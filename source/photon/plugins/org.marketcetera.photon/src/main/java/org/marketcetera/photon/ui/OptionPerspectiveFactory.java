@@ -7,7 +7,6 @@ import org.eclipse.ui.console.IConsoleConstants;
 import org.marketcetera.photon.views.AveragePriceView;
 import org.marketcetera.photon.views.FIXMessagesView;
 import org.marketcetera.photon.views.FillsView;
-import org.marketcetera.photon.views.MarketDataView;
 import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.photon.views.OptionOrderTicketView;
 import org.marketcetera.photon.views.StockOrderTicketView;
@@ -26,8 +25,6 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 	private static final String RIGHT_FOLDER = "rightFolder"; //$NON-NLS-1$
 
-	private static final String TOP_FOLDER = "topFolder"; //$NON-NLS-1$
-
 	public static final String ID = "org.marketcetera.photon.OptionPerspective"; //$NON-NLS-1$
 
 	private IFolderLayout rightFolder;
@@ -35,8 +32,6 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 	private IFolderLayout bottomFolder;
 
 	private IFolderLayout leftFolder;
-
-	private IFolderLayout topFolder;
 
 	/**
 	 * Creates the initial layout of the equity perspective, laying out the
@@ -65,17 +60,14 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.5f,
 				editorArea);
-		leftFolder.addView(MarketDataView.ID);
 		leftFolder.addPlaceholder(FIXMessageDetailView.ID);
+		leftFolder.addPlaceholder(OptionOrderTicketView.ID + ":*"); //$NON-NLS-1$
+		leftFolder.addView(OptionOrderTicketView.ID);
 
 		rightFolder = layout.createFolder(RIGHT_FOLDER, IPageLayout.RIGHT,
 				0.85f, editorArea);
+		rightFolder.addPlaceholder(OpenOrdersView.ID+":*"); //$NON-NLS-1$
 		rightFolder.addView(OpenOrdersView.ID);
-
-		topFolder = layout.createFolder(TOP_FOLDER, IPageLayout.TOP,
-				0.4f, RIGHT_FOLDER);
-		topFolder.addPlaceholder(OptionOrderTicketView.ID + ":*"); //$NON-NLS-1$
-		topFolder.addView(OptionOrderTicketView.ID);
 	}
 
 }
