@@ -3,6 +3,7 @@ package org.marketcetera.photon.views;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -558,6 +559,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 		@Override
 		protected void setValue(Object element, Object value) {
+			if (StringUtils.isBlank(value.toString()))
+				return;
 			MarketDataViewItem item = (MarketDataViewItem) element;
 			final MSymbol symbol = item.getSymbol();
 			if (symbol.toString().equals(value))
