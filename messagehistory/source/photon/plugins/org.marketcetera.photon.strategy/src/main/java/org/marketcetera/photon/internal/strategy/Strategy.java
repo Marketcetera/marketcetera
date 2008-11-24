@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
+import org.marketcetera.client.ClientModuleFactory;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.SinkModuleFactory;
 import org.marketcetera.util.misc.ClassVersion;
@@ -43,7 +44,7 @@ public final class Strategy {
 	 */
 	@ClassVersion("$Id$")
 	public enum Destination {
-		SERVER(Messages.STRATEGY_SERVER_DESTINATION_LABEL.getText(), null), SINK(
+		SERVER(Messages.STRATEGY_SERVER_DESTINATION_LABEL.getText(), ClientModuleFactory.INSTANCE_URN), SINK(
 				Messages.STRATEGY_SINK_DESTINATION_LABEL.getText(),
 				SinkModuleFactory.INSTANCE_URN);
 
