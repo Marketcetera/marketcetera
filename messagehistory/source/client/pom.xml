@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: anshul@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>source</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>client</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Client Libraries</name>
+
+  <dependencies>
+
+    <!-- Compile. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+
+    <!-- Runtime. -->
+    <dependency>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
+    </dependency>
+    <!-- Added to ensure that an older version is not used by another dependency-->
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Testing. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>util-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Configure Eclipse IDE metadata. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
