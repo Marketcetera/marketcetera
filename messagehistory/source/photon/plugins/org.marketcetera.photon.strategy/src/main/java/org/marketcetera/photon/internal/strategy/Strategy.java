@@ -89,7 +89,7 @@ public final class Strategy {
 	
 	private Destination mDestination;
 
-	private final Properties mParameters;
+	private Properties mParameters;
 
 	/**
 	 * Constructor.
@@ -213,10 +213,7 @@ public final class Strategy {
 	 *            the new parameters
 	 */
 	void setParameters(Properties parameters) {
-		mParameters.clear();
-		if (parameters != null) {
-			mParameters.putAll(parameters);
-		}
+		mParameters = parameters;
 	}
 
 	/**
