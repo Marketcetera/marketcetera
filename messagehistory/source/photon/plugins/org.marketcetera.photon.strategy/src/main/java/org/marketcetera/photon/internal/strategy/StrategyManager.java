@@ -215,24 +215,23 @@ public final class StrategyManager {
 	}
 	
 	// TODO: use same implementation as StrategyModule if it becomes public
-	private static String propertiesToString(Properties inProperties)
-    {
-        if(inProperties == null ||
-           inProperties.isEmpty()) {
-            return null;
-        }
-        StringBuffer output = new StringBuffer();
-        boolean delimiterNeeded = false;
-        for(Object key : inProperties.keySet()) {
-            if(delimiterNeeded) {
-                output.append(StrategyMXBean.KEY_VALUE_DELIMITER);
-            } else {
-                delimiterNeeded = true;
-            }
-            output.append(key).append(StrategyMXBean.KEY_VALUE_SEPARATOR).append(inProperties.getProperty((String)key));
-        }
-        return output.toString();
-    }
+	private static String propertiesToString(Properties inProperties) {
+		if (inProperties == null || inProperties.isEmpty()) {
+			return null;
+		}
+		StringBuffer output = new StringBuffer();
+		boolean delimiterNeeded = false;
+		for (Object key : inProperties.keySet()) {
+			if (delimiterNeeded) {
+				output.append(StrategyMXBean.KEY_VALUE_DELIMITER);
+			} else {
+				delimiterNeeded = true;
+			}
+			output.append(key).append(StrategyMXBean.KEY_VALUE_SEPARATOR)
+					.append(inProperties.getProperty((String) key));
+		}
+		return output.toString();
+	}
 
 	/**
 	 * Sets the order destination for the given strategy.
