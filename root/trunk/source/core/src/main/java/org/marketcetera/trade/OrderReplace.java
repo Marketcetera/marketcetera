@@ -12,5 +12,5 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public interface OrderReplace extends RelatedOrder, NewOrReplaceOrder {
+public interface OrderReplace extends TradeMessage, RelatedOrder, NewOrReplaceOrder {
 }

@@ -1,5 +1,7 @@
 package org.marketcetera.trade;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
@@ -11,6 +13,7 @@ import java.util.Collections;
 * @version $Id$
 * @since $Release$
 */
+@ClassVersion("$Id$")
 public enum Side {
     /**
      * Sentinel value for Side that the system is not currently

@@ -20,5 +20,5 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public interface OrderCancelReject extends ReportBase {
+public interface OrderCancelReject extends TradeMessage, ReportBase {
 }

@@ -24,7 +24,7 @@ import java.math.BigDecimal;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public interface ExecutionReport extends ReportBase {
+public interface ExecutionReport extends TradeMessage, ReportBase {
 
     /**
      * Time of execution / order creation in UTC.

@@ -46,7 +46,7 @@ public enum SecurityType {
      *
      * @return the corresponding SecurityType instnace.
      */
-    static SecurityType getInstanceForFIXValue(String inFIXValue) {
+    public static SecurityType getInstanceForFIXValue(String inFIXValue) {
         if(inFIXValue == null) {
             return Unknown;
         }
