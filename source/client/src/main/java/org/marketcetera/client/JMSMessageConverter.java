@@ -79,7 +79,7 @@ public class JMSMessageConverter implements MessageConverter {
     public Message toMessage(Object inObject, Session session)
             throws JMSException, MessageConversionException {
         SLF4JLoggerProxy.debug(this, "Converting to JMS {}", inObject);  //$NON-NLS-1$
-        if (object instanceof TradeMessage) {
+        if (inObject instanceof TradeMessage) {
             return session.createObjectMessage((Serializable) inObject);
         } else {
             throw new MessageConversionException(new I18NBoundMessage1P(
