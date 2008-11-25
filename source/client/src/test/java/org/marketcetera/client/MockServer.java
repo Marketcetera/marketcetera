@@ -1,5 +1,7 @@
 package org.marketcetera.client;
 
+import org.marketcetera.util.ws.stateful.Server;
+import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.FIXVersionTestSuite;
@@ -36,6 +38,10 @@ public class MockServer {
         mHandler = (MockMessageHandler) mContext.getBean("messageHandler",
                 MockMessageHandler.class);
         mContext.start();
+
+        // TODO: Server host and port must come from parameters.
+        Server<?> server=new Server<Object>
+            (new MockAuthenticator(),new SessionManager<Object>());
     }
     public void close() {
         mContext.close();

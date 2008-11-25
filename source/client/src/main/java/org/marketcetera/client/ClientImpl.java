@@ -6,6 +6,7 @@ import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.except.ExceptUtils;
+import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.trade.*;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.client.dest.DestinationsStatus;
@@ -221,6 +222,16 @@ class ClientImpl implements Client {
             setDelegate(delegate);
             setContext(ctx);
             ctx.start();
+
+            // TODO: Server host and port must come from parameters.
+            // AppId must also come from params (or maybe auto-set to
+            // module name).
+            org.marketcetera.util.ws.stateful.Client client=new
+                org.marketcetera.util.ws.stateful.Client
+                (new AppId("ORSClient"));
+            client.login(mParameters.getUsername(),
+                         mParameters.getPassword());
+            Service service=client.getService(Service.class);
         } catch (Throwable t) {
             ExceptUtils.interrupt(t);
             throw new ConnectionException(t, new I18NBoundMessage2P(
