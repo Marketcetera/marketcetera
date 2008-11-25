@@ -153,6 +153,14 @@ class StrategyImpl
         return outboundServicesProvider;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Strategy#getClasspath()
+     */
+    @Override
+    public final String[] getClasspath()
+    {
+        return classpath;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -165,7 +173,7 @@ class StrategyImpl
     }
     /**
      * Create a new StrategyImpl instance.
-     *
+     * 
      * @param inName a <code>String</code> value
      * @param inUniqueIdentifier a <code>String</code> value
      * @param inType a <code>Language</code> value
@@ -194,7 +202,17 @@ class StrategyImpl
         } else {
             parameters = new Properties(inParameters);
         }
-        classpath = inClasspath;
+        if(inClasspath != null &&
+           inClasspath.length != 0) {
+            classpath = new String[inClasspath.length];
+            System.arraycopy(inClasspath,
+                             0,
+                             classpath,
+                             0,
+                             inClasspath.length);
+        } else {
+            classpath = null;
+        }
         outboundServicesProvider = inOutboundServicesProvider;
         code = fileToString(getSource());
     }
@@ -215,15 +233,6 @@ class StrategyImpl
     final File getSource()
     {
         return source;
-    }
-    /**
-     * Get the classpath value.
-     *
-     * @return a <code>String[]</code> value
-     */
-    final String[] getClasspath()
-    {
-        return classpath;
     }
     /**
      * Get the executor value.

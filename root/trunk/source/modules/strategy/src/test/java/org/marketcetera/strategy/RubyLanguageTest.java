@@ -1,16 +1,8 @@
 package org.marketcetera.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import java.io.File;
-import java.math.BigDecimal;
-import java.util.Properties;
-import java.util.Set;
 
-import org.junit.Test;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
 
@@ -56,130 +48,6 @@ public class RubyLanguageTest
     public static final File PART2_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                        "part2.rb");
     public static final String PART2_STRATEGY_NAME = "Part2";
-    /**
-     * Tests that a Ruby class may be dynamically redefined.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void helperRedefinition()
-        throws Exception
-    {
-        StrategyCoordinates strategy1 = getPart1Strategy();
-        doSuccessfulStartTestNoVerification(createStrategy(strategy1.getName(),
-                                                           getLanguage(),
-                                                           strategy1.getFile(),
-                                                           null,
-                                                           null,
-                                                           null,
-                                                           null));
-        StrategyCoordinates strategy2 = getPart2Strategy();
-        doSuccessfulStartTestNoVerification(createStrategy(strategy2.getName(),
-                                                           getLanguage(),
-                                                           strategy2.getFile(),
-                                                           null,
-                                                           null,
-                                                           null,
-                                                           null));
-    }
-    /**
-     * Tests that two strategies with the same class name can co-exist.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void strategiesOfSameClass()
-        throws Exception
-    {
-        StrategyCoordinates strategy1 = getPart1Strategy();
-        ModuleURN strategy1URN = createStrategy(strategy1.getName(),
-                                                getLanguage(),
-                                                strategy1.getFile(),
-                                                null,
-                                                null,
-                                                null,
-                                                null);
-        ModuleURN strategy2URN = createStrategy(strategy1.getName(),
-                                                getLanguage(),
-                                                strategy1.getFile(),
-                                                null,
-                                                null,
-                                                null,
-                                                null);
-        doSuccessfulStartTestNoVerification(strategy1URN);
-        doSuccessfulStartTestNoVerification(strategy2URN);
-        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
-        // should be two running strategies
-        assertEquals(2,
-                     runningStrategies.size());
-        // execute the onCallback method in each running strategy
-        for(StrategyImpl runningStrategy : runningStrategies) {
-            runningStrategy.getRunningStrategy().onCallback(null);
-        }
-        // both strategies get their own onCallback called
-        assertEquals("2",
-                     AbstractRunningStrategy.getProperty("onCallback"));
-        // there should be two callbacks registered
-        String strategyName1 = AbstractRunningStrategy.getProperty("callback1");
-        String strategyName2 = AbstractRunningStrategy.getProperty("callback2");
-        assertFalse(strategyName1.equals(strategyName2));
-    }
-    /**
-     * Verifies that a Ruby class which inherits from a Java class may be dynamically redefined. 
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void redefinedStrategy()
-        throws Exception
-    {
-        StrategyCoordinates strategy1 = getPart1Strategy();
-        StrategyCoordinates strategy2 = getPart1RedefinedStrategy();
-        ModuleURN strategy1URN = createStrategy(strategy1.getName(),
-                                                getLanguage(),
-                                                strategy1.getFile(),
-                                                null,
-                                                null,
-                                                null,
-                                                null);
-        ModuleURN strategy2URN = createStrategy(strategy2.getName(),
-                                                getLanguage(),
-                                                strategy2.getFile(),
-                                                null,
-                                                null,
-                                                null,
-                                                null);
-        doSuccessfulStartTestNoVerification(strategy1URN);
-        doSuccessfulStartTestNoVerification(strategy2URN);
-        setPropertiesToNull();
-        // strategies have started and are working
-        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
-        // should be two running strategies
-        assertEquals(2,
-                     runningStrategies.size());
-        // execute the onAsk method in each running strategy
-        for(StrategyImpl runningStrategy : runningStrategies) {
-            runningStrategy.getRunningStrategy().onAsk(new AskEvent(System.nanoTime(),
-                                                                    System.currentTimeMillis(),
-                                                                    "METC",
-                                                                    "Exchange",
-                                                                    new BigDecimal("1"),
-                                                                    new BigDecimal("2")));
-        }
-        // both strategies should get their onAsk called, but the definition should be the second one
-        Properties properties = AbstractRunningStrategy.getProperties();
-        int askCounter = 0;
-        for(Object key : properties.keySet()) {
-            String keyString = (String)key;
-            if(keyString.startsWith("ask")) {
-                askCounter += 1;
-                assertEquals("part1-redefined",
-                             properties.getProperty(keyString));
-            }
-        }
-        assertEquals(2,
-                     askCounter);
-    }
     /*
      * (non-Javadoc)
      * 
@@ -267,6 +135,7 @@ public class RubyLanguageTest
    /* (non-Javadoc)
      * @see org.marketcetera.strategy.LanguageTestBase#getPart1Strategy()
      */
+    @Override
     protected StrategyCoordinates getPart1Strategy()
     {
         return StrategyCoordinates.get(RubyLanguageTest.PART1_STRATEGY,
@@ -275,6 +144,7 @@ public class RubyLanguageTest
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.LanguageTestBase#getPart2Strategy()
      */
+    @Override
     protected StrategyCoordinates getPart2Strategy()
     {
         return StrategyCoordinates.get(RubyLanguageTest.PART2_STRATEGY,
@@ -283,6 +153,7 @@ public class RubyLanguageTest
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.LanguageTestBase#getPart1RedefinedStrategy()
      */
+    @Override
     protected StrategyCoordinates getPart1RedefinedStrategy()
     {
         return StrategyCoordinates.get(RubyLanguageTest.PART1_REDEFINED_STRATEGY,

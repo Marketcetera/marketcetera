@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.event.AskEvent;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataFlowID;
@@ -104,11 +105,9 @@ public abstract class LanguageTestBase
     /**
      * Tests that the script won't compile if the wrong language is specified.
      *
-     * <p>TODO This test is disabled for now because the Java compiler isn't up and running yet, so Ruby tests won't fail. 
-     * 
      * @throws Exception if an error occurs
      */
-    @Test@Ignore
+    @Test
     public void wrongLanguage()
         throws Exception
     {
@@ -174,7 +173,7 @@ public abstract class LanguageTestBase
                                              null));
     }
     /**
-     * Tests the scenario where the name of the scenario does not match
+     * Tests the scenario where the name of the strategy does not match
      * a class in the script.
      *
      * @throws Exception if an error occurs
@@ -330,7 +329,7 @@ public abstract class LanguageTestBase
         doCallbackFailsTest("shouldFailOnOther",
                             new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade" });
     }
-    @Test @Ignore
+    @Test@Ignore
     public void endlessLoopOnStart()
         throws Exception
     {
@@ -935,11 +934,10 @@ public abstract class LanguageTestBase
     public void startStop()
         throws Exception
     {
-        StrategyCoordinates strategy = StrategyCoordinates.get(RubyLanguageTest.STRATEGY,
-                                                               RubyLanguageTest.STRATEGY_NAME);
+        StrategyCoordinates strategy = getStrategyCompiles();
         ModuleURN strategyModule = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                               strategy.getName(),
-                                                              Language.RUBY,
+                                                              getLanguage(),
                                                               strategy.getFile(),
                                                               null,
                                                               null,
@@ -960,13 +958,12 @@ public abstract class LanguageTestBase
     public void manyStrategiesStartStop()
         throws Exception
     {
-        StrategyCoordinates strategy = StrategyCoordinates.get(RubyLanguageTest.STRATEGY,
-                                                               RubyLanguageTest.STRATEGY_NAME);
+        StrategyCoordinates strategy = getStrategyCompiles();
         int index = 0;
         while (index++ < 500) {
             ModuleURN strategyModule = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                                   strategy.getName(),
-                                                                  Language.RUBY,
+                                                                  getLanguage(),
                                                                   strategy.getFile(),
                                                                   null,
                                                                   null,
@@ -986,13 +983,12 @@ public abstract class LanguageTestBase
     public void manyStrategiesStartWithoutStop()
         throws Exception
     {
-        StrategyCoordinates strategy = StrategyCoordinates.get(RubyLanguageTest.STRATEGY,
-                                                               RubyLanguageTest.STRATEGY_NAME);
+        StrategyCoordinates strategy = getStrategyCompiles();
         int index = 0;
         while (index++ < 500) {
             ModuleURN strategyModule = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                                   strategy.getName(),
-                                                                  Language.RUBY,
+                                                                  getLanguage(),
                                                                   strategy.getFile(),
                                                                   null,
                                                                   null,
@@ -1189,6 +1185,44 @@ public abstract class LanguageTestBase
         assertEquals(1,
                      strategy2Recorder.getDataReceived().size());
     }
+    /**
+     * Tests that a Ruby class may be dynamically redefined.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void helperRedefinition()
+            throws Exception
+    {
+        StrategyCoordinates strategy1 = getPart1Strategy();
+        doSuccessfulStartTestNoVerification(createStrategy(strategy1.getName(),
+                                                           getLanguage(),
+                                                           strategy1.getFile(),
+                                                           null,
+                                                           null,
+                                                           null,
+                                                           null));
+        StrategyCoordinates strategy2 = getPart2Strategy();
+        doSuccessfulStartTestNoVerification(createStrategy(strategy2.getName(),
+                                                           getLanguage(),
+                                                           strategy2.getFile(),
+                                                           null,
+                                                           null,
+                                                           null,
+                                                           null));
+    }
+    /**
+     *
+     *
+     * @return
+     */
+    protected abstract StrategyCoordinates getPart1Strategy();
+    /**
+    *
+    *
+    * @return
+    */
+   protected abstract StrategyCoordinates getPart2Strategy();
     /**
      * Gets the language to use for this test.
      *
@@ -1461,4 +1495,107 @@ public abstract class LanguageTestBase
             verifyPropertyNull(callbackShouldBeNull);
         }
     }
+    /**
+     * Tests that two strategies with the same class name can co-exist.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void strategiesOfSameClass()
+            throws Exception
+    {
+        StrategyCoordinates strategy1 = getPart1Strategy();
+        ModuleURN strategy1URN = createStrategy(strategy1.getName(),
+                                                getLanguage(),
+                                                strategy1.getFile(),
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+        ModuleURN strategy2URN = createStrategy(strategy1.getName(),
+                                                getLanguage(),
+                                                strategy1.getFile(),
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+        doSuccessfulStartTestNoVerification(strategy1URN);
+        doSuccessfulStartTestNoVerification(strategy2URN);
+        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
+        // should be two running strategies
+        assertEquals(2,
+                     runningStrategies.size());
+        // execute the onCallback method in each running strategy
+        for(StrategyImpl runningStrategy : runningStrategies) {
+            runningStrategy.getRunningStrategy().onCallback(null);
+        }
+        // both strategies get their own onCallback called
+        assertEquals("2",
+                     AbstractRunningStrategy.getProperty("onCallback"));
+        // there should be two callbacks registered
+        String strategyName1 = AbstractRunningStrategy.getProperty("callback1");
+        String strategyName2 = AbstractRunningStrategy.getProperty("callback2");
+        assertFalse(strategyName1.equals(strategyName2));
+    }
+    /**
+     * Verifies that a Strategy may be dynamically redefined. 
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void redefinedStrategy()
+            throws Exception
+    {
+        StrategyCoordinates strategy1 = getPart1Strategy();
+        StrategyCoordinates strategy2 = getPart1RedefinedStrategy();
+        ModuleURN strategy1URN = createStrategy(strategy1.getName(),
+                                                getLanguage(),
+                                                strategy1.getFile(),
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+        ModuleURN strategy2URN = createStrategy(strategy2.getName(),
+                                                getLanguage(),
+                                                strategy2.getFile(),
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+        doSuccessfulStartTestNoVerification(strategy1URN);
+        doSuccessfulStartTestNoVerification(strategy2URN);
+        setPropertiesToNull();
+        // strategies have started and are working
+        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
+        // should be two running strategies
+        assertEquals(2,
+                     runningStrategies.size());
+        // execute the onAsk method in each running strategy
+        for(StrategyImpl runningStrategy : runningStrategies) {
+            runningStrategy.getRunningStrategy().onAsk(new AskEvent(System.nanoTime(),
+                                                                    System.currentTimeMillis(),
+                                                                    "METC",
+                                                                    "Exchange",
+                                                                    new BigDecimal("1"),
+                                                                    new BigDecimal("2")));
+        }
+        // both strategies should get their onAsk called, but the definition should be the second one
+        Properties properties = AbstractRunningStrategy.getProperties();
+        int askCounter = 0;
+        for(Object key : properties.keySet()) {
+            String keyString = (String)key;
+            if(keyString.startsWith("ask")) {
+                askCounter += 1;
+                assertTrue(properties.getProperty(keyString).startsWith("part1"));
+            }
+        }
+        assertEquals(2,
+                     askCounter);
+    }
+    /**
+     *
+     *
+     * @return
+     */
+    protected abstract StrategyCoordinates getPart1RedefinedStrategy();
 }

@@ -1,122 +1,194 @@
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
 import java.lang.Override;
 
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.CancelEvent;
-import org.marketcetera.event.ExecutionReport;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
 
 public class JavaStrategy
         extends org.marketcetera.strategy.java.Strategy
 {
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.marketcetera.strategy.java.JavaStrategy#onAsk(org.marketcetera.event
-     * .AskEvent)
-     */
-    public void onAsk(AskEvent inAsk)
+    private int callbackCounter = 0;
+
+    @Override
+    public void onStart()
     {
-        inAsk.toString();
+        callbackCounter = 0;
+        String shouldFail = getParameter("shouldFailOnStart");
+        if(shouldFail != null) {
+            int x = 10 / 0;
+        }
+        String shouldLoop = getParameter("shouldLoopOnStart");
+        if(shouldLoop != null) {
+            while(true) {
+                String shouldStopLoop = getParameter("shouldStopLoop");
+                if(shouldStopLoop != null) {
+                    break;
+                }
+                System.out.println("sleeping...");
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    // do something
+                }
+            }
+        }
+        String marketDataSource = getParameter("shouldRequestData");
+        if(marketDataSource != null) {
+            String symbols = getParameter("symbols");
+            setProperty("requestID",
+                        Long.toString(requestMarketData(symbols,
+                                                        marketDataSource)));
+        }
+        doRequestParameterCallbacks();
+        doRequestPropertiesCallbacks();
+        setProperty("onStart",
+                    Long.toString(System.currentTimeMillis()));
+    }
+    
+    @Override
+    public void onStop()
+    {
+        String shouldFail = getParameter("shouldFailOnStop");
+        if(shouldFail != null) { 
+            int x = 10 / 0;
+        }
+        setProperty("onStop",
+                    Long.toString(System.currentTimeMillis()));
+    }
+    
+    @Override
+    public void onAsk(AskEvent ask)
+    {
+        String shouldFail = getParameter("shouldFailOnAsk");
+        if(shouldFail != null) { 
+            int x = 10 / 0;
+        }
         setProperty("onAsk",
-                    Long.toString(System.nanoTime()));
+                    ask.toString());
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.marketcetera.strategy.java.JavaStrategy#onBid(org.marketcetera.event
-     * .BidEvent)
-     */
-    public void onBid(BidEvent inBid)
+    
+    @Override
+    public void onBid(BidEvent bid)
     {
-        inBid.toString();
+        String shouldFail = getParameter("shouldFailOnBid");
+        if(shouldFail != null) {
+            int x = 10 / 0;
+        }
         setProperty("onBid",
-                    Long.toString(System.nanoTime()));
+                    bid.toString());
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.marketcetera.strategy.java.JavaStrategy#onCallback()
-     */
-    public void onCallback(Object inData)
+    
+    @Override
+    public void onCallback(Object data)
     {
-        List strings = new ArrayList();
+        callbackCounter += 1;
+        String shouldCancel = getProperty("shouldCancel");
+        if(shouldCancel != null) {
+            String requestToCancel = getProperty("requestID");
+            cancelMarketDataRequest(Long.parseLong(requestToCancel));
+        }
+        String shouldFail = getParameter("shouldFailOnCallback");
+        if(shouldFail != null) { 
+            int x = 10 / 0;
+        }
         setProperty("onCallback",
-                    Long.toString(System.nanoTime()));
-        // execute all services
-        setProperty("getCurrentTime",
-                    getCurrentTime().toString());
-        setProperty("getExecutionReport",
-                    Arrays.toString(getExecutionReport(null).toArray()));
-        setProperty("getCurrentPositionAtOpen",
-                    getCurrentPositionAtOpen(new MSymbol("symbol")).toString());
-        setProperty("getCurrentPosition",
-                    getCurrentPosition(new MSymbol("symbol")).toString());
-        System.out.println("onCallback!");
+                    Integer.toString(callbackCounter));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.marketcetera.strategy.java.JavaStrategy#onCancel(org.marketcetera
-     * .event.CancelEvent)
-     */
-    public void onCancel(CancelEvent inCancel)
+    @Override
+    public void onExecutionReport(ExecutionReport executionReport)
     {
-        inCancel.toString();
-        setProperty("onCancel",
-                    Long.toString(System.nanoTime()));
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @seeorg.marketcetera.strategy.java.JavaStrategy#onExecutionReport(org.
-     * marketcetera.event.ExecutionReport)
-     */
-    public void onExecutionReport(ExecutionReport inExecutionReport)
-    {
-        inExecutionReport.toString();
+        String shouldFail = getParameter("shouldFailOnExecutionReport");
+        if(shouldFail != null)  {
+            int x = 10 / 0;
+        }
         setProperty("onExecutionReport",
-                    Long.toString(System.nanoTime()));
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.marketcetera.strategy.java.JavaStrategy#onNews(org.marketcetera.core
-     * .MSymbol, java.lang.String)
-     */
-    public void onNews(MSymbol inSecurity,
-                       String inText)
+                    executionReport.toString());
+    }  
+    
+    @Override
+    public void onCancel(OrderCancelReject cancel)
     {
-        inSecurity.toString();
-        inText.toString();
-        setProperty("onNews",
-                    Long.toString(System.nanoTime()));
+        String shouldFail = getParameter("shouldFailOnCancel");
+        if(shouldFail != null) {
+            int x = 10 / 0;
+        }
+        setProperty("onCancel",
+                    cancel.toString());
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.marketcetera.strategy.java.JavaStrategy#onTrade(org.marketcetera.
-     * event.TradeEvent)
-     */
-    public void onTrade(TradeEvent inTrade)
+    
+    @Override
+    public void onTrade(TradeEvent trade)
     {
-        inTrade.toString();
+        String shouldFail = getParameter("shouldFailOnTrade");
+        if(shouldFail != null) { 
+            int x = 10 / 0;
+        }
         setProperty("onTrade",
-                    Long.toString(System.nanoTime()));
+                    trade.toString());
+    }
+    
+    @Override
+    public void onOther(Object data)
+    {
+        String shouldFail = getParameter("shouldFailOnOther");
+        if(shouldFail != null)  {
+            int x = 10 / 0;
+        }
+        setProperty("onOther",
+                    data.toString());
+    }
+    
+    private void doRequestParameterCallbacks()
+    {
+        doCallbacks(getParameter("shouldRequestCallbackAfter"),
+                    getParameter("shouldRequestCallbackAt"));
+    }
+    
+    private void doRequestPropertiesCallbacks()
+    {
+        doCallbacks(getProperty("shouldRequestCallbackAfter"),
+                    getProperty("shouldRequestCallbackAt"));
+    }
+    
+    private void doCallbacks(String callbackAfter,
+                             String callbackAt)
+    {
+        String shouldDoubleCallbacks = getParameter("shouldDoubleCallbacks");
+        int multiplier;
+        if(shouldDoubleCallbacks != null) {
+            multiplier = 2;
+        } else {
+            multiplier = 1;
+        }
+        String callbackDataIsNull = getParameter("callbackDataIsNull");
+        for(int i=1;i<=multiplier;i++) {
+            if(callbackDataIsNull != null) {
+                if(callbackAfter != null) {
+                    requestCallbackAfter(Long.parseLong(callbackAfter),
+                                         null);
+                }
+                if(callbackAt != null) {
+                    requestCallbackAt(new Date(Long.parseLong(callbackAt)),
+                                      null);
+                }
+            } else {
+                if(callbackAfter != null) {
+                    requestCallbackAfter(Long.parseLong(callbackAfter),
+                                         this);
+                }
+                if(callbackAt != null) {
+                    requestCallbackAt(new Date(Long.parseLong(callbackAt)),
+                                      this);
+                }
+            }
+        }
     }
 }

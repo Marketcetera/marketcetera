@@ -40,6 +40,6 @@ class JavaExecutor
     protected ExecutionEngine getExecutionEngine()
             throws StrategyException
     {
-        return new JavaEngine();
+        return new JavaCompilerExecutionEngine();
     }
 }
