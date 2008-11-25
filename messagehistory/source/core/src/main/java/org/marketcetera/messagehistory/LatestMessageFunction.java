@@ -10,6 +10,8 @@ import quickfix.field.SendingTime;
 import quickfix.field.TransactTime;
 import ca.odell.glazedlists.FunctionList.Function;
 
+/* $License$ */
+
 /**
  * LatestMessageFunction is a {@link Function} that
  * will process a list of FIX messages and find only the
