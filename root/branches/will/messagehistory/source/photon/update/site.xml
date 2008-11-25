@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<site>
-   <description url="http://repo.marketcetera.org/eclipse">
-      Marketcetera update site.
-   </description>
-   <feature url="features/org.rubypeople.rdt_0.8.1.609062100PRD.jar" id="org.rubypeople.rdt" version="0.8.1.609062100PRD"/>
-   <feature url="features/org.marketcetera.photon.feature_0.4.0.jar" id="org.marketcetera.photon.feature" version="0.4"/>
-</site>
