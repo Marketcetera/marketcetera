@@ -36,6 +36,7 @@ public abstract class UCPFilter
      * specific charset.
      */
 
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private static final class UCPCharsetFilter
         extends UCPFilter
     {

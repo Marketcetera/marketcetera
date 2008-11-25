@@ -127,12 +127,12 @@ public class SetterContextSpringTest
 
         SpringSetterString userSetter=new SpringSetterString
             (userHolder,new I18NBoundMessage1P
-             (Messages.USER_SPRING_USAGE,"activemq.user"),
-             "activemq.user");
+             (Messages.USER_SPRING_USAGE,"metc.amq.user"),
+             "metc.amq.user");
         SpringSetterCharArray passwordSetter=new SpringSetterCharArray
             (passwordHolder,new I18NBoundMessage1P
-             (Messages.PASSWORD_SPRING_USAGE,"activemq.password"),
-             "activemq.password");
+             (Messages.PASSWORD_SPRING_USAGE,"metc.amq.password"),
+             "metc.amq.password");
 
         SpringContext context=new SpringContext
             (false,TEST_ROOT+"auth_none.xml",TEST_PROPERTIES_FILES);

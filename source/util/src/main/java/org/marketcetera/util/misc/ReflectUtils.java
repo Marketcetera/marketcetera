@@ -1,7 +1,10 @@
 package org.marketcetera.util.misc;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
+import java.util.Set;
+import org.marketcetera.util.except.ExceptUtils;
 
 /**
  * Utilities for reflection.
@@ -28,7 +31,7 @@ public final class ReflectUtils
      */
 
     private static void getAllClasses
-        (HashSet<Class<?>> result,
+        (Set<Class<?>> result,
          Class<?> c)
     {
         if (c==null) {
@@ -53,7 +56,7 @@ public final class ReflectUtils
     public static Class<?>[] getAllClasses
         (Class<?> c)
     {
-        HashSet<Class<?>> result=new HashSet<Class<?>>();
+        Set<Class<?>> result=new HashSet<Class<?>>();
         getAllClasses(result,c);
         return result.toArray(new Class<?>[0]);
     }
@@ -70,13 +73,57 @@ public final class ReflectUtils
     public static Field[] getAllFields
         (Class<?> c)
     {
-        HashSet<Field> result=new HashSet<Field>();
+        Set<Field> result=new HashSet<Field>();
         for (Class<?> s:getAllClasses(c)) {
             for (Field f:s.getDeclaredFields()) {
                 result.add(f);
             }
         }
         return result.toArray(new Field[0]);
+    }
+
+    /**
+     * Returns an instance of the class by the given name, using its
+     * constructor with the given parameter types, and invoked using
+     * the given parameters. It interrupts the current thread if the
+     * constructor throws an interruption exception per {@link
+     * ExceptUtils#isInterruptException(Throwable)}.
+     *
+     * @param cName The class name.
+     * @param paramTypes The constructor parameter types.
+     * @param paramValues The constructor parameters.
+     *
+     * @return The instance.
+     *
+     * @throws ClassNotFoundException Thrown if a reflection failure
+     * occurs.
+     * @throws IllegalAccessException Thrown if a reflection failure
+     * occurs.
+     * @throws InstantiationException Thrown if a reflection failure
+     * occurs.
+     * @throws NoSuchMethodException Thrown if a reflection failure
+     * occurs.
+     * @throws InvocationTargetException Thrown if a reflection
+     * failure occurs.
+     */
+
+    public static Object getInstance
+        (String cName,
+         Class<?>[] paramTypes,
+         Object[] paramValues)
+        throws ClassNotFoundException,
+               IllegalAccessException,
+               InstantiationException,
+               NoSuchMethodException,
+               InvocationTargetException
+    {
+        try {
+            return Class.forName(cName).getConstructor(paramTypes).
+                newInstance(paramValues);
+        } catch (InvocationTargetException ex) {
+            ExceptUtils.interrupt(ex.getCause());
+            throw ex;
+        }
     }
 
 

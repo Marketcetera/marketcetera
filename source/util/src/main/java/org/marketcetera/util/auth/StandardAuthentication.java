@@ -1,3 +1,4 @@
+
 package org.marketcetera.util.auth;
 
 import java.io.PrintStream;
@@ -41,14 +42,14 @@ public class StandardAuthentication
      */
 
     public static final String USER_PROP=
-        "activemq.user"; //$NON-NLS-1$
+        "metc.amq.user"; //$NON-NLS-1$
 
     /**
      * The default property name for the password (Spring context).
      */
 
     public static final String PASSWORD_PROP=
-        "activemq.password"; //$NON-NLS-1$
+        "metc.amq.password"; //$NON-NLS-1$
 
     /**
      * The default short form of the command-line option for the
