@@ -18,5 +18,10 @@ Export-Package: org.marketcetera.util.auth,
  org.marketcetera.util.quickfix,
  org.marketcetera.util.spring,
  org.marketcetera.util.unicode,
- org.marketcetera.util.ws
+ org.marketcetera.util.ws.sample,
+ org.marketcetera.util.ws.stateful,
+ org.marketcetera.util.ws.stateless,
+ org.marketcetera.util.ws.tags,
+ org.marketcetera.util.ws.types,
+ org.marketcetera.util.ws.wrappers
 Eclipse-BuddyPolicy: dependent
