@@ -47,7 +47,7 @@ public class JMSMessageConverter implements MessageConverter {
         SLF4JLoggerProxy.debug(this, "Converting from JMS {}", message);  //$NON-NLS-1$
         if(message instanceof ObjectMessage) {
             Serializable object = ((ObjectMessage) message).getObject();
-            if(isAcceptableTradeMessage(object)) {
+            if(object instanceof TradeMessage) {
                 return object;
             } else {
                 throw new MessageConversionException(new I18NBoundMessage1P(
@@ -79,7 +79,7 @@ public class JMSMessageConverter implements MessageConverter {
     public Message toMessage(Object inObject, Session session)
             throws JMSException, MessageConversionException {
         SLF4JLoggerProxy.debug(this, "Converting to JMS {}", inObject);  //$NON-NLS-1$
-        if (isAcceptableTradeMessage(inObject)) {
+        if (object instanceof TradeMessage) {
             return session.createObjectMessage((Serializable) inObject);
         } else {
             throw new MessageConversionException(new I18NBoundMessage1P(
@@ -87,15 +87,4 @@ public class JMSMessageConverter implements MessageConverter {
                     ObjectUtils.toString(inObject)).getText());
         }
     }
-
-    private boolean isAcceptableTradeMessage(Object message) {
-        return message instanceof OrderSingle ||
-                message instanceof OrderCancel ||
-                message instanceof OrderReplace ||
-                message instanceof FIXOrder ||
-                message instanceof ExecutionReport ||
-                message instanceof OrderCancelReject;
-    }
-
-
 }
