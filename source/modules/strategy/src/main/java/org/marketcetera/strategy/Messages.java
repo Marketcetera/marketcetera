@@ -62,5 +62,9 @@ public interface Messages
                                                                   "callback_error"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_MESSAGE = new I18NMessage1P(LOGGER,
                                                                    "invalid_message"); //$NON-NLS-1$
+    static final I18NMessage1P COMPILATION_FAILED = new I18NMessage1P(LOGGER,
+                                                                      "compilation_failed"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_STRATEGY_NAME = new I18NMessage1P(LOGGER,
+                                                                         "invalid_strategy_name"); //$NON-NLS-1$
 }
 

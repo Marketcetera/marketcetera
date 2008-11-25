@@ -67,9 +67,6 @@ public class StrategyTestBase
 {
     public static final File SAMPLE_STRATEGY_DIR = new File("src" + File.separator + "test" + File.separator + "sample_data",
                                                             "inputs");   
-    public static final File JAVA_STRATEGY = new File(SAMPLE_STRATEGY_DIR,
-                                                      "JavaStrategy.java");
-    public static final String JAVA_STRATEGY_NAME = "JavaStrategy";
     /**
      * Tuple which describes the location and name of a strategy.
      *

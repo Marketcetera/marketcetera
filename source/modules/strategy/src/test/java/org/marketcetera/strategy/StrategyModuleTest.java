@@ -74,15 +74,15 @@ public class StrategyModuleTest
      *
      * @throws Exception if an error occurs
      */
-    @Test 
+    @Test
     public void lifecycle()
         throws Exception
     {
         assertTrue(moduleManager.getModuleInstances(StrategyModuleFactory.PROVIDER_URN).isEmpty());
         ModuleURN strategy = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
-                                                        JAVA_STRATEGY_NAME,
+                                                        JavaLanguageTest.JAVA_STRATEGY_NAME,
                                                         Language.JAVA,
-                                                        JAVA_STRATEGY,
+                                                        JavaLanguageTest.JAVA_STRATEGY,
                                                         new Properties(),
                                                         new String[0],
                                                         ordersURN,
@@ -113,40 +113,40 @@ public class StrategyModuleTest
     {
         doWrongParameterCountTest((Object[])null);
         doWrongParameterCountTest(new Object[0]);
-        doWrongParameterCountTest(JAVA_STRATEGY_NAME);
-        doWrongParameterCountTest(JAVA_STRATEGY_NAME,
+        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME);
+        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                   Language.JAVA);
-        doWrongParameterCountTest(JAVA_STRATEGY_NAME,
+        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                   Language.JAVA,
-                                  JAVA_STRATEGY);
-        doWrongParameterCountTest(JAVA_STRATEGY_NAME,
+                                  JavaLanguageTest.JAVA_STRATEGY);
+        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                   Language.JAVA,
-                                  JAVA_STRATEGY,
+                                  JavaLanguageTest.JAVA_STRATEGY,
                                   new Properties());
-        doWrongParameterCountTest(JAVA_STRATEGY_NAME,
+        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                   Language.JAVA,
-                                  JAVA_STRATEGY,
+                                  JavaLanguageTest.JAVA_STRATEGY,
                                   new Properties(),
                                   ordersURN);
         // muddle types
         doWrongTypeParameterTest(0,
                                  this,
                                  Language.JAVA,
-                                 JAVA_STRATEGY,
+                                 JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(1,
-                                 JAVA_STRATEGY_NAME,
+                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  this,
-                                 JAVA_STRATEGY,
+                                 JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(2,
-                                 JAVA_STRATEGY_NAME,
+                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
                                  this,
                                  new Properties(),
@@ -154,41 +154,41 @@ public class StrategyModuleTest
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(3,
-                                 JAVA_STRATEGY_NAME,
+                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
-                                 JAVA_STRATEGY,
+                                 JavaLanguageTest.JAVA_STRATEGY,
                                  this,
                                  new String[0],
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(4,
-                                 JAVA_STRATEGY_NAME,
+                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
-                                 JAVA_STRATEGY,
+                                 JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  this,
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(5,
-                                 JAVA_STRATEGY_NAME,
+                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
-                                 JAVA_STRATEGY,
+                                 JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  this,
                                  suggestionsURN);
         doWrongTypeParameterTest(6,
-                                 JAVA_STRATEGY_NAME,
+                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
-                                 JAVA_STRATEGY,
+                                 JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  ordersURN,
                                  this);
         // create a good 'un just to prove we can
-        ModuleURN strategy = createStrategy(JAVA_STRATEGY_NAME,
+        ModuleURN strategy = createStrategy(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                             Language.JAVA,
-                                            JAVA_STRATEGY,
+                                            JavaLanguageTest.JAVA_STRATEGY,
                                             new Properties(),
                                             new String[0],
                                             ordersURN,
@@ -310,9 +310,9 @@ public class StrategyModuleTest
                index[0] == 4 ||
                index[0] == 5 ||
                index[0] == 6) {
-                verifyStrategyStartsAndStops((index[0]==0 ? null : JAVA_STRATEGY_NAME),
+                verifyStrategyStartsAndStops((index[0]==0 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
                                              (index[0]==1 ? null : Language.JAVA),
-                                             (index[0]==2 ? null : JAVA_STRATEGY),
+                                             (index[0]==2 ? null : JavaLanguageTest.JAVA_STRATEGY),
                                              (index[0]==3 ? null : new Properties()),
                                              (index[0]==4 ? null : new String[0]),
                                              (index[0]==5 ? null : ordersURN),
@@ -325,9 +325,9 @@ public class StrategyModuleTest
                     protected void run()
                         throws Exception
                     {
-                        verifyStrategyStartsAndStops((index[0]==0 ? null : JAVA_STRATEGY_NAME),
+                        verifyStrategyStartsAndStops((index[0]==0 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
                                                      (index[0]==1 ? null : Language.JAVA),
-                                                     (index[0]==2 ? null : JAVA_STRATEGY),
+                                                     (index[0]==2 ? null : JavaLanguageTest.JAVA_STRATEGY),
                                                      (index[0]==3 ? null : new Properties()),
                                                      (index[0]==4 ? null : new String[0]),
                                                      (index[0]==5 ? null : ordersURN),
@@ -347,8 +347,6 @@ public class StrategyModuleTest
         throws Exception
     {
         final String emptyName = "";
-        String nonEmptyName = "some name here " + System.nanoTime() + " &^%@&$&$";
-        String nonAsciiName = UnicodeData.GOATS_LNB;
         new ExpectedFailure<ModuleCreationException>(EMPTY_NAME_ERROR) {
             @Override
             protected void run()
@@ -356,23 +354,16 @@ public class StrategyModuleTest
             {
                 verifyStrategyStartsAndStops(emptyName,
                                              Language.JAVA,
-                                             JAVA_STRATEGY,
+                                             JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
                                              null,
                                              null);
             }
         };
-        verifyStrategyStartsAndStops(nonEmptyName,
+        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                      Language.JAVA,
-                                     JAVA_STRATEGY,
-                                     null,
-                                     null,
-                                     null,
-                                     null);
-        verifyStrategyStartsAndStops(nonAsciiName,
-                                     Language.JAVA,
-                                     JAVA_STRATEGY,
+                                     JavaLanguageTest.JAVA_STRATEGY,
                                      null,
                                      null,
                                      null,
@@ -396,26 +387,26 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                              invalidLanguage,
-                                             JAVA_STRATEGY,
+                                             JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
                                              null,
                                              null);
             }
         };
-        verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                      validLanguage,
-                                     JAVA_STRATEGY,
+                                     JavaLanguageTest.JAVA_STRATEGY,
                                      null,
                                      null,
                                      null,
                                      null);
         // test again with a mixed case string
-        verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                      validMixedCaseLanguage,
-                                     JAVA_STRATEGY,
+                                     JavaLanguageTest.JAVA_STRATEGY,
                                      null,
                                      null,
                                      null,
@@ -439,7 +430,7 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                              Language.JAVA,
                                              badFile,
                                              null,
@@ -460,9 +451,9 @@ public class StrategyModuleTest
     {
         Properties properties = new Properties();
         // empty properties
-        verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                      Language.JAVA,
-                                     JAVA_STRATEGY,
+                                     JavaLanguageTest.JAVA_STRATEGY,
                                      properties,
                                      null,
                                      null,
@@ -470,9 +461,9 @@ public class StrategyModuleTest
         // non-empty properties
         properties.setProperty("some-key",
                                "some value " + System.nanoTime());
-        verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                      Language.JAVA,
-                                     JAVA_STRATEGY,
+                                     JavaLanguageTest.JAVA_STRATEGY,
                                      properties,
                                      null,
                                      null,
@@ -488,17 +479,17 @@ public class StrategyModuleTest
         throws Exception
     {
         // empty classpath
-        verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                      Language.JAVA,
-                                     JAVA_STRATEGY,
+                                     JavaLanguageTest.JAVA_STRATEGY,
                                      null,
                                      new String[0],
                                      null,
                                      null);
         // non-empty classpath
-        verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                      Language.JAVA,
-                                     JAVA_STRATEGY,
+                                     JavaLanguageTest.JAVA_STRATEGY,
                                      null,
                                      new String[] { "/some/path/here", "/some/other/path with spaces/here" },
                                      null,
@@ -528,9 +519,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                              Language.JAVA,
-                                             JAVA_STRATEGY,
+                                             JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
                                              invalidURN,
@@ -544,9 +535,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                              Language.JAVA,
-                                             JAVA_STRATEGY,
+                                             JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
                                              validUnstartedURN,
@@ -560,9 +551,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                              Language.JAVA,
-                                             JAVA_STRATEGY,
+                                             JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
                                              validURNNotReceiver,
@@ -577,9 +568,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                              Language.JAVA,
-                                             JAVA_STRATEGY,
+                                             JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
                                              null,
@@ -593,9 +584,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                              Language.JAVA,
-                                             JAVA_STRATEGY,
+                                             JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
                                              null,
@@ -609,9 +600,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JAVA_STRATEGY_NAME,
+                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
                                              Language.JAVA,
-                                             JAVA_STRATEGY,
+                                             JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
                                              null,

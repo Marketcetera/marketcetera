@@ -339,8 +339,8 @@ final class StrategyModule
                                   subStatements[1]);
             } else {
                 SLF4JLoggerProxy.debug(StrategyModule.class,
-                                       "Putative key/value \"{}\" discarded",
-                                       (subStatements == null ? "null" : Arrays.toString(subStatements)));
+                                       "Putative key/value \"{}\" discarded", //$NON-NLS-1$
+                                       (subStatements == null ? "null" : Arrays.toString(subStatements))); //$NON-NLS-1$
             }
         }
         return props;

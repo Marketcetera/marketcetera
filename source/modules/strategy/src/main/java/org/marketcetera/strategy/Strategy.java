@@ -47,6 +47,12 @@ interface Strategy
      */
     public Properties getParameters();
     /**
+     * Gets the classpath to pass to the strategy script compiler.
+     *
+     * @return a <code>String[]</code> value
+     */
+    public String[] getClasspath();
+    /**
      * Starts the execution of the strategy.
      *
      * @throws StrategyException if the strategy cannot start
