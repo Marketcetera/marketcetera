@@ -10,6 +10,10 @@ import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.management.JMX;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+
 import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
@@ -30,7 +34,9 @@ import org.marketcetera.photon.internal.strategy.Strategy.State;
 import org.marketcetera.photon.module.ModulePlugin;
 import org.marketcetera.scripting.ScriptLoggingUtil;
 import org.marketcetera.strategy.Language;
+import org.marketcetera.strategy.StrategyMXBean;
 import org.marketcetera.strategy.StrategyModuleFactory;
+import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -110,6 +116,8 @@ public final class StrategyManager {
 	 */
 	private static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
 
+	private final MBeanServerConnection mMBeanServer = ModulePlugin.getDefault().getMBeanServerConnection();
+	
 	private final ModuleManager mModuleManager = ModulePlugin.getDefault()
 			.getModuleManager();
 
@@ -193,8 +201,36 @@ public final class StrategyManager {
 	 *            the new parameters
 	 */
 	public void setParameters(Strategy strategy, Properties parameters) {
-		strategy.setParameters(parameters);
-		saveState();
+		try {
+			ObjectName objectName = strategy.getURN().toObjectName();
+			StrategyMXBean proxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
+					StrategyMXBean.class);
+			proxy.setParameters(propertiesToString(parameters));
+			strategy.setParameters(parameters);
+			saveState();
+		} catch (Exception e) {
+			// TODO: report to user
+			ExceptUtils.swallow(e);
+		}
+	}
+	
+	// TODO: use same implementation as StrategyModule if it becomes public
+	private static String propertiesToString(Properties inProperties) {
+		if (inProperties == null || inProperties.isEmpty()) {
+			return null;
+		}
+		StringBuffer output = new StringBuffer();
+		boolean delimiterNeeded = false;
+		for (Object key : inProperties.keySet()) {
+			if (delimiterNeeded) {
+				output.append(StrategyMXBean.KEY_VALUE_DELIMITER);
+			} else {
+				delimiterNeeded = true;
+			}
+			output.append(key).append(StrategyMXBean.KEY_VALUE_SEPARATOR)
+					.append(inProperties.getProperty((String) key));
+		}
+		return output.toString();
 	}
 
 	/**
@@ -206,8 +242,17 @@ public final class StrategyManager {
 	 *            the new order destination
 	 */
 	public void setDestination(Strategy strategy, Destination destination) {
-		// TODO: update module via MX bean interface
-		// strategy.setDestination(destination);
+		try {
+			ObjectName objectName = strategy.getURN().toObjectName();
+			StrategyMXBean proxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
+					StrategyMXBean.class);
+			proxy.setOrdersDestination(destination.getURN().toString());
+			strategy.setDestination(destination);
+			saveState();
+		} catch (Exception e) {
+			// TODO: report to user
+			ExceptUtils.swallow(e);
+		}
 	}
 
 	/**
