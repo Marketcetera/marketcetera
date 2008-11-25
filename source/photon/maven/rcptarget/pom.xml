@@ -10,7 +10,8 @@
 <project
  xmlns="http://maven.apache.org/POM/4.0.0"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -192,8 +193,8 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <!-- 
-	        - Some plugins must be unpacked to allow the Eclipse IDE to compile against their embedded jars.
-	        -->
+            - Some plugins must be unpacked to allow the Eclipse IDE to compile against their embedded jars.
+            -->
           <execution>
             <id>unpack-plugins</id>
             <phase>install</phase>
@@ -203,11 +204,12 @@
                 <if>
                   <available file="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar"/>
                   <then>
-	              <unzip src="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar" 
-                      dest="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903"/>
+                    <unzip
+                     src="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar" 
+                     dest="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903"/>
                     <delete file="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar"/>
-	            </then>
-	          </if>
+                  </then>
+                </if>
               </tasks>
             </configuration>
             <goals>
@@ -215,10 +217,10 @@
             </goals>
           </execution>
           <!-- 
-	        - Delete the target during a clean build.  Ideally, the maven-clean-plugin
-	        - could be used instead, but there is a bug that causes it to improperly 
-	        - handle absolute paths. See http://jira.codehaus.org/browse/MCLEAN-36.
-	        -->
+            - Delete the target during a clean build.  Ideally, the maven-clean-plugin
+            - could be used instead, but there is a bug that causes it to improperly 
+            - handle absolute paths. See http://jira.codehaus.org/browse/MCLEAN-36.
+            -->
           <execution>
             <id>clean-target</id>
             <phase>clean</phase>
