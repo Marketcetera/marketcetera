@@ -44,7 +44,12 @@ public class TradeSuggestion {
 		mTimestamp = timestamp;
 	}
 
-	private OrderSingle getOrder() {
+	/**
+	 * Returns the underlying order.
+	 * 
+	 * @return the underlying order
+	 */
+	OrderSingle getOrder() {
 		return mSuggestion.getOrder();
 	}
 

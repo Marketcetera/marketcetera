@@ -122,6 +122,14 @@ public interface Messages {
 			LOGGER, "trade_suggestion.destination_id.label"); //$NON-NLS-1$
 	static final I18NMessage0P TRADE_SUGGESTION_TIMESTAMP_LABEL = new I18NMessage0P(
 			LOGGER, "trade_suggestion.timestamp.label"); //$NON-NLS-1$
+	static final I18NMessage0P SEND_ORDERS_HANDLER_SERVER_FAILURE = new I18NMessage0P(
+			LOGGER, "send_orders_handler.server_failure"); //$NON-NLS-1$
+	static final I18NMessage0P SEND_ORDERS_HANDLER_SEND_ORDERS_FAILURE = new I18NMessage0P(
+			LOGGER, "send_orders_handler.send_orders_failure"); //$NON-NLS-1$
+	static final I18NMessage1P SEND_ORDERS_HANDLER_SEND_ORDER_FAILURE = new I18NMessage1P(
+			LOGGER, "send_orders_handler.send_order_failure"); //$NON-NLS-1$
+	static final I18NMessage0P SEND_ORDERS_HANDLER_SEND_ORDERS_FAILURE_SEE_DETAILS = new I18NMessage0P(
+			LOGGER, "send_orders_handler.send_orders_failure.see_details"); //$NON-NLS-1$
 	
 	/*
 	 * Module information

@@ -3,9 +3,14 @@ package org.marketcetera.photon.internal.strategy;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.views.IOrderTicketController;
+import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.Message;
 
 /* $License$ */
 
@@ -21,9 +26,23 @@ public class OpenSuggestionHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		// TODO: implement this for a later milestone
-		MessageDialog.openInformation(HandlerUtil.getActiveShellChecked(event),
-				"Not yet implemented", "Feature not yet implemented"); //$NON-NLS-1$ //$NON-NLS-2$
+		IStructuredSelection selection = (IStructuredSelection) HandlerUtil
+				.getCurrentSelectionChecked(event);
+		TradeSuggestion suggestion = (TradeSuggestion) selection
+				.getFirstElement();
+		Message message = getFIXMessage(suggestion.getOrder());
+		if (message != null) {
+			IOrderTicketController controller = PhotonPlugin.getDefault()
+					.getOrderTicketController(message);
+			if (controller != null) {
+				controller.setOrderMessage(message);
+			}
+		}
+		return null;
+	}
+
+	private Message getFIXMessage(OrderSingle agnosticMessage) {
+		// TODO: convert Pojo to FIX using T2's API
 		return null;
 	}
 

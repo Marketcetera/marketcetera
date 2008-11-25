@@ -109,17 +109,21 @@
       </category>
       <command
             categoryId="org.marketcetera.photon.tradeSuggestion.commands"
-            defaultHandler="org.marketcetera.photon.internal.strategy.OpenSuggestionHandler"
             description="%openSuggestionCommand.description"
             id="org.marketcetera.photon.tradeSuggestion.commands.open"
             name="%openSuggestionCommand.name">
       </command>
       <command
             categoryId="org.marketcetera.photon.tradeSuggestion.commands"
-            defaultHandler="org.marketcetera.photon.internal.strategy.SendOrdersHandler"
             description="%sendOrders.description"
             id="org.marketcetera.photon.tradeSuggestion.commands.send"
             name="%sendOrders.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.tradeSuggestion.commands"
+            description="%tradeSuggestionDelete.description"
+            id="org.marketcetera.photon.tradeSuggestion.commands.delete"
+            name="%tradeSuggestionDelete.name">
       </command>
    </extension>
    <extension
@@ -168,7 +172,7 @@
          </separator>
          <command
                commandId="org.eclipse.ui.edit.delete"
-               label="%deleteStrategy.lable"
+               label="%deleteStrategy.label"
                style="push">
             <visibleWhen
                   checkEnabled="false">
@@ -227,17 +231,20 @@
          <command
                commandId="org.marketcetera.photon.tradeSuggestion.commands.open"
                icon="icons/arrow_up.png"
-               style="push">
+               style="push"
+               tooltip="%openSuggestionCommand.description">
          </command>
          <command
                commandId="org.marketcetera.photon.tradeSuggestion.commands.send"
                icon="icons/server_go.png"
-               style="push">
+               style="push"
+               tooltip="%sendOrders.description">
          </command>
          <command
-               commandId="org.eclipse.ui.edit.delete"
+               commandId="org.marketcetera.photon.tradeSuggestion.commands.delete"
                icon="icons/cancel.png"
-               style="push">
+               style="push"
+               tooltip="%tradeSuggestionDelete.description">
          </command>
       </menuContribution>
       <menuContribution
@@ -318,6 +325,70 @@
                </equals>
             </with>
          </activeWhen>
+      </handler>
+      <handler
+            class="org.marketcetera.photon.internal.strategy.OpenSuggestionHandler"
+            commandId="org.marketcetera.photon.tradeSuggestion.commands.open">
+         <activeWhen>
+            <with
+                  variable="activePartId">
+               <equals
+                     value="org.marketcetera.photon.strategy.TradeSuggestionsView">
+               </equals>
+            </with>
+         </activeWhen>
+         <enabledWhen>
+            <and>
+               <count
+                     value="1">
+               </count>
+               <iterate>
+                  <instanceof
+                        value="org.marketcetera.photon.internal.strategy.TradeSuggestion">
+                  </instanceof>
+               </iterate>
+            </and>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="org.marketcetera.photon.internal.strategy.SendOrdersHandler"
+            commandId="org.marketcetera.photon.tradeSuggestion.commands.send">
+         <activeWhen>
+            <with
+                  variable="activePartId">
+               <equals
+                     value="org.marketcetera.photon.strategy.TradeSuggestionsView">
+               </equals>
+            </with>
+         </activeWhen>
+         <enabledWhen>
+            <iterate
+                  ifEmpty="false">
+               <instanceof
+                     value="org.marketcetera.photon.internal.strategy.TradeSuggestion">
+               </instanceof>
+            </iterate>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="org.marketcetera.photon.internal.strategy.TradeSuggestionDeleteHandler"
+            commandId="org.marketcetera.photon.tradeSuggestion.commands.delete">
+         <activeWhen>
+            <with
+                  variable="activePartId">
+               <equals
+                     value="org.marketcetera.photon.strategy.TradeSuggestionsView">
+               </equals>
+            </with>
+         </activeWhen>
+         <enabledWhen>
+            <iterate
+                  ifEmpty="false">
+               <instanceof
+                     value="org.marketcetera.photon.internal.strategy.TradeSuggestion">
+               </instanceof>
+            </iterate>
+         </enabledWhen>
       </handler>
    </extension>
    <extension
