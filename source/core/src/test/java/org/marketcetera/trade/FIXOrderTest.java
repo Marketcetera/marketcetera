@@ -103,6 +103,8 @@ public class FIXOrderTest extends TypesTestBase {
         DestinationID id = new DestinationID("blah");
         FIXOrder order = sFactory.createOrder(msg, id);
         assertSame(msg, order.getMessage());
+        //Verify toString() doesn't fail
+        order.toString();
 
         //Test map of fields
         String clOrdID = "blah";
@@ -143,5 +145,7 @@ public class FIXOrderTest extends TypesTestBase {
             actualCopy.remove(i);
         }
         assertEquals(expected, actualCopy);
+        //Verify toString() doesn't fail
+        order.toString();
     }
 }

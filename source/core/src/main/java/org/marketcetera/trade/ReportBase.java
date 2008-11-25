@@ -59,4 +59,11 @@ public interface ReportBase extends Serializable {
      * @return the time of message transmission in UTC.
      */
     Date getSendingTime();
+    
+    /**
+     * The order ID assigned by destination / broker to the original order.
+     *
+     * @return the destination / broker assigned order ID.
+     */
+    String getDestinationOrderID();
 }

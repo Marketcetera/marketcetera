@@ -27,4 +27,18 @@ public interface RelatedOrder extends OrderBase {
      * @param inOrderID the orderID of the order being cancelled.
      */
     void setOriginalOrderID(OrderID inOrderID);
+
+    /**
+     * The order ID assigned by destination / broker to the original order.
+     *
+     * @return the destination / broker assigned order ID.
+     */
+    String getDestinationOrderID();
+
+    /**
+     * Set the destination / broker assigned order ID.
+     * 
+     * @param inDestOrderID the destination / broker assigned order ID.
+     */
+    void setDestinationOrderID(String inDestOrderID);
 }
