@@ -9,7 +9,7 @@ import org.marketcetera.util.log.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: TestMessages.java 9860 2008-10-10 22:00:53Z klim $")
+@ClassVersion("$Id$")
 public interface TestMessages {
     /**
      * The message provider
