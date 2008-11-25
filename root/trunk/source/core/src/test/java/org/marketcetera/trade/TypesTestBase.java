@@ -169,7 +169,7 @@ public class TypesTestBase {
         assertEquals(inOrder1.getCustomFields(), inOrder2.getCustomFields());
         assertEquals(inOrder1.getDestinationID(), inOrder2.getDestinationID());
         if (!inIgnoreOrderID) {
-            assertEquals(inOrder1.getOrderID(), inOrder2.getOrderID());
+        assertEquals(inOrder1.getOrderID(), inOrder2.getOrderID());
         }
         assertEquals(inOrder1.getQuantity(), inOrder2.getQuantity());
         assertEquals(inOrder1.getSecurityType(), inOrder2.getSecurityType());
@@ -194,6 +194,8 @@ public class TypesTestBase {
         assertOrderBaseEquals(inOrder1, inOrder2, inIgnoreOrderID);
         assertEquals(inOrder1.getOriginalOrderID(),
                 inOrder2.getOriginalOrderID());
+        assertEquals(inOrder1.getDestinationOrderID(),
+                inOrder2.getDestinationOrderID());
     }
 
     protected static void assertReportBaseEquals(ReportBase inReport1,
@@ -204,6 +206,8 @@ public class TypesTestBase {
         assertEquals(inReport1.getOriginalOrderID(), inReport2.getOriginalOrderID());
         assertEquals(inReport1.getSendingTime(), inReport2.getSendingTime());
         assertEquals(inReport1.getText(), inReport2.getText());
+        assertEquals(inReport1.getDestinationOrderID(),
+                inReport2.getDestinationOrderID());
     }
 
     /**
@@ -396,8 +400,10 @@ public class TypesTestBase {
     }
 
     protected static void assertRelatedOrderValues(RelatedOrder inOrder,
-                                                OrderID inOrigOrderID) {
+                                                   OrderID inOrigOrderID,
+                                                   String inDestinationOrderID) {
         assertEquals(inOrigOrderID,  inOrder.getOriginalOrderID());
+        assertEquals(inDestinationOrderID,  inOrder.getDestinationOrderID());
     }
 
     protected static void assertReportBaseValues(ReportBase inReport,
@@ -405,13 +411,16 @@ public class TypesTestBase {
                                               OrderID inOrderID,
                                               OrderStatus inOrderStatus,
                                               OrderID inOrigOrderID,
-                                                 Date inSendingTime, String inText) {
+                                                 Date inSendingTime,
+                                                 String inText,
+                                                 String inDestinationOrderID) {
         assertEquals(inDestinationID, inReport.getDestinationID());
         assertEquals(inOrderID, inReport.getOrderID());
         assertEquals(inOrderStatus, inReport.getOrderStatus());
         assertEquals(inOrigOrderID,  inReport.getOriginalOrderID());
         assertEquals(inSendingTime,  inReport.getSendingTime());
         assertEquals(inText, inReport.getText());
+        assertEquals(inDestinationOrderID, inReport.getDestinationOrderID());
     }
 
     protected static void assertExecReportValues(ExecutionReport inReport,
@@ -509,6 +518,73 @@ public class TypesTestBase {
             fields.put(name,value);
         }
         return fields;
+    }
+
+    public static void assertOrderSingle(OrderSingle inOrder,
+                                         OrderID inOrderID,
+                                         Side inSide,
+                                         BigDecimal inQty,
+                                         BigDecimal inPrice,
+                                         TimeInForce inTimeInForce,
+                                         OrderType inOrderType,
+                                         MSymbol inSymbol,
+                                         SecurityType inSecurityType,
+                                         String inAccount,
+                                         OrderCapacity inOrderCapacity,
+                                         PositionEffect inPositionEffect,
+                                         DestinationID inDestinationID,
+                                         Map<String, String> inCustomFields) {
+        assertNotNull(inOrder);
+        assertOrderValues(inOrder, inDestinationID, inSecurityType);
+        assertOrderBaseValues(inOrder, inOrderID, inAccount, inCustomFields, inQty,
+                inSide, inSymbol);
+        assertNROrderValues(inOrder, inOrderType, inPrice,
+                inTimeInForce, inOrderCapacity,
+                inPositionEffect);
+    }
+
+    public static void assertOrderCancel(OrderCancel inOrder,
+                                         OrderID inOrderID,
+                                         OrderID inOriginalOrderID,
+                                         Side inSide,
+                                         MSymbol inSymbol,
+                                         SecurityType inSecurityType,
+                                         BigDecimal inQty,
+                                         String inDestOrderID,
+                                         String inAccount,
+                                         DestinationID inDestinationID,
+                                         Map<String, String> inCustomFields) {
+        assertNotNull(inOrder);
+        assertOrderValues(inOrder, inDestinationID, inSecurityType);
+        assertOrderBaseValues(inOrder, inOrderID, inAccount,
+                inCustomFields, inQty, inSide, inSymbol);
+        assertRelatedOrderValues(inOrder, inOriginalOrderID, inDestOrderID);
+    }
+
+    public static void assertOrderReplace(OrderReplace inOrder,
+                                          OrderID inOrderID,
+                                          OrderID inOrigOrderID,
+                                          String inDestOrderID,
+                                          OrderType inOrderType,
+                                          Side inSide,
+                                          BigDecimal inQty,
+                                          BigDecimal inPrice,
+                                          MSymbol inSymbol,
+                                          SecurityType inSecurityType,
+                                          TimeInForce inTif,
+                                          String inAccount,
+                                          DestinationID inDestinationID,
+                                          PositionEffect inPositionEffect,
+                                          OrderCapacity inOrderCapacity,
+                                          Map<String, String> inCustomFields) {
+        assertOrderValues(inOrder, inDestinationID, inSecurityType);
+        assertOrderBaseValues(inOrder, inOrderID, inAccount, inCustomFields, inQty,
+                inSide, inSymbol);
+        assertNROrderValues(inOrder, inOrderType,
+                inPrice,
+                inTif, inOrderCapacity,
+                inPositionEffect);
+        assertRelatedOrderValues(inOrder, inOrigOrderID, inDestOrderID);
     }
 
     /**

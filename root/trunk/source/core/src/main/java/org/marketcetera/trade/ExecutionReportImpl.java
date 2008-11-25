@@ -109,6 +109,38 @@ class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
         return mOriginator;
     }
 
+    @Override
+    public String toString() {
+        return Messages.EXECUTION_REPORT_TO_STRING.getText(
+                String.valueOf(getAccount()),
+                String.valueOf(getAveragePrice()),
+                String.valueOf(getCumulativeQuantity()),
+                String.valueOf(getDestinationID()),
+                String.valueOf(getExecutionID()),
+                String.valueOf(getExecutionType()),
+                String.valueOf(getLastMarket()),
+                String.valueOf(getLastPrice()),
+                String.valueOf(getLastQuantity()),
+                String.valueOf(getLeavesQuantity()),
+                String.valueOf(getOrderCapacity()),
+                String.valueOf(getOrderID()),
+                String.valueOf(getOrderQuantity()),
+                String.valueOf(getOrderStatus()),
+                String.valueOf(getOrderType()),
+                String.valueOf(getOriginalOrderID()),
+                String.valueOf(getOriginator()),
+                String.valueOf(getPositionEffect()),
+                String.valueOf(getSendingTime()),
+                String.valueOf(getSide()),
+                String.valueOf(getSymbol()),
+                String.valueOf(getText()),
+                String.valueOf(getTimeInForce()),
+                String.valueOf(getTransactTime()),
+                String.valueOf(getDestinationOrderID()),
+                String.valueOf(getMessage())
+        );
+    }
+
     /**
      * Creates an instance.
      *

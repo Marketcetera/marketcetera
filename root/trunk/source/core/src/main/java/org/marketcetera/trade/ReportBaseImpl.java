@@ -45,6 +45,12 @@ class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
     public Date getSendingTime() {
         return FIXUtil.getSendingTime(getMessage());
     }
+
+    @Override
+    public String getDestinationOrderID() {
+        return FIXUtil.getDestinationOrderID(getMessage());
+    }
+
     /**
      * Creates an instance.
      *

@@ -42,6 +42,7 @@ class FactoryImpl extends Factory {
         if (inLatestReport != null) {
             order.setAccount(inLatestReport.getAccount());
             order.setDestinationID(inLatestReport.getDestinationID());
+            order.setDestinationOrderID(inLatestReport.getDestinationOrderID());
             order.setOriginalOrderID(inLatestReport.getOrderID());
             order.setQuantity(inLatestReport.getLeavesQuantity());
             order.setSide(inLatestReport.getSide());
@@ -57,6 +58,7 @@ class FactoryImpl extends Factory {
         if (inLatestReport != null) {
             order.setAccount(inLatestReport.getAccount());
             order.setDestinationID(inLatestReport.getDestinationID());
+            order.setDestinationOrderID(inLatestReport.getDestinationOrderID());
             order.setOrderType(inLatestReport.getOrderType());
             order.setOriginalOrderID(inLatestReport.getOrderID());
             order.setPrice(inLatestReport.getLastPrice());
@@ -158,6 +160,7 @@ class FactoryImpl extends Factory {
         OrderCancel order = new OrderCancelImpl();
         order.setAccount(FIXUtil.getAccount(inMessage));
         order.setDestinationID(inDestinationID);
+        order.setDestinationOrderID(FIXUtil.getDestinationOrderID(inMessage));
         order.setCustomFields(getFieldMap(inMessage, ORDER_CANCEL_FIELDS));
         order.setOrderID(FIXUtil.getOrderID(inMessage));
         order.setOriginalOrderID(FIXUtil.getOriginalOrderID(inMessage));
@@ -181,6 +184,7 @@ class FactoryImpl extends Factory {
         OrderReplace order = new OrderReplaceImpl();
         order.setAccount(FIXUtil.getAccount(inMessage));
         order.setDestinationID(inDestinationID);
+        order.setDestinationOrderID(FIXUtil.getDestinationOrderID(inMessage));
         order.setCustomFields(getFieldMap(inMessage, ORDER_REPLACE_FIELDS));
         order.setOrderID(FIXUtil.getOrderID(inMessage));
         order.setOrderType(FIXUtil.getOrderType(inMessage));
@@ -315,6 +319,7 @@ class FactoryImpl extends Factory {
         tmp = new HashSet<Integer>();
         tmp.addAll(Arrays.asList(
                 ClOrdID.FIELD,
+                quickfix.field.OrderID.FIELD,
                 Account.FIELD,
                 OrigClOrdID.FIELD,
                 OrderQty.FIELD,
@@ -326,6 +331,7 @@ class FactoryImpl extends Factory {
         tmp = new HashSet<Integer>();
         tmp.addAll(Arrays.asList(
                 ClOrdID.FIELD,
+                quickfix.field.OrderID.FIELD,
                 Account.FIELD,
                 OrdType.FIELD,
                 OrigClOrdID.FIELD,
@@ -340,4 +346,5 @@ class FactoryImpl extends Factory {
         ));
         ORDER_REPLACE_FIELDS = Collections.unmodifiableSet(tmp);
     }
+
 }

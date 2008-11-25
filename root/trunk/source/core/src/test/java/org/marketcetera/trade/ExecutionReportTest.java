@@ -68,13 +68,16 @@ public class ExecutionReportTest extends TypesTestBase {
         Message msg = createEmptyExecReport();
         ExecutionReport report = sFactory.createExecutionReport(msg, null,
                 Originator.Server);
-        assertReportBaseValues(report, null, null, null, null, null, null);
+        assertReportBaseValues(report, null, null, null, null, null, null, null);
         assertExecReportValues(report, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null,
                 Originator.Server, null, null);
+        //Verify toString, doesn't fail.
+        report.toString();
         //report with all fields filled in
         DestinationID cID = new DestinationID("bro1");
         OrderID orderID = new OrderID("or2");
+        String destOrderID = "brokOrd1";
         OrderStatus orderStatus = OrderStatus.PartiallyFilled;
         String execID = "kj3";
         Side side = Side.Buy;
@@ -88,7 +91,7 @@ public class ExecutionReportTest extends TypesTestBase {
         String account= "yes";
 
         //Verify returning FIX fields in a map.
-        msg = getSystemMessageFactory().newExecutionReport("brokOrd1",
+        msg = getSystemMessageFactory().newExecutionReport(destOrderID,
                 orderID.getValue(), execID, orderStatus.getFIXValue(),
                 side.getFIXValue(), orderQty, orderPrice, lastShares,
                 lastPrice, cumQty, avgPrice, symbol, account );
@@ -110,29 +113,35 @@ public class ExecutionReportTest extends TypesTestBase {
         msg.setField(new quickfix.field.TimeInForce(timeInForce.getFIXValue()));
         msg.setField(new TransactTime(transactTime));
         msg.setField(new Text(text));
-        msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.PROPRIETARY));
-        msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
+        msg.setField(new quickfix.field.OrderCapacity(
+                quickfix.field.OrderCapacity.PROPRIETARY));
+        msg.setField(new quickfix.field.PositionEffect(
+                quickfix.field.PositionEffect.CLOSE));
 
         //Verify the deprecated factory method
         report = sFactory.createExecutionReport(msg, cID);
         assertReportBaseValues(report, cID, orderID, orderStatus,
-                origOrderID, sendingTime, text);
+                origOrderID, sendingTime, text, destOrderID);
         assertExecReportValues(report, account, avgPrice, cumQty, execID,
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
                 orderQty, orderType, side, symbol, timeInForce,
                 transactTime, Originator.Server,
                 OrderCapacity.Proprietary, PositionEffect.Close);
+        //Verify toString() doesn't fail.
+        report.toString();
 
         //Verify the regular factory method
         report = sFactory.createExecutionReport(msg, cID,
                 Originator.Destination);
         assertReportBaseValues(report, cID, orderID, orderStatus,
-                origOrderID, sendingTime, text);
+                origOrderID, sendingTime, text, destOrderID);
         assertExecReportValues(report, account, avgPrice, cumQty, execID,
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
                 orderQty, orderType, side, symbol, timeInForce,
                 transactTime, Originator.Destination,
                 OrderCapacity.Proprietary, PositionEffect.Close);
+        //Verify toString() doesn't fail.
+        report.toString();
 
         //Verify the map
         Map<Integer,String> expected = new HashMap<Integer, String>();
@@ -143,7 +152,7 @@ public class ExecutionReportTest extends TypesTestBase {
         expected.put(OrdStatus.FIELD,
                 String.valueOf(orderStatus.getFIXValue()));
         expected.put(AvgPx.FIELD, DecimalConverter.convert(avgPrice));
-        expected.put(quickfix.field.OrderID.FIELD, "brokOrd1");
+        expected.put(quickfix.field.OrderID.FIELD, destOrderID);
         expected.put(OrdType.FIELD, String.valueOf(orderType.getFIXValue()));
         expected.put(ClOrdID.FIELD, orderID.getValue());
         expected.put(OrigClOrdID.FIELD, origOrderID.getValue());

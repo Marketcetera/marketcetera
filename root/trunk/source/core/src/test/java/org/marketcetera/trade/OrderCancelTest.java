@@ -40,20 +40,23 @@ public class OrderCancelTest extends TypesTestBase {
     public void pojoDefaults() throws Exception {
         //Null report parameter defaults.
         OrderCancel order = sFactory.createOrderCancel(null);
-        assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
-        assertRelatedOrderValues(order,null);
+        assertOrderCancel(order, NOT_NULL, null, null, null,
+                null, null, null, null, null, null);
+        //Verify toString() doesn't fail
+        order.toString();
 
         //Test an empty report.
         Message report = createEmptyExecReport();
         order = sFactory.createOrderCancel(
                 sFactory.createExecutionReport(report, null, Originator.Server));
-        assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
-        assertRelatedOrderValues(order,null);
+        assertOrderCancel(order, NOT_NULL, null, null, null,
+                null, null, null, null, null, null);
+        //Verify toString() doesn't fail
+        order.toString();
 
         //Test a report with all values in it
         String orderID = "clorder-2";
+        String destOrderID = "brokerder-2";
         Side side = Side.Buy;
         MSymbol symbol = new MSymbol("IBM",
                 SecurityType.Option);
@@ -61,15 +64,18 @@ public class OrderCancelTest extends TypesTestBase {
         DestinationID cID = new DestinationID("iam");
         //Create an exec report.
         report = createExecReport(orderID, side,
-                symbol, account);
+                symbol, account, destOrderID);
         //Create the order from the report.
         order = sFactory.createOrderCancel(
                 sFactory.createExecutionReport(report, cID,
                         Originator.Server));
-        assertOrderValues(order, cID, symbol.getSecurityType());
-        assertOrderBaseValues(order, NOT_NULL, account, null,
-                report.getField(new LeavesQty()).getValue(), side, symbol);
-        assertRelatedOrderValues(order,new OrderID(orderID));
+        assertOrderCancel(order, NOT_NULL, new OrderID(orderID), side,
+                symbol, symbol.getSecurityType(),
+                report.getField(new LeavesQty()).getValue(),
+                destOrderID, account, cID, null);
+        //Verify toString() doesn't fail
+        order.toString();
+
         assertNotSame(order, sFactory.createOrderCancel(
                 sFactory.createExecutionReport(report, cID,
                         Originator.Server)));
@@ -108,24 +114,34 @@ public class OrderCancelTest extends TypesTestBase {
                 factory.getBeginString(), MsgType.ORDER_CANCEL_REQUEST);
         OrderCancel order = sFactory.createOrderCancel(msg, null);
         assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
-        assertRelatedOrderValues(order, null);
+        OrderID expectedOrderID = NOT_NULL;
+        assertOrderBaseValues(order, expectedOrderID, null, null, null, null, null);
+        assertRelatedOrderValues(order, null, null);
+        //Verify toString() doesn't fail
+        order.toString();
         checkSetters(order);
 
         //An order with all fields set.
         DestinationID destinationID = new DestinationID("meh");
+        String destOrderID = "bord1";
         String origOrderID = "testOrderID";
         BigDecimal qty = new BigDecimal("23434.56989");
-        MSymbol symbol = new MSymbol("IBM",SecurityType.CommonStock);
+        SecurityType securityType = SecurityType.CommonStock;
+        MSymbol symbol = new MSymbol("IBM", securityType);
         String account = "nonplus";
+        Side side = Side.Buy;
         msg = factory.newCancel("order",origOrderID,
-                Side.Buy.getFIXValue(), qty, symbol, null);
+                side.getFIXValue(), qty, symbol, null);
         msg.setField(new Account(account));
+        msg.setField(new quickfix.field.OrderID(destOrderID));
         order = sFactory.createOrderCancel(msg, destinationID);
-        assertOrderValues(order, destinationID, SecurityType.CommonStock);
-        assertOrderBaseValues(order, NOT_NULL, account, null,
-                qty, Side.Buy, symbol);
-        assertRelatedOrderValues(order, new OrderID(origOrderID));
+        assertOrderValues(order, destinationID, securityType);
+        assertOrderBaseValues(order, expectedOrderID, account, null,
+                qty, side, symbol);
+        OrderID originalOrderID = new OrderID(origOrderID);
+        assertRelatedOrderValues(order, originalOrderID, destOrderID);
+        //Verify toString() doesn't fail
+        order.toString();
         checkSetters(order);
 
         //Check custom fields
@@ -158,10 +174,9 @@ public class OrderCancelTest extends TypesTestBase {
         
         order = sFactory.createOrderCancel(msg, destinationID);
 
-        assertOrderValues(order, destinationID, SecurityType.CommonStock);
-        assertOrderBaseValues(order, NOT_NULL, account,
-                expectedMap, qty, Side.Buy, symbol);
-        assertRelatedOrderValues(order, new OrderID(origOrderID));
+        assertOrderCancel(order, expectedOrderID, originalOrderID, side,
+                symbol, securityType, qty, destOrderID, account,
+                destinationID, expectedMap);
 
         assertNotSame(order, sFactory.createOrderCancel(msg, destinationID));
     }
@@ -254,12 +269,12 @@ public class OrderCancelTest extends TypesTestBase {
     private Message createExecReport(String inOrderID,
                                      Side inSide,
                                      MSymbol inSymbol,
-                                     String inAccount
-    )
+                                     String inAccount,
+                                     String inDestOrderID)
             throws FieldNotFound {
         return getSystemMessageFactory().newExecutionReport(
-                "id-3",
-                inOrderID, "exec-2", OrderStatus.New.getFIXValue(),
+                inDestOrderID, inOrderID,
+                "exec-2", OrderStatus.New.getFIXValue(),
                 inSide.getFIXValue(), new BigDecimal("34.5"),
                 new BigDecimal("45.67"), new BigDecimal("23.53"),
                 new BigDecimal("983.43"), new BigDecimal("98.34"),

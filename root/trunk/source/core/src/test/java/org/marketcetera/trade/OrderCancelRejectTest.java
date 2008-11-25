@@ -8,6 +8,7 @@ import static org.junit.Assert.assertSame;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.*;
+import quickfix.field.converter.UtcTimestampConverter;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -57,36 +58,43 @@ public class OrderCancelRejectTest extends TypesTestBase {
         // report with all empty fields
         Message msg = getSystemMessageFactory().newOrderCancelReject();
         OrderCancelReject report = sFactory.createOrderCancelReject(msg, null);
-        assertReportBaseValues(report, null, null, null, null, null, null);
+        assertReportBaseValues(report, null, null, null, null, null, null, null);
+        //Verify toString() doesn't fail.
+        report.toString();
 
         //report with fields filled in
         DestinationID cID = new DestinationID("bro1");
+        String destOrderID = "brok3";
         OrderID orderID = new OrderID("ord3");
         OrderID origOrderID = new OrderID("ord2");
         OrderStatus orderStatus = OrderStatus.Rejected;
         String text = "Cancel it please.";
         Date sendingTime = new Date();
+        Date transactTime = new Date();
         msg = getSystemMessageFactory().newOrderCancelReject(
-                new quickfix.field.OrderID("brok3"),
+                new quickfix.field.OrderID(destOrderID),
                 new ClOrdID(orderID.getValue()),
                 new OrigClOrdID(origOrderID.getValue()),
                 text, null);
         msg.getHeader().setField(new SendingTime(sendingTime));
+        msg.setField(new TransactTime(transactTime));
         report = sFactory.createOrderCancelReject(msg, cID);
         assertReportBaseValues(report, cID, orderID, orderStatus, origOrderID,
-                sendingTime, text);
+                sendingTime, text, destOrderID);
+        //Verify toString() doesn't fail.
+        report.toString();
         
         //Verify FIX fields returned in the map.
         Map<Integer,String> expected = new HashMap<Integer, String>();
         expected.put(OrdStatus.FIELD, String.valueOf(orderStatus.getFIXValue()));
-        expected.put(quickfix.field.OrderID.FIELD, "brok3");
+        expected.put(quickfix.field.OrderID.FIELD, destOrderID);
         expected.put(Text.FIELD, text);
         expected.put(CxlRejResponseTo.FIELD,
                 String.valueOf(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
         expected.put(OrigClOrdID.FIELD, origOrderID.getValue());
         expected.put(ClOrdID.FIELD, orderID.getValue());
-        expected.put(TransactTime.FIELD, msg.getField(
-                new StringField(TransactTime.FIELD)).getValue());
+        expected.put(TransactTime.FIELD, UtcTimestampConverter.convert(
+                transactTime, true));
 
         final Map<Integer, String> actual = ((FIXMessageSupport) report).getFields();
         assertEquals(expected, actual);
