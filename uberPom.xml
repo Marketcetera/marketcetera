@@ -10,7 +10,8 @@
 <project
  xmlns="http://maven.apache.org/POM/4.0.0"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -38,22 +39,12 @@
       <!-- Compile: local modules. -->
       <dependency>
         <groupId>${mvn.public.package}</groupId>
+        <artifactId>client</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
         <artifactId>core</artifactId>
-        <version>[${project.version}]</version>
-      </dependency>
-      <dependency>
-        <groupId>${mvn.public.package}</groupId>
-        <artifactId>util</artifactId>
-        <version>[${project.version}]</version>
-      </dependency>
-      <dependency>
-        <groupId>${mvn.public.package}</groupId>
-        <artifactId>strategy</artifactId>
-        <version>[${project.version}]</version>
-      </dependency>
-      <dependency>
-        <groupId>${mvn.public.package}</groupId>
-        <artifactId>misc</artifactId>
         <version>[${project.version}]</version>
       </dependency>
       <dependency>
@@ -63,7 +54,17 @@
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
-        <artifactId>client</artifactId>
+        <artifactId>misc</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>strategy</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>util</artifactId>
         <version>[${project.version}]</version>
       </dependency>
 
@@ -380,8 +381,8 @@
               <showDeprecation>true</showDeprecation>
               <showWarnings>true</showWarnings>
               <!--
-                -  Path warnings cause maven to fail, hence excluded; see
-                -  http://jira.codehaus.org/browse/MCOMPILER-59
+                - Path warnings cause maven to fail, hence excluded; see
+                - http://jira.codehaus.org/browse/MCOMPILER-59
                 -->
               <compilerArgument>-Xlint:-path</compilerArgument>
             </configuration>
@@ -396,7 +397,7 @@
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-              <argLine>-Duser.language=${mvn.jvm.locale.language} -Duser.country=${mvn.jvm.locale.country} -Duser.variant=${mvn.jvm.locale.variant} -Xmx512m</argLine>
+              <argLine>-Duser.language=${mvn.jvm.locale.language} -Duser.country=${mvn.jvm.locale.country} -Duser.variant=${mvn.jvm.locale.variant} ${mvn.test.options}</argLine>
             </configuration>
           </plugin>
         </plugins>
@@ -478,7 +479,7 @@
           <configuration>
             <disableXmlReport>true</disableXmlReport>
             <forkMode>always</forkMode>
-            <argLine>-Xmx512m</argLine>
+            <argLine>${mvn.test.options}</argLine>
           </configuration>
         </plugin>
 
@@ -532,11 +533,11 @@
         </plugin>
 
         <!--
-          -  Explicit dependencies are listed here because maven-jaxb2-plugin
-          -  uses jaxb 2.1.5 by default, which is different than the xjc
-          -  version included with jdk 1.6 (2.1.3 as of 1.6.0_07) and that
-          -  required by org.apache.cxf.cxf-rt-frontend-jaxws (2.1.7 as of
-          -  CXF 2.1.2). We match the CXF one because we use CXF at run-time.
+          - Explicit dependencies are listed here because maven-jaxb2-plugin
+          - uses jaxb 2.1.5 by default, which is different than the xjc
+          - version included with jdk 1.6 (2.1.3 as of 1.6.0_07) and that
+          - required by org.apache.cxf.cxf-rt-frontend-jaxws (2.1.7 as of
+          - CXF 2.1.2). We match the CXF one because we use CXF at run-time.
           -->
         <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
