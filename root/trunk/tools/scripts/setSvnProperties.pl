@@ -55,17 +55,13 @@ my(@patternsAll)=(
 
 my(%patternsCustom)=(
 	'public'
-	  => ('profiles.xml'),
+	  => ['profiles.xml'],
 	'public/source/photon/plugins/com.swtworkbench.community.xswt'
-	  => ('bin'),
+	  => ['bin'],
 	'public/source/photon/plugins/org.marketcetera.core.tests'
-	  => ('core-1.0.0-tests.jar'),
+	  => ['core-1.0.0-tests.jar'],
 	'public/source/strategyagent/src/test/sample_data/modules/jars'
-	  => ('first.jar'),
-	'public/source/strategyagent/src/test/sample_data/modules/jars'
-	  => ('second.jar'),
-	'public/source/strategyagent/src/test/sample_data/modules/jars'
-	  => ('third.jar'),
+	  => ['first.jar','second.jar','third.jar','fourth.jar'],
 );
 
 # Run command.
@@ -109,7 +105,7 @@ sub walk ()
 		my($key);
 		foreach $key (keys(%patternsCustom)) {
 			if ($absName eq $key) {
-				@patterns=(@patterns,$patternsCustom{$key});
+				@patterns=(@patterns,@{$patternsCustom{$key}});
 				last;
 			}
 		}
