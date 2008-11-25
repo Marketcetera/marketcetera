@@ -56,6 +56,7 @@ public class SessionManager<T>
      * The reaper.
      */
 
+    @ClassVersion("$Id$") //$NON-NLS-1$
     class Reaper
         extends Thread
     {

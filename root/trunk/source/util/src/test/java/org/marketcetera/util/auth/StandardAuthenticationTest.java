@@ -151,9 +151,9 @@ public class StandardAuthenticationTest
         assertEquals
             ("Spring framework (overriding context)"+
              SystemUtils.LINE_SEPARATOR+
-             " Set 'activemq.user' to username in properties file"+
+             " Set 'metc.amq.user' to username in properties file"+
              SystemUtils.LINE_SEPARATOR+
-             " Set 'activemq.password' to password in properties file"+
+             " Set 'metc.amq.password' to password in properties file"+
              SystemUtils.LINE_SEPARATOR+
              SystemUtils.LINE_SEPARATOR+
              "Command-line options (overriding context)"+
@@ -174,14 +174,13 @@ public class StandardAuthenticationTest
     }
 
     /*
-     * Run via exec:java. With pom specifying the '-p' argument
-     * (-Pstandard.authentication.arg), it will just print 'true',
-     * 'tu1', and 'pass'; otherwise (-Pstandard.authentication.noarg),
-     * it will prompt for a password. Press Control+D (Linux), or
-     * Control+Z and then Enter (Windows), or leave blank and then
-     * Enter (all OS), and it will print 'false', 'tu1', 'null'; or
-     * enter a password, and it will show 'true', 'tu1', and the
-     * password you typed.
+     * Run via -Pstandard.authentication exec:java. With pom
+     * specifying the '-p' argument, it will just print 'true', 'tu1',
+     * and 'pass'; otherwise, it will prompt for a password. Press
+     * Control+D (Linux), or Control+Z and then Enter (Windows), or
+     * leave blank and then Enter (all OS), and it will print 'false',
+     * 'tu1', 'null'; or enter a password, and it will show 'true',
+     * 'tu1', and the password you typed.
      */
 
     public static void main(String[] args)

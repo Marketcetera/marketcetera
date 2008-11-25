@@ -18,6 +18,8 @@ import org.marketcetera.util.misc.ClassVersion;
 public class SystemPropertiesSetter
 {
 
+    // INSTANCE METHODS.
+
     /**
      * For each entry in the given map, a system property is set
      * wherein the key of each entry is the property name, and the

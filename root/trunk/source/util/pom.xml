@@ -10,7 +10,8 @@
 <project
  xmlns="http://maven.apache.org/POM/4.0.0"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -130,13 +131,7 @@
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
               <mainClass>org.marketcetera.util.ws.sample.SampleServer</mainClass>
-              <arguments>
-               <argument>-user</argument>
-               <argument>user</argument>
-               <argument>-password</argument>
-               <argument>password</argument>
-               <argument>-longGreeting</argument>
-              </arguments>
+              <!-- -Dexec.args="-user user -password password -longGreeting" -->
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>
@@ -154,28 +149,13 @@
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
               <mainClass>org.marketcetera.util.ws.sample.SampleClient</mainClass>
-              <arguments>
-               <argument>-user</argument>
-               <argument>user</argument>
-               <argument>-password</argument>
-               <argument>password</argument>
-               <!-- <argument>password</argument> -->
-               <!-- <argument>badPassword</argument> -->
-               <argument>-argument</argument>
-               <!-- <argument>World</argument> -->
-               <!-- <argument>I18NException</argument> -->
-               <!-- <argument>AssertionError</argument> -->
-               <!-- <argument>IllegalArgumentException</argument> -->
-               <argument>World</argument>
-               <!--
-                 -  Omit the next four lines for greetings in the
-                 -  default locale.
-                 -->
-               <argument>-language</argument>
-               <argument>fr</argument>
-               <argument>-country</argument>
-               <argument>CA</argument>
-              </arguments>
+              <!--
+                - -Dexec.args="-user user -password password -argument World"
+                - Try 'badPassword' for password.
+                - Try 'World', 'I18NException', 'AssertionError',
+                -  'IllegalArgumentException' for argument.
+                - Try non-default locale '-language fr -country CA'.
+                -->
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>
@@ -202,7 +182,7 @@
 
     <!-- Command-line execution: test. -->
     <profile>
-      <id>standard.authentication.arg</id>
+      <id>standard.authentication</id>
       <build>
         <plugins>
           <plugin>
@@ -210,27 +190,7 @@
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
               <mainClass>org.marketcetera.util.auth.StandardAuthenticationTest</mainClass>
-              <arguments>
-               <argument>-p</argument>
-               <argument>pass</argument>
-              </arguments>
-              <classpathScope>test</classpathScope>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!-- Command-line execution: test. -->
-    <profile>
-      <id>standard.authentication.noarg</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <configuration>
-              <mainClass>org.marketcetera.util.auth.StandardAuthenticationTest</mainClass>
+              <!-- -Dexec.args="-p pass" or omit altogether. -->
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>

@@ -1,10 +1,13 @@
 package org.marketcetera.util.misc;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
+import org.marketcetera.util.except.I18NInterruptedRuntimeException;
 import org.marketcetera.util.test.TestCaseBase;
 
+import static org.junit.Assert.*;
 import static org.marketcetera.util.test.CollectionAssert.*;
 
 /**
@@ -75,6 +78,25 @@ public class ReflectUtilsTest
         implements IFace
     {
         int mComplexDerived;
+    }
+
+    private static class IntObject
+    {
+        private int mValue;
+
+        public IntObject
+            (int value)
+        {
+            if (value==0) {
+                throw new I18NInterruptedRuntimeException();
+            }
+            mValue=value;
+        }
+
+        public int getValue()
+        {
+            return mValue;
+        }
     }
 
 
@@ -173,5 +195,32 @@ public class ReflectUtilsTest
                 COMPLEX_BASE_FIELD,
                 COMPLEX_DERIVED_FIELD
             },ReflectUtils.getAllFields(ComplexDerived.class));
+    }
+
+    @Test
+    public void instance()
+        throws Exception
+    {
+        assertEquals(1,((IntObject)
+                        (ReflectUtils.getInstance
+                         (IntObject.class.getName(),
+                          new Class[] {Integer.TYPE},
+                          new Object[] {new Integer(1)}))).getValue());
+        try {
+            ReflectUtils.getInstance("NonExistent",null,null);
+            fail();
+        } catch (ClassNotFoundException ex) {
+            assertFalse(Thread.interrupted());
+        }
+        try {
+            ReflectUtils.getInstance(IntObject.class.getName(),
+                                     new Class[] {Integer.TYPE},
+                                     new Object[] {new Integer(0)});
+            fail();
+        } catch (InvocationTargetException ex) {
+            assertTrue(Thread.interrupted());
+            assertEquals(I18NInterruptedRuntimeException.class,
+                         ex.getCause().getClass());
+        }
     }
 }

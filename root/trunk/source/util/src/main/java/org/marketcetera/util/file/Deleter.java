@@ -29,6 +29,7 @@ public class Deleter
      * symbolic links, and deletes all files it traverses.
      */
 
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private static final class RecursiveDeleter
         extends SmartLinksDirectoryWalker
     {

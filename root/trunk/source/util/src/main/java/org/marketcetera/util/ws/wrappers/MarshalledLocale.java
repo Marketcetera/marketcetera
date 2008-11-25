@@ -46,8 +46,8 @@ public class MarshalledLocale
     }
 
     /**
-     * Creates a new wrapper. This empty constructor is intended for
-     * use by JAXB.
+     * Creates a new marshalled form. This empty constructor is
+     * intended for use by JAXB.
      */
 
     protected MarshalledLocale() {}
