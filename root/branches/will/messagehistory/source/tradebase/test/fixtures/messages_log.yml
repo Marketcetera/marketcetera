@@ -1,0 +1,80 @@
+# B 100 GOOG 408.18
+# some of these have failed_parsing set to 1 for test purposes
+goog_20:  
+  id: 20
+  time: "2006-09-28 15:56:55"
+  beginstring: "FIX.4.2"
+  sendercompid: "MRKTC-ORS"
+  targetcompid: "MRKTC-EXCH"
+  processed: 0
+  text: "8=FIX.4.29=18335=834=1049=MRKTC-EXCH52=20060928-23:01:18.23956=MRKTC-ORS6=408.1811=77714=10017=1203920=331=408.1832=10037=732538=10039=254=155=GOOG60=20060928-23:01:18150=2151=010=180"
+
+# SSE GOOG 4000 408.18
+goog_21:
+  id: 21
+  time: "2006-09-28 15:56:55"
+  beginstring: "FIX.4.2"
+  sendercompid: "MRKTC-ORS"
+  targetcompid: "MRKTC-EXCH"
+  processed: 0
+  text: "8=FIX.4.29=20535=834=1149=MRKTC-EXCH52=20060928-23:01:18.24056=MRKTC-ORS1=TOLI6=408.1811=700314=10017=1204020=331=408.1832=10037=731238=400039=144=408.1854=555=GOOG60=20060928-23:01:18150=1151=390010=018"
+
+goog_long_22:
+# Equity: GOOG Long Equity
+# Account: TOLI with spaces
+  id: 22
+  time: "2006-09-28 15:56:55"
+  beginstring: "FIX.4.2"
+  sendercompid: "MRKTC-ORS"
+  targetcompid: "MRKTC-EXCH"
+  processed: 0
+  failed_parsing: 1
+  text: "8=FIX.4.29=22935=834=1149=MRKTC-EXCH52=20060928-23:01:18.24056=MRKTC-ORS1=TOLI with spaces6=408.1811=700314=10017=1204020=331=408.1832=10037=731238=400039=144=408.1854=555=GOOG Long Equity60=20060928-23:01:18150=1151=390010=223"
+
+sunw_23:
+  id: 23
+  time: "2006-09-28 15:56:55"
+  beginstring: "FIX.4.2"
+  sendercompid: "MRKTC-ORS"
+  targetcompid: "MRKTC-EXCH"
+  processed: 0
+  text: "8=FIX.4.29=17935=834=1249=MRKTC-EXCH52=20060928-23:01:43.59856=MRKTC-ORS6=4.2611=77814=20017=1204120=331=4.2632=20037=732638=20039=254=155=SUNW60=20060928-23:01:43150=2151=010=012"
+
+sunw_24:
+  id: 24
+  time: "2006-09-28 15:56:55"
+  beginstring: "FIX.4.2"
+  sendercompid: "MRKTC-ORS"
+  targetcompid: "MRKTC-EXCH"
+  processed: 0
+  text: "8=FIX.4.29=19935=834=1349=MRKTC-EXCH52=20060928-23:01:43.59956=MRKTC-ORS1=TOLI6=4.2611=700114=20017=1204220=331=4.2632=20037=731038=400039=144=4.2654=555=SUNW60=20060928-23:01:43150=1151=380010=013"
+
+ibm_26:
+  id: 26
+  time: "2006-09-28 15:56:55"
+  beginstring: "FIX.4.2"
+  sendercompid: "MRKTC-ORS"
+  targetcompid: "MRKTC-EXCH"
+  processed: 0
+  text: "8=FIX.4.29=23135=834=1449=MRKTC-EXCH52=20060928-23:01:52.82156=MRKTC-ORS1=TOLI6=40.6141509433962264150943396226415111=700614=53017=1204320=331=77.6532=23037=731538=500039=144=77.6554=155=IBM60=20060928-23:01:52150=1151=447010=085"
+
+ibm_27:
+  id: 27
+  time: 2006-09-23 15:56:55
+  beginstring: FIX.4.2
+  sendercompid: MRKTC-ORS
+  targetcompid: MRKTC-EXCH
+  processed: 0
+  failed_parsing: 1
+  text: "8=FIX.4.29=18035=834=1549=MRKTC-EXCH52=20060925-23:01:52.82256=MRKTC-ORS6=77.6511=77914=23017=1204420=331=77.6532=23037=732738=23039=254=255=IBM60=20060928-23:01:52150=2151=010=014"
+
+partial_fill_101:
+  id: 101
+  time: 2006-09-24 15:56:55
+  beginstring: FIX.4.2
+  sendercompid: MRKTC-ORS
+  targetcompid: MRKTC-EXCH
+  processed: 0
+  failed_parsing: 1
+  text: "8=FIX.4.29=18035=834=1549=MRKTC-EXCH52=20060923-23:01:52.82256=MRKTC-ORS6=77.6511=77914=23017=1204420=331=77.6532=23037=732738=23039=154=255=IBM60=20060928-23:01:52150=2151=010=011"
+

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+    <x:import>
+        <package name="java.lang"/>
+        <package name="org.eclipse.swt.widgets"/>
+        <package name="org.eclipse.swt.layout"/>
+        <package name="com.swtworkbench.community.xswt.examples.newsyntax"/>
+    </x:import>
+    
+	<!--
+		A simple FormLayout example.  This is the SWT 3.2 version.
+		
+		This uses the new XSWT syntax with x:children nodes left out (they are 
+		optional now)
+		
+		This also demonstrates how the new XSWT preview view can load classes out 
+		of the workspace.
+	-->
+
+	<layout x:class="formLayout"/>
+
+	<label x:id="firstColLabel" text="First column">
+		<layoutData x:class="formData">
+			<left numerator="10"/>
+			<top numerator="5"/>
+		</layoutData>
+	</label>
+	
+	<text x:id="secondCol" x:style="BORDER" text="Second column">
+		<layoutData x:class="formData">
+			<left control="firstColLabel" offset="10"/>
+			<top control="firstColLabel" offset="0" alignment="CENTER"/>
+			<right numerator="90"/>
+		</layoutData>
+	</text>
+	
+	<blotter>
+		<layoutData x:class="formData">
+		   <left control="firstColLabel" alignment="LEFT"/>
+		   <top control="firstColLabel" offset="10"/>
+		   <right control="secondCol" alignment="RIGHT"/>
+		   <bottom numerator="90"/>
+		</layoutData>
+	</blotter>
+</xswt>
