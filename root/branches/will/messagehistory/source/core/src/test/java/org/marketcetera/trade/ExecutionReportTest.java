@@ -71,7 +71,7 @@ public class ExecutionReportTest extends TypesTestBase {
         assertReportBaseValues(report, null, null, null, null, null, null);
         assertExecReportValues(report, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null,
-                Originator.Server, null, null);
+                Originator.Server, null, null, false);
         //report with all fields filled in
         DestinationID cID = new DestinationID("bro1");
         OrderID orderID = new OrderID("or2");
@@ -121,7 +121,7 @@ public class ExecutionReportTest extends TypesTestBase {
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
                 orderQty, orderType, side, symbol, timeInForce,
                 transactTime, Originator.Server,
-                OrderCapacity.Proprietary, PositionEffect.Close);
+                OrderCapacity.Proprietary, PositionEffect.Close, true);
 
         //Verify the regular factory method
         report = sFactory.createExecutionReport(msg, cID,
@@ -132,7 +132,7 @@ public class ExecutionReportTest extends TypesTestBase {
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
                 orderQty, orderType, side, symbol, timeInForce,
                 transactTime, Originator.Destination,
-                OrderCapacity.Proprietary, PositionEffect.Close);
+                OrderCapacity.Proprietary, PositionEffect.Close, true);
 
         //Verify the map
         Map<Integer,String> expected = new HashMap<Integer, String>();
