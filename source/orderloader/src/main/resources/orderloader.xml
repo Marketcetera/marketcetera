@@ -19,7 +19,7 @@
   <bean
    id="connectionFactory"
    class="org.apache.activemq.ActiveMQConnectionFactory">
-    <property name="brokerURL" value="${activemq.brokerUrl}"/>
+    <property name="brokerURL" value="${metc.amq.broker.url}"/>
     <property name="userName" ref="runtimeUsername"/>
     <property name="password" ref="runtimePassword"/>
   </bean>
@@ -40,7 +40,7 @@
     </bean>
 
     <bean id="idFactoryURL" class="java.lang.String">
-        <constructor-arg value="http://${tradebase.host}:${tradebase.port}/id_repository/get_next_batch"/>
+        <constructor-arg value="http://${metc.tradebase.host}:${metc.tradebase.port}/id_repository/get_next_batch"/>
     </bean>
 
     <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
