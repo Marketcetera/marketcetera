@@ -23,5 +23,5 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public interface FIXOrder extends Order, FIXMessageSupport {
+public interface FIXOrder extends TradeMessage, Order, FIXMessageSupport {
 }
