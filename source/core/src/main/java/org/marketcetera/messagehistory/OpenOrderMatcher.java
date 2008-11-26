@@ -11,20 +11,20 @@ import ca.odell.glazedlists.matchers.Matcher;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class OpenOrderMatcher implements Matcher<MessageHolder> {
 
-	public boolean matches(MessageHolder item) {
-		if (item instanceof IncomingMessageHolder) {
-			IncomingMessageHolder inHolder = (IncomingMessageHolder) item;
-			Message message = inHolder.getMessage();
-			if (FIXMessageUtil.isExecutionReport(message)){
-				try {
-					char ordStatus = message.getChar(OrdStatus.FIELD);
-					return FIXMessageUtil.isCancellable(ordStatus);
-				} catch (FieldNotFound e) {
-					// do nothing
-				}
-			}
-		}
-		return false;
-	}
-	
+    public boolean matches(MessageHolder item) {
+        if (item instanceof IncomingMessageHolder) {
+            IncomingMessageHolder inHolder = (IncomingMessageHolder) item;
+            Message message = inHolder.getMessage();
+            if (FIXMessageUtil.isExecutionReport(message)){
+                try {
+                    char ordStatus = message.getChar(OrdStatus.FIELD);
+                    return FIXMessageUtil.isCancellable(ordStatus);
+                } catch (FieldNotFound e) {
+                    // do nothing
+                }
+            }
+        }
+        return false;
+    }
+    
 }
