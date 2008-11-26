@@ -38,101 +38,102 @@ import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
  * Keeps track of Trading Report History for photon.
  *
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class TradeReportsHistory {
 
-	private EventList<ReportHolder> allMessages;
+    private final EventList<ReportHolder> mAllMessages;
 
-	private FilterList<ReportHolder> allFilteredMessages;
+    private final FilterList<ReportHolder> mAllFilteredMessages;
 
-	private FilterList<ReportHolder> fillMessages;
+    private final FilterList<ReportHolder> mFillMessages;
 
-    private AveragePriceReportList averagePriceList;
+    private final AveragePriceReportList mAveragePriceList;
 
-	private FilterList<ReportHolder> latestExecutionReportsList;
+    private final FilterList<ReportHolder> mLatestExecutionReportsList;
 
-	private FilterList<ReportHolder> latestMessageList;
+    private final FilterList<ReportHolder> mLatestMessageList;
 
-	private FilterList<ReportHolder> openOrderList;
+    private final FilterList<ReportHolder> mOpenOrderList;
 
-	private final Map<OrderID, ReportHolder> originalOrderACKs;
+    private final Map<OrderID, ReportHolder> mOriginalOrderACKs;
 
-	private Map<OrderID, OrderID> orderIDToGroupMap;
+    private final Map<OrderID, OrderID> mOrderIDToGroupMap;
 
-	private final FIXMessageFactory messageFactory;
+    private final FIXMessageFactory mMessageFactory;
 
-	public TradeReportsHistory(FIXMessageFactory messageFactory) {
-		this.messageFactory = messageFactory;
+    public TradeReportsHistory(FIXMessageFactory messageFactory) {
+        this.mMessageFactory = messageFactory;
 
-		allMessages = new BasicEventList<ReportHolder>();
-		allFilteredMessages = new FilterList<ReportHolder>(allMessages);
-		fillMessages = new FilterList<ReportHolder>(allFilteredMessages,
+        mAllMessages = new BasicEventList<ReportHolder>();
+        mAllFilteredMessages = new FilterList<ReportHolder>(mAllMessages);
+        mFillMessages = new FilterList<ReportHolder>(mAllFilteredMessages,
                 new ReportFillMatcher());
         GroupingList<ReportHolder> orderIDList = new GroupingList<ReportHolder>(
-                allMessages, new ReportGroupIDComparator());
-		latestExecutionReportsList = new FilterList<ReportHolder>(
-			new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
-				new LatestExecutionReportFunction()),
+                mAllMessages, new ReportGroupIDComparator());
+        mLatestExecutionReportsList = new FilterList<ReportHolder>(
+            new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
+                new LatestExecutionReportFunction()),
                 new NotNullReportMatcher());
-		latestMessageList = new FilterList<ReportHolder>(
-				new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
-					new LatestReportFunction()), new NotNullReportMatcher());
-		averagePriceList = new AveragePriceReportList(messageFactory,
-                allMessages);
-		openOrderList = new FilterList<ReportHolder>(latestExecutionReportsList,
+        mLatestMessageList = new FilterList<ReportHolder>(
+                new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
+                    new LatestReportFunction()), new NotNullReportMatcher());
+        mAveragePriceList = new AveragePriceReportList(messageFactory,
+                mAllMessages);
+        mOpenOrderList = new FilterList<ReportHolder>(mLatestExecutionReportsList,
                 new OpenOrderReportMatcher());
 
-		originalOrderACKs = new HashMap<OrderID, ReportHolder>();
-		orderIDToGroupMap = new HashMap<OrderID, OrderID>();
-	}
+        mOriginalOrderACKs = new HashMap<OrderID, ReportHolder>();
+        mOrderIDToGroupMap = new HashMap<OrderID, OrderID>();
+    }
 
-	public void addIncomingMessage(ReportBase inReport) {
-		if(SLF4JLoggerProxy.isDebugEnabled(this) &&
+    public void addIncomingMessage(ReportBase inReport) {
+        if(SLF4JLoggerProxy.isDebugEnabled(this) &&
                 inReport.getSendingTime() != null) {
-			long sendingTime =0;
+            long sendingTime =0;
             sendingTime = inReport.getSendingTime().getTime();
-			long systemTime = System.currentTimeMillis();
-			double diff = (sendingTime-systemTime)/1000.0;
-			if(Math.abs(diff) > 1) {
+            long systemTime = System.currentTimeMillis();
+            double diff = (sendingTime-systemTime)/1000.0;
+            if(Math.abs(diff) > 1) {
                             SLF4JLoggerProxy.debug(this,
                                     "{}: sendingTime v systemTime: {}",  //$NON-NLS-1$
                                     Thread.currentThread().getName(), diff);
-			}
-		}
-		try {
-			allMessages.getReadWriteLock().writeLock().lock();
-			updateOrderIDMappings(inReport);
-			OrderID groupID = getGroupID(inReport);
-			ReportHolder messageHolder = new ReportHolder(inReport, groupID);
+            }
+        }
+        try {
+            mAllMessages.getReadWriteLock().writeLock().lock();
+            updateOrderIDMappings(inReport);
+            OrderID groupID = getGroupID(inReport);
+            ReportHolder messageHolder = new ReportHolder(inReport, groupID);
 
-			// The first message that comes in with a specific order id gets stored in a map.  This
-			// map is used by #getFirstReport(String) to facilitate CancelReplace
-			// TODO: Change this to look for custom ORS acks
+            // The first message that comes in with a specific order id gets stored in a map.  This
+            // map is used by #getFirstReport(String) to facilitate CancelReplace
+            // TODO: Change this to look for custom ORS acks
             if(inReport instanceof ExecutionReport &&
                     inReport.getOrderID() != null) {
                 OrderID id = inReport.getOrderID();
                 OrderStatus status = inReport.getOrderStatus();
                 if(status == OrderStatus.PendingNew ||
                         status == OrderStatus.PendingReplace) {
-                    synchronized (originalOrderACKs) {
-                        if (!originalOrderACKs.containsKey(id)) {
-                            originalOrderACKs.put(id, messageHolder);
+                    synchronized (mOriginalOrderACKs) {
+                        if (!mOriginalOrderACKs.containsKey(id)) {
+                            mOriginalOrderACKs.put(id, messageHolder);
                         }
                     }
                 }
             }
 
-			allMessages.add(messageHolder);
-			if (inReport instanceof OrderCancelReject &&
+            mAllMessages.add(messageHolder);
+            if (inReport instanceof OrderCancelReject &&
                     inReport.getOrderID() != null &&
                     inReport.getOrderStatus() != null){
-				// Add a new execution report to the stream to update the order status, using the values from the
-				// previous execution report.
+                // Add a new execution report to the stream to update the order status, using the values from the
+                // previous execution report.
                 ReportBase executionReport = getLatestExecutionReport(inReport.getOrderID());
-                Message newExecutionReport = messageFactory.createMessage(MsgType.EXECUTION_REPORT);
+                Message newExecutionReport = mMessageFactory.createMessage(MsgType.EXECUTION_REPORT);
                 Message oldExecutionReport = null;
                 if(executionReport instanceof HasFIXMessage) {
                     oldExecutionReport = ((HasFIXMessage)executionReport).getMessage();
@@ -143,9 +144,9 @@ public class TradeReportsHistory {
                         newExecutionReport.setField(new Text(inReport.getText()));
                     }
 /*                  Skip ExecTransType as ExecType serves the same purpose
-					if (newExecutionReport.isSetField(ExecTransType.FIELD)){
-						newExecutionReport.setField(new ExecTransType(ExecTransType.STATUS));
-					}
+                    if (newExecutionReport.isSetField(ExecTransType.FIELD)){
+                        newExecutionReport.setField(new ExecTransType(ExecTransType.STATUS));
+                    }
 */
                     if (newExecutionReport.isSetField(ExecType.FIELD)){
                         newExecutionReport.setField(new ExecType(ExecType.ORDER_STATUS));
@@ -164,148 +165,145 @@ public class TradeReportsHistory {
                     newExecutionReport.removeField(LastMkt.FIELD);
 
                     try {
-                        allMessages.add(new ReportHolder(
+                        mAllMessages.add(new ReportHolder(
                                 Factory.getInstance().createExecutionReport(
                                         newExecutionReport,
-                                        inReport.getDestinationID()), groupID));
+                                        inReport.getDestinationID(), Originator.Server), groupID));
                     } catch (MessageCreationException e) {
                         throw new RuntimeException(Messages.SHOULD_NEVER_HAPPEN_IN_ADDINCOMINGMESSAGE.getText(), e);
                     }
                 } else {
-                    //todo: verify if this is the right thing to do for non-FIX messages
-                    //add the old execution report again.
-                    allMessages.add(new ReportHolder(executionReport));
+                    throw new IllegalArgumentException(inReport.toString());
                 }
             }
-		} finally {
-			allMessages.getReadWriteLock().writeLock().unlock();
-		}
-	}
+        } finally {
+            mAllMessages.getReadWriteLock().writeLock().unlock();
+        }
+    }
 
-	private void updateOrderIDMappings(ReportBase inReport) {
-		if (inReport.getOrderID() != null && inReport.getOriginalOrderID() != null)
-		{
+    private void updateOrderIDMappings(ReportBase inReport) {
+        if (inReport.getOrderID() != null && inReport.getOriginalOrderID() != null)
+        {
             OrderID origOrderID = inReport.getOriginalOrderID();
             OrderID orderID = inReport.getOrderID();
             OrderID groupID;
             // first check to see if the orig is in the map, and if so, use
             // whatever it maps to as the groupID
-            if (orderIDToGroupMap.containsKey(origOrderID)){
+            if (mOrderIDToGroupMap.containsKey(origOrderID)){
                 groupID = getGroupID(origOrderID);
             } else {
                 // otherwise, do a mapping from clOrdId -> origOrderID
                 groupID = origOrderID;
             }
-            orderIDToGroupMap.put(orderID, groupID);
-		}
-	}
+            mOrderIDToGroupMap.put(orderID, groupID);
+        }
+    }
 
-	private OrderID getGroupID(ReportBase inReport) {
+    private OrderID getGroupID(ReportBase inReport) {
         return getGroupID(inReport.getOrderID());
-	}
+    }
 
-	private OrderID getGroupID(OrderID clOrdID) {
-		if (orderIDToGroupMap.containsKey(clOrdID)){
-			return orderIDToGroupMap.get(clOrdID);
-		} else {
-			return clOrdID;
-		}
-	}
+    private OrderID getGroupID(OrderID clOrdID) {
+        if (mOrderIDToGroupMap.containsKey(clOrdID)){
+            return mOrderIDToGroupMap.get(clOrdID);
+        } else {
+            return clOrdID;
+        }
+    }
 
 
-	public FilterList<ReportHolder> getFillsList() {
-		return fillMessages;
-	}
+    public FilterList<ReportHolder> getFillsList() {
+        return mFillMessages;
+    }
 
-	public EventList<ReportHolder> getAveragePricesList()
-	{
-		return averagePriceList;
-	}
+    public EventList<ReportHolder> getAveragePricesList()
+    {
+        return mAveragePriceList;
+    }
 
-	public int size() {
-		return allMessages.size();
-	}
+    public int size() {
+        return mAllMessages.size();
+    }
 
-	// should this return ExecutionReport?
-	public ReportBase getLatestExecutionReport(OrderID clOrdID) {
-		try {
-			latestExecutionReportsList.getReadWriteLock().readLock().lock();
-			OrderID groupID = getGroupID(clOrdID);
-			if (groupID != null){
-				for (ReportHolder holder : latestExecutionReportsList) {
-					if (groupID.equals(holder.getGroupID())){
-						return holder.getReport();
-					}
-				}
-			}
-			return null;
-		} finally {
-			latestExecutionReportsList.getReadWriteLock().readLock().unlock();
-		}
-	}
+    public ReportBase getLatestExecutionReport(OrderID clOrdID) {
+        try {
+            mLatestExecutionReportsList.getReadWriteLock().readLock().lock();
+            OrderID groupID = getGroupID(clOrdID);
+            if (groupID != null){
+                for (ReportHolder holder : mLatestExecutionReportsList) {
+                    if (groupID.equals(holder.getGroupID())){
+                        return holder.getReport();
+                    }
+                }
+            }
+            return null;
+        } finally {
+            mLatestExecutionReportsList.getReadWriteLock().readLock().unlock();
+        }
+    }
 
-	public EventList<ReportHolder> getAllMessagesList() {
-		return allMessages;
-	}
+    public EventList<ReportHolder> getAllMessagesList() {
+        return mAllMessages;
+    }
 
-	public Message getLatestMessage(OrderID inOrderID) {
-		try {
-			latestMessageList.getReadWriteLock().readLock().lock();
-			OrderID groupID = getGroupID(inOrderID);
-			if (groupID != null)
-			{
-				for (ReportHolder holder : latestMessageList)
-				{
-					OrderID holderGroupID = holder.getGroupID();
-					if (holderGroupID != null && groupID.equals(holderGroupID)){
-						return holder.getMessage();
-					}
-				}
-			}
-			return null;
-		} finally {
-			latestMessageList.getReadWriteLock().readLock().unlock();
-		}
-	}
+    public Message getLatestMessage(OrderID inOrderID) {
+        try {
+            mLatestMessageList.getReadWriteLock().readLock().lock();
+            OrderID groupID = getGroupID(inOrderID);
+            if (groupID != null)
+            {
+                for (ReportHolder holder : mLatestMessageList)
+                {
+                    OrderID holderGroupID = holder.getGroupID();
+                    if (holderGroupID != null && groupID.equals(holderGroupID)){
+                        return holder.getMessage();
+                    }
+                }
+            }
+            return null;
+        } finally {
+            mLatestMessageList.getReadWriteLock().readLock().unlock();
+        }
+    }
 
-	public void setMatcherEditor(ThreadedMatcherEditor<ReportHolder> matcherEditor) {
-		allFilteredMessages.setMatcherEditor(matcherEditor);
-	}
+    public void setMatcherEditor(ThreadedMatcherEditor<ReportHolder> matcherEditor) {
+        mAllFilteredMessages.setMatcherEditor(matcherEditor);
+    }
 
-	public EventList<ReportHolder> getFilteredMessages() {
-		return allFilteredMessages;
-	}
+    public EventList<ReportHolder> getFilteredMessages() {
+        return mAllFilteredMessages;
+    }
 
-	public FilterList<ReportHolder> getOpenOrdersList() {
-		return openOrderList;
-	}
+    public FilterList<ReportHolder> getOpenOrdersList() {
+        return mOpenOrderList;
+    }
 
-	public void visitOpenOrdersExecutionReports(MessageVisitor visitor)
-	{
-		try {
-			openOrderList.getReadWriteLock().readLock().lock();
-			ReportHolder[] holders = openOrderList.toArray(new ReportHolder[openOrderList.size()]);
-			for(ReportHolder holder : holders)
-			{
-				visitor.visitOpenOrderExecutionReports(holder.getMessage());
-			}
-		} finally {
-			openOrderList.getReadWriteLock().readLock().unlock();
-		}
-	}
+    public void visitOpenOrdersExecutionReports(MessageVisitor visitor)
+    {
+        try {
+            mOpenOrderList.getReadWriteLock().readLock().lock();
+            ReportHolder[] holders = mOpenOrderList.toArray(new ReportHolder[mOpenOrderList.size()]);
+            for(ReportHolder holder : holders)
+            {
+                visitor.visitOpenOrderExecutionReports(holder.getMessage());
+            }
+        } finally {
+            mOpenOrderList.getReadWriteLock().readLock().unlock();
+        }
+    }
 
-	/**
-	 * Returns a {@link org.marketcetera.messagehistory.ReportHolder} holding the first report Photon received
-	 * for the given clOrdID. This is the PENDING NEW or PENDING REPLACE message
-	 * added via {@link #addIncomingMessage(ReportBase)}.
-	 *
-	 * @param inOrderID the orderID.
-	 * @return the ReportHolder holding the first report
-	 */
-	public ReportHolder getFirstReport(OrderID inOrderID){
-		synchronized (originalOrderACKs){
-			return originalOrderACKs.get(inOrderID);
-		}
-	}
+    /**
+     * Returns a {@link org.marketcetera.messagehistory.ReportHolder} holding the first report Photon received
+     * for the given clOrdID. This is the PENDING NEW or PENDING REPLACE message
+     * added via {@link #addIncomingMessage(ReportBase)}.
+     *
+     * @param inOrderID the orderID.
+     * @return the ReportHolder holding the first report
+     */
+    public ReportHolder getFirstReport(OrderID inOrderID){
+        synchronized (mOriginalOrderACKs){
+            return mOriginalOrderACKs.get(inOrderID);
+        }
+    }
 
 }

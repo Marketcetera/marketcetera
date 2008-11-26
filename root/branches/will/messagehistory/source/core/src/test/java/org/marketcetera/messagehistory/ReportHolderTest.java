@@ -27,16 +27,16 @@ import quickfix.field.Side;
  */
 public class ReportHolderTest {
 
-	@Test
-	public void testGetMessage() throws Exception {
-		Message message = FIXVersion.FIX42.getMessageFactory()
-				.newExecutionReport("asdf", "asdf", "asdf", OrdStatus.CANCELED,
-						Side.BUY, BigDecimal.TEN, BigDecimal.ONE,
-						BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-						BigDecimal.ONE, new MSymbol("123"), "asdf");
-		ExecutionReport report = Factory.getInstance().createExecutionReport(
-				message, new DestinationID("ABC"), Originator.Server);
-		ReportHolder holder = new ReportHolder(report);
-		assertEquals(message, holder.getMessage());
-	}
+    @Test
+    public void testGetMessage() throws Exception {
+        Message message = FIXVersion.FIX42.getMessageFactory()
+                .newExecutionReport("asdf", "asdf", "asdf", OrdStatus.CANCELED,
+                        Side.BUY, BigDecimal.TEN, BigDecimal.ONE,
+                        BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                        BigDecimal.ONE, new MSymbol("123"), "asdf");
+        ExecutionReport report = Factory.getInstance().createExecutionReport(
+                message, new DestinationID("ABC"), Originator.Server);
+        ReportHolder holder = new ReportHolder(report);
+        assertEquals(message, holder.getMessage());
+    }
 }

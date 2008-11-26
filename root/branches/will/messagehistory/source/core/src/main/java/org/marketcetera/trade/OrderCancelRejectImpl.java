@@ -25,5 +25,19 @@ class OrderCancelRejectImpl extends ReportBaseImpl
         super(inMessage, inDestinationID);
     }
 
+    @Override
+    public String toString() {
+        return Messages.ORDER_CANCEL_REJECT_TO_STRING.getText(
+                String.valueOf(getDestinationID()),
+                String.valueOf(getOrderID()),
+                String.valueOf(getOrderStatus()),
+                String.valueOf(getOriginalOrderID()),
+                String.valueOf(getSendingTime()),
+                String.valueOf(getText()),
+                String.valueOf(getDestinationOrderID()),
+                String.valueOf(getMessage())
+        );
+    }
+
     private static final long serialVersionUID = 1L;
 }

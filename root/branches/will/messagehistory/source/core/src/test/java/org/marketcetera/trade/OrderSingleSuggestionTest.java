@@ -28,6 +28,8 @@ public class OrderSingleSuggestionTest extends TypesTestBase {
         OrderSingleSuggestion suggest = sFactory.createOrderSingleSuggestion();
         assertSuggestionValues(suggest, null, null);
         assertNull(suggest.getOrder());
+        //Verify toString() doesn't fail.
+        suggest.toString();
 
         assertNotSame(suggest, sFactory.createOrderSingleSuggestion());
     }
@@ -67,6 +69,9 @@ public class OrderSingleSuggestionTest extends TypesTestBase {
         inSuggest.setOrder(order);
         assertNotSame(order, inSuggest.getOrder());
         assertOrderSingleEquals(order, inSuggest.getOrder());
+        //Verify toString() doesn't fail
+        inSuggest.toString();
+        
         //Verify updating the order that was set doesn't change suggestion's copy
         OrderSingleTest.check(order);
         assertOrderSingleEquals(clone, inSuggest.getOrder());

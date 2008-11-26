@@ -15,11 +15,6 @@ import quickfix.Message;
 class FIXOrderImpl extends FIXMessageWrapper implements FIXOrder {
 
     @Override
-    public Message getMessage() {
-        return mMessage;
-    }
-
-    @Override
     public SecurityType getSecurityType() {
         return FIXUtil.getSecurityType(getMessage());
     }
@@ -48,11 +43,16 @@ class FIXOrderImpl extends FIXMessageWrapper implements FIXOrder {
         if(inMessage == null || inDestinationID == null) {
             throw new NullPointerException();
         }
-        mMessage = inMessage;
         mDestinationID = inDestinationID;
     }
 
+    @Override
+    public String toString() {
+        return Messages.FIX_ORDER_TO_STRING.getText(
+                getDestinationID().getValue(),
+                String.valueOf(getMessage()));
+    }
+
     private DestinationID mDestinationID;
-    private final Message mMessage;
     private static final long serialVersionUID = 1L;
 }

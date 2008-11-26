@@ -15,12 +15,13 @@ import quickfix.Message;
  * Represents a Photon trading report.
  *
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ReportHolder
-	implements Comparable<ReportHolder> {
+    implements Comparable<ReportHolder> {
 
     /**
      * Creates an instance.
@@ -28,9 +29,8 @@ public class ReportHolder
      * @param inReport the report instance.
      */
     public ReportHolder(ReportBase inReport) {
-		this.mReport = inReport;
-		this.messageReference = counter.incrementAndGet();
-	}
+        this(inReport, null);
+    }
 
     /**
      * Creates an instance.
@@ -39,9 +39,10 @@ public class ReportHolder
      * @param inGroupID the orderID of the first order in this chain of orders.
      */
     public ReportHolder(ReportBase inReport, OrderID inGroupID){
-		this(inReport);
-		this.mGroupID = inGroupID;
-	}
+        this.mReport = inReport;
+        this.mMessageReference = sCounter.incrementAndGet();
+        this.mGroupID = inGroupID;
+    }
 
     /**
      * Returns the report instance.
@@ -63,7 +64,7 @@ public class ReportHolder
             return ((HasFIXMessage)mReport).getMessage();
         }
         return null;
-	}
+    }
 
     /**
      * The message reference value. This is a unique, monotonically
@@ -73,14 +74,14 @@ public class ReportHolder
      * @return the message reference value.
      */
     public long getMessageReference()
-	{
-		return messageReference;
-	}
+    {
+        return mMessageReference;
+    }
 
     @Override
-	public int compareTo(ReportHolder mh) {
-		return (int)(messageReference - mh.messageReference);
-	}
+    public int compareTo(ReportHolder mh) {
+        return (int)(mMessageReference - mh.mMessageReference);
+    }
 
     /**
      * The orderID of the first order in this chain of orders.
@@ -88,8 +89,8 @@ public class ReportHolder
      * @return the orderID of the first order in this chain of orders.
      */
     public OrderID getGroupID() {
-		return mGroupID;
-	}
+        return mGroupID;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -98,7 +99,7 @@ public class ReportHolder
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (messageReference ^ (messageReference >>> 32));
+        result = prime * result + (int) (mMessageReference ^ (mMessageReference >>> 32));
         return result;
     }
     /* (non-Javadoc)
@@ -114,10 +115,10 @@ public class ReportHolder
         if (getClass() != obj.getClass())
             return false;
         ReportHolder other = (ReportHolder) obj;
-        return messageReference == other.messageReference;
+        return mMessageReference == other.mMessageReference;
     }
-	private ReportBase mReport;
-	private long messageReference;
-	private static AtomicLong counter = new AtomicLong();
-	private OrderID mGroupID = null;
+    private final ReportBase mReport;
+    private final long mMessageReference;
+    private static AtomicLong sCounter = new AtomicLong();
+    private final OrderID mGroupID;
 }

@@ -28,20 +28,20 @@ import ca.odell.glazedlists.event.ListEventListener;
 
 public class AveragePriceList extends AbstractEventList<MessageHolder> implements ListEventListener<MessageHolder> {
 
-	private HashMap<SymbolSide, Integer> averagePriceIndexes = new HashMap<SymbolSide, Integer>();
-	private ArrayList<MessageHolder> averagePricesList = new ArrayList<MessageHolder>();
-	
-	private FIXMessageFactory messageFactory;
-	
-	public AveragePriceList(FIXMessageFactory messageFactory, EventList<MessageHolder> source) {
-		super(source.getPublisher());
-		this.messageFactory = messageFactory;
-		source.addListEventListener(this);
+    private HashMap<SymbolSide, Integer> averagePriceIndexes = new HashMap<SymbolSide, Integer>();
+    private ArrayList<MessageHolder> averagePricesList = new ArrayList<MessageHolder>();
+    
+    private FIXMessageFactory messageFactory;
+    
+    public AveragePriceList(FIXMessageFactory messageFactory, EventList<MessageHolder> source) {
+        super(source.getPublisher());
+        this.messageFactory = messageFactory;
+        source.addListEventListener(this);
 
-		readWriteLock = source.getReadWriteLock();
-	}
+        readWriteLock = source.getReadWriteLock();
+    }
 
-	public void listChanged(ListEvent<MessageHolder> listChanges) {
+    public void listChanged(ListEvent<MessageHolder> listChanges) {
         // all of these changes to this list happen "atomically"
         updates.beginEvent();
 
@@ -54,98 +54,98 @@ public class AveragePriceList extends AbstractEventList<MessageHolder> implement
                 int changeType = listChanges.getType();
 
                 EventList<MessageHolder> sourceList = listChanges.getSourceList();
-            	// handle delete events
+                // handle delete events
                 if(changeType == ListEvent.DELETE || changeType == ListEvent.UPDATE) {
-                	throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException();
                 } else if(changeType == ListEvent.INSERT) {
-	            	MessageHolder deltaMessageHolder = sourceList.get(listChanges.getIndex());
-	
-	            	Integer averagePriceIndex = null;
-	            	
-	            	try {
-		            	Message deltaMessage = deltaMessageHolder.getMessage();
-						String symbol = deltaMessage.getString(Symbol.FIELD);
-						String side = deltaMessage.getString(Side.FIELD);
-						SymbolSide symbolSide = new SymbolSide(new MSymbol(symbol), side);
-						averagePriceIndex = averagePriceIndexes.get(symbolSide);
-		
-						if(averagePriceIndex != null) {
-	                    	MessageHolder averagePriceMessageHolder = averagePricesList.get(averagePriceIndex);
-		                    Message averagePriceMessage = averagePriceMessageHolder.getMessage();
-	
-		                    if (deltaMessageHolder instanceof IncomingMessageHolder && FIXMessageUtil.isExecutionReport(deltaMessage) &&
-	                    			deltaMessage.getDouble(LastShares.FIELD) > 0){
-	
-		                    	double existingCumQty = 0.0; 
-		                    	try { existingCumQty = averagePriceMessage.getDouble(CumQty.FIELD); } catch (FieldNotFound fnf) {}
-		            			double existingAvgPx = 0.0;
-		            			try { existingAvgPx = averagePriceMessage.getDouble(AvgPx.FIELD); } catch (FieldNotFound fnf) {}
-		            			double newLastQty = deltaMessage.getDouble(LastShares.FIELD);
-		            			double newLastPx = deltaMessage.getDouble(LastPx.FIELD);
-		            			double newTotal = existingCumQty + newLastQty;
-		            			if (newTotal != 0.0){
-		            				double numerator = (existingCumQty * existingAvgPx)+(newLastQty * newLastPx);
-		            				double newAvgPx = numerator / newTotal;
-		            				averagePriceMessage.setDouble(AvgPx.FIELD, newAvgPx);
-		            				averagePriceMessage.setDouble(CumQty.FIELD, newTotal);
-		            			}
-	                    	}
-		                    // The following block is for the PENDING NEW acks from ORS.
-		                    // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
-		                    else if (FIXMessageUtil.isExecutionReport(deltaMessage) && deltaMessage.getChar(OrdStatus.FIELD) == OrdStatus.PENDING_NEW){
-	                    		double orderQty = 0.0;
-	                    		try { 
-	                    			try { orderQty = averagePriceMessage.getDouble(OrderQty.FIELD); } catch (FieldNotFound fnf) {}
-	                    			orderQty = orderQty + deltaMessage.getDouble(OrderQty.FIELD);
-	                    			averagePriceMessage.setDouble(OrderQty.FIELD, orderQty);
-	                    		} catch (FieldNotFound fnf) {}
-	                    	}	
-			                updates.addUpdate(averagePriceIndex);
-						} else {
-							// TODO: Change this to look for custom ORS acks instead of PENDING_NEW
-		                    if (FIXMessageUtil.isExecutionReport(deltaMessage) && 
-		                    		(deltaMessage.getChar(OrdStatus.FIELD) == OrdStatus.PENDING_NEW || deltaMessage.getDouble(LastShares.FIELD) > 0)){
-		            			Message averagePriceMessage = messageFactory.createMessage(MsgType.EXECUTION_REPORT);
-		            			averagePriceMessage.setField(deltaMessage.getField(new Side()));
-		            			averagePriceMessage.setField(deltaMessage.getField(new Symbol()));
-		            			// The following block is for the PENDING NEW acks from ORS.
-			                    // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
-			                    if (deltaMessage.getChar(OrdStatus.FIELD) == OrdStatus.PENDING_NEW){
-			            			averagePriceMessage.setField(new OrderQty(deltaMessage.getDouble(OrderQty.FIELD)));
-		            			} else {
-			            			averagePriceMessage.setField(deltaMessage.getField(new LeavesQty()));
-			            			averagePriceMessage.setField(new StringField(CumQty.FIELD, deltaMessage.getString(LastShares.FIELD)));
-			            			averagePriceMessage.setField(new StringField(AvgPx.FIELD, deltaMessage.getString(LastPx.FIELD)));
-		            			}
-		            			try { averagePriceMessage.setField(deltaMessage.getField(new Account())); } catch (FieldNotFound ex) { /* do nothing */ }
-	
-		                    	averagePricesList.add(new IncomingMessageHolder(averagePriceMessage));
-		                    	averagePriceIndex = averagePricesList.size()-1;
-		                    	averagePriceIndexes.put(symbolSide, averagePriceIndex);
-				                updates.addInsert(averagePriceIndex);
-		                    }
-	                	}
-						// if this value was not filtered out, it is now so add a change
-	
-	            	} catch (FieldNotFound fnf){
-	            		// ignore...
-	            	}
+                    MessageHolder deltaMessageHolder = sourceList.get(listChanges.getIndex());
+    
+                    Integer averagePriceIndex = null;
+                    
+                    try {
+                        Message deltaMessage = deltaMessageHolder.getMessage();
+                        String symbol = deltaMessage.getString(Symbol.FIELD);
+                        String side = deltaMessage.getString(Side.FIELD);
+                        SymbolSide symbolSide = new SymbolSide(new MSymbol(symbol), side);
+                        averagePriceIndex = averagePriceIndexes.get(symbolSide);
+        
+                        if(averagePriceIndex != null) {
+                            MessageHolder averagePriceMessageHolder = averagePricesList.get(averagePriceIndex);
+                            Message averagePriceMessage = averagePriceMessageHolder.getMessage();
+    
+                            if (deltaMessageHolder instanceof IncomingMessageHolder && FIXMessageUtil.isExecutionReport(deltaMessage) &&
+                                    deltaMessage.getDouble(LastShares.FIELD) > 0){
+    
+                                double existingCumQty = 0.0; 
+                                try { existingCumQty = averagePriceMessage.getDouble(CumQty.FIELD); } catch (FieldNotFound fnf) {}
+                                double existingAvgPx = 0.0;
+                                try { existingAvgPx = averagePriceMessage.getDouble(AvgPx.FIELD); } catch (FieldNotFound fnf) {}
+                                double newLastQty = deltaMessage.getDouble(LastShares.FIELD);
+                                double newLastPx = deltaMessage.getDouble(LastPx.FIELD);
+                                double newTotal = existingCumQty + newLastQty;
+                                if (newTotal != 0.0){
+                                    double numerator = (existingCumQty * existingAvgPx)+(newLastQty * newLastPx);
+                                    double newAvgPx = numerator / newTotal;
+                                    averagePriceMessage.setDouble(AvgPx.FIELD, newAvgPx);
+                                    averagePriceMessage.setDouble(CumQty.FIELD, newTotal);
+                                }
+                            }
+                            // The following block is for the PENDING NEW acks from ORS.
+                            // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
+                            else if (FIXMessageUtil.isExecutionReport(deltaMessage) && deltaMessage.getChar(OrdStatus.FIELD) == OrdStatus.PENDING_NEW){
+                                double orderQty = 0.0;
+                                try { 
+                                    try { orderQty = averagePriceMessage.getDouble(OrderQty.FIELD); } catch (FieldNotFound fnf) {}
+                                    orderQty = orderQty + deltaMessage.getDouble(OrderQty.FIELD);
+                                    averagePriceMessage.setDouble(OrderQty.FIELD, orderQty);
+                                } catch (FieldNotFound fnf) {}
+                            }    
+                            updates.addUpdate(averagePriceIndex);
+                        } else {
+                            // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
+                            if (FIXMessageUtil.isExecutionReport(deltaMessage) && 
+                                    (deltaMessage.getChar(OrdStatus.FIELD) == OrdStatus.PENDING_NEW || deltaMessage.getDouble(LastShares.FIELD) > 0)){
+                                Message averagePriceMessage = messageFactory.createMessage(MsgType.EXECUTION_REPORT);
+                                averagePriceMessage.setField(deltaMessage.getField(new Side()));
+                                averagePriceMessage.setField(deltaMessage.getField(new Symbol()));
+                                // The following block is for the PENDING NEW acks from ORS.
+                                // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
+                                if (deltaMessage.getChar(OrdStatus.FIELD) == OrdStatus.PENDING_NEW){
+                                    averagePriceMessage.setField(new OrderQty(deltaMessage.getDouble(OrderQty.FIELD)));
+                                } else {
+                                    averagePriceMessage.setField(deltaMessage.getField(new LeavesQty()));
+                                    averagePriceMessage.setField(new StringField(CumQty.FIELD, deltaMessage.getString(LastShares.FIELD)));
+                                    averagePriceMessage.setField(new StringField(AvgPx.FIELD, deltaMessage.getString(LastPx.FIELD)));
+                                }
+                                try { averagePriceMessage.setField(deltaMessage.getField(new Account())); } catch (FieldNotFound ex) { /* do nothing */ }
+    
+                                averagePricesList.add(new IncomingMessageHolder(averagePriceMessage));
+                                averagePriceIndex = averagePricesList.size()-1;
+                                averagePriceIndexes.put(symbolSide, averagePriceIndex);
+                                updates.addInsert(averagePriceIndex);
+                            }
+                        }
+                        // if this value was not filtered out, it is now so add a change
+    
+                    } catch (FieldNotFound fnf){
+                        // ignore...
+                    }
                 }
             }
         }
 
         // commit the changes and notify listeners
         updates.commitEvent();
-	}
+    }
 
-	@Override
-	public MessageHolder get(int index) {
-		return averagePricesList.get(index);
-	}
+    @Override
+    public MessageHolder get(int index) {
+        return averagePricesList.get(index);
+    }
 
-	@Override
-	public int size() {
-		return averagePricesList.size();
-	}
+    @Override
+    public int size() {
+        return averagePricesList.size();
+    }
 
 }

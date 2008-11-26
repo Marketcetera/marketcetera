@@ -38,131 +38,131 @@ import ca.odell.glazedlists.EventList;
  * @since $Release$
  */
 public class AveragePriceReportListTest extends FIXVersionedTestCase {
-	public AveragePriceReportListTest(String inName, FIXVersion version) {
-		super(inName, version);
-	}
+    public AveragePriceReportListTest(String inName, FIXVersion version) {
+        super(inName, version);
+    }
 
-	public static Test suite() {
-		return new FIXVersionTestSuite(AveragePriceReportListTest.class,
-				FIXVersionTestSuite.ALL_FIX_VERSIONS);
-	}
+    public static Test suite() {
+        return new FIXVersionTestSuite(AveragePriceReportListTest.class,
+                FIXVersionTestSuite.ALL_FIX_VERSIONS);
+    }
 
-	public void testInsertExecutionReport() throws Exception {
-		EventList<ReportHolder> source = new BasicEventList<ReportHolder>();
-		AveragePriceReportList averagePriceList = new AveragePriceReportList(
-				this.msgFactory, source);
-		Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
-				"execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(10), null,
-				new BigDecimal(10), new BigDecimal(11), new BigDecimal(10),
-				new BigDecimal(11), new MSymbol("IBM"), "account");
-		message.setField(new LeavesQty(90.0));
-		source.add(new ReportHolder(createReport(message)));
+    public void testInsertExecutionReport() throws Exception {
+        EventList<ReportHolder> source = new BasicEventList<ReportHolder>();
+        AveragePriceReportList averagePriceList = new AveragePriceReportList(
+                FIXVersion.FIX_SYSTEM.getMessageFactory(), source);
+        Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
+                "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(10), null,
+                new BigDecimal(10), new BigDecimal(11), new BigDecimal(10),
+                new BigDecimal(11), new MSymbol("IBM"), "account");
+        message.setField(new LeavesQty(90.0));
+        source.add(new ReportHolder(createReport(message)));
 
-		assertEquals(1, averagePriceList.size());
-		Message avgPriceMessage = averagePriceList.get(0).getMessage();
-		assertEquals(MsgType.EXECUTION_REPORT, avgPriceMessage.getHeader()
-				.getString(MsgType.FIELD));
-		assertEquals(10.0, avgPriceMessage.getDouble(CumQty.FIELD), .00001);
-		assertEquals(11.0, avgPriceMessage.getDouble(AvgPx.FIELD), .0001);
+        assertEquals(1, averagePriceList.size());
+        Message avgPriceMessage = averagePriceList.get(0).getMessage();
+        assertEquals(MsgType.EXECUTION_REPORT, avgPriceMessage.getHeader()
+                .getString(MsgType.FIELD));
+        assertEquals(10.0, avgPriceMessage.getDouble(CumQty.FIELD), .00001);
+        assertEquals(11.0, avgPriceMessage.getDouble(AvgPx.FIELD), .0001);
 
-		Message message2 = msgFactory.newExecutionReport("clordid1",
-				"clordid1", "execido1", OrdStatus.NEW, Side.BUY,
-				new BigDecimal(10), null, new BigDecimal(110), new BigDecimal(
-						111), new BigDecimal(110), new BigDecimal(111),
-				new MSymbol("IBM"), "account");
-		message2.setField(new LeavesQty(190.0));
-		source.add(new ReportHolder(createReport(message2)));
+        Message message2 = msgFactory.newExecutionReport("clordid1",
+                "clordid1", "execido1", OrdStatus.NEW, Side.BUY,
+                new BigDecimal(10), null, new BigDecimal(110), new BigDecimal(
+                        111), new BigDecimal(110), new BigDecimal(111),
+                new MSymbol("IBM"), "account");
+        message2.setField(new LeavesQty(190.0));
+        source.add(new ReportHolder(createReport(message2)));
 
-		assertEquals(1, averagePriceList.size());
-		avgPriceMessage = averagePriceList.get(0).getMessage();
-		assertEquals(MsgType.EXECUTION_REPORT, avgPriceMessage.getHeader()
-				.getString(MsgType.FIELD));
-		assertEquals(120.0, avgPriceMessage.getDouble(CumQty.FIELD), .00001);
-		assertEquals(102.66666, avgPriceMessage.getDouble(AvgPx.FIELD), .0001);
+        assertEquals(1, averagePriceList.size());
+        avgPriceMessage = averagePriceList.get(0).getMessage();
+        assertEquals(MsgType.EXECUTION_REPORT, avgPriceMessage.getHeader()
+                .getString(MsgType.FIELD));
+        assertEquals(120.0, avgPriceMessage.getDouble(CumQty.FIELD), .00001);
+        assertEquals(102.66666, avgPriceMessage.getDouble(AvgPx.FIELD), .0001);
 
-		Message message3 = msgFactory.newExecutionReport("clordid1",
-				"clordid1", "execido1", OrdStatus.PENDING_NEW, Side.BUY,
-				new BigDecimal(1000), null, new BigDecimal(0), null,
-				new BigDecimal(100), new BigDecimal(3), new MSymbol("IBM"),
-				"account");
-		message3.setField(new OrderQty(1000));
-		source.add(new ReportHolder(createReport(message3)));
+        Message message3 = msgFactory.newExecutionReport("clordid1",
+                "clordid1", "execido1", OrdStatus.PENDING_NEW, Side.BUY,
+                new BigDecimal(1000), null, new BigDecimal(0), null,
+                new BigDecimal(100), new BigDecimal(3), new MSymbol("IBM"),
+                "account");
+        message3.setField(new OrderQty(1000));
+        source.add(new ReportHolder(createReport(message3)));
 
-		assertEquals(1, averagePriceList.size());
-		avgPriceMessage = averagePriceList.get(0).getMessage();
-		assertEquals(MsgType.EXECUTION_REPORT, avgPriceMessage.getHeader()
-				.getString(MsgType.FIELD));
-		assertEquals(120.0, avgPriceMessage.getDouble(CumQty.FIELD), .0001);
-		assertEquals(102.66666, avgPriceMessage.getDouble(AvgPx.FIELD), .0001);
-		assertEquals(1000.0, avgPriceMessage.getDouble(OrderQty.FIELD), .0001);
+        assertEquals(1, averagePriceList.size());
+        avgPriceMessage = averagePriceList.get(0).getMessage();
+        assertEquals(MsgType.EXECUTION_REPORT, avgPriceMessage.getHeader()
+                .getString(MsgType.FIELD));
+        assertEquals(120.0, avgPriceMessage.getDouble(CumQty.FIELD), .0001);
+        assertEquals(102.66666, avgPriceMessage.getDouble(AvgPx.FIELD), .0001);
+        assertEquals(1000.0, avgPriceMessage.getDouble(OrderQty.FIELD), .0001);
 
-	}
+    }
 
-	public void testAddOrderFirst() throws Exception {
-		EventList<ReportHolder> source = new BasicEventList<ReportHolder>();
-		AveragePriceReportList averagePriceList = new AveragePriceReportList(
-				this.msgFactory, source);
-		Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
-				"execido1", OrdStatus.PENDING_NEW, Side.BUY, new BigDecimal(
-						1000), null, new BigDecimal(0), null, new BigDecimal(
-						100), new BigDecimal(3), new MSymbol("IBM"), "account");
-		message.setField(new LeavesQty(0));
-		message.setField(new ExecTransType(ExecTransType.NEW));
-		message.setField(new ExecType(ExecType.NEW));
-		source.add(new ReportHolder(createReport(message)));
+    public void testAddOrderFirst() throws Exception {
+        EventList<ReportHolder> source = new BasicEventList<ReportHolder>();
+        AveragePriceReportList averagePriceList = new AveragePriceReportList(
+                FIXVersion.FIX_SYSTEM.getMessageFactory(), source);
+        Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
+                "execido1", OrdStatus.PENDING_NEW, Side.BUY, new BigDecimal(
+                        1000), null, new BigDecimal(0), null, new BigDecimal(
+                        100), new BigDecimal(3), new MSymbol("IBM"), "account");
+        message.setField(new LeavesQty(0));
+        message.setField(new ExecTransType(ExecTransType.NEW));
+        message.setField(new ExecType(ExecType.NEW));
+        source.add(new ReportHolder(createReport(message)));
 
-		assertEquals(1, averagePriceList.size());
-		Message avgPriceMessage = averagePriceList.get(0).getMessage();
-		assertEquals(MsgType.EXECUTION_REPORT, avgPriceMessage.getHeader()
-				.getString(MsgType.FIELD));
-		assertEquals(1000.0, avgPriceMessage.getDouble(OrderQty.FIELD), .0001);
+        assertEquals(1, averagePriceList.size());
+        Message avgPriceMessage = averagePriceList.get(0).getMessage();
+        assertEquals(MsgType.EXECUTION_REPORT, avgPriceMessage.getHeader()
+                .getString(MsgType.FIELD));
+        assertEquals(1000.0, avgPriceMessage.getDouble(OrderQty.FIELD), .0001);
 
-	}
+    }
 
-	public void testRemove() throws Exception {
-		final EventList<ReportHolder> source = new BasicEventList<ReportHolder>();
-		AveragePriceReportList averagePriceList = new AveragePriceReportList(
-				this.msgFactory, source);
-		Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
-				"execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
-						10), new BigDecimal(11), new MSymbol("IBM"), "account");
-		message.setField(new LeavesQty(90.0));
-		source.add(new ReportHolder(createReport(message)));
+    public void testRemove() throws Exception {
+        final EventList<ReportHolder> source = new BasicEventList<ReportHolder>();
+        AveragePriceReportList averagePriceList = new AveragePriceReportList(
+                FIXVersion.FIX_SYSTEM.getMessageFactory(), source);
+        Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
+                "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
+                        10), new BigDecimal(11), new MSymbol("IBM"), "account");
+        message.setField(new LeavesQty(90.0));
+        source.add(new ReportHolder(createReport(message)));
 
-		assertEquals(1, averagePriceList.size());
+        assertEquals(1, averagePriceList.size());
 
-		// not implemented
-		new ExpectedTestFailure(UnsupportedOperationException.class) {
-			@Override
-			protected void execute() throws Throwable {
-				source.remove(0);
-			}
-		}.run();
-	}
+        // not implemented
+        new ExpectedTestFailure(UnsupportedOperationException.class) {
+            @Override
+            protected void execute() throws Throwable {
+                source.remove(0);
+            }
+        }.run();
+    }
 
-	public void testUpdate() throws Exception {
-		final EventList<ReportHolder> source = new BasicEventList<ReportHolder>();
-		AveragePriceReportList averagePriceList = new AveragePriceReportList(
-				this.msgFactory, source);
-		final Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
-				"execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
-						10), new BigDecimal(11), new MSymbol("IBM"), "account");
-		message.setField(new LeavesQty(90.0));
-		source.add(new ReportHolder(createReport(message)));
+    public void testUpdate() throws Exception {
+        final EventList<ReportHolder> source = new BasicEventList<ReportHolder>();
+        AveragePriceReportList averagePriceList = new AveragePriceReportList(
+                FIXVersion.FIX_SYSTEM.getMessageFactory(), source);
+        final Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
+                "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
+                        10), new BigDecimal(11), new MSymbol("IBM"), "account");
+        message.setField(new LeavesQty(90.0));
+        source.add(new ReportHolder(createReport(message)));
 
-		assertEquals(1, averagePriceList.size());
+        assertEquals(1, averagePriceList.size());
 
-		new ExpectedTestFailure(UnsupportedOperationException.class) {
-			@Override
-			protected void execute() throws Throwable {
-				source.set(0, new ReportHolder(createReport(message)));
-			}
-		}.run();
-	}
+        new ExpectedTestFailure(UnsupportedOperationException.class) {
+            @Override
+            protected void execute() throws Throwable {
+                source.set(0, new ReportHolder(createReport(message)));
+            }
+        }.run();
+    }
 
-	private ExecutionReport createReport(Message message)
-			throws MessageCreationException {
-		return Factory.getInstance().createExecutionReport(message,
-				new DestinationID("null"), Originator.Server);
-	}
+    private ExecutionReport createReport(Message message)
+            throws MessageCreationException {
+        return Factory.getInstance().createExecutionReport(message,
+                new DestinationID("null"), Originator.Server);
+    }
 }
