@@ -17,15 +17,15 @@ import org.marketcetera.core.MemoizedHashCombinator;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class SymbolSide extends MemoizedHashCombinator<MSymbol, String> {
-	/**
-	 * Create a new SymbolSide with the specified {@link MSymbol} and
-	 * string value for side.
-	 * 
-	 * @param symbol the symbol
-	 * @param side the side, one of the values from {@link quickfix.field.Side}
-	 * @see quickfix.field.Side
-	 */
-	public SymbolSide(MSymbol symbol, String side){
-		super(symbol, side);
-	}
+    /**
+     * Create a new SymbolSide with the specified {@link MSymbol} and
+     * string value for side.
+     * 
+     * @param symbol the symbol
+     * @param side the side, one of the values from {@link quickfix.field.Side}
+     * @see quickfix.field.Side
+     */
+    public SymbolSide(MSymbol symbol, String side){
+        super(symbol, side);
+    }
 }

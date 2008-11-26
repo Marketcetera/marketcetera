@@ -17,39 +17,39 @@ import quickfix.Message;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MessageHolder 
-	implements Comparable<MessageHolder> 
+    implements Comparable<MessageHolder> 
 {
-	private Message message;
-	private long mMessageReference;
-	private static AtomicLong counter = new AtomicLong();
-	private String mGroupID = null;
+    private Message message;
+    private long mMessageReference;
+    private static AtomicLong counter = new AtomicLong();
+    private String mGroupID = null;
 
-	public MessageHolder(Message message) {
-		this.message = message;
-		this.mMessageReference = counter.incrementAndGet();
-	}
+    public MessageHolder(Message message) {
+        this.message = message;
+        this.mMessageReference = counter.incrementAndGet();
+    }
 
-	public MessageHolder(Message message, String groupID){
-		this(message);
-		this.mGroupID = groupID;
-	}
+    public MessageHolder(Message message, String groupID){
+        this(message);
+        this.mGroupID = groupID;
+    }
 
     public Message getMessage() {
-		return message;
-	}
-	
-	public long getMessageReference()
-	{
-		return mMessageReference;
-	}
+        return message;
+    }
+    
+    public long getMessageReference()
+    {
+        return mMessageReference;
+    }
 
-	public int compareTo(MessageHolder mh) {  
-		return (int)(mMessageReference - mh.mMessageReference);
-	}
+    public int compareTo(MessageHolder mh) {  
+        return (int)(mMessageReference - mh.mMessageReference);
+    }
 
-	public String getGroupID() {
-		return mGroupID;
-	}
+    public String getGroupID() {
+        return mGroupID;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */

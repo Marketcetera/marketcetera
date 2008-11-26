@@ -49,6 +49,15 @@ class OrderSingleSuggestionImpl
                 : inOrder.clone();
     }
 
+    @Override
+    public String toString() {
+        return Messages.ORDER_SINGLE_SUGGESTION_TO_STRING.getText(
+                String.valueOf(getIdentifier()),
+                String.valueOf(getScore()),
+                String.valueOf(getOrder())
+        );
+    }
+
     private String mIdentifier;
     private BigDecimal mScore;
     private OrderSingle mOrder;

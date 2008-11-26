@@ -40,23 +40,24 @@ public class OrderReplaceTest extends TypesTestBase {
     public void pojoDefaults() throws Exception {
         //Null report parameter defaults.
         OrderReplace order = sFactory.createOrderReplace(null);
-        assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
-        assertNROrderValues(order, null, null, null, null, null);
-        assertRelatedOrderValues(order,null);
+        assertOrderReplace(order, NOT_NULL, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null);
+        //Verify toString() doesn't fail
+        order.toString();
 
         //Test an empty report.
         Message report = createEmptyExecReport();
         order = sFactory.createOrderReplace(
                 sFactory.createExecutionReport(report, null,
                         Originator.Server));
-        assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
-        assertNROrderValues(order, null, null, null, null, null);
-        assertRelatedOrderValues(order,null);
+        assertOrderReplace(order, NOT_NULL, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null);
+        //Verify toString() doesn't fail
+        order.toString();
 
         //Test a report with all values in it
         String orderID = "clorder-2";
+        String destOrderID = "brokerd1";
         Side side = Side.Buy;
         BigDecimal orderQty = new BigDecimal("100");
         BigDecimal lastPrice = new BigDecimal("23.43");
@@ -68,18 +69,18 @@ public class OrderReplaceTest extends TypesTestBase {
         DestinationID cID = new DestinationID("iam");
         //Create an exec report.
         report = createExecReport(orderID, side, orderQty, lastPrice,
-                symbol, account, orderType, fillOrKill);
-        report.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.AGENCY));
-        report.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.OPEN));
+                symbol, account, orderType, fillOrKill, destOrderID,
+                OrderCapacity.Agency, PositionEffect.Open);
         //Create the order from the report.
         order = sFactory.createOrderReplace(
                 sFactory.createExecutionReport(report, cID, Originator.Server));
-        assertOrderValues(order, cID, symbol.getSecurityType());
-        assertOrderBaseValues(order, NOT_NULL, account, null,
-                report.getField(new LeavesQty()).getValue(), side, symbol);
-        assertNROrderValues(order, OrderType.Limit, lastPrice, fillOrKill,
-                OrderCapacity.Agency, PositionEffect.Open);
-        assertRelatedOrderValues(order,new OrderID(orderID));
+        assertOrderReplace(order, NOT_NULL, new OrderID(orderID),
+                destOrderID, OrderType.Limit, side,
+                report.getField(new LeavesQty()).getValue(), lastPrice,
+                symbol, symbol.getSecurityType(), fillOrKill, account,
+                cID, PositionEffect.Open, OrderCapacity.Agency, null);
+        //Verify toString() doesn't fail
+        order.toString();
         
         assertNotSame(order, sFactory.createOrderReplace(
                 sFactory.createExecutionReport(report, cID,
@@ -119,51 +120,54 @@ public class OrderReplaceTest extends TypesTestBase {
                 factory.getBeginString(), MsgType.ORDER_CANCEL_REPLACE_REQUEST);
         OrderReplace order = sFactory.createOrderReplace(msg, null);
         assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
+        OrderID expectedOrderID = NOT_NULL;
+        assertOrderBaseValues(order, expectedOrderID, null, null, null, null, null);
         assertNROrderValues(order, null, null, null, null, null);
-        assertRelatedOrderValues(order, null);
+        assertRelatedOrderValues(order, null, null);
+        //Verify toString() doesn't fail
+        order.toString();
         checkSetters(order);
 
         //A limit order with all the fields set.
         DestinationID destinationID = new DestinationID("meh");
         OrderID orderID = new OrderID("testOrderID");
+        String destOrderID = "brokerd1";
         BigDecimal qty = new BigDecimal("23434.56989");
         BigDecimal price = new BigDecimal("98923.2345");
-        MSymbol symbol = new MSymbol("IBM",SecurityType.CommonStock);
+        SecurityType securityType = SecurityType.CommonStock;
+        MSymbol symbol = new MSymbol("IBM", securityType);
         String account = "nonplus";
+        PositionEffect positionEffect = PositionEffect.Close;
         msg = factory.newCancelReplaceFromMessage(createExecReport(
                 orderID.getValue(), Side.Buy, qty, price, symbol, account,
-                OrderType.Limit, TimeInForce.AtTheClose));
-        msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.INDIVIDUAL));
-        msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
+                OrderType.Limit, TimeInForce.AtTheClose, destOrderID,
+                OrderCapacity.Individual, positionEffect));
         order = sFactory.createOrderReplace(msg, destinationID);
-        assertOrderValues(order, destinationID, SecurityType.CommonStock);
-        assertOrderBaseValues(order, NOT_NULL, account, null,
-                qty, Side.Buy, symbol);
-        assertNROrderValues(order, OrderType.Limit,
-                msg.getField(new Price()).getValue(), TimeInForce.AtTheClose,
-                OrderCapacity.Individual, PositionEffect.Close);
-        assertRelatedOrderValues(order, orderID);
+        assertOrderReplace(order, expectedOrderID, orderID, destOrderID,
+                OrderType.Limit, Side.Buy, qty,
+                msg.getField(new Price()).getValue(), symbol, securityType,
+                TimeInForce.AtTheClose, account, destinationID, positionEffect,
+                OrderCapacity.Individual, null);
+        //Verify toString() doesn't fail
+        order.toString();
         checkSetters(order);
 
         //A market order with all fields set.
+        Side side = Side.Sell;
+        OrderType orderType = OrderType.Market;
+        TimeInForce tif = TimeInForce.FillOrKill;
+        OrderCapacity orderCapacity = OrderCapacity.Proprietary;
         msg = factory.newCancelReplaceFromMessage(createExecReport(
-                orderID.getValue(), Side.Sell, qty, null, symbol, account,
-                OrderType.Market, TimeInForce.FillOrKill));
-        msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.PROPRIETARY));
-        msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
+                orderID.getValue(), side, qty, null, symbol, account,
+                orderType, tif, destOrderID,
+                orderCapacity, positionEffect));
         order = sFactory.createOrderReplace(msg, null);
-        assertOrderValues(order, null, SecurityType.CommonStock);
-        assertOrderBaseValues(order, NOT_NULL, account, null,
-                qty, Side.Sell, symbol);
-        assertNROrderValues(order, OrderType.Market,
-                //Price is copied even though it's a market order
-                //No validation is carried out. If the execution report
-                //has the value it's copied over.
-                msg.getField(new Price()).getValue(),
-                TimeInForce.FillOrKill, OrderCapacity.Proprietary,
-                PositionEffect.Close);
-        assertRelatedOrderValues(order, orderID);
+        assertOrderReplace(order, expectedOrderID, orderID, destOrderID,
+                orderType, side, qty, msg.getField(new Price()).getValue(),
+                symbol, securityType, tif, account, null, positionEffect,
+                orderCapacity, null);
+        //Verify toString() doesn't fail
+        order.toString();
         checkSetters(order);
 
         //Check custom fields
@@ -194,15 +198,13 @@ public class OrderReplaceTest extends TypesTestBase {
                 BooleanConverter.convert(boolValue));
 
         order = sFactory.createOrderReplace(msg, destinationID);
-        assertOrderValues(order, destinationID, SecurityType.CommonStock);
-        assertOrderBaseValues(order, NOT_NULL, account, expectedMap, qty,
-                Side.Sell, symbol);
-        assertNROrderValues(order, OrderType.Market,
-                msg.getField(new Price()).getValue(),
-                TimeInForce.FillOrKill, OrderCapacity.Proprietary,
-                PositionEffect.Close);
-        assertRelatedOrderValues(order, orderID);
+        BigDecimal expectedPrice = msg.getField(new Price()).getValue();
+        assertOrderReplace(order, expectedOrderID, orderID, destOrderID,
+                orderType, side, qty, expectedPrice, symbol, securityType,
+                tif, account, destinationID, positionEffect, orderCapacity,
+                expectedMap);
     }
+
     /**
      * Verifies failures when wrapping a FIX message in an order.
      *
@@ -297,10 +299,13 @@ public class OrderReplaceTest extends TypesTestBase {
                                      MSymbol inSymbol,
                                      String inAccount,
                                      OrderType inOrderType,
-                                     TimeInForce inFillOrKill)
+                                     TimeInForce inFillOrKill,
+                                     String inDestOrderID,
+                                     OrderCapacity inOrderCapacity,
+                                     PositionEffect inPositionEffect)
             throws FieldNotFound {
         Message report = getSystemMessageFactory().newExecutionReport(
-                null,
+                inDestOrderID,
                 inOrderID, "exec-2", OrderStatus.New.getFIXValue(),
                 inSide.getFIXValue(), inQty,
                 new BigDecimal("45.67"), new BigDecimal("23.53"),
@@ -309,6 +314,10 @@ public class OrderReplaceTest extends TypesTestBase {
         report.setField(new OrdType(inOrderType.getFIXValue()));
         report.setField(new quickfix.field.TimeInForce(
                 inFillOrKill.getFIXValue()));
+        report.setField(new quickfix.field.OrderCapacity(
+                inOrderCapacity.getFIXValue()));
+        report.setField(new quickfix.field.PositionEffect(
+                inPositionEffect.getFIXValue()));
         return report;
     }
 

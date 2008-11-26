@@ -42,5 +42,20 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "not_cancel_reject");  //$NON-NLS-1$
     static final I18NMessage0P UNABLE_TO_GENERATE_IDS =
             new I18NMessage0P(LOGGER, "unable_to_generate_ids");   //$NON-NLS-1$
+    static final I18NMessage2P FIX_ORDER_TO_STRING =
+            new I18NMessage2P(LOGGER, "fix_order_to_string");   //$NON-NLS-1$
+    static final I18NMessageNP ORDER_SINGLE_TO_STRING =
+            new I18NMessageNP(LOGGER, "order_single_to_string");   //$NON-NLS-1$
+    static final I18NMessageNP ORDER_REPLACE_TO_STRING =
+            new I18NMessageNP(LOGGER, "order_replace_to_string");   //$NON-NLS-1$
+    static final I18NMessageNP ORDER_CANCEL_TO_STRING =
+            new I18NMessageNP(LOGGER, "order_cancel_to_string");   //$NON-NLS-1$
+    static final I18NMessageNP EXECUTION_REPORT_TO_STRING =
+            new I18NMessageNP(LOGGER, "execution_report_to_string");   //$NON-NLS-1$
+    static final I18NMessageNP ORDER_CANCEL_REJECT_TO_STRING =
+            new I18NMessageNP(LOGGER, "order_cancel_reject_to_string");   //$NON-NLS-1$
+    static final I18NMessage3P ORDER_SINGLE_SUGGESTION_TO_STRING =
+            new I18NMessage3P(LOGGER, "order_single_suggestion_to_string");   //$NON-NLS-1$
+
 
 }
