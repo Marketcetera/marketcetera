@@ -152,4 +152,11 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
      * @return the position effect value.
      */
     public PositionEffect getPositionEffect();
+    
+    /**
+     * Returns whether this message is cancelable.
+     * 
+     * @return whether the message is cancelable.
+     */
+    public boolean isCancelable();
 }

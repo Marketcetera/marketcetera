@@ -139,6 +139,7 @@ public class TypesTestBase {
         assertEquals(inReport1.getSymbol(), inReport2.getSymbol());
         assertEquals(inReport1.getTimeInForce(), inReport2.getTimeInForce());
         assertEquals(inReport1.getTransactTime().getTime(), inReport2.getTransactTime().getTime());
+        assertEquals(inReport1.isCancelable(), inReport2.isCancelable());
     }
 
     public static void assertCancelRejectEquals(OrderCancelReject inReport1,
@@ -441,7 +442,8 @@ public class TypesTestBase {
                                                  Date inTransactTime,
                                                  Object inOriginator,
                                                  OrderCapacity inOrderCapacity,
-                                                 PositionEffect inPositionEffect) {
+                                                 PositionEffect inPositionEffect,
+                                                 boolean inIsCancelable) {
         assertEquals(inAccount, inReport.getAccount());
         assertEquals(inAvgPrice, inReport.getAveragePrice());
         assertEquals(inCumQty, inReport.getCumulativeQuantity());
@@ -460,6 +462,7 @@ public class TypesTestBase {
         assertEquals(inOrderCapacity, inReport.getOrderCapacity());
         assertEquals(inPositionEffect, inReport.getPositionEffect());
         assertEquals(inOriginator, inReport.getOriginator());
+        assertEquals(inIsCancelable, inReport.isCancelable());
     }
 
     protected static void assertSuggestionValues(Suggestion inSuggestion,

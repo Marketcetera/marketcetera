@@ -71,7 +71,9 @@ public class ExecutionReportTest extends TypesTestBase {
         assertReportBaseValues(report, null, null, null, null, null, null, null);
         assertExecReportValues(report, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null,
-                Originator.Server, null, null);
+                Originator.Server, null, null, false);
+        //Verify toString, doesn't fail.
+        report.toString();
         //Verify toString, doesn't fail.
         report.toString();
         //report with all fields filled in
@@ -126,7 +128,9 @@ public class ExecutionReportTest extends TypesTestBase {
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
                 orderQty, orderType, side, symbol, timeInForce,
                 transactTime, Originator.Server,
-                OrderCapacity.Proprietary, PositionEffect.Close);
+                OrderCapacity.Proprietary, PositionEffect.Close, true);
+        //Verify toString() doesn't fail.
+        report.toString();
         //Verify toString() doesn't fail.
         report.toString();
 
@@ -139,7 +143,9 @@ public class ExecutionReportTest extends TypesTestBase {
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
                 orderQty, orderType, side, symbol, timeInForce,
                 transactTime, Originator.Destination,
-                OrderCapacity.Proprietary, PositionEffect.Close);
+                OrderCapacity.Proprietary, PositionEffect.Close, true);
+        //Verify toString() doesn't fail.
+        report.toString();
         //Verify toString() doesn't fail.
         report.toString();
 

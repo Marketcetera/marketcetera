@@ -1,5 +1,6 @@
 package org.marketcetera.trade;
 
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.MSymbol;
 
@@ -107,6 +108,11 @@ class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
     @Override
     public Originator getOriginator() {
         return mOriginator;
+    }
+    
+    @Override
+    public boolean isCancelable() {
+        return FIXMessageUtil.isCancellable(getMessage());
     }
 
     @Override
