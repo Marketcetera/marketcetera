@@ -4,6 +4,9 @@ import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Suggestion;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -26,11 +29,21 @@ interface OutboundServicesProvider
     /**
      * Sends an order to the destination or destinations established in the strategy module.
      *
-     * TODO need the FixAgnostic objects
-     * 
-     * @param inOrder
+     * @param inOrder an <code>OrderSingle</code> value
      */
-    void sendOrder(Object inOrder);
+    void sendOrder(OrderSingle inOrder);
+    /**
+     * Sends an order cancel request to the established destination or destinations.
+     *
+     * @param inCancel an <code>OrderCancel</code> value
+     */
+    void cancelOrder(OrderCancel inCancel);
+    /**
+     * Sends an order replace request to the established destination or destinations.
+     *
+     * @param inReplace an <code>OrderReplace</code> value
+     */
+    void cancelReplace(OrderReplace inReplace);
     /**
      * Sends a trade suggestion to the destination or destinations established in the strategy module.
      *

@@ -37,6 +37,9 @@ public class JavaLanguageTest
     public static final File SUGGESTION_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                             "SuggestTrades.java");
     public static final String SUGGESTION_STRATEGY_NAME = "SuggestTrades";
+    public static final File ORDER_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                       "Orders.java");
+    public static final String ORDER_STRATEGY_NAME = "Orders";
     public static final File MESSAGE_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                          "SendMessage.java");
     public static final String MESSAGE_STRATEGY_NAME = "SendMessage";
@@ -178,6 +181,20 @@ public class JavaLanguageTest
         return StrategyCoordinates.get(PART1_REDEFINED_STRATEGY,
                                        PART1_STRATEGY_NAME);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getOrdersStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getOrdersStrategy()
+    {
+        return StrategyCoordinates.get(ORDER_STRATEGY,
+                                       ORDER_STRATEGY_NAME);
+    }
+    /**
+     * Gets a strategy not in the default package.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
     private StrategyCoordinates getPackageStrategy()
     {
         return StrategyCoordinates.get(PACKAGE_STRATEGY,

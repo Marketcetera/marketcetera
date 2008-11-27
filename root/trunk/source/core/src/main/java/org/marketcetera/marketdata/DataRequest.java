@@ -3,19 +3,16 @@ package org.marketcetera.marketdata;
 import static org.marketcetera.marketdata.Messages.INVALID_ID;
 import static org.marketcetera.marketdata.Messages.INVALID_REQUEST_TYPE;
 import static org.marketcetera.marketdata.Messages.INVALID_STRING_VALUE;
-import static org.marketcetera.marketdata.Messages.LINE_SEPARATOR_NOT_ALLOWED;
 import static org.marketcetera.marketdata.Messages.MISSING_REQUEST_TYPE;
 import static org.marketcetera.marketdata.Messages.POORLY_CONSTRUCTED_REQUEST_SUBCLASS;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.marketcetera.core.Util;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -30,10 +27,6 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class DataRequest
 {
-    /**
-     * the delimiter used to distinguish key/value pairs in the string representation of the request 
-     */
-    public static final String KEY_VALUE_DELIMITER = ":"; //$NON-NLS-1$
     /**
      * identifies the type field in the <code>Properties</code> and <code>String</code> representations of this object
      */
@@ -61,7 +54,7 @@ public abstract class DataRequest
         // transform that string to a properties object for easy access
         Properties request;
         // construct a properties object from the incoming string
-        request = propertiesFromString(inRequestString);
+        request = Util.propertiesFromString(inRequestString);
         // we don't yet know if this request object has all the pieces it needs
         // first, we need to find the type of data request - that must be there
         Class<? extends DataRequest> type = getClassOfRequestOrFail(request);
@@ -167,11 +160,7 @@ public abstract class DataRequest
     {
         Properties output = new Properties();
         populatePropertiesWithObjectAttributes(output);
-        try {
-            return propertiesToString(output);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+        return Util.propertiesToString(output);
     }
     /**
      * Allows an implementing subclass to provide a hashCode implementation.
@@ -200,8 +189,7 @@ public abstract class DataRequest
      */
     protected static String validateStringValue(String inValue)
     {
-        if(inValue.contains(KEY_VALUE_DELIMITER) ||
-           inValue.contains(LINE_SEPARATOR)) {
+        if(inValue.contains(Util.KEY_VALUE_DELIMITER)) {
             throw new IllegalArgumentException(INVALID_STRING_VALUE.getText(inValue));
         }
         return inValue;
@@ -270,29 +258,6 @@ public abstract class DataRequest
         addCurrentAttributesValues(inProperties);
     }
     /**
-     * Creates a <code>String</code> object from the given <code>Properties</code> object. 
-     *
-     * <p>This function returns a <code>String</code> containing a series of key/value pairs representing this object.
-     * Each key/value pair is separated by the {@link #KEY_VALUE_DELIMITER}.
-     *
-     * @param inProperties a <code>Properties</code> value
-     * @return a <code>String</code> value
-     * @throws IOException
-     */
-    protected final static String propertiesToString(Properties inProperties)
-        throws IOException
-    {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            inProperties.store(outputStream,
-                               null);
-        } finally {
-            outputStream.close();
-        }
-        return outputStream.toString().replace(LINE_SEPARATOR,
-                                               KEY_VALUE_DELIMITER);
-    }
-    /**
      * Registers the given <code>DataRequest</code> subclass by the given identifier.
      *
      * <p>Subsequent to registering via this method, a subclass may be instantiated via {@link #newRequestFromString(String)}.
@@ -335,34 +300,6 @@ public abstract class DataRequest
         return inValue;
     }
     /**
-     * Creates a <code>Properties</code> object from the given <code>String</code>.
-     *
-     * <p>This function assumes that the <code>String</code> consists of a series of key/value pairs separated by
-     * the {@link #KEY_VALUE_DELIMITER}.  The <code>String</code> is not allowed to contain the {@link #LINE_SEPARATOR}.
-     * 
-     * @param inCondensedProperties a <code>String</code> value
-     * @return a <code>Properties</code> value
-     * @throws IOException if the <code>String</code> cannot be parsed into a <code>Properties</code>
-     * @throws IllegalArgumentException if the <code>String</code> contains the {@link #LINE_SEPARATOR}.
-     */
-    private static final Properties propertiesFromString(String inCondensedProperties)
-        throws IOException
-    {
-        if(inCondensedProperties.contains(LINE_SEPARATOR)) {
-            throw new IllegalArgumentException(LINE_SEPARATOR_NOT_ALLOWED.getText());
-        }
-        String expandedProperties = inCondensedProperties.replace(KEY_VALUE_DELIMITER,
-                                                                  LINE_SEPARATOR);
-        Properties incomingValues = new Properties();
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(expandedProperties.getBytes());
-        try {
-            incomingValues.load(inputStream);
-        } finally {
-            inputStream.close();
-        }
-        return incomingValues;
-    }
-    /**
      * Initializes the data request type collection if necessary.
      *
      * <p>When complete, {@link #typesByName} will be non-null.
@@ -398,10 +335,6 @@ public abstract class DataRequest
         }
         return type;
     }
-    /**
-     * the delimiter used to separate lines in the <code>Properties</code> representation of this object
-     */
-    protected static final String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
     /**
      * used to generate a stream of identifiers, guaranteed to be unique for this JVM session
      */

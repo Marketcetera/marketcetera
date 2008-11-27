@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.XMLMemento;
 import org.jruby.exceptions.RaiseException;
+import org.marketcetera.core.Util;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
@@ -205,32 +206,13 @@ public final class StrategyManager {
 			ObjectName objectName = strategy.getURN().toObjectName();
 			StrategyMXBean proxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
 					StrategyMXBean.class);
-			proxy.setParameters(propertiesToString(parameters));
+			proxy.setParameters(Util.propertiesToString(parameters));
 			strategy.setParameters(parameters);
 			saveState();
 		} catch (Exception e) {
 			// TODO: report to user
 			ExceptUtils.swallow(e);
 		}
-	}
-	
-	// TODO: use same implementation as StrategyModule if it becomes public
-	private static String propertiesToString(Properties inProperties) {
-		if (inProperties == null || inProperties.isEmpty()) {
-			return null;
-		}
-		StringBuffer output = new StringBuffer();
-		boolean delimiterNeeded = false;
-		for (Object key : inProperties.keySet()) {
-			if (delimiterNeeded) {
-				output.append(StrategyMXBean.KEY_VALUE_DELIMITER);
-			} else {
-				delimiterNeeded = true;
-			}
-			output.append(key).append(StrategyMXBean.KEY_VALUE_SEPARATOR)
-					.append(inProperties.getProperty((String) key));
-		}
-		return output.toString();
 	}
 
 	/**

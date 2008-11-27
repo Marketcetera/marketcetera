@@ -48,6 +48,14 @@ public class JavaStrategy
         }
         doRequestParameterCallbacks();
         doRequestPropertiesCallbacks();
+        if(getParameter("shouldNotify") != null) { 
+            notifyLow("low subject",
+                      Long.toString(System.nanoTime()));
+            notifyMedium("medium subject",
+                           Long.toString(System.nanoTime()));
+            notifyHigh("high subject",
+                       Long.toString(System.nanoTime()));
+        }
         setProperty("onStart",
                     Long.toString(System.currentTimeMillis()));
     }

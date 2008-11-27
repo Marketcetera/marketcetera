@@ -17,7 +17,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
 public final class PublisherEngine
     implements IPublisher
@@ -25,46 +25,35 @@ public final class PublisherEngine
     /**
      * the queue of subscribers - should be maintained in FIFO order
      */
-    private final LinkedHashSet<ISubscriber> mSubscribers;    
+    private final LinkedHashSet<ISubscriber> mSubscribers = new LinkedHashSet<ISubscriber>();    
     /**
      * the pool of notifiers common to all <code>PublisherEngine</code> objects
      */
-    private static ExecutorService sNotifierPool;
+    private static final ExecutorService sNotifierPool = Executors.newCachedThreadPool();
+    private final boolean doSynchronousNotification;
     /**
-     * the max pool size for notifier threads - increase this for greater performance, decrease for smaller footprint
+     * Create a new <code>PublisherEngine</code> object.
      */
-    private final int mMaxPoolSize;
-    /**
-     * default max pool size for notifier threads
-     */
-    private static final int DEFAULT_MAX_POOL_SIZE = 20;    
-    /**
-     * Initializes the publisher threadpool if necessary.
-     */
-    private static synchronized void initializeThreadPool(int inMaxPoolSize)
+    public PublisherEngine(boolean inDoSynchronousNotification)
     {
-        if(sNotifierPool != null) {
-            return;
-        }
-        sNotifierPool = Executors.newFixedThreadPool(inMaxPoolSize);        
-    }  
+        doSynchronousNotification = inDoSynchronousNotification;
+    }    
     /**
      * Create a new <code>PublisherEngine</code> object.
      */
     public PublisherEngine()
     {
-        this(DEFAULT_MAX_POOL_SIZE);
+        this(false);
     }    
     /**
-     * Create a new <code>PublisherEngine</code> object.
-     * 
-     * @param inMaxPoolSize an <code>int</code> value
+     * Indicates whether the publisher is notifying synchronously.
+     *
+     * @return a <code>PublisherEngine</code> value
      */
-    public PublisherEngine(int inMaxPoolSize)
+    public boolean isSynchronousNotification()
     {
-        mSubscribers = new LinkedHashSet<ISubscriber>();
-        mMaxPoolSize = inMaxPoolSize;
-    }    
+        return doSynchronousNotification;
+    }
     /**
      * Advertise for publication the given object to all subscribers.
      * 
@@ -120,15 +109,6 @@ public final class PublisherEngine
         }
     }
     /**
-     * Gets the max pool size setting.
-     * 
-     * @return an <code>int</code> value indicating the maximum number of notifier threads the publisher will use
-     */
-    private int getMaxPoolSize()
-    {
-        return mMaxPoolSize;
-    }
-    /**
      * Perform the actual publication to subscribers.
      *
      * @param inData an <code>Object</code> value
@@ -137,13 +117,21 @@ public final class PublisherEngine
     private Future<Object> doPublish(Object inData)
     {
         SLF4JLoggerProxy.debug(this, "Publishing {} to subscribers", inData); //$NON-NLS-1$
-        initializeThreadPool(getMaxPoolSize());
         // hand the notification chore to a thread from the thread pool
         List<ISubscriber> subscribers;
         synchronized(mSubscribers) {
             subscribers = new ArrayList<ISubscriber>(mSubscribers);
         }
-        return sNotifierPool.submit(new PublisherEngineNotifier(subscribers,
-                                                                inData));
+        Future<Object> token = sNotifierPool.submit(new PublisherEngineNotifier(subscribers,
+                                                                                inData));
+        if(isSynchronousNotification()) {
+            try {
+                token.get();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(PublisherEngine.class,
+                                      e);
+            }
+        }
+        return token;
     }
 }

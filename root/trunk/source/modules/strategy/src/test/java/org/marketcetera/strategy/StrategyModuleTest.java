@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Properties;
 
 import org.junit.Test;
+import org.marketcetera.core.Util;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataFlowException;
@@ -640,8 +641,8 @@ public class StrategyModuleTest
         nonASCIIProperties.setProperty("key1",
                                        UnicodeData.HELLO_GR);
         // group the parameters together
-        final String[] parameterStrings = new String[] { null, "ab:c=d::ef:", StrategyModule.propertiesToString(emptyProperties),
-                                                         StrategyModule.propertiesToString(nonEmptyProperties), StrategyModule.propertiesToString(nonASCIIProperties) };
+        final String[] parameterStrings = new String[] { null, "ab:c=d::ef:", Util.propertiesToString(emptyProperties),
+                                                         Util.propertiesToString(nonEmptyProperties),Util.propertiesToString(nonASCIIProperties) };
         final Properties[] parameters = new Properties[] { null, emptyProperties, nonEmptyProperties, nonASCIIProperties };
         // cycle through all the permutations for the starting point for suggestions and orders (2 values each) and the value to set the destinations to
         //  (5 values each) and new parameters (4 values each) and parameters starting point (3 values each), for a total of 1200 test cases (2*2*5*5*4*3)
@@ -743,92 +744,6 @@ public class StrategyModuleTest
         }
     }
     /**
-     * Tests conversion of <code>String</code> objects to <code>Properties</code> objects.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void propertiesFromString()
-        throws Exception
-    {
-        String testString = null;
-        assertNull(StrategyModule.propertiesFromString(testString));
-        testString = "";
-        assertNull(StrategyModule.propertiesFromString(testString));
-        testString = "key=value";
-        Properties expectedResults = new Properties();
-        expectedResults.setProperty("key",
-                                    "value");
-        assertEquals(expectedResults,
-                     StrategyModule.propertiesFromString(testString));
-        testString += ":" + "key=value";
-        assertEquals(expectedResults,
-                     StrategyModule.propertiesFromString(testString));
-        expectedResults.setProperty(UnicodeData.HOUSE_AR,
-                                    UnicodeData.HELLO_GR);
-        testString += ":" + UnicodeData.HOUSE_AR + "=" + UnicodeData.HELLO_GR;
-        assertEquals(expectedResults,
-                     StrategyModule.propertiesFromString(testString));
-        expectedResults.setProperty("y",
-                                    "value");
-        testString += ":" + "ke:y=value";
-        assertEquals(expectedResults,
-                     StrategyModule.propertiesFromString(testString));
-        testString += ":" + "nothing";
-        assertEquals(expectedResults,
-                     StrategyModule.propertiesFromString(testString));
-        testString += ":" + "ke2=x=value2";
-        assertEquals(expectedResults,
-                     StrategyModule.propertiesFromString(testString));
-    }
-    /**
-     * Tests conversion of <code>Properties</code> objects to <code>String</code> objects. 
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void propertiesToString()
-        throws Exception
-    {
-        // this test works a little differently because the order of key/value pairs in the output is not guaranteed
-        // therefore, equality must be tested using a round-trip
-        Properties testProperties = new Properties();
-        String expectedResults = null;
-        assertNull(StrategyModule.propertiesToString(null));
-        assertNull(StrategyModule.propertiesToString(testProperties));
-        // single property
-        testProperties.setProperty("key",
-                                   "value");
-        expectedResults = "key=value";
-        assertEquals(StrategyModule.propertiesFromString(expectedResults),
-                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
-        // duplicate property
-        testProperties.setProperty("key",
-                                   "value");
-        assertEquals(StrategyModule.propertiesFromString(expectedResults),
-                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
-        // non-ASCII
-        testProperties.setProperty(UnicodeData.HOUSE_AR,
-                                    UnicodeData.HELLO_GR);
-        expectedResults += ":" + UnicodeData.HOUSE_AR + "=" + UnicodeData.HELLO_GR;
-        assertEquals(StrategyModule.propertiesFromString(expectedResults),
-                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
-        // malformed key
-        testProperties.setProperty("y",
-                                    "value");
-        expectedResults += ":" + "ke:y=value";
-        assertEquals(StrategyModule.propertiesFromString(expectedResults),
-                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
-        // missing value
-        expectedResults += ":" + "nothing";
-        assertEquals(StrategyModule.propertiesFromString(expectedResults),
-                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
-        // malformed value
-        expectedResults += ":" + "ke2=x=value2";
-        assertEquals(StrategyModule.propertiesFromString(expectedResults),
-                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
-    }
-    /**
      * Executes a single permutation of a strategy attribute get/set test.
      * 
      * @param inOrdersDestination a <code>String</code> value or null
@@ -873,7 +788,7 @@ public class StrategyModuleTest
             assertNull(mxBeanInterface.getParameters());
         } else {
             String propertiesString = mxBeanInterface.getParameters();
-            Properties actualProperties = StrategyModule.propertiesFromString(propertiesString);
+            Properties actualProperties = Util.propertiesFromString(propertiesString);
             assertEquals(actualProperties,
                          inStartingParameters);
         }
@@ -901,8 +816,8 @@ public class StrategyModuleTest
             assertNull(mxBeanInterface.getParameters());
         } else {
             String propertiesString = mxBeanInterface.getParameters();
-            Properties actualProperties = StrategyModule.propertiesFromString(propertiesString);
-            Properties expectedProperties = StrategyModule.propertiesFromString(inNewParameters);
+            Properties actualProperties = Util.propertiesFromString(propertiesString);
+            Properties expectedProperties = Util.propertiesFromString(inNewParameters);
             assertEquals(actualProperties,
                          expectedProperties);
         }

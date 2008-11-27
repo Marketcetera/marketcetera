@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 import static org.marketcetera.marketdata.Messages.INVALID_ID;
 import static org.marketcetera.marketdata.Messages.INVALID_REQUEST_TYPE;
 import static org.marketcetera.marketdata.Messages.INVALID_STRING_VALUE;
-import static org.marketcetera.marketdata.Messages.LINE_SEPARATOR_NOT_ALLOWED;
-import static org.marketcetera.marketdata.Messages.MISSING_REQUEST_TYPE;
 
 import java.util.Properties;
 
@@ -16,6 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.Util;
 import org.marketcetera.util.test.UnicodeData;
 
 /* $License$ */
@@ -110,8 +109,7 @@ public class DataRequestTest
                                                                           null,
                                                                           null,
                                                                           null);
-        new ExpectedTestFailure(IllegalArgumentException.class,
-                                MISSING_REQUEST_TYPE.getText())
+        new ExpectedTestFailure(NullPointerException.class)
         {
             @Override
             protected void execute()
@@ -368,7 +366,7 @@ public class DataRequestTest
     public void stringValueValidation()
         throws Exception
     {
-        final String var3Value = "stuff" + DataRequest.KEY_VALUE_DELIMITER + "other stuff"; 
+        final String var3Value = "stuff" + Util.KEY_VALUE_DELIMITER + "other stuff"; 
         MockDataRequestWithHashCodeAndEquals request1 = (MockDataRequestWithHashCodeAndEquals) DataRequest.newRequestFromString(constructStringRepresentationOfDataRequest(null,
                                                                                                                                                                            MockDataRequestWithHashCodeAndEquals.TYPE,
                                                                                                                                                                            "-1",
@@ -376,21 +374,6 @@ public class DataRequestTest
                                                                                                                                                                            var3Value));
         assertEquals("stuff",
                      request1.var3);
-        final String var3Value2 = "stuff" + DataRequest.LINE_SEPARATOR + "other stuff"; 
-        new ExpectedTestFailure(IllegalArgumentException.class,
-                                LINE_SEPARATOR_NOT_ALLOWED.getText())
-        {
-            @Override
-            protected void execute()
-                    throws Throwable
-            {
-                DataRequest.newRequestFromString(constructStringRepresentationOfDataRequest(null,
-                                                                                            MockDataRequestWithHashCodeAndEquals.TYPE,
-                                                                                            "-1",
-                                                                                            "false",
-                                                                                            var3Value2));
-            }
-        }.run();
     }
     @Test
     public void validateAndSetRequestDefaultsIfNecessary()
@@ -418,7 +401,7 @@ public class DataRequestTest
                            Long.toString(System.nanoTime()));
         output.setProperty(MockDataRequestWithHashCodeAndEquals.VAR3_KEY,
                            UnicodeData.HELLO_GR);
-        String request1String = DataRequest.propertiesToString(output);
+        String request1String = Util.propertiesToString(output);
         // see if we can construct a request from the properties string
         MockDataRequestWithHashCodeAndEquals request2 = (MockDataRequestWithHashCodeAndEquals)DataRequest.newRequestFromString(request1String);
         assertEquals(output.getProperty(MockDataRequestWithHashCodeAndEquals.VAR3_KEY),
@@ -478,17 +461,7 @@ public class DataRequestTest
                 DataRequest.validateStringValue(value[0]);
             }
         }.run();
-        value[0] = "some stuff " + DataRequest.KEY_VALUE_DELIMITER + "other stuff";
-        new ExpectedTestFailure(IllegalArgumentException.class,
-                                INVALID_STRING_VALUE.getText(value[0])) {
-            @Override
-            protected void execute()
-                throws Throwable
-            {
-                DataRequest.validateStringValue(value[0]);
-            }
-        }.run();
-        value[0] = "some stuff " + DataRequest.LINE_SEPARATOR + "other stuff";
+        value[0] = "some stuff " + Util.KEY_VALUE_DELIMITER + "other stuff";
         new ExpectedTestFailure(IllegalArgumentException.class,
                                 INVALID_STRING_VALUE.getText(value[0])) {
             @Override

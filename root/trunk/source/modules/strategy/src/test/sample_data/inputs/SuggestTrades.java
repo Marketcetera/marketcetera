@@ -63,9 +63,17 @@ public class SuggestTrades
             } else {
                 score = null;
             }
-            suggestTrade(suggestedOrder,
-                         score,
-                         getParameter("identifier"));
+            if(getParameter("doOrder") != null) {
+                if(getParameter("sendOrderShouldBeNull") != null) {
+                    sendOrder(null);
+                } else {
+                    sendOrder(suggestedOrder);
+                }
+            } else {
+                suggestTrade(suggestedOrder,
+                             score,
+                             getParameter("identifier"));
+            }
         }
     }
 }

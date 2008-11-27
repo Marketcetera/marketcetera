@@ -31,7 +31,12 @@ class RubyStrategy < Strategy
       end
       do_request_parameter_callbacks
       do_request_properties_callbacks
-      set_property("onStart",
+      if(get_parameter("shouldNotify") != nil) 
+          notify_low("low subject", Long.toString(System.nanoTime()))
+          notify_medium("medium subject", Long.toString(System.nanoTime()))
+          notify_high("high subject", Long.toString(System.nanoTime()))
+     end
+     set_property("onStart",
                    Long.toString(System.currentTimeMillis()))
   end
   def on_stop
