@@ -2,8 +2,11 @@ package org.marketcetera.strategy.ruby;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.notifications.Notification;
+import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
@@ -12,6 +15,7 @@ import org.marketcetera.strategy.RunningStrategy;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSingle;
 
 import quickfix.Message;
@@ -325,5 +329,110 @@ public class Strategy
     {
         sendMessage(inMessage,
                     inDestination);
+    }
+    /**
+     * Sends an order to all destinations to which orders are sent.
+     *
+     * @param inOrder an <code>OrderSingle</code> value
+     * @return an <code>OrderID</code> value representing the order sent
+     */
+    public final OrderID send_order(OrderSingle inOrder)
+    {
+        return sendOrder(inOrder);
+    }
+    /**
+     * Submits a request to cancel the <code>OrderSingle</code> with the given <code>OrderID</code>.
+     * 
+     * <p>The order must have been submitted by this strategy during this session or this call will
+     * have no effect.
+     *
+     * @param inOrderID an <code>OrderID</code> value
+     * @return a <code>boolean</code> value indicating whether the cancel request was submitted or not
+     */
+    public final boolean cancel_order(OrderID inOrderID)
+    {
+        return cancelOrder(inOrderID);
+    }
+    /**
+     * Submits a cancel-replace order for the given <code>OrderID</code> with the given <code>Order</code>. 
+     *
+     * <p>The order must have been submitted by this strategy during this session or this call will
+     * have no effect.
+     *
+     * @param inOrderID an <code>OrderID</code> value containing the order to cancel
+     * @param inNewOrder an <code>OrderSingle</code> value containing the order with which to replace the existing order
+     * @return an <code>OrderID</code> value containing the <code>OrderID</code> of the new order
+     */
+    public final OrderID cancel_replace(OrderID inOrderID,
+                                        OrderSingle inNewOrder)
+    {
+        return cancelReplace(inOrderID,
+                             inNewOrder);
+    }
+    /**
+     * Submits cancel requests for all <code>OrderSingle</code> objects created during this session.
+     * 
+     * <p>This method will make a best-effort attempt to cancel all orders.  If an attempt to cancel one order
+     * fails, that order will be skipped and the others will still be attempted in their turn.
+     * @return an <code>int</code> value containing the number of orders to cancel
+     */
+    public final int cancel_all_orders()
+    {
+        return cancelAllOrders();
+    }
+    /**
+     * Gets the <code>ExecutionReport</code> values received during the current session that
+     * match the given <code>OrderID</code>.
+     * 
+     * <p>Note that the <code>OrderID</code> must match an <code>OrderSingle</code> generated
+     * by this strategy during the current session.  If not, an empty list will be returned.
+     *
+     * @param inOrderID an <code>OrderID</code> value corresponding to an <code>OrderSingle</code>
+     *   generated during this session by this strategy via {@link #send_order(OrderSingle)} or {@link #cancel_replace(OrderID, OrderSingle)}.
+     * @return a <code>List&lt;ExecutionReport&gt;</code> value containing the <code>ExecutionReport</code> objects as limited according to
+     *   the conditions enumerated above
+     */
+    public final List<ExecutionReport> get_execution_reports(OrderID inOrderID)
+    {
+        return getExecutionReports(inOrderID);
+    }
+    /**
+     * Creates and issues a {@link Notification} at low priority.
+     *
+     * @param inSubject a <code>String</code> value
+     * @param inBody a <code>String</code> value
+     */
+    public final void notify_low(String inSubject,
+                                 String inBody)
+    {
+        NotificationManager.getNotificationManager().publish(Notification.low(inSubject,
+                                                                              inBody,
+                                                                              Strategy.class));
+    }
+    /**
+     * Creates and issues a {@link Notification} at medium priority.
+     *
+     * @param inSubject a <code>String</code> value
+     * @param inBody a <code>String</code> value
+     */
+    public final void notify_medium(String inSubject,
+                                    String inBody)
+    {
+        NotificationManager.getNotificationManager().publish(Notification.medium(inSubject,
+                                                                                 inBody,
+                                                                                 Strategy.class));
+    }
+    /**
+     * Creates and issues a {@link Notification} at high priority.
+     *
+     * @param inSubject a <code>String</code> value
+     * @param inBody a <code>String</code> value
+     */
+    public final void notify_high(String inSubject,
+                                  String inBody)
+    {
+        NotificationManager.getNotificationManager().publish(Notification.high(inSubject,
+                                                                               inBody,
+                                                                               Strategy.class));
     }
 }

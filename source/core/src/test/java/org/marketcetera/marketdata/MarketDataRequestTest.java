@@ -12,7 +12,6 @@ import static org.marketcetera.marketdata.Messages.INVALID_DEPTH;
 import static org.marketcetera.marketdata.Messages.INVALID_ID;
 import static org.marketcetera.marketdata.Messages.INVALID_STRING_VALUE;
 import static org.marketcetera.marketdata.Messages.INVALID_SYMBOLS;
-import static org.marketcetera.marketdata.Messages.LINE_SEPARATOR_NOT_ALLOWED;
 import static org.marketcetera.marketdata.Messages.MISSING_REQUEST_TYPE;
 
 import java.util.Arrays;
@@ -23,6 +22,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.Util;
 import org.marketcetera.marketdata.DataRequestTest.MockDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.RequestType;
 import org.marketcetera.marketdata.MarketDataRequest.UpdateType;
@@ -336,7 +336,7 @@ public class MarketDataRequestTest
                       UpdateType.INCREMENTAL_REFRESH,
                       MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
                                                                                                               null,
-                                                                                                              exchange + MarketDataRequest.KEY_VALUE_DELIMITER + extraStuff,
+                                                                                                              exchange + Util.KEY_VALUE_DELIMITER + extraStuff,
                                                                                                               "METC",
                                                                                                               null,
                                                                                                               null)));
@@ -356,21 +356,6 @@ public class MarketDataRequestTest
                                                                                                         null));
             }
         }.run();
-        // test the line separator
-        new ExpectedTestFailure(IllegalArgumentException.class,
-                                LINE_SEPARATOR_NOT_ALLOWED.getText()) {
-            @Override
-            protected void execute()
-                    throws Throwable
-            {
-                MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
-                                                                                                        null,
-                                                                                                        exchange + System.getProperty("line.separator") + extraStuff,
-                                                                                                        "METC",
-                                                                                                        null,
-                                                                                                        null));
-            }
-        }.run();
         verifyRequest(FULL_BOOK,
                       RequestType.SUBSCRIBE,
                       exchange,
@@ -378,7 +363,7 @@ public class MarketDataRequestTest
                       UpdateType.INCREMENTAL_REFRESH,
                       MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
                                                                                                               null,
-                                                                                                              exchange + MarketDataRequest.KEY_VALUE_DELIMITER + extraStuff,
+                                                                                                              exchange + Util.KEY_VALUE_DELIMITER + extraStuff,
                                                                                                               "METC",
                                                                                                               null,
                                                                                                               null)));
@@ -553,8 +538,7 @@ public class MarketDataRequestTest
                                                                                                         null));
                 }
         }.run();
-        new ExpectedTestFailure(IllegalArgumentException.class,
-                                INVALID_SYMBOLS.getText("")) {
+        new ExpectedTestFailure(IllegalArgumentException.class) {
             @Override
             protected void execute()
                     throws Throwable
@@ -562,21 +546,7 @@ public class MarketDataRequestTest
                 MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
                                                                                                         null,
                                                                                                         null,
-                                                                                                        MarketDataRequest.KEY_VALUE_DELIMITER,
-                                                                                                        null,
-                                                                                                        null));
-                }
-        }.run();
-        new ExpectedTestFailure(IllegalArgumentException.class,
-                                LINE_SEPARATOR_NOT_ALLOWED.getText()) {
-            @Override
-            protected void execute()
-                    throws Throwable
-            {
-                MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
-                                                                                                        null,
-                                                                                                        null,
-                                                                                                        System.getProperty("line.separator"),
+                                                                                                        Util.KEY_VALUE_DELIMITER,
                                                                                                         null,
                                                                                                         null));
                 }
@@ -759,7 +729,7 @@ public class MarketDataRequestTest
         final String[] values = new String[1];
         // don't have to test all parent issues as they're already tested, but do test one to make sure
         //  the parent validation gets called
-        values[0] = "some stuff" + DataRequest.KEY_VALUE_DELIMITER + " some other stuff";
+        values[0] = "some stuff" + Util.KEY_VALUE_DELIMITER + " some other stuff";
         new ExpectedTestFailure(IllegalArgumentException.class,
                                 INVALID_STRING_VALUE.getText(values[0])) {
             @Override

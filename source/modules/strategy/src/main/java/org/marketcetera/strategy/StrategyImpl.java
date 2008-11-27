@@ -92,7 +92,11 @@ class StrategyImpl
             return;
         }
         if(inData instanceof ExecutionReport) {
-            runningStrategy.onExecutionReport((ExecutionReport)inData);
+            if(runningStrategy instanceof AbstractRunningStrategy) {
+                ((AbstractRunningStrategy)runningStrategy).onExecutionReportRedirected((ExecutionReport)inData);
+            } else {
+                runningStrategy.onExecutionReport((ExecutionReport)inData);
+            }
             return;
         }
         if(inData instanceof TradeEvent) {

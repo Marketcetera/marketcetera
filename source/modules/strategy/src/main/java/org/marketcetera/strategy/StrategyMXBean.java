@@ -3,6 +3,7 @@ package org.marketcetera.strategy;
 import javax.management.MXBean;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.Util;
 import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.DisplayName;
 
@@ -24,18 +25,10 @@ import org.marketcetera.module.DisplayName;
 public interface StrategyMXBean
 {
     /**
-     * the delimiter used to distinguish key/value pairs in the string representation of parameters 
-     */
-    public static final String KEY_VALUE_DELIMITER = ":"; //$NON-NLS-1$
-    /**
-     * the separator used to separate key/value pairs in the string representation of parameters 
-     */
-    public static final String KEY_VALUE_SEPARATOR = "="; //$NON-NLS-1$
-    /**
      * Sets the strategy parameters. 
      *
      * <p>This method assumes that the <code>String</code> consists of a series of key/value pairs separated by
-     * the {@link StrategyMXBean#KEY_VALUE_DELIMITER}.  The key/value pairs themselves are separated by the {@link StrategyMXBean#KEY_VALUE_SEPARATOR}.
+     * the {@link Util#KEY_VALUE_DELIMITER}.  The key/value pairs themselves are separated by the {@link Util#KEY_VALUE_SEPARATOR}.
      * Any malformed entries are discarded.  A best-effort will be made to retain as many key/value pairs as possible.
      *
      * @param inParameters a <code>String</code> value or null.  If null or of zero-length, the current parameters are removed.
@@ -47,11 +40,11 @@ public interface StrategyMXBean
      * Returns the current strategy parameters.
      *
      * <p>This method returns a <code>String</code> containing a series of key/value pairs representing the strategy
-     * parameters.  Each key/value pair is separated by the {@link StrategyMXBean#KEY_VALUE_DELIMITER}.
-     * The pairs themselves are separated by {@link StrategyMXBean#KEY_VALUE_SEPARATOR}.
+     * parameters.  Each key/value pair is separated by the {@link Util#KEY_VALUE_DELIMITER}.
+     * The pairs themselves are separated by {@link Util#KEY_VALUE_SEPARATOR}.
      * 
      * <p>Note that if any of the keys or values of the <code>Properties</code> object contains either the
-     * {@link StrategyMXBean#KEY_VALUE_DELIMITER} or the {@link StrategyMXBean#KEY_VALUE_SEPARATOR} character, the resulting
+     * {@link Util#KEY_VALUE_DELIMITER} or the {@link Util#KEY_VALUE_SEPARATOR} character, the resulting
      * <code>String</code> will not be paresable with {@link #setParameters(String)}.
      *
      * @return a <code>String</code> value containing the current parameter settings or null if the current settings are empty.

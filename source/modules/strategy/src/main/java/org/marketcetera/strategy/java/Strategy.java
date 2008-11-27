@@ -1,6 +1,8 @@
 package org.marketcetera.strategy.java;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.notifications.Notification;
+import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
@@ -96,5 +98,45 @@ public class Strategy
     @Override
     public void onStop()
     {
+    }
+    // services start here
+    /**
+     * Creates and issues a {@link Notification} at low priority.
+     *
+     * @param inSubject a <code>String</code> value
+     * @param inBody a <code>String</code> value
+     */
+    protected final void notifyLow(String inSubject,
+                                   String inBody)
+    {
+        NotificationManager.getNotificationManager().publish(Notification.low(inSubject,
+                                                                              inBody,
+                                                                              Strategy.class));
+    }
+    /**
+     * Creates and issues a {@link Notification} at medium priority.
+     *
+     * @param inSubject a <code>String</code> value
+     * @param inBody a <code>String</code> value
+     */
+    protected final void notifyMedium(String inSubject,
+                                      String inBody)
+    {
+        NotificationManager.getNotificationManager().publish(Notification.medium(inSubject,
+                                                                                 inBody,
+                                                                                 Strategy.class));
+    }
+    /**
+     * Creates and issues a {@link Notification} at high priority.
+     *
+     * @param inSubject a <code>String</code> value
+     * @param inBody a <code>String</code> value
+     */
+    protected final void notifyHigh(String inSubject,
+                                    String inBody)
+    {
+        NotificationManager.getNotificationManager().publish(Notification.high(inSubject,
+                                                                               inBody,
+                                                                               Strategy.class));
     }
 }

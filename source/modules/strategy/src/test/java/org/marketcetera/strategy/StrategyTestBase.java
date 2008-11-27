@@ -6,14 +6,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
 
+import java.beans.ExceptionListener;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.JMX;
@@ -22,6 +26,12 @@ import javax.management.ObjectName;
 
 import org.junit.After;
 import org.junit.Before;
+import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientParameters;
+import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.OrderValidationException;
+import org.marketcetera.client.ReportListener;
+import org.marketcetera.client.dest.DestinationsStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -40,18 +50,26 @@ import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
 import quickfix.field.Side;
+import quickfix.field.TransactTime;
 
 /* $License$ */
 
@@ -66,7 +84,7 @@ public class StrategyTestBase
     extends ModuleTestBase
 {
     public static final File SAMPLE_STRATEGY_DIR = new File("src" + File.separator + "test" + File.separator + "sample_data",
-                                                            "inputs");   
+                                                            "inputs");
     /**
      * Tuple which describes the location and name of a strategy.
      *
@@ -118,8 +136,13 @@ public class StrategyTestBase
      */
     public static class MockRecorderModule
         extends Module
-        implements DataReceiver
+        implements DataReceiver, DataEmitter
     {
+        /**
+         * indicates if the module should emit execution reports when it receives OrderSingle objects
+         */
+        public static boolean shouldSendExecutionReports = true;
+        public static int ordersReceived = 0;
         /**
          * Create a new MockRecorderModule instance.
          *
@@ -158,7 +181,54 @@ public class StrategyTestBase
                 data.add(new DataReceived(inFlowID,
                                           inData));
             }
+            if(inData instanceof OrderSingle) {
+                if(shouldSendExecutionReports) {
+                    OrderSingle order = (OrderSingle)inData;
+                    try {
+                        List<ExecutionReport> executionReports = generateExecutionReports(order);
+                        synchronized(subscribers) {
+                            for(ExecutionReport executionReport : executionReports) {
+                                for(DataEmitterSupport subscriber : subscribers.values()) {
+                                    subscriber.send(executionReport);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new StopDataFlowException(e,
+                                                        null);
+                    }
+                }
+                ordersReceived += 1;
+            }
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
+         */
+        @Override
+        public void cancel(RequestID inRequestID)
+        {
+            synchronized(subscribers) {
+                subscribers.remove(inRequestID);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
+         */
+        @Override
+        public void requestData(DataRequest inRequest,
+                                DataEmitterSupport inRequester)
+                throws RequestDataException
+        {
+            synchronized(subscribers) {
+                subscribers.put(inRequester.getRequestID(),
+                                inRequester);
+            }
+        }
+        /**
+         * collection of subscribers interested in data emitter by this module
+         */
+        private final Map<RequestID,DataEmitterSupport> subscribers = new HashMap<RequestID,DataEmitterSupport>();
         /**
          * Resets the collection of data received.
          */
@@ -212,7 +282,6 @@ public class StrategyTestBase
                       true,
                       false);
             }
-    
             /* (non-Javadoc)
              * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
              */
@@ -462,6 +531,147 @@ public class StrategyTestBase
             }
         }
     }
+    public static class MockClient
+        implements Client
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addExceptionListener(java.beans.ExceptionListener)
+         */
+        @Override
+        public void addExceptionListener(ExceptionListener inArg0)
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addReportListener(org.marketcetera.client.ReportListener)
+         */
+        @Override
+        public void addReportListener(ReportListener inArg0)
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#close()
+         */
+        @Override
+        public void close()
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getDestinationsStatus()
+         */
+        @Override
+        public DestinationsStatus getDestinationsStatus()
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getLastConnectTime()
+         */
+        @Override
+        public Date getLastConnectTime()
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getParameters()
+         */
+        @Override
+        public ClientParameters getParameters()
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getPositionAsOf(java.util.Date, org.marketcetera.core.MSymbol)
+         */
+        @Override
+        public BigInteger getPositionAsOf(Date inArg0,
+                                          MSymbol inArg1)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getReportsSince(java.util.Date)
+         */
+        @Override
+        public ReportBase[] getReportsSince(Date inArg0)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#reconnect()
+         */
+        @Override
+        public void reconnect()
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#reconnect(org.marketcetera.client.ClientParameters)
+         */
+        @Override
+        public void reconnect(ClientParameters inArg0)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#removeExceptionListener(java.beans.ExceptionListener)
+         */
+        @Override
+        public void removeExceptionListener(ExceptionListener inArg0)
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#removeReportListener(org.marketcetera.client.ReportListener)
+         */
+        @Override
+        public void removeReportListener(ReportListener inArg0)
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderSingle)
+         */
+        @Override
+        public void sendOrder(OrderSingle inArg0)
+                throws ConnectionException, OrderValidationException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderReplace)
+         */
+        @Override
+        public void sendOrder(OrderReplace inArg0)
+                throws ConnectionException, OrderValidationException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderCancel)
+         */
+        @Override
+        public void sendOrder(OrderCancel inArg0)
+                throws ConnectionException, OrderValidationException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#sendOrderRaw(org.marketcetera.trade.FIXOrder)
+         */
+        @Override
+        public void sendOrderRaw(FIXOrder inArg0)
+                throws ConnectionException, OrderValidationException
+        {
+        }
+    }
     /**
      * Run before each test.
      *
@@ -471,6 +681,9 @@ public class StrategyTestBase
     public void setup()
         throws Exception
     {
+        executionReportMultiplicity = 1;
+        MockRecorderModule.shouldSendExecutionReports = true;
+        MockRecorderModule.ordersReceived = 0;
         moduleManager = new ModuleManager();
         moduleManager.init();
         ordersURN = moduleManager.createModule(MockRecorderModule.Factory.PROVIDER_URN);
@@ -484,6 +697,18 @@ public class StrategyTestBase
         runningModules.add(ordersURN);
         runningModules.add(bogusDataFeedURN);
         setPropertiesToNull();
+        tradeEvent = new TradeEvent(System.nanoTime(),
+                                    System.currentTimeMillis(),
+                                    "METC",
+                                    "Q",
+                                    new BigDecimal("1000.25"),
+                                    new BigDecimal("1000"));
+        askEvent = new AskEvent(System.nanoTime(),
+                                System.currentTimeMillis(),
+                                "METC",
+                                "Q",
+                                new BigDecimal("100.00"),
+                                new BigDecimal("10000"));
     }
     /**
      * Run after each test.
@@ -504,6 +729,77 @@ public class StrategyTestBase
         moduleManager.deleteModule(ordersURN);
         moduleManager.deleteModule(suggestionsURN);
         moduleManager.stop();
+    }
+    /**
+     * Generates an <code>ExecutionReport</code> from the given <code>OrderSingle</code>.
+     *
+     * @param inOrder an <code>OrderSingle</code> value
+     * @return an <code>ExecutionReport</code> value
+     * @throws Exception if an error exists
+     */
+    protected static List<ExecutionReport> generateExecutionReports(OrderSingle inOrder)
+        throws Exception
+    {
+        int multiplicity = executionReportMultiplicity;
+        List<ExecutionReport> reports = new ArrayList<ExecutionReport>();
+        if(inOrder.getQuantity() != null) {
+            BigDecimal totalQuantity = new BigDecimal(inOrder.getQuantity().toString());
+            BigDecimal lastQuantity = BigDecimal.ZERO;
+            for(int iteration=0;iteration<multiplicity-1;iteration++) {
+                BigDecimal thisQuantity = totalQuantity.subtract(totalQuantity.divide(new BigDecimal(Integer.toString(multiplicity))));
+                totalQuantity = totalQuantity.subtract(thisQuantity);
+                Message rawExeReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport(inOrder.getOrderID().toString(),
+                                                                                               inOrder.getOrderID().toString(),
+                                                                                               "execID",
+                                                                                               OrdStatus.PARTIALLY_FILLED,
+                                                                                               Side.BUY,
+                                                                                               thisQuantity,
+                                                                                               inOrder.getPrice(),
+                                                                                               lastQuantity,
+                                                                                               inOrder.getPrice(),
+                                                                                               inOrder.getQuantity(),
+                                                                                               inOrder.getPrice(),
+                                                                                               inOrder.getSymbol(),
+                                                                                               inOrder.getAccount());
+                rawExeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
+                reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
+                                                                                               inOrder.getDestinationID(),
+                                                                                               Originator.Destination));
+                lastQuantity = thisQuantity;
+            }
+            Message rawExeReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport(inOrder.getOrderID().toString(),
+                                                                                           inOrder.getOrderID().toString(),
+                                                                                           "execID",
+                                                                                           OrdStatus.FILLED,
+                                                                                           Side.BUY,
+                                                                                           totalQuantity,
+                                                                                           inOrder.getPrice(),
+                                                                                           lastQuantity,
+                                                                                           inOrder.getPrice(),
+                                                                                           inOrder.getQuantity(),
+                                                                                           inOrder.getPrice(),
+                                                                                           inOrder.getSymbol(),
+                                                                                           inOrder.getAccount());
+            rawExeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
+            reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
+                                                                                           inOrder.getDestinationID(),
+                                                                                           Originator.Destination));
+        }
+        return reports;
+    }
+    /**
+     * Extracts the date used to generate an order from a running strategy, if applicable.
+     * 
+     * @return a <code>Date</code> value used to generate the most recent order in a running strategy or the current time if none exists
+     */
+    protected static Date extractTransactTimeFromRunningStrategy()
+    {
+        String transactTimeString = AbstractRunningStrategy.getProperty("transactTime");
+        Date transactTime = new Date();
+        if(transactTimeString != null) {
+            transactTime = new Date(Long.parseLong(transactTimeString));
+        }
+        return transactTime;
     }
     /**
      * Verifies that a strategy module can start and stop with the given parameters.
@@ -628,6 +924,49 @@ public class StrategyTestBase
                                   true);
     }
     /**
+     * Gets the first strategy in the list of strategies currently running.
+     *
+     * @return a <code>StrategyImpl</code> value
+     */
+    protected final StrategyImpl getFirstRunningStrategy()
+    {
+        return getRunningStrategy(0);
+    }
+    /**
+     * Gets the strategy and the given index in the list of strategies currently running.
+     *
+     * @param index an <code>int</code> value containing a zero-based index
+     * @return a <code>StrategyImpl</code> value
+     */
+    protected final StrategyImpl getRunningStrategy(int index)
+    {
+        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
+        StrategyImpl runningStrategy = runningStrategies.iterator().next();
+        for(int i=0;i<=index;i++) {
+            runningStrategy = runningStrategies.iterator().next();
+        }
+        return runningStrategy;
+    }
+    /**
+     * Gets the first strategy in the list of strategies currently running.
+     *
+     * @return an <code>AbstractRunningStrategy</code> value
+     */
+    protected final AbstractRunningStrategy getFirstRunningStrategyAsAbstractRunningStrategy()
+    {
+        return getRunningStrategyAsAbstractRunningStrategy(0);
+    }
+    /**
+     * Gets the strategy and the given index in the list of strategies currently running.
+     *
+     * @param index an <code>int</code> value containing a zero-based index
+     * @return an <code>AbstractRunningStrategy</code> value
+     */
+    protected final AbstractRunningStrategy getRunningStrategyAsAbstractRunningStrategy(int index)
+    {
+        return (AbstractRunningStrategy)getRunningStrategy(index).getRunningStrategy();
+    }
+    /**
      * global singleton module manager
      */
     protected ModuleManager moduleManager;
@@ -651,4 +990,16 @@ public class StrategyTestBase
      * URN for market data provider
      */
     protected final ModuleURN bogusDataFeedURN = BogusFeedModuleFactory.INSTANCE_URN;
+    /**
+     * trade event with generic information
+     */
+    protected TradeEvent tradeEvent;
+    /**
+     * ask event with generic information
+     */
+    protected AskEvent askEvent;
+    /**
+     * determines how many execution reports should be produced for each order received
+     */
+    protected static int executionReportMultiplicity = 1;
 }

@@ -3,10 +3,12 @@ package org.marketcetera.strategy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -18,7 +20,9 @@ import java.util.concurrent.Callable;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.event.AskEvent;
+import org.marketcetera.core.notifications.NotificationManager;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.BidEvent;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataFlowID;
@@ -29,12 +33,15 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
 import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TypesTestBase;
 
 import quickfix.Message;
@@ -436,13 +443,9 @@ public abstract class LanguageTestBase
                                "true");
         properties.setProperty("requestID",
                                Long.toString(id));
-        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
-        // should be only one running strategy, makes the job easier to find it
-        assertEquals(1,
-                     runningStrategies.size());
         // execute the onCallback method in the running strategy to force the market data
         //  request cancel
-        runningStrategies.iterator().next().getRunningStrategy().onCallback(this);
+        getFirstRunningStrategyAsAbstractRunningStrategy().onCallback(this);
         // collect more market data, or, give it the chance to, anyway
         Thread.sleep(5000);
         // make sure no more data was received
@@ -474,13 +477,9 @@ public abstract class LanguageTestBase
                                "true");
         properties.setProperty("requestID",
                                Long.toString(System.currentTimeMillis()));
-        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
-        // should be only one running strategy, makes the job easier to find it
-        assertEquals(1,
-                     runningStrategies.size());
         // execute the onCallback method in the running strategy to force the market data
         //  request cancel
-        runningStrategies.iterator().next().getRunningStrategy().onCallback(this);
+        getFirstRunningStrategyAsAbstractRunningStrategy().onCallback(this);
         // no error should result from this
         // plumb the faux market data provider to the strategy to verify the strategy
         //  is still working
@@ -1063,15 +1062,9 @@ public abstract class LanguageTestBase
         verifyPropertyNonNull("onAsk");
         // still no order
         assertTrue(orderRecorder.getDataReceived().isEmpty());
-        // suggestion now gets through (after async wait)
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return suggestionRecorder.getDataReceived().size() == 1;
-            }
-        });
+        // suggestion now gets through
+        assertEquals(1,
+                     suggestionRecorder.getDataReceived().size());
         // reset
         setPropertiesToNull();
         suggestionRecorder.resetDataReceived();
@@ -1081,14 +1074,8 @@ public abstract class LanguageTestBase
         doSuccessfulStartTestNoVerification(strategyURN);
         // onAsk still goes through, and the suggestions goes through, but orders won't until the strategy is cycled
         verifyPropertyNonNull("onAsk");
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return suggestionRecorder.getDataReceived().size() == 1;
-            }
-        });
+        assertEquals(1,
+                     suggestionRecorder.getDataReceived().size());
         assertTrue(orderRecorder.getDataReceived().isEmpty());
         // reset
         setPropertiesToNull();
@@ -1101,22 +1088,10 @@ public abstract class LanguageTestBase
         // onAsk set again
         verifyPropertyNonNull("onAsk");
         // order and suggestion got through
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return suggestionRecorder.getDataReceived().size() == 1;
-            }
-        });
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return orderRecorder.getDataReceived().size() == 1;
-            }
-        });
+        assertEquals(1,
+                     suggestionRecorder.getDataReceived().size());
+        assertEquals(1,
+                     orderRecorder.getDataReceived().size());
         // now make them all go away
         strategyProxy.setParameters(null);
         strategyProxy.setOrdersDestination(null);
@@ -1169,16 +1144,6 @@ public abstract class LanguageTestBase
         // strategies have now emitted their suggestions, measure the results
         final MockRecorderModule strategy1Recorder = MockRecorderModule.Factory.recorders.get(suggestionsURN);
         final MockRecorderModule strategy2Recorder = MockRecorderModule.Factory.recorders.get(ordersURN);
-        // the data is going to come in asynchronously, so wait until the recorder admits to receiving data
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                throws Exception
-            {
-                return strategy1Recorder.getDataReceived().size() == 1 &&
-                       strategy2Recorder.getDataReceived().size() == 1;
-            }
-        });
         // each strategy should have received one and only one suggestion
         assertEquals(1,
                      strategy1Recorder.getDataReceived().size());
@@ -1212,17 +1177,402 @@ public abstract class LanguageTestBase
                                                            null));
     }
     /**
+     * Tests a strategy's ability to emit notifications.
      *
-     *
-     * @return
+     * @throws Exception if an error occurs
      */
-    protected abstract StrategyCoordinates getPart1Strategy();
+    @Test
+    public void notifications()
+        throws Exception
+    {
+        // subscribe to notifications
+        final List<Object> publications = new ArrayList<Object>();
+        NotificationManager.getNotificationManager().subscribe(new ISubscriber() {
+            @Override
+            public boolean isInteresting(Object inData)
+            {
+                return true;
+            }
+            @Override
+            public void publishTo(Object inData)
+            {
+                publications.add(inData);
+            }
+        });
+        // create a strategy that can emit notifications
+        StrategyCoordinates strategy = getStrategyCompiles();
+        Properties parameters = new Properties();
+        parameters.setProperty("shouldNotify",
+                               "true");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return publications.size() == 3;
+            }
+        });
+    }
     /**
-    *
-    *
-    * @return
-    */
-   protected abstract StrategyCoordinates getPart2Strategy();
+     * Test a strategy's ability to create and send orders.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void orders()
+        throws Exception
+    {
+        List<OrderSingle> cumulativeOrders = new ArrayList<OrderSingle>();
+        ModuleURN strategy = generateOrders(getOrdersStrategy(),
+                                            ordersURN);
+        // null order
+        AbstractRunningStrategy.setProperty("orderShouldBeNull",
+                                            "true");
+        doOrderTest(strategy,
+                    new OrderSingle[0],
+                    cumulativeOrders);
+        // reset the make-a-null-order flag
+        AbstractRunningStrategy.getProperties().clear();
+        // create the expected order we'll use as a model for all the test
+        OrderSingle expectedOrder = Factory.getInstance().createOrderSingle();
+        cumulativeOrders.add(expectedOrder);
+        // add an account
+        AbstractRunningStrategy.setProperty("account",
+                                            "some account");
+        expectedOrder.setAccount("some account");
+        // add order type
+        AbstractRunningStrategy.setProperty("orderType",
+                                            OrderType.Market.name());
+        expectedOrder.setOrderType(OrderType.Market);
+        // add price
+        AbstractRunningStrategy.setProperty("price",
+                                            "100.23");
+        expectedOrder.setPrice(new BigDecimal("100.23"));
+        // add quantity
+        AbstractRunningStrategy.setProperty("quantity",
+                                            "10000");
+        expectedOrder.setQuantity(new BigDecimal("10000"));
+        // add side
+        AbstractRunningStrategy.setProperty("side",
+                                            Side.Buy.name());
+        expectedOrder.setSide(Side.Buy);
+        // add symbol
+        AbstractRunningStrategy.setProperty("symbol",
+                                            "METC");
+        expectedOrder.setSymbol(new MSymbol("METC"));     
+        doOrderTest(strategy,
+                    new OrderSingle[] { expectedOrder },
+                    cumulativeOrders);
+        // now do another couple of runs to test the order tracking feature
+        OrderSingle expectedOrder2 = Factory.getInstance().createOrderSingle();
+        AbstractRunningStrategy.getProperties().clear();
+        AbstractRunningStrategy.setProperty("account",
+                                            "some other account");
+        expectedOrder2.setAccount("some other account");
+        AbstractRunningStrategy.setProperty("price",
+                                            "400.50");
+        expectedOrder2.setPrice(new BigDecimal("400.50"));
+        AbstractRunningStrategy.setProperty("symbol",
+                                            "GOOG");
+        expectedOrder2.setSymbol(new MSymbol("GOOG"));
+        AbstractRunningStrategy.setProperty("side",
+                                            Side.SellShort.name());
+        expectedOrder2.setSide(Side.SellShort);
+        cumulativeOrders.add(expectedOrder2);
+        doOrderTest(strategy,
+                    new OrderSingle[] { expectedOrder2 },
+                    cumulativeOrders);
+        // three time's a charm
+        OrderSingle expectedOrder3 = Factory.getInstance().createOrderSingle();
+        AbstractRunningStrategy.getProperties().clear();
+        AbstractRunningStrategy.setProperty("account",
+                                            "still another account");
+        expectedOrder3.setAccount("still another account");
+        AbstractRunningStrategy.setProperty("price",
+                                            "10000.25");
+        expectedOrder3.setPrice(new BigDecimal("10000.25"));
+        AbstractRunningStrategy.setProperty("symbol",
+                                            "JAVA");
+        expectedOrder3.setSymbol(new MSymbol("JAVA"));
+        AbstractRunningStrategy.setProperty("side",
+                                            Side.Sell.name());
+        expectedOrder3.setSide(Side.Sell);
+        cumulativeOrders.add(expectedOrder3);
+        doOrderTest(strategy,
+                    new OrderSingle[] { expectedOrder3 },
+                    cumulativeOrders);
+        // cycle the strategy, proving that cumulative orders gets reset
+        // this will prevent the strategy from sending an order when we next execute the test
+        AbstractRunningStrategy.setProperty("orderShouldBeNull",
+                                            "true");
+        // restart and make sure no orders are in this session
+        moduleManager.stop(strategy);
+        moduleManager.start(strategy);
+        cumulativeOrders.clear();
+        doOrderTest(strategy,
+                    new OrderSingle[] { },
+                    cumulativeOrders);
+    }
+    /**
+     * Tests a strategy's ability to retrieve <code>ExecutionReport</code> values related to its own orders.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void executionReports()
+        throws Exception
+    {
+        // create a strategy that sends its orders to a known module that can also emit execution reports
+        generateOrders(getOrdersStrategy(),
+                       ordersURN);
+        doExecutionReportTest(0,
+                              false);
+       // create an order and have the strategy submit it
+        MockRecorderModule.shouldSendExecutionReports = false;
+        doExecutionReportTest(0,
+                              true);
+        MockRecorderModule.shouldSendExecutionReports = true;
+        doExecutionReportTest(1,
+                              true);
+        // test an order that is split into several execution reports
+        StrategyTestBase.executionReportMultiplicity = 4;
+        doExecutionReportTest(4,
+                              true);
+    }
+    /**
+     * Tests a strategy's ability to cancel all orders submitted.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void cancelAllOrders()
+        throws Exception
+    {
+        // cancel 0 orders
+        ModuleURN strategy = generateOrders(getOrdersStrategy(),
+                                            ordersURN);
+        AbstractRunningStrategy runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        AbstractRunningStrategy.setProperty("cancelAll",
+                                            "true");
+        // trigger cancel
+        runningStrategy.onTrade(tradeEvent);
+        assertEquals(AbstractRunningStrategy.getProperty("ordersCanceled"),
+                     "0");
+        // create an order to cancel
+        runningStrategy.onAsk(askEvent);
+        // trigger cancel
+        runningStrategy.onTrade(tradeEvent);
+        assertEquals(AbstractRunningStrategy.getProperty("ordersCanceled"),
+                     "1");
+        // create two orders to cancel
+        runningStrategy.onAsk(askEvent);
+        runningStrategy.onAsk(askEvent);
+        // trigger cancel
+        runningStrategy.onTrade(tradeEvent);
+        assertEquals("2",
+                     AbstractRunningStrategy.getProperty("ordersCanceled"));
+        // submit another order
+        AbstractRunningStrategy.setProperty("ordersCanceled",
+                                            "0");
+        runningStrategy.onAsk(askEvent);
+        // cycle the module to get a fresh session
+        moduleManager.stop(strategy);
+        moduleManager.start(strategy);
+        // trigger a cancel (should do nothing)
+        runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        runningStrategy.onTrade(tradeEvent);
+        assertEquals("0",
+                     AbstractRunningStrategy.getProperty("ordersCanceled"));
+    }
+    /**
+     * Provides a more in-depth test of strategy order cancel involving {@link ExecutionReport} objects.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void cancelSingleOrder()
+        throws Exception
+    {
+        // set up data for the orders to be created
+        // set price
+        AbstractRunningStrategy.setProperty("price",
+                                            "100.23");
+        // add quantity
+        AbstractRunningStrategy.setProperty("quantity",
+                                            "10000");
+        // add side
+        AbstractRunningStrategy.setProperty("side",
+                                            Side.Buy.name());
+        // add symbol
+        AbstractRunningStrategy.setProperty("symbol",
+                                            "METC");
+        // try to cancel an order with a null orderID
+        ModuleURN strategy = generateOrders(getOrdersStrategy(),
+                                            ordersURN);
+        AbstractRunningStrategy runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        assertNull(AbstractRunningStrategy.getProperty("orderCanceled"));
+        runningStrategy.onOther(this);
+        assertEquals("false",
+                     AbstractRunningStrategy.getProperty("orderCanceled"));
+        // now for an orderID that does not match a submitted order
+        AbstractRunningStrategy.setProperty("orderCanceled",
+                                            "");
+        runningStrategy.onOther(new OrderID("this-order-does-not-exist-" + System.nanoTime()));
+        assertEquals("false",
+                     AbstractRunningStrategy.getProperty("orderCanceled"));
+        // submit an order
+        assertNull(AbstractRunningStrategy.getProperty("orderID"));
+        runningStrategy.onAsk(askEvent);
+        String orderIDString = AbstractRunningStrategy.getProperty("orderID"); 
+        assertNotNull(orderIDString);
+        // start and stop the strategy
+        moduleManager.stop(strategy);
+        moduleManager.start(strategy);
+        AbstractRunningStrategy.setProperty("orderCanceled",
+                                            "");
+        runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        // make sure that order cannot be canceled now
+        runningStrategy.onOther(new OrderID(orderIDString));
+        assertEquals("false",
+                     AbstractRunningStrategy.getProperty("orderCanceled"));
+        // submit an order that will produce a single ER
+        AbstractRunningStrategy.setProperty("executionReportsReceived",
+                                            "0");
+        AbstractRunningStrategy.setProperty("orderCanceled",
+                                            "");
+        MockRecorderModule.shouldSendExecutionReports = true;
+        StrategyTestBase.executionReportMultiplicity = 1;
+        runningStrategy.onAsk(askEvent);
+        assertEquals("1",
+                     AbstractRunningStrategy.getProperty("executionReportsReceived"));
+        // cancel that order (using the received ER)
+        orderIDString = AbstractRunningStrategy.getProperty("orderID"); 
+        assertNotNull(orderIDString);        
+        runningStrategy.onOther(new OrderID(orderIDString));
+        assertEquals("true",
+                     AbstractRunningStrategy.getProperty("orderCanceled"));
+        // submit an order that will produce multiple ERs
+        AbstractRunningStrategy.setProperty("executionReportsReceived",
+                                            "0");
+        AbstractRunningStrategy.setProperty("orderCanceled",
+                                            "");
+        StrategyTestBase.executionReportMultiplicity = 10;
+        runningStrategy.onAsk(askEvent);
+        assertEquals("10",
+                     AbstractRunningStrategy.getProperty("executionReportsReceived"));
+        // cancel that order (using the received ER)
+        orderIDString = AbstractRunningStrategy.getProperty("orderID"); 
+        assertNotNull(orderIDString);        
+        runningStrategy.onOther(new OrderID(orderIDString));
+        assertEquals("true",
+                     AbstractRunningStrategy.getProperty("orderCanceled"));
+    }
+    /**
+     * Tests a strategy's ability to cancel an existing order and replace it with a new one.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void cancelReplace()
+        throws Exception
+    {
+        // for now, forbid the creation of execution reports
+        MockRecorderModule.shouldSendExecutionReports = false;
+        // set up data for the orders to be created
+        // set price
+        AbstractRunningStrategy.setProperty("price",
+                                            "100.23");
+        // add quantity
+        AbstractRunningStrategy.setProperty("quantity",
+                                            "10000");
+        // add side
+        AbstractRunningStrategy.setProperty("side",
+                                            Side.Buy.name());
+        // add symbol
+        AbstractRunningStrategy.setProperty("symbol",
+                                            "METC");
+        // add time-in-force
+        AbstractRunningStrategy.setProperty("timeInForce",
+                                            TimeInForce.Day.toString());
+        // create a strategy to use as our test vehicle
+        ModuleURN strategy = generateOrders(getOrdersStrategy(),
+                                            ordersURN);
+        AbstractRunningStrategy runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        // submit an order
+        assertNull(AbstractRunningStrategy.getProperty("orderID"));
+        runningStrategy.onAsk(askEvent);
+        // save the orderID of the order we created, we'll need it later
+        String orderIDString = AbstractRunningStrategy.getProperty("orderID"); 
+        assertNotNull(orderIDString);
+        // try to cancel/replace with a null OrderID
+        AbstractRunningStrategy.setProperty("orderID",
+                                            null);
+        AbstractRunningStrategy.setProperty("newOrderID",
+                                            "");
+        OrderSingle newOrder = Factory.getInstance().createOrderSingle();
+        assertNotNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        newOrder.setPrice(new BigDecimal("1000.50"));
+        newOrder.setQuantity(new BigDecimal("1"));
+        newOrder.setTimeInForce(TimeInForce.GoodTillCancel);
+        // try to cancel/replace with a null OrderID
+        runningStrategy.onOther(newOrder);
+        assertNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        // try to cancel/replace with an unsubmitted OrderID
+        OrderID unsubmittedOrderID = new OrderID("this-order-id-does-not-exist-" + System.nanoTime());
+        AbstractRunningStrategy.setProperty("orderID",
+                                            unsubmittedOrderID.toString());
+        AbstractRunningStrategy.setProperty("newOrderID",
+                                            "");
+        assertNotNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        runningStrategy.onOther(newOrder);
+        assertNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        // try with a null replacement order
+        // put back the orderID of the order to replace
+        AbstractRunningStrategy.setProperty("orderID",
+                                            orderIDString);
+        AbstractRunningStrategy.setProperty("newOrderID",
+                                            "");
+        runningStrategy.onOther("");
+        assertNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        // now allow the cancel/replace to succeed
+        runningStrategy.onOther(newOrder);
+        assertNotNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        // hooray, it worked
+        // turn on execution reports
+        MockRecorderModule.shouldSendExecutionReports = true;
+        StrategyTestBase.executionReportMultiplicity = 20;
+        // re-submit the order
+        runningStrategy.onAsk(askEvent);
+        assertNotNull(AbstractRunningStrategy.getProperty("orderID"));
+        assertFalse(orderIDString.equals(AbstractRunningStrategy.getProperty("orderID")));
+        AbstractRunningStrategy.setProperty("newOrderID",
+                                            null);
+        // cancel/replace again (this time using execution reports)
+        runningStrategy.onOther(newOrder);
+        assertNotNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        // submit an order again
+        AbstractRunningStrategy.setProperty("orderID",
+                                            null);
+        runningStrategy.onAsk(askEvent);
+        orderIDString = AbstractRunningStrategy.getProperty("orderID"); 
+        assertNotNull(orderIDString);
+        // cycle the strategy
+        moduleManager.stop(strategy);
+        moduleManager.start(strategy);
+        runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        AbstractRunningStrategy.setProperty("newOrderID",
+                                            null);
+        // try to cancel/replace again, won't work because the order to be replaced was in the last strategy session (before the stop)
+        runningStrategy.onOther(newOrder);
+        assertNull(AbstractRunningStrategy.getProperty("newOrderID"));
+    }
     /**
      * Gets the language to use for this test.
      *
@@ -1278,6 +1628,30 @@ public abstract class LanguageTestBase
      */
     protected abstract StrategyCoordinates getMessageStrategy();
     /**
+     * Get a strategy that sends orders.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getOrdersStrategy();
+    /**
+     * Gets a strategy that defines and calls into a helper class. 
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getPart1Strategy();
+    /**
+     * Get a strategy that redefines the class and helper defined in {@link #getPart1Strategy()}. 
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getPart1RedefinedStrategy();
+    /**
+     * Get a strategy that complements the classes defined in {@link #getPart1Strategy()}. 
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getPart2Strategy();
+    /**
      * Starts a strategy module which generates <code>FIX</code> messages and measures them against the
      * give expected results.  
      *
@@ -1294,15 +1668,6 @@ public abstract class LanguageTestBase
         final MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(suggestionReceiver);
         assertNotNull("Must be able to find the recorder created",
                       recorder);
-        // the data is going to come in asynchronously, so wait until the recorder admits to receiving data
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                throws Exception
-            {
-                return recorder.getDataReceived().size() == inExpectedOrders.length;
-            }
-        });
         List<DataReceived> messages = recorder.getDataReceived();
         assertEquals("The number of expected messages does not match the number of actual messages",
                      inExpectedOrders.length,
@@ -1355,15 +1720,6 @@ public abstract class LanguageTestBase
         final MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(suggestionReceiver);
         assertNotNull("Must be able to find the recorder created",
                       recorder);
-        // the data is going to come in asynchronously, so wait until the recorder admits to receiving data
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                throws Exception
-            {
-                return recorder.getDataReceived().size() == inExpectedSuggestions.length;
-            }
-        });
         List<DataReceived> suggestions = recorder.getDataReceived();
         assertEquals("The number of expected suggestions does not match the number of actual suggestions",
                      inExpectedSuggestions.length,
@@ -1371,9 +1727,112 @@ public abstract class LanguageTestBase
         int index = 0;
         for(DataReceived datum : suggestions) {
             TypesTestBase.assertOrderSuggestionEquals(inExpectedSuggestions[index++],
-                                                      (OrderSingleSuggestion)datum.getData(), true);
+                                                      (OrderSingleSuggestion)datum.getData(),
+                                                      true);
         }
         recorder.resetDataReceived();
+    }
+    /**
+     * Performs a single iteration of an <code>ExecutionReport</code> test. 
+     *
+     * @param inExecutionReportCount an <code>int</code> value containing the number of execution reports expected
+     * @param inSendOrders a <code>boolean</code> value indicating if the orders should be submitted or not (simulate failure)
+     * @throws Exception if an error occurs
+     */
+    private void doExecutionReportTest(final int inExecutionReportCount,
+                                       boolean inSendOrders)
+        throws Exception
+    {
+        AbstractRunningStrategy.setProperty("executionReportCount",
+                                            "0");
+        AbstractRunningStrategy.setProperty("price",
+                                            "1000");
+        AbstractRunningStrategy.setProperty("quantity",
+                                            "500");
+        AbstractRunningStrategy.setProperty("side",
+                                            Side.Sell.toString());
+        AbstractRunningStrategy.setProperty("symbol",
+                                            "METC");
+        // generate expected order
+        List<ExecutionReport> expectedExecutionReports = new ArrayList<ExecutionReport>();
+        StrategyImpl runningStrategy = getFirstRunningStrategy();
+        OrderID orderID = null;
+        if(inSendOrders) {
+            // this will trigger the strategy to submit an order
+            runningStrategy.dataReceived(askEvent);
+            // generate expected result
+            OrderSingle expectedOrder = Factory.getInstance().createOrderSingle();
+            expectedOrder.setPrice(new BigDecimal("1000"));
+            expectedOrder.setQuantity(new BigDecimal("500"));
+            expectedOrder.setSide(Side.Sell);
+            expectedOrder.setSymbol(new MSymbol("METC"));
+            String orderIDString = AbstractRunningStrategy.getProperty("orderID");
+            if(orderIDString != null) {
+                orderID = new OrderID(orderIDString);
+                expectedOrder.setOrderID(new OrderID(orderIDString));
+            }
+            if(MockRecorderModule.shouldSendExecutionReports) {
+                expectedExecutionReports.addAll(generateExecutionReports(expectedOrder));
+            }
+        }
+        runningStrategy.dataReceived(new BidEvent(System.nanoTime(),
+                                                  System.currentTimeMillis(),
+                                                  "METC",
+                                                  "Q",
+                                                  new BigDecimal("100.00"),
+                                                  new BigDecimal("10000")));
+        assertEquals(inExecutionReportCount,
+                     Integer.parseInt(AbstractRunningStrategy.getProperty("executionReportCount")));
+        List<ExecutionReport> actualExecutionReports = ((AbstractRunningStrategy)runningStrategy.getRunningStrategy()).getExecutionReports(orderID);
+        assertEquals(expectedExecutionReports.size(),
+                     actualExecutionReports.size());
+        int index = 0;
+        for(ExecutionReport actualExecutionReport : actualExecutionReports) {
+            TypesTestBase.assertExecReportEquals(expectedExecutionReports.get(index++),
+                                                 actualExecutionReport);
+        }
+        AbstractRunningStrategy.getProperties().clear();
+        MockRecorderModule.ordersReceived = 0;    
+    }
+    /**
+     * Starts a strategy module which generates orders and measures them against the
+     * given expected results.
+     * @param inStrategy a <code>ModuleURN</code> value
+     * @param inExpectedOrders an <code>OrderSingle[]</code> value
+     * @param inCumulativeOrders a <code>List&lt;OrderSingle&gt;</code> value
+     * @throws Exception if an error occurs
+     */
+    private void doOrderTest(ModuleURN inStrategy,
+                             final OrderSingle[] inExpectedOrders,
+                             List<OrderSingle> inExpectedCumulativeOrders)
+        throws Exception
+    {
+        final MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(ordersURN);
+        assertNotNull("Must be able to find the recorder created",
+                      recorder);
+        // this will execute onAsk on the strategies, which will generate the desired order
+        recorder.resetDataReceived();
+        doSuccessfulStartTestNoVerification(inStrategy);
+        List<DataReceived> orders = recorder.getDataReceived();
+        assertEquals("The number of expected orders does not match the number of actual orders",
+                     inExpectedOrders.length,
+                     orders.size());
+        int index = 0;
+        for(DataReceived datum : orders) {
+            TypesTestBase.assertOrderSingleEquals(inExpectedOrders[index++],
+                                                  (OrderSingle)datum.getData(),
+                                                  true);
+        }
+        StrategyImpl runningStrategy = getFirstRunningStrategy();
+        List<OrderSingle> actualCumulativeOrders = ((AbstractRunningStrategy)runningStrategy.getRunningStrategy()).getSubmittedOrders();
+        assertEquals(inExpectedCumulativeOrders.size(),
+                     actualCumulativeOrders.size());
+        index = 0;
+        for(OrderSingle actualOrder : actualCumulativeOrders) {
+            TypesTestBase.assertOrderSingleEquals(inExpectedCumulativeOrders.get(index++),
+                                                  actualOrder,
+                                                  true);
+        }
     }
     /**
      * Creates a strategy module from the given script with the given parameters and returns the
@@ -1399,6 +1858,29 @@ public abstract class LanguageTestBase
                        null,
                        inSuggestionsURN);
         return inSuggestionsURN;
+    }
+    /**
+     * Creates a strategy module from the given script with the given parameters and returns the
+     * <code>ModuleURN</code> of the module that received any generated orders.
+     *
+     * @param inStrategy a <code>StrategyCoordinates</code> value
+     * @param inOrdersURN a <code>ModuleURN</code> value containing the destination to which to emit suggestions
+     * @return a <code>ModuleURN</code> value
+     * @throws Exception if an error occurs
+     */
+    private ModuleURN generateOrders(StrategyCoordinates inStrategy,
+                                     ModuleURN inOrdersURN)
+        throws Exception
+    {
+        // start the strategy pointing at the orders receiver for its orders
+        ModuleURN strategy = createStrategy(inStrategy.getName(),
+                                            getLanguage(),
+                                            inStrategy.getFile(),
+                                            null,
+                                            null,
+                                            inOrdersURN,
+                                            null);
+        return strategy;
     }
     /**
      * Creates a strategy that requests market data from the given provider for the given symbols.
@@ -1572,12 +2054,7 @@ public abstract class LanguageTestBase
                      runningStrategies.size());
         // execute the onAsk method in each running strategy
         for(StrategyImpl runningStrategy : runningStrategies) {
-            runningStrategy.getRunningStrategy().onAsk(new AskEvent(System.nanoTime(),
-                                                                    System.currentTimeMillis(),
-                                                                    "METC",
-                                                                    "Exchange",
-                                                                    new BigDecimal("1"),
-                                                                    new BigDecimal("2")));
+            runningStrategy.getRunningStrategy().onAsk(askEvent);
         }
         // both strategies should get their onAsk called, but the definition should be the second one
         Properties properties = AbstractRunningStrategy.getProperties();
@@ -1592,10 +2069,4 @@ public abstract class LanguageTestBase
         assertEquals(2,
                      askCounter);
     }
-    /**
-     *
-     *
-     * @return
-     */
-    protected abstract StrategyCoordinates getPart1RedefinedStrategy();
 }

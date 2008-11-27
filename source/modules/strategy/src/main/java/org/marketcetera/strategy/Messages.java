@@ -66,5 +66,14 @@ public interface Messages
                                                                       "compilation_failed"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_STRATEGY_NAME = new I18NMessage1P(LOGGER,
                                                                          "invalid_strategy_name"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_ORDER = new I18NMessage1P(LOGGER,
+                                                                "invalid_order"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_CANCEL = new I18NMessage1P(LOGGER,
+                                                                  "invalid_cancel"); //$NON-NLS-1$
+    static final I18NMessage2P INVALID_ORDERID = new I18NMessage2P(LOGGER,
+                                                                   "invalid_orderid"); //$NON-NLS-1$
+    static final I18NMessage2P ORDER_CANCEL_FAILED = new I18NMessage2P(LOGGER,
+                                                                       "order_cancel_failed"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_REPLACEMENT_ORDER = new I18NMessage1P(LOGGER,
+                                                                             "invalid_replacement_order"); //$NON-NLS-1$
 }
-
