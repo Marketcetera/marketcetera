@@ -466,4 +466,12 @@ public interface Messages
 			LOGGER, "photon_controller.sending_message"); //$NON-NLS-1$
     public static I18NMessage0P FIX_MESSAGE_VIEW_FILTER_LABEL = new I18NMessage0P(
 			LOGGER, "fix_message_view.filter.label"); //$NON-NLS-1$
+    public static I18NMessage0P TIME_OF_DAY_FIELD_EDITOR_ENABLE_BUTTON_LABEL = new I18NMessage0P(
+			LOGGER, "time_of_day_field_editor.enable_button.label"); //$NON-NLS-1$
+    public static I18NMessage2P TIME_OF_DAY_FIELD_EDITOR_PARENTHETICAL_PATTERN = new I18NMessage2P(
+			LOGGER, "time_of_day_field_editor.parenthetical_pattern"); //$NON-NLS-1$
+    public static I18NMessage0P TRADING_HISTORY_PREFERENCE_PAGE_DESCRIPTION = new I18NMessage0P(
+			LOGGER, "trading_history_preference_page.description"); //$NON-NLS-1$
+    public static I18NMessage0P TRADING_HISTORY_PREFERENCE_PAGE_SESSION_START_TIME_LABEL = new I18NMessage0P(
+			LOGGER, "trading_history_preference_page.session_start_time.label"); //$NON-NLS-1$
 }

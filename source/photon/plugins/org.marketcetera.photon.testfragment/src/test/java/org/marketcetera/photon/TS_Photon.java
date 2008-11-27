@@ -114,6 +114,8 @@ public class TS_Photon {
 		suite.addTest(new JUnit4TestAdapter(ChooseColumnsMenuTest.class));
 		suite.addTest(new JUnit4TestAdapter(MarketDataViewItemTest.class));
 		suite.addTest(new JUnit4TestAdapter(MarketDataFeedTest.class));
+		
+		suite.addTest(new JUnit4TestAdapter(TimeOfDayTest.class));
 
         return suite; 
 	}
