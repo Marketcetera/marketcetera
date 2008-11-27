@@ -117,6 +117,8 @@ public class PhotonPlugin
 	private OptionOrderTicketController optionOrderTicketController;
 	
 	private MarketDataManager marketDataManager;
+	
+	public static final String SESSION_START_TIME_PREFERENCE = "TRADING_HISTORY_START_TIME"; //$NON-NLS-1$
 
 	/**
 	 * The constructor.

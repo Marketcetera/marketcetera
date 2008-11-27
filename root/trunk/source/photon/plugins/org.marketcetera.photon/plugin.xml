@@ -131,6 +131,11 @@
             class="org.eclipse.ui.ExtensionFactory:keysPreferencePage"
             id="org.eclipse.ui.preferencePages.Keys">
       </page>
+      <page
+            class="org.marketcetera.photon.preferences.TradingHistoryPreferencePage"
+            id="org.marketcetera.photon.preferences.tradingHistory"
+            name="Trading History">
+      </page>
             
    </extension>
    <extension
@@ -432,6 +437,12 @@
            </instanceof>
          </iterate>
       </definition>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.marketcetera.photon.preferences.PreferenceInitializer">
+      </initializer>
    </extension>
    
 </plugin>
