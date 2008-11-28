@@ -37,7 +37,7 @@ public class JmsManagerTest
     private static final String TEST_TM_EXT=
         "-tm";
     static final int TEST_COUNT=
-        100;
+        10;
 
 
     private static <T> void single
