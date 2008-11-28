@@ -131,6 +131,12 @@
               <arguments>
                 <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
               </arguments>
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/cmd_exec</value>
+                </systemProperty>
+              </systemProperties>
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>

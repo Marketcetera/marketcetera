@@ -2,7 +2,6 @@ package org.marketcetera.ors.filters;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.util.misc.ClassVersion;
-import quickfix.FieldNotFound;
 import quickfix.Message;
 
 /**

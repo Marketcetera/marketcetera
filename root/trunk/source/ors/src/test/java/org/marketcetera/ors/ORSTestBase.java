@@ -10,7 +10,7 @@ import org.marketcetera.util.ws.tags.AppId;
 /**
  * @author tlerios@marketcetera.com
  * @since $Release$
- * @version $Id: ClientServerTest.java 9962 2008-10-29 09:16:23Z tlerios $
+ * @version $Id$
  */
 
 /* $License$ */
