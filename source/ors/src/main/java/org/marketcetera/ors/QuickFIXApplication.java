@@ -1,16 +1,12 @@
 package org.marketcetera.ors;
 
-import java.util.Date;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.ors.dest.Destination;
 import org.marketcetera.ors.dest.Destinations;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXConverter;
-import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
@@ -27,10 +23,7 @@ import quickfix.field.DeliverToCompID;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.RefMsgType;
-import quickfix.field.SenderCompID;
-import quickfix.field.SendingTime;
 import quickfix.field.SessionRejectReason;
-import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 import quickfix.field.TradSesStatus;
 
