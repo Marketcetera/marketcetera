@@ -6,7 +6,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.client.dest.DestinationsStatus;
 
 import java.util.Date;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.beans.ExceptionListener;
 
 /* $License$ */
@@ -121,7 +121,7 @@ public interface Client {
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
-    public BigInteger getPositionAsOf(Date inDate, MSymbol inSymbol)
+    public BigDecimal getPositionAsOf(Date inDate, MSymbol inSymbol)
             throws ConnectionException;
 
     /**
@@ -225,7 +225,7 @@ public interface Client {
     public Date getLastConnectTime();
     
     /**
-     * Returns the receiver's destination status to the client.
+     * Returns the server's destination status.
      *
      * @return The status.
      *

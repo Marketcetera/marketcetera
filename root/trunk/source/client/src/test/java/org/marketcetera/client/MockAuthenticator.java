@@ -6,8 +6,8 @@ import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 
 /**
- * A Test authenticator to aid testing of Client via {@link
- * MockServer}.  It allows login when the username is the same as the
+ * A test authenticator to aid testing of Client via {@link
+ * MockServer}. It allows login when the username is the same as the
  * password.
  * 
  * @author tlerios@marketcetera.com

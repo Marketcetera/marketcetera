@@ -5,7 +5,9 @@ import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.log.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.except.ExceptUtils;
+import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.tags.AppId;
+import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.trade.*;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.client.dest.DestinationsStatus;
@@ -17,7 +19,7 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Deque;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.beans.ExceptionListener;
 
 /* $License$ */
@@ -79,17 +81,43 @@ class ClientImpl implements Client {
     }
 
     @Override
-    public ReportBase[] getReportsSince(Date inDate)
-            throws ConnectionException {
+    public ReportBase[] getReportsSince
+        (Date inDate)
+        throws ConnectionException
+    {
         failIfClosed();
-        throw new UnsupportedOperationException();
+        try {
+            return mService.getReportsSince(getServiceContext(),inDate);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
+        }
     }
 
     @Override
-    public BigInteger getPositionAsOf(Date inDate, MSymbol inSymbol)
-            throws ConnectionException {
+    public BigDecimal getPositionAsOf
+        (Date inDate,
+         MSymbol inSymbol)
+        throws ConnectionException
+    {
         failIfClosed();
-        throw new UnsupportedOperationException();
+        try {
+            return mService.getPositionAsOf
+                (getServiceContext(),inDate,inSymbol);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+
+    @Override
+    public DestinationsStatus getDestinationsStatus()
+        throws ConnectionException
+    {
+        failIfClosed();
+        try {
+            return mService.getDestinationsStatus(getServiceContext());
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
+        }
     }
 
     @Override
@@ -143,12 +171,6 @@ class ClientImpl implements Client {
     public Date getLastConnectTime() {
         failIfClosed();
         return mLastConnectTime;
-    }
-
-    @Override
-    public DestinationsStatus getDestinationsStatus() throws ConnectionException {
-        failIfClosed();
-        throw new UnsupportedOperationException();
     }
 
     ClientImpl(ClientParameters inParameters) throws ConnectionException {
@@ -249,12 +271,11 @@ class ClientImpl implements Client {
             // TODO: Server host and port must come from parameters.
             // AppId must also come from params (or maybe auto-set to
             // module name).
-            org.marketcetera.util.ws.stateful.Client client=new
-                org.marketcetera.util.ws.stateful.Client
+            mServiceClient = new org.marketcetera.util.ws.stateful.Client
                 (new AppId("ORSClient"));
-            client.login(mParameters.getUsername(),
-                         mParameters.getPassword());
-            Service service=client.getService(Service.class);
+            mServiceClient.login(mParameters.getUsername(),
+                                 mParameters.getPassword());
+            mService = mServiceClient.getService(Service.class);
         } catch (Throwable t) {
             ExceptUtils.interrupt(t);
             throw new ConnectionException(t, new I18NBoundMessage2P(
@@ -311,6 +332,11 @@ class ClientImpl implements Client {
         }
     }
 
+    private ClientContext getServiceContext()
+    {
+        return mServiceClient.getContext();
+    }
+
     private volatile AbstractApplicationContext mContext;
     private volatile MessagingDelegate mDelegate;
     private volatile ClientParameters mParameters;
@@ -320,5 +346,9 @@ class ClientImpl implements Client {
     private final Deque<ExceptionListener> mExceptionListeners =
             new LinkedList<ExceptionListener>();
     private Date mLastConnectTime;
+
+    private org.marketcetera.util.ws.stateful.Client mServiceClient;
+    private Service mService;
+
     private static final String TRAFFIC = ClientImpl.class.getPackage().getName() + ".traffic";  //$NON-NLS-1$
 }

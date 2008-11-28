@@ -5,7 +5,6 @@ import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.trade.*;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.core.MSymbol;
 import static org.marketcetera.client.Messages.*;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
