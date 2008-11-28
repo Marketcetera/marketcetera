@@ -8,6 +8,9 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
+
 /**
  * Represents a Security's trading symbol.
  * <p>
@@ -17,6 +20,7 @@ import java.io.Serializable;
  * @author Graham Miller
  * @version $Id$
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MSymbol implements Serializable {
     private String baseSymbol;
@@ -25,7 +29,7 @@ public class MSymbol implements Serializable {
     private final String cachedString;
     private final int cachedHashCode;
     private String exchangeString;
-    private final SecurityType mSecurityType;
+    private SecurityType mSecurityType;
 
     /**
      * Creates a new instance.
@@ -80,6 +84,18 @@ public class MSymbol implements Serializable {
         cachedString = toStringHelper();
         cachedHashCode = cachedString.hashCode();
     }
+
+
+    /**
+     * Creates an instance. This empty constructor is intended for use
+     * by JAXB.
+     */
+
+    protected MSymbol() {
+        cachedString = null;
+        cachedHashCode = 0;
+    }
+
 
     @Override
     public String toString(){
