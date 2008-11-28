@@ -1,0 +1,611 @@
+package org.marketcetera.trade;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
+import quickfix.Message;
+import quickfix.field.Account;
+import quickfix.field.ClOrdID;
+import quickfix.field.OrdType;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.Symbol;
+
+/**
+ * FIX conversion utilities.
+ * 
+ * @author tlerios@marketcetera.com
+ * @since $Release$
+ * @version $Id$
+ */
+
+/* $License$ */
+
+@ClassVersion("$Id$") //$NON-NLS-1$
+public final class FIXConverter
+{
+
+    // CLASS METHODS.
+
+    /**
+     * Adds the given symbol to the given QuickFIX/J message.
+     *
+     * @param symbol The symbol. It may be null.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the symbol is required but is not set.
+     *
+     * @throws I18NException Thrown if the symbol is required but is
+     * not set.
+     */
+
+    private static void addSymbol
+        (MSymbol symbol,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if ((symbol==null) ||
+            (symbol.getFullSymbol()==null)) {
+            if (required) {
+                throw new I18NException
+                    (new I18NBoundMessage1P(Messages.NO_SYMBOL,symbol));
+            }
+        } else{
+            msg.setField(new Symbol(symbol.getFullSymbol()));
+        }
+    }
+
+    /**
+     * Adds the given price to the given QuickFIX/J message.
+     *
+     * @param price The price. It may be null.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the price is required but is not set.
+     *
+     * @throws I18NException Thrown if the price is required but is
+     * not set.
+     */
+
+    private static void addPrice
+        (BigDecimal price,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if (price==null) {
+            if (required) {
+                throw new I18NException(Messages.NO_PRICE);
+            }
+        } else{
+            msg.setField(new Price(price));
+        }
+    }
+
+    /**
+     * Adds the given quantity to the given QuickFIX/J message.
+     *
+     * @param quantity The quantity. It may be null.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the quantity is required but is not set.
+     *
+     * @throws I18NException Thrown if the quantity is required but is
+     * not set.
+     */
+
+    private static void addQuantity
+        (BigDecimal quantity,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if (quantity==null) {
+            if (required) {
+                throw new I18NException(Messages.NO_QUANTITY);
+            }
+        } else{
+            msg.setField(new OrderQty(quantity));
+        }
+    }
+
+    /**
+     * Adds the given account to the given QuickFIX/J message.
+     *
+     * @param account The account. It may be null.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the account is required but is not set.
+     *
+     * @throws I18NException Thrown if the account is required but is
+     * not set.
+     */
+
+    private static void addAccount
+        (String account,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if (account==null) {
+            if (required) {
+                throw new I18NException(Messages.NO_ACCOUNT);
+            }
+        } else{
+            msg.setField(new Account(account));
+        }
+    }
+
+    /**
+     * Adds the given order ID to the given QuickFIX/J message.
+     *
+     * @param orderID The order ID. It may be null.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the order ID is required but is not
+     * set.
+     *
+     * @throws I18NException Thrown if the order ID is required but is
+     * not set.
+     */
+
+    private static void addOrderID
+        (OrderID orderID,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if (orderID==null) {
+            if (required) {
+                throw new I18NException(Messages.NO_ORDER_ID);
+            }
+        } else{
+            msg.setField(new ClOrdID(orderID.getValue()));
+        }
+    }
+
+    /**
+     * Adds the given original order ID to the given QuickFIX/J
+     * message.
+     *
+     * @param originalOrderID The original order ID. It may be null.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the original order ID is required but
+     * is not set.
+     *
+     * @throws I18NException Thrown if the original order ID is
+     * required but is not set.
+     */
+
+    private static void addOriginalOrderID
+        (OrderID originalOrderID,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if (originalOrderID==null) {
+            if (required) {
+                throw new I18NException(Messages.NO_ORIGINAL_ORDER_ID);
+            }
+        } else{
+            msg.setField(new OrigClOrdID(originalOrderID.getValue()));
+        }
+    }
+
+    /**
+     * Adds the given destination order ID to the given QuickFIX/J
+     * message.
+     *
+     * @param destinationOrderID The destination order ID. It may be
+     * null.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the destination order ID is required
+     * but is not set.
+     *
+     * @throws I18NException Thrown if the destination order ID is
+     * required but is not set.
+     */
+
+    private static void addDestinationOrderID
+        (String destinationOrderID,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if (destinationOrderID==null) {
+            if (required) {
+                throw new I18NException(Messages.NO_DESTINATION_ORDER_ID);
+            }
+        } else{
+            msg.setField(new quickfix.field.OrderID(destinationOrderID));
+        }
+    }
+
+    /**
+     * Adds the given side to the given QuickFIX/J message.
+     *
+     * @param securityType The side. It may be null or unknown.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the side is required but is not set.
+     *
+     * @throws I18NException Thrown if the side is required but is not
+     * set.
+     */
+
+    private static void addSide
+        (Side side,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if ((side==null) ||
+            (side==Side.Unknown)) {
+            if (required) {
+                throw new I18NException
+                    (new I18NBoundMessage1P(Messages.NO_SIDE,side));
+            }
+        } else{
+            msg.setField(new quickfix.field.Side(side.getFIXValue()));
+        }
+    }
+
+    /**
+     * Adds the given security type to the given QuickFIX/J message.
+     *
+     * @param securityType The security type. It may be null or
+     * unknown.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the security type is required but is
+     * not set.
+     *
+     * @throws I18NException Thrown if the security type is required
+     * but is not set.
+     */
+
+    private static void addSecurityType
+        (SecurityType securityType,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if ((securityType==null) ||
+            (securityType==SecurityType.Unknown)) {
+            if (required) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.NO_SECURITY_TYPE,securityType));
+            }
+        } else{
+            msg.setField(new quickfix.field.SecurityType
+                         (securityType.getFIXValue()));
+        }
+    }
+
+    /**
+     * Adds the given time-in-force to the given QuickFIX/J message.
+     *
+     * @param timeInForce The time-in-force. It may be null or
+     * unknown.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the time-in-force is required but is
+     * not set.
+     *
+     * @throws I18NException Thrown if the time-in-force is required
+     * but is not set.
+     */
+
+    private static void addTimeInForce
+        (TimeInForce timeInForce,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if ((timeInForce==null) ||
+            (timeInForce==TimeInForce.Unknown)) {
+            if (required) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.NO_TIME_IN_FORCE,timeInForce));
+            }
+        } else{
+            msg.setField(new quickfix.field.TimeInForce
+                         (timeInForce.getFIXValue()));
+        }
+    }
+
+    /**
+     * Adds the given position effect to the given QuickFIX/J message.
+     *
+     * @param positionEffect The position effect. It may be null or
+     * unknown.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the position effect is required but is
+     * not set.
+     *
+     * @throws I18NException Thrown if the position effect is required
+     * but is not set.
+     */
+
+    private static void addPositionEffect
+        (PositionEffect positionEffect,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if ((positionEffect==null) ||
+            (positionEffect==PositionEffect.Unknown)) {
+            if (required) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.NO_POSITION_EFFECT,positionEffect));
+            }
+        } else{
+            msg.setField(new quickfix.field.PositionEffect
+                         (positionEffect.getFIXValue()));
+        }
+    }
+
+    /**
+     * Adds the given order capacity to the given QuickFIX/J message.
+     *
+     * @param orderCapacity The order capacity. It may be null or
+     * unknown.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the order capacity is required but is
+     * not set.
+     *
+     * @throws I18NException Thrown if the order capacity is required
+     * but is not set.
+     */
+
+    private static void addOrderCapacity
+        (OrderCapacity orderCapacity,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if ((orderCapacity==null) ||
+            (orderCapacity==OrderCapacity.Unknown)) {
+            if (required) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.NO_ORDER_CAPACITY,orderCapacity));
+            }
+        } else{
+            msg.setField(new quickfix.field.OrderCapacity
+                         (orderCapacity.getFIXValue()));
+        }
+    }
+
+    /**
+     * Adds the given order type to the given QuickFIX/J message.
+     *
+     * @param orderType The order type. It may be null or unknown.
+     * @param msg The QuickFIX/J message. 
+     * @param required True if the order type is required but is not
+     * set.
+     *
+     * @throws I18NException Thrown if the order type is required but
+     * is not set.
+     */
+
+    private static void addOrderType
+        (OrderType orderType,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        if ((orderType==null) ||
+            (orderType==OrderType.Unknown)) {
+            if (required) {
+                throw new I18NException
+                    (new I18NBoundMessage1P(Messages.NO_ORDER_TYPE,orderType));
+            }
+        } else{
+            msg.setField(new OrdType(orderType.getFIXValue()));
+        }
+    }
+
+    /**
+     * Adds the custom fields of the given order to the given
+     * QuickFIX/J message.
+     *
+     * @param o The order.
+     * @param msg The message.
+     */
+
+    private static void addCustomFields
+        (OrderBase o,
+         Message msg)
+    {
+        Map<String,String> fields=o.getCustomFields();
+        if (fields==null) {
+            return;
+        }
+        for (String k:fields.keySet()) {
+            msg.setString(Integer.parseInt(k),fields.get(k));
+        }
+    }
+
+    /**
+     * Returns the QuickFIX/J message form of the given single order,
+     * using the given version-specific message factory to effect
+     * conversion.
+     *
+     * @param f The factory.
+     * @param o The order.
+     *
+     * @return The QuickFIX/J message.
+     *
+     * @throws I18NException Thrown if conversion fails.
+     */
+
+    public static Message toQMessage
+        (FIXMessageFactory f,
+         OrderSingle o)
+        throws I18NException
+    {
+        Message msg=f.newOrderEmpty();
+        addOrderID(o.getOrderID(),msg,true);
+        addSymbol(o.getSymbol(),msg,true);
+        addSide(o.getSide(),msg,true);
+        addOrderType(o.getOrderType(),msg,true);
+        addSecurityType(o.getSecurityType(),msg,false);
+        addQuantity(o.getQuantity(),msg,false);
+        addTimeInForce(o.getTimeInForce(),msg,false);
+        addAccount(o.getAccount(),msg,false);
+        addPositionEffect(o.getPositionEffect(),msg,false);
+        addOrderCapacity(o.getOrderCapacity(),msg,false);
+        if (o.getOrderType()==OrderType.Limit) {
+            addPrice(o.getPrice(),msg,true);
+        }
+        addCustomFields(o,msg);
+        f.getMsgAugmentor().newOrderSingleAugment(msg);
+        return msg;
+    }
+
+    /**
+     * Returns the QuickFIX/J message form of the given order
+     * cancellation, using the given version-specific message factory
+     * to effect conversion.
+     *
+     * @param f The factory.
+     * @param o The order cancellation.
+     *
+     * @return The QuickFIX/J message.
+     *
+     * @throws I18NException Thrown if conversion fails.
+     */
+
+    public static Message toQMessage
+        (FIXMessageFactory f,
+         OrderCancel o)
+        throws I18NException
+    {
+        Message msg=f.newCancelEmpty();
+        addOriginalOrderID(o.getOriginalOrderID(),msg,true);
+        addOrderID(o.getOrderID(),msg,true);
+        addSymbol(o.getSymbol(),msg,true);
+        addSide(o.getSide(),msg,true);
+        addQuantity(o.getQuantity(),msg,false);
+        addDestinationOrderID(o.getDestinationOrderID(),msg,false);
+        addAccount(o.getAccount(),msg,false);
+        addSecurityType(o.getSecurityType(),msg,false);
+        addCustomFields(o,msg);
+        f.getMsgAugmentor().cancelRequestAugment(msg);
+        return msg;
+    }
+
+    /**
+     * Returns the QuickFIX/J message form of the given order
+     * replacement, using the given version-specific message factory
+     * to effect conversion.
+     *
+     * @param f The factory.
+     * @param o The order replacement.
+     *
+     * @return The QuickFIX/J message.
+     *
+     * @throws I18NException Thrown if conversion fails.
+     */
+
+    public static Message toQMessage
+        (FIXMessageFactory f,
+         OrderReplace o)
+        throws I18NException
+    {
+        Message msg=f.newCancelReplaceEmpty();
+        addOriginalOrderID(o.getOriginalOrderID(),msg,true);
+        addOrderID(o.getOrderID(),msg,true);
+        addSymbol(o.getSymbol(),msg,true);
+        addSide(o.getSide(),msg,true);
+        addOrderType(o.getOrderType(),msg,true);
+        addQuantity(o.getQuantity(),msg,false);
+        addAccount(o.getAccount(),msg,false);
+        addPrice(o.getPrice(),msg,false);
+        addSecurityType(o.getSecurityType(),msg,false);
+        addTimeInForce(o.getTimeInForce(),msg,false);
+        addPositionEffect(o.getPositionEffect(),msg,false);
+        addOrderCapacity(o.getOrderCapacity(),msg,false);
+        addDestinationOrderID(o.getDestinationOrderID(),msg,false);
+        addCustomFields(o,msg);
+        f.getMsgAugmentor().cancelReplaceRequestAugment(msg);
+        return msg;
+    }
+
+    /**
+     * Returns the QuickFIX/J message form of the given order, using
+     * the given version-specific message factory to effect
+     * conversion.
+     *
+     * @param f The factory.
+     * @param o The order.
+     *
+     * @throws I18NException Thrown if conversion fails.
+     */
+
+    public static Message toQMessage
+        (FIXMessageFactory f,
+         Order o)
+        throws I18NException
+    {
+        if (o instanceof FIXOrder) {
+            return ((FIXOrder)o).getMessage();
+        }
+        if (o instanceof OrderSingle) {
+            return toQMessage(f,(OrderSingle)o);
+        }
+        if (o instanceof OrderCancel) {
+            return toQMessage(f,(OrderCancel)o);
+        }
+        if (o instanceof OrderReplace) {
+            return toQMessage(f,(OrderReplace)o);
+        }
+        throw new I18NException
+            (new I18NBoundMessage1P(Messages.CANNOT_CONVERT,o));
+    }
+
+    /**
+     * Returns the FIX Agnostic message form of the given QuickFIX/J
+     * message.
+     *
+     * @param msg The QuickFIX/J message.
+     * @param originator The message originator.
+     * @param destinationID The ID of the destination which generated
+     * the QuickFIX/J message. It may be null.
+     *
+     * @return The FIX Agnostic message. It is null if conversion is
+     * not available for the QuickFIX/J message type.
+     *
+     * @throws MessageCreationException Thrown if conversion is
+     * available for the QuickFIX/J message type, but it fails.
+     */
+
+    public static TradeMessage fromQMessage
+        (Message msg,
+         Originator originator,
+         DestinationID destinationID)
+        throws MessageCreationException
+    {
+        if (FIXMessageUtil.isExecutionReport(msg)) {
+            return Factory.getInstance().createExecutionReport
+                (msg,destinationID,originator);
+        }
+        if (FIXMessageUtil.isCancelReject(msg)) {
+            return Factory.getInstance().createOrderCancelReject
+                (msg,destinationID);
+        }
+        return null;
+    }
+
+
+    // CONSTRUCTORS.
+
+    /**
+     * Constructor. It is private so that no instances can be created.
+     */
+
+    private FIXConverter() {}
+}

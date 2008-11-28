@@ -536,4 +536,31 @@ public class FIXMessageFactory {
                 outgoingMsg.getHeader().getString(SenderCompID.FIELD));
     }
 
+
+
+    public Message newCancelReplaceEmpty()
+    {
+        Message msg=msgFactory.create
+            (beginString,MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+        addTransactionTimeIfNeeded(msg);
+        addHandlingInst(msg);
+        return msg;
+    }
+
+    public Message newCancelEmpty()
+    {
+        Message msg=msgFactory.create
+            (beginString,MsgType.ORDER_CANCEL_REQUEST);
+        addTransactionTimeIfNeeded(msg);
+        return msg;
+    }
+
+    public Message newOrderEmpty()
+    {
+        Message msg=msgFactory.create
+            (beginString, MsgType.ORDER_SINGLE);
+        addHandlingInst(msg);
+        addTransactionTimeIfNeeded(msg);
+        return msg;
+    }
 }

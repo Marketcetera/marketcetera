@@ -23,7 +23,7 @@ public interface Messages {
      */
     static final I18NLoggerProxy LOGGER =
             new I18NLoggerProxy(PROVIDER);
-    
+
     static final I18NMessage1P NON_SYSTEM_FIX_MESSAGE =
             new I18NMessage1P(LOGGER, "non_system_fix_message");   //$NON-NLS-1$
     static final I18NMessage1P SYSTEM_FIX_MESSAGE_NO_BEGIN_STRING =
@@ -58,4 +58,32 @@ public interface Messages {
             new I18NMessage3P(LOGGER, "order_single_suggestion_to_string");   //$NON-NLS-1$
 
 
+    static final I18NMessage1P NO_SYMBOL=
+        new I18NMessage1P(LOGGER,"no_symbol"); //$NON-NLS-1$
+    static final I18NMessage0P NO_PRICE=
+        new I18NMessage0P(LOGGER,"no_price"); //$NON-NLS-1$
+    static final I18NMessage0P NO_QUANTITY=
+        new I18NMessage0P(LOGGER,"no_quantity"); //$NON-NLS-1$
+    static final I18NMessage0P NO_ACCOUNT=
+        new I18NMessage0P(LOGGER,"no_account"); //$NON-NLS-1$
+    static final I18NMessage0P NO_ORDER_ID=
+        new I18NMessage0P(LOGGER,"no_order_id"); //$NON-NLS-1$
+    static final I18NMessage0P NO_ORIGINAL_ORDER_ID=
+        new I18NMessage0P(LOGGER,"no_original_order_id"); //$NON-NLS-1$
+    static final I18NMessage0P NO_DESTINATION_ORDER_ID=
+        new I18NMessage0P(LOGGER,"no_destination_order_id"); //$NON-NLS-1$
+    static final I18NMessage1P NO_SIDE=
+        new I18NMessage1P(LOGGER,"no_side"); //$NON-NLS-1$
+    static final I18NMessage1P NO_SECURITY_TYPE=
+        new I18NMessage1P(LOGGER,"no_security_type"); //$NON-NLS-1$
+    static final I18NMessage1P NO_TIME_IN_FORCE=
+        new I18NMessage1P(LOGGER,"no_time_in_force"); //$NON-NLS-1$
+    static final I18NMessage1P NO_POSITION_EFFECT=
+        new I18NMessage1P(LOGGER,"no_position_effect"); //$NON-NLS-1$
+    static final I18NMessage1P NO_ORDER_CAPACITY=
+        new I18NMessage1P(LOGGER,"no_order_capacity"); //$NON-NLS-1$
+    static final I18NMessage1P NO_ORDER_TYPE=
+        new I18NMessage1P(LOGGER,"no_order_type"); //$NON-NLS-1$
+    static final I18NMessage1P CANNOT_CONVERT=
+        new I18NMessage1P(LOGGER,"cannot_convert"); //$NON-NLS-1$
 }
