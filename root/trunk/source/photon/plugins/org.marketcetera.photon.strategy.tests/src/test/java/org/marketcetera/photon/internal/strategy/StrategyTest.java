@@ -71,7 +71,7 @@ public class StrategyTest {
 		for (Map.Entry<Object, Object> entry : props.entrySet()) {
 			assertEquals(entry.getValue(), fixture.getParameters().get(entry.getKey()));
 		}
-		fixture.setParameters(null);
+		fixture.setParameters(new Properties());
 		assertTrue(fixture.getParameters().isEmpty());
 	}
 
