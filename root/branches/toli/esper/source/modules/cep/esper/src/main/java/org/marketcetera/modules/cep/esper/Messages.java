@@ -26,5 +26,8 @@ public interface Messages {
     static final I18NMessage0P PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER, "provider_description");   //$NON-NLS-1$
     static final I18NMessage0P ERROR_MODULE_NOT_STARTED =
             new I18NMessage0P(LOGGER, "error_module_not_started");  //$NON-NLS-1$
+    static final I18NMessage0P ERROR_MODULE_ALREADY_STARTED =
+            new I18NMessage0P(LOGGER, "error_module_already_started");  //$NON-NLS-1$
+    static final I18NMessage1P ERROR_CREATING_STATEMENTS = new I18NMessage1P(LOGGER, "error_create_stmnt");  //$NON-NLS-1$
     static final I18NMessage0P ERROR_CONFIGURING_ESPER = new I18NMessage0P(LOGGER, "error_config_esper");  //$NON-NLS-1$
 }

@@ -820,7 +820,7 @@ public class OrderBookTest
     {
         if(inEvent instanceof BidEvent) {
             return new BidEvent(inEvent.getMessageId(),
-                                inEvent.getTimestamp(),
+                                inEvent.getTimeMillis(),
                                 inEvent.getSymbol(),
                                 inEvent.getExchange(),
                                 inTuple.getPrice(),
@@ -829,7 +829,7 @@ public class OrderBookTest
         }
         if(inEvent instanceof AskEvent) {
             return new AskEvent(inEvent.getMessageId(),
-                                inEvent.getTimestamp(),
+                                inEvent.getTimeMillis(),
                                 inEvent.getSymbol(),
                                 inEvent.getExchange(),
                                 inTuple.getPrice(),

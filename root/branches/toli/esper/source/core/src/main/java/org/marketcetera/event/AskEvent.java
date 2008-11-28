@@ -89,7 +89,7 @@ public class AskEvent
                      Action inAction)
     {
         this(inAsk.getMessageId(),
-             inAsk.getTimestamp(),
+             inAsk.getTimeMillis(),
              inAsk.getSymbol(),
              inAsk.getExchange(),
              inAsk.getPrice(),
@@ -105,7 +105,7 @@ public class AskEvent
                                        BigDecimal inNewSize)
     {
         return new AskEvent(inAsk.getMessageId(),
-                            inAsk.getTimestamp(),
+                            inAsk.getTimeMillis(),
                             inAsk.getSymbol(),
                             inAsk.getExchange(),
                             inAsk.getPrice(),

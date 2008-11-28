@@ -26,7 +26,4 @@ public interface Messages {
     static final I18NMessage0P PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER, "provider_description");   //$NON-NLS-1$
     static final I18NMessage1P INVALID_QUERY = new I18NMessage1P(LOGGER, "invalid_query");   //$NON-NLS-1$
     static final I18NMessage1P UNSUPPORTED_TYPE = new I18NMessage1P(LOGGER, "unsupported_type"); //$NON-NLS-1$
-
-    // this is for testing
-    static final I18NMessage0P STOP_FLOW = new I18NMessage0P(LOGGER, "stopFlow");  //$NON-NLS-1$
 }

@@ -17,6 +17,7 @@ import java.util.HashMap;
  * CopierModule passes the data coming in as part of DataRequest to the receiver, unless it sees an incoming exception
  * in which case we treat it as a "stop flow" marker and emit an error
  * @author anshul@marketcetera.com
+ * @authoer toli@marketcetera.com
  * @version $Id$
  * @since $Release$
  */
@@ -32,9 +33,7 @@ public class CopierModule extends Module implements DataEmitter {
     protected void preStop() throws ModuleException {
     }
 
-    /** Passes the incoming data to the receiver, unless it sees an incoming exception
-     * in which case we treat it as a "stop flow" marker and emit an error
-     */
+    /** Passes the incoming data to the receiver   */
     public void requestData(final DataRequest inRequest,
                             final DataEmitterSupport inSupport)
             throws RequestDataException {
@@ -49,9 +48,6 @@ public class CopierModule extends Module implements DataEmitter {
                     for(Object o: (Collection)req) {
                         inSupport.send(o);
                     }
-                } else if (req instanceof Exception) {
-                    //stop data flow
-                    inSupport.dataEmitError(new I18NMessage0P(Messages.LOGGER, "stopFlow"), true);
                 } else {
                     inSupport.send(req);
                 }

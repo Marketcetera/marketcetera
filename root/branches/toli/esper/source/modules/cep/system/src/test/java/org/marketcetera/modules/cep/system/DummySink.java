@@ -5,18 +5,15 @@ import org.marketcetera.module.SinkDataListener;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
 
 /**
  * Dummy sink that keeps incoming data in a blocking queue so that we can wait on it synchronously
  *
- * @author admin
+ * @author toli@marketcetera.com
  * @version $Id$
  * @since $Release$
  */
 public class DummySink implements SinkDataListener {
-    private Semaphore sema;
-    private Object terminator;
 
     @Override
     public void receivedData(DataFlowID inFlowID, Object inData) {
