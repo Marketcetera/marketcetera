@@ -1,6 +1,7 @@
 package org.marketcetera.util.ws.types;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -19,43 +20,37 @@ import org.apache.commons.lang.ArrayUtils;
 
 /* $License$ */
 
-public class CharacterHolder
+public class DateHolder
 {
-    private char mItemP;
-    private Character mItem;
-    private char[] mArrayP;
-    private Character[] mArray;
-    private Collection<Character> mCollection;
-    private List<Character> mList;
-    private LinkedList<Character> mLinkedList;
-    private Set<Character> mSet;
-    private HashSet<Character> mHashSet;
-    private TreeSet<Character> mTreeSet;
-    private Map<Character,Character> mMap;
-    private HashMap<Character,Character> mHashMap;
-    private TreeMap<Character,Character> mTreeMap;
+    private Date mItem;
+    private Date[] mArray;
+    private Collection<Date> mCollection;
+    private List<Date> mList;
+    private LinkedList<Date> mLinkedList;
+    private Set<Date> mSet;
+    private HashSet<Date> mHashSet;
+    private TreeSet<Date> mTreeSet;
+    private Map<Date,Date> mMap;
+    private HashMap<Date,Date> mHashMap;
+    private TreeMap<Date,Date> mTreeMap;
 
 
-    private CharacterHolder() {}
+    private DateHolder() {}
 
-    public CharacterHolder
-        (char itemP,
-         Character item,
-         char[] arrayP,
-         Character[] array,
-         Collection<Character> collection,
-         List<Character> list,
-         LinkedList<Character> linkedList,
-         Set<Character> set,
-         HashSet<Character> hashSet,
-         TreeSet<Character> treeSet,
-         Map<Character,Character> map,
-         HashMap<Character,Character> hashMap,
-         TreeMap<Character,Character> treeMap)
+    public DateHolder
+        (Date item,
+         Date[] array,
+         Collection<Date> collection,
+         List<Date> list,
+         LinkedList<Date> linkedList,
+         Set<Date> set,
+         HashSet<Date> hashSet,
+         TreeSet<Date> treeSet,
+         Map<Date,Date> map,
+         HashMap<Date,Date> hashMap,
+         TreeMap<Date,Date> treeMap)
     {
-        setItemP(itemP);        
         setItem(item);
-        setArrayP(arrayP);
         setArray(array);
         setCollection(collection);
         setList(list);
@@ -69,145 +64,123 @@ public class CharacterHolder
     }
 
 
-    public void setItemP
-        (char itemP)
-    {
-        mItemP=itemP;
-    }
-
-    public char getItemP()
-    {
-        return mItemP;
-    }
-
     public void setItem
-        (Character item)
+        (Date item)
     {
         mItem=item;
     }
 
-    public Character getItem()
+    public Date getItem()
     {
         return mItem;
     }
 
-    public void setArrayP
-        (char[] arrayP)
-    {
-        mArrayP=arrayP;
-    }
-
-    public char[] getArrayP()
-    {
-        return mArrayP;
-    }
-
     public void setArray
-        (Character[] array)
+        (Date[] array)
     {
         mArray=array;
     }
 
-    public Character[] getArray()
+    public Date[] getArray()
     {
         return mArray;
     }
 
     public void setCollection
-        (Collection<Character> collection)
+        (Collection<Date> collection)
     {
         mCollection=collection;
     }
 
-    public Collection<Character> getCollection()
+    public Collection<Date> getCollection()
     {
         return mCollection;
     }
 
     public void setList
-        (List<Character> list)
+        (List<Date> list)
     {
         mList=list;
     }
 
-    public List<Character> getList()
+    public List<Date> getList()
     {
         return mList;
     }
 
     public void setLinkedList
-        (LinkedList<Character> linkedList)
+        (LinkedList<Date> linkedList)
     {
         mLinkedList=linkedList;
     }
 
-    public LinkedList<Character> getLinkedList()
+    public LinkedList<Date> getLinkedList()
     {
         return mLinkedList;
     }
 
     public void setSet
-        (Set<Character> set)
+        (Set<Date> set)
     {
         mSet=set;
     }
 
-    public Set<Character> getSet()
+    public Set<Date> getSet()
     {
         return mSet;
     }
 
     public void setHashSet
-        (HashSet<Character> hashSet)
+        (HashSet<Date> hashSet)
     {
         mHashSet=hashSet;
     }
 
-    public HashSet<Character> getHashSet()
+    public HashSet<Date> getHashSet()
     {
         return mHashSet;
     }
 
     public void setTreeSet
-        (TreeSet<Character> treeSet)
+        (TreeSet<Date> treeSet)
     {
         mTreeSet=treeSet;
     }
 
-    public TreeSet<Character> getTreeSet()
+    public TreeSet<Date> getTreeSet()
     {
         return mTreeSet;
     }
 
     public void setMap
-        (Map<Character,Character> map)
+        (Map<Date,Date> map)
     {
         mMap=map;
     }
 
-    public Map<Character,Character> getMap()
+    public Map<Date,Date> getMap()
     {
         return mMap;
     }
 
     public void setHashMap
-        (HashMap<Character,Character> hashMap)
+        (HashMap<Date,Date> hashMap)
     {
         mHashMap=hashMap;
     }
 
-    public HashMap<Character,Character> getHashMap()
+    public HashMap<Date,Date> getHashMap()
     {
         return mHashMap;
     }
 
     public void setTreeMap
-        (TreeMap<Character,Character> treeMap)
+        (TreeMap<Date,Date> treeMap)
     {
         mTreeMap=treeMap;
     }
 
-    public TreeMap<Character,Character> getTreeMap()
+    public TreeMap<Date,Date> getTreeMap()
     {
         return mTreeMap;
     }
@@ -216,9 +189,7 @@ public class CharacterHolder
     @Override
     public int hashCode()
     {
-        return (ArrayUtils.hashCode(getItemP())+
-                ArrayUtils.hashCode(getItem())+
-                ArrayUtils.hashCode(getArrayP())+
+        return (ArrayUtils.hashCode(getItem())+
                 ArrayUtils.hashCode(getArray())+
                 ArrayUtils.hashCode(getCollection())+
                 ArrayUtils.hashCode(getList())+
@@ -241,10 +212,8 @@ public class CharacterHolder
         if ((other==null) || !getClass().equals(other.getClass())) {
             return false;
         }
-        CharacterHolder o=(CharacterHolder)other;
-        return (ArrayUtils.isEquals(getItemP(),o.getItemP()) &&
-                ArrayUtils.isEquals(getItem(),o.getItem()) &&
-                ArrayUtils.isEquals(getArrayP(),o.getArrayP()) &&
+        DateHolder o=(DateHolder)other;
+        return (ArrayUtils.isEquals(getItem(),o.getItem()) &&
                 ArrayUtils.isEquals(getArray(),o.getArray()) &&
                 ArrayUtils.isEquals(getCollection(),o.getCollection()) &&
                 ArrayUtils.isEquals(getList(),o.getList()) &&

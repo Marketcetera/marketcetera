@@ -3,6 +3,7 @@ package org.marketcetera.util.ws.types;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
@@ -605,6 +606,39 @@ public interface Service
     EnumObjectHolder hldEo
         (StatelessClientContext context,
          EnumObjectHolder arg)
+        throws RemoteException;
+
+
+    // Date.
+
+    Date dt
+        (StatelessClientContext context,
+         Date arg)
+        throws RemoteException;
+
+    Date[] arrDt
+        (StatelessClientContext context,
+         Date[] arg)
+        throws RemoteException;
+
+    Collection<Date> colDt
+        (StatelessClientContext context,
+         Collection<Date> arg)
+        throws RemoteException;
+
+    Set<Date> setDt
+        (StatelessClientContext context,
+         Set<Date> arg)
+        throws RemoteException;
+
+    MapWrapper<Date,Date> mapDt
+        (StatelessClientContext context,
+         MapWrapper<Date,Date> arg)
+        throws RemoteException;
+
+    DateHolder hldDt
+        (StatelessClientContext context,
+         DateHolder arg)
         throws RemoteException;
 
 
