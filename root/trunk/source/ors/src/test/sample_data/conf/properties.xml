@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - ORS base configuration file.
+  - CLI/Server properties retrieval.
   -
   - Author: tlerios@marketcetera.com
-  - Since: 0.5.0
+  - Since: $Release$
   - Version: $Id$
   - $License$
-  -->
-
-<!--
-  - DO NOT CHANGE THIS FILE. Place your settings in 'ors_user.properties'.
   -->
 
 <beans
@@ -21,10 +17,20 @@
  "http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
   http://www.springframework.org/schema/util
-  http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+  http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-  <util:list id="propertiesFiles">
-    <value>file:src/test/sample_data/conf/ors_default.properties</value>
-    <value>file:src/test/sample_data/conf/ors_user.properties</value>
+  <util:list
+   id="propertiesFiles">
+    <value>file:src/test/sample_data/conf/default.properties</value>
+    <value>file:src/test/sample_data/conf/user.properties</value>
   </util:list>
+
+  <bean
+   class=
+    "org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+   <property
+    name="locations"
+    ref="propertiesFiles">
+   </property>
+  </bean>
 </beans>
