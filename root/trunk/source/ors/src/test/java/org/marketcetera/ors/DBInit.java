@@ -1,5 +1,6 @@
 package org.marketcetera.ors;
 
+import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.persist.PersistTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -15,7 +16,8 @@ import java.util.Arrays;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class DBInit {
+public class DBInit
+    extends ApplicationBase {
     /**
      * Runs the main method in the class supplied as the
      * first argument after initializing the DB.
@@ -32,6 +34,7 @@ public class DBInit {
                     String[].class).invoke(null,
                     (Object)Arrays.copyOfRange(args,1,args.length));
         } catch (Throwable t) {
+            t.printStackTrace();
             SLF4JLoggerProxy.error(DBInit.class,"Error",t);
         }
 
@@ -43,12 +46,12 @@ public class DBInit {
      *
      * @throws Exception if there was an error.
      */
-    static void initORSDB() throws Exception {
+    public static void initORSDB() throws Exception {
         //
         //Close the spring context so that ORS can startup
-        PersistTestBase.springSetup(new String[]{
-                "ors_initdb_create_admin_vendor.xml", "ors_db.xml"}, //$NON-NLS-1$ //$NON-NLS-2$
-                    new FileSystemXmlApplicationContext(
-                            OrderRoutingSystem.CFG_BASE_FILE_NAME)).close();
+        PersistTestBase.springSetup
+            (new String[] {
+                "file:"+CONF_DIR+ //$NON-NLS-1$
+                "dbinit.xml"}).close(); //$NON-NLS-1$
     }
 }

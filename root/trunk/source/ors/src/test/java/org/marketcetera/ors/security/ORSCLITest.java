@@ -46,8 +46,7 @@ public class ORSCLITest extends PersistTestBase {
                 @Override
                 protected String[] getConfigurations() {
                     //Initialize the DB.
-                    return new String[]{"ors_initdb_vendor.xml", //$NON-NLS-1$
-                            "ors_orm.xml", "ors_db.xml"}; //$NON-NLS-1$ //$NON-NLS-2$
+                    return ORSLoginModuleTest.getSpringFiles();
                 }
 
                 @Override

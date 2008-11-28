@@ -15,7 +15,6 @@ import org.marketcetera.util.log.I18NMessage;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.util.List;
 
@@ -260,8 +259,6 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
 
     @BeforeClass
     public static void setup() throws Exception {
-        springSetup(new String[]{"ors_initdb_vendor.xml", "ors_orm.xml", //$NON-NLS-1$ //$NON-NLS-2$
-                "ors_db.xml"}, new FileSystemXmlApplicationContext( //$NON-NLS-1$
-                        OrderRoutingSystem.CFG_BASE_FILE_NAME));
+        ORSLoginModuleTest.springSetup();
     }
 }
