@@ -4,6 +4,9 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
+
 /* $License$ */
 /**
  * Instances of this class uniquely identify a FIX Destination / Broker to
@@ -14,29 +17,9 @@ import java.io.Serializable;
  * @version $Id$
  * @since $Release$
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class DestinationID implements Serializable {
-
-    /**
-     * Creates a new ID. This empty constructor is intended for use
-     * by JAXB.
-     */
-
-    protected DestinationID() {}
-
-    /**
-     * Sets the text value of the ID. This setter is intended for use
-     * by JAXB.
-     *
-     * @param inValue the string ID value. Cannot be null.
-     */
-    public void setValue(String inValue) {
-        if(inValue == null) {
-            throw new NullPointerException();
-        }
-        mValue=inValue;
-    }
-
 
     /**
      * Returns the text value of the ID.
@@ -72,9 +55,21 @@ public class DestinationID implements Serializable {
      * @param inValue the string ID value. Cannot be null.
      */
     public DestinationID(String inValue) {
-        setValue(inValue);
+        if(inValue == null) {
+            throw new NullPointerException();
+        }
+        mValue = inValue;
     }
 
-    private String mValue;
+    /**
+     * Creates a new ID. This empty constructor is intended for use
+     * by JAXB.
+     */
+
+    protected DestinationID() {
+        mValue = null;
+    }
+
+    private final String mValue;
     private static final long serialVersionUID = 1L;
 }

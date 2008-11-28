@@ -11,14 +11,15 @@ import quickfix.Message;
 
 /* $License$ */
 /**
- * Execution Report implementation that wraps a FIX Message.
+ * Execution Report implementation that wraps a FIX Message. This class
+ * is public for the sake of JAXB and is not intended for general use.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
+public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
 
     @Override
     public Date getTransactTime() {
@@ -158,6 +159,15 @@ class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
                         Originator inOriginator) {
         super(inMessage, inDestinationID);
         mOriginator = inOriginator;
+    }
+
+    /**
+     * Creates an instance. This empty constructor is intended for use
+     * by JAXB.
+     */
+
+    protected ExecutionReportImpl() {
+        mOriginator = null;
     }
 
     private static final long serialVersionUID = 1L;
