@@ -9,3 +9,4 @@ Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional,
  org.junit4;resolution:=optional
 Eclipse-RegisterBuddy: org.marketcetera.core
+Export-Package: org.marketcetera.marketdata.bogus
