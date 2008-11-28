@@ -24,9 +24,9 @@ public class FIXMessageAdapterTest
     public void all()
         throws Exception
     {
+        FIXMessageAdapter adapter=new FIXMessageAdapter();
         assertNull(adapter.unmarshal(adapter.marshal(null)));
 
-        FIXMessageAdapter adapter=new FIXMessageAdapter();
         ExecutionReport er=new ExecutionReport();
         er.set(new OrigClOrdID("42"));
         Message msg=adapter.unmarshal(adapter.marshal(er));
