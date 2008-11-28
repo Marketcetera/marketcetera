@@ -17,11 +17,11 @@ import org.junit.Test;
 import org.junit.After;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.apache.log4j.Level;
 
 import javax.security.auth.callback.*;
 import javax.security.auth.login.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -135,9 +135,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
 
     @BeforeClass
     public static void setup() throws Exception {
-        PersistTestBase.springSetup(new String[]{"ors_orm.xml", "ors_db.xml", //$NON-NLS-1$ //$NON-NLS-2$
-                "ors_initdb_vendor.xml"}, new FileSystemXmlApplicationContext( //$NON-NLS-1$
-                        OrderRoutingSystem.CFG_BASE_FILE_NAME));
+        springSetup();
         user = new SimpleUser();
         user.setName(randomString());
         password = randomString().toCharArray();
@@ -155,6 +153,19 @@ public class ORSLoginModuleTest extends TestCaseBase {
         doNotHandleCallbacks = false;
         callbackException = null;
     }
+
+    static void springSetup()
+        throws Exception {
+        PersistTestBase.springSetup(getSpringFiles()); //$NON-NLS-1$
+    }
+
+    static String[] getSpringFiles() {
+        return new String[] {
+            "file:"+DIR_ROOT+File.separator+ //$NON-NLS-1$
+            "conf"+File.separator+ //$NON-NLS-1$
+            "security_test.xml"}; //$NON-NLS-1$
+    }
+
     private static String randomString() {
         return PersistTestBase.randomString();
     }
