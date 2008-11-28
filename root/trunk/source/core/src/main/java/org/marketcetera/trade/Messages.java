@@ -76,14 +76,24 @@ public interface Messages {
         new I18NMessage1P(LOGGER,"no_side"); //$NON-NLS-1$
     static final I18NMessage1P NO_SECURITY_TYPE=
         new I18NMessage1P(LOGGER,"no_security_type"); //$NON-NLS-1$
+    static final I18NMessage1P UNSUPPORTED_SECURITY_TYPE=
+        new I18NMessage1P(LOGGER,"unsupported_security_type"); //$NON-NLS-1$
     static final I18NMessage1P NO_TIME_IN_FORCE=
         new I18NMessage1P(LOGGER,"no_time_in_force"); //$NON-NLS-1$
+    static final I18NMessage1P UNSUPPORTED_TIME_IN_FORCE=
+        new I18NMessage1P(LOGGER,"unsupported_time_in_force"); //$NON-NLS-1$
     static final I18NMessage1P NO_POSITION_EFFECT=
         new I18NMessage1P(LOGGER,"no_position_effect"); //$NON-NLS-1$
+    static final I18NMessage1P UNSUPPORTED_POSITION_EFFECT=
+        new I18NMessage1P(LOGGER,"unsupported_position_effect"); //$NON-NLS-1$
     static final I18NMessage1P NO_ORDER_CAPACITY=
         new I18NMessage1P(LOGGER,"no_order_capacity"); //$NON-NLS-1$
+    static final I18NMessage1P UNSUPPORTED_ORDER_CAPACITY=
+        new I18NMessage1P(LOGGER,"unsupported_order_capacity"); //$NON-NLS-1$
     static final I18NMessage1P NO_ORDER_TYPE=
         new I18NMessage1P(LOGGER,"no_order_type"); //$NON-NLS-1$
+    static final I18NMessage1P UNSUPPORTED_ORDER_TYPE=
+        new I18NMessage1P(LOGGER,"unsupported_order_type"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_CONVERT=
         new I18NMessage1P(LOGGER,"cannot_convert"); //$NON-NLS-1$
 }

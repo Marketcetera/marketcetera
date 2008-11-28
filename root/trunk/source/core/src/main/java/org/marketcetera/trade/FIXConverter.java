@@ -5,6 +5,7 @@ import java.util.Map;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -34,9 +35,11 @@ public final class FIXConverter
     // CLASS METHODS.
 
     /**
-     * Adds the given symbol to the given QuickFIX/J message.
+     * Adds the given symbol to the given QuickFIX/J message (of the
+     * given FIX version).
      *
      * @param symbol The symbol. It may be null.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the symbol is required but is not set.
      *
@@ -46,6 +49,7 @@ public final class FIXConverter
 
     private static void addSymbol
         (MSymbol symbol,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
@@ -62,9 +66,11 @@ public final class FIXConverter
     }
 
     /**
-     * Adds the given price to the given QuickFIX/J message.
+     * Adds the given price to the given QuickFIX/J message (of the
+     * given FIX version).
      *
      * @param price The price. It may be null.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the price is required but is not set.
      *
@@ -74,6 +80,7 @@ public final class FIXConverter
 
     private static void addPrice
         (BigDecimal price,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
@@ -88,9 +95,11 @@ public final class FIXConverter
     }
 
     /**
-     * Adds the given quantity to the given QuickFIX/J message.
+     * Adds the given quantity to the given QuickFIX/J message (of the
+     * given FIX version).
      *
      * @param quantity The quantity. It may be null.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the quantity is required but is not set.
      *
@@ -100,6 +109,7 @@ public final class FIXConverter
 
     private static void addQuantity
         (BigDecimal quantity,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
@@ -114,9 +124,11 @@ public final class FIXConverter
     }
 
     /**
-     * Adds the given account to the given QuickFIX/J message.
+     * Adds the given account to the given QuickFIX/J message (of the
+     * given FIX version).
      *
      * @param account The account. It may be null.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the account is required but is not set.
      *
@@ -126,6 +138,7 @@ public final class FIXConverter
 
     private static void addAccount
         (String account,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
@@ -140,9 +153,11 @@ public final class FIXConverter
     }
 
     /**
-     * Adds the given order ID to the given QuickFIX/J message.
+     * Adds the given order ID to the given QuickFIX/J message (of the
+     * given FIX version).
      *
      * @param orderID The order ID. It may be null.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the order ID is required but is not
      * set.
@@ -153,6 +168,7 @@ public final class FIXConverter
 
     private static void addOrderID
         (OrderID orderID,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
@@ -168,9 +184,10 @@ public final class FIXConverter
 
     /**
      * Adds the given original order ID to the given QuickFIX/J
-     * message.
+     * message (of the given FIX version).
      *
      * @param originalOrderID The original order ID. It may be null.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the original order ID is required but
      * is not set.
@@ -181,6 +198,7 @@ public final class FIXConverter
 
     private static void addOriginalOrderID
         (OrderID originalOrderID,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
@@ -196,10 +214,11 @@ public final class FIXConverter
 
     /**
      * Adds the given destination order ID to the given QuickFIX/J
-     * message.
+     * message (of the given FIX version).
      *
      * @param destinationOrderID The destination order ID. It may be
      * null.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the destination order ID is required
      * but is not set.
@@ -210,6 +229,7 @@ public final class FIXConverter
 
     private static void addDestinationOrderID
         (String destinationOrderID,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
@@ -224,9 +244,11 @@ public final class FIXConverter
     }
 
     /**
-     * Adds the given side to the given QuickFIX/J message.
+     * Adds the given side to the given QuickFIX/J message (of the
+     * given FIX version).
      *
      * @param securityType The side. It may be null or unknown.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the side is required but is not set.
      *
@@ -236,6 +258,7 @@ public final class FIXConverter
 
     private static void addSide
         (Side side,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
@@ -252,10 +275,12 @@ public final class FIXConverter
     }
 
     /**
-     * Adds the given security type to the given QuickFIX/J message.
+     * Adds the given security type to the given QuickFIX/J message
+     * (of the given FIX version).
      *
      * @param securityType The security type. It may be null or
      * unknown.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the security type is required but is
      * not set.
@@ -266,28 +291,37 @@ public final class FIXConverter
 
     private static void addSecurityType
         (SecurityType securityType,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
     {
+        boolean supported=(fixVersion!=FIXVersion.FIX40);
         if ((securityType==null) ||
             (securityType==SecurityType.Unknown)) {
-            if (required) {
+            if (supported && required) {
                 throw new I18NException
                     (new I18NBoundMessage1P
                      (Messages.NO_SECURITY_TYPE,securityType));
             }
         } else{
+            if (!supported) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.UNSUPPORTED_SECURITY_TYPE,fixVersion));
+            }
             msg.setField(new quickfix.field.SecurityType
                          (securityType.getFIXValue()));
         }
     }
 
     /**
-     * Adds the given time-in-force to the given QuickFIX/J message.
+     * Adds the given time-in-force to the given QuickFIX/J message
+     * (of the given FIX version).
      *
      * @param timeInForce The time-in-force. It may be null or
      * unknown.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the time-in-force is required but is
      * not set.
@@ -298,28 +332,37 @@ public final class FIXConverter
 
     private static void addTimeInForce
         (TimeInForce timeInForce,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
     {
+        boolean supported=(fixVersion!=FIXVersion.FIX40);
         if ((timeInForce==null) ||
             (timeInForce==TimeInForce.Unknown)) {
-            if (required) {
+            if (supported && required) {
                 throw new I18NException
                     (new I18NBoundMessage1P
                      (Messages.NO_TIME_IN_FORCE,timeInForce));
             }
         } else{
+            if (!supported) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.UNSUPPORTED_TIME_IN_FORCE,fixVersion));
+            }
             msg.setField(new quickfix.field.TimeInForce
                          (timeInForce.getFIXValue()));
         }
     }
 
     /**
-     * Adds the given position effect to the given QuickFIX/J message.
+     * Adds the given position effect to the given QuickFIX/J message
+     * (of the given FIX version).
      *
      * @param positionEffect The position effect. It may be null or
      * unknown.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the position effect is required but is
      * not set.
@@ -330,28 +373,39 @@ public final class FIXConverter
 
     private static void addPositionEffect
         (PositionEffect positionEffect,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
     {
+        boolean supported=((fixVersion!=FIXVersion.FIX40) &&
+                           (fixVersion!=FIXVersion.FIX41) &&
+                           (fixVersion!=FIXVersion.FIX42));
         if ((positionEffect==null) ||
             (positionEffect==PositionEffect.Unknown)) {
-            if (required) {
+            if (supported && required) {
                 throw new I18NException
                     (new I18NBoundMessage1P
                      (Messages.NO_POSITION_EFFECT,positionEffect));
             }
         } else{
+            if (!supported) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.UNSUPPORTED_POSITION_EFFECT,fixVersion));
+            }
             msg.setField(new quickfix.field.PositionEffect
                          (positionEffect.getFIXValue()));
         }
     }
 
     /**
-     * Adds the given order capacity to the given QuickFIX/J message.
+     * Adds the given order capacity to the given QuickFIX/J message
+     * (of the given FIX version).
      *
      * @param orderCapacity The order capacity. It may be null or
      * unknown.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the order capacity is required but is
      * not set.
@@ -362,27 +416,38 @@ public final class FIXConverter
 
     private static void addOrderCapacity
         (OrderCapacity orderCapacity,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
     {
+        boolean supported=((fixVersion!=FIXVersion.FIX40) &&
+                           (fixVersion!=FIXVersion.FIX41) &&
+                           (fixVersion!=FIXVersion.FIX42));
         if ((orderCapacity==null) ||
             (orderCapacity==OrderCapacity.Unknown)) {
-            if (required) {
+            if (supported && required) {
                 throw new I18NException
                     (new I18NBoundMessage1P
                      (Messages.NO_ORDER_CAPACITY,orderCapacity));
             }
         } else{
+            if (!supported) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.UNSUPPORTED_ORDER_CAPACITY,fixVersion));
+            }
             msg.setField(new quickfix.field.OrderCapacity
                          (orderCapacity.getFIXValue()));
         }
     }
 
     /**
-     * Adds the given order type to the given QuickFIX/J message.
+     * Adds the given order type to the given QuickFIX/J message (of
+     * the given FIX version).
      *
      * @param orderType The order type. It may be null or unknown.
+     * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the order type is required but is not
      * set.
@@ -393,17 +458,24 @@ public final class FIXConverter
 
     private static void addOrderType
         (OrderType orderType,
+         FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
     {
+        boolean supported=(fixVersion!=FIXVersion.FIX40);
         if ((orderType==null) ||
             (orderType==OrderType.Unknown)) {
-            if (required) {
+            if (supported && required) {
                 throw new I18NException
                     (new I18NBoundMessage1P(Messages.NO_ORDER_TYPE,orderType));
             }
         } else{
+            if (!supported) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.UNSUPPORTED_ORDER_TYPE,fixVersion));
+            }
             msg.setField(new OrdType(orderType.getFIXValue()));
         }
     }
@@ -431,10 +503,11 @@ public final class FIXConverter
 
     /**
      * Returns the QuickFIX/J message form of the given single order,
-     * using the given version-specific message factory to effect
-     * conversion.
+     * using the given version-specific message factory (alongside the
+     * associated version) to effect conversion.
      *
-     * @param f The factory.
+     * @param fixFactory The factory.
+     * @param fixVersion The FIX version. 
      * @param o The order.
      *
      * @return The QuickFIX/J message.
@@ -443,35 +516,37 @@ public final class FIXConverter
      */
 
     public static Message toQMessage
-        (FIXMessageFactory f,
+        (FIXMessageFactory fixFactory,
+         FIXVersion fixVersion,
          OrderSingle o)
         throws I18NException
     {
-        Message msg=f.newOrderEmpty();
-        addOrderID(o.getOrderID(),msg,true);
-        addSymbol(o.getSymbol(),msg,true);
-        addSide(o.getSide(),msg,true);
-        addOrderType(o.getOrderType(),msg,true);
-        addSecurityType(o.getSecurityType(),msg,false);
-        addQuantity(o.getQuantity(),msg,false);
-        addTimeInForce(o.getTimeInForce(),msg,false);
-        addAccount(o.getAccount(),msg,false);
-        addPositionEffect(o.getPositionEffect(),msg,false);
-        addOrderCapacity(o.getOrderCapacity(),msg,false);
+        Message msg=fixFactory.newOrderEmpty();
+        addOrderID(o.getOrderID(),fixVersion,msg,true);
+        addSymbol(o.getSymbol(),fixVersion,msg,true);
+        addSide(o.getSide(),fixVersion,msg,true);
+        addOrderType(o.getOrderType(),fixVersion,msg,true);
+        addSecurityType(o.getSecurityType(),fixVersion,msg,false);
+        addQuantity(o.getQuantity(),fixVersion,msg,false);
+        addTimeInForce(o.getTimeInForce(),fixVersion,msg,false);
+        addAccount(o.getAccount(),fixVersion,msg,false);
+        addPositionEffect(o.getPositionEffect(),fixVersion,msg,false);
+        addOrderCapacity(o.getOrderCapacity(),fixVersion,msg,false);
         if (o.getOrderType()==OrderType.Limit) {
-            addPrice(o.getPrice(),msg,true);
+            addPrice(o.getPrice(),fixVersion,msg,true);
         }
         addCustomFields(o,msg);
-        f.getMsgAugmentor().newOrderSingleAugment(msg);
+        fixFactory.getMsgAugmentor().newOrderSingleAugment(msg);
         return msg;
     }
 
     /**
      * Returns the QuickFIX/J message form of the given order
      * cancellation, using the given version-specific message factory
-     * to effect conversion.
+     * (alongside the associated version) to effect conversion.
      *
-     * @param f The factory.
+     * @param fixFactory The factory.
+     * @param fixVersion The FIX version. 
      * @param o The order cancellation.
      *
      * @return The QuickFIX/J message.
@@ -480,30 +555,32 @@ public final class FIXConverter
      */
 
     public static Message toQMessage
-        (FIXMessageFactory f,
+        (FIXMessageFactory fixFactory,
+         FIXVersion fixVersion,
          OrderCancel o)
         throws I18NException
     {
-        Message msg=f.newCancelEmpty();
-        addOriginalOrderID(o.getOriginalOrderID(),msg,true);
-        addOrderID(o.getOrderID(),msg,true);
-        addSymbol(o.getSymbol(),msg,true);
-        addSide(o.getSide(),msg,true);
-        addQuantity(o.getQuantity(),msg,false);
-        addDestinationOrderID(o.getDestinationOrderID(),msg,false);
-        addAccount(o.getAccount(),msg,false);
-        addSecurityType(o.getSecurityType(),msg,false);
+        Message msg=fixFactory.newCancelEmpty();
+        addOriginalOrderID(o.getOriginalOrderID(),fixVersion,msg,true);
+        addOrderID(o.getOrderID(),fixVersion,msg,true);
+        addSymbol(o.getSymbol(),fixVersion,msg,true);
+        addSide(o.getSide(),fixVersion,msg,true);
+        addQuantity(o.getQuantity(),fixVersion,msg,false);
+        addDestinationOrderID(o.getDestinationOrderID(),fixVersion,msg,false);
+        addAccount(o.getAccount(),fixVersion,msg,false);
+        addSecurityType(o.getSecurityType(),fixVersion,msg,false);
         addCustomFields(o,msg);
-        f.getMsgAugmentor().cancelRequestAugment(msg);
+        fixFactory.getMsgAugmentor().cancelRequestAugment(msg);
         return msg;
     }
 
     /**
      * Returns the QuickFIX/J message form of the given order
      * replacement, using the given version-specific message factory
-     * to effect conversion.
+     * (alongside the associated version) to effect conversion.
      *
-     * @param f The factory.
+     * @param fixFactory The factory.
+     * @param fixVersion The FIX version. 
      * @param o The order replacement.
      *
      * @return The QuickFIX/J message.
@@ -512,42 +589,45 @@ public final class FIXConverter
      */
 
     public static Message toQMessage
-        (FIXMessageFactory f,
+        (FIXMessageFactory fixFactory,
+         FIXVersion fixVersion,
          OrderReplace o)
         throws I18NException
     {
-        Message msg=f.newCancelReplaceEmpty();
-        addOriginalOrderID(o.getOriginalOrderID(),msg,true);
-        addOrderID(o.getOrderID(),msg,true);
-        addSymbol(o.getSymbol(),msg,true);
-        addSide(o.getSide(),msg,true);
-        addOrderType(o.getOrderType(),msg,true);
-        addQuantity(o.getQuantity(),msg,false);
-        addAccount(o.getAccount(),msg,false);
-        addPrice(o.getPrice(),msg,false);
-        addSecurityType(o.getSecurityType(),msg,false);
-        addTimeInForce(o.getTimeInForce(),msg,false);
-        addPositionEffect(o.getPositionEffect(),msg,false);
-        addOrderCapacity(o.getOrderCapacity(),msg,false);
-        addDestinationOrderID(o.getDestinationOrderID(),msg,false);
+        Message msg=fixFactory.newCancelReplaceEmpty();
+        addOriginalOrderID(o.getOriginalOrderID(),fixVersion,msg,true);
+        addOrderID(o.getOrderID(),fixVersion,msg,true);
+        addSymbol(o.getSymbol(),fixVersion,msg,true);
+        addSide(o.getSide(),fixVersion,msg,true);
+        addOrderType(o.getOrderType(),fixVersion,msg,true);
+        addQuantity(o.getQuantity(),fixVersion,msg,false);
+        addAccount(o.getAccount(),fixVersion,msg,false);
+        addPrice(o.getPrice(),fixVersion,msg,false);
+        addSecurityType(o.getSecurityType(),fixVersion,msg,false);
+        addTimeInForce(o.getTimeInForce(),fixVersion,msg,false);
+        addPositionEffect(o.getPositionEffect(),fixVersion,msg,false);
+        addOrderCapacity(o.getOrderCapacity(),fixVersion,msg,false);
+        addDestinationOrderID(o.getDestinationOrderID(),fixVersion,msg,false);
         addCustomFields(o,msg);
-        f.getMsgAugmentor().cancelReplaceRequestAugment(msg);
+        fixFactory.getMsgAugmentor().cancelReplaceRequestAugment(msg);
         return msg;
     }
 
     /**
      * Returns the QuickFIX/J message form of the given order, using
-     * the given version-specific message factory to effect
-     * conversion.
+     * the given version-specific message factory (alongside the
+     * associated version) to effect conversion.
      *
-     * @param f The factory.
+     * @param fixFactory The factory.
+     * @param fixVersion The FIX version. 
      * @param o The order.
      *
      * @throws I18NException Thrown if conversion fails.
      */
 
     public static Message toQMessage
-        (FIXMessageFactory f,
+        (FIXMessageFactory fixFactory,
+         FIXVersion fixVersion,
          Order o)
         throws I18NException
     {
@@ -555,13 +635,13 @@ public final class FIXConverter
             return ((FIXOrder)o).getMessage();
         }
         if (o instanceof OrderSingle) {
-            return toQMessage(f,(OrderSingle)o);
+            return toQMessage(fixFactory,fixVersion,(OrderSingle)o);
         }
         if (o instanceof OrderCancel) {
-            return toQMessage(f,(OrderCancel)o);
+            return toQMessage(fixFactory,fixVersion,(OrderCancel)o);
         }
         if (o instanceof OrderReplace) {
-            return toQMessage(f,(OrderReplace)o);
+            return toQMessage(fixFactory,fixVersion,(OrderReplace)o);
         }
         throw new I18NException
             (new I18NBoundMessage1P(Messages.CANNOT_CONVERT,o));

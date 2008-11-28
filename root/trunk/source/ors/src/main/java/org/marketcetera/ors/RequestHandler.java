@@ -16,12 +16,14 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.IQuickFIXSender;
 import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.trade.DestinationID;
-import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.FIXConverter;
+import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Originator;
@@ -179,7 +181,8 @@ public class RequestHandler
             // Convert to a FIX message.
 
             try {
-                qMsg=FIXConverter.toQMessage(d.getFIXMessageFactory(),om);
+                qMsg=FIXConverter.toQMessage
+                    (d.getFIXMessageFactory(),d.getFIXVersion(),om);
             } catch (I18NException ex) {
                 throw new I18NException(ex,Messages.RH_CONVERSION_FAILED);
             }
@@ -248,7 +251,7 @@ public class RequestHandler
                          BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE,
                          ex.getLocalizedDetail());
                 } else {
-                    report=createRejectionMessage(ex,qMsg);
+                    report=createRejectionMessage(ex,msg,qMsg);
                 }
             } catch (CoreException ex2) {
                 Messages.RH_REPORT_FAILED.error(this,ex,msg);
@@ -278,7 +281,10 @@ public class RequestHandler
      * @param existingOrder
      * @return Corresponding rejection Message
      */
-    protected Message createRejectionMessage(Exception causeEx, Message existingOrder)
+    protected Message createRejectionMessage
+        (Exception causeEx,
+         TradeMessage order,
+         Message existingOrder)
         throws CoreException
     {
         Message rejection = null;
@@ -297,7 +303,9 @@ public class RequestHandler
         }
 
         rejection.setField(new OrdStatus(OrdStatus.REJECTED));
-        FIXMessageUtil.fillFieldsFromExistingMessage(rejection,  existingOrder);
+        if (existingOrder!=null) {
+            FIXMessageUtil.fillFieldsFromExistingMessage(rejection,  existingOrder);
+        }
         
         
         String msg = (causeEx.getLocalizedMessage() == null) ? causeEx.toString() : causeEx.getLocalizedMessage();
@@ -305,10 +313,17 @@ public class RequestHandler
         SLF4JLoggerProxy.debug(this, causeEx, "Reason for above rejection: {}", msg); //$NON-NLS-1$
         rejection.setString(Text.FIELD, msg);
         // manually set the ClOrdID since it's not required in the dictionary but is for electronic orders
-        try {
-            rejection.setField(new ClOrdID(existingOrder.getString(ClOrdID.FIELD)));
-        } catch(FieldNotFound ignored) {
-            // don't set it if it's not there
+        if (order instanceof OrderBase) {
+            rejection.setField(new ClOrdID(((OrderBase)order).getOrderID().
+                                           getValue()));
+        } else if (order instanceof FIXOrder) {
+            try {
+                rejection.setField
+                    (new ClOrdID(((FIXOrder)order).getMessage().
+                                 getString(ClOrdID.FIELD)));
+            } catch(FieldNotFound ignored) {
+                // don't set it if it's not there
+            }
         }
         try {
             getMsgFactory().getMsgAugmentor().executionReportAugment(rejection);
