@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Database configuration: connection pool.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!--
+    - See
+    - http://www.mchange.com/projects/c3p0/index.html#configuration_properties
+    - for a complete list of options.
+    -->
+
+  <bean
+   id="metc_sql_pool"
+   class="com.mchange.v2.c3p0.ComboPooledDataSource"
+   destroy-method="close">
+    <property
+     name="driverClass"
+     value="${metc.jdbc.driver}"/>
+    <property
+     name="jdbcUrl"
+     value="${metc.jdbc.url}"/>
+    <property
+     name="user"
+     value="${metc.jdbc.user}"/>
+    <property
+     name="password"
+     value="${metc.jdbc.password}"/>
+    <property
+     name="maxPoolSize"
+     value="${metc.jdbc.pool.size}"/>
+    <property
+     name="preferredTestQuery"
+     value="select 1"/>
+    <property
+     name="testConnectionOnCheckout"
+     value="true"/>
+  </bean>
+</beans>
