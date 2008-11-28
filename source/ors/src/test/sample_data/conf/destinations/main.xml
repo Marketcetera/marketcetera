@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main destination configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <import
+   resource="dest1/main.xml"/>
+  <import
+   resource="dest2/main.xml"/>
+  <import
+   resource="qsettings.xml"/>
+  <import
+   resource="selector.xml"/>
+
+  <bean
+   id="metc_destinations"
+   class="org.marketcetera.ors.dest.SpringDestinations">
+    <property
+     name="settings"
+     ref="metc_qsettings"/>
+    <property
+     name="destinations">
+      <list>
+        <ref bean="metc_dest1_destination"/>
+        <ref bean="metc_dest2_destination"/>
+      </list>
+    </property>
+  </bean>
+</beans>
