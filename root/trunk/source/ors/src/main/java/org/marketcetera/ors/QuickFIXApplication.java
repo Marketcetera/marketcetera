@@ -1,177 +1,303 @@
 package org.marketcetera.ors;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.CoreException;
-import org.marketcetera.quickfix.*;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.jms.core.JmsOperations;
-import quickfix.*;
-import quickfix.field.*;
-
 import java.util.Date;
-import java.util.Set;
+import org.marketcetera.core.CoreException;
+import org.marketcetera.ors.dest.Destination;
+import org.marketcetera.ors.dest.Destinations;
+import org.marketcetera.ors.filters.MessageFilter;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.IQuickFIXSender;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXConverter;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.jms.core.JmsOperations;
+import quickfix.Application;
+import quickfix.DoNotSend;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.SessionID;
+import quickfix.SessionNotFound;
+import quickfix.UnsupportedMessageType;
+import quickfix.field.DeliverToCompID;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.RefMsgType;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
+import quickfix.field.SessionRejectReason;
+import quickfix.field.TargetCompID;
+import quickfix.field.Text;
+import quickfix.field.TradSesStatus;
 
 /**
- * @author gmiller
- * $Id$
+ * A handler for incoming trade requests (orders).
+ *
+ * @author tlerios@marketcetera.com
+ * @since $Release$
+ * @version $Id$
  */
+
+/* $License$ */
+
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class QuickFIXApplication implements Application {
+public class QuickFIXApplication
+    implements Application
+{
 
-    private JmsOperations jmsOperations;
-    private JmsOperations tradeRecorderJMS;
-    private FIXMessageFactory fixMessageFactory;
-    private Set supportedMsgs;
-    private boolean fLoggedOn;
-    protected IQuickFIXSender quickFIXSender;
-    private MessageModifierManager messageModifierMgr;
+    // INSTANCE DATA.
 
-    public QuickFIXApplication(FIXMessageFactory fixMessageFactory) {
-        fLoggedOn = false;
-        this.fixMessageFactory = fixMessageFactory;
-        quickFIXSender = createQuickFIXSender();
-        supportedMsgs = java.util.Collections.EMPTY_SET; 
+    private final Destinations mDestinations;
+    private final MessageFilter mSupportedMessages;
+    private final IQuickFIXSender mSender;
+    private final JmsOperations mToClientTrades;
+    private final JmsOperations mToClientStatus;
+    private final JmsOperations mToTradeRecorder;
+
+
+    // CONSTRUCTORS.
+
+    public QuickFIXApplication
+        (Destinations destinations,
+         MessageFilter supportedMessages,
+         IQuickFIXSender sender,
+         JmsOperations toClientTrades,
+         JmsOperations toClientStatus,
+         JmsOperations toTradeRecorder)
+    {
+        mDestinations=destinations;
+        mSupportedMessages=supportedMessages;
+        mSender=sender;
+        mToClientTrades=toClientTrades;
+        mToClientStatus=toClientStatus;
+        mToTradeRecorder=toTradeRecorder;
     }
 
-    public void fromAdmin(Message message, SessionID session)  {
-        if (jmsOperations != null){
-            try {
-                if(MsgType.REJECT.equals(message.getHeader().getString(MsgType.FIELD))) {
-                    // bug #219
-                    SLF4JLoggerProxy.debug(this, "received reject: {}", message.getString(Text.FIELD)); //$NON-NLS-1$
-                }
 
-                jmsOperations.convertAndSend(message);
-            } catch (Exception ex) {
-                Messages.ERROR_SENDING_JMS_MESSAGE.error(this, ex, ex.toString());
-                SLF4JLoggerProxy.debug(this, ex, "Failed sending message: {}", message); //$NON-NLS-1$
-            }
-        }
+    // INSTANCE METHODS.
+
+    public Destinations getDestinations()
+    {
+        return mDestinations;
     }
 
-	public void fromApp(Message message, SessionID session) throws UnsupportedMessageType, FieldNotFound {
-       if (!supportedMsgs.contains(message.getHeader().getString(MsgType.FIELD)))
-                throw new UnsupportedMessageType(); 
-		if (jmsOperations != null){
-            try {
-                jmsOperations.convertAndSend(message);
-                if (message.getHeader().isSetField(DeliverToCompID.FIELD)) {
-                    // Support OpenFIX certification - we reject all DeliverToCompID since we don't redilever
-                    Message reject = fixMessageFactory.createSessionReject(message, SessionRejectReason.COMPID_PROBLEM);
-                    reject.setString(Text.FIELD,
-                            Messages.ERROR_NO_DELIVER_TO_COMPID_FIELD.getText(message.getHeader().getString(DeliverToCompID.FIELD)));
-                    quickFIXSender.sendToTarget(reject);
-                    return;
-                }
-            } catch (Exception ex) {
-                Messages.ERROR_SENDING_JMS_MESSAGE.error(this, ex, ex.toString());
-                SLF4JLoggerProxy.debug(this, ex, "Failed sending message: {}", message); //$NON-NLS-1$
-            }
-        }
-
-        if(FIXMessageUtil.isExecutionReport(message)) {
-            char ordStatus = message.getChar(OrdStatus.FIELD);
-            if((ordStatus == OrdStatus.FILLED) || (ordStatus == OrdStatus.PARTIALLY_FILLED)) {
-                logMessage(message, session);
-            }
-        }
-
-        if (FIXMessageUtil.isTradingSessionStatus(message)) {
-            Messages.TRADE_SESSION_STATUS.debug(this, 
-                                                CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldValue(TradSesStatus.FIELD, message.getString(TradSesStatus.FIELD)));
-        }
+    public MessageFilter getSupportedMessages()
+    {
+        return mSupportedMessages;
     }
 
-    /** Wrapper around logging a message to be overridden by tests with a noop */
-    protected void logMessage(final Message message, SessionID sessionID) {
-        if(tradeRecorderJMS != null) {
-            tradeRecorderJMS.convertAndSend(message);
+    public IQuickFIXSender getSender()
+    {
+        return mSender;
+    }
+
+    public JmsOperations getToClientTrades()
+    {
+        return mToClientTrades;
+    }
+
+    public JmsOperations getToClientStatus()
+    {
+        return mToClientStatus;
+    }
+
+    public JmsOperations getToTradeRecorder()
+    {
+        return mToTradeRecorder;
+    }
+
+    private void updateStatus
+        (Destination d,
+         boolean status)
+    {
+        Messages.QF_SENDING_STATUS.info(this,status,d);
+        d.setLoggedOn(status);
+        if (getToClientStatus()==null) {
+            return;
         }
+        getToClientStatus().convertAndSend(d.getStatus());
     }
 
-    public void onCreate(SessionID session) {
-	}
-
-	public void onLogon(SessionID session) {
-        fLoggedOn = true;
-        // do not forward the logon message over JMS as it's already coming through in the fromAdmin call
-    }
-
-	public void onLogout(SessionID session) {
-        fLoggedOn = false;
-        Message logout = fixMessageFactory.createMessage(MsgType.LOGOUT);
-        logout.getHeader().setField(new SenderCompID(session.getSenderCompID()));
-        logout.getHeader().setField(new TargetCompID(session.getTargetCompID()));
-        logout.getHeader().setField(new SendingTime(new Date())); //non-i18n
-        if (jmsOperations != null) {
-            try {
-                jmsOperations.convertAndSend(logout);
-            } catch (Exception ex) {
-                Messages.ERROR_SENDING_JMS_MESSAGE.error(this, ex, ex.toString());
-                SLF4JLoggerProxy.debug(this, ex, "Failed sending message: {}", logout); //$NON-NLS-1$
-            }
+    private void sendToClientTrades
+        (Destination d,
+         Message msg,
+         Originator originator)
+    {
+        Messages.QF_SENDING_REPLY.info(this,msg,d);
+        if (getToClientTrades()==null) {
+            return;
         }
-    }
-
-    /** Apply message modifiers to all outgoing to-admin messages (such as logout/login)
-     * In case the underlying QFJ engine is sending a reject (ie the counterparty sent us a
-     * malformed ExecReport for example) we want to add some more information to it and
-     * send a copy of the reject on the shared ors-messages topic as well so that the
-     * outgoing reject is visible in Photon and to other subscribers
-     * */
-    public void toAdmin(Message message, SessionID session) {
+        TradeMessage reply=null;
         try {
-            if(messageModifierMgr != null) {
-                messageModifierMgr.modifyMessage(message);
+            reply=FIXConverter.fromQMessage
+                (msg,originator,d.getDestinationID());
+        } catch (MessageCreationException ex) {
+            Messages.QF_REPORT_FAILED.error(this,ex);
+            return;
+        }
+        if (reply==null) {
+            Messages.QF_REPORT_TYPE_UNSUPPORTED.info(this);
+            return;
+        }
+        getToClientTrades().convertAndSend(reply);
+    }
+
+    private void sendTradeRecord
+        (Destination d,
+         Message msg)
+    {
+        Messages.QF_SENDING_TRADE_RECORD.info(this,msg,d);
+        if (getToTradeRecorder()==null) {
+            return;
+        }
+        getToTradeRecorder().convertAndSend(msg);
+    }
+
+
+    // Application.
+
+    @Override
+    public void onCreate
+        (SessionID session) {}
+
+    @Override
+	public void onLogon
+        (SessionID session)
+    {
+        Destination d=getDestinations().getDestination(session);
+        updateStatus(d,true);
+        // fromAdmin() will forward an execution report following the
+        // logon; there is no need to send a message from here.
+    }
+
+    @Override
+	public void onLogout
+        (SessionID session)
+    {
+        Destination d=getDestinations().getDestination(session);
+        updateStatus(d,false);
+    }
+
+    @Override
+    public void toAdmin
+        (Message msg,
+         SessionID session)
+    {
+        Destination d=getDestinations().getDestination(session);
+        Messages.QF_TO_ADMIN.info(this,msg,d);
+
+        // Apply message modifiers.
+
+        if (d.getModifiers()!=null) {
+            try {
+                d.getModifiers().modifyMessage(msg);
+            } catch (CoreException ex) {
+                Messages.QF_MODIFICATION_FAILED.warn(this,ex);
             }
-            if(FIXMessageUtil.isReject(message)) {
-                try {
-                    String origText = message.getString(Text.FIELD);
-                    String msgType = (message.isSetField(MsgType.FIELD)) ? null : message.getString(RefMsgType.FIELD);
-                    String msgTypeName = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType);
-                    String combinedText = Messages.ERROR_INCOMING_MSG_REJECTED.getText(msgTypeName, origText);
-                    message.setString(Text.FIELD, combinedText);
-                } catch (FieldNotFound fieldNotFound) {
-                    // ignore - don't modify the message, send original error through
-                }
-                jmsOperations.convertAndSend(message);
+        }
+
+        // If the QuickFIX/J engine is sending a reject (e.g. the
+        // counterparty sent us a malformed execution report, for
+        // example, and we are rejecting it), we notify the client of
+        // the rejection.
+
+        if (FIXMessageUtil.isReject(msg)) {
+            try {
+                String msgType=(msg.isSetField(MsgType.FIELD)?null:
+                                msg.getString(RefMsgType.FIELD));
+                String msgTypeName=d.getFIXDataDictionary().
+                    getHumanFieldValue(MsgType.FIELD, msgType);
+                msg.setString(Text.FIELD,Messages.QF_IN_MESSAGE_REJECTED.
+                              getText(msgTypeName,msg.getString(Text.FIELD)));
+            } catch (FieldNotFound ex) {
+                Messages.QF_MODIFICATION_FAILED.warn(this,ex);
+                // Send original message instead of modified one.
             }
-        } catch (CoreException ex) {
-            SLF4JLoggerProxy.debug(this, ex, "Failed modifying message: {}", message); //$NON-NLS-1$
+            sendToClientTrades(d,msg,Originator.Server);
         }
     }
 
-	public void toApp(Message message, SessionID session) throws DoNotSend {
-	}
+    @Override
+    public void fromAdmin
+        (Message msg,
+         SessionID session)
+    {
+        Destination d=getDestinations().getDestination(session);
+        Messages.QF_FROM_ADMIN.info(this,msg,d);
 
-	public JmsOperations getJmsOperations() {
-		return jmsOperations;
-	}
+        // Do not propagate heartbeats to client.
 
-	public void setJmsOperations(JmsOperations jmsOperations) {
-		this.jmsOperations = jmsOperations;
-	}
-
-    public void setTradeRecorderJMS(JmsOperations tradeRecorderJMS) {
-        this.tradeRecorderJMS = tradeRecorderJMS;
+        sendToClientTrades(d,msg,Originator.Destination);
     }
 
-    public void setSupportedMsgs(Set supportedMsgs) {
-        this.supportedMsgs = supportedMsgs;
-    }
- 
-
-
-    public void setMessageModifierMgr(MessageModifierManager inMgr){
-		messageModifierMgr = inMgr;
-	}
-
-    public boolean isLoggedOn() {
-        return fLoggedOn;
+    @Override
+	public void toApp
+        (Message msg,
+         SessionID session)
+        throws DoNotSend
+    {
+        Destination d=getDestinations().getDestination(session);
+        Messages.QF_TO_APP.info(this,msg,d);
     }
 
-    /** To be overridden by tests */
-    protected IQuickFIXSender createQuickFIXSender() {
-        return new QuickFIXSender();
+    @Override
+	public void fromApp
+        (Message msg,
+         SessionID session)
+        throws UnsupportedMessageType,
+               FieldNotFound
+    {
+        Destination d=getDestinations().getDestination(session);
+        Messages.QF_FROM_APP.info(this,msg,d);
+
+        // Accept only certain message types.
+
+        if (!getSupportedMessages().isAccepted(msg)){
+            Messages.QF_DISALLOWED_MESSAGE.info(this);
+            throw new UnsupportedMessageType();
+        }
+
+        // Report trading session status in a human-readable format.
+
+        if (FIXMessageUtil.isTradingSessionStatus(msg)) {
+            Messages.QF_TRADE_SESSION_STATUS.info
+                (this,d.getFIXDataDictionary().getHumanFieldValue
+                 (TradSesStatus.FIELD,msg.getString(TradSesStatus.FIELD)));
+        }
+
+        // Send message to client.
+
+        sendToClientTrades(d,msg,Originator.Destination);
+
+        // OpenFIX certification: we reject all DeliverToCompID since
+        // we don't redeliver.
+
+        if (msg.getHeader().isSetField(DeliverToCompID.FIELD)) {
+            try {
+                Message reject=d.getFIXMessageFactory().createSessionReject
+                    (msg,SessionRejectReason.COMPID_PROBLEM);
+                reject.setString
+                    (Text.FIELD,Messages.QF_COMP_ID_REJECT.getText
+                     (msg.getHeader().getString(DeliverToCompID.FIELD)));
+                getSender().sendToTarget(reject);
+            } catch (SessionNotFound ex) {
+                Messages.QF_COMP_ID_REJECT_FAILED.error(this,ex);
+            }
+            return;
+        }
+
+        // Record filled (partially or totally) execution reports.
+
+        if (FIXMessageUtil.isExecutionReport(msg)) {
+            char ordStatus=msg.getChar(OrdStatus.FIELD);
+            if ((ordStatus==OrdStatus.FILLED) ||
+                (ordStatus==OrdStatus.PARTIALLY_FILLED)) {
+                sendTradeRecord(d,msg);
+            }
+        }
     }
 }

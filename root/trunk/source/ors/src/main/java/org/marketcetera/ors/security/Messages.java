@@ -15,7 +15,7 @@ public interface Messages {
      * The message provider
      */
     static final I18NMessageProvider PROVIDER =
-            new I18NMessageProvider("security"); //$NON-NLS-1$
+            new I18NMessageProvider("ors_security"); //$NON-NLS-1$
     /**
      * The message logger.
      */

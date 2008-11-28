@@ -12,5 +12,5 @@ import org.marketcetera.core.ClassVersion;
 public interface ORSAdminMBean {
 
     /** Sends a {@link quickfix.fix44.UserRequest} message containing the password reset message */
-    public void sendPasswordReset(String senderCompID, String targetCompID, String oldPassword, String newPassword);
+    public void sendPasswordReset(String destination, String oldPassword, String newPassword);
 }

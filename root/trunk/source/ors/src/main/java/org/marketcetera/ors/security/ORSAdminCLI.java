@@ -1,13 +1,15 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.ApplicationBase;
 import static org.marketcetera.ors.security.Messages.*;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.persist.StringFilter;
+import org.apache.log4j.PropertyConfigurator;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
@@ -15,6 +17,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Console;
@@ -31,7 +34,8 @@ import java.util.Arrays;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class ORSAdminCLI {
+public class ORSAdminCLI
+    extends ApplicationBase {
     private AbstractApplicationContext context;
 
 
@@ -41,12 +45,12 @@ public class ORSAdminCLI {
      * @param err The error stream to write error output to
      */
     public ORSAdminCLI(PrintStream out, PrintStream err) {
-        OrderRoutingSystem.initializeLogger("log4j-cli.properties"); //$NON-NLS-1$
+        PropertyConfigurator.configureAndWatch
+            (CONF_DIR+"log4j"+File.separator+"cli.properties",
+             LOGGER_WATCH_DELAY);
         this.out = out;
         this.err = err;
-        context = new ClassPathXmlApplicationContext(getConfigurations(),
-                new FileSystemXmlApplicationContext(
-                        OrderRoutingSystem.CFG_BASE_FILE_NAME));
+        context = new ClassPathXmlApplicationContext(getConfigurations());
         context.registerShutdownHook();
     }
 
@@ -93,7 +97,9 @@ public class ORSAdminCLI {
      * @return the list of spring configurations
      */
     protected String[] getConfigurations() {
-        return new String[]{"ors_orm_vendor.xml", "ors_orm.xml", "ors_db.xml"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        return new String[] {
+            "file:"+CONF_DIR+ //$NON-NLS-1$
+            "cli.xml"}; //$NON-NLS-1$
     }
 
     /**

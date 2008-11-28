@@ -4,9 +4,11 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.ors.Messages;
-import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.ors.dest.Destination;
 import org.marketcetera.quickfix.IQuickFIXSender;
+import org.marketcetera.trade.DestinationID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.ors.dest.Destinations;
 
 import quickfix.Message;
 import quickfix.SessionID;
@@ -22,27 +24,24 @@ import quickfix.field.*;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ORSAdmin implements ORSAdminMBean {
+    private Destinations destinations;
     protected IQuickFIXSender quickFIXSender;
-    private FIXMessageFactory fixMessageFactory;
     private IDFactory idFactory;
 
-    public ORSAdmin(IQuickFIXSender qfSender, FIXMessageFactory msgFactory, IDFactory idFactory)
+    public ORSAdmin(Destinations destinations,
+                    IQuickFIXSender qfSender,
+                    IDFactory idFactory)
             throws NoMoreIDsException, ClassNotFoundException {
+        this.destinations = destinations;
         quickFIXSender = qfSender;
-        fixMessageFactory = msgFactory;
         this.idFactory = idFactory;
-        try {
-            this.idFactory.init();
-        } catch (Exception ex) {
-            SLF4JLoggerProxy.debug(this, ex, "Error initializing the ID Factory"); //$NON-NLS-1$
-            // ignore the exception - should get the in-memory id factory instead
-        }
     }
 
-    public void sendPasswordReset(String senderCompID, String targetCompID, String oldPassword, String newPassword) {
+    public void sendPasswordReset(String destination, String oldPassword, String newPassword) {
+        Destination d=destinations.getDestination(new DestinationID(destination));
         SLF4JLoggerProxy.debug(this, "Trade session halted, resetting password"); //$NON-NLS-1$
-        SessionID session = new SessionID(fixMessageFactory.getBeginString(), senderCompID,  targetCompID);
-        Message msg = fixMessageFactory.createMessage(MsgType.USER_REQUEST);
+        SessionID session = d.getSessionID();
+        Message msg = d.getFIXMessageFactory().createMessage(MsgType.USER_REQUEST);
         // in case of Currenex that uses FIX.4.2 right message won't be created to set the type manually
         if (!msg.getHeader().isSetField(MsgType.FIELD)) {
             msg.getHeader().setField(new MsgType(MsgType.USER_REQUEST));
