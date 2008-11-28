@@ -134,7 +134,7 @@ public class AveragePricesViewTest
     }
     
 	public void testShowMessage() throws Exception {
-		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX42.getMessageFactory());
+		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
 		AveragePriceView view = (AveragePriceView) getTestView();
 		view.setInput(hist);
 		

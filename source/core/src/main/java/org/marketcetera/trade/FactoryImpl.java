@@ -5,6 +5,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.SystemFIXMessageFactory;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.InMemoryIDFactory;
@@ -134,7 +135,7 @@ class FactoryImpl extends Factory {
         OrderSingle order = createOrderSingle();
         order.setAccount(FIXUtil.getAccount(inMessage));
         order.setDestinationID(inDestinationID);
-        order.setCustomFields(getFieldMap(inMessage, ORDER_SINGLE_FIELDS));
+        order.setCustomFields(getFieldMap(inMessage, SystemFIXMessageFactory.ORDER_SINGLE_FIELDS));
         order.setOrderID(FIXUtil.getOrderID(inMessage));
         order.setOrderType(FIXUtil.getOrderType(inMessage));
         order.setPrice(FIXUtil.getPrice(inMessage));
@@ -161,7 +162,7 @@ class FactoryImpl extends Factory {
         order.setAccount(FIXUtil.getAccount(inMessage));
         order.setDestinationID(inDestinationID);
         order.setDestinationOrderID(FIXUtil.getDestinationOrderID(inMessage));
-        order.setCustomFields(getFieldMap(inMessage, ORDER_CANCEL_FIELDS));
+        order.setCustomFields(getFieldMap(inMessage, SystemFIXMessageFactory.ORDER_CANCEL_FIELDS));
         order.setOrderID(FIXUtil.getOrderID(inMessage));
         order.setOriginalOrderID(FIXUtil.getOriginalOrderID(inMessage));
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
@@ -185,7 +186,7 @@ class FactoryImpl extends Factory {
         order.setAccount(FIXUtil.getAccount(inMessage));
         order.setDestinationID(inDestinationID);
         order.setDestinationOrderID(FIXUtil.getDestinationOrderID(inMessage));
-        order.setCustomFields(getFieldMap(inMessage, ORDER_REPLACE_FIELDS));
+        order.setCustomFields(getFieldMap(inMessage, SystemFIXMessageFactory.ORDER_REPLACE_FIELDS));
         order.setOrderID(FIXUtil.getOrderID(inMessage));
         order.setOrderType(FIXUtil.getOrderType(inMessage));
         order.setOriginalOrderID(FIXUtil.getOriginalOrderID(inMessage));
@@ -297,54 +298,4 @@ class FactoryImpl extends Factory {
                     inMessage.toString()));
         }
     }
-    static final Set<Integer> ORDER_SINGLE_FIELDS;
-    static final Set<Integer> ORDER_CANCEL_FIELDS;
-    static final Set<Integer> ORDER_REPLACE_FIELDS;
-    static {
-        Set<Integer> tmp = new HashSet<Integer>();
-        tmp.addAll(Arrays.asList(
-                ClOrdID.FIELD,
-                Account.FIELD,
-                OrdType.FIELD,
-                Price.FIELD,
-                OrderQty.FIELD,
-                quickfix.field.Side.FIELD,
-                Symbol.FIELD,
-                quickfix.field.SecurityType.FIELD,
-                quickfix.field.TimeInForce.FIELD,
-                quickfix.field.OrderCapacity.FIELD,
-                quickfix.field.PositionEffect.FIELD
-        ));
-        ORDER_SINGLE_FIELDS = Collections.unmodifiableSet(tmp);
-        tmp = new HashSet<Integer>();
-        tmp.addAll(Arrays.asList(
-                ClOrdID.FIELD,
-                quickfix.field.OrderID.FIELD,
-                Account.FIELD,
-                OrigClOrdID.FIELD,
-                OrderQty.FIELD,
-                quickfix.field.Side.FIELD,
-                Symbol.FIELD,
-                quickfix.field.SecurityType.FIELD
-        ));
-        ORDER_CANCEL_FIELDS = Collections.unmodifiableSet(tmp);
-        tmp = new HashSet<Integer>();
-        tmp.addAll(Arrays.asList(
-                ClOrdID.FIELD,
-                quickfix.field.OrderID.FIELD,
-                Account.FIELD,
-                OrdType.FIELD,
-                OrigClOrdID.FIELD,
-                Price.FIELD,
-                OrderQty.FIELD,
-                quickfix.field.Side.FIELD,
-                Symbol.FIELD,
-                quickfix.field.SecurityType.FIELD,
-                quickfix.field.TimeInForce.FIELD,
-                quickfix.field.OrderCapacity.FIELD,
-                quickfix.field.PositionEffect.FIELD
-        ));
-        ORDER_REPLACE_FIELDS = Collections.unmodifiableSet(tmp);
-    }
-
 }

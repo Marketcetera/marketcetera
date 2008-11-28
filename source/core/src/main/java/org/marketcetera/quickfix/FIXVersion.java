@@ -28,7 +28,7 @@ public enum FIXVersion {
     FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, 4.4, "FIX44-marketcetera.xml", //$NON-NLS-1$
             new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING, new quickfix.fix44.MessageFactory(), new FIXMessageAugmentor_44())),
     FIX_SYSTEM(FIXDataDictionary.FIX_SYSTEM_BEGIN_STRING, 0.0, "FIX00-system.xml", //$NON-NLS-1$
-          new FIXMessageFactory(FIXDataDictionary.FIX_SYSTEM_BEGIN_STRING, new SystemMessageFactory(), new FIXMessageAugmentor_44()));
+          new SystemFIXMessageFactory());
 
     private static HashMap<String, FIXVersion> versionMap;
 

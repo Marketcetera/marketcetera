@@ -11,6 +11,8 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.marketcetera.photon.Messages;
+import org.marketcetera.util.misc.ClassVersion;
+/* $License$ */
 
 /**
  * WebHelpAction opens the Marketcetera help site in an external 
@@ -18,8 +20,11 @@ import org.marketcetera.photon.Messages;
  * and {@link IWebBrowser#openURL(URL)}.
  * 
  * @author gmiller
+ * @version $Id$
+ * @since $Release$
  *
  */
+@ClassVersion("$Id$")
 public class WebHelpAction 
     extends Action 
     implements IWorkbenchAction, Messages
@@ -35,7 +40,6 @@ public class WebHelpAction
 		setId(ID);
 		setText(WEB_HELP_ACTION.getText());
 		setToolTipText(WEB_HELP_ACTION_DESCRIPTION.getText());
-		//setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_JMS_HISTORY));
 	}
 	/**
 	 *  

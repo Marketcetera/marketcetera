@@ -22,9 +22,9 @@ public class PriceConverterBuilderTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		CurrentFIXDataDictionary.setCurrentFIXDataDictionary(
-				FIXDataDictionaryManager.initialize(FIXVersion.FIX42, 
-						FIXVersion.FIX42.getDataDictionaryURL()));
-		priceConverterBuilder = new PriceConverterBuilder(FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX42).getDictionary());
+				FIXDataDictionaryManager.initialize(FIXVersion.FIX_SYSTEM, 
+						FIXVersion.FIX_SYSTEM.getDataDictionaryURL()));
+		priceConverterBuilder = new PriceConverterBuilder(FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX_SYSTEM).getDictionary());
 		priceConverterBuilder.addMapping(OrdType.MARKET, PriceImage.MKT.getImage());
 	}
 
@@ -81,14 +81,14 @@ public class PriceConverterBuilderTest extends TestCase {
 		assertEquals(IStatus.OK, validator.validate(OrdType.LIMIT_OR_BETTER).getSeverity());
 		assertEquals(IStatus.OK, validator.validate(OrdType.LIMIT_WITH_OR_WITHOUT).getSeverity());
 		assertEquals(IStatus.OK, validator.validate(OrdType.MARKET).getSeverity());
-		assertEquals(IStatus.ERROR, validator.validate(OrdType.MARKET_IF_TOUCHED).getSeverity());
+		assertEquals(IStatus.OK, validator.validate(OrdType.MARKET_IF_TOUCHED).getSeverity());
 		assertEquals(IStatus.OK, validator.validate(OrdType.MARKET_ON_CLOSE).getSeverity());
-		assertEquals(IStatus.ERROR, validator.validate(OrdType.MARKET_WITH_LEFTOVER_AS_LIMIT).getSeverity());
-		assertEquals(IStatus.ERROR, validator.validate(OrdType.NEXT_FUND_VALUATION_POINT).getSeverity());
+		assertEquals(IStatus.OK, validator.validate(OrdType.MARKET_WITH_LEFTOVER_AS_LIMIT).getSeverity());
+		assertEquals(IStatus.OK, validator.validate(OrdType.NEXT_FUND_VALUATION_POINT).getSeverity());
 		assertEquals(IStatus.OK, validator.validate(OrdType.ON_BASIS).getSeverity());
 		assertEquals(IStatus.OK, validator.validate(OrdType.ON_CLOSE).getSeverity());
 		assertEquals(IStatus.OK, validator.validate(OrdType.PEGGED).getSeverity());
-		assertEquals(IStatus.ERROR, validator.validate(OrdType.PREVIOUS_FUND_VALUATION_POINT).getSeverity());
+		assertEquals(IStatus.OK, validator.validate(OrdType.PREVIOUS_FUND_VALUATION_POINT).getSeverity());
 		assertEquals(IStatus.OK, validator.validate(OrdType.PREVIOUSLY_INDICATED).getSeverity());
 		assertEquals(IStatus.OK, validator.validate(OrdType.PREVIOUSLY_QUOTED).getSeverity());
 		assertEquals(IStatus.OK, validator.validate(OrdType.STOP).getSeverity());

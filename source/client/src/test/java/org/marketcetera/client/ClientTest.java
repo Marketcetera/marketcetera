@@ -211,8 +211,7 @@ public class ClientTest {
         initClient();
 
         //Create order
-        OrderReplace order = Factory.getInstance().createOrderReplace(
-                createExecutionReport());
+        OrderReplace order = createOrderReplace();
 
         //Create an execution report for the mock server to send back
         ExecutionReport report = createExecutionReport();
@@ -243,8 +242,7 @@ public class ClientTest {
         initClient();
 
         //Create cancel order
-        OrderCancel order = Factory.getInstance().createOrderCancel(
-                createExecutionReport());
+        OrderCancel order = createOrderCancel();
 
         //Create a reject for the mock server to send back
         OrderCancelReject report = createCancelReject();
@@ -275,13 +273,7 @@ public class ClientTest {
         initClient();
 
         //Create FIX order
-        FIXOrder order = Factory.getInstance().createOrder(
-                FIXVersion.FIX42.getMessageFactory().newLimitOrder("clOrd1",
-                        quickfix.field.Side.BUY, new BigDecimal("8934.234"),
-                        new MSymbol("IBM", SecurityType.Option),
-                        new BigDecimal("9834.23"),
-                        quickfix.field.TimeInForce.DAY, "no"),
-                new DestinationID("bro"));
+        FIXOrder order = createOrderFIX();
 
         //Create a report for the mock server to send back
         ExecutionReport report = createExecutionReport();
@@ -413,22 +405,22 @@ public class ClientTest {
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.sendOrder((OrderSingle)null);
+                client.sendOrder(createOrderSingle());
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.sendOrder((OrderReplace)null);
+                client.sendOrder(createOrderReplace());
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.sendOrder((OrderCancel) null);
+                client.sendOrder(createOrderCancel());
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.sendOrderRaw(null);
+                client.sendOrderRaw(createOrderFIX());
             }
         };
         //we can call close again
@@ -444,8 +436,7 @@ public class ClientTest {
             sServer.getHandler().addToSend(report);
         }
         //Send an order
-        getClient().sendOrder(Factory.getInstance().createOrderReplace(
-                    createExecutionReport()));
+        getClient().sendOrder(createOrderReplace());
         //Verify we got no exception when sending the order
         if(mListener.getException() != null) {
             SLF4JLoggerProxy.error(this, "Unexpected exception",
@@ -686,6 +677,38 @@ public class ClientTest {
                         new ClOrdID("clord" + sCounter.getAndIncrement()),
                         new OrigClOrdID("origord1"),
                         "what?", null),
+                new DestinationID("bro"));
+    }
+
+    static OrderSingle createOrderSingle() {
+        OrderSingle order = Factory.getInstance().createOrderSingle();
+        order.setOrderType(OrderType.Limit);
+        order.setPrice(new BigDecimal("834.34"));
+        order.setQuantity(new BigDecimal("833.343"));
+        order.setSide(Side.Buy);
+        order.setSymbol(new MSymbol("IBN", SecurityType.CommonStock));
+        return order;
+    }
+
+    static OrderReplace createOrderReplace() throws Exception {
+        OrderReplace order = Factory.getInstance().createOrderReplace(
+                createExecutionReport());
+        order.setOrderType(OrderType.Limit);
+        return order;
+    }
+
+    static OrderCancel createOrderCancel() throws Exception {
+        return Factory.getInstance().createOrderCancel(
+                createExecutionReport());
+    }
+
+    static FIXOrder createOrderFIX() throws MessageCreationException {
+        return Factory.getInstance().createOrder(
+                FIXVersion.FIX42.getMessageFactory().newLimitOrder("clOrd1",
+                        quickfix.field.Side.BUY, new BigDecimal("8934.234"),
+                        new MSymbol("IBM", SecurityType.Option),
+                        new BigDecimal("9834.23"),
+                        quickfix.field.TimeInForce.DAY, "no"),
                 new DestinationID("bro"));
     }
 

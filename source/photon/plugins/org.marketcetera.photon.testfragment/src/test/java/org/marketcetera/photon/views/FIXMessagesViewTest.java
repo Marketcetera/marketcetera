@@ -49,7 +49,7 @@ public class FIXMessagesViewTest extends ViewTestBase {
 	}
 
 	public void testShowMessage() throws Exception {
-		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX42.getMessageFactory());
+		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
 		FIXMessagesView view = (FIXMessagesView) getTestView();
 		view.setInput(hist);
 		hist.addIncomingMessage(new ExecutionReport(
@@ -73,7 +73,7 @@ public class FIXMessagesViewTest extends ViewTestBase {
 	}
 	
 	public void testShowHeartbeats() throws Exception {
-		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX42.getMessageFactory());
+		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
 		FIXMessagesView view = (FIXMessagesView) getTestView();
 		view.setInput(hist);
 		view.setShowHeartbeats(true);

@@ -4,6 +4,7 @@ import static org.marketcetera.quickfix.Messages.CANNOT_CREATE_FIX_FIELD;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.ClassVersion;
@@ -290,7 +291,24 @@ public class FIXMessageUtil {
 	{
 	    return inMessage.getInt(MarketDepth.FIELD);
 	}
-	/** Helper method to extract all useful fields from an existing message into another message
+
+    /**
+     * See {@link #fillFieldsFromExistingMessage(quickfix.Message, quickfix.Message, boolean, java.util.Set)}.
+     * Invokes this api with a null inclusion set.
+     *
+     * @param outgoingMessage The message whose fields need to be filled.
+     * @param existingMessage The message whose fields need to be copied.
+     * @param onlyCopyRequiredFields if only required fields should be copied.
+     */
+    public static void fillFieldsFromExistingMessage(Message outgoingMessage,
+                                                     Message existingMessage,
+                                                     boolean onlyCopyRequiredFields)
+    {
+        fillFieldsFromExistingMessage(outgoingMessage, existingMessage, onlyCopyRequiredFields, null);
+    }
+
+    /**
+     * Helper method to extract all useful fields from an existing message into another message
      * This is usually called when the "existing" message is malformed and is missing some fields,
      * and an appropriate "reject" message needs to be sent.
      * Can't say we are proud of this method - it's rather a kludge.
@@ -301,15 +319,24 @@ public class FIXMessageUtil {
      * that's a rejection, and need to extract all the other fields (ClOrdId, size, etc)
      * which may or may not be present since the order is malformed
      *
-     * @param outgoingMessage
-     * @param existingMessage
+     * @param outgoingMessage The message whose fields need to be filled.
+     * @param existingMessage The message whose fields need to be copied.
+     * @param onlyCopyRequiredFields if only required fields should be copied.
+     * @param inclusionSet the set of fields that should be copied. Can be null.
+     * If not null, only the fields present in this set are copied.
      */
-    public static void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage, boolean onlyCopyRequiredFields)
+    public static void fillFieldsFromExistingMessage(Message outgoingMessage,
+                                                     Message existingMessage,
+                                                     boolean onlyCopyRequiredFields,
+                                                     Set<Integer> inclusionSet)
     {
         try {
             String msgType = outgoingMessage.getHeader().getString(MsgType.FIELD);
             DataDictionary dict = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getDictionary();
             for (int fieldInt = 1; fieldInt < MAX_FIX_FIELDS; fieldInt++){
+                if(inclusionSet != null && !(inclusionSet.contains(fieldInt))) {
+                    continue;
+                }
                 if ((!onlyCopyRequiredFields || dict.isRequiredField(msgType,
 						fieldInt))
 						&& existingMessage.isSetField(fieldInt)

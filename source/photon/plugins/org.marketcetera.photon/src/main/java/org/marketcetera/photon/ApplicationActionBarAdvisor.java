@@ -21,13 +21,15 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.actions.CancelAllOpenOrdersAction;
 import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
-import org.marketcetera.photon.actions.ReconnectJMSAction;
+import org.marketcetera.photon.actions.ReconnectClientAction;
 import org.marketcetera.photon.actions.SelectOptionMarketDataCommandAction;
 import org.marketcetera.photon.actions.WebHelpAction;
+import org.marketcetera.util.misc.ClassVersion;
+
+/* $License$ */
 
 /**
  * This class contains the initialization code for the main application
@@ -35,6 +37,8 @@ import org.marketcetera.photon.actions.WebHelpAction;
  *
  * @author gmiller
  * @author andrei@lissovski.org
+ * @version $Id$
+ * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ApplicationActionBarAdvisor
@@ -105,7 +109,7 @@ public class ApplicationActionBarAdvisor
 
 	private IWorkbenchAction aboutAction;
 
-	private IWorkbenchAction reconnectJMSAction;
+	private IAction reconnectClientAction;
 
 	private IWorkbenchAction focusCommandAction;
 
@@ -178,7 +182,7 @@ public class ApplicationActionBarAdvisor
 //		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);  register(dynamicHelpAction);
         checkForUpdatesAction = new CheckForUpdatesAction(window);  register(checkForUpdatesAction);
 		aboutAction = ActionFactory.ABOUT.create(window); register(aboutAction);
-		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
+		reconnectClientAction = new ReconnectClientAction(window); register(reconnectClientAction);
 		reconnectMarketDataParameter = new CommandContributionItemParameter(window, null, COMMAND_ID, SWT.PUSH);
 		reconnectMarketDataParameter.icon = PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_QUOTE_FEED);
 		reconnectMarketDataParameter.mnemonic = "&e"; // entire menu should be externalized //$NON-NLS-1$
@@ -202,7 +206,7 @@ public class ApplicationActionBarAdvisor
 		// File menu
 		MenuManager menu = new MenuManager(Messages.ApplicationActionBarAdvisor_FileMenuName.getText(),
 				IWorkbenchActionConstants.M_FILE);
-		menu.add(reconnectJMSAction);
+		menu.add(reconnectClientAction);
 		menu.add(new CommandContributionItem(reconnectMarketDataParameter));
 		menu.add(cancelAllOpenOrdersAction);
 		menu.add(new Separator());
@@ -307,13 +311,11 @@ public class ApplicationActionBarAdvisor
 		//toolBar.add(viewSecurityCI);
 		ActionContributionItem focusCommandCI = new ActionContributionItem(focusCommandAction);
 		toolBar.add(focusCommandCI);
-		ActionContributionItem reconnectJMSCI = new ActionContributionItem(reconnectJMSAction);
-		toolBar.add(reconnectJMSCI);
+		ActionContributionItem reconnectClientCI = new ActionContributionItem(reconnectClientAction);
+		toolBar.add(reconnectClientCI);
 		toolBar.add(new CommandContributionItem(reconnectMarketDataParameter));
 		ActionContributionItem cancelAllOpenOrdersCI = new ActionContributionItem(cancelAllOpenOrdersAction);
 		toolBar.add(cancelAllOpenOrdersCI);
-		//ActionContributionItem openOptionsJMSCI = new ActionContributionItem(openOptionEditorAction);
-		//toolBar.add(openOptionsJMSCI);
 	}
 	
 }

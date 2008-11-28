@@ -22,8 +22,8 @@ import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.actions.ReconnectJMSJob;
-import org.marketcetera.photon.messaging.JMSFeedService;
+import org.marketcetera.photon.actions.ReconnectClientJob;
+import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.photon.ui.PhotonConsole;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -43,7 +43,7 @@ public class ApplicationWorkbenchWindowAdvisor
     @Override
 	public boolean preWindowShellClose() {
     	try {
-    		stopJMS();
+    		stopClient();
     	} catch (Throwable t){}
     	return true;
     }
@@ -133,7 +133,7 @@ public class ApplicationWorkbenchWindowAdvisor
 		
 		// The login dialog interferes with testing, this check is to ensure tests are not being run
 		if (PlatformUI.getTestableObject().getTestHarness() == null) {
-			startJMS();
+			startClient();
 		}
 		startMarketDataFeed();
 		startIDFactory();
@@ -158,19 +158,20 @@ public class ApplicationWorkbenchWindowAdvisor
 	}
 
 
-	private void startJMS() {
-		ReconnectJMSJob job = new ReconnectJMSJob(RECONNECT_MESSAGE_SERVER.getText());
+	private void startClient() {
+		ReconnectClientJob job = new ReconnectClientJob(RECONNECT_MESSAGE_SERVER.getText());
 		job.schedule();
 	}
 
 
-	private void stopJMS() {
+	private void stopClient() {
 		try {
 			BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-			ServiceTracker jmsFeedTracker = new ServiceTracker(bundleContext, JMSFeedService.class.getName(), null);
-			jmsFeedTracker.open();
+			ServiceTracker clientFeedTracker = new ServiceTracker(bundleContext, 
+					ClientFeedService.class.getName(), null);
+			clientFeedTracker.open();
 
-			ReconnectJMSJob.disconnect(jmsFeedTracker);
+			ReconnectClientJob.disconnect(clientFeedTracker);
 		} catch (Throwable t){
 			PhotonPlugin.getMainConsoleLogger().error(CANNOT_DISCONNECT_FROM_MESSAGE_QUEUE.getText(),
 			                                          t);

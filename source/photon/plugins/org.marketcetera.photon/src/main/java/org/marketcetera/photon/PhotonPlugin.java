@@ -38,7 +38,6 @@ import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.photon.marketdata.MarketDataManager;
-import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.photon.views.OptionOrderTicketController;
@@ -62,9 +61,13 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.SecurityType;
 
+/* $License$ */
+
 /**
  * The main plugin class to be used in the Photon application. This class is not
  * synchronized and should only be accessed from the UI thread.
+ * @version $Id$
+ * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class PhotonPlugin 
@@ -99,8 +102,6 @@ public class PhotonPlugin
 	public static final String DEFAULT_PROJECT_NAME = "ActiveScripts"; //$NON-NLS-1$
 
 	private static final String RUBY_NATURE_ID = ".rubynature"; //$NON-NLS-1$
-
-	private SimpleMessageListenerContainer registryListener;
 
 	private FIXMessageFactory messageFactory;
 
@@ -170,8 +171,6 @@ public class PhotonPlugin
 		photonController.setMessageHistory(fixMessageHistory);
 		photonController.setMainConsoleLogger(getMainConsoleLogger());
 		photonController.setIDFactory(idFactory);
-		photonController.setMessageFactory(messageFactory);
-
 	}
 
 	private void initFIXMessageHistory() {
@@ -186,9 +185,6 @@ public class PhotonPlugin
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
-		
-		if (registryListener != null)
-			registryListener.stop();
 	}
 
 	/**
@@ -228,16 +224,8 @@ public class PhotonPlugin
 	}
 	
 	private void initMessageFactory() throws FIXFieldConverterNotAvailable {
-		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
-		String versionString = thePreferenceStore.getString(ConnectionConstants.FIX_VERSION_KEY);
-		fixVersion = FIXVersion.FIX42;
-		try {
-			fixVersion = FIXVersion.valueOf(versionString);
-		} catch (IllegalArgumentException iae) {
-			// just use version 4.2
-		}
+		fixVersion = FIXVersion.FIX_SYSTEM;
 		messageFactory = fixVersion.getMessageFactory();
-		FIXDataDictionaryManager.initialize(FIXVersion.FIX44, "FIX44.xml"); //$NON-NLS-1$
 		CurrentFIXDataDictionary.setCurrentFIXDataDictionary(
 				FIXDataDictionaryManager.initialize(fixVersion, 
 						fixVersion.getDataDictionaryURL()));

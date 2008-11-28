@@ -85,8 +85,8 @@ public abstract class FIXMatcherTest<T>
         try {
             // this magic incantation gets the conversion field stuff working
             FIXVersionTestSuite.initializeFIXDataDictionaryManager(FIXVersionTestSuite.ALL_VERSIONS);
-            CurrentFIXDataDictionary.setCurrentFIXDataDictionary(FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44));
-            sMessageFactory = FIXVersion.FIX44.getMessageFactory();
+            CurrentFIXDataDictionary.setCurrentFIXDataDictionary(FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX_SYSTEM));
+            sMessageFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
         } catch (FIXFieldConverterNotAvailable ex) {
             SLF4JLoggerProxy.error(AbstractMarketDataFeedTest.class,
                                    ex);

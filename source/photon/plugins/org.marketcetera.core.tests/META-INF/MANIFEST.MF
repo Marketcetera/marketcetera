@@ -23,5 +23,6 @@ Export-Package: org.marketcetera.core,
  org.marketcetera.quickfix.cficode,
  org.marketcetera.quickfix.customfields,
  org.marketcetera.quickfix.messagefactory,
- org.marketcetera.quickfix.messagemodifiers
+ org.marketcetera.quickfix.messagemodifiers,
+ org.marketcetera.trade
 Bundle-ClassPath: core-1.0.0-tests.jar

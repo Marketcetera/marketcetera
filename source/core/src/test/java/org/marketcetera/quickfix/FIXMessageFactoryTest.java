@@ -71,7 +71,8 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 	public void testNewBasicOrder() throws FieldNotFound {
 		Message basicOrder = msgFactory.newBasicOrder();
 		assertEquals(MsgType.ORDER_SINGLE, basicOrder.getHeader().getString(MsgType.FIELD));
-		if (this.fixDD.getDictionary().isRequiredField(MsgType.ORDER_SINGLE, TransactTime.FIELD)){
+		if (this.fixDD.getDictionary().isRequiredField(MsgType.ORDER_SINGLE,
+                TransactTime.FIELD) && FIXVersion.FIX_SYSTEM != fixVersion){
 			// just make sure it's there:
 			basicOrder.getString(TransactTime.FIELD);
 		}			

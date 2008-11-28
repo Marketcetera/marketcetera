@@ -5,6 +5,8 @@ import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.marketcetera.util.misc.ClassVersion;
+/* $License$ */
 
 /**
  * Aggregate the status values of a number of observable values.
@@ -12,8 +14,11 @@ import org.eclipse.core.runtime.Status;
  * any of the component statuses.
  * 
  * @author gmiller
+ * @version $Id$
+ * @since $Release$
  *
  */
+@ClassVersion("$Id")
 public class StatusAggregator extends ComputedValue {
 
 	private final IObservableValue[] values;
@@ -31,6 +36,7 @@ public class StatusAggregator extends ComputedValue {
 			int currentSeverity = currentStatus.getSeverity();
 			if (currentSeverity > highestSeverity){
 				highestStatus = currentStatus;
+				highestSeverity = currentSeverity;
 			}
 		}
 		if (highestStatus != null){

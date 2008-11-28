@@ -8,6 +8,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.core.MSymbol;
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.management.JMX;
@@ -68,7 +69,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
         instance.reconnect();
         assertEquals(ClientManager.getInstance().getLastConnectTime(),
                 instance.getLastConnectTime());
-        org.junit.Assert.assertTrue(instance.getLastConnectTime().compareTo(lastTime) > 0);
+        assertTrue(instance.getLastConnectTime().compareTo(lastTime) > 0);
     }
 
     protected Object getExpectedUsername() {
@@ -94,8 +95,8 @@ public class ClientModuleTestBase extends ModuleTestBase {
     public void dataFlow() throws Exception {
         //Create all kinds of orders to send
         Order[] orders = new Order[]{
-                Factory.getInstance().createOrderSingle(),
-                Factory.getInstance().createOrderReplace(ClientTest.createExecutionReport()),
+                ClientTest.createOrderSingle(),
+                ClientTest.createOrderReplace(),
                 Factory.getInstance().createOrderCancel(ClientTest.createExecutionReport()),
                 Factory.getInstance().createOrder(
                         FIXVersion.FIX44.getMessageFactory().newLimitOrder(
@@ -144,7 +145,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
         //All the data has been transmitted, cancel the data flow
         mManager.cancel(flowID);
         //Verify data flow has ended
-        org.junit.Assert.assertTrue(mManager.getDataFlows(true).isEmpty());
+        assertTrue(mManager.getDataFlows(true).isEmpty());
         List<DataFlowInfo> history = mManager.getDataFlowHistory();
         assertEquals(1, history.size());
         DataFlowInfo info = history.get(0);
@@ -179,12 +180,13 @@ public class ClientModuleTestBase extends ModuleTestBase {
     @Test
     public void dataFlowUnsupportedTypeError() throws Exception {
         //test suggestion
-        OrderSingleSuggestion errorData = Factory.getInstance().createOrderSingleSuggestion();
+        OrderSingleSuggestion errorData = Factory.getInstance().
+                createOrderSingleSuggestion();
         ModuleURN senderURN = mManager.createModule(
                 OrderSenderModuleFactory.PROVIDER_URN, "unsupported",
                 new Object[]{
                         errorData,
-                        Factory.getInstance().createOrderSingle()});
+                        ClientTest.createOrderSingle()});
         ReportSink sink = new ReportSink();
         mManager.addSinkListener(sink);
         DataFlowID flowID = mManager.createDataFlow(new DataRequest[]{
@@ -195,10 +197,10 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 false, null, null);
         //Wait for sink to receive the report in respose to the order.
         Object data = sink.getNextData();
-        org.junit.Assert.assertTrue(data.getClass().getName(), data instanceof ExecutionReport);
+        assertTrue(data.getClass().getName(), data instanceof ExecutionReport);
         //We've received all data, cancel the data flow
         mManager.cancel(flowID);
-        org.junit.Assert.assertTrue(mManager.getDataFlows(true).isEmpty());
+        assertTrue(mManager.getDataFlows(true).isEmpty());
         List<DataFlowInfo> history = mManager.getDataFlowHistory();
         assertEquals(1, history.size());
         DataFlowInfo info = history.get(0);
@@ -220,7 +222,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
 
     @Test
     public void dataFlowNotInitializedError() throws Exception {
-        OrderSingle order = Factory.getInstance().createOrderSingle();
+        OrderSingle order = ClientTest.createOrderSingle();
         ModuleURN senderURN = mManager.createModule(
                 OrderSenderModuleFactory.PROVIDER_URN, "clientNotInit",
                 new Object[]{Boolean.FALSE, order});
@@ -261,9 +263,9 @@ public class ClientModuleTestBase extends ModuleTestBase {
     @AfterClass
     public static void serverCleanup() throws Exception {
         if (sServer != null) {
-            sServer.close();
-            sServer = null;
-        }
+        sServer.close();
+        sServer = null;
+    }
     }
     @Before
     public void clearMessageHandler() {

@@ -50,7 +50,7 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         return suite;
 /*/
         return new FIXVersionTestSuite(OutgoingMessageHandlerTest.class,
-                FIXVersionTestSuite.ALL_VERSIONS,
+                FIXVersionTestSuite.ALL_FIX_VERSIONS,
                 new HashSet<String>(Arrays.asList("testIncompatibleFIXVersions")), //$NON-NLS-1$
                 new FIXVersion[]{FIXVersion.FIX40});
    }

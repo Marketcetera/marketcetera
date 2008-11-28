@@ -58,6 +58,12 @@ public class QuickFIXTest extends TestCase {
 		assertEquals(false, orderQtyIsInt);
 		assertTrue(FieldType.Char.equals(dictionary.getFieldTypeEnum(Side.FIELD)));
 		
+		version = FIXVersion.FIX_SYSTEM;
+		dictionary = new DataDictionary(version.getDataDictionaryURL());
+		orderQtyIsInt = (FieldType.Int == dictionary.getFieldTypeEnum(OrderQty.FIELD));
+		assertEquals(false, orderQtyIsInt);
+		assertTrue(FieldType.Char.equals(dictionary.getFieldTypeEnum(Side.FIELD)));
+		
 	
 	}
 }

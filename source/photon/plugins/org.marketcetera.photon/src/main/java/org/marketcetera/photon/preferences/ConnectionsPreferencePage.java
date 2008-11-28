@@ -11,8 +11,6 @@ import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -22,7 +20,15 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeed;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.quickfix.ConnectionConstants;
+/* $License$ */
 
+/**
+ * Connection Preferences.
+ * 
+ * @version $Id$
+ * @since $Release$
+ *
+ */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ConnectionsPreferencePage
     extends FieldEditorPreferencePage
@@ -33,7 +39,7 @@ public class ConnectionsPreferencePage
 	
 	private final MarketDataManager mdataManager = PhotonPlugin.getDefault().getMarketDataManager();
 	
-	private UrlFieldEditor jmsServerUrlEditor;
+	private UrlFieldEditor clientUrlEditor;
 
 	private UrlFieldEditor webAppHostEditor;
 	
@@ -54,48 +60,21 @@ public class ConnectionsPreferencePage
      */
     public void init(IWorkbench workbench) {
     }
-
-    /**
-     * Adds labels to the field editor describing the FIX version. 
-     */
-    private void createFIXVersionLabels() {
-    	String fixVersionStr = PhotonPlugin.getDefault().getMessageFactory().getBeginString();
-    	if (fixVersionStr != null && fixVersionStr.length() > 0)
-    	{
-    		Label descriptionLabel = new Label(getFieldEditorParent(), SWT.NONE);
-    		descriptionLabel.setText(FIX_VERSION_LABEL.getText());
-    		Label versionLabel = new Label(getFieldEditorParent(), SWT.NONE);
-    		versionLabel.setText(fixVersionStr);
-    		versionLabel.setToolTipText(FIX_VERSION_TOOLTIP.getText());
-    	}
-    }
-    
+ 
     /**
 	 * Creates the field editor components associated with the vaious connections.
 	 * 
 	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
 	 * 
-	 * @see ConnectionConstants#JMS_OUTGOING_QUEUE_KEY
-	 * @see ConnectionConstants#JMS_INCOMING_TOPIC_KEY
-	 * @see ConnectionConstants#JMS_URL_KEY
+	 * @see ConnectionConstants#CLIENT_URL_KEY
 	 */
 
     protected void createFieldEditors() {
-        createFIXVersionLabels();
         
-        jmsServerUrlEditor = new UrlFieldEditor(ConnectionConstants.JMS_URL_KEY,
-                                                JMS_SERVER_URL_LABEL.getText(),
+        clientUrlEditor = new UrlFieldEditor(ConnectionConstants.CLIENT_URL_KEY,
+                                                CLIENT_SERVER_URL_LABEL.getText(),
                                                 getFieldEditorParent());
-		addField(jmsServerUrlEditor);
-		StringFieldEditor stringEditor = new StringFieldEditor(ConnectionConstants.JMS_INCOMING_TOPIC_KEY,
-		                                                       INCOMING_TOPIC_LABEL.getText(),
-		                                                       getFieldEditorParent());
-        addField(stringEditor);
-        stringEditor = new StringFieldEditor(ConnectionConstants.JMS_OUTGOING_QUEUE_KEY,
-                                             OUTGOING_QUEUE_LABEL.getText(),
-                                             getFieldEditorParent());
-        addField(stringEditor);
-
+		addField(clientUrlEditor);
         webAppHostEditor = new UrlFieldEditor(ConnectionConstants.WEB_APP_HOST_KEY,
                                               WEB_APP_HOST_LABEL.getText(),
                                               getFieldEditorParent());
@@ -164,7 +143,7 @@ public class ConnectionsPreferencePage
     @Override
     public boolean performOk() {
         try {
-        	jmsServerUrlEditor.setStringValue(jmsServerUrlEditor.getStringValue().trim());
+        	clientUrlEditor.setStringValue(clientUrlEditor.getStringValue().trim());
         	webAppHostEditor.setStringValue(webAppHostEditor.getStringValue().trim());
         	
         	super.performOk();  // pulls the data out of the page fields and into the preference store. this call does _not_ persist the data to disk.

@@ -41,14 +41,15 @@ public class ParserTest extends FIXVersionedTestCase {
 
     public static Test suite()
     {
-    	return new FIXVersionTestSuite(ParserTest.class,FIXVersion.values());
+    	return new FIXVersionTestSuite(ParserTest.class,
+    			new FIXVersion[]{FIXVersion.FIX_SYSTEM});
     }
 
     
     public void testNewOrder() throws NoMoreIDsException, FieldNotFound {
     	CommandParser aParser = new CommandParser();
     	aParser.setIDFactory(new InMemoryIDFactory(10));
-    	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
+    	aParser.setMessageFactory(msgFactory);
     	aParser.setDataDictionary(fixDD.getDictionary());
     	String order;  
     	order = "B 100 IBM 1.";
@@ -200,7 +201,7 @@ public class ParserTest extends FIXVersionedTestCase {
     public void testNewOptionOrder() throws NoMoreIDsException, FieldNotFound {
     	CommandParser aParser = new CommandParser();
     	aParser.setIDFactory(new InMemoryIDFactory(10));
-    	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
+    	aParser.setMessageFactory(FIXVersion.FIX_SYSTEM.getMessageFactory());
     	aParser.setDataDictionary(fixDD.getDictionary());
     	String order;  
     	order = "B 100 IBM 08OCT25C 1.";
@@ -367,7 +368,7 @@ public class ParserTest extends FIXVersionedTestCase {
     public void testResendRequest() throws FieldNotFound {
     	CommandParser aParser = new CommandParser();
     	aParser.setIDFactory(new InMemoryIDFactory(10));
-    	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
+    	aParser.setMessageFactory(FIXVersion.FIX_SYSTEM.getMessageFactory());
     	aParser.setDataDictionary(fixDD.getDictionary());
     	String commandText;  
     	MessageCommand command;
@@ -431,20 +432,6 @@ public class ParserTest extends FIXVersionedTestCase {
     }
     
     public void testDecimalQuantity() throws Exception {
-    	if (ParserTest.this.fixVersion==FIXVersion.FIX40 || 
-    			ParserTest.this.fixVersion==FIXVersion.FIX41){
-	    	(new ExpectedTestFailure(ParserException.class) {
-	            protected void execute() throws Throwable
-	            {
-	        		doTestDecimalQuantity();
-	            }
-	        }).run();
-    	} else {
-    		doTestDecimalQuantity();
-    	}
-	}
-
-    private void doTestDecimalQuantity() {
     	String innerOrder = "SS 100.1 IBM 123.4";
     	CommandParser innerParser = new CommandParser();
     	innerParser.setIDFactory(new InMemoryIDFactory(10));
