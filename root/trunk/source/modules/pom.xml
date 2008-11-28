@@ -26,6 +26,7 @@
   <name>Modules</name>
 
   <modules>
+    <module>cep</module>
     <module>marketdata</module>
     <module>misc</module>
     <module>strategy</module>

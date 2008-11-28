@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: toli@marketcetera.com
+  - Since: $Release$
+  - Version: $Id: pom.xml 9860 2008-10-10 22:00:53Z klim $
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>cep</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>cep-esper</artifactId>
+  <packaging>jar</packaging>
+
+  <name>CEP Esper Module</name>
+
+  <dependencies>
+    <!-- Compile. -->
+    <dependency>
+      <groupId>esper</groupId>
+      <artifactId>esper</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>cep-system</artifactId>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>cep-system</artifactId>
+      <type>test-jar</type>
+    </dependency>
+  </dependencies>
+</project>

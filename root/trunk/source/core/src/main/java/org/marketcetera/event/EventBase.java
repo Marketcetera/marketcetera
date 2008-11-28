@@ -16,7 +16,7 @@ import org.marketcetera.core.ClassVersion;
  * @since 0.5.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public abstract class EventBase 
+public abstract class EventBase implements TimestampCarrier
 {
     /**
      * unique identifier for this market event
@@ -53,7 +53,7 @@ public abstract class EventBase
      *
      * @return a <code>long</code> value containing the number of milliseconds since EPOCH in GMT
      */
-    public long getTimestamp() 
+    public long getTimeMillis()
     {
         return timestamp;
     }
@@ -64,7 +64,7 @@ public abstract class EventBase
      */
     public Date getTimestampAsDate()
     {
-        return new Date(getTimestamp()); //non-i18n
+        return new Date(getTimeMillis()); //non-i18n
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -95,6 +95,7 @@ public abstract class EventBase
             return false;
         return true;
     }
+
     /**
      * Compares two events based on their timestamps.
      *
@@ -121,7 +122,7 @@ public abstract class EventBase
                           EventBase inO2)
        {
            // invert the result to be returned if necessary to get a descending sort
-           int temp = new Long(inO1.getTimestamp()).compareTo(inO2.getTimestamp());
+           int temp = new Long(inO1.getTimeMillis()).compareTo(inO2.getTimeMillis());
            return mIsAscending ? temp : -temp;
        }
    }
