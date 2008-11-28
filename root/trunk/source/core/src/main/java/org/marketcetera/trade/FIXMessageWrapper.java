@@ -10,6 +10,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Collections;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 /* $License$ */
 /**
  * Base class for all messages that wrap a FIX Message.
@@ -18,6 +22,7 @@ import java.util.Collections;
  * @version $Id$
  * @since $Release$
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$") //$NON-NLS-1$
 class FIXMessageWrapper implements FIXMessageSupport {
     /**
@@ -28,6 +33,16 @@ class FIXMessageWrapper implements FIXMessageSupport {
     public FIXMessageWrapper(Message inMessage) {
         mMessage = inMessage;
     }
+
+    /**
+     * Creates an instance. This empty constructor is intended for use
+     * by JAXB.
+     */
+
+    protected FIXMessageWrapper() {
+        mMessage = null;
+    }
+
     @Override
     public Message getMessage() {
         return mMessage;
@@ -49,6 +64,7 @@ class FIXMessageWrapper implements FIXMessageSupport {
         return mFields;
     }
     private transient Map<Integer,String> mFields;
+    @XmlJavaTypeAdapter(FIXMessageAdapter.class)
     private final Message mMessage;
     private static final long serialVersionUID = 1L;
 }

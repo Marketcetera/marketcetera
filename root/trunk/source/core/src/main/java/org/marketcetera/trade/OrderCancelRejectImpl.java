@@ -5,14 +5,16 @@ import quickfix.Message;
 
 /* $License$ */
 /**
- * OrderCancelReject instances that wrap a FIX Message instance.
+ * OrderCancelReject instances that wrap a FIX Message instance. This
+ * class is public for the sake of JAXB and is not intended for
+ * general use.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-class OrderCancelRejectImpl extends ReportBaseImpl
+public class OrderCancelRejectImpl extends ReportBaseImpl
         implements OrderCancelReject {
     /**
      * Creates an instance.
@@ -24,6 +26,13 @@ class OrderCancelRejectImpl extends ReportBaseImpl
     OrderCancelRejectImpl(Message inMessage, DestinationID inDestinationID) {
         super(inMessage, inDestinationID);
     }
+
+    /**
+     * Creates an instance. This empty constructor is intended for use
+     * by JAXB.
+     */
+
+    protected OrderCancelRejectImpl() {}
 
     @Override
     public String toString() {
