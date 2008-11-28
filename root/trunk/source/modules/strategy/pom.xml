@@ -74,6 +74,7 @@
 
   <build>
     <plugins>
+
       <!-- Configure Eclipse IDE metadata. -->
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
