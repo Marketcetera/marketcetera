@@ -62,10 +62,11 @@ creation of a <code>BaseT</code> support class, not a
 <code>B</code> one. Hence marshalling will encounter problems unless
 there is some method (or property) anywhere within the same service
 interface that makes direct use of <code>B</code> which thereby forces
-JAXB to create a support class for <code>B</code>. Note that such
-errors will occur only at run-time and when the argument above is
-operated upon in such a manner that <code>B</code> comes into
-play.</p></li>
+JAXB to create a support class for <code>B</code> (this can be
+accomplished using the <code>@XmlSeeAlso</code> annotation,
+instead). Note that such errors will occur only at run-time and when
+the argument above is operated upon in such a manner
+that <code>B</code> comes into play.</p></li>
 
 <li><p><code>@XmlTransient</code>, unlike regular annotations, is
 inherited. This means that a parent class which has annotated a
@@ -82,7 +83,8 @@ if the actual runtime type of the object originally supplied to the
 marshaller is of a class derived from <code>B</code>. To enable
 support of inherited classes, you need to add some method (or
 property) anywhere within the same service interface that makes direct
-use of each inherited class.</p></li>
+use of each inherited class (or use the <code>@XmlSeeAlso</code>
+annotation).</p></li>
 
 <li><p>The previous point also applies to exceptions thrown by service
 methods. However, for exceptions, it is possible to add multiple
@@ -91,18 +93,22 @@ related by super/subclass relationships. In that case, the actual
 exception class will be unmarshalled if it is one of the classes in
 the clause. Unlike regular objects, adding an exception
 subclass <code>D</code> (extending <code>B</code>) in a
-<i>different</i> method of the same service interface will not enable
-marshalling of a <code>D</code> exception as a <code>D</code> within a
-method whose throws clause lists only <code>B</code>
-explicitly.</p></li>
+<i>different</i> method of the same service interface (or using
+the <code>@XmlSeeAlso</code> annotation) will not enable marshalling
+of a <code>D</code> exception as a <code>D</code> within a method
+whose throws clause lists only <code>B</code> explicitly.</p></li>
 
 <li><p>Character objects (meaning <code>Character</code>,
 not <code>char</code> primitives) are sometimes treated as integers,
-and hence are not marshalled properly; strings and <code>char</code>
-primitives are properly marshalled. Character objects as properties
-have problems unless it's a <code>Character[]</code>; character
-objects as method arguments/results have problems only when used in
-maps.</p></li>
+and hence are not marshalled properly; strings (provided they do not
+contain certain illegal characters like \u0000) and <code>char</code>
+primitives (of all values) are properly marshalled. Specifically,
+Character objects as method arguments/results have problems when used
+in maps.</p></li>
+
+<li><p>Date objects are sometimes treated as calendars, and hence are
+not marshalled properly. Specifically, Date objects as method
+arguments/results have problems when used in maps.</p></li>
 
 <li><p>Collections and maps undergo special handling during
 marshalling. When a set needs to get marshalled, it is always

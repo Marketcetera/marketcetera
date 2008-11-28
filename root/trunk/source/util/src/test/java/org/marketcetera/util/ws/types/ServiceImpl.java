@@ -3,6 +3,7 @@ package org.marketcetera.util.ws.types;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
@@ -1600,6 +1601,105 @@ public class ServiceImpl
         return new StatelessRemoteCaller<EnumObjectHolder>() {
             @Override
             protected EnumObjectHolder call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+
+    // Date.
+
+    @Override
+    public Date dt
+        (StatelessClientContext context,
+         final Date arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<Date>() {
+            @Override
+            protected Date call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public Date[] arrDt
+        (StatelessClientContext context,
+         final Date[] arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<Date[]>() {
+            @Override
+            protected Date[] call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public Collection<Date> colDt
+        (StatelessClientContext context,
+         final Collection<Date> arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<Collection<Date>>() {
+            @Override
+            protected Collection<Date> call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public Set<Date> setDt
+        (StatelessClientContext context,
+         final Set<Date> arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<Set<Date>>() {
+            @Override
+            protected Set<Date> call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public MapWrapper<Date,Date> mapDt
+        (StatelessClientContext context,
+         final MapWrapper<Date,Date> arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<MapWrapper<Date,Date>>() {
+            @Override
+            protected MapWrapper<Date,Date> call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public DateHolder hldDt
+        (StatelessClientContext context,
+         final DateHolder arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<DateHolder>() {
+            @Override
+            protected DateHolder call
                 (StatelessClientContext context)
             {
                 return arg;

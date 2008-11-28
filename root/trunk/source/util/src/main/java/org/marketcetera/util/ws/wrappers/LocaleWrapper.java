@@ -1,7 +1,9 @@
 package org.marketcetera.util.ws.wrappers;
 
 import java.util.Locale;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.wrappers.MarshalledLocale;
 
 /**
  * A dual-form wrapper for marshalling a locale. The raw form is
@@ -15,6 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
+@XmlSeeAlso(MarshalledLocale.class)
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class LocaleWrapper
     extends DualWrapper<Locale,MarshalledLocale>

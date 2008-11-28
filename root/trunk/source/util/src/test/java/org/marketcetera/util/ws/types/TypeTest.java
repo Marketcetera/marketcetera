@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -163,13 +164,13 @@ public class TypeTest
     // Character.
 
     private static final char TEST_P_CHAR=
-        'a';
+        '\u0001';
     private static final Character TEST_O_CHAR=
-        'b';
+        '\u0002';
     private static final char[] TEST_PARR_CHAR=new char[]
-        {'a','b','c'};
+        {'\u0001','\u0002','a'};
     private static final Character[] TEST_OARR_CHAR=new Character[]
-        {'d','e','f'};
+        {'\u0003','\u0004','b'};
     private static final List<Character> TEST_LST_CHAR=
         Arrays.asList(TEST_OARR_CHAR);
     private static final Collection<Character> TEST_COL_CHAR=
@@ -196,18 +197,13 @@ public class TypeTest
         TEST_HMAP_CHAR;
     private static final MapWrapper<Character,Character> TEST_WMAP_CHAR=
         new MapWrapper<Character,Character>(TEST_MAP_CHAR);
-    /*
-     * LIMITATION: characters (as objects), or any collections/maps of
-     * them, are treated as integers. Hence using nulls instead for
-     * the test to pass.
-     */
     private static final CharacterHolder TEST_HLD_CHAR=
         new CharacterHolder
-        (TEST_P_CHAR,null,
+        (TEST_P_CHAR,TEST_O_CHAR,
          TEST_PARR_CHAR,TEST_OARR_CHAR,
-         null,null,null,
-         null,null,null,
-         null,null,null);
+         TEST_COL_CHAR,TEST_LST_CHAR,TEST_LLST_CHAR,
+         TEST_SET_CHAR,TEST_HSET_CHAR,TEST_TSET_CHAR,
+         TEST_MAP_CHAR,TEST_HMAP_CHAR,TEST_TMAP_CHAR);
 
     // Double.
 
@@ -636,6 +632,48 @@ public class TypeTest
          TEST_COL_EO,TEST_LST_EO,TEST_LLST_EO,
          TEST_SET_EO,TEST_HSET_EO,TEST_TSET_EO,
          TEST_MAP_EO,TEST_HMAP_EO,TEST_TMAP_EO);
+
+    // Date.
+
+    private static final Date TEST_DT=
+        new Date(1);
+    private static final Date[] TEST_ARR_DT=new Date[]
+        {new Date(1),
+         new Date(2)};
+    private static final List<Date> TEST_LST_DT=
+        Arrays.asList(TEST_ARR_DT);
+    private static final Collection<Date> TEST_COL_DT=
+        TEST_LST_DT;
+    private static final LinkedList<Date> TEST_LLST_DT=
+        toLinkedList(TEST_LST_DT);
+    private static final HashSet<Date> TEST_HSET_DT=
+        toHashSet(TEST_LST_DT);
+    private static final TreeSet<Date> TEST_TSET_DT=
+        toTreeSet(TEST_LST_DT);
+    private static final Set<Date> TEST_SET_DT=
+        TEST_HSET_DT;
+    private static final HashMap<Date,Date> TEST_HMAP_DT=
+        toHashMap(TEST_LST_DT);
+    private static final MapWrapper<Date,Date>
+        TEST_WHMAP_DT=
+        new MapWrapper<Date,Date>(TEST_HMAP_DT);
+    private static final TreeMap<Date,Date> TEST_TMAP_DT=
+        toTreeMap(TEST_LST_DT);
+    private static final MapWrapper<Date,Date>
+        TEST_WTMAP_DT=
+        new MapWrapper<Date,Date>(TEST_TMAP_DT);
+    private static final Map<Date,Date> TEST_MAP_DT=
+        TEST_HMAP_DT;
+    private static final MapWrapper<Date,Date>
+        TEST_WMAP_DT=
+        new MapWrapper<Date,Date>(TEST_MAP_DT);
+    private static final DateHolder TEST_HLD_DT=
+        new DateHolder
+        (TEST_DT,
+         TEST_ARR_DT,
+         TEST_COL_DT,TEST_LST_DT,TEST_LLST_DT,
+         TEST_SET_DT,TEST_HSET_DT,TEST_TSET_DT,
+         TEST_MAP_DT,TEST_HMAP_DT,TEST_TMAP_DT);
 
     // Locale.
 
@@ -1297,6 +1335,35 @@ public class TypeTest
                         i.mapEo(client.getContext(),TEST_WTMAP_EO));
         assertEquals(TEST_HLD_EO,
                      i.hldEo(client.getContext(),TEST_HLD_EO));
+        // Date.
+
+        assertEquals(TEST_DT,
+                     i.dt(client.getContext(),TEST_DT));
+        assertArrayEquals(TEST_ARR_DT,
+                          i.arrDt(client.getContext(),TEST_ARR_DT));
+        assertColEquals(TEST_COL_DT,
+                        i.colDt(client.getContext(),TEST_COL_DT));
+        assertColEquals(TEST_LST_DT,
+                        i.colDt(client.getContext(),TEST_LST_DT));
+        assertColEquals(TEST_LLST_DT,
+                        i.colDt(client.getContext(),TEST_LLST_DT));
+        assertSetEquals(TEST_SET_DT,
+                        i.setDt(client.getContext(),TEST_SET_DT));
+        assertSetEquals(TEST_HSET_DT,
+                        i.setDt(client.getContext(),TEST_HSET_DT));
+        assertSetEquals(TEST_TSET_DT,
+                        i.setDt(client.getContext(),TEST_TSET_DT));
+        /*
+         * LIMITATION: maps of Dates are treated as calendars.
+        assertMapEquals(TEST_WMAP_DT,
+                        i.mapDt(client.getContext(),TEST_WMAP_DT));
+        assertMapEquals(TEST_WHMAP_DT,
+                        i.mapDt(client.getContext(),TEST_WHMAP_DT));
+        assertMapEquals(TEST_WTMAP_DT,
+                        i.mapDt(client.getContext(),TEST_WTMAP_DT));
+        */
+        assertEquals(TEST_HLD_DT,
+                     i.hldDt(client.getContext(),TEST_HLD_DT));
 
         // Locale.
 
