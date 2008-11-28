@@ -26,6 +26,11 @@ public class FIXDataDictionary {
 
     private final DataDictionary mDictionary;
 
+    public FIXDataDictionary(DataDictionary dictionary)
+    {
+        mDictionary=dictionary;
+    }
+
     /**
      * Load a {@link DataDictionary} from the specified resource
      *
