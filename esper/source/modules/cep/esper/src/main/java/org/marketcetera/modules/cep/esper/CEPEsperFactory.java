@@ -16,6 +16,7 @@ import org.marketcetera.module.ModuleURN;
  *
  * @see CEPEsperProcessor
  * @author anshul@marketcetera.com
+ * @author toli@marketcetera.com
  * @since $Release$
  * @version $Id$
  */

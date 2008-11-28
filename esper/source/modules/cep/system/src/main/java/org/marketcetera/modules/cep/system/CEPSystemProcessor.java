@@ -3,50 +3,54 @@ package org.marketcetera.modules.cep.system;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.*;
-import org.marketcetera.event.ExecutionReport;
 import org.marketcetera.module.*;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Simple straight-through implementation of the CEP module that
- * only allows for "select * from xyz" type of queries.
+ * filters received data and only emits data that match the type specified in the query.
+ * Only allows for "select * from xyz" type of queries.
+ * The XYZ types can be any alias or class name listed in @{@link CEPDataTypes}.
+ *
+ *
  * The maps in the data structure are as follows:
  * <ul>
  * <li>{@link #typeLookupMap} is a mapping of all expected data objects to their aliases, ie TradeEvent --> trade
  * for the puproses of doing the 'select * from <em>alias</em>' query</li>
- * <li>{@link #typeToEmitterMap} contains a list of emitters for each alias that we have listeners registered for</li>
- * <li>{@link #requestMap} - map of {@link RequestID} --> list of pairs of {typeAlias, {@link DataEmitterSupport}}. Given a requestID,
- * we can get a list of all the type aliases and corresponding emitters registered to listen on that type. For cancels,
- * we pull out all the aliases, and remove the emitters subscribed to listen on that event type</li>
+ * <li>{@link #mTypeToEmitterMap} contains a list of emitters for each alias that we have listeners registered for</li>
+ * <li>{@link #mRequestMap} - map of {@link RequestID} --> pair of {typeAlias, {@link DataEmitterSupport}}. Given a requestID,
+ * we can get the type alias and corresponding emitter registered to listen on that type. For cancels,
+ * we pull out all the alias, and remove the emitter subscribed to listen on that event type</li>
  * </ul>
  *
  * @author anshul@marketcetera.com
  * @since $Release$
  * @version $Id$
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CEPSystemProcessor extends Module
-        implements DataReceiver, DataEmitter, CEPSystemProcessorMXBean {
+        implements DataReceiver, DataEmitter {
 
-    private static final String QUERY_PREFIX = "select * from ";
+    private static final String QUERY_DELIM = "[ \t]+";
+    private static final String QUERY_PREFIX = "select * from ";        //$NON-NLS-1$
+    private static final String[] QUERY_SPLIT = QUERY_PREFIX.split(QUERY_DELIM);
 
-    private Map<String, List<DataEmitterSupport>> typeToEmitterMap;
-    private Map<RequestID, List<Pair<String, DataEmitterSupport>>> requestMap;
-    private int receivedCounter = 0;
-    private int emittedCounter = 0;
+    private final Map<String, DataEmitterSupport> mTypeToEmitterMap;
+    private final HashMap<RequestID, Pair<String, DataEmitterSupport>> mRequestMap;
 
     private Map<String, String> typeLookupMap = new HashMap<String, String>(20);
 
     protected CEPSystemProcessor(ModuleURN inURN, boolean inAutoStart) {
         super(inURN, inAutoStart);
-        typeToEmitterMap = new HashMap<String, List<DataEmitterSupport>>();
-        requestMap = new HashMap<RequestID, List<Pair<String, DataEmitterSupport>>>();
+        mTypeToEmitterMap = new HashMap<String, DataEmitterSupport>();
+        mRequestMap = new HashMap<RequestID, Pair<String, DataEmitterSupport>>();
     }
 
     @Override
@@ -93,17 +97,8 @@ public class CEPSystemProcessor extends Module
 
     @Override
     protected void preStop() throws ModuleException {
-        // do we need to clear teh maps? or will it just get garbage-collected?
-        for(List<DataEmitterSupport> list : typeToEmitterMap.values()) {
-            list.clear();
-        }
-        typeToEmitterMap.clear();
-        for(List<Pair<String, DataEmitterSupport>> list: requestMap.values()) {
-            list.clear();
-        }
-        requestMap.clear();
-        receivedCounter = 0;
-        emittedCounter = 0;
+        mTypeToEmitterMap.clear();
+        mRequestMap.clear();
     }
 
     /** Map the incoming data to some type, find the list of all {@link DataEmitterSupport} objects
@@ -113,7 +108,6 @@ public class CEPSystemProcessor extends Module
     @Override
     public void receiveData(DataFlowID inFlowID, Object inData) throws ReceiveDataException {
         if(inData != null) {
-            receivedCounter++;
 
             // if it's an xxxImpl, remove the Impl from type
             String type = inData.getClass().getName();
@@ -121,28 +115,23 @@ public class CEPSystemProcessor extends Module
                 type = type.replace("Impl", "");
             }
             String alias = typeLookupMap.get(type);
-            List<DataEmitterSupport> emitterList = typeToEmitterMap.get(alias);
+            DataEmitterSupport emitter = mTypeToEmitterMap.get(alias);
             // special case for Maps, there are too many of them to add up front
-            if(emitterList ==null && inData instanceof Map) {
+            if(emitter ==null && inData instanceof Map) {
                 typeLookupMap.put(inData.getClass().getName(), CEPDataTypes.MAP);
-                emitterList = typeToEmitterMap.get(CEPDataTypes.MAP);
+                emitter = mTypeToEmitterMap.get(CEPDataTypes.MAP);
             }
             // subscribers to {@link CEPDataTypes.MARKET_DATA} should get all the market-data events too
             if(inData instanceof SymbolExchangeEvent) {
-                List<DataEmitterSupport> mdataList = typeToEmitterMap.get(CEPDataTypes.MARKET_DATA);
+                DataEmitterSupport mdataEmitter = mTypeToEmitterMap.get(CEPDataTypes.MARKET_DATA);
                 // no explicit subscription for that type of event, so just use mdata listeners
-                if (emitterList == null) {
-                    emitterList = mdataList;
-                } else if(mdataList != null){
-                    emitterList.addAll(mdataList);
+                if (emitter == null) {
+                    emitter = mdataEmitter;
                 }
             }
 
-            if (emitterList != null) {
-                for(DataEmitterSupport des : emitterList) {
-                    emittedCounter++;
-                    des.send(inData);
-                }
+            if (emitter != null) {
+                emitter.send(inData);
             }
         }
         //ignore null data
@@ -150,6 +139,9 @@ public class CEPSystemProcessor extends Module
 
     @Override
     public void requestData(DataRequest inRequest, DataEmitterSupport inSupport) throws RequestDataException {
+        if(inRequest == null) {
+            throw new IllegalRequestParameterValue(getURN(), null);
+        }
         Object obj = inRequest.getData();
         if(obj == null) {
             throw new IllegalRequestParameterValue(getURN(), null);
@@ -157,61 +149,34 @@ public class CEPSystemProcessor extends Module
         String query;
         if(obj instanceof String) {
             query = (String)obj;
-        } else if (obj instanceof String[]) {
-            throw new IllegalRequestParameterValue(getURN(), obj);
         } else {
             throw new UnsupportedRequestParameterType(getURN(), obj);
         }
 
-        LinkedList<Pair<String, DataEmitterSupport>> requestList = new LinkedList<Pair<String, DataEmitterSupport>>();
-        if (!query.startsWith(QUERY_PREFIX)) {
+        String[] querySplit = query.split(QUERY_DELIM);
+        if (querySplit.length != 4 || !QUERY_SPLIT[0].equals(querySplit[0])
+                ||!QUERY_SPLIT[1].equals(querySplit[1]) ||!QUERY_SPLIT[2].equals(querySplit[2])) {
             throw new RequestDataException(new I18NBoundMessage1P(Messages.INVALID_QUERY, query));
         }
 
         String type = query.substring(QUERY_PREFIX.length());
-        // remove ; if it's present
-        type = (type.endsWith(";")) ? type.substring(0, type.length() - 1) : type;
         String alias = typeLookupMap.get(type);
         if (alias == null) {
             throw new RequestDataException(new I18NBoundMessage1P(Messages.UNSUPPORTED_TYPE, type));
         }
-        List<DataEmitterSupport> list = typeToEmitterMap.get(alias);
-        if (list == null) {
-            list = new LinkedList<DataEmitterSupport>();
-            typeToEmitterMap.put(alias, list);
-        }
-        list.add(inSupport);
-        requestList.add(new Pair<String, DataEmitterSupport>(type, inSupport));
-
-        requestMap.put(inSupport.getRequestID(), requestList);
+        Pair<String, DataEmitterSupport> request = new Pair<String, DataEmitterSupport>(type, inSupport);
+        mTypeToEmitterMap.put(alias, inSupport);
+        mRequestMap.put(inSupport.getRequestID(), request);
     }
 
     /** Find the request, and go through all its types and remove all the {@link DataEmitterSupport}
      * object associated with it */
     @Override
     public void cancel(RequestID inRequestID) {
-        List<Pair<String, DataEmitterSupport>> list = requestMap.get(inRequestID);
-        if(list == null) return;
+        Pair<String, DataEmitterSupport>request = mRequestMap.remove(inRequestID);
+        if(request == null) return;
 
         SLF4JLoggerProxy.debug(this, "Cancelling for request {}", inRequestID);
-        for (Pair<java.lang.String, DataEmitterSupport> pair : list) {
-            List<DataEmitterSupport> emitterList = typeToEmitterMap.get(pair.getFirstMember());
-            if(emitterList!=null) {
-                boolean removed = emitterList.remove(pair.getSecondMember());
-                SLF4JLoggerProxy.debug(this, "Removed type {} for request {}: {}", pair.getFirstMember(), inRequestID, removed);
-            } else {
-                SLF4JLoggerProxy.debug(this, "Type {} for request {} does not have any emitters subscribed", pair.getFirstMember(), inRequestID);
-            }
-        }
-    }
-
-    @Override
-    public long getNumEventsEmitted() {
-        return emittedCounter;
-    }
-
-    @Override
-    public long getNumEventsReceived() {
-        return receivedCounter;
+        mTypeToEmitterMap.remove(request.getFirstMember());
     }
 }

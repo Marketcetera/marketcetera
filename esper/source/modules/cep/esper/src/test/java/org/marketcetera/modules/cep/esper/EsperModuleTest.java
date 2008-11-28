@@ -1,24 +1,21 @@
 package org.marketcetera.modules.cep.esper;
 
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.epl.parse.EPStatementSyntaxException;
 import static junit.framework.Assert.assertNull;
-import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPTestBase;
 import org.marketcetera.modules.cep.system.CopierModuleFactory;
 import org.marketcetera.trade.Factory;
 
 import javax.management.JMX;
-import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -35,23 +32,21 @@ public class EsperModuleTest extends CEPTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {
-        factory = Factory.getInstance();
-        sManager = new ModuleManager();
-        sManager.init();
+        sFactory = Factory.getInstance();
         sEsperBean = JMX.newMXBeanProxy(
-                ManagementFactory.getPlatformMBeanServer(),
+                ModuleTestBase.getMBeanServer(),
                 TEST_URN.toObjectName(),
                 CEPEsperProcessorMXBean.class);
-    }
-
-    @AfterClass
-    public static void cleanup() throws Exception {
-        sManager.stop();
     }
 
     @Override
     protected ModuleURN getModuleURN() {
         return TEST_URN;
+    }
+
+    @Override
+    protected Class getIncorrectQueryException() {
+        return IllegalRequestParameterValue.class;
     }
 
     /**
@@ -61,7 +56,7 @@ public class EsperModuleTest extends CEPTestBase {
      *
      * @throws Exception if there were unexpected errors.
      */
-    @Test
+    @Test(timeout=120000)
     public void testBasicFlow() throws Exception {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
@@ -74,14 +69,14 @@ public class EsperModuleTest extends CEPTestBase {
                 new DataRequest(TEST_URN, "select * from trade where symbol='IBM'")
         });
 
-        Object obj = sink.getReceived().take();
+        Object obj = sSink.getReceived().take();
         assertEquals("Didn't receive right trade event", TradeEvent.class, obj.getClass());
         TradeEvent theTrade = (TradeEvent) obj;
         assertEquals("Didn't receive right symbol event", "IBM", theTrade.getSymbol());
         assertEquals("Didn't receive right size event", new BigDecimal("200"), theTrade.getSize());
 
-        assertNull("should not receive any more events", sink.getReceived().poll(5, TimeUnit.SECONDS));
-        assertEquals("Sink should only receive one event", 0, sink.getReceived().size());
+        assertNull("should not receive any more events", sSink.getReceived().poll(5, TimeUnit.SECONDS));
+        assertEquals("Sink should only receive one event", 0, sSink.getReceived().size());
 
         // check MXBean functionality
         assertEquals("Wrong number of received events", 3, sEsperBean.getNumEventsReceived());
@@ -94,7 +89,7 @@ public class EsperModuleTest extends CEPTestBase {
     /** Create a data flow where you subscribe to 2 types of events, but only the last one
      * should result in statements being received
      */
-    @Test
+    @Test(timeout=120000)
     public void testOnlyLastStatementGetsSubscriber() throws Exception {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
@@ -108,8 +103,9 @@ public class EsperModuleTest extends CEPTestBase {
         });
 
         // verify that we only get the event for java, not IBM
-        assertEquals("JAVA", ((TradeEvent) sink.getReceived().take()).getSymbol());
+        assertEquals("JAVA", ((TradeEvent) sSink.getReceived().take()).getSymbol());
         assertEquals("wrong # of emitted events from Esper", 1, sManager.getDataFlowInfo(flowID).getFlowSteps()[1].getNumEmitted());
+        assertEquals("# of running statements", 2, sEsperBean.getStatementNames().length);
         sManager.cancel(flowID);
     }
 
@@ -117,7 +113,7 @@ public class EsperModuleTest extends CEPTestBase {
      * Then cancel it, create similar data flow, send same events, but make sure
      * only the laste subscriptions get hits
      */
-    @Test
+    @Test(timeout=120000)
     public void testEsperCancel() throws Exception {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
@@ -131,8 +127,9 @@ public class EsperModuleTest extends CEPTestBase {
         });
 
         // verify we get 1 trade and then cancel
-        assertEquals("IBM", ((TradeEvent) sink.getReceived().take()).getSymbol());
+        assertEquals("IBM", ((TradeEvent) sSink.getReceived().take()).getSymbol());
         assertEquals("wrong # of emitted events from Esper", 1, sManager.getDataFlowInfo(flowID).getFlowSteps()[1].getNumEmitted());
+        assertEquals("# of running statements before cancel", 1, sEsperBean.getStatementNames().length);        
         sManager.cancel(flowID);
 
         DataFlowID flowID2 = sManager.createDataFlow(new DataRequest[] {
@@ -146,12 +143,12 @@ public class EsperModuleTest extends CEPTestBase {
                 new DataRequest(TEST_URN, "select * from trade where symbol='JAVA'")
         });
         // verify we only get 1 trade for Java
-        assertEquals("JAVA", ((TradeEvent) sink.getReceived().take()).getSymbol());
+        assertEquals("JAVA", ((TradeEvent) sSink.getReceived().take()).getSymbol());
         assertEquals("wrong # of emitted events from Esper", 1, sManager.getDataFlowInfo(flowID2).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flowID2);
     }
 
-    @Test
+    @Test(timeout=120000)
     /** Verify the statements are treated correctly */
     public void testCreateStatements() throws Exception {
         CEPEsperProcessor esperPr = new CEPEsperProcessor(CEPEsperFactory.PROVIDER_URN);
@@ -167,7 +164,7 @@ public class EsperModuleTest extends CEPTestBase {
     public void testJMX() throws Exception {
         sManager.createModule(CEPEsperFactory.PROVIDER_URN, TEST_URN);
         CEPEsperProcessorMXBean esperBean = JMX.newMXBeanProxy(
-                ManagementFactory.getPlatformMBeanServer(),
+                ModuleTestBase.getMBeanServer(),
                 TEST_URN.toObjectName(),
                 CEPEsperProcessorMXBean.class);
 
@@ -181,6 +178,25 @@ public class EsperModuleTest extends CEPTestBase {
         sManager.stop(TEST_URN);
         sManager.deleteModule(TEST_URN);
     }
+
+
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+    @Test
+    public void testUnknownAlias() throws Exception {
+        new ExpectedTestFailure(IllegalRequestParameterValue.class, "bob") {
+            protected void execute() throws Throwable {
+                sManager.createDataFlow(new DataRequest[] {
+                        // Copier -> System: send 3 events
+                        new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
+                                new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        }),
+                        // ESPER -> Sink: invalid type name
+                        new DataRequest(TEST_URN, "select * from bob")
+                });
+            }
+        }.run();
+    }
+
 
     @Test
     public void testPzattern() throws Exception {

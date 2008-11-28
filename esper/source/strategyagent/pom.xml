@@ -40,10 +40,19 @@
       <scope>compile</scope>
     </dependency>
 
+
     <!-- Runtime. -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+	
+<!-- temp-->
+	<dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>cep-esper</artifactId>
+	  <version>${project.version}</version>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- Testing. -->
@@ -80,7 +89,7 @@
             <configuration>
               <mainClass>org.marketcetera.strategyagent.StrategyAgent</mainClass>
               <arguments>
-                <argument>src/test/sample_data/inputs/sampleCommands.txt</argument>
+                <argument>src/test/sample_data/inputs/toli-sample.txt</argument>
               </arguments>
               <classpathScope>test</classpathScope>
             </configuration>

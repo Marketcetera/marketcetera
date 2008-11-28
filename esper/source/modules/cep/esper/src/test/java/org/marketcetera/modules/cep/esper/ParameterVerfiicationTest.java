@@ -1,12 +1,11 @@
 package org.marketcetera.modules.cep.esper;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.*;
-import org.marketcetera.core.ExpectedTestFailure;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import com.espertech.esper.epl.parse.EPStatementSyntaxException;
+import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.module.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -42,7 +41,6 @@ public class ParameterVerfiicationTest extends ModuleTestBase {
     // what if we just send it an empty array as a request?
     @Test
     public void invalidRequests_EmptyArray() throws Exception {
-        // null request
         final String[] emptyParams = new String[0];
         new ExpectedTestFailure(IllegalRequestParameterValue.class,
                 org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE.getText(TEST_URN.getValue(), emptyParams)) {
@@ -54,11 +52,11 @@ public class ParameterVerfiicationTest extends ModuleTestBase {
 
     @Test
     public void invalidRequests_InvalidReq() throws Exception {
-        // null request
+        // invalide syntax
         final String query = "v lesu rodilas yolochka";
         esperPr.preStart();
-        new ExpectedTestFailure(EPStatementSyntaxException.class) {
-                    protected void execute() throws Throwable {
+        new ExpectedTestFailure(IllegalRequestParameterValue.class) {
+                    protected void execute() throws Exception {
                         esperPr.requestData(new DataRequest(TEST_URN, query), null);
             }
         }.run();
@@ -66,10 +64,10 @@ public class ParameterVerfiicationTest extends ModuleTestBase {
 
     @Test
     public void invalidRequests_Pattern() throws Exception {
-        // null request
+        // invalid pattern syntax
         final String query = "p:v lesu rodilas yolochka";
         esperPr.preStart();
-        new ExpectedTestFailure(EPStatementSyntaxException.class) {
+        new ExpectedTestFailure(IllegalRequestParameterValue.class) {
                     protected void execute() throws Throwable {
                         esperPr.requestData(new DataRequest(TEST_URN, query), null);
             }

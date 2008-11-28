@@ -5,20 +5,18 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.*;
-import org.marketcetera.event.ExecutionReport;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.w3c.dom.Node;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /* $License$ */
 /**
@@ -51,6 +49,7 @@ import java.util.Map;
  * reported and ignored.
  *
  * @author anshul@marketcetera.com
+ * @author toli@marketcetera.com
  * @since $Release$
  * @version $Id$
  */
@@ -63,6 +62,9 @@ public class CEPEsperProcessor extends Module
                             DataEmitterSupport inSupport)
             throws UnsupportedRequestParameterType,
             IllegalRequestParameterValue {
+        if(inRequest == null) {
+            throw new IllegalRequestParameterValue(getURN(), null);
+        }
         Object obj = inRequest.getData();
         if(obj == null) {
             throw new IllegalRequestParameterValue(getURN(), null);
@@ -78,7 +80,11 @@ public class CEPEsperProcessor extends Module
         } else {
             throw new UnsupportedRequestParameterType(getURN(), obj);
         }
-        getDelegate().processRequest(stmts, inSupport);
+        try {
+            getDelegate().processRequest(stmts, inSupport);
+        } catch (RequestDataException e) {
+            throw new IllegalRequestParameterValue(e, new I18NBoundMessage1P(Messages.ERROR_CREATING_STATEMENTS, Arrays.toString(stmts)));
+        }
     }
 
     @Override
@@ -111,7 +117,7 @@ public class CEPEsperProcessor extends Module
     @Override
     public void setConfiguration(String inConfiguration) {
         if(getState().isStarted()) {
-            throw new IllegalStateException(Messages.ERROR_MODULE_NOT_STARTED.getText());
+            throw new IllegalStateException(Messages.ERROR_MODULE_ALREADY_STARTED.getText());
         }
         mConfiguration = inConfiguration;
     }
@@ -140,7 +146,7 @@ public class CEPEsperProcessor extends Module
     @Override
     public void setUseExternalTime(boolean inUseExternalTime) {
         if(getState().isStarted()) {
-            throw new IllegalStateException(Messages.ERROR_MODULE_NOT_STARTED.getText());
+            throw new IllegalStateException(Messages.ERROR_MODULE_ALREADY_STARTED.getText());
         }
         mUseExternalTime = inUseExternalTime;
     }
@@ -207,13 +213,6 @@ public class CEPEsperProcessor extends Module
 
     @Override
     protected void preStop() {
-        // todo: do we need to destroy all statements too?
-        for(List<EPStatement> oneReq : mRequests.values()) {
-            for(EPStatement stmt : oneReq.toArray(new EPStatement[oneReq.size()])){
-                stmt.destroy();
-            }
-        }
-
         mService.destroy();
         mService = null;
     }
@@ -225,8 +224,9 @@ public class CEPEsperProcessor extends Module
      * @param inQuery the EPL and Pattern queries.
      *
      * @return The statements representing the submitted queries.
+     * @throws EPException in case the statements cannot be created
      */
-    protected ArrayList<EPStatement> createStatements(String... inQuery) {
+    protected ArrayList<EPStatement> createStatements(String... inQuery) throws EPException {
         ArrayList<EPStatement> stmts = new ArrayList<EPStatement>(inQuery.length);
         for(String query: inQuery) {
             if(query.startsWith(PATTERN_QUERY_PREFIX)) {
@@ -252,7 +252,7 @@ public class CEPEsperProcessor extends Module
      * The table of requests that this module is currently processing.
      */
     private final Map<RequestID, List<EPStatement>> mRequests =
-            new HashMap<RequestID, List<EPStatement>>();
+            new Hashtable<RequestID, List<EPStatement>>();
 
     private String mConfiguration;
     private volatile boolean mUseExternalTime;
@@ -261,8 +261,8 @@ public class CEPEsperProcessor extends Module
      */
     private static final String PATTERN_QUERY_PREFIX = "p:";
 
-    private final HashMap<DataFlowID, Pair<DataEmitterSupport, String[]>> mUnprocessedRequests =
-            new HashMap<DataFlowID, Pair<DataEmitterSupport, String[]>>();
+    private final Map<DataFlowID, Pair<DataEmitterSupport, String[]>> mUnprocessedRequests =
+            new Hashtable<DataFlowID, Pair<DataEmitterSupport, String[]>>();
     private ProcessingDelegate mDelegate;
 
     /** Basic interface to describe a data flow processing delegate.
@@ -272,11 +272,11 @@ public class CEPEsperProcessor extends Module
      */
     private static interface ProcessingDelegate {
         /** Sends the request to be processed */
-        void processRequest(String[] inStmts, DataEmitterSupport inSupport);
+        void processRequest(String[] inStmts, DataEmitterSupport inSupport) throws RequestDataException;
         /** Cancels all existing and pending requests */
         void cancelRequest(RequestID inRequestID);
 
-        void preProcessData(DataFlowID inFlowID, Object inData);
+        void preProcessData(DataFlowID inFlowID, Object inData) throws StopDataFlowException;
     }
 
     /** Regular "straight-through" delegate - just send all the incoming queries directly to Esper
@@ -285,8 +285,13 @@ public class CEPEsperProcessor extends Module
     private class RegularDelegate implements ProcessingDelegate {
         /** Creates the incoming statements with Esper, and creates a subscriber for the last one */
         @Override
-        public void processRequest(String[] inStmts, DataEmitterSupport inSupport) {
-            ArrayList<EPStatement> statements = createStatements(inStmts);
+        public void processRequest(String[] inStmts, DataEmitterSupport inSupport) throws RequestDataException {
+            ArrayList<EPStatement> statements;
+            try {
+                statements = createStatements(inStmts);
+            } catch (EPException ex) {
+                throw new RequestDataException(ex);
+            }
             statements.get(statements.size() - 1).setSubscriber(new Subscriber(inSupport));
             mRequests.put(inSupport.getRequestID(), statements);
         }
@@ -302,7 +307,7 @@ public class CEPEsperProcessor extends Module
         }
 
         // Nothing to pre-process for regular implementation
-        public void preProcessData(DataFlowID inFlowID, Object inData) {
+        public void preProcessData(DataFlowID inFlowID, Object inData) throws StopDataFlowException {
             //do nothing
         }
     }
@@ -333,7 +338,7 @@ public class CEPEsperProcessor extends Module
          * delegate to the regular {@link #processRequest(String[], DataEmitterSupport)} implementation.
          * If the incoming events aren't TimestampCarriers, then just discard them
          */
-        public void preProcessData(DataFlowID inFlowID, Object inData) {
+        public void preProcessData(DataFlowID inFlowID, Object inData) throws StopDataFlowException {
             if(inData instanceof TimestampCarrier) {
                 //send the time event
                 mService.getEPRuntime().sendEvent(new TimeEvent(
@@ -342,7 +347,12 @@ public class CEPEsperProcessor extends Module
                 //if we have unprocessed statements process them now
                 Pair<DataEmitterSupport, String[]> req = mUnprocessedRequests.remove(inFlowID);
                 if(req != null) {
-                    super.processRequest(req.getSecondMember(), req.getFirstMember());
+                    try {
+                        super.processRequest(req.getSecondMember(), req.getFirstMember());
+                    } catch (RequestDataException e) {
+                        throw new StopDataFlowException(e,
+                                new I18NBoundMessage1P(Messages.ERROR_CREATING_STATEMENTS, Arrays.toString(req.getSecondMember())));
+                    }
                 }
             }
         }

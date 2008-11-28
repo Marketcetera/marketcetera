@@ -10,6 +10,7 @@ import javax.management.MXBean;
  * The management interface for esper module instances.
  *
  * @author anshul@marketcetera.com
+ * @author toli@marketcetera.com
  * @version $Id$
  * @since $Release$
  */

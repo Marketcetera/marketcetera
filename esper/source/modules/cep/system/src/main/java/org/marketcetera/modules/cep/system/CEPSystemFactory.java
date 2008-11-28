@@ -7,12 +7,8 @@ import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
 /**
- * Provides basic "select * from xyz" functionality.
- * The provider will support multiple module instances.
- *
- * The instances are auto-created when they are referred to in a data flow
- * request and they are auto-started.
- *
+ * See {@link CEPSystemProcessor} for an explanation of how the System CEP module works.
+ * 
  * @see CEPSystemProcessor
  * @author toli@marketcetera.com
  * @since $Release$

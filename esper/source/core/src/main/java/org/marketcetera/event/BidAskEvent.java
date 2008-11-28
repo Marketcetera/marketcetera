@@ -158,7 +158,7 @@ public abstract class BidAskEvent
             if(result == 0) {
                 // prices are equal
                 // secondary sort should be on the timestamp
-                result = new Long(inO1.getTimestamp()).compareTo(inO2.getTimestamp());
+                result = new Long(inO1.getTimeMillis()).compareTo(inO2.getTimeMillis());
             }
             // invert the result to be returned if necessary to get a descending sort 
             return result * (mIsAscending ? 1 : -1);
