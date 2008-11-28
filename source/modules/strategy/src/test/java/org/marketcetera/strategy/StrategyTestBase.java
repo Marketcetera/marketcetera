@@ -10,7 +10,6 @@ import java.beans.ExceptionListener;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -587,7 +586,7 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#getPositionAsOf(java.util.Date, org.marketcetera.core.MSymbol)
          */
         @Override
-        public BigInteger getPositionAsOf(Date inArg0,
+        public BigDecimal getPositionAsOf(Date inArg0,
                                           MSymbol inArg1)
                 throws ConnectionException
         {

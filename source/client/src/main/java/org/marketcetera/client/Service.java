@@ -1,7 +1,11 @@
 package org.marketcetera.client;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import javax.jws.WebService;
 import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.ServiceBase;
@@ -23,8 +27,8 @@ public interface Service
     extends ServiceBase
 {
     /**
-     * Returns the receiver's destination status to the client with
-     * the given context.
+     * Returns the server's destination status to the client with the
+     * given context.
      *
      * @param context The context.
      *
@@ -35,6 +39,59 @@ public interface Service
      */
 
     DestinationsStatus getDestinationsStatus
+        (ClientContext context)
+        throws RemoteException;
+
+    /**
+     * Returns all the reports (execution report and order cancel
+     * rejects) generated and received by the server since the
+     * supplied date.
+     *
+     * @param date The date, in UTC.
+     *
+     * @return The reports.
+     *
+     * @throws RemoteException Thrown if the operation cannot be
+     * completed.
+     */
+
+    ReportBaseImpl[] getReportsSince
+        (ClientContext context,
+         Date date)
+        throws RemoteException;
+
+    /**
+     * Returns the position of the supplied symbol based on reports,
+     * generated and received up until the supplied date in UTC.
+     *
+     * @param date The date, in UTC.
+     * @param symbol The symbol.
+     *
+     * @return The position.
+     *
+     * @throws RemoteException Thrown if the operation cannot be
+     * completed.
+     */
+
+    BigDecimal getPositionAsOf
+        (ClientContext context,
+         Date date,
+         MSymbol symbol)
+        throws RemoteException;
+
+    /**
+     * Returns the next server order ID to the client with the given
+     * context.
+     *
+     * @param context The context.
+     *
+     * @return The next order ID.
+     *
+     * @throws RemoteException Thrown if the operation cannot be
+     * completed.
+     */
+
+    String getNextOrderID
         (ClientContext context)
         throws RemoteException;
 }

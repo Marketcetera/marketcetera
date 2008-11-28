@@ -44,6 +44,8 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "unexpected_message_received");   //$NON-NLS-1$
     static final I18NMessage1P ERROR_SEND_MESSAGE =
             new I18NMessage1P(LOGGER, "error_send_message");   //$NON-NLS-1$
+    static final I18NMessage0P ERROR_REMOTE_EXECUTION =
+            new I18NMessage0P(LOGGER, "error_remote_execution");   //$NON-NLS-1$
     static final I18NMessage0P CONNECT_ERROR_NO_URL =
             new I18NMessage0P(LOGGER, "connect_error_no_url");   //$NON-NLS-1$
     static final I18NMessage0P CONNECT_ERROR_NO_USERNAME =

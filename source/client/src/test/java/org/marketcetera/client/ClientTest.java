@@ -1,5 +1,6 @@
 package org.marketcetera.client;
 
+import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.module.ExpectedFailure;
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
 
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
@@ -66,25 +68,6 @@ public class ClientTest {
             mClient.close();
         }
         clearAll();
-    }
-    @Test
-    public void unimplemented() throws Exception {
-        initClient();
-        new ExpectedFailure<UnsupportedOperationException>(null){
-            protected void run() throws Exception {
-                getClient().getReportsSince(null);
-            }
-        };
-        new ExpectedFailure<UnsupportedOperationException>(null){
-            protected void run() throws Exception {
-                getClient().getPositionAsOf(null,null);
-            }
-        };
-        new ExpectedFailure<UnsupportedOperationException>(null){
-            protected void run() throws Exception {
-                getClient().getDestinationsStatus();
-            }
-        };
     }
     @Test
     public void connect() throws Exception {
@@ -162,6 +145,34 @@ public class ClientTest {
                 ClientManager.init(emptyPass);
             }
         };
+    }
+    @Test
+    public void webServices() throws Exception {
+        initClient();
+
+        List<DestinationStatus> ds =
+            getClient().getDestinationsStatus().getDestinations();
+        assertEquals(2,ds.size());
+        DestinationStatus d = ds.get(0);
+        assertEquals("N1",d.getName());
+        assertEquals("ID1",d.getId().getValue());
+        d = ds.get(1);
+        assertEquals("N2",d.getName());
+        assertEquals("ID2",d.getId().getValue());
+
+        ReportBase[] rs = getClient().getReportsSince(new Date());
+        assertEquals(2,rs.length);
+        DestinationID dID = new DestinationID("me");
+        ExecutionReport er = (ExecutionReport)rs[0];
+        assertEquals(dID,er.getDestinationID());
+        assertEquals(Originator.Server,er.getOriginator());
+        assertEquals("42",er.getOriginalOrderID().getValue());
+        OrderCancelReject ocr = (OrderCancelReject)rs[1];
+        assertEquals(dID,ocr.getDestinationID());
+        assertEquals("43",ocr.getOriginalOrderID().getValue());
+
+        assertEquals(BigDecimal.TEN,getClient().getPositionAsOf
+                     (new Date(10),null));
     }
     @Test
     public void sendOrderSingle() throws Exception {
