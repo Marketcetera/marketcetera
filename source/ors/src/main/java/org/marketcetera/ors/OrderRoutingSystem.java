@@ -1,127 +1,271 @@
 package org.marketcetera.ors;
 
-import org.marketcetera.util.auth.StandardAuthentication;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.spring.SpringUtils;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
-
-import org.marketcetera.core.*;
-import org.marketcetera.ors.mbeans.ORSAdmin;
-import org.quickfixj.jmx.JmxExporter;
-import org.springframework.context.ApplicationContext;
-import quickfix.SocketInitiator;
-
-import org.apache.log4j.PropertyConfigurator;
-
+import java.io.File;
+import java.lang.management.ManagementFactory;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import java.lang.management.ManagementFactory;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.log4j.PropertyConfigurator;
+import org.marketcetera.client.Service;
+import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.ors.config.SpringConfig;
+import org.marketcetera.ors.dest.Destinations;
+import org.marketcetera.ors.dest.Selector;
+import org.marketcetera.ors.jms.JmsManager;
+import org.marketcetera.ors.mbeans.ORSAdmin;
+import org.marketcetera.ors.ws.ClientSession;
+import org.marketcetera.ors.ws.DBAuthenticator;
+import org.marketcetera.ors.ws.ServiceImpl;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.QuickFIXSender;
+import org.marketcetera.util.auth.StandardAuthentication;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.quickfix.SpringSessionSettings;
+import org.marketcetera.util.spring.SpringUtils;
+import org.marketcetera.util.ws.stateful.Server;
+import org.marketcetera.util.ws.stateful.SessionManager;
+import org.quickfixj.jmx.JmxExporter;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
+import quickfix.DefaultMessageFactory;
+import quickfix.SocketInitiator;
 
 /**
- * OrderRoutingSystem
- * Main entrypoint for sending orders and receiving responses from a FIX engine
+ * The main application. See {@link SpringConfig} for configuration
+ * information.
  *
- * The ORS is configured using Spring, using the following modules:
- * <ol>
- *   <li>{@link OutgoingMessageHandler} which handles running the received
- *      order through modifiers, sending it on and generating and returning an
- *      immediate execution report </li>
- *   <li>{@link QuickFIXApplication} - a wrapper for setting up a FIX application (listener/sender)</li>
- *   <li>{@link org.marketcetera.quickfix.QuickFIXSender} = actually sends the FIX messages</li>
- * </ol>
- *
- * @author gmiller
- * $Id$
+ * @author tlerios@marketcetera.com
+ * @since $Release$
+ * @version $Id$
  */
+
+/* $License$ */
+
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class OrderRoutingSystem extends ApplicationBase {
+public class OrderRoutingSystem
+    extends ApplicationBase
+{
 
-    public static final String CFG_BASE_FILE_NAME=
-        "file:"+CONF_DIR+"ors_base.xml"; //$NON-NLS-1$ //$NON-NLS-2$
+    // CLASS DATA.
 
-    private static final String LOGGER_NAME = OrderRoutingSystem.class.getName();
-    public static final String[] APP_CONTEXT_CONFIG_FILES =
-            {"quickfixj.xml", "message-modifiers.xml", "order-limits.xml", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    "ors.xml", "ors-shared.xml", "ors_db.xml", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    "ors_orm_vendor.xml", "ors_orm.xml", "supported-messages.xml"}; //$NON-NLS-1$ //$NON-NLS-2$
+    private static final Class<?> LOGGER_CATEGORY=
+        OrderRoutingSystem.class;
+    private static final String APP_CONTEXT_CFG_BASE=
+        "file:"+CONF_DIR+ //$NON-NLS-1$
+        "properties.xml"; //$NON-NLS-1$
+    private static final String REPLY_TOPIC=
+        "ors-messages"; //$NON-NLS-1$
+    private static final String DESTINATION_STATUS_TOPIC=
+        "ors-destination-status"; //$NON-NLS-1$
+    private static final String REQUEST_QUEUE=
+        "ors-commands"; //$NON-NLS-1$
+    private static final String TRADE_RECORDER_QUEUE=
+        "trade-recorder"; //$NON-NLS-1$
+    private static final String JMX_NAME=
+        "org.marketcetera.ors.mbean:type=ORSAdmin"; //$NON-NLS-1$
 
-    private static StandardAuthentication authentication;
-    private volatile static OrderRoutingSystem instance = null;
 
-    public static void initializeLogger(String logConfig)
+    // INSTANCE DATA.
+
+    private final StandardAuthentication mAuth;
+
+
+    // CONSTRUCTORS.
+
+    /**
+     * Creates a new application given the command-line arguments. The
+     * application spawns child threads, but the constructor does not
+     * block while waiting for those threads to terminate; instead, it
+     * returns as soon as construction is complete.
+     *
+     * @param args The command-line arguments.
+     *
+     * @throws Exception Thrown if construction fails.
+     */
+
+    public OrderRoutingSystem
+        (String[] args)
+        throws Exception
     {
-        PropertyConfigurator.configureAndWatch
-            (ApplicationBase.CONF_DIR+logConfig, LOGGER_WATCH_DELAY);
+        // Obtain authorization credentials.
+
+        mAuth=new StandardAuthentication(APP_CONTEXT_CFG_BASE,args);
+        if (!getAuth().setValues()) {
+            printUsage(Messages.APP_MISSING_CREDENTIALS);
+        }
+        args=getAuth().getOtherArgs();
+        if (args.length!=0) {
+            printUsage(Messages.APP_NO_ARGS_ALLOWED);
+        }
+        StaticApplicationContext parentContext=
+            new StaticApplicationContext
+            (new FileSystemXmlApplicationContext(APP_CONTEXT_CFG_BASE));
+        SpringUtils.addStringBean
+            (parentContext,USERNAME_BEAN_NAME,
+             getAuth().getUser());
+        SpringUtils.addStringBean
+            (parentContext,PASSWORD_BEAN_NAME,
+             getAuth().getPasswordAsString());
+        parentContext.refresh();
+
+        // Read Spring configuration.
+
+        FileSystemXmlApplicationContext context=
+            new FileSystemXmlApplicationContext
+            (new String[] {"file:"+CONF_DIR+ //$NON-NLS-1$
+                           "server.xml"}, //$NON-NLS-1$
+                parentContext);
+        context.registerShutdownHook();
+        context.start();
+
+        // Create resource managers.
+
+        SpringConfig cfg=SpringConfig.getSingleton();
+        if (cfg==null) {
+            throw new I18NException(Messages.APP_NO_CONFIGURATION);
+        }
+        JmsManager jmsMgr=new JmsManager
+            (cfg.getIncomingConnectionFactory(),
+             cfg.getOutgoingConnectionFactory());
+        Destinations destinations=new Destinations(cfg.getDestinations());
+        Selector selector=new Selector(destinations,cfg.getSelector());
+        cfg.getIDFactory().init();
+
+        // Set dictionary for all QuickFIX/J messages we generate.
+
+        CurrentFIXDataDictionary.setCurrentFIXDataDictionary
+            (FIXDataDictionary.initializeDataDictionary
+             (FIXVersion.FIX_SYSTEM.getDataDictionaryURL()));
+
+        // Initiate web services.
+
+        SessionManager<ClientSession> sessionManager=
+            new SessionManager<ClientSession>
+            (cfg.getServerSessionLife()*1000);
+        Server<ClientSession> server=new Server<ClientSession>
+            (cfg.getServerHost(),
+             cfg.getServerPort(),
+             new DBAuthenticator(),
+             sessionManager);
+        server.publish
+            (new ServiceImpl(sessionManager,destinations,
+                             cfg.getIDFactory()),
+             Service.class);
+
+        // Initiate JMS.
+
+        QuickFIXSender sender=new QuickFIXSender();
+        RequestHandler handler=new RequestHandler
+            (destinations,selector,cfg.getAllowedOrders(),
+             sender,cfg.getIDFactory());
+        jmsMgr.getIncomingJmsFactory().registerHandlerTM
+            (handler,REQUEST_QUEUE,false,REPLY_TOPIC,true);
+        QuickFIXApplication app=new QuickFIXApplication
+            (destinations,cfg.getSupportedMessages(),sender,
+             jmsMgr.getOutgoingJmsFactory().createJmsTemplateTM
+             (REPLY_TOPIC,true),
+             jmsMgr.getOutgoingJmsFactory().createJmsTemplate
+             (DESTINATION_STATUS_TOPIC,true),
+             jmsMgr.getOutgoingJmsFactory().createJmsTemplateQ
+             (TRADE_RECORDER_QUEUE,false));
+
+        // Initiate destination connections.
+
+        SpringSessionSettings settings=destinations.getSettings();
+        SocketInitiator initiator=new SocketInitiator
+            (app,settings.getQMessageStoreFactory(),
+             settings.getQSettings(),settings.getQLogFactory(),
+             new DefaultMessageFactory());
+        initiator.start();
+
+        // Initiate JMX (for QuickFIX/J and application MBeans).
+
+        MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
+        (new JmxExporter(mbeanServer)).export(initiator);
+        mbeanServer.registerMBean
+            (new ORSAdmin(destinations,sender,cfg.getIDFactory()),
+             new ObjectName(JMX_NAME));
     }
 
-    private static void usage()
+
+    // INSTANCE METHODS.
+
+    /**
+     * Prints the given message alongside usage information on the
+     * standard error stream, and throws an exception.
+     *
+     * @param message The message.
+     *
+     * @throws IllegalStateException Always thrown.
+     */
+
+    private void printUsage
+        (I18NBoundMessage message)
+        throws I18NException
     {
-        System.err.println(Messages.APP_USAGE.getText(OrderRoutingSystem.class.getName()));
+        System.err.println(message.getText());
+        System.err.println(Messages.APP_USAGE.getText
+                           (OrderRoutingSystem.class.getName()));
         System.err.println(Messages.APP_AUTH_OPTIONS.getText());
         System.err.println();
-        authentication.printUsage(System.err);
-        System.exit(1);
-    }
-
-    public static void main(String [] args) throws ConfigFileLoadingException
-    {
-        try {
-            initializeLogger(LOGGER_CONF_FILE);
-
-            authentication=new StandardAuthentication(CFG_BASE_FILE_NAME,args);
-            if (!authentication.setValues()) {
-                usage();
-            }
-            args=authentication.getOtherArgs();
-            if (args.length!=0) {
-                System.err.println(Messages.APP_NO_ARGS_ALLOWED.getText());
-                usage();
-            }
-            StaticApplicationContext parentContext=
-                new StaticApplicationContext
-                (new FileSystemXmlApplicationContext(CFG_BASE_FILE_NAME));
-            SpringUtils.addStringBean
-                (parentContext,USERNAME_BEAN_NAME,
-                 authentication.getUser());
-            SpringUtils.addStringBean
-                (parentContext,PASSWORD_BEAN_NAME,
-                 authentication.getPasswordAsString());
-            parentContext.refresh();
-
-            instance = new OrderRoutingSystem();
-            ApplicationContext appCtx = instance.createApplicationContext(APP_CONTEXT_CONFIG_FILES, parentContext, true);
-
-            String connectHost = (String) appCtx.getBean("socketConnectHostValue", String.class); //$NON-NLS-1$
-            String connectPort = (String) appCtx.getBean("socketConnectPortValue", String.class); //$NON-NLS-1$
-            Messages.CONNECTING_TO.info(LOGGER_NAME, connectHost, connectPort);
-
-            SocketInitiator initiator = (SocketInitiator) appCtx.getBean("socketInitiator", SocketInitiator.class); //$NON-NLS-1$
-            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-            JmxExporter exporter = new JmxExporter(mbeanServer);
-            exporter.export(initiator);
-            ORSAdmin orsAdmin = (ORSAdmin) appCtx.getBean("orsAdmin", ORSAdmin.class); //$NON-NLS-1$
-            mbeanServer.registerMBean(orsAdmin, new ObjectName("org.marketcetera.ors.mbean:type=ORSAdmin")); //$NON-NLS-1$
-
-            instance.startWaitingForever();
-            SLF4JLoggerProxy.debug(LOGGER_NAME, "ORS main finishing"); //$NON-NLS-1$
-        } catch (Exception ex) {
-            Messages.ERROR_STACK_TRACE.error(LOGGER_NAME, ex);
-            Messages.ERROR_CONFIG.error(LOGGER_NAME, ex);
-        } finally {
-            Messages.APP_EXIT.info(LOGGER_NAME);
-        }
+        getAuth().printUsage(System.err);
+        throw new I18NException(message);
     }
 
     /**
-     * Returns the application instance.
-     * @return the ORS instance. Null, if the application is not completely configured.
+     * Returns the receiver's authentication system.
+     *
+     * @return The authentication system.
      */
-    static OrderRoutingSystem getInstance() {
-        return instance;
+
+    public StandardAuthentication getAuth()
+    {
+        return mAuth;
     }
 
-}
 
+    // CLASS METHODS.
+
+    /**
+     * Main program.
+     *
+     * @param args The command-line arguments.
+     */
+
+    public static void main
+        (String[] args)
+    {
+        // Configure logger.
+
+        PropertyConfigurator.configureAndWatch
+            (ApplicationBase.CONF_DIR+"log4j"+ //$NON-NLS-1$
+             File.separator+"server.properties", //$NON-NLS-1$
+             LOGGER_WATCH_DELAY);
+
+        // Log application start.
+
+        Messages.APP_COPYRIGHT.error(LOGGER_CATEGORY);
+        Messages.APP_START.info(LOGGER_CATEGORY);
+
+        // Hook to log shutdown.
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                Messages.APP_STOP.info(LOGGER_CATEGORY);
+            }
+        });
+
+        // Execute application.
+
+        try {
+            (new OrderRoutingSystem(args)).startWaitingForever();
+            Messages.APP_STOP_SUCCESS.info(LOGGER_CATEGORY);
+        } catch (Throwable t) {
+            Messages.APP_STOP_ERROR.error(LOGGER_CATEGORY,t);
+        }
+    }
+}

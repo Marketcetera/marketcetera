@@ -4,7 +4,6 @@ import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
-import org.marketcetera.util.log.I18NMessage3P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -38,65 +37,87 @@ public interface Messages
      * The messages.
      */
 
-    static final I18NMessage0P APP_EXIT = 
-        new I18NMessage0P(LOGGER,"app_exit"); //$NON-NLS-1$
-    static final I18NMessage1P APP_USAGE = 
+    static final I18NMessage0P APP_COPYRIGHT=
+        new I18NMessage0P(LOGGER,"app_copyright"); //$NON-NLS-1$
+    static final I18NMessage0P APP_START=
+        new I18NMessage0P(LOGGER,"app_start"); //$NON-NLS-1$
+    static final I18NMessage0P APP_STOP=
+        new I18NMessage0P(LOGGER,"app_stop"); //$NON-NLS-1$
+    static final I18NMessage0P APP_STOP_SUCCESS=
+        new I18NMessage0P(LOGGER,"app_stop_success"); //$NON-NLS-1$
+    static final I18NMessage0P APP_STOP_ERROR=
+        new I18NMessage0P(LOGGER,"app_stop_error"); //$NON-NLS-1$
+    static final I18NMessage1P APP_USAGE=
         new I18NMessage1P(LOGGER,"app_usage"); //$NON-NLS-1$
-    static final I18NMessage0P APP_AUTH_OPTIONS = 
+    static final I18NMessage0P APP_AUTH_OPTIONS=
         new I18NMessage0P(LOGGER,"app_auth_options"); //$NON-NLS-1$
-    static final I18NMessage0P APP_NO_ARGS_ALLOWED = 
+    static final I18NMessage0P APP_MISSING_CREDENTIALS=
+        new I18NMessage0P(LOGGER,"app_missing_credentials"); //$NON-NLS-1$
+    static final I18NMessage0P APP_NO_ARGS_ALLOWED=
         new I18NMessage0P(LOGGER,"app_no_args_allowed"); //$NON-NLS-1$
+    static final I18NMessage0P APP_NO_CONFIGURATION=
+        new I18NMessage0P(LOGGER,"app_no_configuration"); //$NON-NLS-1$
 
-    static final I18NMessage0P ERROR_CONFIG = 
-        new I18NMessage0P(LOGGER,"error_config"); //$NON-NLS-1$
-    static final I18NMessage0P ERROR_STACK_TRACE = 
-        new I18NMessage0P(LOGGER,"error_stack_trace"); //$NON-NLS-1$
+    static final I18NMessage2P QF_SENDING_STATUS=
+        new I18NMessage2P(LOGGER,"qf_sending_status"); //$NON-NLS-1$
+    static final I18NMessage2P QF_SENDING_REPLY=
+        new I18NMessage2P(LOGGER,"qf_sending_reply"); //$NON-NLS-1$
+    static final I18NMessage2P QF_SENDING_TRADE_RECORD=
+        new I18NMessage2P(LOGGER,"qf_sending_trade_record"); //$NON-NLS-1$
+    static final I18NMessage2P QF_TO_ADMIN=
+        new I18NMessage2P(LOGGER,"qf_to_admin"); //$NON-NLS-1$
+    static final I18NMessage2P QF_FROM_ADMIN=
+        new I18NMessage2P(LOGGER,"qf_from_admin"); //$NON-NLS-1$
+    static final I18NMessage2P QF_TO_APP=
+        new I18NMessage2P(LOGGER,"qf_to_app"); //$NON-NLS-1$
+    static final I18NMessage2P QF_FROM_APP=
+        new I18NMessage2P(LOGGER,"qf_from_app"); //$NON-NLS-1$
+    static final I18NMessage0P QF_REPORT_FAILED=
+        new I18NMessage0P(LOGGER,"qf_report_failed"); //$NON-NLS-1$
+    static final I18NMessage0P QF_REPORT_TYPE_UNSUPPORTED=
+        new I18NMessage0P(LOGGER,"qf_report_type_unsupported"); //$NON-NLS-1$
+    static final I18NMessage0P QF_MODIFICATION_FAILED=
+        new I18NMessage0P(LOGGER,"qf_modification_failed"); //$NON-NLS-1$
+    static final I18NMessage0P QF_DISALLOWED_MESSAGE=
+        new I18NMessage0P(LOGGER,"qf_disallowed_message"); //$NON-NLS-1$
+    static final I18NMessage0P QF_COMP_ID_REJECT_FAILED=
+        new I18NMessage0P(LOGGER,"qf_comp_id_reject_failed"); //$NON-NLS-1$
+    static final I18NMessage1P QF_TRADE_SESSION_STATUS=
+        new I18NMessage1P(LOGGER,"qf_trade_session_status"); //$NON-NLS-1$
+    static final I18NMessage2P QF_IN_MESSAGE_REJECTED=
+        new I18NMessage2P(LOGGER,"qf_in_message_rejected"); //$NON-NLS-1$
+    static final I18NMessage1P QF_COMP_ID_REJECT= 
+        new I18NMessage1P(LOGGER,"qf_comp_id_reject"); //$NON-NLS-1$
+
+    static final I18NMessage0P RH_NULL_MESSAGE=
+        new I18NMessage0P(LOGGER,"rh_null_message"); //$NON-NLS-1$
+    static final I18NMessage0P RH_UNSUPPORTED_MESSAGE=
+        new I18NMessage0P(LOGGER,"rh_unsupported_message"); //$NON-NLS-1$
+    static final I18NMessage0P RH_UNKNOWN_DESTINATION=
+        new I18NMessage0P(LOGGER,"rh_unknown_destination"); //$NON-NLS-1$
+    static final I18NMessage1P RH_UNAVAILABLE_DESTINATION=
+        new I18NMessage1P(LOGGER,"rh_unavailable_destination"); //$NON-NLS-1$
+    static final I18NMessage0P RH_CONVERSION_FAILED=
+        new I18NMessage0P(LOGGER,"rh_conversion_failed"); //$NON-NLS-1$
+    static final I18NMessage1P RH_MODIFICATION_FAILED=
+        new I18NMessage1P(LOGGER,"rh_modification_failed"); //$NON-NLS-1$
+    static final I18NMessage0P RH_ORDER_DISALLOWED=
+        new I18NMessage0P(LOGGER,"rh_order_disallowed"); //$NON-NLS-1$
+    static final I18NMessage1P RH_ROUTING_FAILED=
+        new I18NMessage1P(LOGGER,"rh_routing_failed"); //$NON-NLS-1$
+    static final I18NMessage1P RH_MESSAGE_REJECTED=
+        new I18NMessage1P(LOGGER,"rh_message_rejected"); //$NON-NLS-1$
+    static final I18NMessage1P RH_REPORT_FAILED=
+        new I18NMessage1P(LOGGER,"rh_report_failed"); //$NON-NLS-1$
+    static final I18NMessage1P RH_REPORT_TYPE_UNSUPPORTED=
+        new I18NMessage1P(LOGGER,"rh_report_type_unsupported"); //$NON-NLS-1$
+    static final I18NMessage1P RH_REPORT_FAILED_SENT=
+        new I18NMessage1P(LOGGER,"rh_report_failed_sent"); //$NON-NLS-1$
+
+
 
     static final I18NMessage2P ERROR_MESSAGE_EXCEPTION = 
         new I18NMessage2P(LOGGER,"error_message_exception"); //$NON-NLS-1$
-
-    static final I18NMessage2P CONNECTING_TO = 
-        new I18NMessage2P(LOGGER,"connecting_to"); //$NON-NLS-1$
-    static final I18NMessage1P TRADE_SESSION_STATUS = 
-        new I18NMessage1P(LOGGER,"trade_session_status"); //$NON-NLS-1$
-
-    static final I18NMessage1P ERROR_INIT_PROPNAME_IGNORE = 
-        new I18NMessage1P(LOGGER,"error_init_propname_ignore"); //$NON-NLS-1$
-    static final I18NMessage0P ERROR_INCOMING_MSG_NULL = 
-        new I18NMessage0P(LOGGER,"error_incoming_msg_null"); //$NON-NLS-1$
-    static final I18NMessage2P ERROR_INCOMING_MSG_REJECTED = 
-        new I18NMessage2P(LOGGER,"error_incoming_msg_rejected"); //$NON-NLS-1$
-    static final I18NMessage0P ERROR_SENDING_QF_MESSAGE = 
-        new I18NMessage0P(LOGGER,"error_sending_qf_message"); //$NON-NLS-1$
-    static final I18NMessage1P ERROR_SENDING_JMS_MESSAGE = 
-        new I18NMessage1P(LOGGER,"error_sending_jms_message"); //$NON-NLS-1$
     static final I18NMessage1P ERROR_GENERATING_EXEC_ID = 
         new I18NMessage1P(LOGGER,"error_generating_exec_id"); //$NON-NLS-1$
-    static final I18NMessage0P ERROR_MESSAGE_MALFORMED_NO_FIX_VERSION = 
-        new I18NMessage0P(LOGGER,"error_message_malformed_no_fix_version"); //$NON-NLS-1$
-    static final I18NMessage2P ERROR_MISMATCHED_FIX_VERSION = 
-        new I18NMessage2P(LOGGER,"error_mismatched_fix_version"); //$NON-NLS-1$
-    static final I18NMessage1P ERROR_ORDER_LIMITS_UNINITIALIZED = 
-        new I18NMessage1P(LOGGER,"error_order_limits_uninitialized"); //$NON-NLS-1$
-    static final I18NMessage0P ERROR_ORDER_LIST_UNSUPPORTED = 
-        new I18NMessage0P(LOGGER,"error_order_list_unsupported"); //$NON-NLS-1$
-    static final I18NMessage1P ERROR_UNSUPPORTED_ORDER_TYPE = 
-        new I18NMessage1P(LOGGER,"error_unsupported_order_type"); //$NON-NLS-1$
-    static final I18NMessage0P ERROR_NO_DESTINATION_CONNECTION = 
-        new I18NMessage0P(LOGGER,"error_no_destination_connection"); //$NON-NLS-1$
-    static final I18NMessage1P ERROR_NO_DELIVER_TO_COMPID_FIELD = 
-        new I18NMessage1P(LOGGER,"error_no_deliver_to_compid_field"); //$NON-NLS-1$
-
-    static final I18NMessage3P ERROR_OL_MAX_QTY = 
-        new I18NMessage3P(LOGGER,"error_ol_max_qty"); //$NON-NLS-1$
-    static final I18NMessage3P ERROR_OL_MAX_NOTIONAL = 
-        new I18NMessage3P(LOGGER,"error_ol_max_notional"); //$NON-NLS-1$
-    static final I18NMessage3P ERROR_OL_MAX_PRICE = 
-        new I18NMessage3P(LOGGER,"error_ol_max_price"); //$NON-NLS-1$
-    static final I18NMessage3P ERROR_OL_MIN_PRICE = 
-        new I18NMessage3P(LOGGER,"error_ol_min_price"); //$NON-NLS-1$
-    static final I18NMessage1P ERROR_OL_MARKET_NOT_ALLOWED_PRICE = 
-        new I18NMessage1P(LOGGER,"error_ol_market_not_allowed_price"); //$NON-NLS-1$
-    static final I18NMessage1P ERROR_OL_MARKET_NOT_ALLOWED = 
-        new I18NMessage1P(LOGGER,"error_ol_market_not_allowed"); //$NON-NLS-1$
 }
