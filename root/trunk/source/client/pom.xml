@@ -8,8 +8,8 @@
   -->
 
 <project
- xmlns="http://maven.apache.org/POM/4.0.0"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation=
  "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -87,4 +87,27 @@
       </plugin>
     </plugins>
   </build>
+  
+  <profiles>
+    <!-- Execute mock server -->
+    <profile>
+      <id>mockServer</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.client.MockServer</mainClass>
+              <arguments>
+                <argument>src/test/sample_data/inputs/equity.txt</argument>
+              </arguments>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+  </profiles>
 </project>

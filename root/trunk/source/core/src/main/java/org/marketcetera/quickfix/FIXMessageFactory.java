@@ -100,8 +100,12 @@ public class FIXMessageFactory {
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
         aMessage.setField(new OrderQty(quantity));
-        aMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+        addHandlingInst(aMessage);
         return aMessage;
+    }
+
+    protected void addHandlingInst(Message inMessage) {
+        inMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
     }
 
     public Message newCancelReplacePrice(
@@ -114,7 +118,7 @@ public class FIXMessageFactory {
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
         aMessage.setField(new Price(price));
-        aMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+        addHandlingInst(aMessage);
         return aMessage;
     }
     
@@ -127,22 +131,33 @@ public class FIXMessageFactory {
 		if (oldMessage.isSetField(Price.FIELD)){
 			cancelMessage.setField(oldMessage.getField(new Price()));
 		}
-        cancelMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
-		return cancelMessage;
+        addHandlingInst(cancelMessage);
+        return cancelMessage;
 	}
 	
 	public Message newCancelHelper(String msgType, Message oldMessage, boolean onlyCopyRequiredFields) throws FieldNotFound {
         Message cancelMessage = msgFactory.create(beginString, msgType);
 		cancelMessage.setField(new OrigClOrdID(oldMessage.getString(ClOrdID.FIELD)));
-		FIXMessageUtil.fillFieldsFromExistingMessage(cancelMessage, oldMessage, onlyCopyRequiredFields);
-		if (oldMessage.isSetField(OrderQty.FIELD)){
+        fillFieldsFromExistingMessage(oldMessage, onlyCopyRequiredFields, cancelMessage);
+        if (oldMessage.isSetField(OrderQty.FIELD)){
 			cancelMessage.setField(oldMessage.getField(new OrderQty()));
 		}
         addTransactionTimeIfNeeded(cancelMessage);
-        cancelMessage.getHeader().setField(new SendingTime(new Date())); //non-i18n
-		return cancelMessage;
+        addSendingTime(cancelMessage);
+        return cancelMessage;
 
 	}
+
+    protected void addSendingTime(Message inCancelMessage) {
+        inCancelMessage.getHeader().setField(new SendingTime(new Date())); //non-i18n
+    }
+
+    protected void fillFieldsFromExistingMessage(Message oldMessage,
+                                                 boolean onlyCopyRequiredFields,
+                                                 Message inCancelMessage) {
+        FIXMessageUtil.fillFieldsFromExistingMessage(inCancelMessage,
+                oldMessage, onlyCopyRequiredFields);
+    }
 
     private final int TOP_OF_BOOK_DEPTH = 1;
 
@@ -260,7 +275,7 @@ public class FIXMessageFactory {
                                   char timeInForce, String account) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
         aMessage.setField(new ClOrdID(clOrderID));
-        aMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+        addHandlingInst(aMessage);
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
         if(symbol.getSecurityType() != null &&
                 org.marketcetera.trade.SecurityType.Unknown != symbol.getSecurityType()) {
@@ -432,7 +447,7 @@ public class FIXMessageFactory {
      */
     public Message newBasicOrder() {
         Message msg =  msgFactory.create(beginString, MsgType.ORDER_SINGLE);
-        msg.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+        addHandlingInst(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }

@@ -49,6 +49,7 @@ public class MockMessageHandler {
         return send;
     }
     public synchronized void addToSend(Object inObject) {
+        SLF4JLoggerProxy.debug(this, "ADDED {}", inObject);
         //Use add() instead of put() as we need a non-blocking method.
         mToSend.add(inObject);
     }

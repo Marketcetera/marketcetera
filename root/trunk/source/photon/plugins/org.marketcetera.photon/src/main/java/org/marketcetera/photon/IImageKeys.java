@@ -1,11 +1,18 @@
 package org.marketcetera.photon;
 
+import org.marketcetera.util.misc.ClassVersion;
+
+/* $License$ */
+
 /**
  * Stores constants associated with managing Photon images.
  * 
  * @author gmiller
+ * @version $Id$
+ * @since $Release$
  *
  */
+@ClassVersion("$Id$")
 public interface IImageKeys {
 	public static final String PORTFOLIO = "icons/silk/briefcase.png"; //$NON-NLS-1$
 	public static final String EQUITY = "icons/silk/medal_gold_1.png"; //$NON-NLS-1$
@@ -20,7 +27,7 @@ public interface IImageKeys {
 	public static final String GROUP = "icons/silk/chart_organization.png"; //$NON-NLS-1$
 	public static final String ACCOUNT = "icons/silk/coins.png"; //$NON-NLS-1$
 	public static final String CANCEL = "icons/silk/cancel.png"; //$NON-NLS-1$
-	public static final String RECONNECT_JMS_HISTORY = "icons/silk/plugin_go.png"; //$NON-NLS-1$
+	public static final String RECONNECT_CLIENT_HISTORY = "icons/silk/plugin_go.png"; //$NON-NLS-1$
 	public static final String RECONNECT_QUOTE_FEED = "icons/silk/blue_plugin_go.png"; //$NON-NLS-1$
 	public static final String BROWSER_BACK = "icons/silk/arrow_left.png"; //$NON-NLS-1$
 	public static final String BROWSER_FORWARD = "icons/silk/arrow_right.png"; //$NON-NLS-1$

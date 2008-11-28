@@ -80,8 +80,6 @@ public interface Messages
                                                                    "reject_message"); //$NON-NLS-1$
     public static I18NMessage5P CANCEL_REJECT_MESSAGE = new I18NMessage5P(LOGGER,
                                                                           "cancel_reject_message"); //$NON-NLS-1$
-    public static I18NMessage2P HANDLE_REJECT_MESSAGE = new I18NMessage2P(LOGGER,
-                                                                          "handle_reject_message"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_SEND_MESSAGE_NO_ID = new I18NMessage0P(LOGGER,
                                                                               "cannot_send_message_no_id"); //$NON-NLS-1$
     public static I18NMessage1P CANNOT_SEND_CANCEL = new I18NMessage1P(LOGGER,
@@ -126,18 +124,18 @@ public interface Messages
                                                                            "cannot_show_ors_dialog"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_SHOW_PROGRESS_DIALOG = new I18NMessage0P(LOGGER,
                                                                                 "cannot_show_progress_dialog"); //$NON-NLS-1$
-    public static I18NMessage0P JMS_CONNECTION_FAILED = new I18NMessage0P(LOGGER,
-                                                                          "jms_connection_failed"); //$NON-NLS-1$
+    public static I18NMessage0P CLIENT_CONNECTION_FAILED = new I18NMessage0P(LOGGER,
+                                                                          "client_connection_failed"); //$NON-NLS-1$
     public static I18NMessage1P MESSAGE_QUEUE_CONNECTED = new I18NMessage1P(LOGGER,
                                                                             "message_queue_connected"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_CONNECT_TO_MESSAGE_QUEUE = new I18NMessage0P(LOGGER,
                                                                                     "cannot_connect_to_message_queue"); //$NON-NLS-1$
-    public static I18NMessage0P RECONNECT_JMS_ACTION = new I18NMessage0P(LOGGER,
-                                                                         "reconnect_jms_action"); //$NON-NLS-1$
-    public static I18NMessage0P RECONNECT_JMS_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
-                                                                                     "reconnect_jms_action_description"); //$NON-NLS-1$
-    public static I18NMessage0P RECONNECT_JMS_JOB_ACTION = new I18NMessage0P(LOGGER,
-                                                                             "reconnect_jms_job_action"); //$NON-NLS-1$
+    public static I18NMessage0P RECONNECT_CLIENT_ACTION = new I18NMessage0P(LOGGER,
+                                                                         "reconnect_client_action"); //$NON-NLS-1$
+    public static I18NMessage0P RECONNECT_CLIENT_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
+                                                                                     "reconnect_client_action_description"); //$NON-NLS-1$
+    public static I18NMessage0P RECONNECT_CLIENT_JOB_ACTION = new I18NMessage0P(LOGGER,
+                                                                             "reconnect_client_job_action"); //$NON-NLS-1$
     public static I18NMessage0P CHECK_FOR_UPDATES_ACTION = new I18NMessage0P(LOGGER,
                                                                              "check_for_updates_action"); //$NON-NLS-1$
     public static I18NMessage0P CHECK_FOR_UPDATES_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
@@ -162,8 +160,8 @@ public interface Messages
                                                                          "no_message_converter"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_DETERMINE_RESPONSE_DESTINATION = new I18NMessage0P(LOGGER,
                                                                                           "cannot_determine_response_destination"); //$NON-NLS-1$
-    public static I18NMessage0P JMS_EXCEPTION = new I18NMessage0P(LOGGER,
-                                                                  "jms_exception"); //$NON-NLS-1$
+    public static I18NMessage0P CLIENT_EXCEPTION = new I18NMessage0P(LOGGER,
+                                                                  "client_exception"); //$NON-NLS-1$
     public static I18NMessage1P EXPECTED_PRICE = new I18NMessage1P(LOGGER,
                                                                    "expected_price"); //$NON-NLS-1$
     public static I18NMessage0P MISSING_TIME_IN_FORCE = new I18NMessage0P(LOGGER,
@@ -246,8 +244,8 @@ public interface Messages
                                                                       "fix_version_label"); //$NON-NLS-1$
     public static I18NMessage0P FIX_VERSION_TOOLTIP = new I18NMessage0P(LOGGER,
                                                                         "fix_version_tooltip"); //$NON-NLS-1$
-    public static I18NMessage0P JMS_SERVER_URL_LABEL = new I18NMessage0P(LOGGER,
-                                                                         "jms_server_url_label"); //$NON-NLS-1$
+    public static I18NMessage0P CLIENT_SERVER_URL_LABEL = new I18NMessage0P(LOGGER,
+                                                                         "client_server_url_label"); //$NON-NLS-1$
     public static I18NMessage0P INCOMING_TOPIC_LABEL = new I18NMessage0P(LOGGER,
                                                                          "incoming_topic_label"); //$NON-NLS-1$
     public static I18NMessage0P OUTGOING_QUEUE_LABEL = new I18NMessage0P(LOGGER,
@@ -474,4 +472,18 @@ public interface Messages
 			LOGGER, "trading_history_preference_page.description"); //$NON-NLS-1$
     public static I18NMessage0P TRADING_HISTORY_PREFERENCE_PAGE_SESSION_START_TIME_LABEL = new I18NMessage0P(
 			LOGGER, "trading_history_preference_page.session_start_time.label"); //$NON-NLS-1$
+    public static I18NMessage1P SEND_ORDER_FAIL_UNKNOWN_TYPE = new I18NMessage1P(
+    		LOGGER, "send_order_fail_unknown_type"); //$NON-NLS-1$
+    public static I18NMessage1P SEND_ORDER_VALIDATION_FAILED = new I18NMessage1P(
+    		LOGGER, "send_order_validation_failed"); //$NON-NLS-1$
+    public static I18NMessage1P SEND_ORDER_NOT_INITIALIZED = new I18NMessage1P(
+    		LOGGER, "send_order_not_initialized"); //$NON-NLS-1$
+    public static I18NMessage1P ERROR_HANDLING_MESSAGE = new I18NMessage1P(
+    		LOGGER, "error_handling_message"); //$NON-NLS-1$
+    public static I18NMessage0P NOT_OPTION_SYMBOL = new I18NMessage0P(
+    		LOGGER, "not_option_symbol");//$NON-NLS-1$
+    public static final I18NMessage0P CLIENT_CONNECTION_NAME = new I18NMessage0P(LOGGER,
+			"client_connection_name");//$NON-NLS-1$
+    public static final I18NMessage0P UNKNOWN_VALUE = 
+		new I18NMessage0P(LOGGER, "unknown_value");//$NON-NLS-1$
 }

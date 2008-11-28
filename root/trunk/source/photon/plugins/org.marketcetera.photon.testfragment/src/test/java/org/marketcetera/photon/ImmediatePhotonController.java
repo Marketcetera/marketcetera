@@ -1,10 +1,12 @@
 package org.marketcetera.photon;
 
+import org.marketcetera.trade.Order;
+
 import quickfix.Message;
 
 public class ImmediatePhotonController extends PhotonController {
 
-	private Message lastMessage;
+	private Order mLastOrder;
 
 	public ImmediatePhotonController() {
 		super();
@@ -16,22 +18,11 @@ public class ImmediatePhotonController extends PhotonController {
 	}
 
 	@Override
-	public void handleCounterpartyMessage(Message aMessage) {
-		super.handleCounterpartyMessage(aMessage);
+	public void sendOrder(Order inOrder) {
+		mLastOrder = inOrder;
 	}
-
-	@Override
-	public void handleInternalMessage(Message aMessage) {
-		super.handleInternalMessage(aMessage);
-	}
-	
-	@Override
-	public void convertAndSend(Message fixMessage) {
-		lastMessage = fixMessage;
-	}
-
-	public Message getLastMessage() {
-		return lastMessage;
+	public Order getLastOrder() {
+		return mLastOrder;
 	}
 
 }

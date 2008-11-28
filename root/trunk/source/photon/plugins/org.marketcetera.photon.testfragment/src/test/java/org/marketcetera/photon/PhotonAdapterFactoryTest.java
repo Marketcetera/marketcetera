@@ -19,7 +19,7 @@ import quickfix.field.TransactTime;
 
 public class PhotonAdapterFactoryTest extends TestCase {
 
-    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+    private FIXMessageFactory msgFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
 
     /*
 	 * Test method for 'org.marketcetera.photon.PhotonAdapterFactory.getAdapterList()'

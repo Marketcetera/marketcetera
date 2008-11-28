@@ -40,7 +40,7 @@ import org.marketcetera.photon.ui.databinding.HasValueConverter;
 import org.marketcetera.photon.ui.databinding.IsNewOrderMessageConverter;
 import org.marketcetera.photon.ui.databinding.LabelBooleanImageObservableValue;
 import org.marketcetera.photon.ui.databinding.RetainTextObservable;
-import org.marketcetera.photon.ui.validation.IgnoreFirstNullValidator;
+import org.marketcetera.photon.ui.validation.IgnoreNullValidator;
 import org.marketcetera.photon.ui.validation.ObservableListValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.BigDecimalToStringConverter;
@@ -75,6 +75,8 @@ import quickfix.field.Symbol;
  * along with the order ticket itself.
  * 
  * @author gmiller
+ * @version $Id$
+ * @since $Release$
  *
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
@@ -433,11 +435,11 @@ public class OptionOrderTicketView
 		// ExpireDate Month
 		{
 			Control whichControl = optionTicket.getExpireMonthCombo();
-			IValidator targetAfterGetValidator = new IgnoreFirstNullValidator(new ObservableListValidator(model.getExpirationMonthList(),
+			IValidator targetAfterGetValidator = new IgnoreNullValidator(new ObservableListValidator(model.getExpirationMonthList(),
 			                                                                                              PhotonPlugin.ID,
 			                                                                                              VALUE_NOT_FOUND.getText(),
 			                                                                                              false));
-			IValidator modelBeforeSetValidator = new IgnoreFirstNullValidator(new StringRequiredValidator());
+			IValidator modelBeforeSetValidator = new IgnoreNullValidator(new StringRequiredValidator());
 			ISWTObservableValue swtObservable = SWTObservables.observeText(whichControl);
 			Binding binding = bindMessageValue( 
 					swtObservable,
@@ -460,12 +462,11 @@ public class OptionOrderTicketView
 					new UpdateValueStrategy(),
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
 					);
-			controlsRequiringInput.add(swtObservable);
 		}
 		// ExpireDate Year
 		{
 			Control whichControl = optionTicket.getExpireYearCombo();
-			IValidator validator = new IgnoreFirstNullValidator(new ObservableListValidator(model.getExpirationYearList(),
+			IValidator validator = new IgnoreNullValidator(new ObservableListValidator(model.getExpirationYearList(),
 			                                                                                PhotonPlugin.ID,
 			                                                                                VALUE_NOT_FOUND.getText(),
 			                                                                                false));
@@ -491,13 +492,12 @@ public class OptionOrderTicketView
 					new UpdateValueStrategy(),
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
 					);
-			controlsRequiringInput.add(swtObservable);
 		}
 
 		// StrikePrice
 		{
 			Control whichControl = optionTicket.getStrikePriceCombo();
-			IValidator targetAfterGetValidator = new IgnoreFirstNullValidator(new ObservableListValidator(model.getStrikePriceList(),
+			IValidator targetAfterGetValidator = new IgnoreNullValidator(new ObservableListValidator(model.getStrikePriceList(),
 			                                                                                              PhotonPlugin.ID,
 			                                                                                              VALUE_NOT_FOUND.getText(),
 			                                                                                              false));
@@ -525,12 +525,11 @@ public class OptionOrderTicketView
 					new UpdateValueStrategy(),
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
 					);
-			controlsRequiringInput.add(swtObservable);
 		}
 		// PutOrCall (OptionCFICode)
 		{
             Control whichControl = optionTicket.getPutOrCallCombo();
-			IValidator targetAfterGetValidator = new IgnoreFirstNullValidator(putOrCallConverterBuilder.newTargetAfterGetValidator());
+			IValidator targetAfterGetValidator = new IgnoreNullValidator(putOrCallConverterBuilder.newTargetAfterGetValidator());
 			IValidator modelAfterGetValidator = putOrCallConverterBuilder.newModelAfterGetValidator();
 			
 			ISWTObservableValue swtObservable = SWTObservables.observeText(whichControl);
@@ -557,13 +556,11 @@ public class OptionOrderTicketView
 					new UpdateValueStrategy(),
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
 					);
-			controlsRequiringInput.add(swtObservable);
 		}
 		// OrderCapacity
-		if(OptionOrderTicketModel.isOrderCapacityAllowed())
 		{
 			Control whichControl = optionTicket.getOrderCapacityCombo();
-			IValidator targetAfterGetValidator = new IgnoreFirstNullValidator(orderCapacityConverterBuilder.newTargetAfterGetValidator());
+			IValidator targetAfterGetValidator = new IgnoreNullValidator(orderCapacityConverterBuilder.newTargetAfterGetValidator());
 			IValidator modelAfterGetValidator = orderCapacityConverterBuilder.newModelAfterGetValidator();
 
 			// The FIX field may need to be updated., See
@@ -590,13 +587,11 @@ public class OptionOrderTicketView
 					new UpdateValueStrategy(),
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
 					);
-			controlsRequiringInput.add(swtObservable);
 		}
 		// OpenClose
-		if(OptionOrderTicketModel.isOpenCloseAllowed())
 		{
 			Control whichControl = optionTicket.getOpenCloseCombo();
-			IValidator targetAfterGetValidator = new IgnoreFirstNullValidator(openCloseConverterBuilder.newTargetAfterGetValidator());
+			IValidator targetAfterGetValidator = new IgnoreNullValidator(openCloseConverterBuilder.newTargetAfterGetValidator());
 			IValidator modelAfterGetValidator = openCloseConverterBuilder.newModelAfterGetValidator();
 			
 			// If the field below is changed the defaults in the 
@@ -620,7 +615,6 @@ public class OptionOrderTicketView
 					new UpdateValueStrategy(),
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
 					);
-			controlsRequiringInput.add(swtObservable);
 		}
 		// Option symbol
 		{

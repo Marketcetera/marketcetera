@@ -1,6 +1,9 @@
 package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.spring.SpringUtils;
+import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 /* $License$ */

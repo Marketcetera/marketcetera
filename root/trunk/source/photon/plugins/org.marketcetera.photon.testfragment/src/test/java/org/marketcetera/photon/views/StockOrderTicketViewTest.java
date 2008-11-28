@@ -1,11 +1,8 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
@@ -15,25 +12,15 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
-import org.springframework.jms.core.JmsOperations;
-
-import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.DeliverToCompID;
-import quickfix.field.HandlInst;
-import quickfix.field.LastPx;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntryType;
 import quickfix.field.MsgType;
 import quickfix.field.OrdType;
 import quickfix.field.OrderQty;
@@ -42,8 +29,6 @@ import quickfix.field.SecurityType;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
-import quickfix.field.TransactTime;
-import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
 
 /**
@@ -54,7 +39,7 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
  */
 public class StockOrderTicketViewTest extends ViewTestBase {
 
-    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+    private FIXMessageFactory msgFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
 	private StockOrderTicketController controller;
 	private MarketDataFeedTracker marketDataFeedTracker;
 
@@ -238,9 +223,6 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertEquals(OrdType.MARKET, orderMessage.getChar(OrdType.FIELD));
 		assertEquals(TimeInForce.FILL_OR_KILL, orderMessage.getChar(TimeInForce.FIELD));
 		assertEquals(SecurityType.COMMON_STOCK, orderMessage.getString(SecurityType.FIELD));
-
-		// test for bug #221
-		assertEquals(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE, orderMessage.getChar(HandlInst.FIELD));
 	}
 
 	/**
@@ -306,14 +288,9 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		stockOrderTicketModel.setOrderMessage(newMessage);
 
 		
-		Date oldTime = newMessage.getUtcTimeStamp(TransactTime.FIELD);
-		Thread.sleep(100); // because of windows clock granularity problems
 		stockOrderTicketModel.completeMessage();
 		
 		Message updatedMessage = stockOrderTicketModel.getOrderMessage();
-		//test for bug #367
-		assertFalse("completeMessage() should set different value for TransactTime", 
-				oldTime.getTime() == updatedMessage.getUtcTimeStamp(TransactTime.FIELD).getTime());
 		assertNotNull( updatedMessage );
 		try {
 			quickfix.Message.Header header = updatedMessage.getHeader();
@@ -362,14 +339,9 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		stockOrderTicketModel.setOrderMessage(message);
 
 		
-		Date oldTime = message.getUtcTimeStamp(TransactTime.FIELD);
-		Thread.sleep(100); // because of windows clock granularity problems
 		stockOrderTicketModel.completeMessage();
 		
 		Message updatedMessage = stockOrderTicketModel.getOrderMessage();
-		//test for bug #367
-		assertFalse("completeMessage() should set different value for TransactTime", 
-				oldTime.getTime() == updatedMessage.getUtcTimeStamp(TransactTime.FIELD).getTime());
 		assertNotNull( updatedMessage );
 		quickfix.Message.Header header = updatedMessage.getHeader();
 		String value = header.getString(DeliverToCompID.FIELD);  // header field
@@ -481,70 +453,10 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 			// expected behavior
 		}
 	}
-
-	private void setUpJMSFeedService(JmsOperations jmsOperations) {
-		JMSFeedService jmsFeedService = null;
-		
-		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		ServiceReference jmsFeedServiceReference = bundleContext.getServiceReference(JMSFeedService.class.getName());
-		if (jmsFeedServiceReference == null) {
-			jmsFeedService = new JMSFeedService();
-			ServiceRegistration registration = bundleContext.registerService(
-						JMSFeedService.class.getName(), 
-						jmsFeedService, 
-						null);
-			jmsFeedService.setServiceRegistration(registration);
-		}
-		else {
-			jmsFeedService = (JMSFeedService) bundleContext.getService(jmsFeedServiceReference);
-		}
-		
-		jmsFeedService.setJmsOperations(jmsOperations);
-	}
 	
 	@Override
 	protected String getViewID() {
 		return StockOrderTicketView.ID;
-	}
-	
-	public void testTransactTimeCorrect() throws Exception {
-		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
-
-		MockJmsOperations mockJmsOperations = new MockJmsOperations();
-		setUpJMSFeedService(mockJmsOperations);
-
-		StockOrderTicketView view = (StockOrderTicketView) getTestView();
-
-		// Attempt to get a message ID. This currently has the side effect of
-		// initializing an in memory ID generator if the database backed one is
-		// unavailable. This allows the subsequent ID generation to succeed,
-		// which is required for handleSend() below.
-		try {
-			IDFactory idFactory = PhotonPlugin.getDefault()
-					.getPhotonController().getIDFactory();
-			idFactory.getNext();
-		} catch (Exception anyException) {
-			// Ignore
-		}
-		
-		stockOrderTicketModel.clearOrderMessage();
-
-		view.getOrderTicket().getSideCombo().setText("S");
-		view.getOrderTicket().getQuantityText().setText("45");
-		view.getOrderTicket().getSymbolText().setText("ASDF");
-		view.getOrderTicket().getPriceText().setText("MKT");
-		view.getOrderTicket().getTifCombo().setText("FOK");
-
-		stockOrderTicketModel.completeMessage();
-		
-		Message updatedMessage = stockOrderTicketModel.getOrderMessage();
-		assertNotNull( updatedMessage );
-
-		long sentTime = updatedMessage.getUtcTimeStamp(TransactTime.FIELD).getTime();
-		long diff = System.currentTimeMillis() - sentTime;
-		// check to see that the TransactTime is sometime in the last second,
-		// and not in the future.
-		assertTrue("Found diff of: "+diff, diff >= 0 && diff < 1000);
 	}
 	
 	/** Verify that MarketOnClose orders are translated correctly 

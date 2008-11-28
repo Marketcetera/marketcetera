@@ -10,21 +10,19 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.Pair;
-import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.ui.databinding.ObservableEventList;
 import org.marketcetera.photon.ui.databinding.OptionSpecifierMatcherEditor;
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
 import quickfix.field.OpenClose;
-import quickfix.field.OrderCapacity;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.PutOrCall;
@@ -41,6 +39,8 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.UniqueList;
 import ca.odell.glazedlists.impl.ThreadSafeList;
 
+/* $License$ */
+
 /**
  * Implementation of the model for an option order ticket.  This subclass
  * of {@link OrderTicketModel} adds four main things.  First, it adds
@@ -52,8 +52,11 @@ import ca.odell.glazedlists.impl.ThreadSafeList;
  * display to the end user.
  * 
  * @author gmiller
+ * @version $Id$
+ * @since $Release$
  *
  */
+@ClassVersion("$Id")
 public class OptionOrderTicketModel extends OrderTicketModel {
 
 	private final IObservableList expirationMonthList;
@@ -327,9 +330,7 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 		Message aMessage = getMessageFactory().newBasicOrder();
 		aMessage.setString(SecurityType.FIELD, SecurityType.OPTION);
 		aMessage.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
-		if (isOpenCloseAllowed()){
-			aMessage.setField(new OpenClose(OpenClose.OPEN));
-		}
+		aMessage.setField(new OpenClose(OpenClose.OPEN));
 		return aMessage;
 	}
 	
@@ -541,24 +542,4 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 	public WritableList getOptionMarketDataList() {
 		return optionMarketDataList;
 	}
-	
-	/**
-	 * Determine whether the {@link OrderCapacity} field is allowed in the current
-	 * version of FIX.
-	 * @return true if OrderCapacity is allowed, false otherwise
-	 */
-	public static boolean isOrderCapacityAllowed() {
-		return PhotonPlugin.getDefault().getFIXVersion().getVersionAsDouble() >= FIXVersion.FIX43.getVersionAsDouble();
-	}
-
-	/**
-	 * Determine whether the {@link OpenClose} field is allowed in the current version of FIX
-	 * @return true if OpenClose is allowed, false otherwise
-	 */
-	public static boolean isOpenCloseAllowed() {
-		return PhotonPlugin.getDefault().getFIXVersion().getVersionAsDouble() >= FIXVersion.FIX42.getVersionAsDouble();
-		
-	}
-
-
 }

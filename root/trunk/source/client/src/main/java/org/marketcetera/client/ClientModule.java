@@ -64,7 +64,7 @@ class ClientModule extends Module implements DataReceiver,
                     ObjectUtils.toString(inData)));
         } catch (OrderValidationException e) {
             throw new ReceiveDataException(e, new I18NBoundMessage2P(
-                        Messages.UNSUPPORTED_DATA_TYPE, inFlowID.getValue(),
+                        Messages.SEND_ORDER_VALIDATION_FAILED, inFlowID.getValue(),
                         ObjectUtils.toString(inData)));
         } catch (ClientInitException e) {
             throw new StopDataFlowException(e, new I18NBoundMessage1P(

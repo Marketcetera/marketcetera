@@ -7,12 +7,10 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraTestSuite;
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.Account;
-import quickfix.field.HandlInst;
-import quickfix.field.Side;
-import quickfix.field.TimeInForce;
+import quickfix.field.*;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author toli
@@ -52,10 +50,15 @@ public class FIXVersionsTest extends TestCase {
         long suffix = System.currentTimeMillis();
         Message newSingle = version.getMessageFactory().newMarketOrder("123"+suffix, inSide, new BigDecimal(qty), new MSymbol(inSymbol), //$NON-NLS-1$
                 TimeInForce.DAY, "testAccount"); //$NON-NLS-1$
-        newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         newSingle.setField(new TimeInForce(TimeInForce.DAY));
         newSingle.setField(new Account("testAccount")); //$NON-NLS-1$
         assertSame(version, FIXVersion.getFIXVersion(newSingle));
+        // Add fields that are not added for system fix messages as they
+        // are not added by the clients, they are only added by ORS. 
+        if(version == FIXVersion.FIX_SYSTEM) {
+            newSingle.setField(new TransactTime(new Date()));
+            newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+        }
         return newSingle;
     }
     

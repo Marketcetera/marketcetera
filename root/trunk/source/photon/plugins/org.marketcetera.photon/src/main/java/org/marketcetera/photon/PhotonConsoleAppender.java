@@ -10,7 +10,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.ui.PhotonConsole;
+import org.marketcetera.util.except.I18NException;
 
+/* $License$ */
 
 /**
  * THe PhotonConsoleAppender integrates the RCP's console facility
@@ -19,6 +21,8 @@ import org.marketcetera.photon.ui.PhotonConsole;
  * to write messages into the console using the appropriate
  * {@link MessageConsoleStream}.
  * @author gmiller
+ * @version $Id$
+ * @since $Release$
  *
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
@@ -106,7 +110,13 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
                 }
                 ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
                 if (throwableInformation != null){
-					String exceptionMessage = throwableInformation.getThrowable().getMessage();
+					Throwable throwable = throwableInformation.getThrowable();
+					String exceptionMessage;
+					if(throwable instanceof I18NException) {
+						exceptionMessage = ((I18NException)throwable).getLocalizedDetail();
+					} else {
+						exceptionMessage = throwable.getLocalizedMessage();
+					}
 					stream.println(exceptionMessage);
 	                if (secondaryStream != null){
 	                	secondaryStream.println(exceptionMessage);

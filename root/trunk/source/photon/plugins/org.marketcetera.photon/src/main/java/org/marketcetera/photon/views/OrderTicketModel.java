@@ -169,16 +169,12 @@ public abstract class OrderTicketModel
 	/**
 	 * This method is responsible for "completing" the order message
 	 * prior to sending it.  Currently this method adds the appropriate
-	 * custom fields to the message, and then adds the TransactTime if 
-	 * necessary.  This should only be done just prior to sending the message
-	 * as the TransactTime should be as close to the sending time of the message
-	 * as possible.
+	 * custom fields to the message.
 	 * 
 	 * @throws CoreException
 	 */
 	public void completeMessage() throws CoreException {
 		addCustomFields();
-		messageFactory.addTransactionTimeIfNeeded(orderMessage);
 	}
 
 	/**

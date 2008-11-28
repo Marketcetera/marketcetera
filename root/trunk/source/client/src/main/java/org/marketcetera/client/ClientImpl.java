@@ -2,8 +2,7 @@ package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.spring.SpringUtils;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.ws.tags.AppId;
@@ -35,24 +34,31 @@ class ClientImpl implements Client {
     @Override
     public void sendOrder(OrderSingle inOrderSingle)
             throws ConnectionException, OrderValidationException {
+        Validations.validate(inOrderSingle);
+
         convertAndSend(inOrderSingle);
     }
 
     @Override
     public void sendOrder(OrderReplace inOrderReplace)
             throws ConnectionException, OrderValidationException {
+        Validations.validate(inOrderReplace);
+
         convertAndSend(inOrderReplace);
     }
 
     @Override
     public void sendOrder(OrderCancel inOrderCancel)
             throws ConnectionException, OrderValidationException {
+        Validations.validate(inOrderCancel);
+
         convertAndSend(inOrderCancel);
     }
 
     @Override
     public void sendOrderRaw(FIXOrder inFIXOrder)
             throws ConnectionException, OrderValidationException {
+        Validations.validate(inFIXOrder);
         convertAndSend(inFIXOrder);
     }
 
@@ -151,6 +157,7 @@ class ClientImpl implements Client {
     }
 
     void notifyExecutionReport(ExecutionReport inReport) {
+        SLF4JLoggerProxy.debug(TRAFFIC, "Received Exec Report:{}", inReport);  //$NON-NLS-1$
         synchronized (mReportListeners) {
             for(ReportListener listener: mReportListeners) {
                 try {
@@ -165,6 +172,7 @@ class ClientImpl implements Client {
     }
 
     void notifyCancelReject(OrderCancelReject inReport) {
+        SLF4JLoggerProxy.debug(TRAFFIC, "Received Cancel Reject:{}", inReport);  //$NON-NLS-1$
         synchronized (mReportListeners) {
             for(ReportListener listener: mReportListeners) {
                 try {
@@ -173,6 +181,19 @@ class ClientImpl implements Client {
                     Messages.LOG_ERROR_RECEIVE_CANCEL_REJECT.warn(this, t,
                             ObjectUtils.toString(inReport));
                     ExceptUtils.interrupt(t);
+                }
+            }
+        }
+    }
+    void exceptionThrown(ConnectionException inException) {
+        synchronized (mExceptionListeners) {
+            for(ExceptionListener l: mExceptionListeners) {
+                try {
+                    l.exceptionThrown(inException);
+                } catch (Exception e) {
+                    Messages.LOG_ERROR_NOTIFY_EXCEPTION.warn(this, e,
+                            ObjectUtils.toString(inException));
+                    ExceptUtils.interrupt(e);
                 }
             }
         }
@@ -187,6 +208,8 @@ class ClientImpl implements Client {
                         "Error when closing connection to server", e);  //$NON-NLS-1$
                 ExceptUtils.interrupt(e);
             }
+        mContext = null;
+        mDelegate = null;
         }
         setContext(null);
         setDelegate(null);
@@ -208,7 +231,7 @@ class ClientImpl implements Client {
             SpringUtils.addStringBean(parentCtx,
                     "runtimeUsername", mParameters.getUsername());  //$NON-NLS-1$
             SpringUtils.addStringBean(parentCtx,
-                    "runtimePassword", mParameters == null    //$NON-NLS-1$   
+                    "runtimePassword", mParameters == null    //$NON-NLS-1$
                     ? null
                     : String.valueOf(mParameters.getPassword()));
             parentCtx.refresh();
@@ -261,19 +284,6 @@ class ClientImpl implements Client {
             throw exception;
         }
     }
-    void exceptionThrown(ConnectionException inException) {
-        synchronized (mExceptionListeners) {
-            for(ExceptionListener l: mExceptionListeners) {
-                try {
-                    l.exceptionThrown(inException);
-                } catch (Throwable t) {
-                    Messages.LOG_ERROR_NOTIFY_EXCEPTION.warn(this, t,
-                            ObjectUtils.toString(inException));
-                    ExceptUtils.interrupt(t);
-                }
-            }
-        }
-    }
 
     private MessagingDelegate getDelegate() throws ClientInitException {
         if (mDelegate == null) {
@@ -310,4 +320,5 @@ class ClientImpl implements Client {
     private final Deque<ExceptionListener> mExceptionListeners =
             new LinkedList<ExceptionListener>();
     private Date mLastConnectTime;
+    private static final String TRAFFIC = ClientImpl.class.getPackage().getName() + ".traffic";  //$NON-NLS-1$
 }

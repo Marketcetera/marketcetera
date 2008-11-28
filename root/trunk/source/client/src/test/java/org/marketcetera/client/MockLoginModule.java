@@ -55,8 +55,9 @@ public class MockLoginModule implements LoginModule {
         }
         username = ((NameCallback)callbacks[0]).getName();
         char [] password = ((PasswordCallback)callbacks[1]).getPassword();
-        if(!ObjectUtils.equals(username, String.valueOf(password))) {
-            throw new FailedLoginException();
+        String pass = String.valueOf(password);
+        if(!ObjectUtils.equals(username, pass)) {
+            throw new FailedLoginException(username + "<>" + pass);
         }
         SLF4JLoggerProxy.debug(this,"login done for user {}",username); //$NON-NLS-1$
         return true;

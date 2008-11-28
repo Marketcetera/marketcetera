@@ -9,20 +9,14 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.photon.views.MockJmsOperations;
-import org.marketcetera.photon.views.StockOrderTicketModel;
-import org.marketcetera.photon.views.StockOrderTicketView;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.FIXMessageUtilTest;
+import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderID;
 
-import quickfix.Message;
-import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
-import quickfix.field.OrigClOrdID;
 import quickfix.field.Side;
-import quickfix.field.TimeInForce;
 
 /**
  * Verify the functions in PhotonController
@@ -32,7 +26,7 @@ import quickfix.field.TimeInForce;
 
 @ClassVersion("$Id$")
 public class PhotonControllerTest extends TestCase {
-    private static FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+    private static FIXMessageFactory msgFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
     private MyPhotonController photonController;
     private FIXMessageHistory fixMessageHistory;
 
@@ -46,7 +40,6 @@ public class PhotonControllerTest extends TestCase {
         fixMessageHistory = new FIXMessageHistory(msgFactory);
         photonController.setMessageHistory(fixMessageHistory);
         photonController.setIDFactory(new InMemoryIDFactory(1000));
-        photonController.setMessageFactory(msgFactory);
     }
 
     public void testCancelAllOpenOrders() throws Exception {
@@ -57,46 +50,22 @@ public class PhotonControllerTest extends TestCase {
                 Side.BUY, new BigDecimal(10), new BigDecimal(10.10), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO, new MSymbol("BOB"), "tester"));
         photonController.cancelAllOpenOrders();
-        assertEquals("not enough orders canceled", 2, photonController.sentMessages.size());
-        assertEquals(MsgType.ORDER_CANCEL_REQUEST, photonController.sentMessages.get(0).getHeader().getString(MsgType.FIELD));
-        assertEquals(MsgType.ORDER_CANCEL_REQUEST, photonController.sentMessages.get(1).getHeader().getString(MsgType.FIELD));
-        assertEquals("10001", photonController.sentMessages.get(0).getString(OrigClOrdID.FIELD));
-        assertEquals("10002", photonController.sentMessages.get(1).getString(OrigClOrdID.FIELD));
+        assertEquals("not enough orders canceled", 2, photonController.sentOrders.size());
+        Order order1 = photonController.sentOrders.get(0);
+        Order order2 = photonController.sentOrders.get(1);
+        assertEquals(new OrderID("10001"), ((OrderCancel)order1).getOriginalOrderID());
+        assertEquals(new OrderID("10002"), ((OrderCancel)order2).getOriginalOrderID());
     }
 
-    public void testNewOrderAugmentorApplied() throws Exception {
-    	Message msg = FIXMessageUtilTest.createMarketNOS("IBM", new BigDecimal(100), Side.BUY, msgFactory);
-    	msg.setField(new TimeInForce(TimeInForce.AT_THE_CLOSE));
-    	photonController.handleInternalMessage(msg);
-    	
-    	assertEquals(1, photonController.sentMessages.size());
-    	assertEquals(OrdType.MARKET_ON_CLOSE, photonController.sentMessages.get(0).getChar(OrdType.FIELD));
-    	assertEquals(TimeInForce.DAY, photonController.sentMessages.get(0).getChar(TimeInForce.FIELD));
-    }
-    
+   
     /** Store the messages that are meant to go out */
     private class MyPhotonController extends PhotonController {
-        private Vector<Message> sentMessages = new Vector<Message>();
-        public void convertAndSend(Message fixMessage) {
-            sentMessages.add(fixMessage);
-        }
+		@Override
+		public void sendOrder(Order inOrder) {
+			sentOrders.add(inOrder);
+		}
+		private final Vector<Order> sentOrders = new Vector<Order>();
+        
     }
     
-	/** Verify that MarketOnClose orders are translated correctly 
-	 * Setup the outgoing order to be Market and CLO (at the close)
-	 * in FIX.4.2 Photon
-	 */
-	public void testMarketOnCloseCorrect() throws Exception {
-    	Message msg = FIXMessageUtilTest.createMarketNOS("ASDF", new BigDecimal(45), Side.SELL, msgFactory);
-
-    	msg.setField(new TimeInForce(TimeInForce.AT_THE_CLOSE));
-
-    	photonController.handleInternalMessage(msg);
-
-    	assertEquals(1, photonController.sentMessages.size());
-
-		assertEquals(TimeInForce.DAY, photonController.sentMessages.get(0).getChar(TimeInForce.FIELD));
-		assertEquals(OrdType.MARKET_ON_CLOSE, photonController.sentMessages.get(0).getChar(OrdType.FIELD));
-	}
-
 }

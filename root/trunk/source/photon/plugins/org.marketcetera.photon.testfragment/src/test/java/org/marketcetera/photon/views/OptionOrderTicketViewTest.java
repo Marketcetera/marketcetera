@@ -64,7 +64,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
 @ClassVersion("$Id$")
 public class OptionOrderTicketViewTest extends ViewTestBase {
-    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+    private FIXMessageFactory msgFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
 	private OptionOrderTicketController controller;
 	
 	public OptionOrderTicketViewTest(String name) {

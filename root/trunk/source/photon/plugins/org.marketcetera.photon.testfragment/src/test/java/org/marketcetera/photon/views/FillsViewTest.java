@@ -37,7 +37,7 @@ public class FillsViewTest
     }
     public void testShowMessage() throws Exception
     {
-        FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX42.getMessageFactory());
+        FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
         FillsView view = (FillsView) getTestView();
         view.setInput(hist);
         hist.addIncomingMessage(new ExecutionReport(new OrderID("orderid1"),

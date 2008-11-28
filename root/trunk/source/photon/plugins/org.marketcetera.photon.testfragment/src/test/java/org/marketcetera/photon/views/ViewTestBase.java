@@ -136,7 +136,7 @@ public abstract class ViewTestBase extends TestCase {
     protected void doFilterTest()
         throws Exception
     {
-        FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX42.getMessageFactory());
+        FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
         AbstractFIXMessagesView view = (AbstractFIXMessagesView)getTestView();
         view.setInput(hist);
         List<Message> messages = getFilterTestMessages();

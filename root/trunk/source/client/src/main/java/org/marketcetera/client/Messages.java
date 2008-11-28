@@ -58,6 +58,30 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "request_client_not_initialized");   //$NON-NLS-1$
     static final I18NMessage0P CLIENT_CLOSED =
             new I18NMessage0P(LOGGER, "client_closed");   //$NON-NLS-1$
+    static final I18NMessage0P NO_ORDER_SUPPLIED =
+            new I18NMessage0P(LOGGER, "no_order_supplied");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_ORDERID =
+            new I18NMessage0P(LOGGER, "validation_orderid");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_ORDER_TYPE =
+            new I18NMessage0P(LOGGER, "validation_order_type");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_ORDER_QUANTITY =
+            new I18NMessage0P(LOGGER, "validation_order_quantity");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_ORDER_SIDE =
+            new I18NMessage0P(LOGGER, "validation_order_side");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_ORDER_SYMBOL =
+            new I18NMessage0P(LOGGER, "validation_order_symbol");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_ORIG_ORDERID =
+            new I18NMessage0P(LOGGER, "validation_orig_orderid");   //$NON-NLS-1$
+    static final I18NMessage2P SEND_ORDER_VALIDATION_FAILED =
+            new I18NMessage2P(LOGGER, "send_order_validation_failed");   //$NON-NLS-1$
+    static final I18NMessage0P NO_SUGGEST_SUPPLIED =
+            new I18NMessage0P(LOGGER, "no_suggest_supplied");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_SUGGEST_IDENTIFIER =
+            new I18NMessage0P(LOGGER, "validation_suggest_identifier");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_SUGGEST_SCORE =
+            new I18NMessage0P(LOGGER, "validation_suggest_score");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_SUGGEST_ORDER =
+            new I18NMessage0P(LOGGER, "validation_suggest_order");   //$NON-NLS-1$
 
 
     static final I18NMessage1P LOG_ERROR_RECEIVE_EXEC_REPORT =

@@ -5,7 +5,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.ActionDelegate;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageHolder;
@@ -15,12 +14,14 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.ClOrdID;
 import quickfix.field.OrderID;
+/* $License$ */
 
 /**
  * CancelReplaceOrderActionDelegate is a subclass of {@link ActionDelegate}
@@ -30,6 +31,8 @@ import quickfix.field.OrderID;
  * the context menu.
  * 
  * @author gmiller
+ * @version $Id$
+ * @since $Release$
  *
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
@@ -92,7 +95,7 @@ public class CancelReplaceOrderActionDelegate
 					theMessage = ((MessageHolder) firstElement).getMessage();
 				}
 				if (theMessage != null && theMessage.isSetField(ClOrdID.FIELD) && (FIXMessageUtil.isCancellable(theMessage)) &&
-						(FIXMessageUtil.isOrderSingle(theMessage) || FIXMessageUtil.isExecutionReport(theMessage))){
+						FIXMessageUtil.isExecutionReport(theMessage)){
 					shouldEnable = true;
 				}
 			}
