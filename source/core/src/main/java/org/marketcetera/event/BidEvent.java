@@ -89,7 +89,7 @@ public class BidEvent
                      Action inAction)
     {
         this(inBid.getMessageId(),
-             inBid.getTimestamp(),
+             inBid.getTimeMillis(),
              inBid.getSymbol(),
              inBid.getExchange(),
              inBid.getPrice(),
@@ -105,7 +105,7 @@ public class BidEvent
                                        BigDecimal inNewSize)
     {
         return new BidEvent(inBid.getMessageId(),
-                            inBid.getTimestamp(),
+                            inBid.getTimeMillis(),
                             inBid.getSymbol(),
                             inBid.getExchange(),
                             inBid.getPrice(),

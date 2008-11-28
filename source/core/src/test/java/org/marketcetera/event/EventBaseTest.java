@@ -32,12 +32,12 @@ public class EventBaseTest
         MockEvent e1 = new MockEvent();
         Thread.sleep(100);
         MockEvent e2 = new MockEvent();
-        MockEvent e3 = new MockEvent(e2.getTimestamp());
+        MockEvent e3 = new MockEvent(e2.getTimeMillis());
         Thread.sleep(100);
         MockEvent e4 = new MockEvent();
-        assertTrue(e1.getTimestamp() < e2.getTimestamp());
-        assertTrue(e2.getTimestamp() == e3.getTimestamp());
-        assertTrue(e3.getTimestamp() < e4.getTimestamp());
+        assertTrue(e1.getTimeMillis() < e2.getTimeMillis());
+        assertTrue(e2.getTimeMillis() == e3.getTimeMillis());
+        assertTrue(e3.getTimeMillis() < e4.getTimeMillis());
         List<MockEvent> sortedEvents = new ArrayList<MockEvent>();
         sortedEvents.add(e4);
         sortedEvents.add(e2);
@@ -101,7 +101,7 @@ public class EventBaseTest
         @Override
         public String toString()
         {
-            return Long.toString(getTimestamp());
+            return Long.toString(getTimeMillis());
         }
     }
 }
