@@ -179,7 +179,7 @@ public class SessionManager<T>
     /**
      * Returns the lifespan of the sessions managed by the receiver.
      *
-     * @return The lifespan.
+     * @return The lifespan, in ms.
      */
 
     public long getLifespan()
