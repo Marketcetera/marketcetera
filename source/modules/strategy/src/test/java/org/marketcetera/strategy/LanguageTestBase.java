@@ -19,6 +19,7 @@ import java.util.concurrent.Callable;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -80,7 +81,7 @@ public abstract class LanguageTestBase
                                                   null);
         verifyPropertyNonNull("onStart");
         doSuccessfulStartTest(strategyModule);
-        moduleManager.stop(strategyModule);
+        stopStrategy(strategyModule);
         assertFalse(moduleManager.getModuleInfo(strategyModule).getState().isStarted());
         verifyPropertyNonNull("onStop");
     }
@@ -765,7 +766,7 @@ public abstract class LanguageTestBase
                                                null,
                                                null); 
         doSuccessfulStartTest(strategyURN);
-        moduleManager.stop(strategyURN);
+        stopStrategy(strategyURN);
         assertTrue("The strategy should have been stopped before the callback - increase the callback delay",
                    System.currentTimeMillis() < callbackAt.getTime());
         Thread.sleep(2500);
@@ -976,7 +977,7 @@ public abstract class LanguageTestBase
     /**
      * Starts and stops many different strategies.
      *
-     * @throws Exception
+     * @throws Exception if an error occurs
      */
     @Test
     public void manyStrategiesStartWithoutStop()
@@ -996,6 +997,11 @@ public abstract class LanguageTestBase
             moduleManager.start(strategyModule);
         }
     }
+    /**
+     * Tests the <code>MXBean</code> strategy interface.
+     *
+     * @throws Exception if an error occurs
+     */
     @Test
     public void mxBeanOperations()
         throws Exception
@@ -1034,8 +1040,8 @@ public abstract class LanguageTestBase
         assertTrue(suggestionRecorder.getDataReceived().isEmpty());
         assertTrue(orderRecorder.getDataReceived().isEmpty());
         // now cycle the strategy
-        moduleManager.stop(strategyURN);
-        moduleManager.start(strategyURN);
+        stopStrategy(strategyURN);
+        startStrategy(strategyURN);
         doSuccessfulStartTestNoVerification(strategyURN);
         // onAsk got through, but there are still no destinations for the orders and suggestions
         verifyPropertyNonNull("onAsk");
@@ -1054,8 +1060,8 @@ public abstract class LanguageTestBase
         // reset
         setPropertiesToNull();
         // cycle the strategy again
-        moduleManager.stop(strategyURN);
-        moduleManager.start(strategyURN);
+        stopStrategy(strategyURN);
+        startStrategy(strategyURN);
         // fire the events again
         doSuccessfulStartTestNoVerification(strategyURN);
         // onAsk set again
@@ -1081,8 +1087,8 @@ public abstract class LanguageTestBase
         setPropertiesToNull();
         suggestionRecorder.resetDataReceived();
         // cycle the strategy again
-        moduleManager.stop(strategyURN);
-        moduleManager.start(strategyURN);
+        stopStrategy(strategyURN);
+        startStrategy(strategyURN);
         // fire the events again
         doSuccessfulStartTestNoVerification(strategyURN);
         // onAsk set again
@@ -1101,8 +1107,8 @@ public abstract class LanguageTestBase
         suggestionRecorder.resetDataReceived();
         orderRecorder.resetDataReceived();
         // cycle
-        moduleManager.stop(strategyURN);
-        moduleManager.start(strategyURN);
+        stopStrategy(strategyURN);
+        startStrategy(strategyURN);
         // fire
         doSuccessfulStartTestNoVerification(strategyURN);
         // verify
@@ -1313,8 +1319,8 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("orderShouldBeNull",
                                             "true");
         // restart and make sure no orders are in this session
-        moduleManager.stop(strategy);
-        moduleManager.start(strategy);
+        stopStrategy(strategy);
+        startStrategy(strategy);
         cumulativeOrders.clear();
         doOrderTest(strategy,
                     new OrderSingle[] { },
@@ -1383,8 +1389,8 @@ public abstract class LanguageTestBase
                                             "0");
         runningStrategy.onAsk(askEvent);
         // cycle the module to get a fresh session
-        moduleManager.stop(strategy);
-        moduleManager.start(strategy);
+        stopStrategy(strategy);
+        startStrategy(strategy);
         // trigger a cancel (should do nothing)
         runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
         runningStrategy.onTrade(tradeEvent);
@@ -1433,8 +1439,8 @@ public abstract class LanguageTestBase
         String orderIDString = AbstractRunningStrategy.getProperty("orderID"); 
         assertNotNull(orderIDString);
         // start and stop the strategy
-        moduleManager.stop(strategy);
-        moduleManager.start(strategy);
+        stopStrategy(strategy);
+        startStrategy(strategy);
         AbstractRunningStrategy.setProperty("orderCanceled",
                                             "");
         runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
@@ -1564,14 +1570,110 @@ public abstract class LanguageTestBase
         orderIDString = AbstractRunningStrategy.getProperty("orderID"); 
         assertNotNull(orderIDString);
         // cycle the strategy
-        moduleManager.stop(strategy);
-        moduleManager.start(strategy);
+        stopStrategy(strategy);
+        startStrategy(strategy);
         runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
         AbstractRunningStrategy.setProperty("newOrderID",
                                             null);
         // try to cancel/replace again, won't work because the order to be replaced was in the last strategy session (before the stop)
         runningStrategy.onOther(newOrder);
         assertNull(AbstractRunningStrategy.getProperty("newOrderID"));
+    }
+    /**
+     * Tests a strategy's ability to get the position of a security. 
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void positions()
+        throws Exception
+    {
+        String validSymbol = positions.keySet().iterator().next().toString();
+        Position position = positions.get(new MSymbol(validSymbol));
+        String invalidSymbol = "there-is-no-position-for-this-symbol-" + System.nanoTime();
+        assertFalse(positions.containsKey(new MSymbol(invalidSymbol)));
+        // null symbol
+        doPositionTest(null,
+                       new Date(),
+                       null);
+        // empty symbol
+        doPositionTest("",
+                       new Date(),
+                       null);
+        // invalid symbol
+        doPositionTest(invalidSymbol,
+                       new Date(),
+                       null);
+        // null date
+        doPositionTest(validSymbol,
+                       null,
+                       null);
+        // call fails
+        MockClient.getPositionFails = true;
+        doPositionTest(validSymbol,
+                       new Date(),
+                       null);
+        MockClient.getPositionFails = false;
+        // date in the past (before position begins)
+        Interval<BigDecimal> openingBalance = position.getPositionView().get(0);
+        doPositionTest(validSymbol,
+                       new Date(openingBalance.getDate().getTime() - 1000), // 1s before the open of the position
+                       BigDecimal.ZERO);
+        // date in the past (after position begins)
+        List<Interval<BigDecimal>> view = position.getPositionView(); 
+        int median = view.size() / 2;
+        assertTrue("Position " + position + " contains no data!",
+                   median > 0);
+        Interval<BigDecimal> dataPoint = position.getPositionView().get(median);
+        Date date = dataPoint.getDate();
+        BigDecimal expectedValue = position.getPositionAt(date);
+        assertEquals("value at " + date + ": " + position,
+                     dataPoint.getValue(),
+                     expectedValue);
+        assertTrue(date.getTime() < System.currentTimeMillis());
+        // found a date somewhere in the middle of the position and earlier than today
+        doPositionTest(validSymbol,
+                       date,
+                       expectedValue);
+        // date exactly now
+        date = new Date();
+        expectedValue = position.getPositionAt(date);
+        dataPoint = view.get(view.size() - 1);
+        assertEquals("value at " + date + ": " + position,
+                     dataPoint.getValue(),
+                     expectedValue);
+        doPositionTest(validSymbol,
+                       date,
+                       expectedValue);
+        // pick a data point two weeks into the future
+        date = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
+        expectedValue = position.getPositionAt(date);
+        dataPoint = view.get(view.size() - 1);
+        assertEquals("value at " + date + ": " + position,
+                     dataPoint.getValue(),
+                     expectedValue);
+        doPositionTest(validSymbol,
+                       date,
+                       expectedValue);
+    }
+    /**
+     * Tests a strategy's ability to retrieve available destinations.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void destinations()
+        throws Exception
+    {
+        // call should fail
+        MockClient.getDestinationsFails = true;
+        doDestinationTest(new DestinationStatus[0]);
+        // succeeds and returns a non-empty list
+        MockClient.getDestinationsFails = false;
+        doDestinationTest(destinations.getDestinations().toArray(new DestinationStatus[destinations.getDestinations().size()]));
+        // succeeds and returns an empty list
+        destinations.setDestinations(new ArrayList<DestinationStatus>());
+        doDestinationTest(new DestinationStatus[0]);
     }
     /**
      * Gets the language to use for this test.
@@ -1651,6 +1753,81 @@ public abstract class LanguageTestBase
      * @return a <code>StrategyCoordinates</code> value
      */
     protected abstract StrategyCoordinates getPart2Strategy();
+    /**
+     * Performs a single destinations test.
+     *
+     * @param inExpectedDestinations a <code>DestinationStatus[]</code> value containing the expected destinations
+     * @throws Exception if an error occurs
+     */
+    private void doDestinationTest(DestinationStatus[] inExpectedDestinations)
+        throws Exception
+    {
+        StrategyCoordinates strategy = getStrategyCompiles();
+        AbstractRunningStrategy.getProperties().clear();
+        AbstractRunningStrategy.setProperty("askForDestinations",
+                                            "true");
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null,
+                                     null);
+        int counter = 0;
+        for(DestinationStatus destination : inExpectedDestinations)
+        {
+            assertEquals(destination.toString(),
+                         AbstractRunningStrategy.getProperty("" + counter++));
+        }
+        // verify there are no extra properties
+        assertNull("Property " + inExpectedDestinations.length + " was non-null",
+                   AbstractRunningStrategy.getProperty("" + inExpectedDestinations.length));
+    }
+    /**
+     * Executes a single iteration of the get-current-position test.
+     *
+     * @param inSymbol a <code>String</code> value containing the symbol for which to search or null
+     * @param inDate a <code>Date</code> value containing the time-point at which to search or null
+     * @param inExpectedPosition a <code>BigDecimal</code> value containing the expected result
+     * @throws Exception if an error occurs
+     */
+    private void doPositionTest(String inSymbol,
+                                Date inDate,
+                                BigDecimal inExpectedPosition)
+        throws Exception
+    {
+        StrategyCoordinates strategy = getStrategyCompiles();
+        MSymbol symbol = null;
+        // set up data
+        if(inSymbol != null) {
+            symbol = new MSymbol(inSymbol);
+            AbstractRunningStrategy.setProperty("symbol",
+                                                symbol.toString());
+        } else {
+            AbstractRunningStrategy.setProperty("symbol",
+                                                null);
+        }
+        if(inDate != null) {
+            AbstractRunningStrategy.setProperty("date",
+                                                Long.toString(inDate.getTime()));
+        } else {
+            AbstractRunningStrategy.setProperty("date",
+                                                null);
+        }
+        AbstractRunningStrategy.setProperty("askForPosition",
+                                            "true");
+        AbstractRunningStrategy.setProperty("position",
+                                            null);
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null,
+                                     null);
+        assertEquals((inExpectedPosition == null ? null : inExpectedPosition.toString()),
+                     AbstractRunningStrategy.getProperty("position"));
+    }
     /**
      * Starts a strategy module which generates <code>FIX</code> messages and measures them against the
      * give expected results.  
@@ -1880,6 +2057,7 @@ public abstract class LanguageTestBase
                                             null,
                                             inOrdersURN,
                                             null);
+        setupMockORSConnection(strategy);
         return strategy;
     }
     /**
@@ -1936,8 +2114,8 @@ public abstract class LanguageTestBase
         // plumb the emitter together with the strategy (the data is transmitted when the request is made)
         DataFlowID dataFlowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(dataEmitterURN,
                                                                                                  null),
-                                                                                                 new DataRequest(inStrategy) },
-                                                                                                 false);
+                                                                                 new DataRequest(inStrategy) },
+                                                             false);
         // shut down the flow
         moduleManager.cancel(dataFlowID);
     }

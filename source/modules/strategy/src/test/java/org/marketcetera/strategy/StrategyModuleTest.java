@@ -36,6 +36,7 @@ import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleNotFoundException;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.SinkModuleFactory;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
@@ -742,6 +743,31 @@ public class StrategyModuleTest
                 }
             }
         }
+    }
+    /**
+     * Tests what happens when a module which is not a data-emitter is passed as an OrdersURN.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void ordersNonEmitter()
+        throws Exception
+    {
+        ModuleURN dataSink = SinkModuleFactory.INSTANCE_URN;
+        assertTrue(moduleManager.getModuleInfo(dataSink).getState().isStarted());
+        assertFalse(moduleManager.getModuleInfo(dataSink).isEmitter());
+        ModuleURN strategy = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                        JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                                        Language.JAVA,
+                                                        JavaLanguageTest.JAVA_STRATEGY,
+                                                        null,
+                                                        null,
+                                                        dataSink,
+                                                        null);
+        moduleManager.start(strategy);
+        assertTrue(moduleManager.getModuleInfo(strategy).getState().isStarted());
+        moduleManager.stop(strategy);
+        moduleManager.deleteModule(strategy);
     }
     /**
      * Executes a single permutation of a strategy attribute get/set test.

@@ -1,11 +1,15 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Messages.*;
+import static org.marketcetera.strategy.Messages.CALLBACK_ERROR;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_DESTINATIONS;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_POSITION;
 import static org.marketcetera.strategy.Messages.INVALID_CANCEL;
 import static org.marketcetera.strategy.Messages.INVALID_MARKET_DATA_REQUEST;
 import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
 import static org.marketcetera.strategy.Messages.INVALID_ORDER;
 import static org.marketcetera.strategy.Messages.INVALID_ORDERID;
+import static org.marketcetera.strategy.Messages.INVALID_POSITION_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_REPLACEMENT_ORDER;
 import static org.marketcetera.strategy.Messages.INVALID_TRADE_SUGGESTION;
 import static org.marketcetera.strategy.Messages.NO_PARAMETERS;
 import static org.marketcetera.strategy.Messages.NULL_PROPERTY_KEY;
@@ -13,6 +17,7 @@ import static org.marketcetera.strategy.Messages.ORDER_CANCEL_FAILED;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,7 +27,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.ExecutionReport;
@@ -181,7 +188,7 @@ public abstract class AbstractRunningStrategy
             StringBuilder request = new StringBuilder();
             request.append("type=marketdata:symbols=").append(inSymbols); //$NON-NLS-1$
             try {
-                return strategy.getServicesProvider().requestMarketData(DataRequest.newRequestFromString(request.toString()),
+                return strategy.getOutboundServicesProvider().requestMarketData(DataRequest.newRequestFromString(request.toString()),
                                                                         inSource);
             } catch (Exception e) {
                 INVALID_MARKET_DATA_REQUEST.warn(AbstractRunningStrategy.class,
@@ -205,14 +212,14 @@ public abstract class AbstractRunningStrategy
      */
     protected final void cancelMarketDataRequest(long inRequestID)
     {
-        strategy.getServicesProvider().cancelMarketDataRequest(inRequestID);
+        strategy.getOutboundServicesProvider().cancelMarketDataRequest(inRequestID);
     }
     /**
      * Cancels all market data requests from this strategy.
      */
     protected final void cancelAllMarketDataRequests()
     {
-        strategy.getServicesProvider().cancelAllMarketDataRequests();
+        strategy.getOutboundServicesProvider().cancelAllMarketDataRequests();
     }
     /**
      * Gets the <code>ExecutionReport</code> values generated during the current
@@ -267,7 +274,7 @@ public abstract class AbstractRunningStrategy
                                "{} suggesting trade {}", //$NON-NLS-1$
                                strategy,
                                suggestion);
-        strategy.getServicesProvider().sendSuggestion(suggestion);
+        strategy.getOutboundServicesProvider().sendSuggestion(suggestion);
     }
     /**
      * Sends an order to order subscribers.
@@ -289,7 +296,7 @@ public abstract class AbstractRunningStrategy
                                inOrder,
                                inOrder.getOrderID());
         submittedOrderManager.add(inOrder);
-        strategy.getServicesProvider().sendOrder(inOrder);
+        strategy.getOutboundServicesProvider().sendOrder(inOrder);
         return inOrder.getOrderID();
     }
     /**
@@ -341,7 +348,7 @@ public abstract class AbstractRunningStrategy
                                "{} submitting cancel request {}", //$NON-NLS-1$
                                strategy,
                                cancelRequest);
-        strategy.getServicesProvider().cancelOrder(cancelRequest);
+        strategy.getOutboundServicesProvider().cancelOrder(cancelRequest);
         return true;
     }
     /**
@@ -436,7 +443,7 @@ public abstract class AbstractRunningStrategy
                                strategy,
                                replaceOrder);
         submittedOrderManager.add(inNewOrder);
-        strategy.getServicesProvider().cancelReplace(replaceOrder);
+        strategy.getOutboundServicesProvider().cancelReplace(replaceOrder);
         return inNewOrder.getOrderID();
     }
     /**
@@ -460,8 +467,8 @@ public abstract class AbstractRunningStrategy
                                inMessage,
                                inDestination);
         try {
-            strategy.getServicesProvider().sendMessage(inMessage,
-                                                       inDestination);
+            strategy.getOutboundServicesProvider().sendMessage(inMessage,
+                                                               inDestination);
         } catch (MessageCreationException e) {
             // TODO Log an error-handling message
         }
@@ -512,6 +519,68 @@ public abstract class AbstractRunningStrategy
     {
         requestCallbackAfter(inDate.getTime() - System.currentTimeMillis(),
                              inData);
+    }
+    /**
+     * Returns the list of destinations known to the system.
+     *
+     * <p>These values can be used to create and send orders with {@link #sendMessage(Message, DestinationID)}
+     * or {@link #sendOrder(OrderSingle)}.
+     *
+     * @return a <code>List&lt;DestinationStatus&gt;</code> value
+     */
+    protected final List<DestinationStatus> getDestinations()
+    {
+        try {
+            List<DestinationStatus> destinations = strategy.getInboundServicesProvider().getDestinations();
+            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                   "{} received the following destinations: {}", //$NON-NLS-1$
+                                   strategy,
+                                   destinations == null ? "null" : Arrays.toString(destinations.toArray())); //$NON-NLS-1$
+            return destinations;
+        } catch (Exception e) {
+            CANNOT_RETRIEVE_DESTINATIONS.warn(AbstractRunningStrategy.class,
+                                              e,
+                                              strategy);
+            return new ArrayList<DestinationStatus>();
+        }
+    }
+    /**
+     * Gets the position in the given security at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inSymbol a <code>String</code> value
+     * @return a <code>BigDecimal</code> value containing the position or null if the position could not be retrieved
+     */
+    protected final BigDecimal getPositionAsOf(Date inDate,
+                                               String inSymbol)
+    {
+        if(inDate == null ||
+           inSymbol == null ||
+           inSymbol.isEmpty()) {
+            INVALID_POSITION_REQUEST.warn(AbstractRunningStrategy.class,
+                                          strategy,
+                                          inDate,
+                                          inSymbol);
+            return null;
+        }
+        try {
+            BigDecimal result = strategy.getInboundServicesProvider().getPositionAsOf(inDate,
+                                                                                      new MSymbol(inSymbol)); 
+            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                   "{} found position {} as of {} for {}", //$NON-NLS-1$
+                                   strategy,
+                                   result,
+                                   inDate,
+                                   inSymbol);
+            return result;
+        } catch (Exception e) {
+            CANNOT_RETRIEVE_POSITION.warn(AbstractRunningStrategy.class,
+                                          e,
+                                          strategy,
+                                          inSymbol,
+                                          inDate);
+            return null;
+        }
     }
     /**
      * common properties store shared among all strategies

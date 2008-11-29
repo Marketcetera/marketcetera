@@ -319,61 +319,6 @@ public class AbstractMarketDataFeedTest
                           null);
     }
     /**
-     * Tests the subscribe to all queries function.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testSubscribeAll()
-        throws Exception
-    {
-        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
-        feed.start();
-        feed.login(new MockMarketDataFeedCredentials());
-        // create three subscribers - 1 & 3 will be assigned to specific queries,
-        //  2 will be a general subscriber (all messages)
-        MockSubscriber s1 = new MockSubscriber();
-        MockSubscriber s2 = new MockSubscriber();
-        MockSubscriber s3 = new MockSubscriber();
-        feed.subscribeToAll(s2);
-        MarketDataFeedTokenSpec spec1 = MarketDataFeedTokenSpec.generateTokenSpec(dataRequest,
-                                                                                  s1);
-        MarketDataFeedTokenSpec spec2 = MarketDataFeedTokenSpec.generateTokenSpec(dataRequest,
-                                                                                  s3);
-        // execute two queries
-        feed.execute(spec1);
-        feed.execute(spec2);
-        // wait for the results to come in
-        waitForPublication(s1);
-        waitForPublication(s2);
-        waitForPublication(s3);
-        // 1 & 3 should have gotten one event, 2 should get both
-        assertEquals(1,
-                     s1.getPublishCount());
-        assertEquals(2,
-                     s2.getPublishCount());
-        assertEquals(1,
-                     s3.getPublishCount());
-        // unsubscribe from general
-        feed.unsubscribeFromAll(s2);
-        // reset the subscriber counters
-        resetSubscribers(new MockSubscriber[] { s1, s2, s3 } );
-        // re-execute the queries
-        feed.execute(spec1);
-        feed.execute(spec2);
-        // wait for the publications, making sure 2 receives none
-        // this is deterministic because 3 won't be notified until 2 would have been by the first query
-        waitForPublication(s1);
-        waitForPublication(s3);
-        // 2 did not get notified this time
-        assertEquals(1,
-                     s1.getPublishCount());
-        assertEquals(0,
-                     s2.getPublishCount());
-        assertEquals(1,
-                     s3.getPublishCount());
-    }
-    /**
      * Tests the feed's ability to timeout a request and throw the correct exception.
      *
      * @throws Exception if an error occurs

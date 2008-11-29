@@ -73,9 +73,15 @@ interface Strategy
      */
     public Status getStatus();
     /**
-     * Returns the services provider for this <code>Strategy</code> to use.
+     * Returns the outbound services provider for this <code>Strategy</code> to use.
      *
      * @return an <code>OutboundServicesProvider</code> value
      */
-    public OutboundServicesProvider getServicesProvider();
+    public OutboundServicesProvider getOutboundServicesProvider();
+    /**
+     * Returns the inbound services provider for this <code>Strategy</code. to use.
+     *
+     * @return an <code>InboundServicesProvider</code> value
+     */
+    public InboundServicesProvider getInboundServicesProvider();
 }
