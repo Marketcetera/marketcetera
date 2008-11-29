@@ -35,7 +35,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
-import org.marketcetera.core.IDFactory;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
@@ -90,8 +89,6 @@ public class PhotonPlugin
 	private Logger marketDataLogger;
 
 	private PhotonController photonController;
-
-	private IDFactory idFactory;
 
 	private BundleContext bundleContext;
 	
@@ -153,7 +150,6 @@ public class PhotonPlugin
         System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
         initMessageFactory();
-		initIDFactory();
 		initFIXMessageHistory();
 		initPhotonController();
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
@@ -170,7 +166,6 @@ public class PhotonPlugin
 		photonController = new PhotonController();
 		photonController.setMessageHistory(fixMessageHistory);
 		photonController.setMainConsoleLogger(getMainConsoleLogger());
-		photonController.setIDFactory(idFactory);
 	}
 
 	private void initFIXMessageHistory() {
@@ -210,19 +205,6 @@ public class PhotonPlugin
 		return (ScopedPreferenceStore) super.getPreferenceStore();
 	}
 
-	private void initIDFactory() throws MalformedURLException, UnknownHostException
-	{
-		ScopedPreferenceStore preferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
-		URL url = new URL(
-				"http", //$NON-NLS-1$
-				preferenceStore.getString(ConnectionConstants.WEB_APP_HOST_KEY),
-				preferenceStore.getInt(ConnectionConstants.WEB_APP_PORT_KEY),
-				"/id_repository/get_next_batch" //$NON-NLS-1$
-		);
-		idFactory = new HttpDatabaseIDFactory(url, preferenceStore.getString(ConnectionConstants.ORDER_ID_PREFIX_KEY));
-
-	}
-	
 	private void initMessageFactory() throws FIXFieldConverterNotAvailable {
 		fixVersion = FIXVersion.FIX_SYSTEM;
 		messageFactory = fixVersion.getMessageFactory();
@@ -269,15 +251,6 @@ public class PhotonPlugin
 		return photonController;
 	}
 	
-	/**
-	 * Accessor for the IDFactory singleton.
-	 * 
-	 * @return the IDFactory singleton
-	 */
-	public IDFactory getIDFactory() {
-		return idFactory;
-	}
-
 	public BundleContext getBundleContext() {
 		return bundleContext;
 	}

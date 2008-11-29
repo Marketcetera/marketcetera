@@ -29,7 +29,8 @@ public class ClientModuleFactory extends ModuleFactory
             ClientParameters parameters = new ClientParameters(getUsername(),
                     getPassword() == null
                     ? null
-                    : getPassword().toCharArray(),getURL());
+                    : getPassword().toCharArray(),getURL(),
+                    getHostname(), getPort(), getIDPrefix());
             try {
                 ClientManager.init(parameters);
             } catch (ConnectionException e) {
@@ -81,9 +82,42 @@ public class ClientModuleFactory extends ModuleFactory
         return mPassword;
     }
 
+    @Override
+    public String getHostname() {
+        return mHostname;
+    }
+
+    @Override
+    public void setHostname(String inHostname) {
+        mHostname = inHostname;
+    }
+
+    @Override
+    public int getPort() {
+        return mPort;
+    }
+
+    @Override
+    public void setPort(int inPort) {
+        mPort = inPort;
+    }
+
+    @Override
+    public String getIDPrefix() {
+        return mIDPrefix;
+    }
+
+    @Override
+    public void setIDPrefix(String inIDPrefix) {
+        mIDPrefix = inIDPrefix;
+    }
+
     private String mURL;
     private String mUsername;
     private String mPassword;
+    private String mHostname;
+    private int mPort;
+    private String mIDPrefix;
     static final ModuleURN PROVIDER_URN = new ModuleURN("metc:ors:system");  //$NON-NLS-1$
     public static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN, "single");  //$NON-NLS-1$
 }

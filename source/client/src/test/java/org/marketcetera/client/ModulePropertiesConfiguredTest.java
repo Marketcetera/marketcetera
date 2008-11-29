@@ -1,6 +1,7 @@
 package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.module.*;
 import org.junit.*;
 
@@ -22,6 +23,9 @@ public class ModulePropertiesConfiguredTest extends ClientModuleTestBase {
         CONFIG_PROVIDER.setURL(MockServer.URL);
         CONFIG_PROVIDER.setUsername(USER_NAME);
         CONFIG_PROVIDER.setPassword(USER_NAME);
+        CONFIG_PROVIDER.setHostname(Node.DEFAULT_HOST);
+        CONFIG_PROVIDER.setPort(Node.DEFAULT_PORT);
+        CONFIG_PROVIDER.setIDPrefix(IDPREFIX);
         mManager.init();
     }
 

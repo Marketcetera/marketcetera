@@ -229,26 +229,24 @@ public class CommandParser
 						throw new jfun.parsec.UserException(MISSING_TIME_IN_FORCE.getText());
 					}
 					Message message=null;
-					try {
-						if (PriceImage.MKT.equals(priceImage))	{
-							message = messageFactory.newMarketOrder(idFactory.getNext(), sideImage.getFIXCharValue(), quantity, new MSymbol(symbol), timeInForce.getFIXValue(), accountID);
+					if (PriceImage.MKT.equals(priceImage))	{
+						message = messageFactory.newMarketOrder("", //$NON-NLS-1$ 
+								sideImage.getFIXCharValue(), quantity, new MSymbol(symbol), timeInForce.getFIXValue(), accountID);
+					} else {
+						message = messageFactory.newLimitOrder("", //$NON-NLS-1$
+								sideImage.getFIXCharValue(), quantity, new MSymbol(symbol), new BigDecimal(priceImage.getImage()), timeInForce.getFIXValue(), accountID);
+					}
+					if (optionSpecifier != null || optionSymbolPattern.matcher(symbol).matches()){
+						if (optionSpecifier != null){
+							FIXMessageUtil.copyFields(message,optionSpecifier);
 						} else {
-							message = messageFactory.newLimitOrder(idFactory.getNext(), sideImage.getFIXCharValue(), quantity, new MSymbol(symbol), new BigDecimal(priceImage.getImage()), timeInForce.getFIXValue(), accountID);
+							message.setString(SecurityType.FIELD, SecurityType.OPTION);
 						}
-						if (optionSpecifier != null || optionSymbolPattern.matcher(symbol).matches()){
-							if (optionSpecifier != null){
-								FIXMessageUtil.copyFields(message,optionSpecifier);
-							} else {
-								message.setString(SecurityType.FIELD, SecurityType.OPTION);
-							}
-							if (dataDictionary.isField(OpenClose.FIELD)){
-								message.setField(new OpenClose(OpenClose.OPEN));
-							}
-						} else {
-							message.setString(SecurityType.FIELD, SecurityType.COMMON_STOCK);
+						if (dataDictionary.isField(OpenClose.FIELD)){
+							message.setField(new OpenClose(OpenClose.OPEN));
 						}
-					} catch (NoMoreIDsException e) {
-						PhotonPlugin.getMainConsoleLogger().error(this, e);
+					} else {
+						message.setString(SecurityType.FIELD, SecurityType.COMMON_STOCK);
 					}
 					return new SendOrderToOrderManagerCommand(message);
 				}
@@ -284,8 +282,6 @@ public class CommandParser
 				Parsers.token(new IsReserved(theImage)), "module1").seq(suffixParser)); //$NON-NLS-1$
 	}
 
-	private IDFactory idFactory;
-
 	private FIXMessageFactory messageFactory;
 
 	private DataDictionary dataDictionary;
@@ -306,10 +302,6 @@ public class CommandParser
 	public Tok[] lex(String theInputString){
 		return Parsers.runParser(theInputString, mainLexeme, "lex only"); //$NON-NLS-1$
 	}
-	public void setIDFactory(IDFactory factory) {
-		this.idFactory = factory;
-	}
-
 	public void setMessageFactory(FIXMessageFactory factory) {
 		this.messageFactory = factory;
 	}

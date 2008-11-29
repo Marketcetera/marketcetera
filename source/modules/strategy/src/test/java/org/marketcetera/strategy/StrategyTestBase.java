@@ -205,7 +205,7 @@ public class StrategyTestBase
          * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
          */
         @Override
-        public void cancel(RequestID inRequestID)
+        public void cancel(DataFlowID inFlowID, RequestID inRequestID)
         {
             synchronized(subscribers) {
                 subscribers.remove(inRequestID);
@@ -416,7 +416,7 @@ public class StrategyTestBase
          * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
          */
         @Override
-        public void cancel(RequestID inRequestID)
+        public void cancel(DataFlowID inFlowID, RequestID inRequestID)
         {
             // nothing to do here
         }

@@ -43,7 +43,7 @@ public class OrderSenderModule extends Module implements DataEmitter {
     }
 
     @Override
-    public void cancel(RequestID inRequestID) {
+    public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
         Future<?> future = mTable.remove(inRequestID);
         future.cancel(true);
     }

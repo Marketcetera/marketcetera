@@ -95,7 +95,7 @@ class ClientModule extends Module implements DataReceiver,
     }
 
     @Override
-    public void cancel(RequestID inRequestID) {
+    public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
         ReportListener listener = mRequestTable.remove(inRequestID);
         try {
             getClient().removeReportListener(listener);

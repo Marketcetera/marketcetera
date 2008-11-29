@@ -25,7 +25,7 @@ public interface DataEmitter {
      * The <code>inSupport</code> instance has
      * {@link DataEmitterSupport#getRequestID() requestID} 
      * uniquely identifying this request. The same <code>requestID</code> is
-     * supplied by the framework when {@link #cancel(RequestID) canceling}
+     * supplied by the framework when {@link #cancel(DataFlowID, RequestID) canceling}
      * the request.
      *
      * <p>
@@ -58,8 +58,8 @@ public interface DataEmitter {
      * request ID when this method is invoked.
      *
      * Does nothing if the request wasn't active.
-     *
+     * @param inFlowID the data flowID
      * @param inRequestID the request handle
      */
-    public void cancel(RequestID inRequestID);
+    public void cancel(DataFlowID inFlowID, RequestID inRequestID);
 }

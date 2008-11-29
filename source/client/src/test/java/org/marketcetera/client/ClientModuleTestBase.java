@@ -300,4 +300,5 @@ public class ClientModuleTestBase extends ModuleTestBase {
 
     protected ModuleManager mManager;
     private static MockServer sServer;
+    protected static final String IDPREFIX = "my";
 }

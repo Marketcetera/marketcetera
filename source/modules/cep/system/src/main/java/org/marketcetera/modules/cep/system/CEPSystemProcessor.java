@@ -172,7 +172,7 @@ public class CEPSystemProcessor extends Module
     /** Find the request, and go through all its types and remove all the {@link DataEmitterSupport}
      * object associated with it */
     @Override
-    public void cancel(RequestID inRequestID) {
+    public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
         Pair<String, DataEmitterSupport>request = mRequestMap.remove(inRequestID);
         if(request == null) return;
 

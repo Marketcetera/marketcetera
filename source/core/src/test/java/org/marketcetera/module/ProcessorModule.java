@@ -90,7 +90,7 @@ public class ProcessorModule extends ModuleBase
     }
 
     @Override
-    public void cancel(RequestID inRequestID) {
+    public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
         if (inRequestID.equals(mPassThruID)) {
             mPassThru = null;
         }

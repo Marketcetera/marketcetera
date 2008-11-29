@@ -2,11 +2,13 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.Util;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.ConversionException;
 
 import java.util.Hashtable;
+import java.util.Properties;
 
 /* $License$ */
 /**
@@ -176,11 +178,29 @@ class StringToTypeConverter {
                             : o.toString()).getText());
         }
     }
+    private static final class PropertiesConverter implements Converter {
+        public Object convert(Class inClass, Object o) {
+            if(Properties.class.equals(inClass)) {
+                if(o instanceof Properties) {
+                    return o;
+                } else if(o instanceof String) {
+                    return Util.propertiesFromString((String)o);
+                }
+            }
+            throw new ConversionException(new I18NBoundMessage1P(
+                    Messages.CANNOT_CONVERT_TO_PROPERTIES,
+                    o == null
+                            ? null
+                            : o.toString()).getText());
+        }
+    }
     static {
         //Reset the converter to throw exceptions for conversion errors
         sConverter.register(true, true, 0);
         //register the module URN converter
         sConverter.register(new ModuleURNConverter(), ModuleURN.class);
+        //register the Properties converter
+        sConverter.register(new PropertiesConverter(), Properties.class);
         //initialize the table convert primitive type names to their
         //respective class instances.
         registerPrimitive(Boolean.TYPE);

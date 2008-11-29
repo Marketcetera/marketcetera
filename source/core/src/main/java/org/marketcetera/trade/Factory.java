@@ -1,6 +1,7 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.IDFactory;
 import quickfix.Message;
 
 /* $License$ */
@@ -186,31 +187,6 @@ public abstract class Factory {
             Originator inOriginator)
             throws MessageCreationException;
     /**
-     * Creates an execution report based on the supplied execution report
-     * FIX Message. Defaults the Originator to {@link Originator#Server}
-     *
-     * @param inMessage the execution report FIX message. Cannot be null.
-     *
-     * @param inDestinationID the ID of the destination from which this
-     * message was received.
-     *
-     * @return An execution report instance based on the supplied
-     * FIX Message. The returned type will implement
-     * {@link FIXMessageSupport}.
-     *
-     * @throws MessageCreationException if there were errors wrapping
-     * the supplied FIX Message.
-     *
-     * @deprecated Use
-     * {@link #createExecutionReport(quickfix.Message, DestinationID, Originator)}
-     * instead. 
-     */
-    @Deprecated
-    public abstract ExecutionReport createExecutionReport(
-            Message inMessage, DestinationID inDestinationID)
-            throws MessageCreationException;
-
-    /**
      * Creates an order cancel reject message based on the supplied
      * order cancel reject FIX Message.
      *
@@ -231,10 +207,47 @@ public abstract class Factory {
             throws MessageCreationException;
 
     /**
-     * Creates an instance. 
+     * Initializes the starting ID value for ReportIDs that are assigned
+     * by this class to the reports created by it. The supplied value
+     * has to be greater than the current value otherwise the operation
+     * will fail with an exception.
+     * <p>
+     * The next ID value will be greater than the value supplied to
+     * this method.
+     * <p>
+     * This method should be invoke right at the beginning of
+     * the application's initialization. 
+     *
+     * @param inValue the new start value for reportIDs. Supplied value
+     * has to be greater than the current value.
+     *
+     * @throws IDException if the supplied value is less than the current
+     * value.
+     */
+    public abstract void initReportIDValue(long inValue)
+            throws IDException;
+
+    /**
+     * Initializes the orderID factory that should be used to assign
+     * OrderIDs to all the orders created by this instance.
+     * If this method is not invoked, an in memory ID factory is used
+     * to assign IDs to all orders.
+     * <p>
+     * The factory should already be {@link IDFactory#init() intialized}
+     * before it's supplied to this method.
+     *
+     * @param inIDFactory an initialized orderID Factory. Cannot be null.
+     */
+    public abstract void setOrderIDFactory(IDFactory inIDFactory);
+
+
+    /**
+     * Creates an instance.
      */
     protected Factory() {
         //do nothing.
     }
+
+
     private static final Factory sFactory = new FactoryImpl();
 }

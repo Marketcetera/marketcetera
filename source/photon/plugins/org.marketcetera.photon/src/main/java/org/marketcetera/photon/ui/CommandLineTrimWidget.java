@@ -58,7 +58,6 @@ public class CommandLineTrimWidget
 		this.charWidth = charWidth;
 		commandParser = new CommandParser();
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
-		commandParser.setIDFactory(plugin.getIDFactory());
 		commandParser.setMessageFactory(plugin.getMessageFactory());
 		commandParser.setDataDictionary(plugin.getFIXDataDictionary().getDictionary());
 		

@@ -10,6 +10,7 @@ import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.jms.core.JmsOperations;
 import quickfix.Application;
@@ -42,6 +43,9 @@ public class QuickFIXApplication
     implements Application
 {
 
+    // CLASS DATA.
+    private static final String TRAFFIC = QuickFIXApplication.class.
+            getPackage().getName() + ".traffic";  //$NON-NLS-1$
     // INSTANCE DATA.
 
     private final Destinations mDestinations;
@@ -182,10 +186,11 @@ public class QuickFIXApplication
     {
         Destination d=getDestinations().getDestination(session);
         Messages.QF_TO_ADMIN.info(this,msg,d);
-
-        // Apply message modifiers.
-
-        if (d.getModifiers()!=null) {
+        if (SLF4JLoggerProxy.isDebugEnabled(TRAFFIC)) {
+			Messages.QF_TO_ADMIN.debug(TRAFFIC, FIXMessageUtil.toPrettyString(
+					msg, d.getFIXDataDictionary()), d);
+		}
+		if (d.getModifiers()!=null) {
             try {
                 d.getModifiers().modifyMessage(msg);
             } catch (CoreException ex) {
@@ -221,10 +226,11 @@ public class QuickFIXApplication
     {
         Destination d=getDestinations().getDestination(session);
         Messages.QF_FROM_ADMIN.info(this,msg,d);
-
-        // Do not propagate heartbeats to client.
-
-        sendToClientTrades(d,msg,Originator.Destination);
+        if (SLF4JLoggerProxy.isDebugEnabled(TRAFFIC)) {
+			Messages.QF_FROM_ADMIN.debug(TRAFFIC, FIXMessageUtil.toPrettyString(
+					msg, d.getFIXDataDictionary()), d);
+		}
+		sendToClientTrades(d,msg,Originator.Destination);
     }
 
     @Override
@@ -235,6 +241,10 @@ public class QuickFIXApplication
     {
         Destination d=getDestinations().getDestination(session);
         Messages.QF_TO_APP.info(this,msg,d);
+        if (SLF4JLoggerProxy.isDebugEnabled(TRAFFIC)) {
+			Messages.QF_TO_APP.debug(TRAFFIC, FIXMessageUtil.toPrettyString(
+					msg, d.getFIXDataDictionary()), d);
+		}
     }
 
     @Override
@@ -246,10 +256,11 @@ public class QuickFIXApplication
     {
         Destination d=getDestinations().getDestination(session);
         Messages.QF_FROM_APP.info(this,msg,d);
-
-        // Accept only certain message types.
-
-        if (!getSupportedMessages().isAccepted(msg)){
+        if (SLF4JLoggerProxy.isDebugEnabled(TRAFFIC)) {
+			Messages.QF_FROM_APP.debug(TRAFFIC, FIXMessageUtil.toPrettyString(
+					msg, d.getFIXDataDictionary()), d);
+		}
+		if (!getSupportedMessages().isAccepted(msg)){
             Messages.QF_DISALLOWED_MESSAGE.info(this);
             throw new UnsupportedMessageType();
         }

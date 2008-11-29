@@ -1,6 +1,7 @@
 package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.module.*;
 import org.marketcetera.core.LoggerConfiguration;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class ModuleFailuresTest extends ModuleTestBase {
         try {
             mockServer = new MockServer();
             ClientManager.init(new ClientParameters(username, username.toCharArray(),
-                    MockServer.URL));
+                    MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT));
             ModuleManager manager = new ModuleManager();
             manager.init();
             assertModuleInfo(manager, ClientModuleFactory.INSTANCE_URN,

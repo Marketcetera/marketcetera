@@ -64,7 +64,7 @@ public class MockServer {
                 MockMessageHandler.class);
         mContext.start();
 
-        // TODO: Server host and port must come from parameters.
+        // Use default Server host and port 
         SessionManager<Object> sessionManager=new SessionManager<Object>();
         Server<?> server=new Server<Object>
             (new MockAuthenticator(),sessionManager);

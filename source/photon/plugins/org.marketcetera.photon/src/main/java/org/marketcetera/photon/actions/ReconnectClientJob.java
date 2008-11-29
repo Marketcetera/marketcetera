@@ -12,6 +12,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWTException;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.progress.UIJob;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.photon.Messages;
@@ -130,8 +131,11 @@ public class ReconnectClientJob
 					monitor.beginTask(RECONNECT_MESSAGE_SERVER.getText(),
 					                  3);
 
-					String url = PhotonPlugin.getDefault().getPreferenceStore().getString(
-							ConnectionConstants.CLIENT_URL_KEY);
+					ScopedPreferenceStore prefs = PhotonPlugin.getDefault().getPreferenceStore();
+					String url = prefs.getString(ConnectionConstants.CLIENT_URL_KEY);
+					String hostname = prefs.getString(ConnectionConstants.WEB_APP_HOST_KEY);
+					int port = prefs.getInt(ConnectionConstants.WEB_APP_PORT_KEY);
+					String idPrefix = prefs.getString(ConnectionConstants.ORDER_ID_PREFIX_KEY);
 					Random random=new Random();
 					LoginDialog loginDialog = new LoginDialog(null);
 					while (true){
@@ -150,7 +154,7 @@ public class ReconnectClientJob
 								details.getPassword() == null
 								? null
 										: details.getPassword().toCharArray(), 
-										url);
+										url, hostname, port, idPrefix);
 						ProgressMonitorDialog progress = new ProgressMonitorDialog(null);
 						progress.setCancelable(false);
 						CreateApplicationContextRunnable runnable=new CreateApplicationContextRunnable(

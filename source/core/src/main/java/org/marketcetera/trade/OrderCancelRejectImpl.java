@@ -19,12 +19,13 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
     /**
      * Creates an instance.
      *
+     * @param inReportID The unique ReportID.
      * @param inMessage The FIX Message instance.
      * @param inDestinationID the broker / destinationID from which this
-     * message was received.
      */
-    OrderCancelRejectImpl(Message inMessage, DestinationID inDestinationID) {
-        super(inMessage, inDestinationID);
+    OrderCancelRejectImpl(ReportID inReportID, Message inMessage,
+                          DestinationID inDestinationID) {
+        super(inReportID, inMessage, inDestinationID);
     }
 
     /**

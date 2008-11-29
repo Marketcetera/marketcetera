@@ -6,6 +6,8 @@ import org.marketcetera.core.MSymbol;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import quickfix.Message;
 import quickfix.field.*;
 import quickfix.field.converter.DecimalConverter;
@@ -72,6 +74,8 @@ public class ExecutionReportTest extends TypesTestBase {
         assertExecReportValues(report, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null,
                 Originator.Server, null, null, false);
+        ReportID reportID = report.getReportID();
+        assertNotNull(reportID);
         //Verify toString, doesn't fail.
         report.toString();
         //Verify toString, doesn't fail.
@@ -120,20 +124,6 @@ public class ExecutionReportTest extends TypesTestBase {
         msg.setField(new quickfix.field.PositionEffect(
                 quickfix.field.PositionEffect.CLOSE));
 
-        //Verify the deprecated factory method
-        report = sFactory.createExecutionReport(msg, cID);
-        assertReportBaseValues(report, cID, orderID, orderStatus,
-                origOrderID, sendingTime, text, destOrderID);
-        assertExecReportValues(report, account, avgPrice, cumQty, execID,
-                execType, lastMarket, lastPrice, lastShares, leavesQty,
-                orderQty, orderType, side, symbol, timeInForce,
-                transactTime, Originator.Server,
-                OrderCapacity.Proprietary, PositionEffect.Close, true);
-        //Verify toString() doesn't fail.
-        report.toString();
-        //Verify toString() doesn't fail.
-        report.toString();
-
         //Verify the regular factory method
         report = sFactory.createExecutionReport(msg, cID,
                 Originator.Destination);
@@ -144,8 +134,8 @@ public class ExecutionReportTest extends TypesTestBase {
                 orderQty, orderType, side, symbol, timeInForce,
                 transactTime, Originator.Destination,
                 OrderCapacity.Proprietary, PositionEffect.Close, true);
-        //Verify toString() doesn't fail.
-        report.toString();
+        assertNotNull(report.getReportID());
+        assertTrue(report.getReportID().compareTo(reportID) > 0);
         //Verify toString() doesn't fail.
         report.toString();
 

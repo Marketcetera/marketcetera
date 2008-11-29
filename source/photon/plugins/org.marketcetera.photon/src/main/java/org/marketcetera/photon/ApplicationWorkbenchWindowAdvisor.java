@@ -136,7 +136,6 @@ public class ApplicationWorkbenchWindowAdvisor
 			startClient();
 		}
 		startMarketDataFeed();
-		startIDFactory();
 		initStatusLine();
 	}
 
@@ -148,15 +147,6 @@ public class ApplicationWorkbenchWindowAdvisor
 		IStatusLineManager statusline = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
 		statusline.setMessage(ApplicationWorkbenchWindowAdvisor_OnlineLabel.getText()); 
 	}
-
-	private void startIDFactory(){
-		try {
-			((HttpDatabaseIDFactory)PhotonPlugin.getDefault().getIDFactory()).grabIDs();
-		} catch (NoMoreIDsException e) {
-			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_GET_ID.getText());
-		}
-	}
-
 
 	private void startClient() {
 		ReconnectClientJob job = new ReconnectClientJob(RECONNECT_MESSAGE_SERVER.getText());

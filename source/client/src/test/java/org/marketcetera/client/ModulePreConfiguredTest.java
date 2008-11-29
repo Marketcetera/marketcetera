@@ -1,6 +1,7 @@
 package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.module.*;
 import org.junit.*;
 
@@ -21,7 +22,8 @@ public class ModulePreConfiguredTest extends ClientModuleTestBase {
         //Initialize the client before initializing the module manager
         String username = "me";
         ClientParameters parameters = new ClientParameters(username,
-                username.toCharArray(), MockServer.URL);
+                username.toCharArray(), MockServer.URL,
+                Node.DEFAULT_HOST, Node.DEFAULT_PORT, IDPREFIX);
         ClientManager.init(parameters);
         mManager.init();
     }

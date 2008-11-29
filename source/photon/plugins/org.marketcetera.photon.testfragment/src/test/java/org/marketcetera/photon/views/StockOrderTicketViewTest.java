@@ -270,18 +270,6 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		customFieldsTable.getItem(0).setChecked(true);
 		((CustomField) stockOrderTicketModel.getCustomFieldsList().get(0)).setEnabled(true);
 		
-		// Attempt to get a message ID. This currently has the side effect of
-		// initializing an in memory ID generator if the database backed one is
-		// unavailable. This allows the subsequent ID generation to succeed,
-		// which is required for handleSend() below.
-		try {
-			IDFactory idFactory = PhotonPlugin.getDefault()
-					.getPhotonController().getIDFactory();
-			idFactory.getNext();
-		} catch (Exception anyException) {
-			// Ignore
-		}
-		
 		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
 				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
@@ -323,18 +311,6 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		customFieldsTable.getItem(1).setChecked(true);
 		((CustomField) stockOrderTicketModel.getCustomFieldsList().get(0)).setEnabled(true);
 		((CustomField) stockOrderTicketModel.getCustomFieldsList().get(1)).setEnabled(true);
-		
-		// Attempt to get a message ID. This currently has the side effect of
-		// initializing an in memory ID generator if the database backed one is
-		// unavailable. This allows the subsequent ID generation to succeed,
-		// which is required for handleSend() below.
-		try {
-			IDFactory idFactory = PhotonPlugin.getDefault()
-					.getPhotonController().getIDFactory();
-			idFactory.getNext();
-		} catch (Exception anyException) {
-			// Ignore
-		}
 		
 		stockOrderTicketModel.setOrderMessage(message);
 

@@ -4,10 +4,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -18,7 +15,6 @@ import org.junit.BeforeClass;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
-import java.util.Iterator;
 import java.math.BigDecimal;
 
 import quickfix.field.HandlInst;
@@ -59,10 +55,8 @@ public class TypesTestBase {
     public static void logFields(Message msg) throws FieldNotFound {
         FIXVersion v = FIXVersion.getFIXVersion(msg);
         FIXDataDictionary dict = FIXDataDictionaryManager.getFIXDataDictionary(v);
-        HashMap<String, String> fields = fieldsToMap(msg, dict);
-        fields.put("HEADER", fieldsToMap(msg.getHeader(), dict).toString());
-        fields.put("TRAILER", fieldsToMap(msg.getTrailer(), dict).toString());
-        SLF4JLoggerProxy.error(TypesTestBase.class,  fields.toString());
+        String fields = FIXMessageUtil.toPrettyString(msg, dict);
+        SLF4JLoggerProxy.error(TypesTestBase.class,  fields);
     }
 
     public static void assertOrderFIXEquals(FIXOrder inOrder1,
@@ -485,42 +479,6 @@ public class TypesTestBase {
                     append(">, actual<").append(inObj2).append(">").toString());
         }
         return inObj1 == null;
-    }
-
-    /**
-     * Converts the supplied FieldMap to a map with human readable field
-     * names (based on the supplied dictionary) as keys and field values
-     * as string values.
-     *
-     * @param msg The FIX Message.
-     * @param inDict The FIX data dictionary.
-     *
-     * @return The map containing supplied fieldMap's keys & values.
-     */
-    private static HashMap<String, String> fieldsToMap(FieldMap msg,
-                                                       FIXDataDictionary inDict) {
-        HashMap<String, String> fields = new HashMap<String, String>();
-        Iterator<Field<?>> iterator = msg.iterator();
-        while(iterator.hasNext()) {
-            Field<?> f = iterator.next();
-            String value;
-            if(f instanceof StringField) {
-                value = ((StringField)f).getValue();
-            } else {
-                value = String.valueOf(f.getObject());
-            }
-            String name = null;
-            if (inDict != null) {
-                name = inDict.getHumanFieldName(f.getTag());
-            }
-            if(name == null) {
-                name = String.valueOf(f.getTag());
-            } else {
-                name += "(" + f.getTag() + ")";
-            }
-            fields.put(name,value);
-        }
-        return fields;
     }
 
     public static void assertOrderSingle(OrderSingle inOrder,

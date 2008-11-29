@@ -110,22 +110,6 @@ public class ConnectionsPreferencePage
 		                                           getFieldEditorParent());
 		addField(quoteFeedNameEditor);
 		
-//        StringFieldEditor stringEditor = new StringFieldEditor(
-//                ConfigPropertiesLoader.DB_URL_KEY, "Database URL",
-//                getFieldEditorParent()
-//                );
-//        addField(stringEditor);
-//        stringEditor = new StringFieldEditor(
-//                ConfigPropertiesLoader.DB_USER_KEY, "Database user",
-//                getFieldEditorParent()
-//                );
-//        addField(stringEditor);
-//        stringEditor = new StringFieldEditor(
-//                ConfigPropertiesLoader.DB_PASS_KEY, "Database password",
-//                getFieldEditorParent()
-//                );
-//        addField(stringEditor);
-		
         orderIDPrefixEditor = new StringFieldEditor(ConnectionConstants.ORDER_ID_PREFIX_KEY,
                                                     ORDER_ID_PREFIX_LABEL.getText(),
                                                     getFieldEditorParent());

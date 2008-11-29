@@ -10,7 +10,6 @@ import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageVisitor;
@@ -59,8 +58,6 @@ public class PhotonController
 
 	private FIXMessageHistory fixMessageHistory;
 
-	private IDFactory idFactory;
-	
 	private final ServiceTracker mClientServiceTracker;
 
 	public static final DestinationID DEFAULT_DESTINATION = null; 
@@ -265,15 +262,6 @@ public class PhotonController
 		}
 	}
 	
-	public void setIDFactory(IDFactory fact){
-		idFactory = fact;
-	}
-	
-	public IDFactory getIDFactory() {
-		return idFactory;
-	}
-	
-
 	/**
 	 * @return Returns the mainConsoleLogger.
 	 */

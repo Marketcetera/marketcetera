@@ -56,6 +56,8 @@ public interface Messages {
             new I18NMessageNP(LOGGER, "order_cancel_reject_to_string");   //$NON-NLS-1$
     static final I18NMessage3P ORDER_SINGLE_SUGGESTION_TO_STRING =
             new I18NMessage3P(LOGGER, "order_single_suggestion_to_string");   //$NON-NLS-1$
+    static final I18NMessage2P INVALID_ID_START_VALUE =
+            new I18NMessage2P(LOGGER, "invalid_id_start_value");   //$NON-NLS-1$
 
 
     static final I18NMessage1P NO_SYMBOL=

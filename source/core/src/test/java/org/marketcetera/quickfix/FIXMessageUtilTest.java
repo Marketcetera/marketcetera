@@ -12,12 +12,7 @@ import java.util.List;
 
 import junit.framework.Test;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.CoreException;
-import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.FIXVersionTestSuite;
-import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.*;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -26,7 +21,7 @@ import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.*;
-
+/* $License$ */
 /**
  * @author Graham Miller
  * @version $Id$
@@ -41,6 +36,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     }
 
     public static Test suite() {
+        LoggerConfiguration.logSetup();
 /*
         MarketceteraTestSuite suite = new MarketceteraTestSuite();
         suite.addTest(new FIXMessageUtilTest("testFillFieldsFromExistingMessage", FIXVersion.FIX40));
@@ -597,5 +593,44 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         assertNotNull(field);
         assertEquals(0,
                      field.getTag());
+    }
+
+    /**
+     * Tests {@link FIXMessageUtil#toPrettyString(quickfix.Message, FIXDataDictionary)}
+     *
+     * @throws Exception if there were errors
+     */
+    public void testPrettyString() throws Exception {
+        //Test an order
+        Message message = createNOS("bob",
+                new BigDecimal("23.11"), new BigDecimal("100"),
+                Side.BUY, msgFactory);
+        message.setString(5001,"customValue");
+        String str = FIXMessageUtil.toPrettyString(message,fixDD);
+        //Verify if we have certain text values
+        //field tag strings & values
+        assertTrue(str, str.contains("BeginString(8)="));
+        assertTrue(str, str.contains("Side(54)=BUY(1)"));
+        assertTrue(str, str.contains("MsgType(35)=NewOrderSingle(D)"));
+
+        //check custom field
+        assertTrue(str, str.contains("5001=customValue"));
+
+        //Test an exec report
+        message = msgFactory.newExecutionReport("ord1", "clord1", "execID",
+                OrdStatus.NEW, Side.SELL, new BigDecimal("234.43"),
+                new BigDecimal("98.34"), BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"),
+                "accountName");
+        message.setString(5001,"customValue");
+        str = FIXMessageUtil.toPrettyString(message,fixDD);
+        //field tag string
+        assertTrue(str, str.contains("BeginString(8)="));
+        assertTrue(str, str.contains("Side(54)=SELL(2)"));
+        assertTrue(str, str.contains("MsgType(35)=ExecutionReport(8)"));
+
+        //check custom field
+        assertTrue(str, str.contains("5001=customValue"));
+
     }
 }

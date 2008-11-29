@@ -151,13 +151,15 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
     /**
      * Creates an instance.
      *
+     * @param inReportID the unique ID for this report.
      * @param inMessage The FIX Message of type execution report.
      * @param inDestinationID the destinationID from which this
      * @param inOriginator the originator of this message.
      */
-    ExecutionReportImpl(Message inMessage, DestinationID inDestinationID,
+    ExecutionReportImpl(ReportID inReportID, Message inMessage,
+                        DestinationID inDestinationID,
                         Originator inOriginator) {
-        super(inMessage, inDestinationID);
+        super(inReportID, inMessage, inDestinationID);
         mOriginator = inOriginator;
     }
 

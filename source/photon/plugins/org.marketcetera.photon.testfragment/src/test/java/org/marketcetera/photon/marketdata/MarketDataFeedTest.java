@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
+import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.IllegalRequestParameterValue;
@@ -225,7 +226,7 @@ public class MarketDataFeedTest {
 			}
 
 			@Override
-			public void cancel(RequestID inRequestID) {
+			public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
 			}
 
 			@Override

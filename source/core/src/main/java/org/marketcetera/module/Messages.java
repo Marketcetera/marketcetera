@@ -88,6 +88,8 @@ public interface Messages {
             new I18NMessage4P(LOGGER, "cannot_create_module_wrong_param_type");  //$NON-NLS-1$
     static final I18NMessage1P CANNOT_CONVERT_TO_MODULE_URN =
             new I18NMessage1P(LOGGER, "cannot_convert_to_module_urn");  //$NON-NLS-1$
+    static final I18NMessage1P CANNOT_CONVERT_TO_PROPERTIES =
+            new I18NMessage1P(LOGGER, "cannot_convert_to_properties");  //$NON-NLS-1$
     static final I18NMessage0P EMPTY_STRING_DATA_REQUEST =
             new I18NMessage0P(LOGGER, "empty_string_data_request");  //$NON-NLS-1$
     static final I18NMessage3P STRING_CONVERSION_ERROR =
