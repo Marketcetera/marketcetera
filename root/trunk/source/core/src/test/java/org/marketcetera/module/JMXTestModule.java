@@ -1,9 +1,11 @@
 package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.Util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Properties;
 
 /* $License$ */
 /**
@@ -234,6 +236,15 @@ public class JMXTestModule extends Module implements JMXTestModuleMXBean {
     public void setURL(String inURL) {
         mURL = inURL;
     }
+    
+    @Override
+    public String getProperties() {
+        return Util.propertiesToString(mProperties);
+    }
+
+    public void setProperties(Properties inProperties) {
+        mProperties = inProperties;
+    }
 
     @Override
     public String getFactoryAnnotation() {
@@ -270,5 +281,6 @@ public class JMXTestModule extends Module implements JMXTestModuleMXBean {
     private BigInteger mInteger;
     private String mFile;
     private String mURL;
+    private Properties mProperties;
     private String mFactoryAnnotation;
 }

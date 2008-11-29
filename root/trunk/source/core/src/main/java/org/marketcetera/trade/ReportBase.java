@@ -66,4 +66,11 @@ public interface ReportBase extends Serializable {
      * @return the destination / broker assigned order ID.
      */
     String getDestinationOrderID();
+
+    /**
+     * The unique ID for this report.
+     *
+     * @return the unique ID for this report
+     */
+    ReportID getReportID();
 }

@@ -182,6 +182,9 @@ public interface JMXTestModuleMXBean {
             @DisplayName("URL type")
             String inURL);
 
+    @DisplayName("properties")
+    String getProperties();
+
     @DisplayName("factory annotation")
     String getFactoryAnnotation();
 
@@ -189,4 +192,5 @@ public interface JMXTestModuleMXBean {
     void setFactoryAnnotation(
             @DisplayName("factory annotation")
             String inFactoryAnnotation);
+
 }

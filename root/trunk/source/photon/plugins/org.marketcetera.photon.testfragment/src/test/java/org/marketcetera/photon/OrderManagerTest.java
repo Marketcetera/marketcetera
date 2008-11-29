@@ -79,7 +79,6 @@ public class OrderManagerTest extends TestCase {
 		messageHistory = new FIXMessageHistory(msgFactory);
 		photonController = new ImmediatePhotonController();
 		photonController.setMessageHistory(messageHistory);
-		photonController.setIDFactory(idFactory);
 	}
 
 	

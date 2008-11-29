@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.io.File;
 import java.net.URL;
+import java.util.Properties;
 
 /* $License$ */
 /**
@@ -43,7 +44,8 @@ public class JMXTestModuleFactory extends ModuleFactory<JMXTestModule>
         module.setDecimal((BigDecimal) parameters[i++]);
         module.setInteger((BigInteger) parameters[i++]);
         module.setFile(parameters[i++].toString());
-        module.setURL((parameters[i]).toString());
+        module.setURL((parameters[i++]).toString());
+        module.setProperties((Properties) parameters[i]);
         module.setFactoryAnnotation(getNewInstanceAnnotation());
         return module;
     }
@@ -63,7 +65,8 @@ public class JMXTestModuleFactory extends ModuleFactory<JMXTestModule>
                 BigDecimal.class,
                 BigInteger.class,
                 File.class,
-                URL.class);
+                URL.class,
+                Properties.class);
     }
 
     @Override

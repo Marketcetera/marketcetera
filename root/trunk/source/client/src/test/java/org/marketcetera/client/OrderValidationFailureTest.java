@@ -2,6 +2,7 @@ package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.trade.*;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
@@ -146,7 +147,7 @@ public class OrderValidationFailureTest {
         sServer = new MockServer();
         String u = "u";
         ClientManager.init(new ClientParameters(u, u.toCharArray(),
-                MockServer.URL));
+                MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT));
     }
     @AfterClass
     public static void cleanup() throws Exception {

@@ -221,6 +221,17 @@ class ClientImpl implements Client {
         }
     }
 
+    /**
+     * Fetches the next orderID base from server.
+     *
+     * @return the next orderID base from server.
+     *
+     * @throws RemoteException if there were communication errors.
+     */
+    String getNextServerID() throws RemoteException {
+        return mService.getNextOrderID(getServiceContext());
+    }
+
     private void internalClose() {
         if (mContext != null) {
             try {
@@ -246,6 +257,13 @@ class ClientImpl implements Client {
                 trim().isEmpty()) {
             throw new ConnectionException(Messages.CONNECT_ERROR_NO_USERNAME);
         }
+        if(mParameters.getHostname() == null || mParameters.getHostname().trim().isEmpty()) {
+            throw new ConnectionException(Messages.CONNECT_ERROR_NO_HOSTNAME);
+        }
+        if(mParameters.getPort() < 1 || mParameters.getPort() > 0xFFFF) {
+            throw new ConnectionException(new I18NBoundMessage1P(
+                    Messages.CONNECT_ERROR_INVALID_PORT, mParameters.getPort()));
+        }
         try {
             StaticApplicationContext parentCtx = new StaticApplicationContext();
             SpringUtils.addStringBean(parentCtx, "brokerURL",  //$NON-NLS-1$
@@ -268,19 +286,22 @@ class ClientImpl implements Client {
             setContext(ctx);
             ctx.start();
 
-            // TODO: Server host and port must come from parameters.
-            // AppId must also come from params (or maybe auto-set to
-            // module name).
             mServiceClient = new org.marketcetera.util.ws.stateful.Client
-                (new AppId("ORSClient"));
+                (mParameters.getHostname(), mParameters.getPort(),
+                        new AppId("Client"));  //$NON-NLS-1$
             mServiceClient.login(mParameters.getUsername(),
                                  mParameters.getPassword());
             mService = mServiceClient.getService(Service.class);
+            ClientIDFactory idFactory = new ClientIDFactory(
+                    mParameters.getIDPrefix(), this);
+            idFactory.init();
+            Factory.getInstance().setOrderIDFactory(idFactory);
         } catch (Throwable t) {
             ExceptUtils.interrupt(t);
-            throw new ConnectionException(t, new I18NBoundMessage2P(
+            throw new ConnectionException(t, new I18NBoundMessage4P(
                     Messages.ERROR_CONNECT_TO_SERVER, mParameters.getURL(),
-                    mParameters.getUsername()));
+                    mParameters.getUsername(), mParameters.getHostname(),
+                    mParameters.getPort()));
         }
         mLastConnectTime = new Date();
     }
@@ -291,6 +312,7 @@ class ClientImpl implements Client {
 
     private void convertAndSend(Order inOrder) throws ConnectionException {
         failIfClosed();
+        SLF4JLoggerProxy.debug(TRAFFIC, "Sending order:{}", inOrder);  //$NON-NLS-1$
         try {
             MessagingDelegate delegate = getDelegate();
             delegate.convertAndSend(inOrder);
@@ -350,5 +372,6 @@ class ClientImpl implements Client {
     private org.marketcetera.util.ws.stateful.Client mServiceClient;
     private Service mService;
 
-    private static final String TRAFFIC = ClientImpl.class.getPackage().getName() + ".traffic";  //$NON-NLS-1$
+    private static final String TRAFFIC = ClientImpl.class.getPackage().
+            getName() + ".traffic";  //$NON-NLS-1$
 }

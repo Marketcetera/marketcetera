@@ -5,7 +5,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.ActionDelegate;
-import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.Messages;
@@ -137,8 +136,6 @@ public class CancelReplaceOrderActionDelegate
 
 				Message cancelReplaceMessage = messageFactory
 						.newCancelReplaceFromMessage(originalOrderMessage);
-				cancelReplaceMessage.setField(new ClOrdID(PhotonPlugin
-						.getDefault().getIDFactory().getNext()));
 				if (orderID != null){
 					cancelReplaceMessage.setField(new OrderID(orderID));
 				}
@@ -147,8 +144,6 @@ public class CancelReplaceOrderActionDelegate
 				if (controller != null) {
 					controller.setOrderMessage(cancelReplaceMessage);
 				}
-			} catch (NoMoreIDsException e) {
-				PhotonPlugin.getMainConsoleLogger().error(CANNOT_CANCEL.getText());
 			} catch (FieldNotFound e) {
                 PhotonPlugin.getMainConsoleLogger().error(CANNOT_CANCEL.getText(),
                                                           e);

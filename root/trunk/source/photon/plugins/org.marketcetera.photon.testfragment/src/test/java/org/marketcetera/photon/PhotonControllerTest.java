@@ -6,7 +6,6 @@ import java.util.Vector;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -39,7 +38,6 @@ public class PhotonControllerTest extends TestCase {
         photonController = new MyPhotonController();
         fixMessageHistory = new FIXMessageHistory(msgFactory);
         photonController.setMessageHistory(fixMessageHistory);
-        photonController.setIDFactory(new InMemoryIDFactory(1000));
     }
 
     public void testCancelAllOpenOrders() throws Exception {

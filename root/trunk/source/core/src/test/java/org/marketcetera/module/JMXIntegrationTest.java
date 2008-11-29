@@ -2,6 +2,7 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.Util;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.AfterClass;
@@ -11,10 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import javax.management.*;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Collection;
+import java.util.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.io.File;
@@ -477,6 +475,9 @@ public class JMXIntegrationTest extends ModuleTestBase {
         BigInteger vInteger = new BigInteger("8909175843507945098345");
         File vFile = new File("/tmp/test");
         URL vURL = new URL("http://www.what.com");
+        Properties vProperties = new Properties();
+        vProperties.put("si","no");
+        vProperties.put("go","no");
 
         final ModuleManagerMXBean mm = JMX.newMXBeanProxy(getMBeanServer(),
                 getMMName(), ModuleManagerMXBean.class);
@@ -486,7 +487,7 @@ public class JMXIntegrationTest extends ModuleTestBase {
         String parameterList = getCreateParmString(urn, vBool, vPBool, vByte,
                 vPByte, vChar, vPChar, vShort, vPShort, vInt, vPInt, vFloat,
                 vPFloat, vLong, vPLong, vDouble, vPDouble, vString, vDecimal,
-                vInteger, vFile, vURL);
+                vInteger, vFile, vURL, vProperties);
         assertEquals(urn.getValue(), mm.createModule(
                 JMXTestModuleFactory.PROVIDER_URN.getValue(),
                 parameterList));
@@ -582,6 +583,8 @@ public class JMXIntegrationTest extends ModuleTestBase {
         module.setURL((vURL = new URL("http://marketcetera.org")).toString());
         assertEquals(vURL.toString(),module.getURL());
 
+        assertEquals(Util.propertiesToString(vProperties), module.getProperties());
+
         // verify that the updated factory annotation got copied to the instance
         assertEquals("test annotation", module.getFactoryAnnotation());
 
@@ -668,7 +671,7 @@ public class JMXIntegrationTest extends ModuleTestBase {
                                 vInt, 4324.43f, vFloat, 3123124212l, vLong, 2432432.43242,
                                 vDouble, "whatever", new BigDecimal("65.45"),
                                 new BigInteger("45398"), new File("/whatever"),
-                                new URL("http://market.org")));
+                                new URL("http://market.org"), new Properties()));
             }
         };
     }
@@ -678,18 +681,19 @@ public class JMXIntegrationTest extends ModuleTestBase {
      * value of various parameters.
      */
     private static String getCreateParmString(ModuleURN inUrn,
-                                       Boolean inVBool, boolean inVPBool,
-                                       Byte inVByte, byte inVPByte,
-                                       Character inVChar, char inVPChar,
-                                       Short inVShort, short inVPShort,
-                                       Integer inVInt, int inVPInt,
-                                       Float inVFloat, float inVPFloat,
-                                       Long inVLong, long inVPLong,
-                                       Double inVDouble, double inVPDouble,
-                                       String inVString,
-                                       BigDecimal inVDecimal,
-                                       BigInteger inVInteger,
-                                       File inVFile, URL inVURL) {
+                                              Boolean inVBool, boolean inVPBool,
+                                              Byte inVByte, byte inVPByte,
+                                              Character inVChar, char inVPChar,
+                                              Short inVShort, short inVPShort,
+                                              Integer inVInt, int inVPInt,
+                                              Float inVFloat, float inVPFloat,
+                                              Long inVLong, long inVPLong,
+                                              Double inVDouble, double inVPDouble,
+                                              String inVString,
+                                              BigDecimal inVDecimal,
+                                              BigInteger inVInteger,
+                                              File inVFile, URL inVURL,
+                                              Properties inVProperties) {
         final char c = ',';
         StringBuilder sb = new StringBuilder();
         sb.append(inUrn);
@@ -739,6 +743,7 @@ public class JMXIntegrationTest extends ModuleTestBase {
         sb.append(c).append(inVInteger);
         sb.append(c).append(inVFile);
         sb.append(c).append(inVURL);
+        sb.append(c).append(Util.propertiesToString(inVProperties));
         return sb.toString();
     }
 

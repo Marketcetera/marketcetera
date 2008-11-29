@@ -15,6 +15,7 @@ import javax.management.NotificationListener;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
+import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.IllegalRequestParameterValue;
 import org.marketcetera.module.Module;
@@ -139,7 +140,7 @@ public class MockMarketDataModuleFactory extends ModuleFactory<Module> {
 		}
 
 		@Override
-		public void cancel(RequestID inRequestID) {
+		public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
 		}
 
 		@Override

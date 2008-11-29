@@ -57,16 +57,22 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
         return FIXUtil.getDestinationOrderID(getMessage());
     }
 
+    @Override
+    public ReportID getReportID() {
+        return mReportID;
+    }
+
     /**
      * Creates an instance.
      *
+     * @param inReportID the unique ID for this report
      * @param inMessage the FIX Message.
      * @param inDestinationID the broker / destinationID from which this
-     * FIX Message was received.
      */
-    protected ReportBaseImpl(Message inMessage,
+    protected ReportBaseImpl(ReportID inReportID, Message inMessage,
                              DestinationID inDestinationID) {
         super(inMessage);
+        mReportID = inReportID;
         mDestinationID = inDestinationID;
     }
 
@@ -77,8 +83,9 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
 
     protected ReportBaseImpl() {
         mDestinationID = null;
+        mReportID = null;
     }
-
+    private final ReportID mReportID;
     private final DestinationID mDestinationID;
     private static final long serialVersionUID = 1L;
 }

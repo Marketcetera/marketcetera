@@ -10,7 +10,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
@@ -48,7 +47,6 @@ public class ParserTest extends FIXVersionedTestCase {
     
     public void testNewOrder() throws NoMoreIDsException, FieldNotFound {
     	CommandParser aParser = new CommandParser();
-    	aParser.setIDFactory(new InMemoryIDFactory(10));
     	aParser.setMessageFactory(msgFactory);
     	aParser.setDataDictionary(fixDD.getDictionary());
     	String order;  
@@ -129,7 +127,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "A 100 IBM 94.8 DAY AAA?A/a-A";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -141,7 +138,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "SS A IBM 94.8 DAY AAA?A/a-A";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -153,7 +149,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "SS 100 IBM XXX DAY AAA?A/a-A";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -165,7 +160,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "SS 100 IBM 123.45 ASDF AAA?A/a-A";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -177,7 +171,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "SS 100 IBM ";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -189,7 +182,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "s 15 toli mkt bob errtok";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	MessageCommand aCommand = innerParser.parseNewOrder(innerOrder);
@@ -200,7 +192,6 @@ public class ParserTest extends FIXVersionedTestCase {
     
     public void testNewOptionOrder() throws NoMoreIDsException, FieldNotFound {
     	CommandParser aParser = new CommandParser();
-    	aParser.setIDFactory(new InMemoryIDFactory(10));
     	aParser.setMessageFactory(FIXVersion.FIX_SYSTEM.getMessageFactory());
     	aParser.setDataDictionary(fixDD.getDictionary());
     	String order;  
@@ -283,7 +274,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "B 100 IBM 2007ASD45C 94.8 DAY";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -295,7 +285,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "S IBM 2007DEC44 94.8 DAY";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -307,7 +296,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "B 100 IBM 2007DEC44T DAY";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -319,7 +307,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "SS 100 IBM 2007DEC25C 123.45 ASDF AAA?A/a-A";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -331,7 +318,6 @@ public class ParserTest extends FIXVersionedTestCase {
             {
             	String innerOrder = "SS 100 IBM 2007DEC25C ";
             	CommandParser innerParser = new CommandParser();
-            	innerParser.setIDFactory(new InMemoryIDFactory(10));
             	innerParser.setMessageFactory(msgFactory);
             	innerParser.setDataDictionary(fixDD.getDictionary());
             	innerParser.parseNewOrder(innerOrder);
@@ -367,7 +353,6 @@ public class ParserTest extends FIXVersionedTestCase {
     
     public void testResendRequest() throws FieldNotFound {
     	CommandParser aParser = new CommandParser();
-    	aParser.setIDFactory(new InMemoryIDFactory(10));
     	aParser.setMessageFactory(FIXVersion.FIX_SYSTEM.getMessageFactory());
     	aParser.setDataDictionary(fixDD.getDictionary());
     	String commandText;  
@@ -405,7 +390,6 @@ public class ParserTest extends FIXVersionedTestCase {
     
     public void testFullOrder() throws FieldNotFound{
     	CommandParser aParser = new CommandParser();
-    	aParser.setIDFactory(new InMemoryIDFactory(10));
     	aParser.setMessageFactory(msgFactory);
     	aParser.setDataDictionary(fixDD.getDictionary());
     	
@@ -420,7 +404,6 @@ public class ParserTest extends FIXVersionedTestCase {
 
     public void testCancelOrder() throws NoMoreIDsException, FieldNotFound{
     	CommandParser aParser = new CommandParser();
-    	aParser.setIDFactory(new InMemoryIDFactory(10));
     	aParser.setMessageFactory(msgFactory);
     	aParser.setDataDictionary(fixDD.getDictionary());
 
@@ -434,7 +417,6 @@ public class ParserTest extends FIXVersionedTestCase {
     public void testDecimalQuantity() throws Exception {
     	String innerOrder = "SS 100.1 IBM 123.4";
     	CommandParser innerParser = new CommandParser();
-    	innerParser.setIDFactory(new InMemoryIDFactory(10));
     	innerParser.setMessageFactory(msgFactory);
     	innerParser.setDataDictionary(fixDD.getDictionary());
     	innerParser.parseNewOrder(innerOrder);

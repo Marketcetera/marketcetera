@@ -64,7 +64,7 @@ public class FIXMessageUtil {
      */
     public FIXMessageUtil() {
     }
-    
+
     public static int getMaxFIXFields() {
     	return MAX_FIX_FIELDS;
     }
@@ -96,7 +96,7 @@ public class FIXMessageUtil {
     public static boolean isReject(Message message) {
         return msgTypeHelper(message, MsgType.REJECT);
     }
-    
+
     public static boolean isBusinessMessageReject(Message message) {
     	return msgTypeHelper(message, MsgType.BUSINESS_MESSAGE_REJECT);
     }
@@ -140,11 +140,11 @@ public class FIXMessageUtil {
 	public static boolean isMarketDataIncrementalRefresh(Message message) {
     	return msgTypeHelper(message, MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
 	}
-	
+
 	public static boolean isResendRequest(Message message) {
 		return msgTypeHelper(message, MsgType.RESEND_REQUEST);
 	}
-	
+
 	public static boolean isDerivativeSecurityList(
 			Message message) {
 		return msgTypeHelper(message, MsgType.DERIVATIVE_SECURITY_LIST);
@@ -174,7 +174,7 @@ public class FIXMessageUtil {
         return msgTypeHelper(inMessage,
                              MsgType.SECURITY_LIST_REQUEST);
     }
-	
+
 	public static boolean isEquityOptionOrder(Message message)
 	{
 		try {
@@ -189,7 +189,7 @@ public class FIXMessageUtil {
 			return false;
 		}
 	}
-	
+
 	public static boolean isCancellable(char ordStatus) {
 		switch (ordStatus){
 		case OrdStatus.ACCEPTED_FOR_BIDDING:
@@ -224,7 +224,7 @@ public class FIXMessageUtil {
 		return false;
 	}
     /**
-     * FIX market depth constant for "best bid or offer" or Level I 
+     * FIX market depth constant for "best bid or offer" or Level I
      */
     public static final int TOP_OF_BOOK_DEPTH = 1;
 	/**
@@ -286,7 +286,7 @@ public class FIXMessageUtil {
 	 * @return an <code>int</code>
 	 * @throws FieldNotFound if the given message does not contain market depth information
 	 */
-	private static int getMarketDepth(Message inMessage) 
+	private static int getMarketDepth(Message inMessage)
 	    throws FieldNotFound
 	{
 	    return inMessage.getInt(MarketDepth.FIELD);
@@ -360,7 +360,7 @@ public class FIXMessageUtil {
      * @param copyTo
      * @param copyFrom
      */
-    public static void copyFields(FieldMap copyTo, 
+    public static void copyFields(FieldMap copyTo,
                                   FieldMap copyFrom)
     {
     	Iterator<Field<?>> iter = copyFrom.iterator();
@@ -373,7 +373,7 @@ public class FIXMessageUtil {
 			}
     	}
     }
-    
+
     public static boolean isRequiredField(Message message, int whichField) {
     	boolean required = false;
 		try {
@@ -397,7 +397,7 @@ public class FIXMessageUtil {
 		}
 		return required;
 	}
-    
+
     //cl todo:need to check if this take care of custom fields
     public static boolean isValidField(int whichField) {
 		boolean valid = false;
@@ -410,7 +410,7 @@ public class FIXMessageUtil {
 		}
 		return valid;
 	}
-    
+
     /**
 	 * Copy only required fields.
 	 */
@@ -451,7 +451,7 @@ public class FIXMessageUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param msgType the msgType of the request message
 	 * @return the field that represents the request/response correlation ID in the request message
 	 */
@@ -505,9 +505,9 @@ public class FIXMessageUtil {
 		if (!isMarketDataIncrementalRefresh(marketDataIncrementalRefresh)){
 			throw new IllegalArgumentException(Messages.FIX_MD_MERGE_INVALID_INCOMING_INCREMENTAL.getText());
 		}
-		
+
 		HashMap<Character, Group> consolidatingSet = new HashMap<Character, Group>();
-		
+
 		addGroupsToMap(marketDataSnapshotFullRefresh, factory, consolidatingSet);
 		addGroupsToMap(marketDataIncrementalRefresh, factory, consolidatingSet);
 		marketDataSnapshotFullRefresh.removeGroup(NoMDEntries.FIELD);
@@ -556,7 +556,7 @@ public class FIXMessageUtil {
 	    }
 	    Throwable error = null;
 	    try {
-	        // try the easy case first: the given field might be one of the pre-packaged quickfix fields 
+	        // try the easy case first: the given field might be one of the pre-packaged quickfix fields
 	        return (Field<?>)Class.forName(QUICKFIX_PACKAGE + inFieldName).newInstance();
 	    } catch(ClassNotFoundException cnfe) {
 	        // if this exception is thrown, that means that the field does not correspond to a pre-packaged quickfix field
@@ -576,4 +576,72 @@ public class FIXMessageUtil {
 	                            new I18NBoundMessage1P(CANNOT_CREATE_FIX_FIELD,
 	                                                   inFieldName));
 	}
+    /**
+     * Converts the supplied fix message to a pretty string that can be logged.
+     * The returned string prints the human readable representations of field
+     * tags and enumeration type field values to make them easily readable.
+     * <p>
+     * This method ignores any repeating groups in the message.
+     *
+     * @param msg the FIX Message.
+     * @param inDict the data dictionary for the message
+     *
+     * @return the string form of the message.
+     */
+    public static String toPrettyString(Message msg, FIXDataDictionary inDict) {
+        HashMap<String, String> fields = fieldsToMap(msg, inDict);
+        fields.put("HEADER", fieldsToMap(msg.getHeader(),  //$NON-NLS-1$
+                inDict).toString());
+        fields.put("TRAILER", fieldsToMap(msg.getTrailer(),  //$NON-NLS-1$
+                inDict).toString());
+        return fields.toString();
+    }
+
+    /**
+     * Converts the supplied FieldMap to a map with human readable field
+     * names (based on the supplied dictionary) as keys and field values
+     * as string values.
+     * <p>
+     * This method ignores any repeating groups present in the fieldMap.
+     *
+     * @param inMap The FIX FieldMap.
+     * @param inDict The FIX data dictionary.
+     *
+     * @return The map containing supplied fieldMap's keys & values.
+     */
+    private static HashMap<String, String> fieldsToMap(FieldMap inMap,
+                                                      FIXDataDictionary inDict) {
+        HashMap<String, String> fields = new HashMap<String, String>();
+        Iterator<Field<?>> iterator = inMap.iterator();
+        while(iterator.hasNext()) {
+            Field<?> f = iterator.next();
+            String value;
+            if(f instanceof StringField) {
+                value = ((StringField)f).getValue();
+                if (inDict != null) {
+                    String humanValue = inDict.getHumanFieldValue(f.getTag(),value);
+                    if(humanValue != null) {
+                        value = new StringBuilder().append(humanValue).
+                                append("(").append(value).  //$NON-NLS-1$
+                                append(")").toString();  //$NON-NLS-1$
+                    }
+                }
+            } else {
+                value = String.valueOf(f.getObject());
+            }
+            String name = null;
+            if (inDict != null) {
+                name = inDict.getHumanFieldName(f.getTag());
+            }
+            if(name == null) {
+                name = String.valueOf(f.getTag());
+            } else {
+                name = new StringBuilder().append(name).
+                        append("(").append(f.getTag()).  //$NON-NLS-1$
+                        append(")").toString();  //$NON-NLS-1$
+            }
+            fields.put(name,value);
+        }
+        return fields;
+    }
 }

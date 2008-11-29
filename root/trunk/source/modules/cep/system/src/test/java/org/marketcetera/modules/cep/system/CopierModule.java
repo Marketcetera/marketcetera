@@ -57,7 +57,7 @@ public class CopierModule extends Module implements DataEmitter {
         mRequestTable.put(inSupport.getRequestID(), result);
     }
 
-    public void cancel(RequestID inRequestID) {
+    public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
         Future<?> f = mRequestTable.get(inRequestID);
         if(f != null) {
             f.cancel(true);

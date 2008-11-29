@@ -92,7 +92,7 @@ public class MockServiceImpl
 
     private String getNextOrderIDImpl()
     {
-        return "MyID"+(mNextOrderID++);
+        return ID_PREFIX +(mNextOrderID++);
     }
 
 
@@ -165,4 +165,6 @@ public class MockServiceImpl
                 return getNextOrderIDImpl();
             }}).execute(context);
     }
+
+    static final String ID_PREFIX = "MyID";
 }

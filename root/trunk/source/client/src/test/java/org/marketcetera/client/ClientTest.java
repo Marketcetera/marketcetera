@@ -3,6 +3,7 @@ package org.marketcetera.client;
 import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.*;
 import static org.marketcetera.trade.TypesTestBase.*;
@@ -76,39 +77,97 @@ public class ClientTest {
     }
     @Test
     public void connectFailure() throws Exception {
+        //Null URL
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_URL){
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters("you",
-                        "why".toCharArray(), null));
+                        "why".toCharArray(), null, Node.DEFAULT_HOST,
+                        Node.DEFAULT_PORT));
             }
         };
+        //Empty URL
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_URL){
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters("you",
-                        "why".toCharArray(), "  "));
+                        "why".toCharArray(), "  ", Node.DEFAULT_HOST,
+                        Node.DEFAULT_PORT));
             }
         };
+        //null user name
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_USERNAME){
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters(null,
-                        "why".toCharArray(), "tcp://whatever:404"));
+                        "why".toCharArray(), "tcp://whatever:404",
+                        Node.DEFAULT_HOST, Node.DEFAULT_PORT));
             }
         };
+        //empty user name
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_USERNAME){
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters("   ",
-                        "why".toCharArray(), "tcp://whatever:404"));
+                        "why".toCharArray(), "tcp://whatever:404",
+                        Node.DEFAULT_HOST, Node.DEFAULT_PORT));
             }
         };
+        //null hostname
+        new ExpectedFailure<ConnectionException>(
+                Messages.CONNECT_ERROR_NO_HOSTNAME){
+            protected void run() throws Exception {
+                ClientManager.init(new ClientParameters("name",
+                        "name".toCharArray(), MockServer.URL,
+                        null, Node.DEFAULT_PORT));
+            }
+        };
+        //empty hostname
+        new ExpectedFailure<ConnectionException>(
+                Messages.CONNECT_ERROR_NO_HOSTNAME){
+            protected void run() throws Exception {
+                ClientManager.init(new ClientParameters("name",
+                        "name".toCharArray(), MockServer.URL,
+                        "  ", Node.DEFAULT_PORT));
+            }
+        };
+        //invalid port number, lower bound
+        new ExpectedFailure<ConnectionException>(
+                Messages.CONNECT_ERROR_INVALID_PORT, -1){
+            protected void run() throws Exception {
+                ClientManager.init(new ClientParameters("name",
+                        "name".toCharArray(), MockServer.URL,
+                        Node.DEFAULT_HOST, -1));
+            }
+        };
+        //invalid port number, upper bound
+        new ExpectedFailure<ConnectionException>(
+                Messages.CONNECT_ERROR_INVALID_PORT, 65536){
+            protected void run() throws Exception {
+                ClientManager.init(new ClientParameters("name",
+                        "name".toCharArray(), MockServer.URL,
+                        Node.DEFAULT_HOST, 65536));
+            }
+        };
+        //no server at port
+        final ClientParameters noServerAtPort = new ClientParameters("name",
+                "name".toCharArray(), MockServer.URL,
+                Node.DEFAULT_HOST, Node.DEFAULT_PORT + 1);
+        new ExpectedFailure<ConnectionException>(
+                Messages.ERROR_CONNECT_TO_SERVER, noServerAtPort.getURL(),
+                noServerAtPort.getUsername(), Node.DEFAULT_HOST,
+                Node.DEFAULT_PORT + 1){
+            protected void run() throws Exception {
+                ClientManager.init(noServerAtPort);
+            }
+        };
+        //auth failure
         final ClientParameters parameters = new ClientParameters("name",
-                "game".toCharArray(), MockServer.URL);
+                "game".toCharArray(), MockServer.URL,
+                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, parameters.getURL(),
-                parameters.getUsername()){
+                parameters.getUsername(),Node.DEFAULT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
                 ClientManager.init(parameters);
             }
@@ -116,10 +175,10 @@ public class ClientTest {
         //Use the correct password but incorrect port number
         final ClientParameters wrongPort = new ClientParameters(
                 parameters.getUsername(), "name".toCharArray(),
-                "tcp://localhost:61617");
+                "tcp://localhost:61617", Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, wrongPort.getURL(),
-                wrongPort.getUsername()){
+                wrongPort.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
                 ClientManager.init(wrongPort);
             }
@@ -127,20 +186,20 @@ public class ClientTest {
         //Make sure null & empty passwords are accepted
         final ClientParameters nullPass = new ClientParameters(
                 parameters.getUsername(), null,
-                MockServer.URL);
+                MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, nullPass.getURL(),
-                nullPass.getUsername()){
+                nullPass.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
                 ClientManager.init(nullPass);
             }
         };
         final ClientParameters emptyPass = new ClientParameters(
                 parameters.getUsername(), "  ".toCharArray(),
-                MockServer.URL);
+                MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, emptyPass.getURL(),
-                emptyPass.getUsername()){
+                emptyPass.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
                 ClientManager.init(emptyPass);
             }
@@ -646,7 +705,8 @@ public class ClientTest {
         Thread.sleep(100);
         //Now reconnect the client using a different parameters
         ClientParameters parms = new ClientParameters("you",
-                "you".toCharArray(), MockServer.URL);
+                "you".toCharArray(), MockServer.URL,
+                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         getClient().reconnect(parms);
         assertEquals(parms, getClient().getParameters());
         assertFalse(oldParms.equals(parms));
@@ -741,7 +801,8 @@ public class ClientTest {
             throws ConnectionException, ClientInitException {
         Date currentTime = new Date();
         ClientParameters parameters = new ClientParameters("name",
-                "name".toCharArray(), MockServer.URL);
+                "name".toCharArray(), MockServer.URL,
+                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         ClientManager.init(parameters);
         mClient = ClientManager.getInstance();
         mClient.addExceptionListener(mListener);

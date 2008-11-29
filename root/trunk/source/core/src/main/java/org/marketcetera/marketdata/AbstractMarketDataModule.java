@@ -22,6 +22,7 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
+import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.IllegalRequestParameterValue;
 import org.marketcetera.module.Module;
@@ -83,7 +84,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
      */
     @Override
-    public final void cancel(RequestID inRequestID)
+    public final void cancel(DataFlowID inFlowID, RequestID inRequestID)
     {
         synchronized(tokens) {
             T token = tokens.remove(inRequestID);

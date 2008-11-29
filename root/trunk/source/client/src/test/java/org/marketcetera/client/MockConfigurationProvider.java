@@ -27,6 +27,18 @@ class MockConfigurationProvider implements ModuleConfigurationProvider {
         mPassword = inPassword;
     }
 
+    public void setHostname(String inHostname) {
+        mHostname = inHostname;
+    }
+
+    public void setPort(int inPort) {
+        mPort = inPort;
+    }
+
+    public void setIDPrefix(String inIDPrefix) {
+        mIDPrefix = inIDPrefix;
+    }
+
     @Override
     public String getDefaultFor(ModuleURN inURN, String inAttribute)
             throws ModuleException {
@@ -37,6 +49,12 @@ class MockConfigurationProvider implements ModuleConfigurationProvider {
                 return mUsername;
             } else if("Password".equals(inAttribute)) {
                 return mPassword;
+            } else if("Hostname".equals(inAttribute)) {
+                return mHostname;
+            } else if("Port".equals(inAttribute)) {
+                return String.valueOf(mPort);
+            } else if("IDPrefix".equals(inAttribute)) {
+                return mIDPrefix;
             }
         }
         return null;
@@ -48,4 +66,7 @@ class MockConfigurationProvider implements ModuleConfigurationProvider {
     private String mURL;
     private String mUsername;
     private String mPassword;
+    private String mHostname;
+    private int mPort;
+    private String mIDPrefix;
 }

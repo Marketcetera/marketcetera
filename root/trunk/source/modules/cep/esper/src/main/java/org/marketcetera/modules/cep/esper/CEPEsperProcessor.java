@@ -88,7 +88,7 @@ public class CEPEsperProcessor extends Module
     }
 
     @Override
-    public void cancel(RequestID inRequestID) {
+    public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
         //todo update this method to supply data flow ID along with the requestID: not sure what this means (tk)
         getDelegate().cancelRequest(inRequestID);
     }

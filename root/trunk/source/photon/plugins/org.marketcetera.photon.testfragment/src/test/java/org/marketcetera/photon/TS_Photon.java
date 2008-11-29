@@ -8,7 +8,6 @@ import junit.framework.TestSuite;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.photon.marketdata.MarketDataFeedTest;
 import org.marketcetera.photon.marketdata.OptionContractDataTest;
 import org.marketcetera.photon.marketdata.OptionMessageHolderTest;
@@ -48,7 +47,6 @@ public class TS_Photon {
 
 			@Override
 			public void run(TestResult result) {
-				PhotonPlugin.getDefault().getPhotonController().setIDFactory(new InMemoryIDFactory(21));
 				// Running this suite in Photon with logging causes a the process to hang when the Photon
 				// Console fills up.  This is a temporary workaround, see EG-153 for details.
 				BasicConfigurator.resetConfiguration();

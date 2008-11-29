@@ -97,7 +97,7 @@ public class CSVEmitter extends Module implements DataEmitter {
     }
 
     @Override
-    public void cancel(RequestID inRequestID) {
+    public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
         Future<Boolean> future = mRequests.get(inRequestID);
         if (future != null) {
             future.cancel(true);

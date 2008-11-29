@@ -8,6 +8,7 @@ import org.junit.AfterClass;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.Properties;
 import java.io.File;
 import java.net.URL;
 import java.net.URI;
@@ -90,7 +91,8 @@ public class LifecycleTest extends ModuleTestBase {
                         BigDecimal.class.getName(),
                         BigInteger.class.getName(),
                         File.class.getName(),
-                        URL.class.getName()},
+                        URL.class.getName(),
+                        Properties.class.getName()},
                 new Class[]{ModuleURN.class,
                         Boolean.class, Boolean.TYPE,
                         Byte.class, Byte.TYPE,
@@ -104,7 +106,8 @@ public class LifecycleTest extends ModuleTestBase {
                         BigDecimal.class,
                         BigInteger.class,
                         File.class,
-                        URL.class},
+                        URL.class,
+                        Properties.class},
                 TestMessages.MULTIPLE_3_PROVIDER.getText(),
                 false, true);
         final ModuleURN unknownProvider = new ModuleURN("metc:test:unknown");

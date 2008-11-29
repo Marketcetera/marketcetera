@@ -881,6 +881,11 @@ public class DataFlowTest extends ModuleTestBase {
                 SinkModuleFactory.INSTANCE_URN),
                 SinkModuleFactory.INSTANCE_URN,ModuleState.STARTED, null,
                 new DataFlowID[]{flowID},false, true, true, false, false);
+        //Verify that the emitter has the data flow ID
+        EmitterModule emitter = (EmitterModule) ModuleBase.getInstance(
+                EmitterModuleFactory.INSTANCE_URN);
+        assertTrue(emitter.getFlows().contains(flowID));
+        assertEquals(1, emitter.getFlows().size());
         //verify processor was invoked with correct parameters
         ProcessorModule proc = (ProcessorModule) ModuleBase.getInstance(actualProcURN);
         assertEquals(1, proc.getNumRequests());
@@ -900,12 +905,12 @@ public class DataFlowTest extends ModuleTestBase {
         sSink.clear();
         //verify that the modules have been stopped
         //emitter
-        EmitterModule emitter = (EmitterModule) ModuleBase.getInstance(
-                EmitterModuleFactory.INSTANCE_URN);
         final Set<RequestID> requestIDs = emitter.getRequests();
         assertEquals(1, requestIDs.size());
         Future<Integer> task = emitter.getTask(requestIDs.iterator().next());
         assertTrue(task.isCancelled());
+        //verify that the flow got canceled
+        assertTrue(emitter.getFlows().isEmpty());
         //reset the counter for test.
         emitter.clear();
         //verify no flows running.
@@ -997,6 +1002,7 @@ public class DataFlowTest extends ModuleTestBase {
         assertFlowInfo(flowInfo,flowID, 3, true, false, inModule.getURN(), null);
         ModuleURN actualProcURN = verifyFlowSteps(param, inEmitterURN,
                 procModuleURN, flowInfo, false, false);
+
         //verify module infos
         ModuleTestBase.assertModuleInfo(sManager.getModuleInfo(
                 EmitterModuleFactory.INSTANCE_URN),
@@ -1009,6 +1015,11 @@ public class DataFlowTest extends ModuleTestBase {
                 SinkModuleFactory.INSTANCE_URN),
                 SinkModuleFactory.INSTANCE_URN,ModuleState.STARTED, null,
                 new DataFlowID[]{flowID},false, true, true, false, false);
+        //Verify that the emitter has the data flow ID
+        EmitterModule emitter = (EmitterModule) ModuleBase.getInstance(
+                EmitterModuleFactory.INSTANCE_URN);
+        assertTrue(emitter.getFlows().contains(flowID));
+        assertEquals(1, emitter.getFlows().size());
         //verify processor was invoked with correct parameters
         ProcessorModule proc = (ProcessorModule) ModuleBase.getInstance(actualProcURN);
         assertEquals(1, proc.getNumRequests());
@@ -1028,12 +1039,12 @@ public class DataFlowTest extends ModuleTestBase {
         sSink.clear();
         //verify that the modules have been stopped
         //emitter
-        EmitterModule emitter = (EmitterModule) ModuleBase.getInstance(
-                EmitterModuleFactory.INSTANCE_URN);
         final Set<RequestID> requestIDs = emitter.getRequests();
         assertEquals(1, requestIDs.size());
         Future<Integer> task = emitter.getTask(requestIDs.iterator().next());
         assertTrue(task.isCancelled());
+        //verify that the flow got canceled
+        assertTrue(emitter.getFlows().isEmpty());
         //reset the counter for test.
         emitter.clear();
         //verify processor was started.

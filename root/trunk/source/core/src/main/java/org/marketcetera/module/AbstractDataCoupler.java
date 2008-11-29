@@ -218,7 +218,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      */
     final void cancelRequest() {
         try {
-            ((DataEmitter)mEmitter).cancel(mRequestID);
+            ((DataEmitter)mEmitter).cancel(mFlowID, mRequestID);
         } catch(Throwable t) {
             Messages.LOG_UNEXPECTED_ERROR_CANCELING_REQ.warn(
                     this,t, mRequestID);

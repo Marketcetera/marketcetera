@@ -55,10 +55,12 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
         mLastTask = new EmitTask(obj, inSupport);
         Future<Integer> handle = mService.submit(mLastTask);
         mRequests.put(inSupport.getRequestID(),handle);
+        mFlowIDs.add(inSupport.getFlowID());
     }
 
     @Override
-    public void cancel(RequestID inID) {
+    public void cancel(DataFlowID inFlowID, RequestID inID) {
+        mFlowIDs.remove(inFlowID);
         Future<Integer> handle = getTask(inID);
         if(handle != null) {
             // handles are not removed from the table so that
@@ -78,6 +80,17 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
      */
     public Set<RequestID> getRequests() {
         return new HashSet<RequestID>(mRequests.keySet());
+    }
+
+    /**
+     * Returns the set of data flow IDs for the flows that are currently
+     * being handled by this module.
+     *
+     * @return the set of data flow IDs for the flows that are currently
+     * being handled by this module.
+     */
+    public Set<DataFlowID> getFlows() {
+        return new HashSet<DataFlowID>(mFlowIDs);
     }
 
     /**
@@ -135,7 +148,7 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
     }
 
     /**
-     * If {@link #cancel(RequestID)} should throw an exception.
+     * If {@link #cancel(DataFlowID, RequestID)} should throw an exception.
      *
      * @param inThrowExceptionOnCancel if the module should throw
      * an exception when canceling a request.
@@ -216,6 +229,7 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
     }
     private ExecutorService mService;
     private EmitTask mLastTask;
+    private final Set<DataFlowID> mFlowIDs = new HashSet<DataFlowID>();
     private final Hashtable<RequestID,Future<Integer>> mRequests =
             new Hashtable<RequestID, Future<Integer>>();
     private boolean mThrowExceptionOnCancel = false;

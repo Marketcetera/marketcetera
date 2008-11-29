@@ -30,8 +30,8 @@ public interface Messages {
             new I18NMessage2P(LOGGER, "unsupported_data_type");   //$NON-NLS-1$
     static final I18NMessage1P SEND_ORDER_FAIL_NO_CONNECT =
             new I18NMessage1P(LOGGER, "send_order_fail_no_connect");   //$NON-NLS-1$
-    static final I18NMessage2P ERROR_CONNECT_TO_SERVER =
-            new I18NMessage2P(LOGGER, "error_connect_to_server");   //$NON-NLS-1$
+    static final I18NMessage4P ERROR_CONNECT_TO_SERVER =
+            new I18NMessage4P(LOGGER, "error_connect_to_server");   //$NON-NLS-1$
     static final I18NMessage0P CREATE_MODULE_ERROR =
             new I18NMessage0P(LOGGER, "create_module_error");   //$NON-NLS-1$
     static final I18NMessage0P CLIENT_ALREADY_INITIALIZED =
@@ -50,6 +50,10 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "connect_error_no_url");   //$NON-NLS-1$
     static final I18NMessage0P CONNECT_ERROR_NO_USERNAME =
             new I18NMessage0P(LOGGER, "connect_error_no_username");   //$NON-NLS-1$
+    static final I18NMessage0P CONNECT_ERROR_NO_HOSTNAME =
+            new I18NMessage0P(LOGGER, "connect_error_no_hostname");   //$NON-NLS-1$
+    static final I18NMessage1P CONNECT_ERROR_INVALID_PORT =
+            new I18NMessage1P(LOGGER, "connect_error_invalid_port");   //$NON-NLS-1$
     static final I18NMessage0P NOT_CONNECTED_TO_SERVER =
             new I18NMessage0P(LOGGER, "not_connected_to_server");   //$NON-NLS-1$
     static final I18NMessage0P ERROR_RECEIVING_JMS_MESSAGE =
@@ -84,7 +88,8 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "validation_suggest_score");   //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_SUGGEST_ORDER =
             new I18NMessage0P(LOGGER, "validation_suggest_order");   //$NON-NLS-1$
-
+    static final I18NMessage0P UNABLE_FETCH_ID_SERVER =
+            new I18NMessage0P(LOGGER, "unable_fetch_id_server");   //$NON-NLS-1$
 
     static final I18NMessage1P LOG_ERROR_RECEIVE_EXEC_REPORT =
             new I18NMessage1P(LOGGER, "log_error_receive_exec_report");   //$NON-NLS-1$
@@ -96,6 +101,6 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "log_error_send_exception");   //$NON-NLS-1$
     static final I18NMessage1P LOG_CLIENT_NOT_INIT_CANCEL_REQUEST =
             new I18NMessage1P(LOGGER, "log_client_not_init_cancel_request");   //$NON-NLS-1$
-
-
+    static final I18NMessage0P LOG_UNABLE_FETCH_ID_SERVER =
+            new I18NMessage0P(LOGGER, "log_unable_fetch_id_server");   //$NON-NLS-1$
 }

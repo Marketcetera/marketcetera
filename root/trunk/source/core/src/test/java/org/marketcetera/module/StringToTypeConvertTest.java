@@ -2,7 +2,9 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.UnicodeData;
+import org.marketcetera.core.LoggerConfiguration;
 import org.junit.Test;
+import org.junit.BeforeClass;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -12,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.List;
 import java.util.Date;
+import java.util.Properties;
 
 /* $License$ */
 /**
@@ -21,6 +24,10 @@ import java.util.Date;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class StringToTypeConvertTest {
+    @BeforeClass
+    public static void initLogger() {
+        LoggerConfiguration.logSetup();
+    }
     /**
      * Tests the {@link StringToTypeConverter#isSupported(String)} and
      *  {@link StringToTypeConverter#isSupported(Class)} API. 
@@ -51,7 +58,8 @@ public class StringToTypeConvertTest {
         assertSupported(File.class);
         assertSupported(URL.class);
         assertSupported(Date.class);
-        
+        assertSupported(Properties.class);
+
         assertSupported(ModuleURN.class);
     }
 
@@ -138,6 +146,15 @@ public class StringToTypeConvertTest {
 
         verifyConversion(ModuleURN.class, "metc:blah:blue:green",
                 new ModuleURN("metc:blah:blue:green"));
+        
+        Properties expected = new Properties();
+        expected.put("one", "to");
+        expected.put("three", "flour");
+        verifyConversion(Properties.class, "one=to:three=flour", expected);
+        verifyConversion(Properties.class, "", null);
+        verifyConversion(Properties.class, "   ", new Properties());
+        verifyConversion(Properties.class, "abc", new Properties());
+        verifyConversion(Properties.class, "abc:pqr", new Properties());
     }
 
     /**
@@ -192,6 +209,8 @@ public class StringToTypeConvertTest {
 
         verifyConvertFail(ModuleURN.class, "");
         verifyConvertFail(ModuleURN.class, null);
+
+        verifyConvertFail(Properties.class, null);
 
         //Invalid type
         assertTrue(new ExpectedFailure<IllegalArgumentException>(null){
