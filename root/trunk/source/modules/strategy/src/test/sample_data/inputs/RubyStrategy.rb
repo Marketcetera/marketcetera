@@ -36,6 +36,32 @@ class RubyStrategy < Strategy
           notify_medium("medium subject", Long.toString(System.nanoTime()))
           notify_high("high subject", Long.toString(System.nanoTime()))
      end
+     if(get_property("askForPosition") != nil)
+         symbol = get_property "symbol"
+         dateString = get_property "date"
+         if(dateString == nil)
+             date = nil
+         else
+             date = Date.new Long.parseLong dateString
+         end
+         result = get_position_as_of date, symbol
+         if(result == nil)
+            resultString = nil
+         else
+            resultString = result.to_s
+         end
+         set_property "position", resultString
+     end
+     if(get_property("askForDestinations") != nil)
+        destinations = get_destinations
+        iterator = destinations.iterator
+        counter = 0
+        while iterator.hasNext
+            destination = iterator.next
+            set_property counter.to_s, destination.toString
+            counter += 1
+        end
+     end
      set_property("onStart",
                    Long.toString(System.currentTimeMillis()))
   end

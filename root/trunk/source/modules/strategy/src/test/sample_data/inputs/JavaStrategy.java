@@ -3,7 +3,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.lang.Override;
+import java.math.BigDecimal;
 
+import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -55,6 +57,33 @@ public class JavaStrategy
                            Long.toString(System.nanoTime()));
             notifyHigh("high subject",
                        Long.toString(System.nanoTime()));
+        }
+        if(getProperty("askForPosition") != null) {
+            String symbol = getProperty("symbol");
+            String dateString = getProperty("date");
+            Date date;
+            if(dateString == null) {
+                date = null;
+            } else {
+                date = new Date(Long.parseLong(dateString));
+            }
+            BigDecimal result = getPositionAsOf(date,
+                                                symbol);
+            String resultString;
+            if(result == null) {
+               resultString = null;
+            } else {
+               resultString = result.toString();
+            }
+            setProperty("position",
+                        resultString);
+        }
+        if(getProperty("askForDestinations") != null) {
+            int counter = 0;
+            for(DestinationStatus destination : getDestinations()) {
+                setProperty("" + counter++,
+                            destination.toString());
+            }
         }
         setProperty("onStart",
                     Long.toString(System.currentTimeMillis()));

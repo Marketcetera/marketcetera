@@ -196,26 +196,6 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.IMarketDataFeed#subscribeToAll(org.marketcetera.core.publisher.ISubscriber)
-     */
-    @Override
-    public void subscribeToAll(ISubscriber inSubscriber)
-    {
-        synchronized(mAllPublisher) {
-            mAllPublisher.subscribe(inSubscriber);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.IMarketDataFeed#unsubscribeFromAll(org.marketcetera.core.publisher.ISubscriber)
-     */
-    @Override
-    public void unsubscribeFromAll(ISubscriber inSubscriber)
-    {
-        synchronized(mAllPublisher) {
-            mAllPublisher.unsubscribe(inSubscriber);
-        }
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataFeed#login(org.marketcetera.marketdata.MarketDataFeedCredentials)
      */
     @Override

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationManager;
@@ -434,5 +435,30 @@ public class Strategy
         NotificationManager.getNotificationManager().publish(Notification.high(inSubject,
                                                                                inBody,
                                                                                Strategy.class));
+    }
+    /**
+     * Returns the list of destinations known to the system.
+     *
+     * <p>These values can be used to create and send orders with {@link #send_message(Message, DestinationID)}
+     * or {@link #send_order(OrderSingle)}.
+     *
+     * @return a <code>List&lt;DestinationStatus&gt;</code> value
+     */
+    public final List<DestinationStatus> get_destinations()
+    {
+        return getDestinations();
+    }
+    /**
+     * Gets the position in the given security at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inSymbol a <code>String</code> value
+     * @return a <code>BigDecimal</code> value containing the position or null if the position could not be retrieved
+     */
+    public final BigDecimal get_position_as_of(Date inDate,
+                                               String inSymbol)
+    {
+        return getPositionAsOf(inDate,
+                               inSymbol);
     }
 }

@@ -1,6 +1,8 @@
 package org.marketcetera.strategy;
 
+import static org.marketcetera.strategy.Messages.CANNOT_INITIALIZE_CLIENT;
 import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
+import static org.marketcetera.strategy.Messages.EXECUTION_REPORT_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
 import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
@@ -10,14 +12,22 @@ import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ClientModuleFactory;
+import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
@@ -61,16 +71,16 @@ import quickfix.Message;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public
-final class StrategyModule
+public final class StrategyModule
         extends Module
-        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider, StrategyMXBean
+        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider, StrategyMXBean, InboundServicesProvider
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
      */
     @Override
-    public void cancel(DataFlowID inFlowID, RequestID inRequestID)
+    public void cancel(DataFlowID inFlowID,
+                       RequestID inRequestID)
     {
         unsubscribe(inRequestID);
     }
@@ -333,6 +343,28 @@ final class StrategyModule
                                                                   inDestination));
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.InboundServicesProvider#getDestinations()
+     */
+    @Override
+    public List<DestinationStatus> getDestinations()
+        throws ConnectionException
+    {
+        assert(orsClient != null);
+        return orsClient.getDestinationsStatus().getDestinations();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.InboundServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.core.MSymbol)
+     */
+    @Override
+    public BigDecimal getPositionAsOf(Date inDate,
+                                      MSymbol inSymbol)
+        throws ConnectionException
+    {
+        assert(orsClient != null);
+        return orsClient.getPositionAsOf(inDate,
+                                         inSymbol);
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -497,10 +529,6 @@ final class StrategyModule
                                                                                                  OutputType.ORDERS),
                                                                                  new DataRequest(ordersDestination) },
                                                              false));
-                // request execution reports from the ORS client
-                dataFlows.add(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(ordersDestination),
-                                                                                 new DataRequest(getURN()) },
-                                                             false));
             }
             if(suggestionsDestination != null) {
                 dataFlows.add(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
@@ -508,14 +536,26 @@ final class StrategyModule
                                                                                  new DataRequest(suggestionsDestination) },
                                                              false));
             }
+            // request execution reports from the ORS client
+            try {
+                dataFlows.add(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(ClientModuleFactory.INSTANCE_URN),
+                                                                                 new DataRequest(getURN()) },
+                                                             false));
+            } catch (Exception e) {
+                EXECUTION_REPORT_REQUEST_FAILED.warn(StrategyModule.class,
+                                                     name,
+                                                     ordersDestination);
+            }
         }
         try {
+            initializeClient();
             strategy = new StrategyImpl(name,
                                         getURN().getValue(),
                                         type,
                                         source,
                                         parameters,
                                         classpath,
+                                        this,
                                         this);
             strategy.start();
         } catch (Exception e) {
@@ -664,6 +704,20 @@ final class StrategyModule
         }
     }
     /**
+     * Prepares the <code>orsClient</code> to be used. 
+     */
+    private void initializeClient()
+    {
+        try {
+            if(orsClient == null) {
+                orsClient = ClientManager.getInstance();
+            }
+        } catch (Exception e) {
+            CANNOT_INITIALIZE_CLIENT.warn(StrategyModule.class,
+                                          e);
+        }
+    }
+    /**
      * the name of the strategy being run - this name is chosen by the module caller and has no mandatory correlation 
      * to the contents of the strategy
      */
@@ -712,6 +766,10 @@ final class StrategyModule
      * services for data flow creation
      */
     private DataFlowSupport dataFlowSupport;
+    /**
+     * client to use for services
+     */
+    static Client orsClient; // this is non-final and non-private in order to provide a loophole for testing
     /**
      * counter used to guarantee unique identifiers
      */

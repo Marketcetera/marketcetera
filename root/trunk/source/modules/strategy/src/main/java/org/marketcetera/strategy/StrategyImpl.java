@@ -152,9 +152,18 @@ class StrategyImpl
      * @return a <code>OutboundServices</code> value
      */
     @Override
-    public final OutboundServicesProvider getServicesProvider()
+    public final OutboundServicesProvider getOutboundServicesProvider()
     {
         return outboundServicesProvider;
+    }
+    /**
+     * Get the inboundServicesProvider value.
+     *
+     * @return a <code>StrategyImpl</code> value
+     */
+    public final InboundServicesProvider getInboundServicesProvider()
+    {
+        return inboundServicesProvider;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.Strategy#getClasspath()
@@ -185,6 +194,7 @@ class StrategyImpl
      * @param inParameters a <code>Properties</code> value
      * @param inClasspath a <code>String[]</code> value
      * @param inOutboundServicesProvider an <code>OutboundServices</code> value
+     * @param inInboundServicesProvider an <code>InboundServices</code> value
      * @throws IOException if the given <code>File</code> could not be resolved
      */
     StrategyImpl(String inName,
@@ -193,7 +203,8 @@ class StrategyImpl
                  File inSource,
                  Properties inParameters,
                  String[] inClasspath,
-                 OutboundServicesProvider inOutboundServicesProvider)
+                 OutboundServicesProvider inOutboundServicesProvider,
+                 InboundServicesProvider inInboundServicesProvider)
         throws IOException
     {
         status = NOT_RUNNING;
@@ -218,6 +229,7 @@ class StrategyImpl
             classpath = null;
         }
         outboundServicesProvider = inOutboundServicesProvider;
+        inboundServicesProvider = inInboundServicesProvider;
         code = fileToString(getSource());
     }
     /**
@@ -348,6 +360,10 @@ class StrategyImpl
      * the provider of services for outgoing data via the strategy agent framework
      */
     private final OutboundServicesProvider outboundServicesProvider;
+    /**
+     * the provider of services for incoming data
+     */
+    private final InboundServicesProvider inboundServicesProvider;
     /**
      * the value that uniquely identifies this strategy to the system within the scope of this JVM execution
      */

@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata;
 
-import org.marketcetera.core.publisher.ISubscriber;
 import org.springframework.context.Lifecycle;
 
 import quickfix.field.SubscriptionRequestType;
@@ -50,19 +49,4 @@ public interface MarketDataFeed<T extends MarketDataFeedToken,
      * <p>If the feed is not currently logged in, this method does nothing.
      */
     public void logout();
-    /**
-     * Subscribes to all market data passing through the feed.
-     * 
-     * <p>Subscribers will be notified of all market data received
-     * from all queries.
-     *
-     * @param inSubscriber an <code>ISubscriber</code> value
-     */
-    public void subscribeToAll(ISubscriber inSubscriber);
-    /**
-     * Unsubscribes to all market data passing through the feed.
-     *
-     * @param inSubscriber an <code>ISubscriber</code> value
-     */
-    public void unsubscribeFromAll(ISubscriber inSubscriber);
 }

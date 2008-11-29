@@ -130,4 +130,16 @@ public class DestinationStatus
     {
         return mLoggedOn;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return String.format("Destination: %s(%s,%s)", //$NON-NLS-1$
+                             String.valueOf(mName),
+                             String.valueOf(mId),
+                             mLoggedOn);
+    }
 }
