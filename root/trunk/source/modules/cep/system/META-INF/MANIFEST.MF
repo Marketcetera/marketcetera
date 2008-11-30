@@ -7,6 +7,6 @@ Bundle-Version: 1.0.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional,
- org.junit4;resolution:=optional,
+ org.junit4;resolution:=optional
 Eclipse-RegisterBuddy: org.marketcetera.core
-Export-Package: org.marketcetera.cep.system
+Export-Package: org.marketcetera.modules.cep.system
