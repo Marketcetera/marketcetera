@@ -11,24 +11,26 @@ import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.messagehistory.MessageVisitor;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.FIXMessageSupport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
 import org.osgi.util.tracker.ServiceTracker;
 
 import quickfix.FieldNotFound;
@@ -56,7 +58,7 @@ public class PhotonController
 
 	private Logger internalMainLogger = PhotonPlugin.getMainConsoleLogger();
 
-	private FIXMessageHistory fixMessageHistory;
+	private TradeReportsHistory fixMessageHistory;
 
 	private final ServiceTracker mClientServiceTracker;
 
@@ -71,15 +73,14 @@ public class PhotonController
 		mClientServiceTracker.open();
 	}
 
-	public void setMessageHistory(FIXMessageHistory fixMessageHistory) 
+	public void setMessageHistory(TradeReportsHistory fixMessageHistory) 
 	{
 		this.fixMessageHistory = fixMessageHistory;
 	}
 	
 	@Override
 	public void receiveCancelReject(OrderCancelReject inReport) {
-		Message message = ((FIXMessageSupport)inReport).getMessage();
-		fixMessageHistory.addIncomingMessage(message);
+		fixMessageHistory.addIncomingMessage(inReport);
 		try {
 			handleCancelReject(inReport);
 		} catch (FieldNotFound e) {
@@ -91,8 +92,7 @@ public class PhotonController
 
 	@Override
 	public void receiveExecutionReport(ExecutionReport inReport) {
-		Message message = ((FIXMessageSupport)inReport).getMessage();
-		fixMessageHistory.addIncomingMessage(message);
+		fixMessageHistory.addIncomingMessage(inReport);
 		try {
 			handleExecutionReport(inReport);
 		} catch (NoMoreIDsException e) {
@@ -177,14 +177,22 @@ public class PhotonController
 		cancelOneOrderByClOrdID(clOrdID, null);
 	}
 	public void cancelOneOrderByClOrdID(String clOrdID, String textField) throws NoMoreIDsException {
-		Message latestMessage = fixMessageHistory.getLatestExecutionReport(clOrdID);
-		if (latestMessage == null){
-			latestMessage = fixMessageHistory.getLatestMessage(clOrdID);
-			if (latestMessage == null){
+		OrderID orderid = new OrderID(clOrdID);
+		ReportBase latestExecutionReport = fixMessageHistory.getLatestExecutionReport(orderid);
+		Message latestMessage;
+		if (latestExecutionReport == null){
+			latestMessage = fixMessageHistory.getLatestMessage(orderid);
+			if (latestExecutionReport == null){
 				internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
 				return;
 			}
+		} else if (latestExecutionReport instanceof HasFIXMessage) {
+			latestMessage = ((HasFIXMessage) latestExecutionReport).getMessage();
+		} else {
+			internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
+			return;
 		}
+		
 		try { 
 			if(internalMainLogger.isDebugEnabled()) {
 				internalMainLogger.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD));  //$NON-NLS-1$

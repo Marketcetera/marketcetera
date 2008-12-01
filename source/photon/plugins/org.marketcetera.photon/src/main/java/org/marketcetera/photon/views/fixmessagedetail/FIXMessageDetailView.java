@@ -28,7 +28,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
@@ -107,7 +107,7 @@ public class FIXMessageDetailView
 			boolean shouldClear = true;
 			// only display message detail for a single message
 			if (structuredSelection.size() == 1) {
-				MessageHolder messageHolder = (MessageHolder) structuredSelection
+				ReportHolder messageHolder = (ReportHolder) structuredSelection
 						.getFirstElement();
 				if (messageHolder != null) {
 					Message message = messageHolder.getMessage();

@@ -6,8 +6,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 
 import ca.odell.glazedlists.EventList;
@@ -47,7 +47,7 @@ public class FillsView
                                                              ID));
 		inTheToolBarManager.update(true);
 	}
-	public EventList<MessageHolder> extractList(FIXMessageHistory input) {
+	public EventList<ReportHolder> extractList(TradeReportsHistory input) {
 		return input.getFillsList();
 	}
 	@Override
@@ -58,9 +58,9 @@ public class FillsView
      * @see org.marketcetera.photon.views.AbstractFIXMessagesView#getMessageList(org.marketcetera.messagehistory.FIXMessageHistory)
      */
     @Override
-    protected FilterList<MessageHolder> getMessageList(FIXMessageHistory inHistory)
+    protected FilterList<ReportHolder> getMessageList(TradeReportsHistory inHistory)
     {
-        return new FilterList<MessageHolder>(inHistory.getFillsList(),
+        return new FilterList<ReportHolder>(inHistory.getFillsList(),
                                              getFilterMatcherEditor());
     }
 }

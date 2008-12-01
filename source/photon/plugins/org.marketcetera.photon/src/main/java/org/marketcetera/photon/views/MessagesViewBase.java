@@ -25,7 +25,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
@@ -287,7 +287,7 @@ public abstract class MessagesViewBase<T>
 	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum<?>[] enums) {
 		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);
-		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
+		aMessagesViewer.setContentProvider(new EventListContentProvider<ReportHolder>());
 		aMessagesViewer.setLabelProvider(new MessageListTableFormat(aMessageTable, enums, getSite()));
 		return aMessagesViewer;
 	}

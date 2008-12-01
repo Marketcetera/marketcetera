@@ -9,8 +9,19 @@ public class SendOrderToOrderManagerCommand
     extends MessageCommand
     implements Messages
 {
+	private final String mDestination;
+
 	public SendOrderToOrderManagerCommand(Message message) {
+		this(message, null);
+	}
+	
+	public SendOrderToOrderManagerCommand(Message message, String destination) {
 		super(message);
+		mDestination = destination;
+	}
+	
+	public String getDestination() {
+		return mDestination;
 	}
 
 	public void execute() {

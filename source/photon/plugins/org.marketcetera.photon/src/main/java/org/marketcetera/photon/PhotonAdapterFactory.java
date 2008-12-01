@@ -6,7 +6,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 
 /**
  * The PhotonAdapterFactory produces adapters that the RCP uses to 
@@ -64,7 +64,7 @@ public class PhotonAdapterFactory
 	@SuppressWarnings("unchecked") // overrides unparameterized method //$NON-NLS-1$
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType == IWorkbenchAdapter.class
-				&& adaptableObject instanceof MessageHolder)
+				&& adaptableObject instanceof ReportHolder)
 			return messageAdapter;
 		if (adapterType == IWorkbenchAdapter.class
 				&& adaptableObject instanceof AccountID)

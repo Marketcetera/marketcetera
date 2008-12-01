@@ -13,14 +13,16 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.photon.OrderManagerTest;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messagehistory.FIXMatcher;
 import org.marketcetera.photon.test.SWTTestUtil;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.views.AbstractFIXMessagesView.FilterMatcherEditor;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.MessageCreationException;
 
 import quickfix.Message;
 import ca.odell.glazedlists.impl.matchers.TrueMatcher;
@@ -129,14 +131,14 @@ public abstract class ViewTestBase extends TestCase {
         }
     }
     protected void addMessage(Message inMessage,
-                              FIXMessageHistory inHistory)
+                              TradeReportsHistory inHistory) throws MessageCreationException
     {
-        inHistory.addIncomingMessage(inMessage);
+        inHistory.addIncomingMessage(OrderManagerTest.createReport(inMessage));
     }
     protected void doFilterTest()
         throws Exception
     {
-        FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
+    	TradeReportsHistory hist = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
         AbstractFIXMessagesView view = (AbstractFIXMessagesView)getTestView();
         view.setInput(hist);
         List<Message> messages = getFilterTestMessages();
@@ -160,7 +162,7 @@ public abstract class ViewTestBase extends TestCase {
         int testConditionCounter = 0;
         for(FilterTestCondition condition : conditions) {
             // construct the expected results
-            List<MessageHolder> expectedResults = new ArrayList<MessageHolder>();
+            List<ReportHolder> expectedResults = new ArrayList<ReportHolder>();
             for(int index : condition.mMatchingMessages) {
                 expectedResults.add(view.getMessageList(hist).get(index));
             }
@@ -170,9 +172,9 @@ public abstract class ViewTestBase extends TestCase {
             assertEquals("Test condition " + testConditionCounter + " failed",
                          expectedResults.size(),
                          view.getMessageList(hist).size());
-            for(MessageHolder expectedMessage : expectedResults) {
+            for(ReportHolder expectedMessage : expectedResults) {
                 boolean found = false;
-                for(MessageHolder actualMessage : view.getMessageList(hist)) {
+                for(ReportHolder actualMessage : view.getMessageList(hist)) {
                     if(actualMessage.getMessage().equals(expectedMessage.getMessage())) {
                         found = true;
                         break;
@@ -183,7 +185,7 @@ public abstract class ViewTestBase extends TestCase {
                 }
             }
             // reset the filter and make sure they all show up again
-            filter.setMatcher(new TrueMatcher<MessageHolder>());
+            filter.setMatcher(new TrueMatcher<ReportHolder>());
             assertEquals("Test condition " + testConditionCounter + " failed",
                          messages.size(),
                          view.getMessageList(hist).size());

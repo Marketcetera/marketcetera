@@ -16,8 +16,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
@@ -47,7 +47,7 @@ import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public abstract class AbstractFIXMessagesView
-        extends MessagesViewBase<MessageHolder>
+        extends MessagesViewBase<ReportHolder>
 {
     /**
      * refresher for the view table
@@ -60,7 +60,7 @@ public abstract class AbstractFIXMessagesView
     /**
      * default matcher matches all rows
      */
-    private static final ca.odell.glazedlists.matchers.Matcher<MessageHolder> DEFAULT_MATCHER = new TrueMatcher<MessageHolder>();
+    private static final ca.odell.glazedlists.matchers.Matcher<ReportHolder> DEFAULT_MATCHER = new TrueMatcher<ReportHolder>();
     /**
      * regex determining the search pattern for the view filter
      */
@@ -87,7 +87,7 @@ public abstract class AbstractFIXMessagesView
     public void createPartControl(Composite inParent)
     {
         super.createPartControl(inParent);
-        FIXMessageHistory messageHistory = PhotonPlugin.getDefault().getFIXMessageHistory();
+        TradeReportsHistory messageHistory = PhotonPlugin.getDefault().getTradeReportsHistory();
         if (messageHistory != null) {
             setInput(messageHistory);
         }
@@ -97,10 +97,10 @@ public abstract class AbstractFIXMessagesView
      *
      * @param inHistory a <code>FIXMessageHistory</code> value containing the messages to display
      */
-    public void setInput(FIXMessageHistory inHistory)
+    public void setInput(TradeReportsHistory inHistory)
     {
         // this list object is used to hold the messages to be displayed 
-        FilterList<MessageHolder> extractedList = (FilterList<MessageHolder>)getMessageList(inHistory);
+        FilterList<ReportHolder> extractedList = (FilterList<ReportHolder>)getMessageList(inHistory);
         // register the dynamic filter generator with the list
         extractedList.setMatcherEditor(getFilterMatcherEditor());
         super.setInput(extractedList);
@@ -130,7 +130,7 @@ public abstract class AbstractFIXMessagesView
      * @param inHistory a <code>FIXMessageHistory</code> value
      * @return a <code>FilterList&lt;MessageHolder&gt;</code> value
      */
-    protected abstract FilterList<MessageHolder> getMessageList(FIXMessageHistory inHistory);
+    protected abstract FilterList<ReportHolder> getMessageList(TradeReportsHistory inHistory);
     /**
      * Gets the current value of the filter widget.
      *
@@ -205,12 +205,12 @@ public abstract class AbstractFIXMessagesView
      * @param inMessageTable a <code>Table</code> value
      * @return a <code>FIXMessageTableFormat&lt;MessageHolder&gt;</code> value
      */
-    protected FIXMessageTableFormat<MessageHolder> createFIXMessageTableFormat(Table inMessageTable)
+    protected FIXMessageTableFormat<ReportHolder> createFIXMessageTableFormat(Table inMessageTable)
     {
         String viewID = getViewID();
-        return new FIXMessageTableFormat<MessageHolder>(inMessageTable,
+        return new FIXMessageTableFormat<ReportHolder>(inMessageTable,
                                                         viewID,
-                                                        MessageHolder.class);
+                                                        ReportHolder.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.MessagesViewBase#createTableViewer(org.eclipse.swt.widgets.Table, java.lang.Enum<?>[])
@@ -221,9 +221,9 @@ public abstract class AbstractFIXMessagesView
     {
         IndexedTableViewer aMessagesViewer = new IndexedTableViewer(inMessageTable);
         getSite().setSelectionProvider(aMessagesViewer);
-        aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
+        aMessagesViewer.setContentProvider(new EventListContentProvider<ReportHolder>());
 
-        FIXMessageTableFormat<MessageHolder> tableFormat = createFIXMessageTableFormat(inMessageTable);
+        FIXMessageTableFormat<ReportHolder> tableFormat = createFIXMessageTableFormat(inMessageTable);
         aMessagesViewer.setLabelProvider(tableFormat);
 
         tableRefresher = new FIXMessageTableRefresher(aMessagesViewer,
@@ -240,7 +240,7 @@ public abstract class AbstractFIXMessagesView
      * @param inValue a <code>String</code> value containing the value to match against the table rows
      * @return a {@link ca.odell.glazedlists.matchers.Matcher}<{@link MessageHolder}> value
      */
-    protected ca.odell.glazedlists.matchers.Matcher<MessageHolder> createStringMatcher(int inFixField,
+    protected ca.odell.glazedlists.matchers.Matcher<ReportHolder> createStringMatcher(int inFixField,
                                                                                        String inValue)
     {
         return new FIXStringMatcher(inFixField,
@@ -253,7 +253,7 @@ public abstract class AbstractFIXMessagesView
      * @param inValue a <code>String</code> value containing the value to match against the table rows
      * @return a <code>ca.odell.glazedlists.matchers.Matcher&lt;MessageHolder&gt;</code> value
      */
-    protected ca.odell.glazedlists.matchers.Matcher<MessageHolder> createRegexMatcher(int inFixField,
+    protected ca.odell.glazedlists.matchers.Matcher<ReportHolder> createRegexMatcher(int inFixField,
                                                                                       String inValue)
     {
         return new FIXRegexMatcher(inFixField,
@@ -311,7 +311,7 @@ public abstract class AbstractFIXMessagesView
      *
      * @return a <code>ca.odell.glazedlists.matchers.Matcher&lt;MessageHolder&gt;</code> value
      */
-    protected ca.odell.glazedlists.matchers.Matcher<MessageHolder> getDefaultMatcher()
+    protected ca.odell.glazedlists.matchers.Matcher<ReportHolder> getDefaultMatcher()
     {
         return DEFAULT_MATCHER;
     }
@@ -345,14 +345,14 @@ public abstract class AbstractFIXMessagesView
      */
     @ClassVersion("$Id$")//$NON-NLS-1$
     protected final static class FilterMatcherEditor
-        extends AbstractMatcherEditor<MessageHolder>
+        extends AbstractMatcherEditor<ReportHolder>
     {
         /**
          * Sets the <code>Matcher</code> used in the editor.
          *
          * @param inMatcher a <code>ca.odell.glazedlists.matchers.Matcher&lt;MessageHolder&gt;</code> value
          */
-        protected final void setMatcher(ca.odell.glazedlists.matchers.Matcher<MessageHolder> inMatcher)
+        protected final void setMatcher(ca.odell.glazedlists.matchers.Matcher<ReportHolder> inMatcher)
         {
             fireChanged(inMatcher);
         }

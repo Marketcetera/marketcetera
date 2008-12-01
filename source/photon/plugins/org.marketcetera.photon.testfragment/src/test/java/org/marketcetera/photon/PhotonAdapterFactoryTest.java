@@ -7,11 +7,10 @@ import junit.framework.TestCase;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.messagehistory.IncomingMessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 
-import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.OrdStatus;
 import quickfix.field.Side;
@@ -26,19 +25,19 @@ public class PhotonAdapterFactoryTest extends TestCase {
 	 */
 	public void testGetAdapterList() {
 		PhotonAdapterFactory fact = new PhotonAdapterFactory();
-		Class[] adapterList = fact.getAdapterList();
+		Class<?>[] adapterList = fact.getAdapterList();
 		assertEquals(1, adapterList.length);
 		assertEquals(IWorkbenchAdapter.class, adapterList[0]);
 	}
 	
 	
-	public void testMessageAdapter() throws FieldNotFound {
+	public void testMessageAdapter() throws Exception {
 		PhotonAdapterFactory fact = new PhotonAdapterFactory();
 		Message aMessage = msgFactory.newExecutionReport("456", OrderManagerTest.CL_ORD_ID, "987", 
 				OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(100), 
 				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal("12.3"), OrderManagerTest.SYMBOL, null);
 		aMessage.setUtcTimeStamp(TransactTime.FIELD, OrderManagerTest.THE_TRANSACT_TIME);
-		IncomingMessageHolder holder = new IncomingMessageHolder(aMessage);
+		ReportHolder holder = new ReportHolder(OrderManagerTest.createReport(aMessage));
 		
 		IWorkbenchAdapter adapter = (IWorkbenchAdapter)fact.getAdapter(holder, IWorkbenchAdapter.class);
 		String label = adapter.getLabel(holder);
