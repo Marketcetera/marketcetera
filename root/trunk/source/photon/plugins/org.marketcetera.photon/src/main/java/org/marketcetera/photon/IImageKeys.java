@@ -32,7 +32,6 @@ public interface IImageKeys {
 	public static final String BROWSER_BACK = "icons/silk/arrow_left.png"; //$NON-NLS-1$
 	public static final String BROWSER_FORWARD = "icons/silk/arrow_right.png"; //$NON-NLS-1$
 	public static final String BROWSER_GO = "icons/silk/world_go.png"; //$NON-NLS-1$
-	public static final String SHOW_HEARTBEATS = "icons/silk/heart.png"; //$NON-NLS-1$
 	public static final String OPEN_OPTIONS = "icons/silk/tab_go.png"; //$NON-NLS-1$
 	public static final String MINUS_TICK = "icons/silk/arrow_down.png"; //$NON-NLS-1$
 	public static final String ZERO_MINUS_TICK = "icons/silk/arrow_zero_down.png"; //$NON-NLS-1$

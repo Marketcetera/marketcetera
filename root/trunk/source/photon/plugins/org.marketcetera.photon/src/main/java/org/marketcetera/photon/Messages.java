@@ -94,10 +94,6 @@ public interface Messages
                                                                     "web_help_action"); //$NON-NLS-1$
     public static I18NMessage0P WEB_HELP_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
                                                                                 "web_help_action_description"); //$NON-NLS-1$
-    public static I18NMessage0P SHOW_HEARTBEATS_ACTION = new I18NMessage0P(LOGGER,
-                                                                           "show_heartbeats_action"); //$NON-NLS-1$
-    public static I18NMessage0P SHOW_HEARTBEATS_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
-                                                                                       "show_heartbeats_action_description"); //$NON-NLS-1$
     public static I18NMessage0P FOCUS_COMMAND_ACTION = new I18NMessage0P(LOGGER,
                                                                          "focus_command_action"); //$NON-NLS-1$
     public static I18NMessage0P FOCUS_COMMAND_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
