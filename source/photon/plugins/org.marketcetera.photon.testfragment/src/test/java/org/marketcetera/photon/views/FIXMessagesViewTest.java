@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IViewPart;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
@@ -27,7 +26,6 @@ import quickfix.field.LastQty;
 import quickfix.field.LastShares;
 import quickfix.field.LeavesQty;
 import quickfix.field.MsgSeqNum;
-import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
@@ -70,21 +68,6 @@ public class FIXMessagesViewTest extends ViewTestBase {
 		IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) item.getData();
 		Message message = returnedMessageHolder.getMessage();
 		assertEquals("orderid1", message.getString(OrderID.FIELD));
-	}
-	
-	public void testShowHeartbeats() throws Exception {
-		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
-		FIXMessagesView view = (FIXMessagesView) getTestView();
-		view.setInput(hist);
-		view.setShowHeartbeats(true);
-		hist.addIncomingMessage(new Heartbeat());
-		delay(1);
-		IndexedTableViewer tableViewer = view.getMessagesViewer();
-		Table table = tableViewer.getTable();
-		TableItem item = table.getItem(0);
-		IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) item.getData();
-		Message message = returnedMessageHolder.getMessage();
-		assertEquals(MsgType.HEARTBEAT, message.getHeader().getString(MsgType.FIELD));
 	}
 	/**
      * Tests the filtering ability of the view.
@@ -205,16 +188,5 @@ public class FIXMessagesViewTest extends ViewTestBase {
         messages.add(hb2);
         
         return messages;
-    }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.photon.views.ViewTestBase#getTestView()
-     */
-    @Override
-    public IViewPart getTestView()
-    {
-        FIXMessagesView view = (FIXMessagesView)super.getTestView();
-        view.setShowHeartbeats(true);
-        return view;
     }
 }
