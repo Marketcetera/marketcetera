@@ -32,8 +32,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.TradeReportsHistory;
-import org.marketcetera.photon.destination.DestinationManager;
-import org.marketcetera.photon.destination.IDestinationValidator;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.views.IOrderTicketController;
@@ -112,8 +110,6 @@ public class PhotonPlugin
 	private OptionOrderTicketController optionOrderTicketController;
 	
 	private MarketDataManager marketDataManager;
-
-	private IDestinationValidator mDestinationManager;
 	
 	public static final String SESSION_START_TIME_PREFERENCE = "TRADING_HISTORY_START_TIME"; //$NON-NLS-1$
 
@@ -517,23 +513,5 @@ public class PhotonPlugin
 			PhotonPlugin.getDefault().changeLogLevel(""+event.getNewValue()); //$NON-NLS-1$
 		}
 	}
-
-	/**
-	 * Returns the {@link DestinationManager} singleton for this plug-in.
-	 * Typically, this should be accessed through
-	 * {@link DestinationManager#getCurrent()}.
-	 * 
-	 * @return the DestinationManager singleton for this plug-in
-	 */
-	public IDestinationValidator getDestinationManager() {
-		if (mDestinationManager == null) {
-			mDestinationManager = new DestinationManager();
-		}
-		return mDestinationManager;
-	}
-
-	
-
-
 	
 }
