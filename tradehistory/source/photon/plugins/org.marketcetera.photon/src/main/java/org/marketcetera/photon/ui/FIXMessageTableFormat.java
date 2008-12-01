@@ -14,7 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.preferences.FIXMessageColumnPreferenceParser;
@@ -343,8 +343,8 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 	public FieldMap getFieldMap(T element, int columnIndex) {
 		FieldMap fieldMap = null;
 		// todo: This specialization should be in a derived class.
-		if (element instanceof MessageHolder) {
-			fieldMap = ((MessageHolder) element).getMessage();
+		if (element instanceof ReportHolder) {
+			fieldMap = ((ReportHolder) element).getMessage();
 		}
 		return fieldMap;
 	}

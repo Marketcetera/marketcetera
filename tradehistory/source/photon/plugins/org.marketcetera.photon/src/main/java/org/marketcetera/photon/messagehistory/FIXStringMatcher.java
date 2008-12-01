@@ -3,7 +3,7 @@ package org.marketcetera.photon.messagehistory;
 import static org.marketcetera.photon.Messages.MATCHER_FAILED;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -57,7 +57,7 @@ public class FIXStringMatcher
      * @see ca.odell.glazedlists.matchers.Matcher#matches(java.lang.Object)
      */
     @Override
-    public boolean matches(MessageHolder inEntry)
+    public boolean matches(ReportHolder inEntry)
     {
         try {
             Message message = inEntry.getMessage();

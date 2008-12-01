@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 
@@ -30,7 +30,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public abstract class FIXMatcher<T>
-        implements Matcher<MessageHolder>
+        implements Matcher<ReportHolder>
 {
     /**
      * collection of converters keyed by FIX field

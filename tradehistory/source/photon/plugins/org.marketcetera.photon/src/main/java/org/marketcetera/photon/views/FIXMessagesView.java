@@ -7,8 +7,8 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 import org.marketcetera.photon.actions.ShowHeartbeatsAction;
 import org.marketcetera.photon.messagehistory.FIXMatcher;
@@ -41,7 +41,7 @@ public class FIXMessagesView
     /**
      * this matcher will show all messages except FIX field 35 type 0 messages, heartbeats
      */
-    private static final Matcher<MessageHolder> NO_HEARTBEATS_MATCHER = new FIXStringMatcher(MsgType.FIELD,
+    private static final Matcher<ReportHolder> NO_HEARTBEATS_MATCHER = new FIXStringMatcher(MsgType.FIELD,
                                                                                              MsgType.HEARTBEAT,
                                                                                              false);
 	// messages
@@ -107,12 +107,12 @@ public class FIXMessagesView
 	public void setFocus() {
 	}
 
-	protected FilterList<MessageHolder> getFilterList() {
-		return (FilterList<MessageHolder>) getInput();
+	protected FilterList<ReportHolder> getFilterList() {
+		return (FilterList<ReportHolder>) getInput();
 	}
 
-	public EventList<MessageHolder> extractList(FIXMessageHistory input) {
-		FilterList<MessageHolder> filterList = new FilterList<MessageHolder>(
+	public EventList<ReportHolder> extractList(TradeReportsHistory input) {
+		FilterList<ReportHolder> filterList = new FilterList<ReportHolder>(
 				input.getAllMessagesList());
 		return filterList;
 	}
@@ -124,26 +124,26 @@ public class FIXMessagesView
 	}
 
 	@Override
-	protected FIXMessageTableFormat<MessageHolder> createFIXMessageTableFormat(
+	protected FIXMessageTableFormat<ReportHolder> createFIXMessageTableFormat(
 			Table aMessageTable) {
 		String viewID = getViewID();
-		return new DirectionalMessageTableFormat<MessageHolder>(aMessageTable,
-				viewID, MessageHolder.class);
+		return new DirectionalMessageTableFormat<ReportHolder>(aMessageTable,
+				viewID, ReportHolder.class);
 	}
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.AbstractFIXMessagesView#getMessageList(org.marketcetera.messagehistory.FIXMessageHistory)
      */
     @Override
-    protected FilterList<MessageHolder> getMessageList(FIXMessageHistory inHistory)
+    protected FilterList<ReportHolder> getMessageList(TradeReportsHistory inHistory)
     {
-        return new FilterList<MessageHolder>(inHistory.getAllMessagesList(),
+        return new FilterList<ReportHolder>(inHistory.getAllMessagesList(),
                                              getFilterMatcherEditor());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.AbstractFIXMessagesView#createRegexMatcher(int, java.lang.String)
      */
     @Override
-    protected Matcher<MessageHolder> createRegexMatcher(int inFixField,
+    protected Matcher<ReportHolder> createRegexMatcher(int inFixField,
                                                         String inValue)
     {
         return new HeartbeatMatcher(inFixField,
@@ -155,7 +155,7 @@ public class FIXMessagesView
      * @see org.marketcetera.photon.views.AbstractFIXMessagesView#createStringMatcher(int, java.lang.String)
      */
     @Override
-    protected Matcher<MessageHolder> createStringMatcher(int inFixField,
+    protected Matcher<ReportHolder> createStringMatcher(int inFixField,
                                                          String inValue)
     {
         return new HeartbeatMatcher(inFixField,
@@ -167,7 +167,7 @@ public class FIXMessagesView
      * @see org.marketcetera.photon.views.AbstractFIXMessagesView#getDefaultMatcher()
      */
     @Override
-    protected Matcher<MessageHolder> getDefaultMatcher()
+    protected Matcher<ReportHolder> getDefaultMatcher()
     {
         if(getShowHeartbeat()) {
             return super.getDefaultMatcher();
@@ -196,7 +196,7 @@ public class FIXMessagesView
         /**
          * the parent matcher
          */
-        private final Matcher<MessageHolder> mParentMatcher;
+        private final Matcher<ReportHolder> mParentMatcher;
         /**
          * Create a new <code>HeartbeatMatcher</code> instance.
          *
@@ -205,7 +205,7 @@ public class FIXMessagesView
          */
         private HeartbeatMatcher(int inFixField,
                                  String inValue,
-                                 Matcher<MessageHolder> inParentMatcher)
+                                 Matcher<ReportHolder> inParentMatcher)
         {
             super(inFixField,
                   inValue);
@@ -221,7 +221,7 @@ public class FIXMessagesView
          * @see ca.odell.glazedlists.matchers.Matcher#matches(java.lang.Object)
          */
         @Override
-        public boolean matches(MessageHolder inItem)
+        public boolean matches(ReportHolder inItem)
         {
             // let the parent have the first crack at the item to match
             boolean parentResult = mParentMatcher.matches(inItem);

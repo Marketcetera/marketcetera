@@ -47,7 +47,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Manages a collection of {@link Strategy} objects and interfaces with the
  * underlying Module Framework.
  * 
- * This class manages an {@link WritableList} of {@link Strategy} objects, and
+ * This class manages a {@link WritableList} of {@link Strategy} objects, and
  * as such, it is thread safe. An exception will be thrown if it is accessed
  * from any thread other than the one that created it.
  * 

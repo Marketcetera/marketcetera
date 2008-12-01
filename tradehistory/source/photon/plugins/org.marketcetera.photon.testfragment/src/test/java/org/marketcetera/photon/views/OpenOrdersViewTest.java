@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
 import org.marketcetera.photon.messagehistory.FIXStringMatcher;
 
@@ -177,14 +176,5 @@ public class OpenOrdersViewTest
         fill3.setField(new TransactTime(new Date()));
         messages.add(fill3);
         return messages;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.photon.views.ViewTestBase#addMessage(quickfix.Message, org.marketcetera.messagehistory.FIXMessageHistory)
-     */
-    @Override
-    protected void addMessage(Message inMessage,
-                              FIXMessageHistory inHistory)
-    {
-        inHistory.addIncomingMessage(inMessage);
     }
 }

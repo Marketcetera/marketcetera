@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.ActionDelegate;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
@@ -79,8 +79,8 @@ public class CancelOrderActionDelegate
 				Message theMessage = null;
 				if (firstElement instanceof Message) {
 					theMessage = (Message) firstElement;
-				} else if (firstElement instanceof MessageHolder){
-					theMessage = ((MessageHolder) firstElement).getMessage();
+				} else if (firstElement instanceof ReportHolder){
+					theMessage = ((ReportHolder) firstElement).getMessage();
 				}
 				if (theMessage != null && theMessage.isSetField(ClOrdID.FIELD) && (FIXMessageUtil.isCancellable(theMessage)) &&
 						(FIXMessageUtil.isOrderSingle(theMessage) || FIXMessageUtil.isExecutionReport(theMessage))){
@@ -103,8 +103,8 @@ public class CancelOrderActionDelegate
 		if (item instanceof Message) {
 			qfMessage = (Message) item;
 			
-		} else if (item instanceof MessageHolder) {
-			MessageHolder holder = (MessageHolder) item;
+		} else if (item instanceof ReportHolder) {
+			ReportHolder holder = (ReportHolder) item;
 			qfMessage = holder.getMessage();
 		}
 		if (qfMessage != null){
