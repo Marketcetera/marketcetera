@@ -11,8 +11,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.marketdata.AbstractMarketDataFeedTest;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
+import org.marketcetera.photon.OrderManagerTest;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
@@ -154,7 +155,7 @@ public abstract class FIXMatcherTest<T>
             FIXMatcher<T> matcher = getInstance(condition.mFixField,
                                                 condition.mValue);
             // this is the FIX message specified as part of the test condition
-            MessageHolder holder = new MessageHolder(condition.mMessage);
+            ReportHolder holder = new ReportHolder(OrderManagerTest.createReport(condition.mMessage));
             // make sure that the stated condition passes (it should match or not match according to the condition)
             assertEquals(condition.mMatches,
                          matcher.matches(holder));

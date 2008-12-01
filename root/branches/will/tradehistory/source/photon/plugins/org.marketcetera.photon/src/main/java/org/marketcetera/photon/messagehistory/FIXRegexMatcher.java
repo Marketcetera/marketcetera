@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 
 import quickfix.Message;
 
@@ -63,7 +63,7 @@ public class FIXRegexMatcher
      * @see ca.odell.glazedlists.matchers.Matcher#matches(java.lang.Object)
      */
     @Override
-    public boolean matches(MessageHolder inItem)
+    public boolean matches(ReportHolder inItem)
     {
         try {
             Message aMessage = inItem.getMessage();

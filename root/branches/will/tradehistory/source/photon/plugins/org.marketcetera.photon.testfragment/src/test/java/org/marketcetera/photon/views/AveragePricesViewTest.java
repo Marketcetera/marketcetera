@@ -6,8 +6,9 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.IncomingMessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.photon.OrderManagerTest;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
 import org.marketcetera.photon.messagehistory.FIXStringMatcher;
 import org.marketcetera.photon.ui.IndexedTableViewer;
@@ -134,7 +135,7 @@ public class AveragePricesViewTest
     }
     
 	public void testShowMessage() throws Exception {
-		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
+		TradeReportsHistory hist = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
 		AveragePriceView view = (AveragePriceView) getTestView();
 		view.setInput(hist);
 		
@@ -152,7 +153,7 @@ public class AveragePricesViewTest
 		order1.set(new ClOrdID("clordid1"));
         order1.set(new LastShares(0));
 		order1.setField(new OrderQty(100));
-		hist.addIncomingMessage(order1);
+		hist.addIncomingMessage(OrderManagerTest.createReport(order1));
 		
 		ExecutionReport order2 = new ExecutionReport(
 				new OrderID("clordid2"),
@@ -168,7 +169,7 @@ public class AveragePricesViewTest
 		order2.set(new ClOrdID("clordid2"));
         order2.set(new LastShares(0));
 		order2.setField(new OrderQty(100));
-		hist.addIncomingMessage(order2);
+		hist.addIncomingMessage(OrderManagerTest.createReport(order2));
 
 		ExecutionReport fill = new ExecutionReport(
 				new OrderID("orderid1"),
@@ -184,7 +185,7 @@ public class AveragePricesViewTest
 		fill.setField(new OrderQty(1000));
 		fill.setField(new LastPx(82));
 		fill.setField(new LastShares(91));
-		hist.addIncomingMessage(fill);
+		hist.addIncomingMessage(OrderManagerTest.createReport(fill));
 		delay(1);
 		assertEquals(1, hist.getAveragePricesList().size());
 		IndexedTableViewer tableViewer = view.getMessagesViewer();
@@ -205,7 +206,7 @@ public class AveragePricesViewTest
 		fill.setField(new OrderQty(1000));
 		fill.setField(new LastPx(80));
 		fill.setField(new LastShares(91));
-		hist.addIncomingMessage(fill);
+		hist.addIncomingMessage(OrderManagerTest.createReport(fill));
 		delay(1);
 		assertEquals(1, table.getItemCount());
 		
@@ -223,12 +224,12 @@ public class AveragePricesViewTest
 		fill.setField(new OrderQty(1000));
 		fill.setField(new LastPx(808));
 		fill.setField(new LastShares(909));
-		hist.addIncomingMessage(fill);
+		hist.addIncomingMessage(OrderManagerTest.createReport(fill));
 		delay(1);
 		
 		assertEquals(2, table.getItemCount());
 		TableItem item = table.getItem(0);
-		IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) item.getData();
+		ReportHolder returnedMessageHolder = (ReportHolder) item.getData();
 		Message message = returnedMessageHolder.getMessage();
 		assertEquals("symbol1", message.getString(Symbol.FIELD));
 		assertEquals(0, new BigDecimal("81").compareTo(message.getDecimal(AvgPx.FIELD)));

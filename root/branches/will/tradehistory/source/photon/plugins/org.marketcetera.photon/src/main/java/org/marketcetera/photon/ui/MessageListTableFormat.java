@@ -2,14 +2,14 @@ package org.marketcetera.photon.ui;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkbenchPartSite;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
 
 
 
-public class MessageListTableFormat extends MessageListTableFormatBase<MessageHolder> {
+public class MessageListTableFormat extends MessageListTableFormatBase<ReportHolder> {
 	
 	public MessageListTableFormat(Table table, Enum<?>[] columns, IWorkbenchPartSite site, DataDictionary dataDictionary) {
 		super(table, columns, site, dataDictionary);
@@ -20,8 +20,8 @@ public class MessageListTableFormat extends MessageListTableFormatBase<MessageHo
 	}
 
 	@Override
-	public FieldMap getFieldMap(MessageHolder element, int columnIndex) {
-		FieldMap fieldMap = ((MessageHolder) element).getMessage();
+	public FieldMap getFieldMap(ReportHolder element, int columnIndex) {
+		FieldMap fieldMap = ((ReportHolder) element).getMessage();
 		return fieldMap;
 	}
 

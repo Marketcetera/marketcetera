@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.Order;
@@ -27,7 +27,7 @@ import quickfix.field.Side;
 public class PhotonControllerTest extends TestCase {
     private static FIXMessageFactory msgFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
     private MyPhotonController photonController;
-    private FIXMessageHistory fixMessageHistory;
+    private TradeReportsHistory fixMessageHistory;
 
     public PhotonControllerTest(String inName) {
         super(inName);
@@ -36,17 +36,17 @@ public class PhotonControllerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         photonController = new MyPhotonController();
-        fixMessageHistory = new FIXMessageHistory(msgFactory);
+        fixMessageHistory = new TradeReportsHistory(msgFactory);
         photonController.setMessageHistory(fixMessageHistory);
     }
 
     public void testCancelAllOpenOrders() throws Exception {
-        fixMessageHistory.addIncomingMessage(msgFactory.newExecutionReport("123", "10001", "201", OrdStatus.NEW,
+        fixMessageHistory.addIncomingMessage(OrderManagerTest.createReport(msgFactory.newExecutionReport("123", "10001", "201", OrdStatus.NEW,
                 Side.BUY, new BigDecimal(10), new BigDecimal(10.10), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, new MSymbol("XYZ"), "tester"));
-        fixMessageHistory.addIncomingMessage(msgFactory.newExecutionReport("123", "10002", "201", OrdStatus.NEW,
+                BigDecimal.ZERO, new MSymbol("XYZ"), "tester")));
+        fixMessageHistory.addIncomingMessage(OrderManagerTest.createReport(msgFactory.newExecutionReport("123", "10002", "201", OrdStatus.NEW,
                 Side.BUY, new BigDecimal(10), new BigDecimal(10.10), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, new MSymbol("BOB"), "tester"));
+                BigDecimal.ZERO, new MSymbol("BOB"), "tester")));
         photonController.cancelAllOpenOrders();
         assertEquals("not enough orders canceled", 2, photonController.sentOrders.size());
         Order order1 = photonController.sentOrders.get(0);

@@ -2,8 +2,8 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.jface.action.IToolBarManager;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 
 import ca.odell.glazedlists.FilterList;
@@ -43,9 +43,9 @@ public class AveragePriceView
      * @see org.marketcetera.photon.views.AbstractFIXMessagesView#getMessageList(org.marketcetera.messagehistory.FIXMessageHistory)
      */
     @Override
-    protected FilterList<MessageHolder> getMessageList(FIXMessageHistory inHistory)
+    protected FilterList<ReportHolder> getMessageList(TradeReportsHistory inHistory)
     {
-        return new FilterList<MessageHolder>(inHistory.getAveragePricesList(),
+        return new FilterList<ReportHolder>(inHistory.getAveragePricesList(),
                                              getFilterMatcherEditor());
     }
 }

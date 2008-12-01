@@ -5,8 +5,9 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.IncomingMessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.photon.OrderManagerTest;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
 import org.marketcetera.photon.messagehistory.FIXStringMatcher;
 import org.marketcetera.photon.ui.IndexedTableViewer;
@@ -37,10 +38,10 @@ public class FillsViewTest
     }
     public void testShowMessage() throws Exception
     {
-        FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
+        TradeReportsHistory hist = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
         FillsView view = (FillsView) getTestView();
         view.setInput(hist);
-        hist.addIncomingMessage(new ExecutionReport(new OrderID("orderid1"),
+        hist.addIncomingMessage(OrderManagerTest.createReport(new ExecutionReport(new OrderID("orderid1"),
                                                     new ExecID("execid1"),
                                                     new ExecTransType(ExecTransType.STATUS),
                                                     new ExecType(ExecType.PARTIAL_FILL),
@@ -49,7 +50,7 @@ public class FillsViewTest
                                                     new Side(Side.BUY),
                                                     new LeavesQty(1),
                                                     new CumQty(2),
-                                                    new AvgPx(3)));
+                                                    new AvgPx(3))));
         delay(1);
         IndexedTableViewer tableViewer = view.getMessagesViewer();
         Table table = tableViewer.getTable();
@@ -67,10 +68,10 @@ public class FillsViewTest
                                                    new AvgPx(6));
         fill.setField(new LastPx(81));
         fill.setField(new LastQty(91));
-        hist.addIncomingMessage(fill);
+        hist.addIncomingMessage(OrderManagerTest.createReport(fill));
         delay(1);
         TableItem item = table.getItem(0);
-        IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) item.getData();
+        ReportHolder returnedMessageHolder = (ReportHolder) item.getData();
         Message message = returnedMessageHolder.getMessage();
         assertEquals("orderid2",
                      message.getString(OrderID.FIELD));
@@ -172,14 +173,5 @@ public class FillsViewTest
         fill3.setField(new LastQty(91));
         messages.add(fill3);
         return messages;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.photon.views.ViewTestBase#addMessage(quickfix.Message, org.marketcetera.messagehistory.FIXMessageHistory)
-     */
-    @Override
-    protected void addMessage(Message inMessage,
-                              FIXMessageHistory inHistory)
-    {
-        inHistory.addIncomingMessage(inMessage);
     }
 }

@@ -5,9 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.logging.LogManager;
 
 import org.apache.log4j.BasicConfigurator;
@@ -34,8 +31,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.HttpDatabaseIDFactory;
-import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.photon.destination.DestinationManager;
+import org.marketcetera.photon.destination.IDestinationValidator;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.views.IOrderTicketController;
@@ -45,7 +43,6 @@ import org.marketcetera.photon.views.OrderTicketModel;
 import org.marketcetera.photon.views.SecondaryIDCreator;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicketModel;
-import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -79,7 +76,7 @@ public class PhotonPlugin
 	//The shared instance.
 	private static PhotonPlugin plugin;
 
-	private FIXMessageHistory fixMessageHistory;
+	private TradeReportsHistory mTradeReportsHistory;
 
 	
 	/**
@@ -115,6 +112,8 @@ public class PhotonPlugin
 	private OptionOrderTicketController optionOrderTicketController;
 	
 	private MarketDataManager marketDataManager;
+
+	private IDestinationValidator mDestinationManager;
 	
 	public static final String SESSION_START_TIME_PREFERENCE = "TRADING_HISTORY_START_TIME"; //$NON-NLS-1$
 
@@ -150,7 +149,7 @@ public class PhotonPlugin
         System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
         initMessageFactory();
-		initFIXMessageHistory();
+		initTradeReportsHistory();
 		initPhotonController();
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 	}
@@ -164,12 +163,12 @@ public class PhotonPlugin
 	
 	private void initPhotonController() {
 		photonController = new PhotonController();
-		photonController.setMessageHistory(fixMessageHistory);
+		photonController.setMessageHistory(mTradeReportsHistory);
 		photonController.setMainConsoleLogger(getMainConsoleLogger());
 	}
 
-	private void initFIXMessageHistory() {
-		fixMessageHistory = new FIXMessageHistory(messageFactory);
+	private void initTradeReportsHistory() {
+		mTradeReportsHistory = new TradeReportsHistory(messageFactory);
 	}
 
 
@@ -233,12 +232,12 @@ public class PhotonPlugin
 	}
 	                                            
 	/**
-	 * Accessor for the FIXMessageHistory singleton.
+	 * Accessor for the TradeReportsHistory singleton.
 	 * 
-	 * @return the FIXMessageHistory singleton
+	 * @return the TradeReportsHistory singleton
 	 */
-	public FIXMessageHistory getFIXMessageHistory() {
-		return fixMessageHistory;
+	public TradeReportsHistory getTradeReportsHistory() {
+		return mTradeReportsHistory;
 	}
 	
 	/** 
@@ -518,6 +517,22 @@ public class PhotonPlugin
 			PhotonPlugin.getDefault().changeLogLevel(""+event.getNewValue()); //$NON-NLS-1$
 		}
 	}
+
+	/**
+	 * Returns the {@link DestinationManager} singleton for this plug-in.
+	 * Typically, this should be accessed through
+	 * {@link DestinationManager#getCurrent()}.
+	 * 
+	 * @return the DestinationManager singleton for this plug-in
+	 */
+	public IDestinationValidator getDestinationManager() {
+		if (mDestinationManager == null) {
+			mDestinationManager = new DestinationManager();
+		}
+		return mDestinationManager;
+	}
+
+	
 
 
 	

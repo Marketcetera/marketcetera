@@ -10,7 +10,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionDelegate;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
@@ -38,8 +38,8 @@ public class ViewFIXMessageDetailActionDelegate
 				Object firstElement = structuredSelection.getFirstElement();
 				if (firstElement instanceof Message) {
 					fixMessage = (Message) firstElement;
-				} else if (firstElement instanceof MessageHolder) {
-					fixMessage = ((MessageHolder) firstElement).getMessage();
+				} else if (firstElement instanceof ReportHolder) {
+					fixMessage = ((ReportHolder) firstElement).getMessage();
 				}
 
 			}
