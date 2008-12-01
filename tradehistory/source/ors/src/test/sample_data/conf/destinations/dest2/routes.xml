@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Destination 2 configuration: routes.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_dest2_routes"
+   class="org.marketcetera.quickfix.MessageRouteManager">
+    <property
+     name="separateSuffix"
+     value="false"/>
+    <property
+     name="routeMethod"
+     value="field:100"/>
+    <property
+     name="routes">
+      <map>
+        <entry
+         key="N"
+         value="NONE"/>
+        <entry
+         key="IN"
+         value="Naples"/>
+      </map>
+    </property>
+  </bean>
+</beans>
