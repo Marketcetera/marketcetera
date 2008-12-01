@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main configuration for database initialization (unit test).
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <import
+   resource="properties.xml"/>
+  <import
+   resource="db/db.xml"/>
+  <import
+   resource="db/orm.xml"/>
+
+  <bean
+   class="org.marketcetera.persist.ExecuteSQLFromFile">
+    <constructor-arg>
+      <list>
+        <value>file:src/main/sample_data/conf/001_create_user_schema.sql</value>
+      </list>
+    </constructor-arg>
+    <constructor-arg
+     ref="metc_sql_pool"/>
+  </bean>
+
+  <bean
+   id="metc_db_vendor"
+   class="org.marketcetera.persist.MySQLDBVendor"/>
+
+  <!-- Inject DB initiailzation before any ORM stuff. -->
+  <bean
+   id="metc_jpa_vendor"
+   class="org.marketcetera.persist.HibernateVendor"
+   depends-on="metc_db_vendor"/>
+</beans>

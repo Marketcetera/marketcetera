@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Messaging configuration: client configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_connection_factory_in"
+   class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property
+     name="brokerURL"
+     value="${metc.amq.broker.url}"/>
+    <property
+     name="userName"
+     ref="runtimeUsername"/>
+    <property
+     name="password"
+     ref="runtimePassword"/>
+  </bean>
+
+  <bean
+   id="metc_connection_factory_out"
+   class="org.apache.activemq.pool.PooledConnectionFactory">
+    <property
+     name="connectionFactory"
+     ref="metc_connection_factory_in"/>
+  </bean>
+
+  <bean
+   id="metc_id_factory"
+   class="org.marketcetera.core.DatabaseIDFactory">
+    <constructor-arg
+     ref="metc_sql_pool"/>
+  </bean>
+</beans>
