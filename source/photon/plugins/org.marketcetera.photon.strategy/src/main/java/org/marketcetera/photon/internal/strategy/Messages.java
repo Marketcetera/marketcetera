@@ -130,6 +130,8 @@ public interface Messages {
 			LOGGER, "send_orders_handler.send_order_failure"); //$NON-NLS-1$
 	static final I18NMessage0P SEND_ORDERS_HANDLER_SEND_ORDERS_FAILURE_SEE_DETAILS = new I18NMessage0P(
 			LOGGER, "send_orders_handler.send_orders_failure.see_details"); //$NON-NLS-1$
+	static final I18NMessage0P OPEN_SUGGESTION_HANDLER_CONVERSION_FAILURE = new I18NMessage0P(
+            LOGGER, "open_suggestions_handler.conversion_failure"); //$NON-NLS-1$
 	
 	/*
 	 * Module information
