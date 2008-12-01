@@ -5,22 +5,21 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.ActionDelegate;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.field.ClOrdID;
 import quickfix.field.OrderID;
-/* $License$ */
 
 /**
  * CancelReplaceOrderActionDelegate is a subclass of {@link ActionDelegate}
@@ -90,8 +89,8 @@ public class CancelReplaceOrderActionDelegate
 				Message theMessage = null;
 				if (firstElement instanceof Message) {
 					theMessage = (Message) firstElement;
-				} else if (firstElement instanceof MessageHolder){
-					theMessage = ((MessageHolder) firstElement).getMessage();
+				} else if (firstElement instanceof ReportHolder){
+					theMessage = ((ReportHolder) firstElement).getMessage();
 				}
 				if (theMessage != null && theMessage.isSetField(ClOrdID.FIELD) && (FIXMessageUtil.isCancellable(theMessage)) &&
 						FIXMessageUtil.isExecutionReport(theMessage)){
@@ -114,22 +113,22 @@ public class CancelReplaceOrderActionDelegate
 		if (item instanceof Message) {
 			oldMessage = (Message) item;
 			
-		} else if (item instanceof MessageHolder) {
-			MessageHolder holder = (MessageHolder) item;
+		} else if (item instanceof ReportHolder) {
+			ReportHolder holder = (ReportHolder) item;
 			oldMessage = holder.getMessage();
 		}
 		if (oldMessage != null){
 			try {
-				StringField clOrdId = oldMessage.getField(new ClOrdID());
+				org.marketcetera.trade.OrderID clOrdId = new org.marketcetera.trade.OrderID(oldMessage.getString(ClOrdID.FIELD));
 				Message originalOrderMessage = getOriginalOrderMessage(clOrdId);
 				if (originalOrderMessage == null) {
 					originalOrderMessage = oldMessage;
 				}
 				String orderID = null;
 				try {
-					FIXMessageHistory fixMessageHistory = PhotonPlugin.getDefault().getFIXMessageHistory();
-					Message latestMessage = fixMessageHistory.getLatestExecutionReport(clOrdId.getValue());
-					orderID = latestMessage.getString(OrderID.FIELD);
+					TradeReportsHistory fixMessageHistory = PhotonPlugin.getDefault().getTradeReportsHistory();
+					ReportBase latestMessage = fixMessageHistory.getLatestExecutionReport(new org.marketcetera.trade.OrderID(clOrdId.getValue()));
+					orderID = latestMessage.getOrderID().getValue();
 				} catch (Exception ex){
 					// use null
 				}
@@ -151,11 +150,10 @@ public class CancelReplaceOrderActionDelegate
 		}
 	}
 
-	private Message getOriginalOrderMessage(StringField clOrdId) {
-		FIXMessageHistory messageHistory = PhotonPlugin.getDefault()
-				.getFIXMessageHistory();
-		MessageHolder messageHolder = messageHistory.getFirstReport(clOrdId
-				.getValue());
+	private Message getOriginalOrderMessage(org.marketcetera.trade.OrderID clOrdId) {
+		TradeReportsHistory messageHistory = PhotonPlugin.getDefault()
+				.getTradeReportsHistory();
+		ReportHolder messageHolder = messageHistory.getFirstReport(clOrdId);
 		if (messageHolder == null) {
 			return null;
 		}

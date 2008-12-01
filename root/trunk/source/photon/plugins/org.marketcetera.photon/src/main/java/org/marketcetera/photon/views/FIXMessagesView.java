@@ -3,8 +3,8 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Table;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 import org.marketcetera.photon.ui.DirectionalMessageTableFormat;
 import org.marketcetera.photon.ui.FIXMessageTableFormat;
@@ -40,17 +40,17 @@ public class FIXMessagesView
 	}
 
 	@Override
-	protected FIXMessageTableFormat<MessageHolder> createFIXMessageTableFormat(
+	protected FIXMessageTableFormat<ReportHolder> createFIXMessageTableFormat(
 			Table aMessageTable) {
 		String viewID = getViewID();
-		return new DirectionalMessageTableFormat<MessageHolder>(aMessageTable,
-				viewID, MessageHolder.class);
+		return new DirectionalMessageTableFormat<ReportHolder>(aMessageTable,
+				viewID, ReportHolder.class);
 	}
     
 	@Override
-    protected FilterList<MessageHolder> getMessageList(FIXMessageHistory inHistory)
+    protected FilterList<ReportHolder> getMessageList(TradeReportsHistory inHistory)
     {
-        return new FilterList<MessageHolder>(inHistory.getAllMessagesList(),
+        return new FilterList<ReportHolder>(inHistory.getAllMessagesList(),
                                              getFilterMatcherEditor());
     }
 }

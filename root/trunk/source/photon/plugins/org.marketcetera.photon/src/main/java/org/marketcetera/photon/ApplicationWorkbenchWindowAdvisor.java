@@ -20,8 +20,6 @@ import org.eclipse.ui.internal.layout.ITrimManager;
 import org.eclipse.ui.internal.layout.IWindowTrim;
 import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.HttpDatabaseIDFactory;
-import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectClientJob;
 import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.photon.ui.PhotonConsole;

@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.IncomingMessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
 import org.marketcetera.photon.messagehistory.FIXStringMatcher;
 import org.marketcetera.photon.ui.IndexedTableViewer;
@@ -38,7 +38,6 @@ import quickfix.field.TargetCompID;
 import quickfix.field.TransactTime;
 import quickfix.field.Urgency;
 import quickfix.fix42.ExecutionReport;
-import quickfix.fix42.Heartbeat;
 
 public class FIXMessagesViewTest extends ViewTestBase {
 
@@ -47,10 +46,10 @@ public class FIXMessagesViewTest extends ViewTestBase {
 	}
 
 	public void testShowMessage() throws Exception {
-		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
+		TradeReportsHistory hist = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
 		FIXMessagesView view = (FIXMessagesView) getTestView();
 		view.setInput(hist);
-		hist.addIncomingMessage(new ExecutionReport(
+		addMessage(new ExecutionReport(
 				new OrderID("orderid1"),
 				new ExecID("execid1"),
 				new ExecTransType(ExecTransType.STATUS),
@@ -60,12 +59,12 @@ public class FIXMessagesViewTest extends ViewTestBase {
 				new Side(Side.BUY),
 				new LeavesQty(1),
 				new CumQty(2),
-				new AvgPx(3)));
+				new AvgPx(3)), hist);
 		delay(1);
 		IndexedTableViewer tableViewer = view.getMessagesViewer();
 		Table table = tableViewer.getTable();
 		TableItem item = table.getItem(0);
-		IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) item.getData();
+		ReportHolder returnedMessageHolder = (ReportHolder) item.getData();
 		Message message = returnedMessageHolder.getMessage();
 		assertEquals("orderid1", message.getString(OrderID.FIELD));
 	}
@@ -93,7 +92,7 @@ public class FIXMessagesViewTest extends ViewTestBase {
         // string match on existing field
         conditions.add(new FilterTestCondition(new FIXStringMatcher(Side.FIELD,
                                                                     "B"),
-                                               new int[] { 0, 1, 3 }));
+                                               new int[] { 0, 1, 2 }));
         // string no match on existing field
         conditions.add(new FilterTestCondition(new FIXStringMatcher(Symbol.FIELD,
                                                                     "symbol-not-present"),
@@ -105,7 +104,7 @@ public class FIXMessagesViewTest extends ViewTestBase {
         // regex match on existing field
         conditions.add(new FilterTestCondition(new FIXRegexMatcher(Symbol.FIELD,
                                                                    "[a-z]*bol[1|2]"),
-                                               new int[] { 0, 1, 3 } ));
+                                               new int[] { 0, 1, 2 } ));
         // regex match on non-existent field
         conditions.add(new FilterTestCondition(new FIXRegexMatcher(Symbol.FIELD,
                                                                    "[a-z]*bxol[1|2]"),
@@ -168,8 +167,6 @@ public class FIXMessagesViewTest extends ViewTestBase {
         fill2.setField(new TargetCompID("target-comp"));
         fill2.setField(new TransactTime(new Date()));
         messages.add(fill2);
-        Heartbeat hb1 = new Heartbeat();
-        messages.add(hb1);
         ExecutionReport order1 = new ExecutionReport(new OrderID("clordid1"),
 				new ExecID("execido1"),
 				new ExecTransType(ExecTransType.NEW),
@@ -184,8 +181,6 @@ public class FIXMessagesViewTest extends ViewTestBase {
         order1.set(new LastShares(1));
         order1.set(new OrderQty(100));
         messages.add(order1);
-        Heartbeat hb2 = new Heartbeat();
-        messages.add(hb2);
         
         return messages;
     }

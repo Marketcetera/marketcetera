@@ -13,7 +13,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.views.WebBrowserView;
 
 import quickfix.FieldNotFound;
@@ -56,7 +56,7 @@ public class ViewSecurityActionDelegate implements IObjectActionDelegate {
 			Object firstElement = selection.getFirstElement();
 			proxyAction.setEnabled(selection.size() == 1
 					&& (firstElement instanceof Message ||
-					firstElement instanceof MessageHolder));
+					firstElement instanceof ReportHolder));
 		} else {
 			// Other selections, for example containing text or of other kinds.
 			proxyAction.setEnabled(false);
@@ -82,8 +82,8 @@ public class ViewSecurityActionDelegate implements IObjectActionDelegate {
 			Message message;
 			if (firstElement instanceof Message) {
 				message = (Message) firstElement;
-			} else if (firstElement instanceof MessageHolder) {
-				MessageHolder holder = (MessageHolder) firstElement;
+			} else if (firstElement instanceof ReportHolder) {
+				ReportHolder holder = (ReportHolder) firstElement;
 				message = holder.getMessage();
 			} else {
 				return;

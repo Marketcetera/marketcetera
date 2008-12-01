@@ -32,6 +32,7 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
+import org.marketcetera.photon.destination.IDestinationValidator;
 import org.marketcetera.photon.views.OptionDateHelper;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -195,6 +196,22 @@ public class CommandParser
 		}
 	});
 
+	final Parser<String> destinationParser = Parsers.token("destinationParser", new FromToken<String>(){ //$NON-NLS-1$
+        private static final long serialVersionUID = 1L;
+        public String fromToken(Tok tok) {
+			String text = ((TypedToken<?>)tok.getToken()).getText();
+			return text;
+//			String switchString = MessageFormat.format("/{0}:", Messages.COMMAND_LINE_DESTINATION_SWITCH.getText()); //$NON-NLS-1$
+//			if (text.startsWith(switchString)) {
+//				int length = switchString.length();
+//				if (text.length() > length) {
+//					return text.substring(length);
+//				}
+//			}
+//			return "";
+		}
+	});
+
 	final Parser<IPhotonCommand> resendRequestMapper = Parsers.map2(
 			integerParser, integerParser,
 			new Map2<BigInteger, BigInteger, IPhotonCommand>() {
@@ -207,7 +224,7 @@ public class CommandParser
 	final Parser<IPhotonCommand> orderCommandMapper = Parsers.mapn(
 			(Parser<?>[])new Parser<?>[]{sideImageParser, orderQtyParser, wordParser, 
 					Parsers.atomize("optionExpirationParserAtom", optionExpirationParser).optional(),  //$NON-NLS-1$
-					priceParser, timeInForceParser.optional(), accountParser.optional()} ,
+					priceParser, destinationParser.optional(), timeInForceParser.optional(), accountParser.optional()} ,
 		new Mapn<IPhotonCommand>(){
             private static final long serialVersionUID = 1L;
         public IPhotonCommand map(Object... vals) {
@@ -217,17 +234,24 @@ public class CommandParser
 					String symbol = (String) vals[i++];
 					FieldMap optionSpecifier = (FieldMap) vals[i++];
 					PriceImage priceImage = (PriceImage) vals[i++];
-					
+					String destination = null;
 					TimeInForceImage timeInForce = TimeInForceImage.DAY;
 					String accountID = null;
 					if (vals.length > i && vals[i] != null) {
-						timeInForce = (TimeInForceImage) vals[i];
-						i++;
-						if (vals.length >= i && vals[i] !=null)
-							accountID = (String) vals[i];
-					} else if (vals.length > i+1 && vals[i+1] != null){
-						throw new jfun.parsec.UserException(MISSING_TIME_IN_FORCE.getText());
+						destination = (String) vals[i++];
+						if (destinationValidator != null && !destinationValidator.isValid(destination)) {
+							throw new jfun.parsec.UserException("Invalid destination");
+						}
+						if (vals.length > i && vals[i] != null) {
+							timeInForce = (TimeInForceImage) vals[i++];
+							if (vals.length > i && vals[i] !=null) {
+								accountID = (String) vals[i];
+							}
+						} else if (vals.length > i+1 && vals[i+1] != null){
+							throw new jfun.parsec.UserException(MISSING_TIME_IN_FORCE.getText());
+						}
 					}
+					
 					Message message=null;
 					if (PriceImage.MKT.equals(priceImage))	{
 						message = messageFactory.newMarketOrder("", //$NON-NLS-1$ 
@@ -248,7 +272,7 @@ public class CommandParser
 					} else {
 						message.setString(SecurityType.FIELD, SecurityType.COMMON_STOCK);
 					}
-					return new SendOrderToOrderManagerCommand(message);
+					return new SendOrderToOrderManagerCommand(message, destination);
 				}
 			}
 	);
@@ -288,6 +312,8 @@ public class CommandParser
 
 	private boolean orderQtyIsInt = false;
 
+	private IDestinationValidator destinationValidator;
+
 	public MessageCommand parseNewOrder(String theInputString) {
 		SendOrderToOrderManagerCommand result = (SendOrderToOrderManagerCommand)Parsers.runParser(theInputString, newOrderCommandParser,
 		"user input"); //$NON-NLS-1$
@@ -309,4 +335,8 @@ public class CommandParser
 		this.dataDictionary = dd;
 		orderQtyIsInt = FieldType.Int == dataDictionary.getFieldTypeEnum(OrderQty.FIELD);
 	}
+	public void setDestinationValidator(IDestinationValidator validator) {
+		this.destinationValidator = validator;
+	}
+	
 }

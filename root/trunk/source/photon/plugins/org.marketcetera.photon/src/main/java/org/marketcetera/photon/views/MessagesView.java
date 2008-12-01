@@ -1,8 +1,8 @@
 package org.marketcetera.photon.views;
 
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 
-public abstract class MessagesView extends MessagesViewBase<MessageHolder> {
+public abstract class MessagesView extends MessagesViewBase<ReportHolder> {
 
 	public MessagesView() {
 		this(true);

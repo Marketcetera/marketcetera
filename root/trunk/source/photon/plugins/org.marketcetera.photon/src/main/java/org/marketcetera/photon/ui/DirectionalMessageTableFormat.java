@@ -2,17 +2,21 @@ package org.marketcetera.photon.ui;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
-import org.marketcetera.messagehistory.IncomingMessageHolder;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.FIXDataDictionary;
 
+/* $License$ */
+
 /**
+ * Provides the in arrow image (out arrow was removed in 1.0)
  * 
  * @author michael.lossos@softwaregoodness.com
- *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
  */
 public class DirectionalMessageTableFormat<T>
     extends FIXMessageTableFormat<T>
@@ -23,14 +27,10 @@ public class DirectionalMessageTableFormat<T>
 	
 	private Image arrowInImage;
 
-	private Image arrowOutImage;
-
 	public DirectionalMessageTableFormat(Table table,
 			final String assignedViewID, Class<T> underlyingClass) {
 		super(table, assignedViewID, underlyingClass);
 		arrowInImage = PhotonPlugin.getImageDescriptor(IImageKeys.ARROW_IN)
-				.createImage();
-		arrowOutImage = PhotonPlugin.getImageDescriptor(IImageKeys.ARROW_OUT)
 				.createImage();
 	}
 
@@ -38,7 +38,6 @@ public class DirectionalMessageTableFormat<T>
 	public void dispose() {
 		try {
 			arrowInImage.dispose();
-			arrowOutImage.dispose();
 		} catch (Exception anyException) {
 			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_DISPOSE_OF_ARROWS.getText(),
 			                                         anyException);
@@ -48,12 +47,8 @@ public class DirectionalMessageTableFormat<T>
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
-		if (columnIndex == 0 && element instanceof MessageHolder) {
-			if (element instanceof IncomingMessageHolder) {
-				return arrowInImage;
-			} else {
-				return arrowOutImage;
-			}
+		if (columnIndex == 0 && element instanceof ReportHolder) {
+			return arrowInImage;
 		}
 		return super.getColumnImage(element, columnIndex);
 	}

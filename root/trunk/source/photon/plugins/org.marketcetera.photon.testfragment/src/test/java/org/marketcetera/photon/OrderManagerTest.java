@@ -8,15 +8,15 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.IncomingMessageHolder;
-import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
@@ -69,14 +69,12 @@ public class OrderManagerTest extends TestCase {
     }
 	
 	
-	private InMemoryIDFactory idFactory;
-	private FIXMessageHistory messageHistory;
+	private TradeReportsHistory messageHistory;
 	private ImmediatePhotonController photonController;
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		idFactory = new InMemoryIDFactory(999);
-		messageHistory = new FIXMessageHistory(msgFactory);
+		messageHistory = new TradeReportsHistory(msgFactory);
 		photonController = new ImmediatePhotonController();
 		photonController.setMessageHistory(messageHistory);
 	}
@@ -94,19 +92,19 @@ public class OrderManagerTest extends TestCase {
 					Factory.getInstance().createExecutionReport(aMessage, 
 							new DestinationID("bro"), Originator.Server));
 		}
-		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
+		EventList<ReportHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(2, historyList.size());
-		assertEquals(IncomingMessageHolder.class, historyList.get(0).getClass());
-		assertEquals(IncomingMessageHolder.class, historyList.get(1).getClass());
-		assertEquals(MsgType.EXECUTION_REPORT, ((IncomingMessageHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
-		assertEquals(MsgType.EXECUTION_REPORT, ((IncomingMessageHolder)historyList.get(1)).getMessage().getHeader().getString(MsgType.FIELD));
+		assertEquals(ReportHolder.class, historyList.get(0).getClass());
+		assertEquals(ReportHolder.class, historyList.get(1).getClass());
+		assertEquals(MsgType.EXECUTION_REPORT, ((ReportHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
+		assertEquals(MsgType.EXECUTION_REPORT, ((ReportHolder)historyList.get(1)).getMessage().getHeader().getString(MsgType.FIELD));
 	}
 
 	/*
 	 * Test method for 'org.marketcetera.photon.PhotonController.handleInternalMessage(Message)'
 	 */
-	public void testHandleInternalMessages() throws FieldNotFound {
-		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
+	public void testHandleInternalMessages() throws Exception {
+		EventList<ReportHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(0, historyList.size());
 		Message order = msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		Message cancel = msgFactory.newCancel("AQWE", "ASDF", Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
@@ -119,7 +117,7 @@ public class OrderManagerTest extends TestCase {
 				org.marketcetera.trade.TimeInForce.Day, OrderType.Limit, 
 				new MSymbol("QWER"), null, null, null, null, 
 				PhotonController.DEFAULT_DESTINATION, null);
-		messageHistory.addIncomingMessage(exReport);
+		messageHistory.addIncomingMessage(createReport(exReport));
 		photonController.handleInternalMessage(cancel);
 		TypesTestBase.assertOrderCancel((OrderCancel)photonController.getLastOrder(), 
 				TypesTestBase.NOT_NULL, new OrderID("ASDF"), 
@@ -136,10 +134,10 @@ public class OrderManagerTest extends TestCase {
 		photonController.receiveExecutionReport(Factory.getInstance().
 				createExecutionReport(message,new DestinationID("bro"), 
 						Originator.Server)); 
-		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
+		EventList<ReportHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(1, historyList.size());
-		assertEquals(IncomingMessageHolder.class, historyList.get(0).getClass());
-		assertEquals(MsgType.EXECUTION_REPORT, ((IncomingMessageHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
+		assertEquals(ReportHolder.class, historyList.get(0).getClass());
+		assertEquals(MsgType.EXECUTION_REPORT, ((ReportHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
 	}
 
 	/*
@@ -173,7 +171,7 @@ public class OrderManagerTest extends TestCase {
 				new MSymbol("QWER"), null, null, null, null, 
 				PhotonController.DEFAULT_DESTINATION, null);
 
-		messageHistory.addIncomingMessage(exReport);
+		messageHistory.addIncomingMessage(createReport(exReport));
 		Message cancelReplaceMessage = msgFactory.newCancelReplaceFromMessage(exReport);
 
 		photonController.handleInternalMessage(cancelReplaceMessage);
@@ -201,7 +199,7 @@ public class OrderManagerTest extends TestCase {
 				new MSymbol("QWER"), null, null, null, null, 
 				PhotonController.DEFAULT_DESTINATION, null);
 
-		messageHistory.addIncomingMessage(exReport);
+		messageHistory.addIncomingMessage(createReport(exReport));
 		Message cancelMessage = msgFactory.newCancel("clOrd1", myClOrdID, Side.BUY, 
 				BigDecimal.ONE, new MSymbol("QWER"), "ord1");
 		photonController.handleInternalMessage(cancelMessage);
@@ -232,12 +230,18 @@ public class OrderManagerTest extends TestCase {
 				OrderType.Market, new MSymbol("QWER"), null, null, null, 
 				null, PhotonController.DEFAULT_DESTINATION, null);
 
-		messageHistory.addIncomingMessage(exReport);
+		messageHistory.addIncomingMessage(createReport(exReport));
 		photonController.cancelOneOrderByClOrdID(myClOrdID);
 		TypesTestBase.assertOrderCancel((OrderCancel)photonController.getLastOrder(), 
 				TypesTestBase.NOT_NULL, new OrderID(myClOrdID), 
 				org.marketcetera.trade.Side.Buy, new MSymbol("QWER"), null, 
 				orderQty.subtract(cumQty), "456", null, PhotonController.DEFAULT_DESTINATION, null);
+	}
+	
+	public static ExecutionReport createReport(Message message)
+			throws MessageCreationException {
+		return Factory.getInstance().createExecutionReport(message,
+				new DestinationID("null"), Originator.Server);
 	}
 
 }
