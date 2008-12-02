@@ -1,5 +1,8 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.marketdata.DataRequest"
+include_class "org.marketcetera.trade.Factory"
+include_class "org.marketcetera.core.MSymbol"
+include_class "java.math.BigDecimal"
 include_class "java.lang.System"
 include_class "java.lang.Long"
 include_class "java.util.Date"
@@ -28,6 +31,9 @@ class RubyStrategy < Strategy
           set_property("requestID",
                        Long.toString(request_market_data(symbols,
                                                          marketDataSource)))
+      end
+      if(get_parameter("shouldRequestCEPData") != nil)
+          do_cep_request
       end
       do_request_parameter_callbacks
       do_request_properties_callbacks
@@ -78,6 +84,9 @@ class RubyStrategy < Strategy
       if(shouldFail != nil) 
           10 / 0
       end
+      if(get_parameter("shouldRequestCEPData") != nil)
+          suggestion_from_event ask
+      end
       set_property("onAsk",
                    ask.toString())
   end  
@@ -85,6 +94,9 @@ class RubyStrategy < Strategy
       shouldFail = get_parameter("shouldFailOnBid")
       if(shouldFail != nil) 
           10 / 0
+      end
+      if(get_parameter("shouldRequestCEPData") != nil)
+          suggestion_from_event bid
       end
       set_property("onBid",
                    bid.toString())
@@ -99,6 +111,9 @@ class RubyStrategy < Strategy
       shouldFail = get_parameter("shouldFailOnCallback")
       if(shouldFail != nil) 
           10 / 0
+      end
+      if(get_parameter("shouldRequestCEPData") != nil)
+          cancel_all_cep_requests
       end
       set_property("onCallback",
                    @callbackCounter.to_s)
@@ -124,6 +139,9 @@ class RubyStrategy < Strategy
       if(shouldFail != nil) 
           10 / 0
       end
+      if(get_parameter("shouldRequestCEPData") != nil)
+          suggestion_from_event trade
+      end
       set_property("onTrade",
                    trade.toString())
   end  
@@ -131,6 +149,9 @@ class RubyStrategy < Strategy
       shouldFail = get_parameter("shouldFailOnOther")
       if(shouldFail != nil) 
           10 / 0
+      end
+      if(get_property("shouldCancelCEPData") != nil)
+          cancel_cep_request Long.parseLong get_property "requestID"
       end
       set_property("onOther",
                    data.toString())
@@ -173,5 +194,24 @@ class RubyStrategy < Strategy
         end
       end
     end
+  end
+  def suggestion_from_event(event)
+      suggestedOrder = Factory.getInstance().createOrderSingle()
+      suggestedOrder.setPrice event.getPrice
+      suggestedOrder.setSymbol MSymbol.new event.getSymbol
+      suggestedOrder.setQuantity event.getSize
+      suggest_trade suggestedOrder, BigDecimal.new("1.0"), "CEP Event Received" 
+  end
+  def do_cep_request
+      cepDataSource = get_parameter("source")
+      if(cepDataSource != nil)
+          statementString = get_parameter "statements"
+          if(statementString != nil) 
+              statements = statementString.split("#")
+          else
+              statements = nil
+          end
+          set_property("requestID", Long.toString(request_cep_data(statements.to_java(:string), cepDataSource)))
+      end
   end
 end

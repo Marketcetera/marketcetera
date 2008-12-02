@@ -132,11 +132,12 @@ public class ProviderLoadTest extends ModuleTestBase {
         //Should see all the providers now
         ModuleTestBase.checkAllProviders(mManager.getProviders());
 
-        assertEquals(3, mManager.getModuleInstances(null).size());
+        assertEquals(4, mManager.getModuleInstances(null).size());
         assertContains(mManager.getModuleInstances(null),new ModuleURN[]{
                 SinkModuleFactory.INSTANCE_URN,
                 EmitterModuleFactory.INSTANCE_URN,
-                SingleModuleFactory.INSTANCE_URN});
+                SingleModuleFactory.INSTANCE_URN,
+                CopierModuleFactory.INSTANCE_URN});
     }
     private ModuleManager mManager;
     private static class Refresher implements RefreshListener {

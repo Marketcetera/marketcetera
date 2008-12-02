@@ -54,6 +54,12 @@ public class JavaLanguageTest
     public static final File PACKAGE_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                          "PackageStrategy.java");
     public static final String PACKAGE_STRATEGY_NAME = "PackageStrategy";
+    public static final File EVENT_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                       "SendEvent.java");
+    public static final String EVENT_STRATEGY_NAME = "SendEvent";
+    public static final File COMBINED_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                          "CombinedRequest.java");
+    public static final String COMBINED_STRATEGY_NAME = "CombinedRequest";
     /**
      * Tests that a strategy declared in a package other than the default package works as expected.
      *
@@ -199,5 +205,23 @@ public class JavaLanguageTest
     {
         return StrategyCoordinates.get(PACKAGE_STRATEGY,
                                        PACKAGE_STRATEGY_NAME);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getEventStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getEventStrategy()
+    {
+        return StrategyCoordinates.get(EVENT_STRATEGY,
+                                       EVENT_STRATEGY_NAME);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getCombinedStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getCombinedStrategy()
+    {
+        return StrategyCoordinates.get(COMBINED_STRATEGY,
+                                       COMBINED_STRATEGY_NAME);
     }
 }

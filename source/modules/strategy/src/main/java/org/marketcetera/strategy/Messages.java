@@ -5,6 +5,8 @@ import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessage3P;
+import org.marketcetera.util.log.I18NMessage5P;
+import org.marketcetera.util.log.I18NMessage6P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -50,6 +52,8 @@ public interface Messages
                                                                            "no_support_for_language"); //$NON-NLS-1$
     static final I18NMessage2P MARKET_DATA_REQUEST_FAILED = new I18NMessage2P(LOGGER,
                                                                               "market_data_request_failed"); //$NON-NLS-1$
+    static final I18NMessage2P CEP_REQUEST_FAILED = new I18NMessage2P(LOGGER,
+                                                                      "cep_request_failed"); //$NON-NLS-1$
     static final I18NMessage0P NULL_PROPERTY_KEY = new I18NMessage0P(LOGGER,
                                                                      "null_property_key"); //$NON-NLS-1$
     static final I18NMessage1P NO_PARAMETERS = new I18NMessage1P(LOGGER,
@@ -86,4 +90,30 @@ public interface Messages
                                                                             "cannot_initialize_client"); //$NON-NLS-1$
     static final I18NMessage2P EXECUTION_REPORT_REQUEST_FAILED = new I18NMessage2P(LOGGER,
                                                                                    "execution_report_request_failed"); //$NON-NLS-1$
+    static final I18NMessage3P INVALID_CEP_REQUEST = new I18NMessage3P(LOGGER,
+                                                                       "invalid_cep_request"); //$NON-NLS-1$
+    static final I18NMessage2P UNABLE_TO_CANCEL_MARKET_DATA_REQUEST = new I18NMessage2P(LOGGER,
+                                                                                        "unable_to_cancel_market_data_request"); //$NON-NLS-1$
+    static final I18NMessage2P NO_MARKET_DATA_HANDLE = new I18NMessage2P(LOGGER,
+                                                                         "no_market_data_handle"); //$NON-NLS-1$
+    static final I18NMessage2P UNABLE_TO_CANCEL_CEP_REQUEST = new I18NMessage2P(LOGGER,
+                                                                                "unable_to_cancel_cep_request"); //$NON-NLS-1$
+    static final I18NMessage2P NO_CEP_HANDLE = new I18NMessage2P(LOGGER,
+                                                                 "no_cep_handle"); //$NON-NLS-1$
+    static final I18NMessage3P SEND_MESSAGE_FAILED = new I18NMessage3P(LOGGER,
+                                                                       "send_message_failed"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_EVENT = new I18NMessage1P(LOGGER,
+                                                                 "invalid_event"); //$NON-NLS-1$
+    static final I18NMessage3P CANNOT_SEND_EVENT_TO_CEP = new I18NMessage3P(LOGGER,
+                                                                            "cannot_send_event_to_cep"); //$NON-NLS-1$
+    static final I18NMessage1P STOP_ERROR = new I18NMessage1P(LOGGER,
+                                                              "stop_error"); //$NON-NLS-1$
+    static final I18NMessage2P CANNOT_CREATE_CONNECTION = new I18NMessage2P(LOGGER,
+                                                                            "cannot_create_connection"); //$NON-NLS-1$
+    static final I18NMessage3P INVALID_EVENT_TO_CEP = new I18NMessage3P(LOGGER,
+                                                                        "invalid_event_to_cep"); //$NON-NLS-1$
+    static final I18NMessage6P INVALID_COMBINED_DATA_REQUEST = new I18NMessage6P(LOGGER,
+                                                                                 "invalid_combined_data_request"); //$NON-NLS-1$
+    static final I18NMessage5P COMBINED_DATA_REQUEST_FAILED = new I18NMessage5P(LOGGER,
+                                                                                "combined_data_request_failed"); //$NON-NLS-1$
 }

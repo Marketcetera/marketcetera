@@ -1,27 +1,23 @@
-package org.marketcetera.modules.cep.system;
+package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.Module;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
  * CopierModuleFactory
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: CopierModuleFactory.java 10127 2008-11-28 22:40:50Z tlerios $
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class CopierModuleFactory extends ModuleFactory {
+@ClassVersion("$Id: CopierModuleFactory.java 10127 2008-11-28 22:40:50Z tlerios $") //$NON-NLS-1$
+public class CopierModuleFactory extends ModuleFactory<CopierModule> {
     public CopierModuleFactory() {
         super(PROVIDER_URN, new I18NMessage0P(Messages.LOGGER, "provider"), false, false);
     }
 
-    public Module create(Object[] inParameters) throws ModuleCreationException {
+    public Module create(Object... inParameters) throws ModuleCreationException {
         return new CopierModule();
     }
     static final ModuleURN PROVIDER_URN = new ModuleURN("metc:test:copier");

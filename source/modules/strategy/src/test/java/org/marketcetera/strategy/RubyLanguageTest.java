@@ -51,6 +51,12 @@ public class RubyLanguageTest
     public static final File PART2_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                        "part2.rb");
     public static final String PART2_STRATEGY_NAME = "Part2";
+    public static final File EVENT_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                       "send_event.rb");
+    public static final String EVENT_STRATEGY_NAME = "SendEvent";
+    public static final File COMBINED_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                          "combined_request.rb");
+    public static final String COMBINED_STRATEGY_NAME = "CombinedRequest";
     /*
      * (non-Javadoc)
      * 
@@ -170,5 +176,23 @@ public class RubyLanguageTest
     {
         return StrategyCoordinates.get(RubyLanguageTest.ORDER_STRATEGY,
                                        RubyLanguageTest.ORDER_STRATEGY_NAME);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getEventStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getEventStrategy()
+    {
+        return StrategyCoordinates.get(RubyLanguageTest.EVENT_STRATEGY,
+                                       RubyLanguageTest.EVENT_STRATEGY_NAME);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getCombinedStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getCombinedStrategy()
+    {
+        return StrategyCoordinates.get(RubyLanguageTest.COMBINED_STRATEGY,
+                                       RubyLanguageTest.COMBINED_STRATEGY_NAME);
     }
 }

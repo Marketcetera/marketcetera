@@ -19,5 +19,13 @@ public enum OutputType
     /**
      * trade suggestions created by this strategy
      */
-    SUGGESTIONS;
+    SUGGESTIONS,
+    /**
+     * events created by this strategy
+     */
+    EVENTS,
+    /**
+     * all objects, regardless of type (includes all the above)
+     */
+    ALL
 }

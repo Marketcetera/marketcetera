@@ -12,7 +12,6 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPTestBase;
-import org.marketcetera.modules.cep.system.CopierModuleFactory;
 import org.marketcetera.trade.Factory;
 
 import javax.management.JMX;

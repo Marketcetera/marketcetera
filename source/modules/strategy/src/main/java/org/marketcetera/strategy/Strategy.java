@@ -84,4 +84,10 @@ interface Strategy
      * @return an <code>InboundServicesProvider</code> value
      */
     public InboundServicesProvider getInboundServicesProvider();
+    /**
+     * Returns the default namespace for this strategy.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getDefaultNamespace();
 }
