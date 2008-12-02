@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Destination 1 configuration: QuickFIX/J session descriptor.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_dest1_qdescriptor"
+   class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
+    <property
+     name="dictionary">
+      <map>
+        <entry
+         key="BeginString"
+         value="${metc.qf.dest1.begin.string}"/>
+        <entry
+         key="DataDictionary"
+         value="${metc.qf.dest1.data.dictionary}"/>
+        <entry
+         key="SenderCompID"
+         value="${metc.qf.dest1.sender.comp.id}"/>
+        <entry
+         key="TargetCompID"
+         value="${metc.qf.dest1.target.comp.id}"/>
+        <entry
+         key="FileStorePath"
+         value="${metc.qf.dest1.store}"/>
+        <entry
+         key="SocketConnectHost"
+         value="${metc.qf.dest1.destination}"/>
+        <entry
+         key="SocketConnectPort"
+         value="${metc.qf.dest1.port}"/>
+      </map>
+    </property>
+  </bean>
+</beans>

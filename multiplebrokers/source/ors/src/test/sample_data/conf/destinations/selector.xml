@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Destination configuration: destination selector.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_selector"
+   class="org.marketcetera.ors.dest.SpringSelector">
+    <property
+     name="entries">
+      <list>
+        <bean
+         class="org.marketcetera.ors.dest.SpringSelectorEntry">
+          <property
+           name="targetType"
+	       value="CS"/> <!-- Common Stock. -->
+          <property
+           name="destination"
+	       ref="metc_dest2_destination"/>
+          <property
+           name="skipIfUnavailable"
+	       value="true"/>
+        </bean>
+        <bean
+         class="org.marketcetera.ors.dest.SpringSelectorEntry">
+          <property
+           name="targetType"
+	       value="OPT"/> <!-- Option. -->
+          <property
+           name="destination"
+	       ref="metc_dest2_destination"/>
+          <property
+           name="skipIfUnavailable"
+	       value="false"/>
+        </bean>
+      </list>
+    </property>
+    <property
+     name="defaultDestination"
+	 ref="metc_dest1_destination"/>
+  </bean>
+</beans>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Destination 2 configuration: message modifiers.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_dest2_modifiers"
+   class="org.marketcetera.ors.MessageModifierManager">
+    <property
+     name="messageModifiers">
+      <list>
+        <bean
+         class="org.marketcetera.quickfix.DefaultMessageModifier">
+          <property
+           name="headerFields">
+            <map>
+            </map>
+          </property>
+          <property
+           name="msgFields">
+            <map>
+<!--
+              <entry
+               key="99(A)"
+               value="anotherMessageValue"/>
+-->
+            </map>
+          </property>
+          <property
+           name="trailerFields">
+            <map>
+<!--
+              <entry
+               key="37(A)"
+               value="trailerValue"/>
+-->
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+</beans>

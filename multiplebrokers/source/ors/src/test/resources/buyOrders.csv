@@ -1,0 +1,4 @@
+Symbol,Side,OrderQty,Price,TimeInForce,Account
+AAPL,B,1500,18.11,DAY,TOLI
+SUNW,B,1500,18.11,DAY,TOLI
+GOOG,B,1500,18.11,DAY,TOLI
