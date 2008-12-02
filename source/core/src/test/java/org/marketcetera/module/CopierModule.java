@@ -17,10 +17,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author anshul@marketcetera.com
  * @author toli@marketcetera.com
- * @version $Id: CopierModule.java 10130 2008-11-29 18:13:56Z anshul $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: CopierModule.java 10130 2008-11-29 18:13:56Z anshul $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CopierModule extends Module implements DataEmitter {
     protected CopierModule() {
         super(CopierModuleFactory.INSTANCE_URN, true);
