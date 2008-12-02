@@ -33,7 +33,7 @@ import quickfix.field.OrderID;
  * @since $Release$
  *
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class CancelReplaceOrderActionDelegate
     extends ActionDelegate
     implements Messages

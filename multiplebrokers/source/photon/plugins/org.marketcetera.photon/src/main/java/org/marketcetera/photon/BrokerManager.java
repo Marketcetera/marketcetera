@@ -30,7 +30,7 @@ public final class BrokerManager implements IBrokerIdValidator {
 	/**
 	 * The default/null broker.
 	 */
-	public static final Broker DEFAULT_BROKER = new Broker("Default", null);
+	public static final Broker DEFAULT_BROKER = new Broker(Messages.BROKER_MANAGER_DEFAULT_BROKER_NAME.getText(), null);
 
 	/**
 	 * Returns the singleton instance for the currently running plug-in.

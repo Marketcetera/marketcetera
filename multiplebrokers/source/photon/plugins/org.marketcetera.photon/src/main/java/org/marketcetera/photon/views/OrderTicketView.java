@@ -117,7 +117,7 @@ import quickfix.field.TimeInForce;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class OrderTicketView
     extends XSWTView<IOrderTicket>
     implements Messages

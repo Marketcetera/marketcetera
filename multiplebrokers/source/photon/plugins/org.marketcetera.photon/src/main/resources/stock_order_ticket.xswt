@@ -86,41 +86,6 @@
 						</checkboxTableViewer>
 					</composite>
 				</section>
-				<section x:style="ExpandableComposite.TITLE_BAR" text="Market data" expanded="true" client="_marketdata_composite">
-					<layout x:class="gridLayout"
-						marginWidth="0"
-						marginHeight="0"/>
-					<layoutData x:class="gridData" 
-						grabExcessHorizontalSpace="true"
-						grabExcessVerticalSpace="true"
-						verticalAlignment="SWT.FILL"
-						horizontalAlignment="SWT.FILL"
-						horizontalSpan="6" />
-					<composite x:id="_marketdata_composite">
-						<layout x:class="gridLayout"
-							marginWidth="0"
-							marginHeight="0"
-							numColumns="2"/>
-						<tableViewer x:id="Level2BidTableViewer" x:style="SINGLE|FULL_SELECTION|VIRTUAL|BORDER">
-							<layoutData x:class="gridData" 
-								grabExcessHorizontalSpace="true"
-								grabExcessVerticalSpace="true"
-								verticalAlignment="SWT.FILL"
-								horizontalAlignment="SWT.FILL"
-								heightHint="200"
-								widthHint="200" />
-						</tableViewer>
-						<tableViewer x:id="Level2OfferTableViewer" x:style="SINGLE|FULL_SELECTION|VIRTUAL|BORDER">
-							<layoutData x:class="gridData" 
-								grabExcessHorizontalSpace="true"
-								grabExcessVerticalSpace="true"
-								verticalAlignment="SWT.FILL"
-								horizontalAlignment="SWT.FILL"
-								heightHint="200"
-								widthHint="200" />
-						</tableViewer>					
-					</composite>
-				</section>
 			</x:children>
 		</getBody>
 	</scrolledForm>

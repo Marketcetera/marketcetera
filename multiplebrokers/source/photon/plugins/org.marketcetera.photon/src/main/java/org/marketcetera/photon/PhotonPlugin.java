@@ -67,7 +67,7 @@ import quickfix.field.SecurityType;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class PhotonPlugin 
     extends AbstractUIPlugin
     implements Messages, IPropertyChangeListener

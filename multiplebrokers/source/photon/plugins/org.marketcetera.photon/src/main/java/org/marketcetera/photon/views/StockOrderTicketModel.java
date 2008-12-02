@@ -1,15 +1,10 @@
 package org.marketcetera.photon.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.quickfix.FIXMessageFactory;
 
 import quickfix.Message;
 import quickfix.field.MsgType;
 import quickfix.field.SecurityType;
-import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
 /**
  * Implements the model of a stock order ticket.  It is
@@ -24,14 +19,6 @@ public class StockOrderTicketModel
     extends OrderTicketModel 
 {
     /**
-     * the bids collected by this stock order ticket
-     */
-    private final List<MarketDataSnapshotFullRefresh.NoMDEntries> bids = new ArrayList<MarketDataSnapshotFullRefresh.NoMDEntries>();
-    /**
-     * the offers collected by this stock order ticket
-     */
-    private final List<MarketDataSnapshotFullRefresh.NoMDEntries> offers = new ArrayList<MarketDataSnapshotFullRefresh.NoMDEntries>();
-	/**
 	 * Create a {@link StockOrderTicketModel} with the given
 	 * {@link FIXMessageFactory} for message creation and
 	 * augmentation.
@@ -42,32 +29,7 @@ public class StockOrderTicketModel
 	{
 		super(messageFactory);
 	}
-	/**
-	 * Add a bid to the stock order ticket.
-	 * 
-	 * @param inBid a <code>MarketDataSnapshotFullRefresh.NoMDEntries</code> value
-	 */
-    public void addBid(MarketDataSnapshotFullRefresh.NoMDEntries inBid)
-    {        
-        OrderTicketPublication publication = new OrderTicketPublication(OrderTicketPublication.Type.BID,
-                                                                        inBid);
-        synchronized(bids) {
-            bids.add(inBid);
-        }
-        getPublisher().publish(publication);
-    }
-    public void addOffer(MarketDataSnapshotFullRefresh.NoMDEntries inOffer)
-    {
-        OrderTicketPublication publication = new OrderTicketPublication(OrderTicketPublication.Type.OFFER,
-                                                                        inOffer);
-        synchronized(offers) {
-            offers.add(inOffer);
-        }
-        getPublisher().publish(publication);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.photon.views.OrderTicketModel#createNewOrder()
-     */
+	
     @Override
     protected Message createNewOrder()
     {
@@ -76,15 +38,4 @@ public class StockOrderTicketModel
         aMessage.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
         return aMessage;
     }
-	/**
-	 * Subscribes to changes to the model.
-	 * 
-	 * <p>Subscribers will be notified when new bids and offers are added.
-	 * 
-	 * @param inSubscriber an <code>ISubscriber</code> value
-	 */
-	void subscribe(ISubscriber inSubscriber)
-	{
-	    getPublisher().subscribe(inSubscriber);
-	}
 }

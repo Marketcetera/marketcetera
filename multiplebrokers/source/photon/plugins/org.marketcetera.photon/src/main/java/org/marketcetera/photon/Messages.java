@@ -19,7 +19,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
  * @version $Id$
  * @since 0.6.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("photon"); //$NON-NLS-1$
@@ -488,4 +488,6 @@ public interface Messages
 			"unknown_value");//$NON-NLS-1$
 	public static final I18NMessage0P BROKER_SUPPORT_TABLE_FORMAT_BROKER_COLUMN = new I18NMessage0P(LOGGER,
 			"broker_support_table_format.broker_column");//$NON-NLS-1$
+	public static final I18NMessage0P BROKER_MANAGER_DEFAULT_BROKER_NAME = new I18NMessage0P(LOGGER,
+			"broker_manager.default_broker_name");//$NON-NLS-1$
 }

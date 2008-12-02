@@ -14,7 +14,6 @@ import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
-import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.OrderQty;

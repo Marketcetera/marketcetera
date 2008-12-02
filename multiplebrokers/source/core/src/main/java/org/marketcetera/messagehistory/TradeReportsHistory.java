@@ -106,11 +106,11 @@ public class TradeReportsHistory {
     	// check for duplicates
     	ReportID uniqueID = inReport.getReportID();
     	if (uniqueID == null) {
-    		SLF4JLoggerProxy.debug(this, "Recieved report without report id: {}", inReport);        		
+    		SLF4JLoggerProxy.debug(this, "Recieved report without report id: {}", inReport); //$NON-NLS-1$
     	} else {
     		synchronized (mUniqueReportIds) {
 	    		if (mUniqueReportIds.contains(uniqueID)) {
-	    			SLF4JLoggerProxy.debug(this, "Skipping duplicate report: {}", inReport);
+	    			SLF4JLoggerProxy.debug(this, "Skipping duplicate report: {}", inReport); //$NON-NLS-1$
 	    			return;
 	    		} else {
 	    			mUniqueReportIds.add(uniqueID);
