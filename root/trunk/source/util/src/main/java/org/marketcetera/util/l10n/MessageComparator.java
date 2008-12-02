@@ -103,8 +103,8 @@ public class MessageComparator
      * container's message provider and the given locale.
      *
      * @param classInfo The meta-information of a container class.
-     * @param locale The locale. It may be null to access the fallback
-     * properties file.
+     * @param locale The locale. Use {@link Locale#ROOT} for the
+     * fallback properties file.
      *
      * @throws I18NException Thrown if there is a problem obtaining
      * the meta-information of the properties file.
@@ -125,8 +125,8 @@ public class MessageComparator
      * the given locale.
      *
      * @param container The class.
-     * @param locale The locale. It may be null to access the fallback
-     * properties file.
+     * @param locale The locale. Use {@link Locale#ROOT} for the
+     * fallback properties file.
      *
      * @throws I18NException Thrown if there is a problem obtaining
      * the meta-information of either the container or the properties
@@ -157,7 +157,7 @@ public class MessageComparator
         (Class<?> container)
         throws I18NException
     {
-        this(container,null);
+        this(container,Locale.ROOT);
     }
 
 

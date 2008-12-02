@@ -28,7 +28,7 @@ public class PropertiesFileInfoTest
     {
         PropertiesFileInfo info=new PropertiesFileInfo(TestMessages.PROVIDER);
         assertEquals(TestMessages.PROVIDER,info.getProvider());
-        assertNull(info.getLocale());
+        assertEquals(Locale.ROOT,info.getLocale());
         assertArrayPermutation
             (new PropertyMessageInfo[] {
                 new PropertyMessageInfo
@@ -48,7 +48,7 @@ public class PropertiesFileInfoTest
                 new PropertyMessageInfo
                 ("m7.msg",7,"Text {0} {1} {2} {3} {4} {5} {6}"),
                 new PropertyMessageInfo
-                ("m8.msg",8,"Text {0} {1} {2} {3} {4} {5} {6} {7}"),
+                ("m8.msg",8,"Text {0} {1} {2} {3} {4} {5} {6} {7,date,full}"),
                 new PropertyMessageInfo
                 ("b1.ttl",0,"B Text"),
                 new PropertyMessageInfo

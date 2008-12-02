@@ -51,8 +51,8 @@ public class PropertiesFileInfo
      * associated with the given provider and locale.
      *
      * @param provider The provider.
-     * @param locale The locale. It may be null to access the fallback
-     * properties file.
+     * @param locale The locale. Use {@link Locale#ROOT} for the
+     * fallback properties file.
      *
      * @throws I18NException Thrown if there is an I/O error while
      * attempting to read the properties file.
@@ -71,7 +71,7 @@ public class PropertiesFileInfo
         StringBuilder builder=new StringBuilder();
         builder.append(getProvider().getProviderId());
         builder.append(I18NMessageProvider.MESSAGE_FILE_EXTENSION);
-        if (getLocale()!=null) {
+        if (getLocale()!=Locale.ROOT) {
             builder.append('_'); //$NON-NLS-1$
             builder.append(getLocale().toString());
         }
@@ -135,7 +135,7 @@ public class PropertiesFileInfo
         (I18NMessageProvider provider)
         throws I18NException
     {
-        this(provider,null);
+        this(provider,Locale.ROOT);
     }
 
 
