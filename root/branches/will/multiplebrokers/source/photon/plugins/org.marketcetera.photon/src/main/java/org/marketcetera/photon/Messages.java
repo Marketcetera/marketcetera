@@ -48,6 +48,10 @@ public interface Messages
                                                                                                       "ApplicationActionBarAdvisor_OpenPerspectiveMenuID"); //$NON-NLS-1$
     public static I18NMessage0P CommandStatusLineContribution_CommandLabel = new I18NMessage0P(LOGGER,
                                                                                                "CommandStatusLineContribution_CommandLabel"); //$NON-NLS-1$
+    public static final I18NMessage0P COMMAND_PARSER_DEFAULT_KEYWORD = new I18NMessage0P(
+			LOGGER, "command_parser.default_keyword");//$NON-NLS-1$
+    public static final I18NMessage2P COMMAND_PARSER_INVALID_BROKER_ID = new I18NMessage2P(
+			LOGGER, "command_parser.invalid_broker_id");//$NON-NLS-1$
     public static I18NMessage0P CANNOT_START_DEFAULT_SCRIPT_PROJECT = new I18NMessage0P(LOGGER,
                                                                                         "cannot_start_default_script_project"); //$NON-NLS-1$
     public static I18NMessage1P LOGGER_LEVEL_CHANGED = new I18NMessage1P(LOGGER,
@@ -76,6 +80,8 @@ public interface Messages
                                                                                              "cannot_decode_outgoing_specified_message"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_DECODE_OUTGOING_MESSAGE = new I18NMessage0P(LOGGER,
                                                                                    "cannot_decode_outgoing_message"); //$NON-NLS-1$
+    public static final I18NMessage1P PHOTON_CONTROLLER_MISSING_REPORT_ID = new I18NMessage1P(
+			LOGGER, "photon_controller.missing_report_id");//$NON-NLS-1$
     public static I18NMessage3P REJECT_MESSAGE = new I18NMessage3P(LOGGER,
                                                                    "reject_message"); //$NON-NLS-1$
     public static I18NMessage5P CANCEL_REJECT_MESSAGE = new I18NMessage5P(LOGGER,
@@ -264,8 +270,6 @@ public interface Messages
                                                                        "more_columns_label"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_PARSE_LEVEL_TWO_DATA = new I18NMessage0P(LOGGER,
                                                                                 "cannot_parse_level_two_data"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_DISPOSE_OF_ARROWS = new I18NMessage0P(LOGGER,
-                                                                             "cannot_dispose_of_arrows"); //$NON-NLS-1$
     public static I18NMessage1P CANNOT_REMOVE_NONEXISTANT_LISTENER = new I18NMessage1P(LOGGER,
                                                                                        "cannot_remove_nonexistant_listener"); //$NON-NLS-1$
     public static I18NMessage0P PASSWORD_LABEL = new I18NMessage0P(LOGGER,
@@ -480,6 +484,8 @@ public interface Messages
     		LOGGER, "not_option_symbol");//$NON-NLS-1$
     public static final I18NMessage0P CLIENT_CONNECTION_NAME = new I18NMessage0P(LOGGER,
 			"client_connection_name");//$NON-NLS-1$
-    public static final I18NMessage0P UNKNOWN_VALUE = 
-		new I18NMessage0P(LOGGER, "unknown_value");//$NON-NLS-1$
+    public static final I18NMessage0P UNKNOWN_VALUE = new I18NMessage0P(LOGGER,
+			"unknown_value");//$NON-NLS-1$
+	public static final I18NMessage0P BROKER_SUPPORT_TABLE_FORMAT_BROKER_COLUMN = new I18NMessage0P(LOGGER,
+			"broker_support_table_format.broker_column");//$NON-NLS-1$
 }

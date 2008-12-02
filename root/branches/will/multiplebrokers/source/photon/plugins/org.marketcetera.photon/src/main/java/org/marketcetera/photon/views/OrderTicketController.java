@@ -272,6 +272,11 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
     public void setOrderMessage(Message order) {
         orderTicketModel.setOrderMessage(order);
     }
+    
+    @Override
+    public void setBrokerId(String id) {
+    	orderTicketModel.setBrokerId(id);
+    }
 
     /**
      * Get the current market data subscription for this ticket.

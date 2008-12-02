@@ -23,12 +23,10 @@ import jfun.parsec.pattern.Patterns;
 import jfun.parsec.tokens.Tokenizers;
 import jfun.parsec.tokens.TypedToken;
 
-import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.photon.IBrokerIdValidator;
 import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
@@ -195,6 +193,14 @@ public class CommandParser
 		}
 	});
 
+	final Parser<String> brokerParser = Parsers.token("brokerParser", new FromToken<String>(){ //$NON-NLS-1$
+        private static final long serialVersionUID = 1L;
+        public String fromToken(Tok tok) {
+			String text = ((TypedToken<?>)tok.getToken()).getText();
+			return Messages.COMMAND_PARSER_DEFAULT_KEYWORD.getText().equals(text) ? null : text;
+		}
+	});
+
 	final Parser<IPhotonCommand> resendRequestMapper = Parsers.map2(
 			integerParser, integerParser,
 			new Map2<BigInteger, BigInteger, IPhotonCommand>() {
@@ -207,7 +213,7 @@ public class CommandParser
 	final Parser<IPhotonCommand> orderCommandMapper = Parsers.mapn(
 			(Parser<?>[])new Parser<?>[]{sideImageParser, orderQtyParser, wordParser, 
 					Parsers.atomize("optionExpirationParserAtom", optionExpirationParser).optional(),  //$NON-NLS-1$
-					priceParser, timeInForceParser.optional(), accountParser.optional()} ,
+					priceParser, brokerParser.optional(), timeInForceParser.optional(), accountParser.optional()} ,
 		new Mapn<IPhotonCommand>(){
             private static final long serialVersionUID = 1L;
         public IPhotonCommand map(Object... vals) {
@@ -217,17 +223,24 @@ public class CommandParser
 					String symbol = (String) vals[i++];
 					FieldMap optionSpecifier = (FieldMap) vals[i++];
 					PriceImage priceImage = (PriceImage) vals[i++];
-					
+					String broker = null;
 					TimeInForceImage timeInForce = TimeInForceImage.DAY;
 					String accountID = null;
 					if (vals.length > i && vals[i] != null) {
-						timeInForce = (TimeInForceImage) vals[i];
-						i++;
-						if (vals.length >= i && vals[i] !=null)
-							accountID = (String) vals[i];
-					} else if (vals.length > i+1 && vals[i+1] != null){
-						throw new jfun.parsec.UserException(MISSING_TIME_IN_FORCE.getText());
+						broker = (String) vals[i++];
+						if (brokerIdValidator != null && broker != null && !brokerIdValidator.isValid(broker)) {
+							throw new jfun.parsec.UserException(COMMAND_PARSER_INVALID_BROKER_ID.getText(broker, COMMAND_PARSER_DEFAULT_KEYWORD.getText()));
+						}
+						if (vals.length > i && vals[i] != null) {
+							timeInForce = (TimeInForceImage) vals[i++];
+							if (vals.length > i && vals[i] !=null) {
+								accountID = (String) vals[i];
+							}
+						} else if (vals.length > i+1 && vals[i+1] != null){
+							throw new jfun.parsec.UserException(MISSING_TIME_IN_FORCE.getText());
+						}
 					}
+					
 					Message message=null;
 					if (PriceImage.MKT.equals(priceImage))	{
 						message = messageFactory.newMarketOrder("", //$NON-NLS-1$ 
@@ -248,7 +261,7 @@ public class CommandParser
 					} else {
 						message.setString(SecurityType.FIELD, SecurityType.COMMON_STOCK);
 					}
-					return new SendOrderToOrderManagerCommand(message);
+					return new SendOrderToOrderManagerCommand(message, broker);
 				}
 			}
 	);
@@ -288,6 +301,8 @@ public class CommandParser
 
 	private boolean orderQtyIsInt = false;
 
+	private IBrokerIdValidator brokerIdValidator;
+
 	public MessageCommand parseNewOrder(String theInputString) {
 		SendOrderToOrderManagerCommand result = (SendOrderToOrderManagerCommand)Parsers.runParser(theInputString, newOrderCommandParser,
 		"user input"); //$NON-NLS-1$
@@ -309,4 +324,8 @@ public class CommandParser
 		this.dataDictionary = dd;
 		orderQtyIsInt = FieldType.Int == dataDictionary.getFieldTypeEnum(OrderQty.FIELD);
 	}
+	public void setBrokerValidator(IBrokerIdValidator validator) {
+		this.brokerIdValidator = validator;
+	}
+	
 }

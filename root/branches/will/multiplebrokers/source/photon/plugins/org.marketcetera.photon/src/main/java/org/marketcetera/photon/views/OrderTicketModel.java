@@ -96,6 +96,7 @@ public abstract class OrderTicketModel
 
     private final PropertyChangeSupport propertyChangeSupport;
 	protected Message orderMessage;
+	private String brokerId = null;
 	private final WritableList customFieldsList = new WritableList();
 	private final FIXMessageFactory messageFactory;
 	private final DataDictionary dictionary;
@@ -137,6 +138,26 @@ public abstract class OrderTicketModel
 	}
 	
 	
+	/**
+	 * Returns the broker id of the ticket being edited.
+	 * 
+	 * @return the broker id string
+	 */
+	public String getBrokerId() {
+		return brokerId;
+	}
+
+	/**
+	 * Sets the broker id.
+	 * 
+	 * @param brokerId the broker id (can be null to represent the default broker)
+	 */
+	public void setBrokerId(String brokerId) {
+		Object oldValue = this.brokerId;
+		this.brokerId = brokerId;
+		propertyChangeSupport.firePropertyChange("brokerId", oldValue, brokerId); //$NON-NLS-1$
+	}
+
 	/**
 	 * Clear the order message by creating a new one and calling {@link #setOrderMessage(Message)}
 	 */

@@ -10,24 +10,29 @@ import quickfix.Message;
  * Command responsible for showing a particular order in the
  * correct order ticket window.  Depends on {@link PhotonPlugin#getOrderTicketController(Message)}
  * @author gmiller
- *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  */
 public class ShowOrderInTicketCommand implements IPhotonCommand {
 
-	Message order;
+	Message mOrder;
+	String mBroker;
 	
-	public ShowOrderInTicketCommand(Message order) {
-		super();
-		this.order = order;
+	public ShowOrderInTicketCommand(Message order, String broker) {
+		mOrder = order;
+		mBroker = broker;
 	}
 
 	/**
 	 * Shows an order in the appropriate order ticket window.
 	 */
 	public void execute() {
-		IOrderTicketController controller = PhotonPlugin.getDefault().getOrderTicketController(order);
+		IOrderTicketController controller = PhotonPlugin.getDefault().getOrderTicketController(mOrder);
 		if(controller != null) {
-			controller.setOrderMessage(order);
+			controller.setOrderMessage(mOrder);
+			if (mBroker != null) {
+				controller.setBrokerId(mBroker);
+			}
+				
 		}
 	}
 

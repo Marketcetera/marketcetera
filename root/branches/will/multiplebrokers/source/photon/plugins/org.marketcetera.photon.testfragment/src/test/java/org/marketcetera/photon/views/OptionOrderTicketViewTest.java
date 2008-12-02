@@ -1,46 +1,35 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.concurrent.Callable;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-import org.eclipse.core.databinding.Binding;
-import org.eclipse.core.databinding.observable.list.IObservableList;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.dest.DestinationsStatus;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.DestinationID;
 
-import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
 import quickfix.field.CFICode;
 import quickfix.field.DeliverToCompID;
-import quickfix.field.LastPx;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryType;
 import quickfix.field.MaturityDate;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
-import quickfix.field.NoMDEntries;
 import quickfix.field.OrdType;
 import quickfix.field.OrderQty;
 import quickfix.field.PrevClosePx;
@@ -55,7 +44,6 @@ import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
-import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
 /**
  * @author toli
@@ -101,7 +89,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 	 * call showMessage on it. When a user enters an option root, they cause a
 	 * subscription to the specific option contracts.
 	 */
-	private void showMessageInOptionTicket(IOptionOrderTicket ticket, Message message,
+	private void showMessageInOptionTicket(IOptionOrderTicket ticket, Message message, String broker,
 			OptionOrderTicketController optController, String optionRoot,
 			String[] callSpecifiers, String [] putSpecifiers, BigDecimal[] strikePrices) {
 		// Set an option root before simulating the subscription response
@@ -111,6 +99,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
         optController.handleDerivativeSecurityList(dsl);
         // Show the message for the specific contract
         optController.setOrderMessage(message);
+        optController.setBrokerId(broker);
         OptionOrderTicketModel orderTicketModel = (OptionOrderTicketModel)optController.getOrderTicketModel();
 		(orderTicketModel).updateOptionInfo();
 	}
@@ -183,7 +172,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals(0, ticket.getExpireYearCombo().getItemCount());
 		assertEquals(0, ticket.getStrikePriceCombo().getItemCount());
 
-		showMessageInOptionTicket(ticket, message, controller, optionRoot,
+		showMessageInOptionTicket(ticket, message, null, controller, optionRoot,
 				new String[] { callContractSpecifier }, new String[] { putContractSpecifier },  new BigDecimal[] { BigDecimal.TEN });
         
 		assertEquals(1, ticket.getExpireMonthCombo().getItemCount());
@@ -517,24 +506,21 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
                 PutOrCall.CALL, new BigDecimal(1), new BigDecimal(10), Side.BUY, msgFactory);
 
         Message cxr = msgFactory.newCancelReplaceFromMessage(buy);
-        showMessageInOptionTicket(ticket, cxr, controller, optionRoot,
+        showMessageInOptionTicket(ticket, cxr, null, controller, optionRoot,
                 new String[] { callContractSpecifier }, new String[] {putContractSpecifier}, new BigDecimal[] { BigDecimal.TEN });
 
         assertEquals("10", ticket.getQuantityText().getText());
         assertEquals("B", ticket.getSideCombo().getText());
         assertEquals("1", ticket.getPriceText().getText());
         assertEquals(callContractSymbol, ticket.getOptionSymbolText().getText());
-        assertEquals("DAY", ticket.getTifCombo().getText());
-
-        assertEquals("10", ticket.getQuantityText().getText());
-        assertEquals("B", ticket.getSideCombo().getText());
-        assertEquals("1", ticket.getPriceText().getText());
         assertEquals("MSQ+GE", ticket.getSymbolText().getText());
         assertEquals("DAY", ticket.getTifCombo().getText());
+        assertEquals("Default", ticket.getBrokerCombo().getText());
 
         // verify Side/Symbol/TIF are disabled for cancel/replace
         assertFalse("Side should not be enabled", ticket.getSideCombo().isEnabled());
         assertFalse("TIF should not be enabled", ticket.getTifCombo().isEnabled());
+        assertFalse("Broker should not be enabled", ticket.getBrokerCombo().isEnabled());
         assertFalse("Symbol should not be enabled", ticket.getSymbolText().isEnabled());
         assertFalse("Expiry Month should not be enabled", ticket.getExpireMonthCombo().isEnabled());
         assertFalse("Expiry year should not be enabled", ticket.getExpireYearCombo().isEnabled());
@@ -545,6 +531,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
         controller.clear();
         assertTrue("Side should be enabled", ticket.getSideCombo().isEnabled());
         assertTrue("TIF should be enabled", ticket.getTifCombo().isEnabled());
+        assertTrue("Broker should be enabled", ticket.getBrokerCombo().isEnabled());
         assertTrue("Symbol should be enabled", ticket.getSymbolText().isEnabled());
         assertTrue("Expiry Month should be enabled", ticket.getExpireMonthCombo().isEnabled());
         assertTrue("Expiry year should be enabled", ticket.getExpireYearCombo().isEnabled());
@@ -688,6 +675,31 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
         }
         responseMessage.setField(resultCode);
         return responseMessage;
+    }
+    
+    public void testBrokerId() {
+    	IOptionOrderTicket ticket = ((OptionOrderTicketView)getTestView()).getOptionOrderTicket();
+    	DestinationStatus status1 = new DestinationStatus("Goldman Sachs", new DestinationID("gs"), true);
+		DestinationStatus status2 = new DestinationStatus("Exchange Simulator", new DestinationID("metc"), false);
+		DestinationsStatus statuses =  new DestinationsStatus(Arrays.asList(status1, status2));
+    	BrokerManager.getCurrent().setBrokersStatus(statuses);
+        final String optionRoot = "MSQ";
+        final String callContractSpecifier = "GE";
+        Message buy = FIXMessageUtilTest.createOptionNOS(optionRoot, callContractSpecifier, "200701", new BigDecimal(10),
+                PutOrCall.CALL, new BigDecimal(1), new BigDecimal(10), Side.BUY, msgFactory);
+        controller.setOrderMessage(buy);
+        controller.setBrokerId(null);
+        controller.setBrokerId("gs");
+        assertEquals("Goldman Sachs (gs)", ticket.getBrokerCombo().getText());
+        controller.setBrokerId(null);
+        assertEquals("Default", ticket.getBrokerCombo().getText());
+        controller.setOrderMessage(buy);
+        controller.setBrokerId("gs");
+        controller.clear();
+        // last broker is saved
+        assertEquals("Goldman Sachs (gs)", ticket.getBrokerCombo().getText());
+        controller.setBrokerId(null);
+        BrokerManager.getCurrent().setBrokersStatus(new DestinationsStatus(new ArrayList<DestinationStatus>()));
     }
 }
 
