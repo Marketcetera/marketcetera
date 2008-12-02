@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.file.CloseableRegistry;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
@@ -38,6 +39,7 @@ public class AnalyzedMessage
         new LinkedList<AnalyzedField>();
     private final List<AnalyzedField> mTrailer=
         new LinkedList<AnalyzedField>();
+    private Exception mValidationException;
 
 
     // CONSTRUCTOR.
@@ -72,6 +74,15 @@ public class AnalyzedMessage
                       qMsg.iterator(),mBody);
         analyzeFields(qDict,qDict,qMsg,DataDictionary.TRAILER_ID,
                       qMsg.getTrailer().iterator(),mTrailer);
+
+        // Validate message.
+
+        try {
+            qDict.validate(qMsg);
+        } catch (Exception ex) {
+            ExceptUtils.interrupt(ex);
+            mValidationException=ex;
+        }
     }
 
 
@@ -188,6 +199,17 @@ public class AnalyzedMessage
     }
 
     /**
+     * Returns the receiver's validation exception.
+     *
+     * @return The exception. It is null if the receiver is valid.
+     */
+
+    public Exception getValidationException()
+    {
+        return mValidationException;
+    }
+
+    /**
      * Prints the receiver onto the given stream.
      *
      * @param stream The stream.
@@ -196,6 +218,12 @@ public class AnalyzedMessage
     public void print
         (PrintStream stream)
     {
+        if (getValidationException()!=null) {
+            stream.println();
+            stream.println(Messages.VALIDATION_TITLE.getText());
+            stream.print(" ");
+            stream.print(getValidationException().getLocalizedMessage());
+        }
         printSection(stream,Messages.HEADER_TITLE,getHeader());
         printSection(stream,Messages.BODY_TITLE,getBody());
         printSection(stream,Messages.TRAILER_TITLE,getTrailer());

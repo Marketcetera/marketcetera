@@ -26,6 +26,10 @@ public class AnalyzerTestBase
         AnalyzedField.class.getName();
     protected static final String TEST_HEADER=
         SystemUtils.LINE_SEPARATOR+
+        "Validation error"+
+        SystemUtils.LINE_SEPARATOR+
+        " Required tag missing, field=34"+
+        SystemUtils.LINE_SEPARATOR+
         "Header"+
         SystemUtils.LINE_SEPARATOR+
         " BeginString [8R] = FIX.4.2"+

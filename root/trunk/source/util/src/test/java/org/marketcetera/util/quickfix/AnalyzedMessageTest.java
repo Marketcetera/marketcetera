@@ -1,21 +1,30 @@
 package org.marketcetera.util.quickfix;
 
+import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Level;
 import org.junit.Test;
 import quickfix.Message;
 import quickfix.field.Account;
+import quickfix.field.ClOrdID;
+import quickfix.field.HandlInst;
 import quickfix.field.Issuer;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
+import quickfix.field.MsgSeqNum;
 import quickfix.field.NoMDEntries;
+import quickfix.field.OrdType;
 import quickfix.field.OrderID;
 import quickfix.field.QuoteEntryID;
 import quickfix.field.QuoteSetID;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
+import quickfix.field.TargetCompID;
+import quickfix.field.TransactTime;
 import quickfix.field.UnderlyingIssuer;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import quickfix.fix42.MassQuote;
@@ -53,10 +62,22 @@ public class AnalyzedMessageTest
     }
 
     @Test
-    public void basic()
+    public void valid()
         throws Exception
     {
+
         NewOrderSingle msg=new NewOrderSingle();
+        // Required header fields.
+        msg.getHeader().setField(new SenderCompID("me"));
+        msg.getHeader().setField(new TargetCompID("you"));
+        msg.getHeader().setField(new MsgSeqNum(1));
+        msg.getHeader().setField(new SendingTime(new Date(2)));
+        // Required body fields.
+        msg.set(new ClOrdID("a"));
+        msg.set(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+        msg.set(new TransactTime(new Date(3)));
+        msg.set(new OrdType(OrdType.LIMIT));
+        msg.set(new Symbol("METC"));
         // A required enumeration.
         msg.set(new Side(Side.BUY));
         // An optional non-enumeration.
@@ -64,20 +85,44 @@ public class AnalyzedMessageTest
         msg.toString();
         AnalyzedMessage msgA=new AnalyzedMessage(TEST_DICTIONARY,msg);
         assertNoEvents();
-        assertEquals(3,msgA.getHeader().size());
-        assertEquals(2,msgA.getBody().size());
+        assertEquals(7,msgA.getHeader().size());
+        assertEquals(7,msgA.getBody().size());
         assertEquals(1,msgA.getTrailer().size());
         assertEquals
-            (TEST_HEADER+"17"+
+            (SystemUtils.LINE_SEPARATOR+
+             "Header"+
+             SystemUtils.LINE_SEPARATOR+
+             " BeginString [8R] = FIX.4.2"+
+             SystemUtils.LINE_SEPARATOR+
+             " BodyLength [9R] = 108"+
+             SystemUtils.LINE_SEPARATOR+
+             " MsgSeqNum [34R] = 1"+
              SystemUtils.LINE_SEPARATOR+
              " MsgType [35R] = NewOrderSingle"+
+             SystemUtils.LINE_SEPARATOR+
+             " SenderCompID [49R] = me"+
+             SystemUtils.LINE_SEPARATOR+
+             " SendingTime [52R] = 19700101-00:00:00.002"+
+             SystemUtils.LINE_SEPARATOR+
+             " TargetCompID [56R] = you"+
              SystemUtils.LINE_SEPARATOR+
              "Body"+
              SystemUtils.LINE_SEPARATOR+
              " Account [1] = metc"+
              SystemUtils.LINE_SEPARATOR+
+             " ClOrdID [11R] = a"+
+             SystemUtils.LINE_SEPARATOR+
+             " HandlInst [21R] = "+
+             "AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION"+
+             SystemUtils.LINE_SEPARATOR+
+             " OrdType [40R] = LIMIT"+
+             SystemUtils.LINE_SEPARATOR+
              " Side [54R] = BUY"+
-             TEST_FOOTER+"216",msgA.toString());
+             SystemUtils.LINE_SEPARATOR+
+             " Symbol [55R] = METC"+
+             SystemUtils.LINE_SEPARATOR+
+             " TransactTime [60R] = 19700101-00:00:00.003"+
+             TEST_FOOTER+"076",msgA.toString());
     }
 
     @Test
