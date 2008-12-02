@@ -63,6 +63,8 @@ public interface Messages
         new I18NMessage1P(LOGGER,"invalid_session_id"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_DESTINATION_ID=
         new I18NMessage1P(LOGGER,"invalid_destination_id"); //$NON-NLS-1$
+    static final I18NMessage1P ANALYZED_MESSAGE=
+        new I18NMessage1P(LOGGER,"analyzed_message"); //$NON-NLS-1$
     static final I18NMessage3P DESTINATION_STRING=
         new I18NMessage3P(LOGGER,"destination_string"); //$NON-NLS-1$
 }
