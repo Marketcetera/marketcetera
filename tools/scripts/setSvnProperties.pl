@@ -144,6 +144,8 @@ sub walk ()
 	my($mime);
 	if (/\.java$/io) {
 		$mime='text/plain';
+	} elsif (/\.properties$/io) {
+		$mime='text/plain; charset=iso-8859-1';
 	} elsif (/\.txt$/io) {
 		$mime='text/plain';
 	} elsif (/\.((sh)|(bat))$/io) {
