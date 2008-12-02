@@ -318,12 +318,8 @@ public interface Messages
                                                                                          "failed_to_dispose_market_data_widget"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_PARSE_OPTION_INFO = new I18NMessage0P(LOGGER,
                                                                              "cannot_parse_option_info"); //$NON-NLS-1$
-    public static I18NMessage1P CANNOT_GET_OPTION_CONTRACT_INFO = new I18NMessage1P(LOGGER,
-                                                                                    "cannot_get_option_contract_info"); //$NON-NLS-1$
     public static I18NMessage0P COPY_LABEL = new I18NMessage0P(LOGGER,
                                                                "copy_label"); //$NON-NLS-1$
-    public static I18NMessage1P CANNOT_SUBSCRIBE_TO_MARKET_DATA = new I18NMessage1P(LOGGER,
-                                                                                    "cannot_subscribe_to_market_data"); //$NON-NLS-1$
     public static I18NMessage0P OPTIONS_LABEL = new I18NMessage0P(LOGGER,
                                                                   "options_label"); //$NON-NLS-1$
     public static I18NMessage0P SKIPPING_MARKET_DATA = new I18NMessage0P(LOGGER,
@@ -340,8 +336,6 @@ public interface Messages
                                                                          "replace_option_label"); //$NON-NLS-1$
     public static I18NMessage0P VALUE_NOT_FOUND = new I18NMessage0P(LOGGER,
                                                                     "value_not_found"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_UNSUBSCRIBE = new I18NMessage0P(LOGGER,
-                                                                       "cannot_unsubscribe"); //$NON-NLS-1$
     public static I18NMessage1P CANNOT_READ_CUSTOM_FIELD = new I18NMessage1P(LOGGER,
                                                                              "cannot_read_custom_field"); //$NON-NLS-1$
     public static I18NMessage0P INVALID_TIME_IN_FORCE = new I18NMessage0P(LOGGER,
