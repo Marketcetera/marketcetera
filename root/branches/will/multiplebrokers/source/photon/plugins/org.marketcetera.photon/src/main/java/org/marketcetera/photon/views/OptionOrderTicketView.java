@@ -68,7 +68,7 @@ import quickfix.field.Symbol;
  * @since $Release$
  *
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class OptionOrderTicketView
     extends OrderTicketView
     implements Messages
