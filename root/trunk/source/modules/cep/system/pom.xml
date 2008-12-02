@@ -27,6 +27,7 @@
 
   <build>
     <plugins>
+
       <!-- Place tests into a jar for use during testing of other packages. -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
@@ -38,6 +39,7 @@
           </execution>
         </executions>
       </plugin>
+
       <!-- Configure Eclipse IDE metadata. -->
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
