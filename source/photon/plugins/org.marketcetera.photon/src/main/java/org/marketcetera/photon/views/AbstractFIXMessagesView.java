@@ -24,6 +24,7 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
 import org.marketcetera.photon.messagehistory.FIXStringMatcher;
 import org.marketcetera.photon.ui.ContextMenuFactory;
+import org.marketcetera.photon.ui.BrokerSupportTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.FIXMessageTableFormat;
 import org.marketcetera.photon.ui.FIXMessageTableRefresher;
@@ -45,7 +46,7 @@ import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
  * @author michael.lossos@softwaregoodness.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class AbstractFIXMessagesView
         extends MessagesViewBase<ReportHolder>
 {
@@ -205,13 +206,10 @@ public abstract class AbstractFIXMessagesView
      * @param inMessageTable a <code>Table</code> value
      * @return a <code>FIXMessageTableFormat&lt;MessageHolder&gt;</code> value
      */
-    protected FIXMessageTableFormat<ReportHolder> createFIXMessageTableFormat(Table inMessageTable)
-    {
-        String viewID = getViewID();
-        return new FIXMessageTableFormat<ReportHolder>(inMessageTable,
-                                                        viewID,
-                                                        ReportHolder.class);
-    }
+    protected FIXMessageTableFormat<ReportHolder> createFIXMessageTableFormat(
+			Table inMessageTable) {
+		return new BrokerSupportTableFormat(inMessageTable, getViewID());
+	}
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.MessagesViewBase#createTableViewer(org.eclipse.swt.widgets.Table, java.lang.Enum<?>[])
      */

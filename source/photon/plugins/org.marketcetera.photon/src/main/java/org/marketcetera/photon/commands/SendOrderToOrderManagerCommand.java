@@ -1,6 +1,7 @@
 package org.marketcetera.photon.commands;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
 
 import quickfix.Message;
@@ -9,33 +10,34 @@ public class SendOrderToOrderManagerCommand
     extends MessageCommand
     implements Messages
 {
-	private final String mDestination;
+	private final String mBroker;
 
 	public SendOrderToOrderManagerCommand(Message message) {
 		this(message, null);
 	}
 	
-	public SendOrderToOrderManagerCommand(Message message, String destination) {
+	public SendOrderToOrderManagerCommand(Message message, String broker) {
 		super(message);
-		mDestination = destination;
+		mBroker = broker;
 	}
 	
-	public String getDestination() {
-		return mDestination;
+	public String getBroker() {
+		return mBroker;
 	}
 
 	public void execute() {
 		try {
 			Message theMessage = getMessage();
-			sendOrder(theMessage);
+			PhotonController photonController = PhotonPlugin.getDefault().getPhotonController();
+			if (getBroker() == null) {
+				photonController.handleInternalMessage(theMessage);
+			} else {
+				photonController.handleInternalMessage(theMessage, getBroker());
+			}
 		} catch (Exception ex){
 			PhotonPlugin.getMainConsoleLogger().error(CANNOT_SEND_ORDER.getText(),
 			                                          ex);
 		}
-	}
-
-	public static void sendOrder(Message theMessage) {
-			PhotonPlugin.getDefault().getPhotonController().handleInternalMessage(theMessage);
 	}
 
 }

@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.conversion.StringToNumberConverter;
@@ -26,11 +28,14 @@ import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
@@ -57,9 +62,11 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.BrokerManager.Broker;
 import org.marketcetera.photon.parser.ILexerFIXImage;
 import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.SideImage;
@@ -83,6 +90,7 @@ import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.trade.DestinationID;
 
 import quickfix.DataDictionary;
 import quickfix.FieldType;
@@ -109,7 +117,7 @@ import quickfix.field.TimeInForce;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class OrderTicketView
     extends XSWTView<IOrderTicket>
     implements Messages
@@ -146,6 +154,8 @@ public abstract class OrderTicketView
 	private IMemento memento;
 
 	private AggregateValidationStatus aggregateValidationStatus;
+
+	private ComboViewer mDestinationViewer;
 
 	/**
 	 * Create a new order ticket view.  Get the error and warning images out of the
@@ -216,6 +226,7 @@ public abstract class OrderTicketView
 		addInputControlErrorDecoration(ticket.getQuantityText());
 		addInputControlErrorDecoration(ticket.getSideCombo());
 		addInputControlErrorDecoration(ticket.getSymbolText());
+		addInputControlErrorDecoration(ticket.getBrokerCombo());
 		addInputControlErrorDecoration(ticket.getTifCombo());
 
 		Color bg = ticket.getForm().getParent().getBackground();
@@ -225,6 +236,20 @@ public abstract class OrderTicketView
 		ticket.getSideCombo().add(SideImage.BUY.getImage());
 		ticket.getSideCombo().add(SideImage.SELL.getImage());
 		ticket.getSideCombo().add(SideImage.SELL_SHORT.getImage());
+		
+		mDestinationViewer = new ComboViewer(ticket.getBrokerCombo());
+		ObservableListContentProvider destinationContentProvider = new ObservableListContentProvider();
+		mDestinationViewer.setContentProvider(destinationContentProvider);
+		mDestinationViewer.setLabelProvider(new LabelProvider() {
+			@Override
+			public String getText(Object element) {
+				if (element == BrokerManager.DEFAULT_BROKER)
+					return "Default";
+				Broker destination = (Broker) element;
+				return MessageFormat.format("{0} ({1})", destination.getName(), destination.getId().getValue());
+			}
+		});
+		mDestinationViewer.setInput(BrokerManager.getCurrent().getAvailableBrokers());
 		
 		addComboChoicesFromLexerEnum(ticket.getTifCombo(), TimeInForceImage.values());
 		
@@ -654,6 +679,46 @@ public abstract class OrderTicketView
 				controlsRequiringInput.add(swtObservable);
 			}
 			{
+				Control whichControl = getOrderTicket().getBrokerCombo();
+				IObservableValue observable = ViewersObservables.observeSingleSelection(mDestinationViewer);
+				Binding binding = bindMessageValue( 
+						observable,
+						BeansObservables.observeValue(model, "brokerId"), //$NON-NLS-1$
+						new UpdateValueStrategy().setConverter(new Converter(Broker.class, String.class) {
+							@Override
+							public Object convert(Object fromObject) {
+								DestinationID id = ((Broker) fromObject).getId();
+								return id == null ? null : id.getValue();
+							}
+						}),
+						new UpdateValueStrategy().setConverter(new Converter(String.class, Broker.class) {
+							@Override
+							public Object convert(Object fromObject) {
+								if (fromObject == null) {
+									return BrokerManager.DEFAULT_BROKER;
+								}									
+								for (Object obj : BrokerManager.getCurrent().getAvailableBrokers()) {
+									DestinationID id = ((Broker) obj).getId();
+									if (id != null && id.getValue() != null && id.getValue().equals(fromObject)) {
+										return obj;
+									}
+								}
+								return BrokerManager.DEFAULT_BROKER;
+							}
+						}));
+				bindMessageValue(
+						new ErrorDecorationObservable(whichControl, errorImage, warningImage),
+						binding.getValidationStatus(),
+						null,
+						null);
+				bindMessageValue(
+						SWTObservables.observeEnabled(whichControl),
+						BeansObservables.observeValue(model, "orderMessage"), //$NON-NLS-1$
+						null,
+						new UpdateValueStrategy().setConverter(new IsNewOrderMessageConverter()));
+				controlsRequiringInput.add(observable);
+			}
+			{
 				Control whichControl = getOrderTicket().getTifCombo();
 				IValidator afterGetValidator = new IgnoreFirstNullValidator(tifConverterBuilder
 						.newTargetAfterGetValidator());
@@ -898,7 +963,7 @@ public abstract class OrderTicketView
 			PhotonPlugin plugin = PhotonPlugin.getDefault();
 			Message orderMessage = orderTicketModel.getOrderMessage();
 			orderTicketModel.completeMessage();
-			plugin.getPhotonController().handleInternalMessage(orderMessage);
+			plugin.getPhotonController().handleInternalMessage(orderMessage, orderTicketModel.getBrokerId());
 			orderTicketModel.clearOrderMessage();
 		} catch (Exception e) {
 			String errorMessage = CANNOT_SEND_ORDER_SPECIFIED.getText(e.getMessage());

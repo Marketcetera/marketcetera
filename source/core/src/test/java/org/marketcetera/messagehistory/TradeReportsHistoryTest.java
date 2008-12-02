@@ -916,6 +916,27 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         assertEquals(1, history.getFillsList().size());
 
     }
+    
+    public void testDuplicateReports() throws Exception {
+    	ExecutionReport report1 = createReport(getTestableExecutionReport());
+    	ExecutionReport report2 = createReport(getTestableExecutionReport());
+    	TradeReportsHistory history = createMessageHistory();
+    	history.addIncomingMessage(report1);
+    	assertEquals(1, history.size());
+    	history.addIncomingMessage(report1);
+    	assertEquals(1, history.size());
+    	history.addIncomingMessage(report2);
+    	assertEquals(2, history.size());
+    	history.addIncomingMessage(report2);
+    	assertEquals(2, history.size());
+    	history.addIncomingMessage(report1);
+    	assertEquals(2, history.size());
+    }
+    
+    private Message getTestableExecutionReport() throws FieldNotFound {
+        return msgFactory.newExecutionReport("456", "clorderid", "987", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
+                        new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal("12.3"), new MSymbol("IBM"), null);
+    }
 
     private ExecutionReport createReport(Message message)
             throws MessageCreationException {

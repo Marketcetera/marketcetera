@@ -2,15 +2,25 @@ package org.marketcetera.messagehistory;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.*;
-import org.marketcetera.event.HasFIXMessage;
 
 import quickfix.Message;
 import quickfix.field.ExecID;
@@ -64,6 +74,8 @@ public class TradeReportsHistory {
     private final Map<OrderID, OrderID> mOrderIDToGroupMap;
 
     private final FIXMessageFactory mMessageFactory;
+    
+    private Set<ReportID> mUniqueReportIds = new HashSet<ReportID>();
 
     public TradeReportsHistory(FIXMessageFactory messageFactory) {
         this.mMessageFactory = messageFactory;
@@ -91,6 +103,20 @@ public class TradeReportsHistory {
     }
 
     public void addIncomingMessage(ReportBase inReport) {
+    	// check for duplicates
+    	ReportID uniqueID = inReport.getReportID();
+    	if (uniqueID == null) {
+    		SLF4JLoggerProxy.debug(this, "Recieved report without report id: {}", inReport); //$NON-NLS-1$
+    	} else {
+    		synchronized (mUniqueReportIds) {
+	    		if (mUniqueReportIds.contains(uniqueID)) {
+	    			SLF4JLoggerProxy.debug(this, "Skipping duplicate report: {}", inReport); //$NON-NLS-1$
+	    			return;
+	    		} else {
+	    			mUniqueReportIds.add(uniqueID);
+	    		}
+    		}
+    	}
         if(SLF4JLoggerProxy.isDebugEnabled(this) &&
                 inReport.getSendingTime() != null) {
             long sendingTime =0;

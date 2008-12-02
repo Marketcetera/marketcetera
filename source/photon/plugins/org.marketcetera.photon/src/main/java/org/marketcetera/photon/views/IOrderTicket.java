@@ -22,6 +22,8 @@ public interface IOrderTicket {
 
 	Text getSymbolText();
 
+	Combo getBrokerCombo();
+
 	Combo getTifCombo();
 
 	Text getAccountText();

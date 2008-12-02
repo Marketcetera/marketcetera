@@ -18,6 +18,7 @@ import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.MessageCommand;
+import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
 import org.marketcetera.photon.commands.ShowOrderInTicketCommand;
 import org.marketcetera.photon.parser.CommandParser;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -119,7 +120,7 @@ public class CommandLineTrimWidget
 					command = commandParser.parseCommand(theInputString);
 					Message message = ((MessageCommand)command).getMessage();
 					if (FIXMessageUtil.isOrderSingle(message)){
-						command = new ShowOrderInTicketCommand(message);
+						command = new ShowOrderInTicketCommand(message, ((SendOrderToOrderManagerCommand)command).getBroker());
 					}
 				}
 				if (command != null){
