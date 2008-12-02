@@ -1,0 +1,7 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Positions", :action_name => "List All Positions", :top_level_controller => 'positions' } %>
+<h1>Listing all positions</h1>
+
+<%= render :partial => 'positions/positions_list_display' %>
+
+<%= pagination_links(@position_pages, :params => { :as_of_date => @date }) %><br />

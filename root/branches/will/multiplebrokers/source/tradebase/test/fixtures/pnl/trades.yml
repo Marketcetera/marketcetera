@@ -1,0 +1,253 @@
+--- 
+trade_00012: 
+  position_qty: 100.0
+  created_on: 2007-04-13 13:37:20 -07:00
+  side: 1
+  account_id: 1
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 100.0
+  tradeable_type: Equity
+  id: 12
+  tradeable_id: 6
+  price_per_share: 408.18
+  journal_id: 12
+  comment: 
+  trade_type: T
+trade_00001: 
+  position_qty: 77.0
+  created_on: 2007-04-13 13:37:18 -07:00
+  side: 1
+  account_id: 1
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 77.0
+  tradeable_type: Equity
+  id: 1
+  tradeable_id: 1
+  price_per_share: 10.0
+  journal_id: 1
+  comment: 
+  trade_type: T
+trade_00002: 
+  position_qty: 200.0
+  created_on: 2007-04-13 13:37:18 -07:00
+  side: 1
+  account_id: 2
+  updated_on: 2007-04-17 18:11:32 -07:00
+  quantity: 200.0
+  tradeable_type: Equity
+  id: 2
+  tradeable_id: 2
+  price_per_share: 4.26
+  journal_id: 2
+  comment: ""
+  trade_type: T
+trade_00013: 
+  position_qty: -100.0
+  created_on: 2007-04-13 13:37:20 -07:00
+  side: 2
+  account_id: 1
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 100.0
+  tradeable_type: Equity
+  id: 13
+  tradeable_id: 1
+  price_per_share: 10.33
+  journal_id: 13
+  comment: 
+  trade_type: T
+trade_00014: 
+  position_qty: -100.0
+  created_on: 2007-04-13 13:37:20 -07:00
+  side: 5
+  account_id: 2
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 100.0
+  tradeable_type: Equity
+  id: 14
+  tradeable_id: 6
+  price_per_share: 408.18
+  journal_id: 14
+  comment: 
+  trade_type: T
+trade_00003: 
+  position_qty: -77.0
+  created_on: 2007-04-13 13:37:18 -07:00
+  side: 2
+  account_id: 1
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 77.0
+  tradeable_type: Equity
+  id: 3
+  tradeable_id: 1
+  price_per_share: 10.0
+  journal_id: 3
+  comment: 
+  trade_type: T
+trade_00004: 
+  position_qty: -200.0
+  created_on: 2007-04-13 13:37:18 -07:00
+  side: 5
+  account_id: 2
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 200.0
+  tradeable_type: Equity
+  id: 4
+  tradeable_id: 2
+  price_per_share: 4.26
+  journal_id: 4
+  comment: 
+  trade_type: T
+trade_00015: 
+  position_qty: 23.0
+  created_on: 2007-04-13 13:37:20 -07:00
+  side: 1
+  account_id: 1
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 23.0
+  tradeable_type: Equity
+  id: 15
+  tradeable_id: 1
+  price_per_share: 10.0
+  journal_id: 15
+  comment: 
+  trade_type: T
+trade_00016: 
+  position_qty: -23.0
+  created_on: 2007-04-13 13:37:20 -07:00
+  side: 2
+  account_id: 1
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 23.0
+  tradeable_type: Equity
+  id: 16
+  tradeable_id: 1
+  price_per_share: 10.0
+  journal_id: 16
+  comment: 
+  trade_type: T
+trade_00005: 
+  position_qty: 200.0
+  created_on: 2007-04-13 13:37:18 -07:00
+  side: 1
+  account_id: 1
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 200.0
+  tradeable_type: Equity
+  id: 5
+  tradeable_id: 3
+  price_per_share: 22.81
+  journal_id: 5
+  comment: 
+  trade_type: T
+trade_00006: 
+  position_qty: -200.0
+  created_on: 2007-04-13 13:37:18 -07:00
+  side: 5
+  account_id: 2
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 200.0
+  tradeable_type: Equity
+  id: 6
+  tradeable_id: 3
+  price_per_share: 22.81
+  journal_id: 6
+  comment: 
+  trade_type: T
+trade_00017: 
+  position_qty: 300.0
+  created_on: 2007-04-17 17:59:55 -07:00
+  side: 1
+  account_id: 2
+  updated_on: 2007-04-17 18:02:56 -07:00
+  quantity: 300.0
+  tradeable_type: Equity
+  id: 17
+  tradeable_id: 2
+  price_per_share: 5.67
+  journal_id: 17
+  comment: ""
+  trade_type: T
+trade_00018: 
+  position_qty: -1000.0
+  created_on: 2007-04-18 17:49:31 -07:00
+  side: 2
+  account_id: 3
+  updated_on: 2007-04-19 14:10:05 -07:00
+  quantity: 1000.0
+  tradeable_type: Equity
+  id: 18
+  tradeable_id: 14
+  price_per_share: 44.5
+  journal_id: 18
+  comment: ""
+  trade_type: T
+trade_00007: 
+  position_qty: 230.0
+  created_on: 2007-04-13 13:37:18 -07:00
+  side: 1
+  account_id: 2
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 230.0
+  tradeable_type: Equity
+  id: 7
+  tradeable_id: 4
+  price_per_share: 77.65
+  journal_id: 7
+  comment: 
+  trade_type: T
+trade_00008: 
+  position_qty: -100.0
+  created_on: 2007-04-13 13:37:18 -07:00
+  side: 2
+  account_id: 1
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 100.0
+  tradeable_type: Equity
+  id: 8
+  tradeable_id: 5
+  price_per_share: 10.23
+  journal_id: 8
+  comment: 
+  trade_type: T
+trade_00009: 
+  position_qty: -230.0
+  created_on: 2007-04-13 13:37:19 -07:00
+  side: 2
+  account_id: 1
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 230.0
+  tradeable_type: Equity
+  id: 9
+  tradeable_id: 4
+  price_per_share: 77.65
+  journal_id: 9
+  comment: 
+  trade_type: T
+trade_00010: 
+  position_qty: 100.0
+  created_on: 2007-04-13 13:37:19 -07:00
+  side: 1
+  account_id: 1
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 100.0
+  tradeable_type: Equity
+  id: 10
+  tradeable_id: 5
+  price_per_share: 10.23
+  journal_id: 10
+  comment: 
+  trade_type: T
+trade_00011: 
+  position_qty: 100.0
+  created_on: 2007-04-13 13:37:19 -07:00
+  side: 1
+  account_id: 1
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 100.0
+  tradeable_type: Equity
+  id: 11
+  tradeable_id: 1
+  price_per_share: 10.33
+  journal_id: 11
+  comment: 
+  trade_type: T
