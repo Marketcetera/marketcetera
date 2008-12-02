@@ -90,13 +90,15 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		}
 
 		public void remove(TableColumn column) {
-			int fieldNum = columnToFieldMap.get(column);
-			int columnIndex = fieldToColumnIndexMap.get(fieldNum);
-
-			fieldToColumnMap.remove(fieldNum);
-			columnToFieldMap.remove(column);
-			columnIndexToFieldMap.remove(columnIndex);
-			fieldToColumnIndexMap.remove(fieldNum);
+			Integer fieldNum = columnToFieldMap.get(column);
+			if (fieldNum != null) {
+				int columnIndex = fieldToColumnIndexMap.get(fieldNum);
+	
+				fieldToColumnMap.remove(fieldNum);
+				columnToFieldMap.remove(column);
+				columnIndexToFieldMap.remove(columnIndex);
+				fieldToColumnIndexMap.remove(fieldNum);
+			}
 		}
 
 		public boolean containsFieldNumber(int fieldNum) {
@@ -375,5 +377,14 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 				groupDiscriminatorID, groupDiscriminatorValue, true);
 		return value;
 	}
+    
+    /**
+     * Returns the table being formatted by this class.
+     * 
+     * @return the table being formatted by this class
+     */
+    protected final Table getTable() {
+    	return underlyingTable;
+    }
 }
 

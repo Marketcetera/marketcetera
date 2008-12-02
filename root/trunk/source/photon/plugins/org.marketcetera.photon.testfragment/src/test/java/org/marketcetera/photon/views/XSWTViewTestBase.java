@@ -4,8 +4,6 @@ import java.lang.reflect.Method;
 
 import com.swtworkbench.community.xswt.XSWTException;
 
-import junit.framework.TestCase;
-
 
 public abstract class XSWTViewTestBase extends ViewTestBase {
 

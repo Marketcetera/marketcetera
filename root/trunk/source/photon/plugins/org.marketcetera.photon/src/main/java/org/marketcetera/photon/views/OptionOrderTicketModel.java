@@ -2,7 +2,6 @@ package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
@@ -66,22 +65,6 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 	
 	private final WritableValue currentOptionSymbol = new WritableValue("", String.class); //$NON-NLS-1$
 	private final WritableValue observableSymbol = new WritableValue("", String.class); //$NON-NLS-1$
-	
-	private final WritableValue underlyingSymbol = new WritableValue("", String.class); //$NON-NLS-1$
-	private final WritableValue underlyingTickIndicator = new WritableValue(false, Boolean.class);
-	private final WritableValue underlyingLastPrice = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingLastPriceChange = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingBidSize = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingBidPrice = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingOfferPrice = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingOfferSize = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingLastUpdated = new WritableValue(new Date(), Date.class);
-	private final WritableValue underlyingVolume = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingOpenPrice = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingHighPrice = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingLowPrice = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingTradedValue = new WritableValue(null, BigDecimal.class);
-	private final WritableValue underlyingPreviousClosePrice = new WritableValue(null, BigDecimal.class);
 	
 	private final OptionDateHelper optionDateHelper = new OptionDateHelper();
 
@@ -243,7 +226,6 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 	 * 
 	 */
 	public void updateOptionInfo() {
-//		Logger logger = PhotonPlugin.getMainConsoleLogger();
 			if (!updatingOptionInfo){
 				updatingOptionInfo = true;
 				try {
@@ -254,7 +236,6 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 						symbol = symbol.length() == 0 ? null : symbol;
 					}
 					if (OptionMarketDataUtils.isOptionSymbol(symbol)){
-//						logger.debug("Updating option info by symbol: "+symbol);
 						currentOptionSymbol.setValue(symbol);
 						optionMatcher.setOptionSymbol(symbol);
 					} else {
@@ -391,147 +372,6 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 	@Override
 	public WritableValue getObservableSymbol(){
 		return observableSymbol;
-	}
-
-	/**
-	 * Get the (String) WritableValue for underlying symbol (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingSymbol() {
-		return underlyingSymbol;
-	}
-
-	/**
-	 * Get the (Boolean) WritableValue for tick direction(underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingTickIndicator() {
-		return underlyingTickIndicator;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for last price (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingLastPrice() {
-		return underlyingLastPrice;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for last price change (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingLastPriceChange() {
-		return underlyingLastPriceChange;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for bid size (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingBidSize() {
-		return underlyingBidSize;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for bid price (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingBidPrice() {
-		return underlyingBidPrice;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for offer price (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingOfferPrice() {
-		return underlyingOfferPrice;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for offer size (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingOfferSize() {
-		return underlyingOfferSize;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for last updated time (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingLastUpdated() {
-		return underlyingLastUpdated;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for last price (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingVolume() {
-		return underlyingVolume;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for the opening price (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingOpenPrice() {
-		return underlyingOpenPrice;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for high price (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingHighPrice() {
-		return underlyingHighPrice;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for low price (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingLowPrice() {
-		return underlyingLowPrice;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for total traded value (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingTradedValue() {
-		return underlyingTradedValue;
-	}
-
-	/**
-	 * Get the (BigDecimal) WritableValue for previous close price (underlying market data)
-	 * @return the writable value
-	 */
-	public WritableValue getUnderlyingPreviousClosePrice() {
-		return underlyingPreviousClosePrice;
-	}
-
-	/**
-	 * Clear all the fields for underlying market data.
-	 */
-	public void clearUnderlyingMarketData() {
-		underlyingSymbol.setValue(""); //$NON-NLS-1$
-		underlyingTickIndicator.setValue(null);
-		underlyingLastPrice.setValue(null);
-		underlyingLastPriceChange.setValue(null);
-		underlyingBidSize.setValue(null);
-		underlyingBidPrice.setValue(null);
-		underlyingOfferPrice.setValue(null);
-		underlyingOfferSize.setValue(null);
-		underlyingLastUpdated.setValue(null);
-		underlyingVolume.setValue(null);
-		underlyingOpenPrice.setValue(null);
-		underlyingHighPrice.setValue(null);
-		underlyingLowPrice.setValue(null);
-		underlyingTradedValue.setValue(null);
-		underlyingPreviousClosePrice.setValue(null);
 	}
 
 	/**

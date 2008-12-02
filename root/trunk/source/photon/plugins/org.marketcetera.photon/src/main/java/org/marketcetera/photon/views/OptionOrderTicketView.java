@@ -13,10 +13,8 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Control;
@@ -24,21 +22,16 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.OptionInfoComponent;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
-import org.marketcetera.photon.ui.OptionMessageListTableFormat;
 import org.marketcetera.photon.ui.databinding.ErrorDecorationObservable;
-import org.marketcetera.photon.ui.databinding.HasValueConverter;
 import org.marketcetera.photon.ui.databinding.IsNewOrderMessageConverter;
-import org.marketcetera.photon.ui.databinding.LabelBooleanImageObservableValue;
 import org.marketcetera.photon.ui.databinding.RetainTextObservable;
 import org.marketcetera.photon.ui.validation.IgnoreNullValidator;
 import org.marketcetera.photon.ui.validation.ObservableListValidator;
@@ -54,11 +47,7 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import quickfix.FieldNotFound;
 import quickfix.FieldType;
 import quickfix.Message;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryType;
 import quickfix.field.MaturityMonthYear;
-import quickfix.field.NoMDEntries;
 import quickfix.field.OpenClose;
 import quickfix.field.OrderCapacity;
 import quickfix.field.PutOrCall;
@@ -79,7 +68,7 @@ import quickfix.field.Symbol;
  * @since $Release$
  *
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class OptionOrderTicketView
     extends OrderTicketView
     implements Messages
@@ -153,11 +142,6 @@ public class OptionOrderTicketView
 		updateSize(optionOrderTicket.getStrikePriceCombo(), 7);
 		updateSize(optionOrderTicket.getPutOrCallCombo(), 2);
 
-		TableViewer bidViewer = optionOrderTicket.getOptionMarketDataTableViewer();
-		bidViewer.setLabelProvider(new OptionMessageListTableFormat(bidViewer.getTable(), OptionDataColumns.values(), getSite(), dictionary));
-		bidViewer.setContentProvider(new ObservableListContentProvider());
-		packColumns(bidViewer.getTable());
-
 	}
 	
 
@@ -176,7 +160,6 @@ public class OptionOrderTicketView
 	/**
 	 * After calling superclass implementation, does additional binding work
 	 * by calling {@link #bindOptionInfo(OptionOrderTicketModel, IOptionOrderTicket)}
-	 * and {@link #bindUnderlyingInfo(OptionOrderTicketModel, IOptionOrderTicket)}
 	 */
 	@Override
 	public void setInput(OrderTicketModel model) {
@@ -184,7 +167,6 @@ public class OptionOrderTicketView
 		OptionOrderTicketModel optionTicketModel = (OptionOrderTicketModel) model;
 		IOptionOrderTicket optionOrderTicket = getOptionOrderTicket();
 		bindOptionInfo(optionTicketModel, optionOrderTicket);
-		bindUnderlyingInfo(optionTicketModel, optionOrderTicket);
 	}
 
 	/**
@@ -217,139 +199,6 @@ public class OptionOrderTicketView
 				(optionTicketModel).getStrikePriceList(),
 				new UpdateListStrategy(UpdateListStrategy.POLICY_NEVER),
 				null);
-	}
-	
-	/**
-	 * Binds the fields related to underlying market data to the UI, including
-	 * stock bid, stock offer, stock last trade, etc.
-	 * 
-	 * @param model the model underlying the ticket
-	 * @param optionTicket the ticket itself
-	 */
-	private void bindUnderlyingInfo(OptionOrderTicketModel model,
-			IOptionOrderTicket optionTicket) {
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingSymbolLabel()), 
-					model.getUnderlyingSymbol(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy()
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingLastPriceLabel()), 
-					model.getUnderlyingLastPrice(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					new LabelBooleanImageObservableValue(optionTicket.getUnderlyingLastPriceUpDownArrowLabel(),upImage,downImage), 
-					model.getUnderlyingTickIndicator(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy()
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingLastPriceChangeLabel()), 
-					model.getUnderlyingLastPriceChange(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingBidPriceLabel()), 
-					model.getUnderlyingBidPrice(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingOfferPriceLabel()), 
-					model.getUnderlyingOfferPrice(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingBidSizeLabel()), 
-					model.getUnderlyingBidSize(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingOfferSizeLabel()), 
-					model.getUnderlyingOfferSize(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingLastUpdatedTimeLabel()), 
-					model.getUnderlyingLastUpdated(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new DateToStringCustomConverter("HH:mm")) //$NON-NLS-1$
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingVolumeLabel()), 
-					model.getUnderlyingVolume(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(true))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingOpenPriceLabel()), 
-					model.getUnderlyingOpenPrice(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingHighPriceLabel()), 
-					model.getUnderlyingHighPrice(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingLowPriceLabel()), 
-					model.getUnderlyingLowPrice(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			getDataBindingContext().bindValue(
-					SWTObservables.observeText(optionTicket.getUnderlyingTradedValueLabel()), 
-					model.getUnderlyingTradedValue(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
-			);
-		}
-		{
-			// Only show underlying market data composite when the
-			// underlying symbol has a value
-			getDataBindingContext().bindValue(
-					SWTObservables.observeVisible(optionTicket.getUnderlyingMarketDataComposite()),
-					model.getUnderlyingSymbol(),
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), 
-					new UpdateValueStrategy().setConverter(new HasValueConverter()));
-		}
-		
 	}
 
 	@Override
@@ -626,9 +475,6 @@ public class OptionOrderTicketView
 					new UpdateValueStrategy()
 			);
 		}
-		{
-			optionTicket.getOptionMarketDataTableViewer().setInput(model.getOptionMarketDataList());
-		}
 	}
 
 	/**
@@ -689,68 +535,4 @@ public class OptionOrderTicketView
 			return null;
 		}
 	}
-
-	public enum OptionDataColumns implements IFieldIdentifier {
-		ZEROWIDTH(""),  //$NON-NLS-1$
-		CVOL("cVol", OptionInfoComponent.CALL_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME),  //$NON-NLS-1$
-		CBIDSZ("cBidSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),  //$NON-NLS-1$
-		CBID("cBid", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), //$NON-NLS-1$
-		CASK("cAsk", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
-		CASKSZ("cAskSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
-		CSYM("cSym", OptionInfoComponent.CALL_EXTRA_INFO, Symbol.FIELD, null, null, null), //$NON-NLS-1$
-		STRIKE("Strike", OptionInfoComponent.STRIKE_INFO, StrikePrice.FIELD, null, null, null), //$NON-NLS-1$
-		EXP("Exp", OptionInfoComponent.STRIKE_INFO, MaturityMonthYear.FIELD, null, null, null), //$NON-NLS-1$
-		PSYM("pSym", OptionInfoComponent.PUT_EXTRA_INFO, Symbol.FIELD, null, null, null), //$NON-NLS-1$
-		PBIDSZ("pBidSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),  //$NON-NLS-1$
-		PBID("pBid", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), //$NON-NLS-1$
-		PASK("pAsk", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
-		PASKSZ("pAskSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
-		PVOL("pVol", OptionInfoComponent.PUT_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME); //$NON-NLS-1$
-
-
-		private String name;
-		private Integer fieldID;
-		private Integer groupID;
-		private Integer groupDiscriminatorID;
-		private Object groupDiscriminatorValue;
-		private OptionInfoComponent component;
-
-		OptionDataColumns(String name){
-			this.name = name;
-		}
-
-		OptionDataColumns(String name, OptionInfoComponent component, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
-			this.name=name;
-			this.component = component;
-			this.fieldID = fieldID;
-			this.groupID = groupID;
-			this.groupDiscriminatorID = groupDiscriminatorID;
-			this.groupDiscriminatorValue = groupDiscriminatorValue;
-		}
-
-		public String toString() {
-			return name;
-		}
-
-		public Integer getFieldID() {
-			return fieldID;
-		}
-		
-		public Integer getGroupID() {
-			return groupID;
-		}
-
-		public Integer getGroupDiscriminatorID() {
-			return groupDiscriminatorID;
-		}
-
-		public Object getGroupDiscriminatorValue() {
-			return groupDiscriminatorValue;
-		}
-
-		public OptionInfoComponent getComponent() {
-			return component;
-		}
-	}
-
 }

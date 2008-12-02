@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
 import java.util.logging.LogManager;
 
 import org.apache.log4j.BasicConfigurator;
@@ -30,6 +31,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.dest.DestinationsStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.marketdata.MarketDataManager;
@@ -48,6 +51,7 @@ import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.DestinationID;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.RubyCore;
 
@@ -63,7 +67,7 @@ import quickfix.field.SecurityType;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class PhotonPlugin 
     extends AbstractUIPlugin
     implements Messages, IPropertyChangeListener
@@ -110,6 +114,8 @@ public class PhotonPlugin
 	private OptionOrderTicketController optionOrderTicketController;
 	
 	private MarketDataManager marketDataManager;
+
+	private BrokerManager mDestinationManager;
 	
 	public static final String SESSION_START_TIME_PREFERENCE = "TRADING_HISTORY_START_TIME"; //$NON-NLS-1$
 
@@ -513,5 +519,18 @@ public class PhotonPlugin
 			PhotonPlugin.getDefault().changeLogLevel(""+event.getNewValue()); //$NON-NLS-1$
 		}
 	}
-	
+
+	/**
+	 * Returns the {@link BrokerManager} singleton for this plug-in.
+	 * Typically, this should be accessed through
+	 * {@link BrokerManager#getCurrent()}.
+	 * 
+	 * @return the DestinationManager singleton for this plug-in
+	 */
+	public BrokerManager getBrokerManager() {
+		if (mDestinationManager == null) {
+			mDestinationManager = new BrokerManager();
+		}
+		return mDestinationManager;
+	}
 }

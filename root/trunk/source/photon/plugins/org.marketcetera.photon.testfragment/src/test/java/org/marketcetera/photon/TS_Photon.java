@@ -33,7 +33,6 @@ import org.marketcetera.photon.views.FillsViewTest;
 import org.marketcetera.photon.views.MarketDataViewItemTest;
 import org.marketcetera.photon.views.OpenOrdersViewTest;
 import org.marketcetera.photon.views.OptionDateHelperTest;
-import org.marketcetera.photon.views.OptionOrderTicketControllerTest;
 import org.marketcetera.photon.views.OptionOrderTicketModelTest;
 import org.marketcetera.photon.views.OptionOrderTicketViewTest;
 import org.marketcetera.photon.views.OptionOrderTicketXSWTTest;
@@ -104,7 +103,6 @@ public class TS_Photon {
 		suite.addTest(OptionOrderTicketModelTest.suite());
 		suite.addTestSuite(OptionOrderTicketXSWTTest.class);
 		suite.addTestSuite(StockOrderTicketXSWTTest.class);
-		suite.addTestSuite(OptionOrderTicketControllerTest.class);
 		suite.addTestSuite(SWTTestViewTest.class);
 		suite.addTestSuite(OpenOrdersViewTest.class);
 		

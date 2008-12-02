@@ -1,23 +1,27 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.core.IDFactory;
+import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.dest.DestinationsStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.MockEventTranslator;
+import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.DestinationID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.osgi.framework.BundleContext;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.DeliverToCompID;
@@ -41,15 +45,9 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
     private FIXMessageFactory msgFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
 	private StockOrderTicketController controller;
-	private MarketDataFeedTracker marketDataFeedTracker;
 
 	public StockOrderTicketViewTest(String name) {
 		super(name);
-		
-		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);
-		marketDataFeedTracker.open();
-
 	}
 
     @SuppressWarnings("restriction")
@@ -161,47 +159,6 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 			assertEquals(image.getImage(), orderTicket.getTifCombo().getItem(i++));
 		}
 	}
-
-//  // Broken during 1.0 M2 (Will)
-//	public void testShowQuote() throws Exception {
-//		final String symbolStr = "MRKT";
-//		StockOrderTicketView view = (StockOrderTicketView) getTestView();
-//		Message orderMessage = msgFactory.newLimitOrder("1",
-//				Side.BUY, BigDecimal.TEN, new MSymbol(symbolStr), BigDecimal.ONE,
-//				TimeInForce.DAY, null);
-//
-//		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
-//		quoteMessageToSend.set(new Symbol("MRKT"));
-//		
-//		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
-//		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
-//		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
-//		
-//		MockEventTranslator.setMessageToReturn(quoteMessageToSend);
-//
-//		controller.listenMarketData(symbolStr);
-//		controller.setOrderMessage(orderMessage);		
-//
-//		TableViewer bidViewer = ((IStockOrderTicket)view.getOrderTicket()).getLevel2BidTableViewer();
-//		TableViewer offerViewer = ((IStockOrderTicket)view.getOrderTicket()).getLevel2OfferTableViewer();
-//		final List<?> bidInput = (List<?>)bidViewer.getInput();
-//		final List<?> offerInput = (List<?>)offerViewer.getInput();
-//        doDelay(new Callable<Boolean>() {
-//            public Boolean call() 
-//                throws Exception
-//            {
-//                return bidInput.size() > 0 && offerInput.size() > 0;
-//            }});
-//		assertTrue(bidInput.size() > 0);
-//		FieldMap bidGroup = (FieldMap) bidInput.get(0);
-//		assertEquals(MDEntryType.BID, bidGroup.getChar(MDEntryType.FIELD));
-//		assertEquals(1, bidGroup.getInt(MDEntryPx.FIELD));
-//
-//		assertTrue(offerInput.size() > 0);
-//		FieldMap offerGroup = (FieldMap) offerInput.get(0);
-//		assertEquals(MDEntryType.OFFER, offerGroup.getChar(MDEntryType.FIELD));
-//		assertEquals(10, offerGroup.getInt(MDEntryPx.FIELD));
-//	}
 
 	public void testTypeNewOrder() throws Exception {
 		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
@@ -482,6 +439,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
         assertTrue("Side should be enabled", ticket.getSideCombo().isEnabled());
         assertTrue("TIF should be enabled", ticket.getTifCombo().isEnabled());
         assertTrue("Symbol should be enabled", ticket.getSymbolText().isEnabled());
+        assertTrue("Broker should be enabled", ticket.getBrokerCombo().isEnabled());
         ticket.getSideCombo().setFocus();
         assertFalse(ticket.getPriceText().isFocusControl());
         
@@ -490,16 +448,19 @@ public class StockOrderTicketViewTest extends ViewTestBase {
                 TimeInForce.DAY, null);
         Message cxr = msgFactory.newCancelReplaceFromMessage(buy);
         controller.setOrderMessage(cxr);
+        controller.setBrokerId(null);
         assertEquals("10", ticket.getQuantityText().getText());
         assertEquals("B", ticket.getSideCombo().getText());
         assertEquals("1", ticket.getPriceText().getText());
         assertEquals("QWER", ticket.getSymbolText().getText());
         assertEquals("DAY", ticket.getTifCombo().getText());
+        assertEquals("Default", ticket.getBrokerCombo().getText());
 
         // verify Side/Symbol/TIF are disabled for cancel/replace
         assertFalse("Side should not be enabled", ticket.getSideCombo().isEnabled());
         assertFalse("TIF should not be enabled", ticket.getTifCombo().isEnabled());
         assertFalse("Symbol should not be enabled", ticket.getSymbolText().isEnabled());
+        assertFalse("Broker should not be enabled", ticket.getBrokerCombo().isEnabled());
         
         assertTrue(ticket.getForm().getText().contains("Replace"));
         // test for bug #438
@@ -510,6 +471,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
         assertTrue("Side should be enabled", ticket.getSideCombo().isEnabled());
         assertTrue("TIF should be enabled", ticket.getTifCombo().isEnabled());
         assertTrue("Symbol should be enabled", ticket.getSymbolText().isEnabled());
+        assertTrue("Broker should be enabled", ticket.getBrokerCombo().isEnabled());
     }
     
     /**  verify the side combo is focused after clear - ie after send or cancel
@@ -526,5 +488,28 @@ public class StockOrderTicketViewTest extends ViewTestBase {
                               ticket.getSideCombo().isFocusControl());
     	assertTrue("side is not focused",
     	           ticket.getSideCombo().isFocusControl());
+    }
+    
+    public void testBrokerId() {
+    	IStockOrderTicket ticket = (IStockOrderTicket) ((StockOrderTicketView)getTestView()).getOrderTicket();
+    	DestinationStatus status1 = new DestinationStatus("Goldman Sachs", new DestinationID("gs"), true);
+		DestinationStatus status2 = new DestinationStatus("Exchange Simulator", new DestinationID("metc"), false);
+		DestinationsStatus statuses =  new DestinationsStatus(Arrays.asList(status1, status2));
+    	BrokerManager.getCurrent().setBrokersStatus(statuses);
+        Message buy = msgFactory.newLimitOrder("1",
+                Side.BUY, BigDecimal.TEN, new MSymbol("QWER"), BigDecimal.ONE,
+                TimeInForce.DAY, null);
+        controller.setOrderMessage(buy);
+        controller.setBrokerId("gs");
+        assertEquals("Goldman Sachs (gs)", ticket.getBrokerCombo().getText());
+        controller.setBrokerId(null);
+        assertEquals("Default", ticket.getBrokerCombo().getText());
+        controller.setOrderMessage(buy);
+        controller.setBrokerId("gs");
+        controller.clear();
+        // last broker is saved
+        assertEquals("Goldman Sachs (gs)", ticket.getBrokerCombo().getText());
+        controller.setBrokerId(null);
+        BrokerManager.getCurrent().setBrokersStatus(new DestinationsStatus(new ArrayList<DestinationStatus>()));
     }
 }

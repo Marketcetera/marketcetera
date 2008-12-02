@@ -7,6 +7,8 @@ public interface IOrderTicketController {
 
 	Message getOrderMessage();
 	
+	void setBrokerId(String id);
+	
 	void clear();
 	
 	void dispose();

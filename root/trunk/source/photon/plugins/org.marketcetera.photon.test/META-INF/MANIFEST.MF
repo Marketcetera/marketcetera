@@ -7,7 +7,8 @@ Bundle-Vendor: Marketcetera, Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
- org.marketcetera.thirdparty;visibility:=reexport
+ org.marketcetera.thirdparty;visibility:=reexport,
+ org.eclipse.core.databinding
 Export-Package: org.marketcetera.photon.test
 Import-Package: org.junit,
  org.junit.internal.runners,
