@@ -88,8 +88,8 @@ public class DatabaseIDFactoryTest extends TestCase {
             Statement stmt = dbConnection.createStatement();
             stmt.execute("drop table if exists " + DatabaseIDFactory.TABLE_NAME); //$NON-NLS-1$
             stmt.execute("create table " + DatabaseIDFactory.TABLE_NAME + //$NON-NLS-1$
-                    "(id int default null auto_increment primary key, " + //$NON-NLS-1$
-                    DatabaseIDFactory.COL_NAME + " int not null default 0)"); //$NON-NLS-1$
+                    "(id bigint default null auto_increment primary key, " + //$NON-NLS-1$
+                    DatabaseIDFactory.COL_NAME + " bigint not null default 0)"); //$NON-NLS-1$
 
             factory.init();
             String next = factory.getNext();
@@ -97,11 +97,11 @@ public class DatabaseIDFactoryTest extends TestCase {
             assertFalse("looks like we got an inMemoryIDFactory id: " + next, //$NON-NLS-1$
                     next.contains(InetAddress.getLocalHost().toString()));
             String previous = next;
-            for(int i=0;i < DatabaseIDFactory.NUM_IDS_GRABBED*2; i++){
+            for(long i=0;i < DatabaseIDFactory.NUM_IDS_GRABBED*2; i++){
                 String cur = factory.getNext();
                 assertNotNull(cur);
                 assertNotSame("getting same ids in a row", cur, previous); //$NON-NLS-1$
-                assertTrue((new Integer(cur) > new Integer(previous)));
+                assertTrue((new Long(cur) > new Long(previous)));
                 previous = cur;
             }
         } finally {

@@ -6,8 +6,8 @@ package org.marketcetera.core;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class ExternalIDFactory implements IDFactory {
-    private int mUpTo = 0;
-    private int mNextID = 0;
+    private long mUpTo = 0;
+    private long mNextID = 0;
     private String prefix = "";  //$NON-NLS-1$
 
     protected ExternalIDFactory(String prefix)
@@ -21,12 +21,12 @@ public abstract class ExternalIDFactory implements IDFactory {
      */
     protected abstract void grabIDs() throws NoMoreIDsException;
 
-    protected void setMaxAllowedID(int newVal)
+    protected void setMaxAllowedID(long newVal)
     {
         mUpTo = newVal;
     }
 
-    protected void setNextID(int nextID)
+    protected void setNextID(long nextID)
     {
     	mNextID = nextID;
 	}
@@ -42,7 +42,7 @@ public abstract class ExternalIDFactory implements IDFactory {
     }
 
     /** Returns the value of the next ID, but does not increment the id - this is more of a peek */
-    protected int peekNextAsInt()
+    protected long peekNextAsInt()
     {
         return mNextID;
     }
