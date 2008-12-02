@@ -10,11 +10,11 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
 
     public static final String TABLE_NAME = "id_repository"; //$NON-NLS-1$
     public static final String COL_NAME = "nextAllowedID"; //$NON-NLS-1$
-    public static final int NUM_IDS_GRABBED = 1000;
+    public static final long NUM_IDS_GRABBED = 1;
 
     private String dbTable;
     private String dbColumn;
-    private int mCacheQuantity;
+    private long mCacheQuantity;
     private DataSource dataSource;
 
     /**
@@ -33,7 +33,7 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
      * @param quantity the quantity of IDs to fetch
      */
     public DatabaseIDFactory(DataSource ds, String table,
-                             String column, int quantity) {
+                             String column, long quantity) {
         super(""); //$NON-NLS-1$
         this.dataSource = ds;
         dbTable = table;
@@ -69,13 +69,13 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
                 if (!set.next()) {
                     set.moveToInsertRow();
                     set.insertRow();
-                    set.updateInt(dbColumn, NUM_IDS_GRABBED);
+                    set.updateLong(dbColumn, NUM_IDS_GRABBED);
                     set.moveToCurrentRow();
                     set.next();
                 }
-                int nextID = set.getInt(dbColumn);
-                int upTo = nextID + mCacheQuantity;
-                set.updateInt(dbColumn, upTo);
+                long nextID = set.getLong(dbColumn);
+                long upTo = nextID + mCacheQuantity;
+                set.updateLong(dbColumn, upTo);
                 set.updateRow();
                 stmt.close();
                 setMaxAllowedID(upTo);
