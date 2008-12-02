@@ -23,7 +23,6 @@ import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Originator;

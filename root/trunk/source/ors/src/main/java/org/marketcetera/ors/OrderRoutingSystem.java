@@ -144,7 +144,10 @@ public class OrderRoutingSystem
 
         SessionManager<ClientSession> sessionManager=
             new SessionManager<ClientSession>
-            (cfg.getServerSessionLife()*1000);
+            ((cfg.getServerSessionLife()==
+              SessionManager.INFINITE_SESSION_LIFESPAN)?
+             SessionManager.INFINITE_SESSION_LIFESPAN:
+             (cfg.getServerSessionLife()*1000));
         Server<ClientSession> server=new Server<ClientSession>
             (cfg.getServerHost(),
              cfg.getServerPort(),
@@ -247,7 +250,7 @@ public class OrderRoutingSystem
 
         // Log application start.
 
-        Messages.APP_COPYRIGHT.error(LOGGER_CATEGORY);
+        Messages.APP_COPYRIGHT.info(LOGGER_CATEGORY);
         Messages.APP_START.info(LOGGER_CATEGORY);
 
         // Hook to log shutdown.
