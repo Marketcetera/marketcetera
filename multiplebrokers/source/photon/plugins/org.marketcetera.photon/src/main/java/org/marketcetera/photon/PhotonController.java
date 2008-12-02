@@ -51,7 +51,7 @@ import quickfix.field.OrigClOrdID;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class PhotonController
     implements Messages, ReportListener
 {
@@ -80,6 +80,7 @@ public class PhotonController
 	
 	@Override
 	public void receiveCancelReject(OrderCancelReject inReport) {
+		checkReportID(inReport);
 		fixMessageHistory.addIncomingMessage(inReport);
 		try {
 			handleCancelReject(inReport);
@@ -92,6 +93,7 @@ public class PhotonController
 
 	@Override
 	public void receiveExecutionReport(ExecutionReport inReport) {
+		checkReportID(inReport);
 		fixMessageHistory.addIncomingMessage(inReport);
 		try {
 			handleExecutionReport(inReport);
@@ -105,20 +107,34 @@ public class PhotonController
 		}		
 	}
 	
+	private void checkReportID(ReportBase report) {
+		if (report.getReportID() == null) {
+			internalMainLogger.error(PHOTON_CONTROLLER_MISSING_REPORT_ID.getText(report.toString()));
+		}
+	}
+	
 	protected void asyncExec(Runnable runnable) {
 		Display.getDefault().asyncExec(runnable);
 	}
 
 	public void handleInternalMessage(Message aMessage) {
+		handleInternalMessage(aMessage, DEFAULT_DESTINATION);
+	}
+	
+	public void handleInternalMessage(Message aMessage, String brokerId) {
+		handleInternalMessage(aMessage, brokerId == null ? null : new DestinationID(brokerId));
+	}
+	
+	public void handleInternalMessage(Message aMessage, DestinationID destination) {
 		Factory factory = Factory.getInstance();
 	
 		try {
 			if (FIXMessageUtil.isOrderSingle(aMessage)) {
-				sendOrder(factory.createOrderSingle(aMessage, DEFAULT_DESTINATION));
+				sendOrder(factory.createOrderSingle(aMessage, destination));
 			} else if (FIXMessageUtil.isCancelRequest(aMessage)) {
-				sendOrder(factory.createOrderCancel(aMessage, DEFAULT_DESTINATION));
+				sendOrder(factory.createOrderCancel(aMessage, destination));
 			} else if (FIXMessageUtil.isCancelReplaceRequest(aMessage)) {
-				sendOrder(factory.createOrderReplace(aMessage, DEFAULT_DESTINATION));
+				sendOrder(factory.createOrderReplace(aMessage, destination));
 			} else {
 				internalMainLogger.warn(UNKNOWN_INTERNAL_MESSAGE_TYPE.
 						getText(aMessage.toString()));
@@ -138,7 +154,7 @@ public class PhotonController
 				rejectReason = "Unknown"; //$NON-NLS-1$
 			}
 			
-			org.marketcetera.trade.OrderID orderID = inReport.getOrderID(); //$NON-NLS-1$
+			org.marketcetera.trade.OrderID orderID = inReport.getOrderID();
 			
 			String rejectMsg = REJECT_MESSAGE.getText(orderID.getValue(),
 			                                          inReport.getSymbol().getFullSymbol(),

@@ -2,9 +2,10 @@ package org.marketcetera.messagehistory;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.OrderID;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
@@ -64,6 +65,15 @@ public class ReportHolder
             return ((HasFIXMessage)mReport).getMessage();
         }
         return null;
+    }
+    
+    /**
+     * Gets the ID of the destination from which this report was received.
+     *
+     * @return the destination ID from which this report was received.
+     */
+    public DestinationID getDestinationID() {
+    	return mReport.getDestinationID();
     }
 
     /**

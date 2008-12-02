@@ -120,7 +120,8 @@ public class CancelReplaceOrderActionDelegate
 		if (oldMessage != null){
 			try {
 				org.marketcetera.trade.OrderID clOrdId = new org.marketcetera.trade.OrderID(oldMessage.getString(ClOrdID.FIELD));
-				Message originalOrderMessage = getOriginalOrderMessage(clOrdId);
+				ReportHolder originalReport = getOriginalOrderMessage(clOrdId);
+				Message originalOrderMessage = originalReport == null ? null : originalReport.getMessage();
 				if (originalOrderMessage == null) {
 					originalOrderMessage = oldMessage;
 				}
@@ -142,6 +143,7 @@ public class CancelReplaceOrderActionDelegate
 						.getOrderTicketController(originalOrderMessage);
 				if (controller != null) {
 					controller.setOrderMessage(cancelReplaceMessage);
+					controller.setBrokerId(originalReport.getDestinationID() == null ? null : originalReport.getDestinationID().getValue());
 				}
 			} catch (FieldNotFound e) {
                 PhotonPlugin.getMainConsoleLogger().error(CANNOT_CANCEL.getText(),
@@ -150,14 +152,10 @@ public class CancelReplaceOrderActionDelegate
 		}
 	}
 
-	private Message getOriginalOrderMessage(org.marketcetera.trade.OrderID clOrdId) {
+	private ReportHolder getOriginalOrderMessage(org.marketcetera.trade.OrderID clOrdId) {
 		TradeReportsHistory messageHistory = PhotonPlugin.getDefault()
 				.getTradeReportsHistory();
-		ReportHolder messageHolder = messageHistory.getFirstReport(clOrdId);
-		if (messageHolder == null) {
-			return null;
-		}
-		return messageHolder.getMessage();
+		return messageHistory.getFirstReport(clOrdId);
 	}
 
 }

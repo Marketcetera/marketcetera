@@ -12,9 +12,12 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWTException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.progress.UIJob;
 import org.marketcetera.client.ClientParameters;
+import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messaging.ClientFeedService;
@@ -67,6 +70,17 @@ public class ReconnectClientJob
 		InterruptedException {
 			try {
 				mService.initClient(mParameters);
+				final DestinationsStatus destinationsStatus = mService.getClient().getDestinationsStatus();
+				PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							BrokerManager.getCurrent().setBrokersStatus(destinationsStatus);
+						} catch (Throwable ex) {
+							setFailure(ex);
+						}
+					}
+				});
 			} catch (Throwable ex) {
 				setFailure(ex);
 			}				
