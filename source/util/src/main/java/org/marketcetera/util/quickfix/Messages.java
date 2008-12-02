@@ -59,6 +59,8 @@ public interface Messages
         new I18NMessage2P(LOGGER,"missing_group"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_FIELD_VALUE=
         new I18NMessage1P(LOGGER,"invalid_field_value"); //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_TITLE=
+        new I18NMessage0P(LOGGER,"validation_title"); //$NON-NLS-1$
     static final I18NMessage0P HEADER_TITLE=
         new I18NMessage0P(LOGGER,"header_title"); //$NON-NLS-1$
     static final I18NMessage0P BODY_TITLE=
