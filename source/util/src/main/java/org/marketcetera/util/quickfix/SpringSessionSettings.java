@@ -56,7 +56,7 @@ public class SpringSessionSettings
      */
 
     public static final String LOG_FACTORY_CLASS_PARAM=
-        "metc.LogFactoryClass";
+        "metc.LogFactoryClass"; //$NON-NLS-1$
 
     /**
      * The parameter name for the QuickFIX/J message store factory
@@ -64,7 +64,7 @@ public class SpringSessionSettings
      */
 
     public static final String MESSAGE_STORE_FACTORY_CLASS_PARAM=
-        "metc.MessageStoreFactoryClass";
+        "metc.MessageStoreFactoryClass"; //$NON-NLS-1$
 
 
     // INSTANCE DATA.
