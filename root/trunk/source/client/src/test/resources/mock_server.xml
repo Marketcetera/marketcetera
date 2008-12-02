@@ -56,4 +56,20 @@
         class="org.apache.activemq.pool.PooledConnectionFactory">
     <property name="connectionFactory" ref="connectionFactory"/>
   </bean>
+
+  <bean
+   id="statusSender"
+   class="org.springframework.jms.core.JmsTemplate">
+    <property
+     name="connectionFactory"
+     ref="pooledConnectionFactory"/>
+    <property
+     name="defaultDestination">
+      <bean
+       class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg
+         value="ors-destination-status"/>
+      </bean>
+    </property>
+  </bean>
 </beans>

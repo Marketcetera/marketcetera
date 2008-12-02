@@ -27,7 +27,8 @@ import java.beans.ExceptionListener;
  *      <li>sendOrder: {@link #sendOrder(OrderSingle)},
  *      {@link #sendOrder(OrderReplace)}, {@link #sendOrder(OrderCancel)},
  *      {@link #sendOrderRaw(FIXOrder)}</li>
- *      <li>{@link #addReportListener(ReportListener) receiveReports}</li>
+ *      <li>{@link #addReportListener(ReportListener) receive reports}</li>
+ *      <li>{@link #addDestinationStatusListener(DestinationStatusListener) receive destination status updates}</li>
  *      <li>{@link #getReportsSince(Date) fetch past reports} </li>
  *      <li>{@link #getPositionAsOf(Date, MSymbol)}  fetch positions} </li> 
  * </ul>
@@ -150,15 +151,46 @@ public interface Client {
     public void removeReportListener(ReportListener inListener);
 
     /**
+     * Adds a destination status listener, which receives all the
+     * destination status changes sent out by the server.
+     *
+     * <p>If the same listener is added more than once, it will receive
+     * notifications as many times as it has been added.</p>
+     *
+     * <p>The listeners are notified in the reverse order of their
+     * addition.</p>
+     *
+     * @param listener The listener which should be supplied the
+     * destination status changes.
+     */
+    public void addDestinationStatusListener
+        (DestinationStatusListener listener);
+
+    /**
+     * Removes a destination status listener that was previously added
+     * via {@link
+     * #addDestinationStatusListener(DestinationStatusListener)}.
+     *
+     * <p>If the listener was added more than once, only its most
+     * recently added instance will be removed.</p>
+     *
+     * @param listener The listener which should stop receiving
+     * destination status changes.
+     */
+    public void removeDestinationStatusListener
+        (DestinationStatusListener listener);
+
+    /**
      * Adds an exception listener. The exception listeners are notified
      * whenever the client encounters connectivity issues when communicating
      * with the server.
      * <p>
      * The listeners are notified only when connectivity issues are
-     * encountered when sending or receiving messages, ie. when
-     * any of the <code>send*()</code> methods are invoked and when the
+     * encountered when sending or receiving messages, ie. when any of
+     * the <code>send*()</code> methods are invoked and when the
      * client receives a message and encounters errors processing it
-     * before delivering it to {@link ReportListener}. 
+     * before delivering it to {@link ReportListener} or {@link
+     * DestinationStatusListener}.
      * <p>
      * If the same listener is added more than once, it will receive
      * notifications as many times as it's been added.

@@ -38,8 +38,8 @@ import quickfix.field.OrigClOrdID;
 
 /* $License$ */
 /**
- * Tests the client functionality including transmission of trades and reports
- * to and from a mock server over JMS. 
+ * Tests the client functionality including transmission of trades,
+ * reports, and destination status to and from a mock server over JMS.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -407,6 +407,43 @@ public class ClientTest {
 
     }
 
+    @Test
+    public void statusListening() throws Exception {
+        initClient();
+        //Create our own status listener
+        StatusReplyListener chitChat = new StatusReplyListener();
+        //Add it to the client
+        getClient().addDestinationStatusListener(chitChat);
+        try {
+            DestinationStatus status = triggerStatus();
+            //Verify our listener got it.
+            DestinationStatus receivedStatus = chitChat.getStatus();
+            assertTrue(receivedStatus instanceof DestinationStatus);
+            assertEquals(status.toString(), receivedStatus.toString());
+            //Now set our reply listener to fail
+            chitChat.setFail(true);
+            //Trigger receipt of the status and verify that the main
+            //test listener got it. This verifies that exceptions from
+            //listener do not impact notifications to other listeners.
+            status = triggerStatus();
+            //Verify our listener got it.
+            receivedStatus = chitChat.getStatus();
+            assertTrue(receivedStatus instanceof DestinationStatus);
+            assertEquals(status.toString(), receivedStatus.toString());
+
+            //Now remove our listener.
+            getClient().removeDestinationStatusListener(chitChat);
+            chitChat.clear();
+            assertNull(chitChat.peekStatus());
+            //Send another order
+            triggerStatus();
+            //Verify our listener didn't get it
+            assertNull(chitChat.peekStatus());
+        } finally {
+            getClient().removeDestinationStatusListener(chitChat);
+        }
+    }
+
     /**
      * Verifies the client's behavior after it's been closed.
      *
@@ -421,6 +458,11 @@ public class ClientTest {
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
                 client.addExceptionListener(null);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.addDestinationStatusListener(null);
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
@@ -475,6 +517,11 @@ public class ClientTest {
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
+                client.removeDestinationStatusListener(null);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
                 client.sendOrder(createOrderSingle());
             }
         };
@@ -519,6 +566,22 @@ public class ClientTest {
         assertTrue(receivedReport instanceof ExecutionReport);
         assertExecReportEquals(report, (ExecutionReport) receivedReport);
         return report;
+    }
+
+    private DestinationStatus triggerStatus() throws Exception {
+        //Clean up any dirty state from previous failures
+        clearAll();
+        //Create a status for the mock server to send back
+        DestinationStatus status =
+            new DestinationStatus("me",new DestinationID("myID"),true);
+        sServer.getHandler().addToSendStatus(status);
+        //Send the status
+        sServer.getStatusSender().convertAndSend(status);
+        //Verify received status
+        DestinationStatus receivedStatus = mStatusReplies.getStatus();
+        assertTrue(receivedStatus instanceof DestinationStatus);
+        assertEquals(status.toString(),receivedStatus.toString());
+        return status;
     }
 
     @Test
@@ -786,6 +849,7 @@ public class ClientTest {
     private void clearAll() {
         mListener.clear();
         mReplies.clear();
+        mStatusReplies.clear();
         if (sServer != null) {
             sServer.getHandler().clear();
         }
@@ -807,6 +871,7 @@ public class ClientTest {
         mClient = ClientManager.getInstance();
         mClient.addExceptionListener(mListener);
         mClient.addReportListener(mReplies);
+        mClient.addDestinationStatusListener(mStatusReplies);
         assertEquals(parameters, mClient.getParameters());
         assertNotNull(mClient.getLastConnectTime());
         assertTrue(mClient.getLastConnectTime().compareTo(currentTime) >= 0);
@@ -819,6 +884,8 @@ public class ClientTest {
     }
     private final ErrorListener mListener = new ErrorListener();
     private final ReplyListener mReplies = new ReplyListener();
+    private final StatusReplyListener mStatusReplies =
+        new StatusReplyListener();
     private static MockServer sServer;
     private Client mClient;
     private static final AtomicLong sCounter = new AtomicLong();
@@ -880,5 +947,34 @@ public class ClientTest {
         private boolean mFail = false;
         private BlockingQueue<ReportBase> mReports =
                 new LinkedBlockingQueue<ReportBase>();
+    }
+    private static class StatusReplyListener
+        implements DestinationStatusListener {
+
+        public void receiveDestinationStatus(DestinationStatus inStatus) {
+            //Use add() instead of put() as these need to be non-blocking.
+            mStatus.add(inStatus);
+            if (mFail) {
+                throw new IllegalArgumentException("Test Failure");
+            }
+        }
+
+        public DestinationStatus getStatus() throws InterruptedException {
+            //Use take as we should block until a message is available.
+            return mStatus.take();
+        }
+        public DestinationStatus peekStatus() {
+            return mStatus.peek();
+        }
+        public void setFail(boolean isFail) {
+            mFail = isFail;
+        }
+        public void clear() {
+            mStatus.clear();
+            mFail = false;
+        }
+        private boolean mFail = false;
+        private BlockingQueue<DestinationStatus> mStatus =
+                new LinkedBlockingQueue<DestinationStatus>();
     }
 }

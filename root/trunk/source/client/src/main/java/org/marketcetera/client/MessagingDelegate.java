@@ -2,6 +2,7 @@ package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.*;
+import org.marketcetera.client.dest.DestinationStatus;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ExceptionListener;
@@ -20,7 +21,7 @@ import javax.jms.JMSException;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MessagingDelegate implements ExceptionListener {
     /**
-     * Receives an execution report from the topic.
+     * Receives an execution report from a topic.
      *
      * @param inReport the received execution report.
      */
@@ -29,12 +30,24 @@ public class MessagingDelegate implements ExceptionListener {
     }
 
     /**
-     * Receives an order cancel reject message from the topic.
+     * Receives an order cancel reject message from a topic.
      *
      * @param inReport the received order cancel reject.
      */
     public void handleMessage(OrderCancelReject inReport) {
         getClientImpl().notifyCancelReject(inReport);
+    }
+
+    /**
+     * Receives a destination status change from a topic.
+     *
+     * @param status The received status change.
+     */
+
+    public void handleMessage
+        (DestinationStatus status)
+    {
+        getClientImpl().notifyDestinationStatus(status);
     }
 
     /**

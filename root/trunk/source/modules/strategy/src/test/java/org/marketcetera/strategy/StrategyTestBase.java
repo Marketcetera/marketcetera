@@ -35,6 +35,7 @@ import org.junit.BeforeClass;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.DestinationStatusListener;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
 import org.marketcetera.client.dest.DestinationStatus;
@@ -570,6 +571,14 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addDestinationStatusListener(org.marketcetera.client.DestinationStatusListener)
+         */
+        @Override
+        public void addDestinationStatusListener(DestinationStatusListener inArg0)
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.client.Client#close()
          */
         @Override
@@ -662,6 +671,14 @@ public class StrategyTestBase
          */
         @Override
         public void removeReportListener(ReportListener inArg0)
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#removeDestinationStatusListener(org.marketcetera.client.DestinationStatusListener)
+         */
+        @Override
+        public void removeDestinationStatusListener(DestinationStatusListener inArg0)
         {
             throw new UnsupportedOperationException();
         }
