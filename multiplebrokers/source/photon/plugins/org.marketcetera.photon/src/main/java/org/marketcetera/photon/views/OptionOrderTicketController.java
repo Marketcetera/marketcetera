@@ -13,7 +13,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
-import org.marketcetera.marketdata.MarketDataFeedToken;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.OptionContractData;
@@ -40,7 +39,7 @@ import quickfix.fix44.DerivativeSecurityList;
  * @version $Id$
  *
  */
-@ClassVersion ("$Id$") //$NON-NLS-1$
+@ClassVersion ("$Id$")
 public class OptionOrderTicketController 
 	extends OrderTicketController<OptionOrderTicketModel>
     implements Messages
