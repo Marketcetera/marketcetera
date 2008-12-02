@@ -51,7 +51,7 @@ public class SpringSessionDescriptor
      */
 
     public static final String DEFAULT_DATA_DICTIONARY=
-        "metc.DefaultDataDictionary";
+        "metc.DefaultDataDictionary"; //$NON-NLS-1$
 
     /**
      * The map of begin strings to default data dictionaries.
@@ -76,11 +76,16 @@ public class SpringSessionDescriptor
      */ 
 
     static {
-        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX40,"FIX40.xml");
-        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX41,"FIX41.xml");
-        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX42,"FIX42.xml");
-        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX43,"FIX43.xml");
-        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX44,"FIX44.xml");
+        DATA_DICTIONARY_MAP.put
+            (FixVersions.BEGINSTRING_FIX40,"FIX40.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put
+            (FixVersions.BEGINSTRING_FIX41,"FIX41.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put
+            (FixVersions.BEGINSTRING_FIX42,"FIX42.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put
+            (FixVersions.BEGINSTRING_FIX43,"FIX43.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put
+            (FixVersions.BEGINSTRING_FIX44,"FIX44.xml"); //$NON-NLS-1$
     }
 
 

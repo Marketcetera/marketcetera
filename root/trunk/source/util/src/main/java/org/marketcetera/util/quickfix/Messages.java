@@ -3,6 +3,8 @@ package org.marketcetera.util.quickfix;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -50,4 +52,21 @@ public interface Messages
         new I18NMessage1P(LOGGER,"bad_log_factory"); //$NON-NLS-1$
     static final I18NMessage1P BAD_MESSAGE_STORE_FACTORY=
         new I18NMessage1P(LOGGER,"bad_message_store_factory"); //$NON-NLS-1$
+
+    static final I18NMessage1P MISSING_TYPE=
+        new I18NMessage1P(LOGGER,"missing_type"); //$NON-NLS-1$
+    static final I18NMessage2P MISSING_GROUP=
+        new I18NMessage2P(LOGGER,"missing_group"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_FIELD_VALUE=
+        new I18NMessage1P(LOGGER,"invalid_field_value"); //$NON-NLS-1$
+    static final I18NMessage0P HEADER_TITLE=
+        new I18NMessage0P(LOGGER,"header_title"); //$NON-NLS-1$
+    static final I18NMessage0P BODY_TITLE=
+        new I18NMessage0P(LOGGER,"body_title"); //$NON-NLS-1$
+    static final I18NMessage0P TRAILER_TITLE=
+        new I18NMessage0P(LOGGER,"trailer_title"); //$NON-NLS-1$
+    static final I18NMessage1P GROUP_TITLE=
+        new I18NMessage1P(LOGGER,"group_title"); //$NON-NLS-1$
+    static final I18NMessage4P SINGLE_FIELD=
+        new I18NMessage4P(LOGGER,"single_field"); //$NON-NLS-1$
 }
