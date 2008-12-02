@@ -133,6 +133,9 @@ public class OrderRoutingSystem
         Destinations destinations=new Destinations(cfg.getDestinations());
         Selector selector=new Selector(destinations,cfg.getSelector());
         cfg.getIDFactory().init();
+        LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
+        localIdFactory.init();
+        ReplyPersister persister=new ReplyPersister();
 
         // Set dictionary for all QuickFIX/J messages we generate.
 
@@ -154,8 +157,7 @@ public class OrderRoutingSystem
              new DBAuthenticator(),
              sessionManager);
         server.publish
-            (new ServiceImpl(sessionManager,destinations,
-                             cfg.getIDFactory()),
+            (new ServiceImpl(sessionManager,destinations,cfg.getIDFactory()),
              Service.class);
 
         // Initiate JMS.
@@ -163,11 +165,11 @@ public class OrderRoutingSystem
         QuickFIXSender sender=new QuickFIXSender();
         RequestHandler handler=new RequestHandler
             (destinations,selector,cfg.getAllowedOrders(),
-             sender,cfg.getIDFactory());
+             persister,sender,localIdFactory);
         jmsMgr.getIncomingJmsFactory().registerHandlerTM
             (handler,REQUEST_QUEUE,false,REPLY_TOPIC,true);
         QuickFIXApplication app=new QuickFIXApplication
-            (destinations,cfg.getSupportedMessages(),sender,
+            (destinations,cfg.getSupportedMessages(),persister,sender,
              jmsMgr.getOutgoingJmsFactory().createJmsTemplateTM
              (REPLY_TOPIC,true),
              jmsMgr.getOutgoingJmsFactory().createJmsTemplate
@@ -189,7 +191,7 @@ public class OrderRoutingSystem
         MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
         (new JmxExporter(mbeanServer)).export(initiator);
         mbeanServer.registerMBean
-            (new ORSAdmin(destinations,sender,cfg.getIDFactory()),
+            (new ORSAdmin(destinations,sender,localIdFactory),
              new ObjectName(JMX_NAME));
     }
 

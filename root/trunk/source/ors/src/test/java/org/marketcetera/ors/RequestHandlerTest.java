@@ -573,7 +573,7 @@ public class RequestHandlerTest
              JmsOperations inIncomingCommandsCopier)
                 throws ClassNotFoundException,
                        ConfigError, FieldConvertError, CoreException {
-            super(null,null,null,
+            super(null,null,null,null,
                   inQuickFIXSender,
                   new InMemoryIDFactory(factoryStart));
             // simulate logon

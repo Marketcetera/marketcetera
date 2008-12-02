@@ -114,7 +114,11 @@ public interface Messages
     static final I18NMessage1P RH_REPORT_FAILED_SENT=
         new I18NMessage1P(LOGGER,"rh_report_failed_sent"); //$NON-NLS-1$
 
+    static final I18NMessage1P RP_PERSISTED_REPLY=
+        new I18NMessage1P(LOGGER,"rp_persisted_reply"); //$NON-NLS-1$
 
+
+    // LEGACY CODE.
 
     static final I18NMessage2P ERROR_MESSAGE_EXCEPTION = 
         new I18NMessage2P(LOGGER,"error_message_exception"); //$NON-NLS-1$

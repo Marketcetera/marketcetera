@@ -72,6 +72,7 @@ public class RequestHandler
     private final Destinations mDestinations;
     private final Selector mSelector;
     private final OrderFilter mAllowedOrders;
+    private final ReplyPersister mPersister;
     private final IQuickFIXSender mSender;
     private final IDFactory mIDFactory;
 
@@ -82,12 +83,14 @@ public class RequestHandler
         (Destinations destinations,
          Selector selector,
          OrderFilter allowedOrders,
+         ReplyPersister persister,
          IQuickFIXSender sender,
          IDFactory idFactory)
     {
         mDestinations=destinations;
         mSelector=selector;
         mAllowedOrders=allowedOrders;
+        mPersister=persister;
         mSender=sender;
         mIDFactory=idFactory;
     }
@@ -108,6 +111,11 @@ public class RequestHandler
     public OrderFilter getAllowedOrders()
     {
         return mAllowedOrders;
+    }
+
+    public ReplyPersister getPersister()
+    {
+        return mPersister;
     }
 
     public IQuickFIXSender getSender()
@@ -140,6 +148,7 @@ public class RequestHandler
     {
         DestinationID dID=null;
         Message qMsg=null;
+        TradeMessage reply=null;
         try {
 
             // Reject null messages.
@@ -230,7 +239,7 @@ public class RequestHandler
             }
             if (msg instanceof OrderSingle) {
                 try {
-                    return Factory.getInstance().createExecutionReport
+                    reply=Factory.getInstance().createExecutionReport
                         (executionReportFromNewOrder(qMsg),dID,
                          Originator.Server);
                 } catch (FieldNotFound ex) {
@@ -239,7 +248,6 @@ public class RequestHandler
                      (Messages.RH_REPORT_FAILED_SENT,qMsg));
                 }
             }
-            return null;
         } catch (I18NException ex) {
             Messages.RH_MESSAGE_REJECTED.error(this,ex,msg);
             Message report;
@@ -256,7 +264,6 @@ public class RequestHandler
                 Messages.RH_REPORT_FAILED.error(this,ex,msg);
                 return null;
             }
-            TradeMessage reply=null;
             try {
                 reply=FIXConverter.fromQMessage
                     (report,Originator.Server,dID);
@@ -267,8 +274,11 @@ public class RequestHandler
             if (reply==null) {
                 Messages.RH_REPORT_TYPE_UNSUPPORTED.info(this,msg);
             }
-            return reply;
         }
+        if (reply!=null) {
+            getPersister().persistReply(reply);
+        }
+        return reply;
 	}
 
 

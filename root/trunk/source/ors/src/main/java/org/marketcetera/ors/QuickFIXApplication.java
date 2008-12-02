@@ -46,6 +46,7 @@ public class QuickFIXApplication
 
     private final Destinations mDestinations;
     private final MessageFilter mSupportedMessages;
+    private final ReplyPersister mPersister;
     private final IQuickFIXSender mSender;
     private final JmsOperations mToClientTrades;
     private final JmsOperations mToClientStatus;
@@ -57,6 +58,7 @@ public class QuickFIXApplication
     public QuickFIXApplication
         (Destinations destinations,
          MessageFilter supportedMessages,
+         ReplyPersister persister,
          IQuickFIXSender sender,
          JmsOperations toClientTrades,
          JmsOperations toClientStatus,
@@ -64,6 +66,7 @@ public class QuickFIXApplication
     {
         mDestinations=destinations;
         mSupportedMessages=supportedMessages;
+        mPersister=persister;
         mSender=sender;
         mToClientTrades=toClientTrades;
         mToClientStatus=toClientStatus;
@@ -81,6 +84,11 @@ public class QuickFIXApplication
     public MessageFilter getSupportedMessages()
     {
         return mSupportedMessages;
+    }
+
+    public ReplyPersister getPersister()
+    {
+        return mPersister;
     }
 
     public IQuickFIXSender getSender()
@@ -136,6 +144,7 @@ public class QuickFIXApplication
             Messages.QF_REPORT_TYPE_UNSUPPORTED.info(this);
             return;
         }
+        getPersister().persistReply(reply);
         getToClientTrades().convertAndSend(reply);
     }
 
