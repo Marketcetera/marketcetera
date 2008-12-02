@@ -58,4 +58,32 @@
     <property name="exceptionListener" ref="delegate"/>
     <property name="destination" ref="orsMessagesTopic"/>
   </bean>
+
+  <!-- note that this needs to use the non-pooled connection factory -->
+  <bean
+   class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+    <property
+     name="connectionFactory"
+     ref="externalConnectionFactory"/>
+    <property
+     name="messageListener">
+      <bean
+       class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property
+         name="delegate"
+         ref="delegate"/>
+      </bean>
+    </property>
+    <property
+     name="exceptionListener"
+     ref="delegate"/>
+    <property
+     name="destination">
+     <bean
+      class="org.apache.activemq.command.ActiveMQTopic">
+      <constructor-arg
+       value="ors-destination-status"/>
+     </bean>
+    </property>
+  </bean>
 </beans>

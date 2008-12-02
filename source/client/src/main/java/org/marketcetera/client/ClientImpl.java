@@ -10,6 +10,7 @@ import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.trade.*;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.client.dest.DestinationsStatus;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -77,6 +78,26 @@ class ClientImpl implements Client {
         failIfClosed();
         synchronized (mReportListeners) {
             mReportListeners.removeFirstOccurrence(inListener);
+        }
+    }
+
+    @Override
+    public void addDestinationStatusListener
+        (DestinationStatusListener listener)
+    {
+        failIfClosed();
+        synchronized (mDestinationStatusListeners) {
+            mDestinationStatusListeners.addFirst(listener);
+        }
+    }
+
+    @Override
+    public void removeDestinationStatusListener
+        (DestinationStatusListener listener)
+    {
+        failIfClosed();
+        synchronized (mDestinationStatusListeners) {
+            mDestinationStatusListeners.removeFirstOccurrence(listener);
         }
     }
 
@@ -207,6 +228,24 @@ class ClientImpl implements Client {
             }
         }
     }
+
+    void notifyDestinationStatus(DestinationStatus status) {
+        SLF4JLoggerProxy.debug
+            (TRAFFIC,"Received Destination Status:{}",status); //$NON-NLS-1$
+        synchronized (mDestinationStatusListeners) {
+            for (DestinationStatusListener listener:
+                     mDestinationStatusListeners) {
+                try {
+                    listener.receiveDestinationStatus(status);
+                } catch (Throwable t) {
+                    Messages.LOG_ERROR_RECEIVE_DEST_STATUS.warn(this, t,
+                            ObjectUtils.toString(status));
+                    ExceptUtils.interrupt(t);
+                }
+            }
+        }
+    }
+
     void exceptionThrown(ConnectionException inException) {
         synchronized (mExceptionListeners) {
             for(ExceptionListener l: mExceptionListeners) {
@@ -365,6 +404,8 @@ class ClientImpl implements Client {
     private volatile boolean mClosed = false;
     private final Deque<ReportListener> mReportListeners =
             new LinkedList<ReportListener>();
+    private final Deque<DestinationStatusListener> mDestinationStatusListeners=
+        new LinkedList<DestinationStatusListener>();
     private final Deque<ExceptionListener> mExceptionListeners =
             new LinkedList<ExceptionListener>();
     private Date mLastConnectTime;

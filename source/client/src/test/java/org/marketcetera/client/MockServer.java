@@ -12,6 +12,7 @@ import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.MessageCreationException;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import quickfix.Message;
 import quickfix.FieldNotFound;
@@ -63,6 +64,7 @@ public class MockServer {
         mHandler = (MockMessageHandler) mContext.getBean("messageHandler",
                 MockMessageHandler.class);
         mContext.start();
+        mStatusSender = (JmsTemplate) mContext.getBean("statusSender");
 
         // Use default Server host and port 
         SessionManager<Object> sessionManager=new SessionManager<Object>();
@@ -76,6 +78,9 @@ public class MockServer {
 
     public MockMessageHandler getHandler() {
         return mHandler;
+    }
+    public JmsTemplate getStatusSender() {
+        return mStatusSender;
     }
     private void readMessagesFromFile(File inFile) {
         BufferedReader reader = null;
@@ -176,4 +181,5 @@ public class MockServer {
     public static final String URL = "tcp://localhost:61616";
     private final ClassPathXmlApplicationContext mContext;
     private MockMessageHandler mHandler;
+    private JmsTemplate mStatusSender;
 }

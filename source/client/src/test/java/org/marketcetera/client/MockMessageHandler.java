@@ -53,6 +53,11 @@ public class MockMessageHandler {
         //Use add() instead of put() as we need a non-blocking method.
         mToSend.add(inObject);
     }
+    public synchronized void addToSendStatus(Object inObject) {
+        SLF4JLoggerProxy.debug(this, "ADDED STATUS {}", inObject);
+        //Use add() instead of put() as we need a non-blocking method.
+        mToSendStatus.add(inObject);
+    }
     public synchronized Object removeReceived() throws InterruptedException {
         //block until a report is available.
         return mReceived.take();
@@ -63,6 +68,7 @@ public class MockMessageHandler {
     public synchronized void clear() {
         mReceived.clear();
         mToSend.clear();
+        mToSendStatus.clear();
     }
     static ExecutionReport createExecutionReport() {
         try {
@@ -84,5 +90,6 @@ public class MockMessageHandler {
     }
     private final BlockingQueue<Object> mReceived = new LinkedBlockingQueue<Object>();
     private final Queue<Object> mToSend = new LinkedList<Object>();
+    private final Queue<Object> mToSendStatus = new LinkedList<Object>();
     private static final AtomicLong mLong = new AtomicLong();
 }
