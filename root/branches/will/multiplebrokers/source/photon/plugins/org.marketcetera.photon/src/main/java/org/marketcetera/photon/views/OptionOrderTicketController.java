@@ -50,7 +50,6 @@ public class OptionOrderTicketController
 	 * Maps option roots and underlyings to a complete set of OptionContractData
 	 */
 	HashMap<String, List<OptionContractData>> receivedOptionRoots = new HashMap<String, List<OptionContractData>>();
-	private MarketDataFeedToken currentOptionToken;
 	
 	/**
 	 * Create a new {@link OptionOrderTicketController} wrapping the given model.
@@ -254,52 +253,4 @@ public class OptionOrderTicketController
 			                                                      e);
 		}
 	}
-
-	/**
-	 * Get the current subscription for option market data
-	 * @return the ISubscription for market data
-	 */
-	public MarketDataFeedToken getOptionMarketDataToken() {
-		return currentOptionToken;
-	}
-	
-
-//	/**
-//	 * Debug code
-//	 * @return
-//	 */
-//	@Deprecated
-//    public static DerivativeSecurityList _createDummySecurityList(String symbol, String[] callSuffixes, String [] putSuffixes, BigDecimal[] strikePrices) {
-//        SecurityRequestResult resultCode = new SecurityRequestResult(SecurityRequestResult.VALID_REQUEST);
-//        DerivativeSecurityList responseMessage = new DerivativeSecurityList();
-//        responseMessage.setField(new SecurityReqID("bob"));
-//        responseMessage.setField(new SecurityResponseID("123"));
-//
-//        responseMessage.setField(new UnderlyingSymbol(symbol));
-//        for (int i = 0; i < callSuffixes.length; i++) {
-//            MSymbol putSymbol = new MSymbol(symbol+"+"+putSuffixes[i]);
-//            // put first
-//            Group optionGroup = new DerivativeSecurityList.NoRelatedSym();
-//            optionGroup.setField(new Symbol(putSymbol.toString()));
-//            optionGroup.setField(new StrikePrice(strikePrices[i]));
-//            optionGroup.setField(new CFICode("OPASPS"));
-//            optionGroup.setField(new MaturityMonthYear("200801"));
-//            optionGroup.setField(new MaturityDate("20080122"));
-//            responseMessage.addGroup(optionGroup);
-//
-//            MSymbol callSymbol = new MSymbol(symbol + "+" + callSuffixes[i]);
-//            // now call
-//            optionGroup.setField(new Symbol(callSymbol.toString()));
-//            optionGroup.setField(new StrikePrice(strikePrices[i]));
-//            optionGroup.setField(new CFICode("OCASPS"));
-//            optionGroup.setField(new MaturityMonthYear("200801"));
-//            optionGroup.setField(new MaturityDate("20080122"));
-//            responseMessage.addGroup(optionGroup);
-//
-//        }
-//        responseMessage.setField(resultCode);
-//        return responseMessage;
-//    }
-
-
 }

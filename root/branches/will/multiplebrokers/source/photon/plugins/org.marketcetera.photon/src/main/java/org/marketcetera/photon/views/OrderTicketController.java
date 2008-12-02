@@ -5,21 +5,12 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.CoreException;
-import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.marketdata.MarketDataFeedToken;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
-import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 
 import quickfix.Message;
-import quickfix.field.MsgType;
 
 /* $License$ */
 
@@ -80,12 +71,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
         return orderTicketModel;
     }
 
-    /**
-     * Remove this as a market data listener, and close the connection
-     * to the {@link MarketDataFeedTracker}.
-     * 
-     * Remove this as a listener to preference store events.
-     */
+    @Override
     public void dispose() {
         // don't dispose of system colors
         PhotonPlugin.getDefault().getPreferenceStore()
