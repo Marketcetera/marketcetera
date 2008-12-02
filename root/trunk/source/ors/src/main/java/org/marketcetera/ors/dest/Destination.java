@@ -8,9 +8,13 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.MessageRouteManager;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.DestinationID;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import quickfix.SessionID;
+import org.marketcetera.util.quickfix.AnalyzedMessage;
+import quickfix.DataDictionary;
+import quickfix.Message;
 import quickfix.Session;
+import quickfix.SessionID;
 
 /**
  * The in-memory representation of a single destination.
@@ -112,6 +116,28 @@ public class Destination
     }
 
     /**
+     * Returns the receiver's QuickFIX/J session.
+     *
+     * @return The session.
+     */
+
+    public Session getSession()
+    {
+        return Session.lookupSession(getSessionID());
+    }
+
+    /**
+     * Returns the receiver's QuickFIX/J data dictionary.
+     *
+     * @return The dictionary.
+     */
+
+    public DataDictionary getDataDictionary()
+    {
+        return getSession().getDataDictionary();
+    }
+
+    /**
      * Returns the receiver's message modifier manager.
      *
      * @return The manager. It may be null.
@@ -164,8 +190,7 @@ public class Destination
     public synchronized FIXDataDictionary getFIXDataDictionary()
     {
         if (mDataDictionary==null) {
-            mDataDictionary=new FIXDataDictionary
-                (Session.lookupSession(getSessionID()).getDataDictionary());
+            mDataDictionary=new FIXDataDictionary(getDataDictionary());
         }
         return mDataDictionary;
     }
@@ -206,6 +231,22 @@ public class Destination
     public synchronized boolean getLoggedOn()
     {
         return mLoggedOn;
+    }
+
+    /**
+     * Logs the given message, analyzed using the receiver's data
+     * dictionary, at the debugging level.
+     *
+     * @param msg The message.
+     */
+
+    public void logMessage
+        (Message msg)
+    {
+        if (SLF4JLoggerProxy.isDebugEnabled(this)) {
+            Messages.ANALYZED_MESSAGE.debug
+                (this,new AnalyzedMessage(getDataDictionary(),msg).toString());
+        }        
     }
 
 
