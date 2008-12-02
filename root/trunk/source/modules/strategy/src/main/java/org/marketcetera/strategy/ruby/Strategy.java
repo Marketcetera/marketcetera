@@ -10,6 +10,7 @@ import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
@@ -272,9 +273,9 @@ public class Strategy
      * <p>The <code>inSource</code> parameter must contain the identifier of a started market data provider
      * module.
      * 
-     * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
      * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols for which to request data
-     * @return a <code>long</code> value containing an identifier corresponding to this market data request
+     * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
+     * @return a <code>long</code> value containing an identifier corresponding to this market data request or 0 if the request failed
      */
     public final long request_market_data(String inSymbols,
                                           String inSource)
@@ -283,12 +284,34 @@ public class Strategy
                                  inSource);
     }
     /**
+     * Requests market data processed by the given complex event processor from the given source.
+     *
+     * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols
+     * @param inMarketDataSource a <code>String</code> value containing a string corresponding to a market data provider identifier
+     * @param inStatements a <code>String[]</code> value containing the statements to pass to the
+     *   complex event processor.  The meaning of the statements varies according to the actual
+     *   event processor that handles them.
+     * @param inCepSource a <code>String</code> value containing the name of the complex event processor
+     *   to which to send the query request
+     * @return a <code>long</code> value containing the handle of the request or 0 if the request failed
+     */
+    public final long request_processed_market_data(String inSymbols,
+                                                    String inMarketDataSource,
+                                                    String[] inStatements,
+                                                    String inCepSource)
+    {
+        return requestProcessedMarketData(inSymbols,
+                                          inMarketDataSource,
+                                          inStatements,
+                                          inCepSource);
+    }
+    /**
      * Cancels a given market data request.
      * 
-     * <p>If the given <code>inDataRequestID</code> identifier does not correspond to an active market data
+     * <p>If the given <code>inRequestID</code> identifier does not correspond to an active market data
      * request, this method does nothing.
      *
-     * @param inDataRequestID a <code>long</code> value identifying the market data request to cancel
+     * @param inRequestID a <code>long</code> value identifying the market data request to cancel
      */
     public final void cancel_market_data_request(long inRequestID)
     {
@@ -302,6 +325,40 @@ public class Strategy
     public final void cancel_all_market_data_requests()
     {
         cancelAllMarketDataRequests();
+    }
+    /**
+     * Creates a complex event processor request.
+     * 
+     * @param inStatements a <code>String[]</code> value containing an array of statements that comprises the request
+     * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
+     * @return a <code>long</code> value containing an identifier corresponding to this market data request or 0 if the request failed
+     */
+    public final long request_cep_data(String[] inStatements,
+                                       String inSource)
+    {
+        return requestCEPData(inStatements,
+                              inSource);
+    }
+    /**
+     * Cancels a given complex event processor request.
+     * 
+     * <p>If the given <code>inRequestID</code> identifier does not correspond to an active complex event processor data
+     * request, this method does nothing.
+     *
+     * @param inRequestID a <code>long</code> value identifying the complex event processor data request to cancel
+     */
+    public final void cancel_cep_request(long inRequestID)
+    {
+        cancelCEPRequest(inRequestID);
+    }
+    /**
+     * Cancels all complex event processor requests for this {@link Strategy}.
+     *
+     * <p>If there are no active complex event processor requests for this {@link Strategy}, this method does nothing.
+     */
+    public final void cancel_all_cep_requests()
+    {
+        cancelAllCEPRequests();
     }
     /**
      * Suggests a trade.
@@ -330,6 +387,29 @@ public class Strategy
     {
         sendMessage(inMessage,
                     inDestination);
+    }
+    /**
+     * Sends the given event to the CEP module indicated by the provider.
+     * 
+     * <p>The corresponding CEP module must already exist or the message will not be sent.
+     *
+     * @param inEvent an <code>EventBase</code> value containing the event to be sent
+     * @param inProvider a <code>String</code> value containing the name of a CEP provider
+     */
+    public final void send_event_to_cep(EventBase inEvent,
+                                        String inProvider)
+    {
+        sendEventToCEP(inEvent,
+                       inProvider);
+    }
+    /**
+     * Sends the given event to the appropriate subscribers. 
+     *
+     * @param inEvent an <code>EventBase</code> value
+     */
+    public final void send_event(EventBase inEvent)
+    {
+        sendEvent(inEvent);
     }
     /**
      * Sends an order to all destinations to which orders are sent.

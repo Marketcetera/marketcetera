@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 
 import java.math.BigDecimal;
@@ -23,14 +24,19 @@ import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.EventBase;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
+import org.marketcetera.module.CopierModuleFactory;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
 import org.marketcetera.trade.DestinationID;
@@ -44,6 +50,7 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TypesTestBase;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;
@@ -1676,6 +1683,596 @@ public abstract class LanguageTestBase
         doDestinationTest(new DestinationStatus[0]);
     }
     /**
+     * Tests that two strategies with the same class name can co-exist.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void strategiesOfSameClass()
+            throws Exception
+    {
+        StrategyCoordinates strategy1 = getPart1Strategy();
+        ModuleURN strategy1URN = createStrategy(strategy1.getName(),
+                                                getLanguage(),
+                                                strategy1.getFile(),
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+        ModuleURN strategy2URN = createStrategy(strategy1.getName(),
+                                                getLanguage(),
+                                                strategy1.getFile(),
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+        doSuccessfulStartTestNoVerification(strategy1URN);
+        doSuccessfulStartTestNoVerification(strategy2URN);
+        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
+        // should be two running strategies
+        assertEquals(2,
+                     runningStrategies.size());
+        // execute the onCallback method in each running strategy
+        for(StrategyImpl runningStrategy : runningStrategies) {
+            runningStrategy.getRunningStrategy().onCallback(null);
+        }
+        // both strategies get their own onCallback called
+        assertEquals("2",
+                     AbstractRunningStrategy.getProperty("onCallback"));
+        // there should be two callbacks registered
+        String strategyName1 = AbstractRunningStrategy.getProperty("callback1");
+        String strategyName2 = AbstractRunningStrategy.getProperty("callback2");
+        assertFalse(strategyName1.equals(strategyName2));
+    }
+    /**
+     * Verifies that a Strategy may be dynamically redefined. 
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void redefinedStrategy()
+            throws Exception
+    {
+        StrategyCoordinates strategy1 = getPart1Strategy();
+        StrategyCoordinates strategy2 = getPart1RedefinedStrategy();
+        ModuleURN strategy1URN = createStrategy(strategy1.getName(),
+                                                getLanguage(),
+                                                strategy1.getFile(),
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+        ModuleURN strategy2URN = createStrategy(strategy2.getName(),
+                                                getLanguage(),
+                                                strategy2.getFile(),
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+        doSuccessfulStartTestNoVerification(strategy1URN);
+        doSuccessfulStartTestNoVerification(strategy2URN);
+        setPropertiesToNull();
+        // strategies have started and are working
+        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
+        // should be two running strategies
+        assertEquals(2,
+                     runningStrategies.size());
+        // execute the onAsk method in each running strategy
+        for(StrategyImpl runningStrategy : runningStrategies) {
+            runningStrategy.getRunningStrategy().onAsk(askEvent);
+        }
+        // both strategies should get their onAsk called, but the definition should be the second one
+        Properties properties = AbstractRunningStrategy.getProperties();
+        int askCounter = 0;
+        for(Object key : properties.keySet()) {
+            String keyString = (String)key;
+            if(keyString.startsWith("ask")) {
+                askCounter += 1;
+                assertTrue(properties.getProperty(keyString).startsWith("part1"));
+            }
+        }
+        assertEquals(2,
+                     askCounter);
+    }
+    /**
+     * Tests the stategy's ability to execute CEP queries.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void cep()
+        throws Exception
+    {
+        String validEsperStatement1 = "select * from trade where symbol='METC'";
+        String validEsperStatement2 = "select * from ask where symbol='ORCL'";
+        String validSystemStatement1 = "select * from trade";
+        String validSystemStatement2 = "select * from ask";
+        String invalidStatement = "this statement is not syntactically valid";
+        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        String[] sources = new String[] { null, "esper", "system" };
+        String[][] statements = new String[][] { { null }, { }, { invalidStatement },
+                                                 { validSystemStatement1, validSystemStatement2 }, { validSystemStatement1 },
+                                                 { validEsperStatement1 }, { validEsperStatement1, validEsperStatement2 } };
+        for(int sourceCounter=0;sourceCounter<sources.length;sourceCounter++) {
+            for(int statementCounter=0;statementCounter<statements.length;statementCounter++) {
+                SLF4JLoggerProxy.debug(LanguageTestBase.class,
+                                       "{}:{}",
+                                       sourceCounter,
+                                       statementCounter);
+                List<OrderSingleSuggestion> suggestions = doCEPTest(sources[sourceCounter],
+                                                                    statements[statementCounter],
+                                                                    events,
+                                                                    true);
+                // verify results
+                switch(sourceCounter) {
+                    case 0 :
+                        assertTrue(suggestions.isEmpty());
+                        continue;
+                    case 1 :
+                        // esper conditions
+                        switch(statementCounter) {
+                            case 0 :
+                                // null statements
+                                assertTrue(suggestions.isEmpty());
+                                continue;
+                            case 1 :
+                                // empty statements
+                                assertTrue(suggestions.isEmpty());
+                                continue;
+                            case 2 :
+                                // invalid statements
+                                assertTrue(suggestions.isEmpty());
+                                continue;
+                            case 3 :
+                                // 2 valid system statements (also valid esper statements)
+                                // note that the last statement is the only one that will return data
+                                assertEquals(2,
+                                             suggestions.size());
+                                verifyCEPSuggestion("METC",
+                                                    new BigDecimal("3"),
+                                                    new BigDecimal("300"),
+                                                    suggestions.get(0));
+                                verifyCEPSuggestion("ORCL",
+                                                    new BigDecimal("4"),
+                                                    new BigDecimal("400"),
+                                                    suggestions.get(1));
+                                continue;
+                            case 4 :
+                                // 1 valid system statement (also valid esper statement)
+                                assertEquals(2,
+                                             suggestions.size());
+                                verifyCEPSuggestion("METC",
+                                                    new BigDecimal("1"),
+                                                    new BigDecimal("100"),
+                                                    suggestions.get(0));
+                                verifyCEPSuggestion("ORCL",
+                                                    new BigDecimal("2"),
+                                                    new BigDecimal("200"),
+                                                    suggestions.get(1));
+                                continue;
+                            case 5 :
+                                // 1 valid esper statement
+                                assertEquals(1,
+                                             suggestions.size());
+                                verifyCEPSuggestion("METC",
+                                                    new BigDecimal("1"),
+                                                    new BigDecimal("100"),
+                                                    suggestions.get(0));
+                                continue;
+                            case 6 :
+                                // 2 valid esper statements
+                                assertEquals(1,
+                                             suggestions.size());
+                                verifyCEPSuggestion("ORCL",
+                                                    new BigDecimal("4"),
+                                                    new BigDecimal("400"),
+                                                    suggestions.get(0));
+                                continue;
+                            default :
+                                fail("Unexpected statement");
+                        }
+                        continue;
+                    case 2 :
+                        // system conditions
+                        switch(statementCounter) {
+                            case 0 :
+                                // null statements
+                                assertTrue(suggestions.isEmpty());
+                                continue;
+                            case 1 :
+                                // empty statements
+                                assertTrue(suggestions.isEmpty());
+                                continue;
+                            case 2 :
+                                // invalid statements
+                                assertTrue(suggestions.isEmpty());
+                                continue;
+                            case 3 :
+                                // 2 valid system statements
+                                // note that the first statement is the only one that will return data
+                                assertEquals(2,
+                                             suggestions.size());
+                                verifyCEPSuggestion("METC",
+                                                    new BigDecimal("1"),
+                                                    new BigDecimal("100"),
+                                                    suggestions.get(0));
+                                verifyCEPSuggestion("ORCL",
+                                                    new BigDecimal("2"),
+                                                    new BigDecimal("200"),
+                                                    suggestions.get(1));
+                                continue;
+                            case 4 :
+                                // 1 valid system statement
+                                assertEquals(2,
+                                             suggestions.size());
+                                verifyCEPSuggestion("METC",
+                                                    new BigDecimal("1"),
+                                                    new BigDecimal("100"),
+                                                    suggestions.get(0));
+                                verifyCEPSuggestion("ORCL",
+                                                    new BigDecimal("2"),
+                                                    new BigDecimal("200"),
+                                                    suggestions.get(1));
+                                continue;
+                            case 5 :
+                                // 1 valid esper statement (not valid for system)
+                                assertTrue(suggestions.isEmpty());
+                                continue;
+                            case 6 :
+                                // 2 valid esper statements (not valid for system)
+                                assertTrue(suggestions.isEmpty());
+                                continue;
+                            default :
+                                fail("Unexpected statement");
+                        }
+                    default :
+                        fail("Unexpected source");
+                }
+            }
+        }
+    }
+    /**
+     * Tests the ability to cancel a single CEP request.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void cancelSingleCep()
+        throws Exception
+    {
+        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        assertNull(AbstractRunningStrategy.getProperty("requestID"));
+        // create a strategy that creates some suggestions
+        List<OrderSingleSuggestion> suggestions = doCEPTest("esper",
+                                                            new String[] { "select * from trade" },
+                                                            events,
+                                                            false);
+        assertEquals(2,
+                     suggestions.size());
+        String requestIDString = AbstractRunningStrategy.getProperty("requestID");
+        assertNotNull(requestIDString);
+        // issue a cancel request for a non-existant id
+        long badID = System.nanoTime();
+        assertFalse(Long.parseLong(requestIDString) == badID);
+        AbstractRunningStrategy.setProperty("shouldCancelCEPData",
+                                            "true");
+        AbstractRunningStrategy.setProperty("requestID",
+                                            Long.toString(badID));
+        // the strategy is still running and it has an active CEP query
+        // if we send an "onOther" to the strategy, it will trigger a cancel request
+        StrategyImpl strategy = getFirstRunningStrategy();
+        strategy.getRunningStrategy().onOther(this);
+        ModuleURN cepModuleURN = new ModuleURN("metc:cep:esper:" + strategy.getDefaultNamespace());
+        // verify that the cancel did not affect the existing query by triggering another set of suggestions via the CEP query
+        assertEquals(0,
+                     getReceivedSuggestions(suggestionsURN).size());
+        feedEventsToCEP(events,
+                        cepModuleURN);
+        assertEquals(2,
+                     getReceivedSuggestions(suggestionsURN).size());
+        // cancel the actual query and verify no events are received from CEP
+        AbstractRunningStrategy.setProperty("requestID",
+                                            requestIDString);
+        assertEquals(0,
+                     getReceivedSuggestions(suggestionsURN).size());
+        // triggers the cancel
+        strategy.getRunningStrategy().onOther(this);
+        // triggers the events to CEP
+        feedEventsToCEP(events,
+                        cepModuleURN);
+        // measure the result
+        assertEquals(0,
+                     getReceivedSuggestions(suggestionsURN).size());
+    }
+    /**
+     * Cancels all active cep requests.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void cancelAllCep()
+        throws Exception
+    {
+        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        assertEquals(2,
+                     doCEPTest("esper",
+                               new String[] { "select * from trade" },
+                               events,
+                               false).size());
+        StrategyImpl strategy = getFirstRunningStrategy();
+        strategy.getRunningStrategy().onCallback(this);
+        ModuleURN cepModuleURN = new ModuleURN("metc:cep:esper:" + strategy.getDefaultNamespace());
+        feedEventsToCEP(events,
+                        cepModuleURN);
+        assertEquals(0,
+                     getReceivedSuggestions(suggestionsURN).size());
+        // cancel again to make sure nothing breaks
+        strategy.getRunningStrategy().onCallback(this);
+        feedEventsToCEP(events,
+                        cepModuleURN);
+        assertEquals(0,
+                     getReceivedSuggestions(suggestionsURN).size());
+    }
+    /**
+     * Tests a strategy's ability to send events to a targeted CEP module
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void sendEventToCEP()
+        throws Exception
+    {
+        // start the event strategy
+        StrategyCoordinates strategyFile = getEventStrategy();
+        theStrategy = createStrategy(strategyFile.getName(),
+                                     getLanguage(),
+                                     strategyFile.getFile(),
+                                     null,
+                                     null,
+                                     null,
+                                     null);
+        AbstractRunningStrategy.setProperty("source",
+                                            "esper");
+        // get a handle to that strategy
+        StrategyImpl strategy = getFirstRunningStrategy();
+        // begin testing
+        assertNull(AbstractRunningStrategy.getProperty("ask"));
+        assertNull(AbstractRunningStrategy.getProperty("askCount"));
+        // send an event to a null source
+        AbstractRunningStrategy.setProperty("nilSource",
+                                            "true");
+        // start the reaction
+        strategy.getRunningStrategy().onOther(askEvent);
+        // make sure nothing got sent out
+        assertNull(AbstractRunningStrategy.getProperty("ask"));
+        assertNull(AbstractRunningStrategy.getProperty("askCount"));
+        // next test - null event
+        AbstractRunningStrategy.setProperty("nilSource",
+                                            null);
+        AbstractRunningStrategy.setProperty("nilEvent",
+                                            "true");
+        assertNull(AbstractRunningStrategy.getProperty("ask"));
+        assertNull(AbstractRunningStrategy.getProperty("askCount"));
+        // start the reaction
+        strategy.getRunningStrategy().onOther(askEvent);
+        // make sure nothing got sent out
+        assertNull(AbstractRunningStrategy.getProperty("ask"));
+        assertNull(AbstractRunningStrategy.getProperty("askCount"));
+        // next test - empty provider
+        AbstractRunningStrategy.setProperty("nilEvent",
+                                            null);
+        AbstractRunningStrategy.setProperty("source",
+                                            "");
+        // start the reaction
+        strategy.getRunningStrategy().onOther(askEvent);
+        // make sure nothing got sent out
+        assertNull(AbstractRunningStrategy.getProperty("ask"));
+        assertNull(AbstractRunningStrategy.getProperty("askCount"));
+        // next - invalid provider
+        AbstractRunningStrategy.setProperty("source",
+                                            "this-cep-provider-does-not-exist");
+        // start the reaction
+        strategy.getRunningStrategy().onOther(askEvent);
+        // make sure nothing got sent out
+        assertNull(AbstractRunningStrategy.getProperty("ask"));
+        assertNull(AbstractRunningStrategy.getProperty("askCount"));
+        // next - valid but unstarted provider (since no query is established, the event gets sent but is never received back by the strategy)
+        AbstractRunningStrategy.setProperty("source",
+                                            "esper");
+        // start the reaction
+        strategy.getRunningStrategy().onOther(askEvent);
+        // make sure nothing got sent out
+        assertNull(AbstractRunningStrategy.getProperty("ask"));
+        assertNull(AbstractRunningStrategy.getProperty("askCount"));
+        // next, create a query that listens for ask events
+        AbstractRunningStrategy.setProperty("shouldRequestCEPData",
+                                            "true");
+        String[] statements = new String[] { "select * from ask" };
+        AbstractRunningStrategy.setProperty("statements",
+                                            createConsolidatedCEPStatement(statements));
+        // start the query
+        strategy.getRunningStrategy().onCallback(this);
+        // start the reaction, this will cause the event to be echoed back to the strategy
+        strategy.getRunningStrategy().onOther(askEvent);
+        assertEquals("1",
+                     AbstractRunningStrategy.getProperty("askCount"));
+        assertEquals(askEvent.toString(),
+                     AbstractRunningStrategy.getProperty("ask"));
+    }
+    /**
+     * Tests the strategy's ability to send an event to event subscribers.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void sendEvent()
+        throws Exception
+    {
+        // these will be the subscribers to events
+        MockRecorderModule eventSubscriber = MockRecorderModule.Factory.recorders.get(ordersURN);
+        MockRecorderModule allSubscriber = MockRecorderModule.Factory.recorders.get(suggestionsURN);
+        // start the event strategy
+        StrategyCoordinates strategyFile = getEventStrategy();
+        theStrategy = createStrategy(strategyFile.getName(),
+                                     getLanguage(),
+                                     strategyFile.getFile(),
+                                     null,
+                                     null,
+                                     null,
+                                     null);
+        // get a handle to the running strategy
+        StrategyImpl strategy = getFirstRunningStrategy();
+        // begin testing
+        assertTrue(eventSubscriber.getDataReceived().isEmpty());
+        assertTrue(allSubscriber.getDataReceived().isEmpty());
+        AbstractRunningStrategy.setProperty("eventOnlyTest",
+                                            "true");
+        // send a null event
+        AbstractRunningStrategy.setProperty("nilEvent",
+                                            "true");
+        // start reaction
+        strategy.getRunningStrategy().onOther(askEvent);
+        // make sure nothing got sent
+        assertTrue(eventSubscriber.getDataReceived().isEmpty());
+        assertTrue(allSubscriber.getDataReceived().isEmpty());
+        // real event (no subscribers yet, though)
+        AbstractRunningStrategy.setProperty("nilEvent",
+                                            null);
+        // start reaction
+        strategy.getRunningStrategy().onOther(askEvent);
+        // event got through, but didn't go anywhere
+        assertTrue(eventSubscriber.getDataReceived().isEmpty());
+        assertTrue(allSubscriber.getDataReceived().isEmpty());
+        // set up a subscriber for the events channel and the all channel
+        DataFlowID eventSubscription = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(theStrategy,
+                                                                                                        OutputType.EVENTS),
+                                                                                        new DataRequest(ordersURN) },
+                                                                    false);
+        DataFlowID allSubscription = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(theStrategy,
+                                                                                                      OutputType.ALL),
+                                                                                      new DataRequest(suggestionsURN) },
+                                                                  false);
+        // start again
+        strategy.getRunningStrategy().onOther(askEvent);
+        // check results
+        assertEquals(1,
+                     eventSubscriber.getDataReceived().size());
+        assertEquals(1,
+                     allSubscriber.getDataReceived().size());
+        assertEquals(askEvent,
+                     eventSubscriber.getDataReceived().get(0).getData());
+        assertEquals(askEvent,
+                     allSubscriber.getDataReceived().get(0).getData());
+        // cleanup
+        moduleManager.cancel(eventSubscription);
+        moduleManager.cancel(allSubscription);
+    }
+    /**
+     * Tests a strategy's ability to create processed market data requests.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void processedMarketDataRequests()
+        throws Exception
+    {
+        StrategyCoordinates strategy = getCombinedStrategy();
+        theStrategy = createStrategy(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null,
+                                     null);
+        // these are the nominal test values
+        String symbols = "METC,ORCL,GOOG,YHOO";
+        String marketDataSource = BogusFeedModuleFactory.IDENTIFIER;
+        String compressedStatements = createConsolidatedCEPStatement(new String[] { "select * from ask where symbol='METC'" });
+        String cepSource = "esper";
+        // set the default values
+        AbstractRunningStrategy.setProperty("symbols",
+                                            symbols);
+        AbstractRunningStrategy.setProperty("marketDataSource",
+                                            marketDataSource);
+        AbstractRunningStrategy.setProperty("statements",
+                                            compressedStatements);
+        AbstractRunningStrategy.setProperty("cepSource",
+                                            cepSource);
+        doProcessedMarketDataRequestVerification(false);
+        // begin testing
+        // test with null symbols
+        AbstractRunningStrategy.setProperty("symbols",
+                                            null);
+        executeProcessedMarketDataRequest(false);
+        // test with empty symbols string
+        AbstractRunningStrategy.setProperty("symbols",
+                                            "");
+        executeProcessedMarketDataRequest(false);
+        // done with negative symbols, replace the value
+        AbstractRunningStrategy.setProperty("symbols",
+                                            symbols);
+        // test null market data source
+        AbstractRunningStrategy.setProperty("marketDataSource",
+                                            null);
+        executeProcessedMarketDataRequest(false);
+        // test empty market data source
+        AbstractRunningStrategy.setProperty("marketDataSource",
+                                            "");
+        executeProcessedMarketDataRequest(false);
+        // done with negative market data source, replace the value
+        AbstractRunningStrategy.setProperty("marketDataSource",
+                                            marketDataSource);
+        // test null statements
+        AbstractRunningStrategy.setProperty("statements",
+                                            null);
+        executeProcessedMarketDataRequest(false);
+        // test zero statements
+        AbstractRunningStrategy.setProperty("statements",
+                                            createConsolidatedCEPStatement(new String[0]));
+        executeProcessedMarketDataRequest(false);
+        // done with negative statements, replace the value
+        AbstractRunningStrategy.setProperty("statements",
+                                            compressedStatements);
+        // test null cep source
+        AbstractRunningStrategy.setProperty("cepSource",
+                                            null);
+        executeProcessedMarketDataRequest(false);
+        // test empty cep source
+        AbstractRunningStrategy.setProperty("cepSource",
+                                            "");
+        executeProcessedMarketDataRequest(false);
+        // done with negative cep source, replace the value
+        AbstractRunningStrategy.setProperty("cepSource",
+                                            cepSource);
+        // turn off the md feed
+        moduleManager.stop(bogusDataFeedURN);
+        executeProcessedMarketDataRequest(false);
+        // start the md feed again
+        moduleManager.start(bogusDataFeedURN);
+        // next test returns some values
+        executeProcessedMarketDataRequest(true);
+        // test cancellation of a combined request
+        AbstractRunningStrategy.setProperty("cancelCep",
+                                            "true");
+        AbstractRunningStrategy runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        runningStrategy.onCallback(this);
+    }
+    /**
      * Gets the language to use for this test.
      *
      * @return a <code>Language</code> value
@@ -1753,6 +2350,217 @@ public abstract class LanguageTestBase
      * @return a <code>StrategyCoordinates</code> value
      */
     protected abstract StrategyCoordinates getPart2Strategy();
+    /**
+     * Gets a strategy that sends events.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getEventStrategy();
+    /**
+     * Gets a strategy that executes a processed market data request.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getCombinedStrategy();
+    /**
+     * Executes a single processed market data request test. 
+     *
+     * @param inSucceeds a <code>boolean</code> value indicating whether the test is expected to succeed or not
+     * @throws Exception if an error occurs
+     */
+    private void executeProcessedMarketDataRequest(boolean inSucceeds)
+        throws Exception
+    {
+        AbstractRunningStrategy strategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        AbstractRunningStrategy.setProperty("finished",
+                                            null);
+        // start test
+        strategy.onOther(this);
+        // retrieve the id returned by the request
+        String requestIDString = AbstractRunningStrategy.getProperty("requestID");
+        assertNotNull("The request should have returned a value, either zero or non-zero, but null means the request didn't even happen",
+                      requestIDString);
+        // wait until the agreed-upon number of events have arrived (if the strategy is going to work)
+        if(inSucceeds) {
+            assertTrue(Integer.parseInt(requestIDString) > 0);
+            MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    return AbstractRunningStrategy.getProperty("finished") != null;
+                }
+            });
+        } else {
+            assertEquals(requestIDString,
+                         "0");
+        }
+        // check results
+        doProcessedMarketDataRequestVerification(inSucceeds);
+    }
+    /**
+     * Verify the result of a single processed market data request.
+     *
+     * @param inSucceeds a <code>boolean</code> value indicating whether the test is expected to succeed or not
+     * @throws Exception if an error occurs
+     */
+    private void doProcessedMarketDataRequestVerification(boolean inSucceeds)
+        throws Exception
+    {
+        Properties storedProperties = AbstractRunningStrategy.getProperties();
+        for(Object rawKey : storedProperties.keySet()) {
+            String key = (String)rawKey;
+            if(key.contains("bid")) {
+                fail("Should not have received any bids");
+            }
+            if(key.contains("ask")) {
+                String value = storedProperties.getProperty(key);
+                assertEquals(inSucceeds ? "Received an ask for a symbol other than 'METC': " + key : "Wasn't expecting any asks",
+                             inSucceeds,
+                             key.contains("METC"));
+                assertTrue("Expected more than 0 asks for 'METC'",
+                           Integer.parseInt(value) > 0);
+            }
+        }
+    }
+    /**
+     * Verifies that a trade suggestion created as a result of a CEP query matches the expected values.
+     *
+     * @param inSymbol a <code>String</code> value containing the expected symbol
+     * @param inPrice a <code>BigDecimal</code> value containing the expected price
+     * @param inQuantity a <code>BigDecimal</code> value containing the expected quantity
+     * @param inSuggestion an <code>OrderSingleSuggestion</code> containing the actual suggestion
+     * @throws Exception if an error occurs
+     */
+    private void verifyCEPSuggestion(String inSymbol,
+                                     BigDecimal inPrice,
+                                     BigDecimal inQuantity,
+                                     OrderSingleSuggestion inSuggestion)
+        throws Exception
+    {
+        assertEquals(inSymbol,
+                     inSuggestion.getOrder().getSymbol().getBaseSymbol());
+        assertEquals(inPrice,
+                     inSuggestion.getOrder().getPrice());
+        assertEquals(inQuantity,
+                     inSuggestion.getOrder().getQuantity());
+    }
+    /**
+     * Retrieves the suggestions stored by the given recorder.
+     *
+     * @param inRecorder a <code>ModuleURN</code> value containing a {@link MockRecorderModule} URN.
+     * @return a <code>List&lt;OrderSingleSuggestion&gt;</code> value containing the recorded suggestions
+     */
+    private List<OrderSingleSuggestion> getReceivedSuggestions(ModuleURN inRecorder)
+    {
+        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(inRecorder);
+        List<OrderSingleSuggestion> suggestions = new ArrayList<OrderSingleSuggestion>();
+        for(DataReceived datum : recorder.getDataReceived()) {
+            suggestions.add((OrderSingleSuggestion)datum.getData());
+        }
+        recorder.resetDataReceived();
+        return suggestions;
+    }
+    /**
+     * Feeds the given events to the given <code>CEP</code> module. 
+     *
+     * @param inEvents an <code>EventBase[]</code> value
+     * @param inCEPModule a <code>ModuleURN</code> value containing a CEP module
+     * @return a <code>DataFlowID</code> value representing the channel by which the events are fed
+     * @throws Exception if an error occurs
+     */
+    private DataFlowID feedEventsToCEP(EventBase[] inEvents,
+                                       ModuleURN inCEPModule)
+        throws Exception
+    {
+        SynchronousRequest request = new SynchronousRequest(inEvents);
+        request.semaphore.acquire();
+        DataFlowID dataFlowID =  moduleManager.createDataFlow(new DataRequest[] { new DataRequest(CopierModuleFactory.INSTANCE_URN,
+                                                                                                  request),
+                                                                                  new DataRequest(inCEPModule) },
+                                                              false);
+        // wait until the copier is ready
+        request.semaphore.acquire();
+        return dataFlowID;
+    }
+    /**
+     * Creates a consolidated string used to communicate a set of CEP statements to a strategy.
+     *
+     * @param inStatements a <code>String[]</code> value
+     * @return a <code>String</code> value
+     */
+    private String createConsolidatedCEPStatement(String[] inStatements)
+    {
+        StringBuilder statements = new StringBuilder();
+        boolean separatorNeeded = false;
+        for(String statement : inStatements) {
+            if(separatorNeeded) {
+                statements.append("#"); // arbitrary separator character
+            } else {
+                separatorNeeded = true;
+            }
+            statements.append(statement);
+        }
+        return statements.toString();
+    }
+    /**
+     * Executes a single CEP test.
+     *
+     * @param inProvider a <code>String</code> value containing the provider to whom to make the request
+     * @param inStatements a <code>String[]</code> value containing the statements to pass to the CEP module
+     * @param inEvents an <code>EventBase[]</code> value containing the events to cause to be passed to the CEP module
+     * @param inCleanup a <code>boolean</code> value indicating whether the strategy started during the test should be stopped or not
+     * @return a <code>List&lt;OrderSingleSuggestion&gt;</code> value containing the suggestions received
+     * @throws Exception if an error occurs
+     */
+    private List<OrderSingleSuggestion> doCEPTest(String inProvider,
+                                                  String[] inStatements,
+                                                  EventBase[] inEvents,
+                                                  boolean inCleanup)
+        throws Exception
+    {
+        setPropertiesToNull();
+        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(suggestionsURN);
+        recorder.resetDataReceived();
+        Properties parameters = new Properties();
+        parameters.setProperty("shouldRequestCEPData",
+                               "true");
+        if(inProvider != null) {
+            parameters.setProperty("source",
+                                   inProvider);
+        }
+        if(inStatements != null) {
+            parameters.setProperty("statements",
+                                   createConsolidatedCEPStatement(inStatements));
+        }
+        StrategyCoordinates strategyFile = getStrategyCompiles();
+        theStrategy = createStrategy(strategyFile.getName(),
+                                     getLanguage(),
+                                     strategyFile.getFile(),
+                                     parameters,
+                                     null,
+                                     null,
+                                     suggestionsURN);
+        Strategy strategy = getFirstRunningStrategy();
+        assertEquals(theStrategy.instanceName(),
+                     strategy.getDefaultNamespace());
+        ModuleURN cepModuleURN = new ModuleURN("metc:cep:" + inProvider + ":" + strategy.getDefaultNamespace());
+        long requestID = 0;
+        if(AbstractRunningStrategy.getProperty("requestID") != null) {
+            requestID = Long.parseLong(AbstractRunningStrategy.getProperty("requestID"));
+        }
+        // feed events into the cep module
+        if(requestID != 0) {
+            feedEventsToCEP(inEvents,
+                            cepModuleURN);
+        }
+        // collect the suggestions created
+        List<OrderSingleSuggestion> suggestions = getReceivedSuggestions(suggestionsURN);
+        if(inCleanup) {
+            stopStrategy(theStrategy);
+        }
+        return suggestions;
+    }
     /**
      * Performs a single destinations test.
      *
@@ -2154,97 +2962,5 @@ public abstract class LanguageTestBase
         for(String callbackShouldBeNull : allCallbacks) {
             verifyPropertyNull(callbackShouldBeNull);
         }
-    }
-    /**
-     * Tests that two strategies with the same class name can co-exist.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void strategiesOfSameClass()
-            throws Exception
-    {
-        StrategyCoordinates strategy1 = getPart1Strategy();
-        ModuleURN strategy1URN = createStrategy(strategy1.getName(),
-                                                getLanguage(),
-                                                strategy1.getFile(),
-                                                null,
-                                                null,
-                                                null,
-                                                null);
-        ModuleURN strategy2URN = createStrategy(strategy1.getName(),
-                                                getLanguage(),
-                                                strategy1.getFile(),
-                                                null,
-                                                null,
-                                                null,
-                                                null);
-        doSuccessfulStartTestNoVerification(strategy1URN);
-        doSuccessfulStartTestNoVerification(strategy2URN);
-        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
-        // should be two running strategies
-        assertEquals(2,
-                     runningStrategies.size());
-        // execute the onCallback method in each running strategy
-        for(StrategyImpl runningStrategy : runningStrategies) {
-            runningStrategy.getRunningStrategy().onCallback(null);
-        }
-        // both strategies get their own onCallback called
-        assertEquals("2",
-                     AbstractRunningStrategy.getProperty("onCallback"));
-        // there should be two callbacks registered
-        String strategyName1 = AbstractRunningStrategy.getProperty("callback1");
-        String strategyName2 = AbstractRunningStrategy.getProperty("callback2");
-        assertFalse(strategyName1.equals(strategyName2));
-    }
-    /**
-     * Verifies that a Strategy may be dynamically redefined. 
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void redefinedStrategy()
-            throws Exception
-    {
-        StrategyCoordinates strategy1 = getPart1Strategy();
-        StrategyCoordinates strategy2 = getPart1RedefinedStrategy();
-        ModuleURN strategy1URN = createStrategy(strategy1.getName(),
-                                                getLanguage(),
-                                                strategy1.getFile(),
-                                                null,
-                                                null,
-                                                null,
-                                                null);
-        ModuleURN strategy2URN = createStrategy(strategy2.getName(),
-                                                getLanguage(),
-                                                strategy2.getFile(),
-                                                null,
-                                                null,
-                                                null,
-                                                null);
-        doSuccessfulStartTestNoVerification(strategy1URN);
-        doSuccessfulStartTestNoVerification(strategy2URN);
-        setPropertiesToNull();
-        // strategies have started and are working
-        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
-        // should be two running strategies
-        assertEquals(2,
-                     runningStrategies.size());
-        // execute the onAsk method in each running strategy
-        for(StrategyImpl runningStrategy : runningStrategies) {
-            runningStrategy.getRunningStrategy().onAsk(askEvent);
-        }
-        // both strategies should get their onAsk called, but the definition should be the second one
-        Properties properties = AbstractRunningStrategy.getProperties();
-        int askCounter = 0;
-        for(Object key : properties.keySet()) {
-            String keyString = (String)key;
-            if(keyString.startsWith("ask")) {
-                askCounter += 1;
-                assertTrue(properties.getProperty(keyString).startsWith("part1"));
-            }
-        }
-        assertEquals(2,
-                     askCounter);
     }
 }

@@ -54,6 +54,16 @@
     <!-- Testing. -->
     <dependency>
       <groupId>${mvn.public.package}</groupId>
+      <artifactId>cep-esper</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>cep-system</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>marketdata-bogus</artifactId>
       <scope>test</scope>
     </dependency>

@@ -8,3 +8,4 @@ org.marketcetera.module.ProcessorModuleFactory
 org.marketcetera.module.EmitterModuleFactory
 org.marketcetera.module.FlowRequesterModuleFactory
 org.marketcetera.module.SingleParmModuleFactory
+org.marketcetera.module.CopierModuleFactory

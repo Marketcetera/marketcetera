@@ -3,7 +3,11 @@ package org.marketcetera.strategy;
 import static org.marketcetera.strategy.Messages.CALLBACK_ERROR;
 import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_DESTINATIONS;
 import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_POSITION;
+import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.INVALID_CANCEL;
+import static org.marketcetera.strategy.Messages.INVALID_CEP_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_EVENT;
+import static org.marketcetera.strategy.Messages.INVALID_EVENT_TO_CEP;
 import static org.marketcetera.strategy.Messages.INVALID_MARKET_DATA_REQUEST;
 import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
 import static org.marketcetera.strategy.Messages.INVALID_ORDER;
@@ -30,11 +34,12 @@ import java.util.concurrent.TimeUnit;
 import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.DataRequest;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
@@ -178,18 +183,22 @@ public abstract class AbstractRunningStrategy
      *
      * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols
      * @param inSource a <code>String</code> value containing a string corresponding to a market data provider identifier
-     * @return a <code>long</code> value containing the handle of the request or 0 if the request or the source was invalid
+     * @return a <code>long</code> value containing the handle of the request or 0 if the request failed
      */
     protected final long requestMarketData(String inSymbols,
                                            String inSource)
     {
         if(inSymbols != null &&
            !inSymbols.isEmpty()) {
-            StringBuilder request = new StringBuilder();
-            request.append("type=marketdata:symbols=").append(inSymbols); //$NON-NLS-1$
             try {
-                return strategy.getOutboundServicesProvider().requestMarketData(DataRequest.newRequestFromString(request.toString()),
-                                                                        inSource);
+                MarketDataRequest request = constructMarketDataRequest(inSymbols);
+                SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                       "{} requesting market data {} from {}", //$NON-NLS-1$
+                                       strategy,
+                                       request,
+                                       inSource);
+                return strategy.getOutboundServicesProvider().requestMarketData(request,
+                                                                                inSource);
             } catch (Exception e) {
                 INVALID_MARKET_DATA_REQUEST.warn(AbstractRunningStrategy.class,
                                                  e,
@@ -206,6 +215,73 @@ public abstract class AbstractRunningStrategy
         return 0;
     }
     /**
+     * Requests market data processed by the given complex event processor from the given source.
+     *
+     * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols
+     * @param inMarketDataSource a <code>String</code> value containing a string corresponding to a market data provider identifier
+     * @param inStatements a <code>String[]</code> value containing the statements to pass to the
+     *   complex event processor.  The meaning of the statements varies according to the actual
+     *   event processor that handles them.
+     * @param inCepSource a <code>String</code> value containing the name of the complex event processor
+     *   to which to send the query request
+     * @return a <code>long</code> value containing the handle of the request or 0 if the request failed
+     */
+    protected final long requestProcessedMarketData(String inSymbols,
+                                                    String inMarketDataSource,
+                                                    String[] inStatements,
+                                                    String inCepSource)
+    {
+        if(inSymbols == null ||
+           inSymbols.isEmpty() ||
+           inMarketDataSource == null ||
+           inMarketDataSource.isEmpty()) {
+            INVALID_MARKET_DATA_REQUEST.warn(AbstractRunningStrategy.class,
+                                             strategy,
+                                             inSymbols,
+                                             inMarketDataSource);
+            return 0;
+        }
+        if(inStatements == null ||
+           inStatements.length == 0 ||
+           inCepSource == null ||
+           inCepSource.isEmpty()) {
+            INVALID_CEP_REQUEST.warn(AbstractRunningStrategy.class,
+                                     strategy,
+                                     Arrays.toString(inStatements),
+                                     inCepSource);
+            return 0;
+        }
+        MarketDataRequest marketDataRequest = null;
+        String namespace = strategy.getDefaultNamespace();
+        try {
+            // construct market data request
+            marketDataRequest = constructMarketDataRequest(inSymbols);
+            // retrieve CEP default namespace
+            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                   "{} requesting market data {} from {} with cep query {} from {}:{}", //$NON-NLS-1$
+                                   strategy,
+                                   marketDataRequest.toString(),
+                                   inMarketDataSource,
+                                   Arrays.toString(inStatements),
+                                   inCepSource,
+                                   namespace);
+            return strategy.getOutboundServicesProvider().requestProcessedMarketData(marketDataRequest,
+                                                                                   inMarketDataSource,
+                                                                                   inStatements,
+                                                                                   inCepSource,
+                                                                                   namespace);
+        } catch (Exception e) {
+            COMBINED_DATA_REQUEST_FAILED.warn(AbstractRunningStrategy.class,
+                                              e,
+                                              marketDataRequest,
+                                              inMarketDataSource,
+                                              Arrays.toString(inStatements),
+                                              inCepSource,
+                                              namespace);
+            return 0;
+        }
+   }
+    /**
      * Cancels the given market data request.
      *
      * @param inRequestID a <code>long</code> value containing the identifier of the data request to cancel
@@ -220,6 +296,58 @@ public abstract class AbstractRunningStrategy
     protected final void cancelAllMarketDataRequests()
     {
         strategy.getOutboundServicesProvider().cancelAllMarketDataRequests();
+    }
+    /**
+     * Creates a complex event processor query.
+     *
+     * @param inStatements a <code>String[]</code> value containing the statements to pass to the
+     *   complex event processor.  The meaning of the statements varies according to the actual
+     *   event processor that handles them.
+     * @param inSource a <code>String</code> value containing the name of the complex event processor
+     *   to which to send the query request
+     * @return a <code>long</code> value containing the identifier of this request or 0 if the request
+     *   failed
+     */
+    protected final long requestCEPData(String[] inStatements,
+                                        String inSource)
+    {
+        if(inStatements != null &&
+           inStatements.length > 0) {
+            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                   "{} requesting CEP data {} from {} ({})", //$NON-NLS-1$
+                                   strategy,
+                                   Arrays.toString(inStatements),
+                                   inSource,
+                                   strategy.getDefaultNamespace());
+            return strategy.getOutboundServicesProvider().requestCEPData(inStatements,
+                                                                         inSource,
+                                                                         strategy.getDefaultNamespace());
+        }
+        INVALID_CEP_REQUEST.warn(AbstractRunningStrategy.class,
+                                 strategy,
+                                 Arrays.toString(inStatements),
+                                 inSource);
+        return 0;
+    }
+    /**
+     * Cancels the given complex event processor data request.
+     *
+     * @param inRequestID a <code>long</code> value containing the identifier of the data request to cancel
+     */
+    protected final void cancelCEPRequest(long inRequestID)
+    {
+        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                               "{} canceling CEP request {}", //$NON-NLS-1$
+                               strategy,
+                               inRequestID);
+        strategy.getOutboundServicesProvider().cancelCEPRequest(inRequestID);
+    }
+    /**
+     * Cancels all complex event processor data requests from this strategy.
+     */
+    protected final void cancelAllCEPRequests()
+    {
+        strategy.getOutboundServicesProvider().cancelAllCEPRequests();
     }
     /**
      * Gets the <code>ExecutionReport</code> values generated during the current
@@ -466,12 +594,55 @@ public abstract class AbstractRunningStrategy
                                strategy,
                                inMessage,
                                inDestination);
-        try {
-            strategy.getOutboundServicesProvider().sendMessage(inMessage,
-                                                               inDestination);
-        } catch (MessageCreationException e) {
-            // TODO Log an error-handling message
+        strategy.getOutboundServicesProvider().sendMessage(inMessage,
+                                                           inDestination);
+    }
+    /**
+     * Sends the given event to the CEP module indicated by the provider.
+     * 
+     * <p>The corresponding CEP module must already exist or the message will not be sent.
+     *
+     * @param inEvent an <code>EventBase</code> value containing the event to be sent
+     * @param inProvider a <code>String</code> value containing the name of a CEP provider
+     */
+    protected final void sendEventToCEP(EventBase inEvent,
+                                        String inProvider)
+    {
+        if(inEvent == null ||
+           inProvider == null ||
+           inProvider.isEmpty()) {
+            INVALID_EVENT_TO_CEP.warn(AbstractRunningStrategy.class,
+                                      strategy,
+                                      inEvent,
+                                      inProvider);
+            return;
         }
+        String namespace = strategy.getDefaultNamespace();
+        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                               "{} sending {} to CEP {}:{}", //$NON-NLS-1$
+                               strategy,
+                               inEvent,
+                               inProvider,
+                               namespace);
+        strategy.getOutboundServicesProvider().sendEvent(inEvent,
+                                                         inProvider,
+                                                         namespace);
+    }
+    /**
+     * Sends the given event to the appropriate subscribers. 
+     *
+     * @param inEvent an <code>EventBase</code> value
+     */
+    protected final void sendEvent(EventBase inEvent)
+    {
+       if(inEvent == null) {
+           INVALID_EVENT.warn(AbstractRunningStrategy.class,
+                              strategy);
+           return;
+       }
+       strategy.getOutboundServicesProvider().sendEvent(inEvent,
+                                                        null,
+                                                        null);
     }
     /**
      * Requests a callback after a specified delay in milliseconds.
@@ -581,6 +752,19 @@ public abstract class AbstractRunningStrategy
                                           inDate);
             return null;
         }
+    }
+    /**
+     * Constructs a market data request from the given string of symbols.
+     *
+     * @param inSymbols a <code>String</code> value containing the list of symbols for which to request market data
+     * @return a <code>MarketDataRequest</code> value
+     * @throws Exception if an error occurs
+     */
+    private MarketDataRequest constructMarketDataRequest(String inSymbols)
+        throws Exception
+    {
+        return (MarketDataRequest)DataRequest.newRequestFromString(String.format("type=marketdata:symbols=%s", //$NON-NLS-1$
+                                                                                 inSymbols));
     }
     /**
      * common properties store shared among all strategies

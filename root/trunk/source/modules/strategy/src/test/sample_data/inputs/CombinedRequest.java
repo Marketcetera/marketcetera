@@ -1,0 +1,132 @@
+import java.util.HashMap;
+import java.util.Map;
+
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.strategy.java.Strategy;
+
+/* $License$ */
+
+/**
+ * Sample strategy that tests processed market data requests.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
+public class CombinedRequest
+        extends Strategy
+{
+    /**
+     * stores bid counts by symbol
+     */
+    private final Map<String,Integer> bids = new HashMap<String,Integer>();
+    /**
+     * stores ask counts by symbol
+     */
+    private final Map<String,Integer> asks = new HashMap<String,Integer>();
+    /**
+     * counts total events received
+     */
+    private int totalEventCount = 0;
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onOther(java.lang.Object)
+     */
+    @Override
+    public void onOther(Object inEvent)
+    {
+        doCombinedRequest();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onCallback(java.lang.Object)
+     */
+    @Override
+    public void onCallback(Object inData)
+    {
+        long requestID = Long.parseLong(getProperty("requestID"));
+        if(getProperty("cancelCep") != null) {
+            cancelCEPRequest(requestID);
+        } else {
+            cancelMarketDataRequest(requestID);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.event.AskEvent)
+     */
+    @Override
+    public void onAsk(AskEvent inAsk)
+    {
+        recordSymbol(inAsk.getSymbol(),
+                     asks);
+        transcribeCollection("ask",
+                             asks);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onBid(org.marketcetera.event.BidEvent)
+     */
+    @Override
+    public void onBid(BidEvent inBid)
+    {
+        recordSymbol(inBid.getSymbol(),
+                     bids);
+        transcribeCollection("bid",
+                             bids);
+    }
+    /**
+     * Records the receipt of a symbol.
+     *
+     * @param inSymbol
+     */
+    private void recordSymbol(String inSymbol,
+                              Map<String,Integer> inCollection)
+    {
+        Integer count = inCollection.get(inSymbol);
+        if(count == null) {
+            inCollection.put(inSymbol,
+                             1);
+        } else {
+            inCollection.put(inSymbol,
+                             ++count);
+        }
+        totalEventCount += 1;
+        if(totalEventCount >= 50) {
+            setProperty("finished",
+                        "true");
+        }
+    }
+    /**
+     * Writes the given collection into the common storage area.
+     *
+     * @param inKey a <code>String</code> value to prepend to each stored symbol
+     * @param inCollection a <code>Map&lt;String,Integer&gt;</code> value containing the values to be stored
+     */
+    private void transcribeCollection(String inKey,
+                                      Map<String,Integer> inCollection)
+    {
+        for(String symbol : inCollection.keySet()) {
+            setProperty(inKey + "-" + symbol,
+                        Integer.toString(inCollection.get(symbol)));
+        }
+    }
+    /**
+     * Executes a request for processed market data.
+     */
+    private void doCombinedRequest()
+    {
+        String symbols = getProperty("symbols");
+        String marketDataSource = getProperty("marketDataSource");
+        String compressedStatements = getProperty("statements");
+        String[] statements;
+        if(compressedStatements != null) {
+            statements = compressedStatements.split("#");
+        } else {
+            statements = null;
+        }
+        String cepSource = getProperty("cepSource");
+        setProperty("requestID",
+                    Long.toString(requestProcessedMarketData(symbols,
+                                                             marketDataSource,
+                                                             statements,
+                                                             cepSource)));
+    }
+}

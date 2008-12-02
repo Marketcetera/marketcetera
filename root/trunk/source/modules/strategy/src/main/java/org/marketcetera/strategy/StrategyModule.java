@@ -1,19 +1,37 @@
 package org.marketcetera.strategy;
 
+import static org.marketcetera.strategy.Messages.CANNOT_CREATE_CONNECTION;
 import static org.marketcetera.strategy.Messages.CANNOT_INITIALIZE_CLIENT;
+import static org.marketcetera.strategy.Messages.CANNOT_SEND_EVENT_TO_CEP;
+import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
 import static org.marketcetera.strategy.Messages.EXECUTION_REPORT_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
+import static org.marketcetera.strategy.Messages.INVALID_CEP_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_COMBINED_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_EVENT;
 import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
+import static org.marketcetera.strategy.Messages.INVALID_MARKET_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
+import static org.marketcetera.strategy.Messages.INVALID_ORDER;
+import static org.marketcetera.strategy.Messages.INVALID_TRADE_SUGGESTION;
 import static org.marketcetera.strategy.Messages.MARKET_DATA_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.NO_CEP_HANDLE;
+import static org.marketcetera.strategy.Messages.NO_MARKET_DATA_HANDLE;
 import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
+import static org.marketcetera.strategy.Messages.SEND_MESSAGE_FAILED;
+import static org.marketcetera.strategy.Messages.STOP_ERROR;
+import static org.marketcetera.strategy.Messages.UNABLE_TO_CANCEL_CEP_REQUEST;
+import static org.marketcetera.strategy.Messages.UNABLE_TO_CANCEL_MARKET_DATA_REQUEST;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +49,8 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.event.EventBase;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -48,8 +68,8 @@ import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
@@ -107,6 +127,15 @@ public final class StrategyModule
             }
         } else if(requestPayload instanceof OutputType) {
             request = (OutputType)requestPayload;
+        } else if(requestPayload instanceof InternalRequest) {
+            InternalRequest internalRequest = (InternalRequest)requestPayload;
+            SLF4JLoggerProxy.debug(StrategyModule.class,
+                                   "{} received a request to set up a specialized data flow to {}",
+                                   strategy,
+                                   internalRequest.originalRequester); //$NON-NLS-1$
+            internalDataFlows.put(internalRequest.originalRequester,
+                                  inSupport);
+            return;
         } else {
             throw new UnsupportedRequestParameterType(getURN(),
                                                       requestPayload);
@@ -138,20 +167,12 @@ public final class StrategyModule
         strategy.dataReceived(inData);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServices#sendOrder(java.lang.Object)
-     */
-    @Override
-    public void sendOrder(OrderSingle inOrder)
-    {
-        ordersPublisher.publish(inOrder);
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServicesProvider#cancelOrder(org.marketcetera.trade.OrderCancel)
      */
     @Override
     public void cancelOrder(OrderCancel inCancel)
     {
-        ordersPublisher.publish(inCancel);
+        publish(inCancel);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServicesProvider#cancelReplace(org.marketcetera.trade.OrderReplace)
@@ -159,30 +180,27 @@ public final class StrategyModule
     @Override
     public void cancelReplace(OrderReplace inReplace)
     {
-        ordersPublisher.publish(inReplace);
+        publish(inReplace);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServices#sendSuggestion(java.lang.Object)
+     * @see org.marketcetera.strategy.OutboundServices#marketDataRequest(org.marketcetera.marketdata.MarketDataRequest, java.lang.String)
      */
     @Override
-    public void sendSuggestion(Suggestion inSuggestion)
-    {
-        suggestionsPublisher.publish(inSuggestion);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServices#marketDataRequest(org.marketcetera.marketdata.DataRequest, java.lang.String)
-     */
-    @Override
-    public long requestMarketData(org.marketcetera.marketdata.DataRequest inRequest,
+    public long requestMarketData(MarketDataRequest inRequest,
                                   String inSource)
     {
+        if(inRequest == null ||
+           inSource == null ||
+           inSource.isEmpty()) {
+            INVALID_MARKET_DATA_REQUEST.warn(StrategyModule.class,
+                                             strategy,
+                                             inRequest,
+                                             inSource);
+            return 0;
+        }
         long requestID = counter.incrementAndGet();
-        StringBuilder providerURNAsString = new StringBuilder();
-        // TODO need a cleaner way to construct this URN
-        providerURNAsString.append("metc:mdata:").append(inSource); //$NON-NLS-1$
-        ModuleURN providerURN = new ModuleURN(providerURNAsString.toString());
         try {
-            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(providerURN,
+            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inSource),
                                                                                                        inRequest),
                                                                                        new DataRequest(getURN()) },
                                                                    false);
@@ -190,14 +208,74 @@ public final class StrategyModule
                 marketDataRequests.put(requestID,
                                        dataFlowID);
             }
-        } catch (ModuleException e) {
-            // warn, but do not cause the strategy to stop working
+        } catch (Exception e) {
             MARKET_DATA_REQUEST_FAILED.warn(this,
                                             e,
                                             inRequest,
                                             inSource);
+            return 0;
         }
         return requestID;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#requestMarketDataWithCEP(org.marketcetera.marketdata.MarketDataRequest, java.lang.String, java.lang.String[], java.lang.String, java.lang.String)
+     */
+    @Override
+    public long requestProcessedMarketData(MarketDataRequest inRequest,
+                                           String inMarketDataSource,
+                                           String[] inStatements,
+                                           String inCEPSource,
+                                           String inNamespace)
+    {
+        if(inRequest == null ||
+           inMarketDataSource == null ||
+           inMarketDataSource.isEmpty() ||
+           inStatements == null ||
+           inStatements.length == 0 ||
+           inCEPSource == null ||
+           inCEPSource.isEmpty() ||
+           inNamespace == null ||
+           inNamespace.isEmpty()) {
+            INVALID_COMBINED_DATA_REQUEST.warn(StrategyModule.class,
+                                               strategy,
+                                               inRequest,
+                                               inMarketDataSource,
+                                               Arrays.toString(inStatements),
+                                               inCEPSource,
+                                               inNamespace);
+            return 0;
+        }
+        long requestID = counter.incrementAndGet();
+        // construct a request that connects the provider to the cep query
+        try {
+            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inMarketDataSource),
+                                                                                                       inRequest),
+                                                                                       new DataRequest(constructCepUrn(inCEPSource,
+                                                                                                                       inNamespace),
+                                                                                                       determineCepStatements(inCEPSource,
+                                                                                                                              inStatements)),
+                                                                                       new DataRequest(getURN()) },
+                                                                   false);
+            // add request to both counters
+            synchronized(marketDataRequests) {
+                marketDataRequests.put(requestID,
+                                       dataFlowID);
+            }
+            synchronized(cepRequests) {
+                cepRequests.put(requestID,
+                                dataFlowID);
+            }
+            return requestID;
+        } catch (Exception e) {
+            COMBINED_DATA_REQUEST_FAILED.warn(StrategyModule.class,
+                                              e,
+                                              inRequest,
+                                              inMarketDataSource,
+                                              Arrays.toString(inStatements),
+                                              inCEPSource,
+                                              inNamespace);
+            return 0;
+        }        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServices#cancelAllMarketDataRequests()
@@ -206,15 +284,18 @@ public final class StrategyModule
     public void cancelAllMarketDataRequests()
     {
         synchronized(marketDataRequests) {
-            for(DataFlowID dataFlowID : marketDataRequests.values()) {
+            // create a copy of the list because the cancel call is going to modify the collection
+            List<Long> activeRequests = new ArrayList<Long>(marketDataRequests.keySet());
+            for(long request : activeRequests) {
                 try {
-                    doMarketDataRequestCancel(dataFlowID);
-                } catch (ModuleException e) {
-                    // TODO handle exception
-                    e.printStackTrace();
+                    cancelDataRequest(request);
+                } catch (Exception e) {
+                    UNABLE_TO_CANCEL_MARKET_DATA_REQUEST.warn(StrategyModule.class,
+                                                              e,
+                                                              strategy,
+                                                              request);
                 }
             }
-            marketDataRequests.clear();
         }
     }
     /* (non-Javadoc)
@@ -224,18 +305,103 @@ public final class StrategyModule
     public void cancelMarketDataRequest(long inDataRequestID)
     {
         synchronized(marketDataRequests) {
-            DataFlowID dataFlowID = marketDataRequests.get(inDataRequestID);
-            if(dataFlowID == null) {
-                // TODO warn about null request
+            if(!marketDataRequests.containsKey(inDataRequestID)) {
+                NO_MARKET_DATA_HANDLE.warn(this,
+                                           strategy,
+                                           inDataRequestID);
                 return;
             }
             try {
-                doMarketDataRequestCancel(dataFlowID);
-            } catch (ModuleException e) {
-                // TODO handle exception
-                e.printStackTrace();
+                cancelDataRequest(inDataRequestID);
+            } catch (Exception e) {
+                UNABLE_TO_CANCEL_MARKET_DATA_REQUEST.warn(StrategyModule.class,
+                                                          e,
+                                                          strategy,
+                                                          inDataRequestID);
             }
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelAllCEPRequests()
+     */
+    @Override
+    public void cancelAllCEPRequests()
+    {
+        synchronized(cepRequests) {
+            // create a copy of the list because the cancel call is going to modify the collection
+            List<Long> activeRequests = new ArrayList<Long>(cepRequests.keySet());
+            for(long request : activeRequests) {
+                try {
+                    cancelDataRequest(request);
+                } catch (Exception e) {
+                    UNABLE_TO_CANCEL_CEP_REQUEST.warn(StrategyModule.class,
+                                                      e,
+                                                      strategy,
+                                                      request);
+                }
+            }
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelCEPRequest(long)
+     */
+    @Override
+    public void cancelCEPRequest(long inDataRequestID)
+    {
+        synchronized(cepRequests) {
+            if(!cepRequests.containsKey(inDataRequestID)) {
+                NO_CEP_HANDLE.warn(StrategyModule.class,
+                                   strategy,
+                                   inDataRequestID);
+                return;
+            }
+            try {
+                cancelDataRequest(inDataRequestID);
+            } catch (Exception e) {
+                UNABLE_TO_CANCEL_CEP_REQUEST.warn(StrategyModule.class,
+                                                  e,
+                                                  strategy,
+                                                  inDataRequestID);
+            }
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#requestCEPData(java.lang.String[], java.lang.String)
+     */
+    @Override
+    public long requestCEPData(String[] inStatements,
+                               String inSource,
+                               String inNamespace)
+    {
+        if(inStatements == null ||
+           inStatements.length == 0) {
+            INVALID_CEP_REQUEST.warn(StrategyModule.class,
+                                     strategy,
+                                     Arrays.toString(inStatements),
+                                     String.valueOf(inSource) + ":" + String.valueOf(inNamespace)); //$NON-NLS-1$
+            return 0;
+        }
+        long requestID = counter.incrementAndGet();
+        ModuleURN providerURN = constructCepUrn(inSource,
+                                                inNamespace);
+        try {
+            synchronized(cepRequests) {
+                cepRequests.put(requestID,
+                                dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(providerURN,
+                                                                                                   determineCepStatements(inSource,
+                                                                                                                          inStatements)),
+                                                                                   new DataRequest(getURN()) },
+                                                               false));
+            }
+        } catch (Exception e) {
+            // warn, but do not cause the strategy to stop working
+            CEP_REQUEST_FAILED.warn(this,
+                                    e,
+                                    Arrays.toString(inStatements),
+                                    inSource);
+            return 0;
+        }
+        return requestID;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyMXBean#setOrdersDestination(java.lang.String)
@@ -333,14 +499,88 @@ public final class StrategyModule
     @Override
     public void sendMessage(Message inMessage,
                             DestinationID inDestination)
-        throws MessageCreationException
     {
-        SLF4JLoggerProxy.debug(this,
-                               "{} publishing {}", //$NON-NLS-1$
-                               strategy,
-                               inMessage);
-        ordersPublisher.publish(Factory.getInstance().createOrder(inMessage,
-                                                                  inDestination));
+        if(inMessage == null ||
+           inDestination == null) {
+            INVALID_MESSAGE.warn(StrategyModule.class,
+                                 strategy);
+            return;
+        }
+        try {
+            publish(Factory.getInstance().createOrder(inMessage,
+                                                      inDestination));
+        } catch (Exception e) {
+            SEND_MESSAGE_FAILED.warn(StrategyModule.class,
+                                     e,
+                                     strategy,
+                                     inMessage,
+                                     inDestination);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServices#sendOrder(java.lang.Object)
+     */
+    @Override
+    public void sendOrder(OrderSingle inOrder)
+    {
+        if(inOrder == null) {
+            INVALID_ORDER.warn(StrategyModule.class,
+                               strategy);
+            return;
+        }
+        publish(inOrder);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServices#sendSuggestion(java.lang.Object)
+     */
+    @Override
+    public void sendSuggestion(Suggestion inSuggestion)
+    {
+        if(inSuggestion == null) {
+            INVALID_TRADE_SUGGESTION.warn(StrategyModule.class,
+                                          strategy);
+            return;
+        }
+        publish(inSuggestion);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#sendEvent(org.marketcetera.event.EventBase)
+     */
+    @Override
+    public void sendEvent(EventBase inEvent,
+                          String inProvider,
+                          String inNamespace)
+    {
+        // event must not be null, but the other two parameters may be
+        if(inEvent == null) {
+            INVALID_EVENT.warn(StrategyModule.class,
+                               strategy);
+            return;
+        }
+        // event is not null, check that provider and namespace are not null
+        if(inProvider != null &&
+           !inProvider.isEmpty() &&
+           inNamespace != null &&
+           !inNamespace.isEmpty()) {
+            // event, provider, and namespace are not null, send the event to the described cep module
+            ModuleURN cepModuleURN = constructCepUrn(inProvider,
+                                                     inNamespace);
+            try {
+                sendEventToCEP(cepModuleURN,
+                               inEvent);
+            } catch (Exception e) {
+                // warn that the event was not sent to CEP, but continue to send to subscribers
+                // this may not be an error as the CEP module may not exist
+                CANNOT_SEND_EVENT_TO_CEP.warn(StrategyModule.class,
+                                              e,
+                                              strategy,
+                                              inEvent,
+                                              cepModuleURN);
+            }
+            // done sending event to CEP, for better or worse
+        }
+        // send to subscribers
+        publish(inEvent);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.InboundServicesProvider#getDestinations()
@@ -555,6 +795,7 @@ public final class StrategyModule
                                         source,
                                         parameters,
                                         classpath,
+                                        getURN().instanceName(),
                                         this,
                                         this);
             strategy.start();
@@ -571,11 +812,14 @@ public final class StrategyModule
             throws ModuleException
     {
         cancelAllMarketDataRequests();
+        cancelAllCEPRequests();
         try {
             strategy.stop();
-        } catch (StrategyException e) {
-            // TODO should this be swallowed or propagated - ask Anshul
-            e.printStackTrace();
+        } catch (Exception e) {
+            // a strategy may not prevent itself from being stopped
+            STOP_ERROR.warn(StrategyModule.class,
+                            e,
+                            strategy);
         }
         synchronized(dataFlows) {
             for(DataFlowID flow : dataFlows) {
@@ -607,6 +851,53 @@ public final class StrategyModule
                              String.format("strategy%s%s", //$NON-NLS-1$
                                            sanitizedName,
                                            Long.toHexString(counter.incrementAndGet())));
+    }
+    /**
+     * Constructs a <code>ModuleURN</code> for a <code>CEP</code> module from the given components. 
+     *
+     * @param inSource a <code>String</code> value containing the name of a <code>CEP</code> provider
+     * @param inNamespace a <code>String</code> value containing the namespace of a <code>CEP</code> provider query
+     * @return a <code>ModuleURN</code> value containing the URN of the CEP module - there is no guarantee that this
+     *   URN exists or is started
+     */
+    private static ModuleURN constructCepUrn(String inSource,
+                                             String inNamespace)
+    {
+        // this should live somewhere in CEP - don't like this
+        assert(inSource != null);
+        assert(inNamespace != null);
+        return new ModuleURN(String.format("metc:cep:%s:%s", //$NON-NLS-1$
+                                           inSource,
+                                           inNamespace));
+    }
+    /**
+     * 
+     *
+     *
+     * @param inSource
+     * @param inStatements
+     * @return
+     */
+    private static Object determineCepStatements(String inSource,
+                                                 String[] inStatements)
+    {
+        if(inSource.equals("esper")) { //$NON-NLS-1$
+            return inStatements;
+        } else {
+            return inStatements[0];
+        }
+    }
+    /**
+     * 
+     *
+     *
+     * @param inSource
+     * @return
+     */
+    private static ModuleURN constructMarketDataUrn(String inSource)
+    {
+        return new ModuleURN(String.format("metc:mdata:%s", //$NON-NLS-1$
+                                           inSource));
     }
     /**
      * Create a new StrategyModule instance.
@@ -641,6 +932,41 @@ public final class StrategyModule
         suggestionsDestination = inSuggestionsInstance;
     }
     /**
+     * Sends the given event to the <code>CEP</code> module specified.
+     *
+     * <p>There is no guarantee that the given event can be delivered if the URN does
+     * not exist or is not started.
+     * 
+     * @param inCEPModule a <code>ModuleURN</code> value
+     * @param inEvent an <code>EventBase</code> value
+     * @throws ModuleException if the event could not be sent
+     */
+    private void sendEventToCEP(ModuleURN inCEPModule,
+                                EventBase inEvent)
+        throws ModuleException
+    {
+        assert(inCEPModule != null);
+        assert(inEvent != null);
+        // see if we have a connection to this module already
+        DataEmitterSupport establishedConnection = internalDataFlows.get(inCEPModule);
+        if(establishedConnection == null) {
+            // no connection exists yet to the CEP module.  create one.
+            dataFlows.add(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
+                                                                                             new InternalRequest(inCEPModule)),
+                                                                             new DataRequest(inCEPModule) },
+                                                         false));
+            establishedConnection = internalDataFlows.get(inCEPModule);
+            if(establishedConnection == null) {
+                CANNOT_CREATE_CONNECTION.warn(StrategyModule.class,
+                                              strategy,
+                                              inCEPModule);
+                return;
+            }
+        }
+        assert(establishedConnection != null);
+        establishedConnection.send(inEvent);
+    }
+    /**
      * Confirms that the object attributes are in the state they are expected to be in at the beginning of {@link #preStart()}.
      */
     private void assertStateForPreStart()
@@ -660,17 +986,6 @@ public final class StrategyModule
     {
         assertStateForPreStart();
         assert(strategy != null);
-    }
-    /**
-     * Cancels a given market data request.
-     *
-     * @param inDataFlowID a <code>DataFlowID</code> value
-     * @throws ModuleException if an error occurs while canceling the market data request
-     */
-    private void doMarketDataRequestCancel(DataFlowID inDataFlowID)
-        throws ModuleException
-    {
-        dataFlowSupport.cancel(inDataFlowID);
     }
     /**
      * Unsubscribes the given requester from any subscribed flows.
@@ -704,6 +1019,30 @@ public final class StrategyModule
         }
     }
     /**
+     * Publishes the given <code>Object</code> to the appropriate subscribers.
+     *
+     * @param inObject an <code>Object</code> value
+     */
+    private void publish(Object inObject)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "{} publishing {}", //$NON-NLS-1$
+                               strategy,
+                               inObject);
+        assert(inObject != null);
+        if(inObject instanceof FIXOrder ||
+           inObject instanceof OrderSingle ||
+           inObject instanceof OrderCancel ||
+           inObject instanceof OrderReplace) {
+            ordersPublisher.publish(inObject);
+        } else if(inObject instanceof Suggestion) {
+            suggestionsPublisher.publish(inObject);
+        } else if(inObject instanceof EventBase) {
+            eventsPublisher.publish(inObject);
+        }
+        allPublisher.publish(inObject);
+    }
+    /**
      * Prepares the <code>orsClient</code> to be used. 
      */
     private void initializeClient()
@@ -715,6 +1054,25 @@ public final class StrategyModule
         } catch (Exception e) {
             CANNOT_INITIALIZE_CLIENT.warn(StrategyModule.class,
                                           e);
+        }
+    }
+    /**
+     * Cancels the given request whether it's a market data request, a cep request,
+     * or both.
+     *
+     * @param inRequest a <code>long</code> value containing a request handle
+     * @throws ModuleException if an error occurs
+     */
+    private void cancelDataRequest(long inRequest)
+        throws ModuleException
+    {
+        DataFlowID dataFlowID = marketDataRequests.remove(inRequest);
+        if(dataFlowID != null) {
+            dataFlowSupport.cancel(dataFlowID);
+        }
+        dataFlowID = cepRequests.remove(inRequest);
+        if(dataFlowID != null) {
+            dataFlowSupport.cancel(dataFlowID);
         }
     }
     /**
@@ -755,6 +1113,14 @@ public final class StrategyModule
      */
     private final PublisherEngine suggestionsPublisher = new PublisherEngine(true);
     /**
+     * the publishing engine for events
+     */
+    private final PublisherEngine eventsPublisher = new PublisherEngine(true);
+    /**
+     * the publishing engine for all objects
+     */
+    private final PublisherEngine allPublisher = new PublisherEngine(true);
+    /**
      * tracks subscriber objects by requestIDs
      */
     private final Map<RequestID,DataRequester> subscribers = new HashMap<RequestID,DataRequester>();
@@ -779,9 +1145,41 @@ public final class StrategyModule
      */
     private final Map<Long,DataFlowID> marketDataRequests = new HashMap<Long,DataFlowID>();
     /**
+     * active cep requests for this strategy 
+     */
+    private final Map<Long,DataFlowID> cepRequests = new HashMap<Long,DataFlowID>();
+    /**
      * the list of dataflows started during the lifetime of this strategy
      */
     private final List<DataFlowID> dataFlows = new ArrayList<DataFlowID>();
+    /**
+     * the collection of data flows created to send data to a specific URN
+     */
+    private final Map<ModuleURN,DataEmitterSupport> internalDataFlows = new HashMap<ModuleURN,DataEmitterSupport>();
+    /**
+     * Request for data that comes from within strategy to strategy.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private static class InternalRequest
+    {
+        /**
+         * the URN of the module that made the original request for data 
+         */
+        private final ModuleURN originalRequester;
+        /**
+         * Create a new OneShotRequest instance.
+         *
+         * @param inOriginalRequester
+         */
+        private InternalRequest(ModuleURN inOriginalRequester)
+        {
+            originalRequester = inOriginalRequester;
+        }
+    }
     /**
      * Represents a request for a subscription to data this strategy can emit.
      *
@@ -824,6 +1222,10 @@ public final class StrategyModule
                 ordersPublisher.subscribe(this);
             } else if(requestType.equals(OutputType.SUGGESTIONS)) {
                 suggestionsPublisher.subscribe(this);
+            } else if(requestType.equals(OutputType.EVENTS)) {
+                eventsPublisher.subscribe(this);
+            } else if(requestType.equals(OutputType.ALL)) {
+                allPublisher.subscribe(this);
             } else {
                 throw new IllegalArgumentException(); // this is a development-time exception to indicate the logic needs to be expanded because of a new request type
             }
@@ -844,12 +1246,19 @@ public final class StrategyModule
         {
             emitterSupport.send(inData);
         }
+        /**
+         * Unsubscribes from the appropriate publisher.
+         */
         private void unsubscribe()
         {
             if(requestType.equals(OutputType.ORDERS)) {
                 ordersPublisher.unsubscribe(this);
             } else if(requestType.equals(OutputType.SUGGESTIONS)) {
                 suggestionsPublisher.unsubscribe(this);
+            } else if(requestType.equals(OutputType.EVENTS)) {
+                eventsPublisher.unsubscribe(this);
+            } else if(requestType.equals(OutputType.ALL)) {
+                allPublisher.unsubscribe(this);
             } else {
                 throw new IllegalArgumentException(); // this is a development-time exception to indicate the logic needs to be expanded because of a new request type
             }

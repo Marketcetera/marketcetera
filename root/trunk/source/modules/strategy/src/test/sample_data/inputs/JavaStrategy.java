@@ -1,17 +1,17 @@
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
-import java.lang.Override;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidAskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderSingle;
 
 public class JavaStrategy
         extends org.marketcetera.strategy.java.Strategy
@@ -47,6 +47,21 @@ public class JavaStrategy
             setProperty("requestID",
                         Long.toString(requestMarketData(symbols,
                                                         marketDataSource)));
+        }
+        if(getParameter("shouldRequestCEPData") != null) {
+            String cepDataSource = getParameter("source");
+            if(cepDataSource != null) {
+                String statementString = getParameter("statements");
+                String[] statements;
+                if(statementString != null) {
+                    statements = statementString.split("#");
+                } else {
+                    statements = null;
+                }
+                setProperty("requestID",
+                            Long.toString(requestCEPData(statements,
+                                                         cepDataSource)));
+            }
         }
         doRequestParameterCallbacks();
         doRequestPropertiesCallbacks();
@@ -107,6 +122,9 @@ public class JavaStrategy
         if(shouldFail != null) { 
             int x = 10 / 0;
         }
+        if(getParameter("shouldRequestCEPData") != null) {
+            suggestionFromEvent(ask);
+        }
         setProperty("onAsk",
                     ask.toString());
     }
@@ -117,6 +135,9 @@ public class JavaStrategy
         String shouldFail = getParameter("shouldFailOnBid");
         if(shouldFail != null) {
             int x = 10 / 0;
+        }
+        if(getParameter("shouldRequestCEPData") != null) {
+            suggestionFromEvent(bid);
         }
         setProperty("onBid",
                     bid.toString());
@@ -134,6 +155,9 @@ public class JavaStrategy
         String shouldFail = getParameter("shouldFailOnCallback");
         if(shouldFail != null) { 
             int x = 10 / 0;
+        }
+        if(getParameter("shouldRequestCEPData") != null) {
+            cancelAllCEPRequests();
         }
         setProperty("onCallback",
                     Integer.toString(callbackCounter));
@@ -168,6 +192,9 @@ public class JavaStrategy
         if(shouldFail != null) { 
             int x = 10 / 0;
         }
+        if(getParameter("shouldRequestCEPData") != null) {
+            suggestionFromEvent(trade);
+        }
         setProperty("onTrade",
                     trade.toString());
     }
@@ -178,6 +205,9 @@ public class JavaStrategy
         String shouldFail = getParameter("shouldFailOnOther");
         if(shouldFail != null)  {
             int x = 10 / 0;
+        }
+        if(getProperty("shouldCancelCEPData") != null) {
+            cancelCEPRequest(Long.parseLong(getProperty("requestID")));
         }
         setProperty("onOther",
                     data.toString());
@@ -227,5 +257,28 @@ public class JavaStrategy
                 }
             }
         }
+    }
+    /**
+     * Creates a trade suggestion from the given event.
+     *
+     * @param inEvent an <code>EventBase</code> value
+     */
+    private void suggestionFromEvent(EventBase inEvent)
+    {
+        OrderSingle suggestedOrder = Factory.getInstance().createOrderSingle();
+        if(inEvent instanceof BidAskEvent) {
+            BidAskEvent event = (BidAskEvent)inEvent;
+            suggestedOrder.setPrice(event.getPrice());
+            suggestedOrder.setSymbol(new MSymbol(event.getSymbol()));
+            suggestedOrder.setQuantity(event.getSize());
+        } else if(inEvent instanceof TradeEvent) {
+            TradeEvent event = (TradeEvent)inEvent;
+            suggestedOrder.setPrice(event.getPrice());
+            suggestedOrder.setSymbol(new MSymbol(event.getSymbol()));
+            suggestedOrder.setQuantity(event.getSize());
+        }
+        suggestTrade(suggestedOrder,
+                     new BigDecimal("1.0"),
+                     "CEP Event Received"); 
     }
 }

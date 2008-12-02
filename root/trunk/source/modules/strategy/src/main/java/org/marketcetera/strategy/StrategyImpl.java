@@ -174,6 +174,14 @@ class StrategyImpl
         return classpath;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Strategy#getDefaultNamespace()
+     */
+    @Override
+    public final String getDefaultNamespace()
+    {
+        return defaultNamespace;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -193,6 +201,7 @@ class StrategyImpl
      * @param inSource a <code>File</code> value
      * @param inParameters a <code>Properties</code> value
      * @param inClasspath a <code>String[]</code> value
+     * @param inNamespace a <code>String</code> value 
      * @param inOutboundServicesProvider an <code>OutboundServices</code> value
      * @param inInboundServicesProvider an <code>InboundServices</code> value
      * @throws IOException if the given <code>File</code> could not be resolved
@@ -203,6 +212,7 @@ class StrategyImpl
                  File inSource,
                  Properties inParameters,
                  String[] inClasspath,
+                 String inNamespace,
                  OutboundServicesProvider inOutboundServicesProvider,
                  InboundServicesProvider inInboundServicesProvider)
         throws IOException
@@ -231,6 +241,7 @@ class StrategyImpl
         outboundServicesProvider = inOutboundServicesProvider;
         inboundServicesProvider = inInboundServicesProvider;
         code = fileToString(getSource());
+        defaultNamespace = inNamespace;
     }
     /**
      * Get the uniqueIdentifier value.
@@ -364,6 +375,10 @@ class StrategyImpl
      * the provider of services for incoming data
      */
     private final InboundServicesProvider inboundServicesProvider;
+    /**
+     * the default namespace for this strategy
+     */
+    private final String defaultNamespace;
     /**
      * the value that uniquely identifies this strategy to the system within the scope of this JVM execution
      */

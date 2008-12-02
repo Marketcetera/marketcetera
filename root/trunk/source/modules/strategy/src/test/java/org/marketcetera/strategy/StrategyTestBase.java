@@ -1425,6 +1425,10 @@ public class StrategyTestBase
      */
     protected AskEvent askEvent;
     /**
+     * can be used to track a central strategy
+     */
+    protected ModuleURN theStrategy;
+    /**
      * positions for a set of symbols
      */
     protected final static Map<MSymbol,Position> positions = new HashMap<MSymbol,Position>();

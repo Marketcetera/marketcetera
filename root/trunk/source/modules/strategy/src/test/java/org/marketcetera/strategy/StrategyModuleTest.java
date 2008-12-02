@@ -260,11 +260,19 @@ public class StrategyModuleTest
                                                                                               "OrDeRs") });
         DataFlowID flowID2 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
                                                                                               "SuGgEsTiOnS") });
-        // correct RequestType payload
         DataFlowID flowID3 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
-                                                                                              OutputType.ORDERS) });
+                                                                                              "eVeNtS") });
         DataFlowID flowID4 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                              "AlL") });
+        // correct RequestType payload
+        DataFlowID flowID5 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                              OutputType.ORDERS) });
+        DataFlowID flowID6 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
                                                                                               OutputType.SUGGESTIONS) });
+        DataFlowID flowID7 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                              OutputType.EVENTS) });
+        DataFlowID flowID8 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                              OutputType.ALL) });
         // TODO insert some code here to:
         //  1) have a test module make the above data requests
         //  2) have the strategy emit a trade suggestion and an order (verified in the module described in #1)
@@ -272,6 +280,10 @@ public class StrategyModuleTest
         moduleManager.cancel(flowID2);
         moduleManager.cancel(flowID3);
         moduleManager.cancel(flowID4);
+        moduleManager.cancel(flowID5);
+        moduleManager.cancel(flowID6);
+        moduleManager.cancel(flowID7);
+        moduleManager.cancel(flowID8);
     }
     @Test 
     public void receiveData()
