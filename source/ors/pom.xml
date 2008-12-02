@@ -155,6 +155,12 @@
             <configuration>
               <mainClass>org.marketcetera.ors.security.ORSAdminCLI</mainClass>
               <!-- -Dexec.args="-u admin ..." -->
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/cmd_exec</value>
+                </systemProperty>
+              </systemProperties>
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>
