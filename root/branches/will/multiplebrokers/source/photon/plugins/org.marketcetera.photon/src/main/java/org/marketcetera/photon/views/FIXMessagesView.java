@@ -18,7 +18,7 @@ import ca.odell.glazedlists.FilterList;
  * @author michael.lossos@softwaregoodness.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class FIXMessagesView
     extends AbstractFIXMessagesView
 {

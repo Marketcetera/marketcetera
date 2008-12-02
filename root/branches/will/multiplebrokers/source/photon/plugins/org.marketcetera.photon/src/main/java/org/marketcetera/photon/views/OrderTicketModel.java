@@ -8,7 +8,6 @@ import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -23,7 +22,6 @@ import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
-import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
 /* $License$ */
 
@@ -38,69 +36,16 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 0.6.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class OrderTicketModel 
     implements Messages
 {
-    /**
-     * Indicates to model subscribers that the model has changed.
-     *
-     * @author gmiller
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since 0.6.0
-     */
-    @ClassVersion("$Id$") //$NON-NLS-1$
-    public static class OrderTicketPublication 
-    {
-        public enum Type {
-            BID,OFFER,SYMBOL_CHANGE
-        };	    
-        private final Type type;
-        private final MarketDataSnapshotFullRefresh.NoMDEntries message; 
-        private final String mSymbolFragment;
-
-        OrderTicketPublication(Type inType,
-                               MarketDataSnapshotFullRefresh.NoMDEntries inMessage)
-                               {
-            type = inType;
-            message = inMessage;
-            mSymbolFragment = null;
-                               }
-        OrderTicketPublication(Type inType,
-                               String inSymbolFragment)
-                               {
-            type = inType;
-            message = null;
-            mSymbolFragment = inSymbolFragment;
-                               }
-        public Type getType()
-        {
-            return type;
-        }
-        public MarketDataSnapshotFullRefresh.NoMDEntries getMessage()
-        {
-            return message;
-        }
-        public String getSymbolFragment()
-        {
-            return mSymbolFragment;
-        }    	    
-        public String toString()
-        {
-            return String.format("OrderTicketModel %s publication: %s",  //$NON-NLS-1$
-                                 type,
-                                 message);
-        }
-    }
-
     private final PropertyChangeSupport propertyChangeSupport;
 	protected Message orderMessage;
 	private String brokerId = null;
 	private final WritableList customFieldsList = new WritableList();
 	private final FIXMessageFactory messageFactory;
 	private final DataDictionary dictionary;
-    private final PublisherEngine mPublisher = new PublisherEngine();
 
 	/**
 	 * Create a new OrderTicketModel using the specified FIXMessageFactory
@@ -229,8 +174,6 @@ public abstract class OrderTicketModel
 			@Override
 			protected void doSetValue(Object value) {
 				orderMessage.setField(new Symbol((String)value));
-				getPublisher().publish(new OrderTicketPublication(OrderTicketPublication.Type.SYMBOL_CHANGE,
-				                                                  ((String)value)));
 			}
 		};
 	}
@@ -341,10 +284,5 @@ public abstract class OrderTicketModel
 	 */
 	public FIXMessageFactory getMessageFactory() {
 		return messageFactory;
-	}
-
-	protected final PublisherEngine getPublisher()
-	{
-	    return mPublisher;
 	}
 }

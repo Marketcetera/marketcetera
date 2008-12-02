@@ -46,7 +46,7 @@ import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
  * @author michael.lossos@softwaregoodness.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class AbstractFIXMessagesView
         extends MessagesViewBase<ReportHolder>
 {
