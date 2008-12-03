@@ -30,7 +30,7 @@ public final class BrokerManager implements IBrokerIdValidator {
 	/**
 	 * The default/null broker.
 	 */
-	public static final Broker DEFAULT_BROKER = new Broker(Messages.BROKER_MANAGER_DEFAULT_BROKER_NAME.getText(), null);
+	public static final Broker AUTO_SELECT_BROKER = new Broker(Messages.BROKER_MANAGER_AUTO_SELECT.getText(), null);
 
 	/**
 	 * Returns the singleton instance for the currently running plug-in.
@@ -66,7 +66,7 @@ public final class BrokerManager implements IBrokerIdValidator {
 		@Override
 		protected List<?> calculate() {
 			List<Broker> list = new ArrayList<Broker>();
-			list.add(DEFAULT_BROKER);
+			list.add(AUTO_SELECT_BROKER);
 			for (Object object : mBrokers) {
 				DestinationStatus brokerStatus = (DestinationStatus) object;
 				if (brokerStatus.getLoggedOn()) {

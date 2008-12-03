@@ -243,7 +243,7 @@ public abstract class OrderTicketView
 		mDestinationViewer.setLabelProvider(new LabelProvider() {
 			@Override
 			public String getText(Object element) {
-				if (element == BrokerManager.DEFAULT_BROKER)
+				if (element == BrokerManager.AUTO_SELECT_BROKER)
 					return "Default";
 				Broker destination = (Broker) element;
 				return MessageFormat.format("{0} ({1})", destination.getName(), destination.getId().getValue());
@@ -695,7 +695,7 @@ public abstract class OrderTicketView
 							@Override
 							public Object convert(Object fromObject) {
 								if (fromObject == null) {
-									return BrokerManager.DEFAULT_BROKER;
+									return BrokerManager.AUTO_SELECT_BROKER;
 								}									
 								for (Object obj : BrokerManager.getCurrent().getAvailableBrokers()) {
 									DestinationID id = ((Broker) obj).getId();
@@ -703,7 +703,7 @@ public abstract class OrderTicketView
 										return obj;
 									}
 								}
-								return BrokerManager.DEFAULT_BROKER;
+								return BrokerManager.AUTO_SELECT_BROKER;
 							}
 						}));
 				bindMessageValue(

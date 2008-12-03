@@ -10,6 +10,7 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.marketdata.MarketDataReceiverModule.IConfigurationProvider;
 import org.marketcetera.photon.marketdata.MarketDataReceiverModule.MarketDataSubscriber;
+import org.marketcetera.photon.module.ModulePlugin;
 import org.marketcetera.util.except.I18NException;
 
 /* $License$ */
@@ -27,8 +28,14 @@ public class MarketDataReceiverModuleTest {
 
 	@Before
 	public void setUp() throws Exception {
-		mModuleManager = new ModuleManager();
-		mModuleManager.init();
+		ModulePlugin plugin = ModulePlugin.getDefault();
+		if (plugin != null) {
+			mModuleManager = plugin.getModuleManager();
+		}
+		if (mModuleManager == null) {
+			mModuleManager = new ModuleManager();
+			mModuleManager.init();
+		}
 		mModuleManager.start(MockMarketDataModuleFactory.INSTANCE_URN);
 	}
 

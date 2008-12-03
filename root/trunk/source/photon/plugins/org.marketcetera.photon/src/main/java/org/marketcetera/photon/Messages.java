@@ -48,8 +48,8 @@ public interface Messages
                                                                                                       "ApplicationActionBarAdvisor_OpenPerspectiveMenuID"); //$NON-NLS-1$
     public static I18NMessage0P CommandStatusLineContribution_CommandLabel = new I18NMessage0P(LOGGER,
                                                                                                "CommandStatusLineContribution_CommandLabel"); //$NON-NLS-1$
-    public static final I18NMessage0P COMMAND_PARSER_DEFAULT_KEYWORD = new I18NMessage0P(
-			LOGGER, "command_parser.default_keyword");//$NON-NLS-1$
+    public static final I18NMessage0P COMMAND_PARSER_AUTO_SELECT_BROKER_KEYWORD = new I18NMessage0P(
+			LOGGER, "command_parser.auto_select_broker_keyword");//$NON-NLS-1$
     public static final I18NMessage2P COMMAND_PARSER_INVALID_BROKER_ID = new I18NMessage2P(
 			LOGGER, "command_parser.invalid_broker_id");//$NON-NLS-1$
     public static I18NMessage0P CANNOT_START_DEFAULT_SCRIPT_PROJECT = new I18NMessage0P(LOGGER,
@@ -482,6 +482,16 @@ public interface Messages
 			"unknown_value");//$NON-NLS-1$
 	public static final I18NMessage0P BROKER_SUPPORT_TABLE_FORMAT_BROKER_COLUMN = new I18NMessage0P(LOGGER,
 			"broker_support_table_format.broker_column");//$NON-NLS-1$
-	public static final I18NMessage0P BROKER_MANAGER_DEFAULT_BROKER_NAME = new I18NMessage0P(LOGGER,
-			"broker_manager.default_broker_name");//$NON-NLS-1$
+	public static final I18NMessage0P BROKER_MANAGER_AUTO_SELECT = new I18NMessage0P(LOGGER,
+			"broker_manager.auto_select");//$NON-NLS-1$
+	public static final I18NMessage0P BROKER_NOTIFICATION_BROKER_AVAILABLE = new I18NMessage0P(
+			LOGGER, "broker_notification.broker_available");//$NON-NLS-1$
+	public static final I18NMessage2P BROKER_NOTIFICATION_BROKER_AVAILABLE_DETAILS = new I18NMessage2P(
+			LOGGER, "broker_notification.broker_available_details");//$NON-NLS-1$
+	public static final I18NMessage0P BROKER_NOTIFICATION_BROKER_UNAVAILABLE = new I18NMessage0P(
+			LOGGER, "broker_notification.broker_unavailable");//$NON-NLS-1$
+	public static final I18NMessage2P BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS = new I18NMessage2P(
+			LOGGER, "broker_notification.broker_unavailable_details");//$NON-NLS-1$
+	public static final I18NMessage1P BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED = new I18NMessage1P(
+			LOGGER, "broker_notification.error_occurred");//$NON-NLS-1$
 }
