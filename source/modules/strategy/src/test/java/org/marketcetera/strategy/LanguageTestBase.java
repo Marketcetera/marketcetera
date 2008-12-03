@@ -952,7 +952,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception
      */
-    @Test
+    @PerformanceTest
     public void startStop()
         throws Exception
     {
@@ -977,7 +977,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception
      */
-    @Test
+    @PerformanceTest
     public void manyStrategiesStartStop()
         throws Exception
     {
@@ -1003,7 +1003,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test
+    @PerformanceTest
     public void manyStrategiesStartWithoutStop()
         throws Exception
     {
@@ -2982,5 +2982,19 @@ public abstract class LanguageTestBase
         for(String callbackShouldBeNull : allCallbacks) {
             verifyPropertyNull(callbackShouldBeNull);
         }
+    }
+    /**
+     * Indicates that a <code>JUnit</code> test is designated as a performance test instead of a unit test.
+     * 
+     * <p>As this annotation becomes more widely used, an appropriate home can be chosen for it.  In the
+     * long run, <code>LanguageTestBase</code> is not the right owner.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public @interface PerformanceTest
+    {
+        boolean value() default true;
     }
 }
