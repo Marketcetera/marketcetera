@@ -259,7 +259,7 @@ public final class StrategyManager {
 			String displayName, Destination destination, Properties parameters) {
 		try {
 			ModuleURN urn = mModuleManager.createModule(
-					StrategyModuleFactory.PROVIDER_URN, className,
+					StrategyModuleFactory.PROVIDER_URN, null, className,
 					Language.RUBY, file.getLocation().toFile(), parameters,
 					null, destination.getURN(), TradeSuggestionManager
 							.getCurrent().getReceiverURN());

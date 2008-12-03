@@ -5,6 +5,7 @@ import static org.marketcetera.strategy.Messages.CANNOT_INITIALIZE_CLIENT;
 import static org.marketcetera.strategy.Messages.CANNOT_SEND_EVENT_TO_CEP;
 import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.EMPTY_INSTANCE_ERROR;
 import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
 import static org.marketcetera.strategy.Messages.EXECUTION_REPORT_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
@@ -624,63 +625,79 @@ public final class StrategyModule
     static StrategyModule getStrategyModule(Object...inParameters)
         throws ModuleCreationException
     {
-        // must have 7 parameters, though the last four may be null
+        // must have 8 parameters, though the first and the last four may be null
         if(inParameters == null ||
-           inParameters.length != 7) {
+           inParameters.length != 8) {
             throw new ModuleCreationException(PARAMETER_COUNT_ERROR);
         }
-        // parameter 1 is the strategy name (human-readable) and must be non-null and have non-zero length
-        String name;
-        if(inParameters[0] == null) {
-            throw new ModuleCreationException(new I18NBoundMessage2P(NULL_PARAMETER_ERROR,
-                                                                     1,
-                                                                     String.class.getName()));
-        }
-        if(inParameters[0] instanceof String) {
-            if(((String)inParameters[0]).isEmpty()) {
-                throw new ModuleCreationException(EMPTY_NAME_ERROR);
+        // parameter 1 is the URN name of the strategy or null for the system to create a name
+        String instanceName = null;
+        if(inParameters[0] != null) {
+            if(inParameters[0] instanceof String) {
+                if(((String)inParameters[0]).isEmpty()) {
+                    throw new ModuleCreationException(EMPTY_INSTANCE_ERROR);
+                } else {
+                    instanceName = (String)inParameters[0];
+                }                
             } else {
-                name = (String)inParameters[0];
+                throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
+                                                                         1,
+                                                                         String.class.getName(),
+                                                                         inParameters[0].getClass().getName()));
             }
-        } else {
-            throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
-                                                                     1,
-                                                                     String.class.getName(),
-                                                                     inParameters[0].getClass().getName()));
         }
-        // parameter 2 is the language.  the parameter may be of type Language or may be a String describing the contents of a Language enum value 
-        Language type = null;
+        // parameter 2 is the strategy name (human-readable) and must be non-null and have non-zero length
+        String name;
         if(inParameters[1] == null) {
             throw new ModuleCreationException(new I18NBoundMessage2P(NULL_PARAMETER_ERROR,
                                                                      2,
-                                                                     Language.class.getName()));
+                                                                     String.class.getName()));
         }
-        if(inParameters[1] instanceof Language) {
-            type = (Language)inParameters[1];
-        } else {
-            if(inParameters[1] instanceof String) {
-                try {
-                    type = Language.valueOf(((String)inParameters[1]).toUpperCase());
-                } catch (Exception e) {
-                    throw new ModuleCreationException(new I18NBoundMessage1P(INVALID_LANGUAGE_ERROR,
-                                                                             inParameters[1].toString()));
-                }
+        if(inParameters[1] instanceof String) {
+            if(((String)inParameters[1]).isEmpty()) {
+                throw new ModuleCreationException(EMPTY_NAME_ERROR);
             } else {
-                throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
-                                                                         2,
-                                                                         Language.class.getName(),
-                                                                         inParameters[1].getClass().getName()));
+                name = (String)inParameters[1];
             }
+        } else {
+            throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
+                                                                     2,
+                                                                     String.class.getName(),
+                                                                     inParameters[1].getClass().getName()));
         }
-        // parameter 3 is the strategy source.  the parameter must be of type File, must be non-null, must exist, and must be readable
-        File source;
+        // parameter 3 is the language.  the parameter may be of type Language or may be a String describing the contents of a Language enum value 
+        Language type = null;
         if(inParameters[2] == null) {
             throw new ModuleCreationException(new I18NBoundMessage2P(NULL_PARAMETER_ERROR,
                                                                      3,
+                                                                     Language.class.getName()));
+        }
+        if(inParameters[2] instanceof Language) {
+            type = (Language)inParameters[2];
+        } else {
+            if(inParameters[2] instanceof String) {
+                try {
+                    type = Language.valueOf(((String)inParameters[2]).toUpperCase());
+                } catch (Exception e) {
+                    throw new ModuleCreationException(new I18NBoundMessage1P(INVALID_LANGUAGE_ERROR,
+                                                                             inParameters[2].toString()));
+                }
+            } else {
+                throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
+                                                                         3,
+                                                                         Language.class.getName(),
+                                                                         inParameters[2].getClass().getName()));
+            }
+        }
+        // parameter 4 is the strategy source.  the parameter must be of type File, must be non-null, must exist, and must be readable
+        File source;
+        if(inParameters[3] == null) {
+            throw new ModuleCreationException(new I18NBoundMessage2P(NULL_PARAMETER_ERROR,
+                                                                     4,
                                                                      File.class.getName()));
         }
-        if(inParameters[2] instanceof File) {
-            source = (File)inParameters[2];
+        if(inParameters[3] instanceof File) {
+            source = (File)inParameters[3];
             if(!(source.exists() ||
                     source.canRead())) {
                 throw new ModuleCreationException(new I18NBoundMessage1P(FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE,
@@ -688,54 +705,41 @@ public final class StrategyModule
             }
         } else {
             throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
-                                                                     3,
+                                                                     4,
                                                                      File.class.getName(),
-                                                                     inParameters[2].getClass().getName()));
+                                                                     inParameters[3].getClass().getName()));
         }
-        // parameter 4 is a Properties object.  The parameter may be null.  If non-null, these values are made available to the running strategy.
+        // parameter 5 is a Properties object.  The parameter may be null.  If non-null, these values are made available to the running strategy.
         Properties parameters = null;
-        if(inParameters[3] != null) {
-            if(inParameters[3] instanceof Properties) {
-                parameters = (Properties)inParameters[3];
-            } else {
-                throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
-                                                                         4,
-                                                                         Properties.class.getName(),
-                                                                         inParameters[3].getClass().getName()));
-            }
-        }
-        // parameter 5 is the classpath.  This parameter may be null.  If non-null, it contains an array of Strings which are passed to the
-        //  script executor for use in a language-dependent fashion.
-        String[] classpath = null;
         if(inParameters[4] != null) {
-            if(inParameters[4] instanceof String[]) {
-                classpath = (String[])inParameters[4];
+            if(inParameters[4] instanceof Properties) {
+                parameters = (Properties)inParameters[4];
             } else {
                 throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
                                                                          5,
-                                                                         String[].class.getName(),
+                                                                         Properties.class.getName(),
                                                                          inParameters[4].getClass().getName()));
             }
         }
-        // parameter 6 is a ModuleURN.  This parameter may be null.  If non-null, it must describe a module instance that is started and able
-        //  to receive data.  Orders will be sent to this module when they are created.
-        ModuleURN ordersInstance = null;
+        // parameter 6 is the classpath.  This parameter may be null.  If non-null, it contains an array of Strings which are passed to the
+        //  script executor for use in a language-dependent fashion.
+        String[] classpath = null;
         if(inParameters[5] != null) {
-            if(inParameters[5] instanceof ModuleURN) {
-                ordersInstance = (ModuleURN)inParameters[5];
+            if(inParameters[5] instanceof String[]) {
+                classpath = (String[])inParameters[5];
             } else {
                 throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
                                                                          6,
-                                                                         ModuleURN.class.getName(),
+                                                                         String[].class.getName(),
                                                                          inParameters[5].getClass().getName()));
             }
         }
         // parameter 7 is a ModuleURN.  This parameter may be null.  If non-null, it must describe a module instance that is started and able
-        //  to receive data.  Trade suggestions will be sent to this module when they are created.
-        ModuleURN suggestionsInstance = null;
+        //  to receive data.  Orders will be sent to this module when they are created.
+        ModuleURN ordersInstance = null;
         if(inParameters[6] != null) {
             if(inParameters[6] instanceof ModuleURN) {
-                suggestionsInstance = (ModuleURN)inParameters[6];
+                ordersInstance = (ModuleURN)inParameters[6];
             } else {
                 throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
                                                                          7,
@@ -743,7 +747,21 @@ public final class StrategyModule
                                                                          inParameters[6].getClass().getName()));
             }
         }
-        return new StrategyModule(generateInstanceURN(name),
+        // parameter 8 is a ModuleURN.  This parameter may be null.  If non-null, it must describe a module instance that is started and able
+        //  to receive data.  Trade suggestions will be sent to this module when they are created.
+        ModuleURN suggestionsInstance = null;
+        if(inParameters[7] != null) {
+            if(inParameters[7] instanceof ModuleURN) {
+                suggestionsInstance = (ModuleURN)inParameters[7];
+            } else {
+                throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
+                                                                         8,
+                                                                         ModuleURN.class.getName(),
+                                                                         inParameters[7].getClass().getName()));
+            }
+        }
+        return new StrategyModule(instanceName == null ? generateInstanceURN(name) : new ModuleURN(StrategyModuleFactory.PROVIDER_URN,
+                                                                                                   instanceName),
                                   name,
                                   type,
                                   source,

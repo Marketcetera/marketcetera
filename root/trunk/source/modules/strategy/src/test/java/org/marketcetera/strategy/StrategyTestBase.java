@@ -12,10 +12,12 @@ import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -1315,8 +1317,12 @@ public class StrategyTestBase
         throws Exception
     {
         verifyNullProperties();
+        LinkedList<Object> actualParameters = new LinkedList<Object>(Arrays.asList(inParameters));
+        if(inParameters.length <= 7) {
+            actualParameters.addFirst(null);
+        }
         return createModule(StrategyModuleFactory.PROVIDER_URN,
-                            inParameters);
+                            actualParameters.toArray());
     }
     /**
      * Creates and starts a module with the given URN and the given parameters.
