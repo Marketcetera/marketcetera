@@ -61,17 +61,44 @@ public class OrderCancelTest extends TypesTestBase {
         MSymbol symbol = new MSymbol("IBM",
                 SecurityType.Option);
         String account = "what?";
+        BigDecimal orderQty = new BigDecimal("34.5");
         DestinationID cID = new DestinationID("iam");
         //Create an exec report.
         report = createExecReport(orderID, side,
-                symbol, account, destOrderID);
+                symbol, account, destOrderID, orderQty);
         //Create the order from the report.
         order = sFactory.createOrderCancel(
                 sFactory.createExecutionReport(report, cID,
                         Originator.Server));
         assertOrderCancel(order, NOT_NULL, new OrderID(orderID), side,
                 symbol, symbol.getSecurityType(),
-                report.getField(new LeavesQty()).getValue(),
+                orderQty,
+                destOrderID, account, cID, null);
+        //Verify toString() doesn't fail
+        order.toString();
+
+        assertNotSame(order, sFactory.createOrderCancel(
+                sFactory.createExecutionReport(report, cID,
+                        Originator.Server)));
+        
+
+        
+        //Test a cancel for a partial fill
+        //Create an exec report.
+        report = createExecReport(orderID, side,
+                symbol, account, destOrderID, orderQty);
+        report.setDecimal(AvgPx.FIELD, new BigDecimal("23.2"));
+        report.setDecimal(CumQty.FIELD, new BigDecimal("10"));
+        report.setDecimal(LeavesQty.FIELD, new BigDecimal("9"));
+        report.setField(new OrdStatus(OrdStatus.PARTIALLY_FILLED));
+        
+        //Create the order from the report.
+        order = sFactory.createOrderCancel(
+                sFactory.createExecutionReport(report, cID,
+                        Originator.Server));
+        assertOrderCancel(order, NOT_NULL, new OrderID(orderID), side,
+                symbol, symbol.getSecurityType(),
+                orderQty,
                 destOrderID, account, cID, null);
         //Verify toString() doesn't fail
         order.toString();
@@ -270,12 +297,13 @@ public class OrderCancelTest extends TypesTestBase {
                                      Side inSide,
                                      MSymbol inSymbol,
                                      String inAccount,
-                                     String inDestOrderID)
+                                     String inDestOrderID,
+                                     BigDecimal inQty)
             throws FieldNotFound {
         return getSystemMessageFactory().newExecutionReport(
                 inDestOrderID, inOrderID,
                 "exec-2", OrderStatus.New.getFIXValue(),
-                inSide.getFIXValue(), new BigDecimal("34.5"),
+                inSide.getFIXValue(), inQty,
                 new BigDecimal("45.67"), new BigDecimal("23.53"),
                 new BigDecimal("983.43"), new BigDecimal("98.34"),
                 new BigDecimal("34.32"), inSymbol, inAccount);

@@ -76,7 +76,32 @@ public class OrderReplaceTest extends TypesTestBase {
                 sFactory.createExecutionReport(report, cID, Originator.Server));
         assertOrderReplace(order, NOT_NULL, new OrderID(orderID),
                 destOrderID, OrderType.Limit, side,
-                report.getField(new LeavesQty()).getValue(), lastPrice,
+                orderQty, lastPrice,
+                symbol, symbol.getSecurityType(), fillOrKill, account,
+                cID, PositionEffect.Open, OrderCapacity.Agency, null);
+        //Verify toString() doesn't fail
+        order.toString();
+        
+        assertNotSame(order, sFactory.createOrderReplace(
+                sFactory.createExecutionReport(report, cID,
+                        Originator.Server)));
+        
+        //Test a replace for a partial fill
+        //Create an exec report.
+        report = createExecReport(orderID, side, orderQty, lastPrice,
+                symbol, account, orderType, fillOrKill, destOrderID,
+                OrderCapacity.Agency, PositionEffect.Open);
+        report.setDecimal(AvgPx.FIELD, new BigDecimal("23.2"));
+        report.setDecimal(CumQty.FIELD, new BigDecimal("10"));
+        report.setDecimal(LeavesQty.FIELD, new BigDecimal("9"));
+        report.setField(new OrdStatus(OrdStatus.PARTIALLY_FILLED));
+        
+        //Create the order from the report.
+        order = sFactory.createOrderReplace(
+                sFactory.createExecutionReport(report, cID, Originator.Server));
+        assertOrderReplace(order, NOT_NULL, new OrderID(orderID),
+                destOrderID, OrderType.Limit, side,
+                orderQty, lastPrice,
                 symbol, symbol.getSecurityType(), fillOrKill, account,
                 cID, PositionEffect.Open, OrderCapacity.Agency, null);
         //Verify toString() doesn't fail
