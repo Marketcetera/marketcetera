@@ -1,16 +1,14 @@
 package org.marketcetera.modules.cep.esper;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.event.*;
-import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.event.TimestampCarrier;
 import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
-import org.marketcetera.trade.*;
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 import org.w3c.dom.Node;
 
 import java.io.File;
@@ -57,6 +55,21 @@ import java.util.*;
 public class CEPEsperProcessor extends Module
         implements DataReceiver, DataEmitter, CEPEsperProcessorMXBean {
 
+    /** Reference counter that keep track if we get events posted back into us from events that we emit
+     * ie we emit to a strategy that sends events in back to this Esper instance
+     * 0 means "not self-posted event", ie "send regular events to Esper"
+     */
+    private final ThreadLocal<Integer> mSelfPostingEvents = new ThreadLocal<Integer>()  {
+        @Override
+        protected Integer initialValue() {
+            return 0;
+        }
+    };
+
+    protected CEPEsperProcessor(ModuleURN inURN, boolean inAutoStart) {
+        super(inURN, inAutoStart);
+    }
+
     @Override
     public void requestData(DataRequest inRequest,
                             DataEmitterSupport inSupport)
@@ -89,21 +102,42 @@ public class CEPEsperProcessor extends Module
 
     @Override
     public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
-        //todo update this method to supply data flow ID along with the requestID: not sure what this means (tk)
-        getDelegate().cancelRequest(inRequestID);
+        getDelegate().cancelRequest(inFlowID, inRequestID);
     }
 
+    /** Need to keep a reference count in case of nested events being sent out of Esper and posted back in
+     * Increment the count before, and then decrement after
+     */
     @Override
     public void receiveData(DataFlowID inFlowID, Object inData)
             throws UnsupportedDataTypeException, StopDataFlowException {
         if(inData != null) {
             getDelegate().preProcessData(inFlowID, inData);
-            if (inData instanceof Map) {
-                mService.getEPRuntime().sendEvent((Map)inData, CEPDataTypes.MAP);
-            } else if(inData instanceof Node) {
-                mService.getEPRuntime().sendEvent((Node)inData);
-            } else {
-                mService.getEPRuntime().sendEvent(inData);
+            int selfPostedCounter = mSelfPostingEvents.get();
+            boolean fSelfPostedEvent = selfPostedCounter > 0;
+            mSelfPostingEvents.set(selfPostedCounter+1);
+            try {
+                if (inData instanceof Map) {
+                    if(fSelfPostedEvent) {
+                        mService.getEPRuntime().route((Map)inData, CEPDataTypes.MAP);
+                    } else {
+                        mService.getEPRuntime().sendEvent((Map)inData, CEPDataTypes.MAP);
+                    }
+                } else if(inData instanceof Node) {
+                    if (fSelfPostedEvent) {
+                        mService.getEPRuntime().route((Node) inData);
+                    } else {
+                        mService.getEPRuntime().sendEvent((Node) inData);
+                    }
+                } else {
+                    if (fSelfPostedEvent) {
+                        mService.getEPRuntime().route(inData);
+                    } else {
+                        mService.getEPRuntime().sendEvent(inData);
+                    }
+                }
+            } finally {
+                mSelfPostingEvents.set(selfPostedCounter);
             }
         }
         //ignore null data
@@ -181,21 +215,11 @@ public class CEPEsperProcessor extends Module
                     }
                 }
             }
-            configuration.addEventTypeAlias(CEPDataTypes.MARKET_DATA, SymbolExchangeEvent.class);
-            configuration.addEventTypeAlias(CEPDataTypes.BID, BidEvent.class);
-            configuration.addEventTypeAlias(CEPDataTypes.ASK, AskEvent.class);
-            configuration.addEventTypeAlias(CEPDataTypes.TRADE, TradeEvent.class);
-            configuration.addEventTypeAlias(CEPDataTypes.REPORT, ExecutionReport.class);
-            configuration.addEventTypeAlias(CEPDataTypes.CANCEL_REJECT, OrderCancelReject.class);
-            configuration.addEventTypeAlias(CEPDataTypes.ORDER_SINGLE, OrderSingle.class);
-            configuration.addEventTypeAlias(CEPDataTypes.ORDER_CANCEL, OrderCancel.class);
-            configuration.addEventTypeAlias(CEPDataTypes.ORDER_REPLACE, OrderReplace.class);
-            configuration.addEventTypeAlias(CEPDataTypes.FIX_ORDER, FIXOrder.class);
-            configuration.addEventTypeAlias(CEPDataTypes.SUGGEST, Suggestion.class);
-            configuration.addEventTypeAlias(CEPDataTypes.NOTIFICATION, Notification.class);   // todo: is this correct class?
-            configuration.addEventTypeAlias(CEPDataTypes.MAP, Map.class);
+
+            for (Pair<String, Class<?>> stringClassPair : CEPDataTypes.REQUEST_PRECANNED_TYPES) {
+                configuration.addEventTypeAlias(stringClassPair.getFirstMember(), stringClassPair.getSecondMember());
+            }
             configuration.addEventTypeAlias(CEPDataTypes.TIME_CARRIER, TimestampCarrier.class);
-            configuration.addEventTypeAlias(CEPDataTypes.TIME, TimeEvent.class);
 
             mService = EPServiceProviderManager.getProvider(
                     getURN().instanceName(), configuration);
@@ -228,14 +252,22 @@ public class CEPEsperProcessor extends Module
      */
     protected ArrayList<EPStatement> createStatements(String... inQuery) throws EPException {
         ArrayList<EPStatement> stmts = new ArrayList<EPStatement>(inQuery.length);
-        for(String query: inQuery) {
-            if(query.startsWith(PATTERN_QUERY_PREFIX)) {
-                stmts.add(mService.getEPAdministrator().
-                        createPattern(query.substring(
-                                PATTERN_QUERY_PREFIX.length())));
-            } else {
-                stmts.add(mService.getEPAdministrator().createEPL(query));
+        try {
+            for(String query: inQuery) {
+                if(query.startsWith(PATTERN_QUERY_PREFIX)) {
+                    stmts.add(mService.getEPAdministrator().
+                            createPattern(query.substring(
+                                    PATTERN_QUERY_PREFIX.length())));
+                } else {
+                    stmts.add(mService.getEPAdministrator().createEPL(query));
+                }
             }
+        } catch(EPException ex) {
+            // destroy all pre-created statements so that they don't leak and re-throw exctpion
+            for (EPStatement stmt : stmts) {
+                stmt.destroy();
+            }
+            throw ex;
         }
         return stmts;
     }
@@ -259,10 +291,10 @@ public class CEPEsperProcessor extends Module
     /**
      * The prefix for pattern queries - they all start with p:xxxxx
      */
-    private static final String PATTERN_QUERY_PREFIX = "p:";
+    private static final String PATTERN_QUERY_PREFIX = "p:";  //$NON-NLS-1$
 
-    private final Map<DataFlowID, Pair<DataEmitterSupport, String[]>> mUnprocessedRequests =
-            new Hashtable<DataFlowID, Pair<DataEmitterSupport, String[]>>();
+    private final Map<DataFlowID, List<Pair<DataEmitterSupport, String[]>>> mUnprocessedRequests =
+            new Hashtable<DataFlowID, List<Pair<DataEmitterSupport, String[]>>>();
     private ProcessingDelegate mDelegate;
 
     /** Basic interface to describe a data flow processing delegate.
@@ -274,7 +306,7 @@ public class CEPEsperProcessor extends Module
         /** Sends the request to be processed */
         void processRequest(String[] inStmts, DataEmitterSupport inSupport) throws RequestDataException;
         /** Cancels all existing and pending requests */
-        void cancelRequest(RequestID inRequestID);
+        void cancelRequest(DataFlowID inFlowID, RequestID inRequestID);
 
         void preProcessData(DataFlowID inFlowID, Object inData) throws StopDataFlowException;
     }
@@ -297,7 +329,7 @@ public class CEPEsperProcessor extends Module
         }
 
         /** Go through and destroy all the existing EPL statements */
-        public void cancelRequest(RequestID inRequestID) {
+        public void cancelRequest(DataFlowID inFlowID, RequestID inRequestID) {
             List<EPStatement> stmts = mRequests.remove(inRequestID);
             if(stmts != null) {
                 for(EPStatement s: stmts) {
@@ -323,15 +355,29 @@ public class CEPEsperProcessor extends Module
         public void processRequest(String[] inStmts, DataEmitterSupport inSupport) {
             //Save off inSupport and statments so that they can be processed
             //in preProcessData
-            //todo account for multiple requests per data flow?
-            mUnprocessedRequests.put(inSupport.getFlowID(),
-                    new Pair<DataEmitterSupport, String[]>(inSupport, inStmts));
+            List<Pair<DataEmitterSupport, String[]>> emitterList = mUnprocessedRequests.get(inSupport.getFlowID());
+            if(emitterList == null) {
+                emitterList = new ArrayList<Pair<DataEmitterSupport, String[]>>();
+                mUnprocessedRequests.put(inSupport.getFlowID(), emitterList);
+            }
+            emitterList.add(new Pair<DataEmitterSupport, String[]>(inSupport, inStmts));
         }
 
         @Override
-        public void cancelRequest(RequestID inRequestID) {
-            super.cancelRequest(inRequestID);
-            //todo account for unprocessed statement being cancelled.
+        public void cancelRequest(DataFlowID inFlowID, RequestID inRequestID) {
+            super.cancelRequest(inFlowID, inRequestID);
+            // remove any pending unprocessed statements for this flowID
+            List<Pair<DataEmitterSupport, String[]>> reqList = mUnprocessedRequests.get(inFlowID);
+            if(reqList != null) {
+                for (Pair<DataEmitterSupport, String[]> dataEmitterSupportPair : reqList) {
+                    if(dataEmitterSupportPair.getFirstMember().getRequestID().equals(inRequestID)) {
+                        reqList.remove(dataEmitterSupportPair);
+                    }
+                }
+                if(reqList.isEmpty()) {
+                    mUnprocessedRequests.remove(inFlowID);
+                }
+            }
         }
 
         /** Seed the Esper engine with the incoming time event, then
@@ -341,17 +387,17 @@ public class CEPEsperProcessor extends Module
         public void preProcessData(DataFlowID inFlowID, Object inData) throws StopDataFlowException {
             if(inData instanceof TimestampCarrier) {
                 //send the time event
-                mService.getEPRuntime().sendEvent(new TimeEvent(
-                        ((TimestampCarrier)inData).getTimeMillis()));
-                //send the event directly to downstream module? todo?
+                mService.getEPRuntime().sendEvent(new CurrentTimeEvent(((TimestampCarrier)inData).getTimeMillis()));
                 //if we have unprocessed statements process them now
-                Pair<DataEmitterSupport, String[]> req = mUnprocessedRequests.remove(inFlowID);
-                if(req != null) {
-                    try {
-                        super.processRequest(req.getSecondMember(), req.getFirstMember());
-                    } catch (RequestDataException e) {
-                        throw new StopDataFlowException(e,
-                                new I18NBoundMessage1P(Messages.ERROR_CREATING_STATEMENTS, Arrays.toString(req.getSecondMember())));
+                List<Pair<DataEmitterSupport, String[]>> reqList = mUnprocessedRequests.remove(inFlowID);
+                if(reqList != null) {
+                    for (Pair<DataEmitterSupport, String[]> oneRequest: reqList) {
+                        try {
+                            super.processRequest(oneRequest.getSecondMember(), oneRequest.getFirstMember());
+                        } catch (RequestDataException e) {
+                            throw new StopDataFlowException(e,
+                                    new I18NBoundMessage1P(Messages.ERROR_CREATING_STATEMENTS, Arrays.toString(oneRequest.getSecondMember())));
+                        }
                     }
                 }
             }

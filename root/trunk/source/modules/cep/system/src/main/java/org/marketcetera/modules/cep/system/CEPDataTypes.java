@@ -1,11 +1,28 @@
 package org.marketcetera.modules.cep.system;
 
+import org.marketcetera.core.Pair;
+import org.marketcetera.core.notifications.INotification;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.misc.ClassVersion;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+/* $License$ */
 /**
+ *
  * Set of constants naming pre-defined CEP data types
  * @author toli@marketcetera.com
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CEPDataTypes {
     public static final String MARKET_DATA  = "mdata";          //$NON-NLS-1$
     public static final String BID          = "bid";            //$NON-NLS-1$
@@ -22,4 +39,20 @@ public class CEPDataTypes {
     public static final String MAP          = "map";            //$NON-NLS-1$
     public static final String TIME_CARRIER = "timeCarrier";    //$NON-NLS-1$
     public static final String TIME         = "time";           //$NON-NLS-1$
+
+    public static List<Pair<String, Class<?>>> REQUEST_PRECANNED_TYPES = Collections.unmodifiableList(Arrays.asList(
+                    new Pair<String, Class<?>>(CEPDataTypes.MARKET_DATA, SymbolExchangeEvent.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.BID, BidEvent.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.ASK, AskEvent.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.TRADE, TradeEvent.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.REPORT, ExecutionReport.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.CANCEL_REJECT, OrderCancelReject.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.FIX_ORDER, FIXOrder.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.ORDER_CANCEL, OrderCancel.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.ORDER_REPLACE, OrderReplace.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.ORDER_SINGLE, OrderSingle.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.SUGGEST, Suggestion.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.NOTIFICATION, INotification.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.MAP, Map.class)));
+
 }

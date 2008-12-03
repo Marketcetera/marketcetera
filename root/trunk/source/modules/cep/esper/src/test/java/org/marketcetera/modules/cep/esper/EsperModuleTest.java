@@ -1,12 +1,12 @@
 package org.marketcetera.modules.cep.esper;
 
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.epl.parse.EPStatementSyntaxException;
 import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
@@ -17,6 +17,7 @@ import org.marketcetera.trade.Factory;
 import javax.management.JMX;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @version $Id$
  * @since $Release$
  */
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class EsperModuleTest extends CEPTestBase {
     private static CEPEsperProcessorMXBean sEsperBean;
     private static ModuleURN TEST_URN = new ModuleURN(CEPEsperFactory.PROVIDER_URN, "toli");
@@ -179,13 +181,12 @@ public class EsperModuleTest extends CEPTestBase {
     }
 
 
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     @Test
     public void testUnknownAlias() throws Exception {
         new ExpectedTestFailure(IllegalRequestParameterValue.class, "bob") {
             protected void execute() throws Throwable {
                 sManager.createDataFlow(new DataRequest[] {
-                        // Copier -> System: send 3 events
+                        // Copier -> Esper
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
                                 new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
                         }),
@@ -196,15 +197,79 @@ public class EsperModuleTest extends CEPTestBase {
         }.run();
     }
 
+    /** Verify that when you send a query of N steps, where a non-first step is invalid, all N statements are cleaned up */
+    @Test(timeout=120000)
+    public void testAllStatementsCleanedUpIfOneHasError() throws Exception {
+        // first create a valid statement
+        DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
+                // Copier -> Esper
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
+                        new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                }),
+                // ESPER -> Sink: invalid type name
+                new DataRequest(TEST_URN, new String[] {"select * from trade"})});
+        CEPEsperProcessorMXBean esperBean = JMX.newMXBeanProxy(ModuleTestBase.getMBeanServer(), TEST_URN.toObjectName(),
+                CEPEsperProcessorMXBean.class);
+        assertEquals("invalid # of statements"+ Arrays.toString(esperBean.getStatementNames()), 1, esperBean.getStatementNames().length);
 
-    @Test
-    public void testPzattern() throws Exception {
-        // do a pattern query and make sure we get something reasonable back
-       // p:every ask(symbol="IBM", price>80) where timer:within(60 seconds)
+        new ExpectedTestFailure(IllegalRequestParameterValue.class, "bob") {
+            protected void execute() throws Throwable {
+                sManager.createDataFlow(new DataRequest[] {
+                        // Copier -> Esper
+                        new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
+                                new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        }),
+                        // ESPER -> Sink: invalid type name
+                        new DataRequest(TEST_URN, new String[] {"select * from trade", "select * from bob"})
+                });
+            }
+        }.run();
+        assertEquals("invalid # of statements"+ Arrays.toString(esperBean.getStatementNames()), 1, esperBean.getStatementNames().length);
+        sManager.cancel(flow);
     }
 
+
+    /** do a pattern query and make sure we get something reasonable back
+       p:every ask(symbol="IBM") where timer:within(10 seconds)
+     */
+    @Test(timeout=120000)
+    public void testPattern() throws Exception {
+
+        long timeStart = System.currentTimeMillis();
+        DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
+                // Copier -> Esper: send 2 events
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
+                        new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        new AskEvent(1, 2, "IBM", "NYSE", new BigDecimal("100"), new BigDecimal("100")),
+                }),
+                // ESPER -> Sink: pattern
+                new DataRequest(TEST_URN, new String[] {"p: ask(symbol='IBM') -> timer:interval(10 seconds)"})});
+
+        // gets an empty hashmpa back since we are not selecting anything
+        sSink.getReceived().take();
+        long timeEnd = System.currentTimeMillis();
+        assertTrue("Didn't wait longer than 10 secs: "+(timeEnd-timeStart), timeEnd - timeStart > 10*1000);
+        sManager.cancel(flow);
+    }
+
+    /** Create an explicit pattern (instead of using p:query that results in createPattern call) */
     @Test
-    public void testExternalTime() throws Exception {
+    public void testPattern_explicit() throws Exception {
+
+        long timeStart = System.currentTimeMillis();
+        DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
+                // Copier -> Esper
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
+                        new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        new AskEvent(1, 2, "IBM", "NYSE", new BigDecimal("100"), new BigDecimal("100")),
+                }),
+                // ESPER -> Sink: explicit pattern
+                new DataRequest(TEST_URN, new String[] {"select 1 as toli from pattern [ask(symbol='IBM') -> timer:interval(10 seconds)]"})});
         
+        // should get back an integer with value 1
+        assertEquals("received wrong object", 1, sSink.getReceived().take());
+        long timeEnd = System.currentTimeMillis();
+        assertTrue("Didn't wait longer than 10 secs: "+(timeEnd-timeStart), timeEnd - timeStart > 10*1000);
+        sManager.cancel(flow);
     }
 }
