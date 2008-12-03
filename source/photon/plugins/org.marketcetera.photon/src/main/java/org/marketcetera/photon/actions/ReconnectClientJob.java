@@ -15,14 +15,24 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.progress.UIJob;
+import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientParameters;
+import org.marketcetera.client.DestinationStatusListener;
+import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.core.notifications.Notification;
+import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.TimeOfDay;
 import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.photon.ui.LoginDialog;
 import org.marketcetera.quickfix.ConnectionConstants;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -44,11 +54,9 @@ public class ReconnectClientJob
     extends UIJob
     implements Messages
 {
-
-	
-
 	private static final AtomicBoolean sReconnectInProgress = new AtomicBoolean(false);
 	private final boolean mDisconnectOnly;
+	private static final BrokerNotificationListener sBrokerNotificationListener = new BrokerNotificationListener();
 
 	private static class CreateApplicationContextRunnable
 		implements IRunnableWithProgress
@@ -81,6 +89,19 @@ public class ReconnectClientJob
 						}
 					}
 				});
+				sBrokerNotificationListener.setService(mService);
+				mService.getClient().removeDestinationStatusListener(sBrokerNotificationListener);
+				TimeOfDay time = TimeOfDay.create(PhotonPlugin.getDefault()
+						.getPreferenceStore().getString(
+								PhotonPlugin.SESSION_START_TIME_PREFERENCE));
+				if (time != null) {
+					ReportBase[] reports = mService.getClient()
+							.getReportsSince(time.getLastOccurrence());
+					for (ReportBase reportBase : reports) {
+						PhotonPlugin.getDefault().getTradeReportsHistory()
+								.addIncomingMessage(reportBase);
+					}
+				}
 			} catch (Throwable ex) {
 				setFailure(ex);
 			}				
@@ -223,6 +244,12 @@ public class ReconnectClientJob
 		ClientFeedService feed = (ClientFeedService) clientFeedTracker.getService();
 
 		if (feed != null){
+			try {
+				feed.getClient().removeDestinationStatusListener(sBrokerNotificationListener);
+			} catch (ClientInitException e) {
+				// already disconnected
+			}
+			sBrokerNotificationListener.setService(null);
 			ServiceRegistration serviceRegistration;
 			if (((serviceRegistration = feed.getServiceRegistration())!=null)){
 				serviceRegistration.unregister();
@@ -239,6 +266,62 @@ public class ReconnectClientJob
 	@Override
 	public boolean shouldSchedule() {
 		return !sReconnectInProgress.get();
+	}
+	
+	/**
+	 * Handles broker status updates.
+	 *
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
+	 */
+	@ClassVersion("$Id$")
+	static class BrokerNotificationListener implements DestinationStatusListener {
+		
+		private ClientFeedService mService;
+		
+		/**
+		 * Set the service to use to receive destination statuses.
+		 * 
+		 * @param service the service
+		 */
+		void setService(ClientFeedService service) {
+			mService = service;
+		}
+
+		@Override
+		public void receiveDestinationStatus(final DestinationStatus status) {
+			if (mService == null) {
+				SLF4JLoggerProxy.error(this, new IllegalStateException());
+				return;
+			}
+			try {
+				I18NMessage0P subject;
+				I18NMessage2P details;
+				if (status.getLoggedOn()) {
+					subject = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE;
+					details = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE_DETAILS;
+				} else {
+					subject = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE;
+					details = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS;
+				}
+				NotificationManager.getNotificationManager().publish(
+						Notification.high(subject.getText(), details.getText(
+								status.getName(), status.getId()), getClass()));
+				final DestinationsStatus destinationsStatus = mService
+						.getClient().getDestinationsStatus();
+				PlatformUI.getWorkbench().getDisplay().asyncExec(
+						new Runnable() {
+							@Override
+							public void run() {
+								BrokerManager.getCurrent().setBrokersStatus(
+										destinationsStatus);
+							}
+						});
+			} catch (Throwable e) {
+				Messages.BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED.getText(status);
+			}
+		}
 	}
 
 	

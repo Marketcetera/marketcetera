@@ -8,7 +8,9 @@ import junit.framework.TestSuite;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.marketcetera.photon.actions.BrokerNotificationListenerTest;
 import org.marketcetera.photon.marketdata.MarketDataFeedTest;
+import org.marketcetera.photon.marketdata.MarketDataReceiverModuleTest;
 import org.marketcetera.photon.marketdata.OptionContractDataTest;
 import org.marketcetera.photon.marketdata.OptionMessageHolderTest;
 import org.marketcetera.photon.parser.LexerTest;
@@ -111,6 +113,11 @@ public class TS_Photon {
 		suite.addTest(new JUnit4TestAdapter(MarketDataViewItemTest.class));
 		suite.addTest(new JUnit4TestAdapter(MarketDataFeedTest.class));
 		
+		suite.addTest(new JUnit4TestAdapter(BrokerNotificationListenerTest.class));		
+
+		suite.addTest(new JUnit4TestAdapter(MarketDataReceiverModuleTest.class));
+		suite.addTest(new JUnit4TestAdapter(MessagesTest.class));
+		suite.addTest(new JUnit4TestAdapter(org.marketcetera.photon.marketdata.MessagesTest.class));
 		suite.addTest(new JUnit4TestAdapter(TimeOfDayTest.class));
 
         return suite; 

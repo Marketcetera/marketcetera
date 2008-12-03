@@ -587,7 +587,7 @@ public class ParserTest extends FIXVersionedTestCase {
     	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
     	assertNull(command.getBroker());
     	
-    	order = "B 100 IBM 1 default";
+    	order = "B 100 IBM 1 auto";
     	command = (SendOrderToOrderManagerCommand) aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("1"), TimeInForce.DAY, null);
@@ -601,7 +601,7 @@ public class ParserTest extends FIXVersionedTestCase {
     	
     	new ExpectedFailure<ParserException>(
 				Messages.COMMAND_PARSER_INVALID_BROKER_ID.getText("ABC",
-						Messages.COMMAND_PARSER_DEFAULT_KEYWORD.getText()),
+						Messages.COMMAND_PARSER_AUTO_SELECT_BROKER_KEYWORD.getText()),
 				false) {
 			protected void run() throws Exception {
 				aParser.parseNewOrder("B 100 IBM 1 ABC");

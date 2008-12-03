@@ -197,7 +197,7 @@ public class CommandParser
         private static final long serialVersionUID = 1L;
         public String fromToken(Tok tok) {
 			String text = ((TypedToken<?>)tok.getToken()).getText();
-			return Messages.COMMAND_PARSER_DEFAULT_KEYWORD.getText().equals(text) ? null : text;
+			return Messages.COMMAND_PARSER_AUTO_SELECT_BROKER_KEYWORD.getText().equals(text) ? null : text;
 		}
 	});
 
@@ -229,7 +229,7 @@ public class CommandParser
 					if (vals.length > i && vals[i] != null) {
 						broker = (String) vals[i++];
 						if (brokerIdValidator != null && broker != null && !brokerIdValidator.isValid(broker)) {
-							throw new jfun.parsec.UserException(COMMAND_PARSER_INVALID_BROKER_ID.getText(broker, COMMAND_PARSER_DEFAULT_KEYWORD.getText()));
+							throw new jfun.parsec.UserException(COMMAND_PARSER_INVALID_BROKER_ID.getText(broker, COMMAND_PARSER_AUTO_SELECT_BROKER_KEYWORD.getText()));
 						}
 						if (vals.length > i && vals[i] != null) {
 							timeInForce = (TimeInForceImage) vals[i++];
