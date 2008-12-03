@@ -5,6 +5,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.*;
+import org.marketcetera.event.HasFIXMessage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import quickfix.field.HandlInst;
 import quickfix.field.TransactTime;
 import quickfix.field.MsgType;
+import quickfix.field.ClOrdID;
 import quickfix.*;
 
 /* $License$ */
@@ -61,9 +63,23 @@ public class TypesTestBase {
 
     public static void assertOrderFIXEquals(FIXOrder inOrder1,
                                              FIXOrder inOrder2) {
+        assertOrderFIXEquals(inOrder1, inOrder2, false);
+    }
+    public static void assertOrderFIXEquals(FIXOrder inOrder1,
+                                            FIXOrder inOrder2,
+                                            boolean inIgnoreClOrdID) {
         if (checkForNull(inOrder1, inOrder2)) return;
         assertOrderEquals(inOrder1,  inOrder2);
-        assertEquals(inOrder1.getFields(), inOrder2.getFields());
+        if(inIgnoreClOrdID) {
+            //Get the two maps, remove the field and then compare
+            Map<Integer, String> map1 = new HashMap<Integer, String>(inOrder1.getFields());
+            map1.remove(ClOrdID.FIELD);
+            Map<Integer, String> map2 = new HashMap<Integer, String>(inOrder2.getFields());
+            map2.remove(ClOrdID.FIELD);
+            assertEquals(map1, map2);
+        } else {
+            assertEquals(inOrder1.getFields(), inOrder2.getFields());
+        }
     }
 
     public static void assertOrderSingleEquals(OrderSingle inOrder1,
@@ -132,7 +148,7 @@ public class TypesTestBase {
         assertEquals(inReport1.getSide(), inReport2.getSide());
         assertEquals(inReport1.getSymbol(), inReport2.getSymbol());
         assertEquals(inReport1.getTimeInForce(), inReport2.getTimeInForce());
-        assertEquals(inReport1.getTransactTime().getTime(), inReport2.getTransactTime().getTime());
+        assertEquals(inReport1.getTransactTime(), inReport2.getTransactTime());
         assertEquals(inReport1.isCancelable(), inReport2.isCancelable());
     }
 
@@ -141,6 +157,14 @@ public class TypesTestBase {
         if (checkForNull(inReport1, inReport1)) return;
         assertReportBaseEquals(inReport1, inReport2);
     }
+
+    public static void assertFIXEquals(ReportBase inReport1, ReportBase inReport2) {
+        if (checkForNull(inReport1, inReport1)) return;
+        HasFIXMessage fix1 = (HasFIXMessage) inReport1;
+        HasFIXMessage fix2 = (HasFIXMessage) inReport2;
+        assertEquals(fix1.getMessage().toString(), fix2.getMessage().toString());
+    }
+
     protected static void assertSuggestionEquals(Suggestion inSuggest1,
                                                  Suggestion inSuggest2) {
         assertEquals(inSuggest1.getIdentifier(), inSuggest2.getIdentifier());

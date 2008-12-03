@@ -25,7 +25,7 @@ public interface Messages
     /**
      * The message provider.
      */
-    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("strategy");  //$NON-NLS-1$
+    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("strategy", Messages.class.getClassLoader());  //$NON-NLS-1$
     /**
      * The logger.
      */

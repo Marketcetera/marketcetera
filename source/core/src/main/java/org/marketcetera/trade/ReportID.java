@@ -45,12 +45,21 @@ public class ReportID implements Serializable, Comparable<ReportID> {
     public int hashCode() {
         return (int) (mValue ^ (mValue >>> 32));
     }
+
+    /**
+     * Returns the value underlying this key.
+     *
+     * @return the value underlying this key.
+     */
+    public long longValue() {
+        return mValue;
+    }
     /**
      * Creates an instance.
      *
      * @param inValue the reportID value.
      */
-    ReportID(long inValue) {
+    public ReportID(long inValue) {
         mValue = inValue;
     }
 

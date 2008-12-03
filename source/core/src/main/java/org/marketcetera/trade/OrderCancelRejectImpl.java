@@ -19,13 +19,12 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
     /**
      * Creates an instance.
      *
-     * @param inReportID The unique ReportID.
      * @param inMessage The FIX Message instance.
      * @param inDestinationID the broker / destinationID from which this
      */
-    OrderCancelRejectImpl(ReportID inReportID, Message inMessage,
+    OrderCancelRejectImpl(Message inMessage,
                           DestinationID inDestinationID) {
-        super(inReportID, inMessage, inDestinationID);
+        super(inMessage, inDestinationID);
     }
 
     /**
@@ -42,6 +41,7 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
                 String.valueOf(getOrderID()),
                 String.valueOf(getOrderStatus()),
                 String.valueOf(getOriginalOrderID()),
+                String.valueOf(getReportID()),
                 String.valueOf(getSendingTime()),
                 String.valueOf(getText()),
                 String.valueOf(getDestinationOrderID()),

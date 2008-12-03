@@ -116,6 +116,8 @@ public interface Messages
 
     static final I18NMessage1P RP_PERSISTED_REPLY=
         new I18NMessage1P(LOGGER,"rp_persisted_reply"); //$NON-NLS-1$
+    static final I18NMessage1P RP_PERSIST_ERROR=
+        new I18NMessage1P(LOGGER,"rp_persist_error"); //$NON-NLS-1$
 
 
     // LEGACY CODE.

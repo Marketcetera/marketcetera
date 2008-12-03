@@ -8,10 +8,6 @@ import org.marketcetera.client.Service;
 import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.symbology.SymbolScheme;
-import org.marketcetera.trade.DestinationID;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderCancelReject;
-import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.SecurityType;
 
@@ -49,20 +45,11 @@ public class ServiceTest
         assertEquals("metc2",d.getId().getValue());
 
         ReportBaseImpl[] rs=s.getReportsSince
-            (getORSClientContext(),new Date(0));
-        assertEquals(2,rs.length);
+            (getORSClientContext(),new Date());
+        assertNull(rs);
 
-        DestinationID dID=new DestinationID("me");
-        ExecutionReport er=(ExecutionReport)rs[0];
-        assertEquals(dID,er.getDestinationID());
-        assertEquals(Originator.Server,er.getOriginator());
-        assertEquals("42",er.getOriginalOrderID().getValue());
-        OrderCancelReject ocr=(OrderCancelReject)rs[1];
-        assertEquals(dID,ocr.getDestinationID());
-        assertEquals("43",ocr.getOriginalOrderID().getValue());
-
-        assertEquals(BigDecimal.TEN,s.getPositionAsOf
-                     (getORSClientContext(),new Date(10),TEST_SYMBOL));
+        assertEquals(BigDecimal.ZERO,s.getPositionAsOf
+                     (getORSClientContext(),new Date(),TEST_SYMBOL));
 
         String id=s.getNextOrderID(getORSClientContext());
         assertNotNull(id);

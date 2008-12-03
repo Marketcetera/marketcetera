@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Tests all the ID classes in this package. Tested classes
  * include {@link OrderID} & {@link DestinationID}.
  * <p>
- * Also tests ID generation methods {@link Factory#initReportIDValue(long)} &
+ * Also tests 
  * {@link Factory#setOrderIDFactory(org.marketcetera.core.IDFactory)} 
  *
  * @author anshul@marketcetera.com
@@ -87,30 +87,12 @@ public class IDTest {
                 new ReportID(Long.MAX_VALUE));
         ReportID id = new ReportID(2343l);
         assertEquals("2343", id.toString());
+        assertEquals(2343l, id.longValue());
         SerializableAssert.assertSerializable(id);
         ComparableAssert.assertComparable(new ReportID(12), new ReportID(12),
                 new ReportID(13));
     }
 
-    @Test
-    public void reportIDStart() throws Exception {
-        final Factory factory = Factory.getInstance();
-        ReportID reportID = getNextReportID();
-        //verify failure
-        new ExpectedFailure<IDException>(Messages.INVALID_ID_START_VALUE,
-                String.valueOf(0), reportID.toString()){
-            protected void run() throws Exception {
-                factory.initReportIDValue(0);
-            }
-        };
-        //Verify that we can set it to value greater than before
-        long l;
-        for(l = Integer.MAX_VALUE - 10; l < Integer.MAX_VALUE; l++) {
-            factory.initReportIDValue(l);
-        }
-        //Verify that the next reportID is greater than the last init value
-        assertTrue(getNextReportID().compareTo(new ReportID(--l)) > 0);
-    }
     @Test
     public void orderIDFactory() throws Exception {
         final Factory factory = Factory.getInstance();

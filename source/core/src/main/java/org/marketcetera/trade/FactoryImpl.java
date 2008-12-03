@@ -13,7 +13,6 @@ import quickfix.*;
 import quickfix.field.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 /* $License$ */
 /**
@@ -77,6 +76,7 @@ class FactoryImpl extends Factory {
     @Override
     public FIXOrder createOrder(Message inMessage, DestinationID inDestinationID)
             throws MessageCreationException {
+        assignOrderID(inMessage);
         return new FIXOrderImpl(inMessage, inDestinationID);
     }
 
@@ -92,7 +92,7 @@ class FactoryImpl extends Factory {
             throw new NullPointerException();
         }
         if(FIXMessageUtil.isExecutionReport(inMessage)) {
-            return new ExecutionReportImpl(generateNextReportID(), inMessage,
+            return new ExecutionReportImpl(inMessage,
                     inDestinationID, inOriginator);
         } else {
             throw new MessageCreationException(new I18NBoundMessage1P(
@@ -109,7 +109,7 @@ class FactoryImpl extends Factory {
             throw new NullPointerException();
         }
         if(FIXMessageUtil.isCancelReject(inMessage)) {
-            return new OrderCancelRejectImpl(generateNextReportID(),
+            return new OrderCancelRejectImpl(
                     inMessage, inDestinationID);
         } else {
             throw new MessageCreationException(new I18NBoundMessage1P(
@@ -194,23 +194,6 @@ class FactoryImpl extends Factory {
         assignOrderID(order);
         return order;
     }
-    @Override
-    public void initReportIDValue(long inValue) throws IDException {
-        while (true) {
-            long currentValue = mReportID.get();
-            if(inValue < currentValue) {
-                throw new IDException(new I18NBoundMessage2P(
-                        Messages.INVALID_ID_START_VALUE,
-                        String.valueOf(inValue), String.valueOf(currentValue)));
-            } else {
-                //Do an atomic update. This will fail if the currentValue
-                //was changed between get() and compareAndSet()
-                if(mReportID.compareAndSet(currentValue, inValue)) {
-                    break;
-                }
-            }
-        }
-    }
 
     @Override
     public void setOrderIDFactory(IDFactory inIDFactory) {
@@ -220,9 +203,36 @@ class FactoryImpl extends Factory {
         mIDFactory = inIDFactory;
     }
 
+    /**
+     * Assigns a unique order ID to the supplied order.
+     *
+     * @param inOrder the order that needs to be assigned a unique order ID.
+     */
     private void assignOrderID(OrderBase inOrder) {
+        inOrder.setOrderID(new OrderID(getNextOrderID()));
+    }
+
+    /**
+     * Assigns a unique order ID to the supplied order.
+     *
+     * @param inMessage the order message that needs to be
+     * assigned a unique order ID.
+     */
+    private void assignOrderID(Message inMessage) {
+        FIXUtil.setOrderID(inMessage, getNextOrderID());
+    }
+
+    /**
+     * Fetches the next orderID value from the ID factory.
+     *
+     * @return the next orderID value.
+     *
+     * @throws IllegalArgumentException if the ID factory was not
+     * configured correctly.
+     */
+    private String getNextOrderID() throws IllegalArgumentException {
         try {
-            inOrder.setOrderID(new OrderID(mIDFactory.getNext()));
+            return mIDFactory.getNext();
         } catch (NoMoreIDsException e) {
             //Indicates that id factories are not correctly assembled
             //to prevent failure. The factory should not throw exceptions.
@@ -317,14 +327,4 @@ class FactoryImpl extends Factory {
                     inMessage.toString()));
         }
     }
-
-    /**
-     * Generates the next unique report ID value.
-     *
-     * @return the next unique reportID value.
-     */
-    private ReportID generateNextReportID() {
-        return new ReportID(mReportID.incrementAndGet());
-    }
-    private final AtomicLong mReportID = new AtomicLong();
 }

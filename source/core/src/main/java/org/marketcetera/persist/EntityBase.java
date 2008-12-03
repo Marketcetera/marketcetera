@@ -363,7 +363,7 @@ public abstract class EntityBase implements SummaryEntityBase {
     /**
      * The ID attribute name, used to refer to ID in various JPQL queries
      */
-    protected static final String ATTRIBUTE_ID = "id"; //$NON-NLS-1$
+    public static final String ATTRIBUTE_ID = "id"; //$NON-NLS-1$
     private long id = UNINITIALIZED;
     private int updateCount = UNINITIALIZED;
     private Date lastUpdated;

@@ -6,8 +6,7 @@ import org.marketcetera.core.MSymbol;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import quickfix.Message;
 import quickfix.field.*;
 import quickfix.field.converter.DecimalConverter;
@@ -74,8 +73,7 @@ public class ExecutionReportTest extends TypesTestBase {
         assertExecReportValues(report, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null,
                 Originator.Server, null, null, false);
-        ReportID reportID = report.getReportID();
-        assertNotNull(reportID);
+        assertNull(report.getReportID());
         //Verify toString, doesn't fail.
         report.toString();
         //Verify toString, doesn't fail.
@@ -134,8 +132,7 @@ public class ExecutionReportTest extends TypesTestBase {
                 orderQty, orderType, side, symbol, timeInForce,
                 transactTime, Originator.Destination,
                 OrderCapacity.Proprietary, PositionEffect.Close, true);
-        assertNotNull(report.getReportID());
-        assertTrue(report.getReportID().compareTo(reportID) > 0);
+        assertNull(report.getReportID());
         //Verify toString() doesn't fail.
         report.toString();
 

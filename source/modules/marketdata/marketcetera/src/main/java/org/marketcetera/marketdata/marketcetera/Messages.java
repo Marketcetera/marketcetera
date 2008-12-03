@@ -18,7 +18,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
-    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("marketcetera"); //$NON-NLS-1$
+    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("marketcetera", Messages.class.getClassLoader()); //$NON-NLS-1$
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
 
     static final I18NMessage1P UNKNOWN_EVENT_TYPE = new I18NMessage1P(LOGGER,

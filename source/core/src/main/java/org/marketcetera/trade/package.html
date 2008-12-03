@@ -99,4 +99,12 @@
     <li>{@link org.marketcetera.trade.ExecutionReport Execution Reports}</li>
     <li>{@link org.marketcetera.trade.OrderCancelReject Cancellation Rejects}</li>
 </ol>
+<h3>Unique IDs</h3>
+<p>
+    Both Orders and Reports are assigned unique IDs within the system. The
+    {@link org.marketcetera.trade.Factory} assigns unique OrderIDs to all
+    the orders when they are created by it. The reports when initially created
+    have their ID set to a null value. An ID is assigned to them by the server
+    when they are persisted.
+</p>
 </body>

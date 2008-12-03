@@ -1,7 +1,10 @@
 package org.marketcetera.ors;
 
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.ors.history.ReportHistoryServices;
+import org.marketcetera.persist.PersistenceException;
 
 /**
  * A persister of trade messages (replies) sent by the ORS to clients.
@@ -18,15 +21,15 @@ public class ReplyPersister
 {
 
     // INSTANCE DATA.
-    // Add system model class as instance 
+    private final ReportHistoryServices mServices; 
 
 
     // CONSTRUCTORS.
 
     public ReplyPersister
-        (/* Add system model. */)
+        (ReportHistoryServices inServices)
     {
-        // Retain system model
+        mServices = inServices;
     }
 
 
@@ -43,6 +46,12 @@ public class ReplyPersister
         (TradeMessage msg)
     {
         // Persist reply.
+        try {
+            mServices.save((ReportBase) msg);
+        } catch (Exception e) {
+            Messages.RP_PERSIST_ERROR.error(this, e, msg);
+            return;
+        }
 
         Messages.RP_PERSISTED_REPLY.info(this,msg);        
     }

@@ -63,16 +63,27 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
     }
 
     /**
+     * This method is provided to assign ReportIDs to the instances
+     * after they have been persisted. This method is an implementation
+     * artifact and is not meant to be used by the clients of this API.
+     *
+     * @param inInstance The report instance.
+     * @param inReportID The reportID that needs to be assigned to the instance.
+     */
+    public static void assignReportID(ReportBaseImpl inInstance,
+                                      ReportID inReportID) {
+        inInstance.mReportID = inReportID;
+    }
+
+    /**
      * Creates an instance.
      *
-     * @param inReportID the unique ID for this report
      * @param inMessage the FIX Message.
      * @param inDestinationID the broker / destinationID from which this
      */
-    protected ReportBaseImpl(ReportID inReportID, Message inMessage,
+    protected ReportBaseImpl(Message inMessage,
                              DestinationID inDestinationID) {
         super(inMessage);
-        mReportID = inReportID;
         mDestinationID = inDestinationID;
     }
 
@@ -83,9 +94,8 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
 
     protected ReportBaseImpl() {
         mDestinationID = null;
-        mReportID = null;
     }
-    private final ReportID mReportID;
+    private ReportID mReportID = null;
     private final DestinationID mDestinationID;
     private static final long serialVersionUID = 1L;
 }

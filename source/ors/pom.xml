@@ -88,7 +88,7 @@
         <executions>
           <execution>
             <!-- In this phase, the persistence.xml file has been copied. -->
-            <phase>process-resources</phase>
+            <phase>process-classes</phase>
             <goals>
               <goal>hbm2ddl</goal>
             </goals>

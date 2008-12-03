@@ -15,6 +15,7 @@ import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.ors.ws.DBAuthenticator;
 import org.marketcetera.ors.ws.ServiceImpl;
+import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXVersion;
@@ -121,6 +122,9 @@ public class OrderRoutingSystem
         context.registerShutdownHook();
         context.start();
 
+        // Create History Services
+        ReportHistoryServices historyServices=new ReportHistoryServices();
+
         // Create resource managers.
 
         SpringConfig cfg=SpringConfig.getSingleton();
@@ -135,7 +139,7 @@ public class OrderRoutingSystem
         cfg.getIDFactory().init();
         LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
         localIdFactory.init();
-        ReplyPersister persister=new ReplyPersister();
+        ReplyPersister persister=new ReplyPersister(historyServices);
 
         // Set dictionary for all QuickFIX/J messages we generate.
 
@@ -157,7 +161,8 @@ public class OrderRoutingSystem
              new DBAuthenticator(),
              sessionManager);
         server.publish
-            (new ServiceImpl(sessionManager,destinations,cfg.getIDFactory()),
+            (new ServiceImpl(sessionManager,destinations,
+                             cfg.getIDFactory(),historyServices),
              Service.class);
 
         // Initiate JMS.

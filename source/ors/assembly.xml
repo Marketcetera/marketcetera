@@ -18,6 +18,9 @@
   <fileSets>
     <fileSet>
       <directory>src/main/sample_data/conf</directory>
+      <excludes>
+        <exclude>*.sql</exclude>
+      </excludes>
       <outputDirectory>conf</outputDirectory>
     </fileSet>
   </fileSets>

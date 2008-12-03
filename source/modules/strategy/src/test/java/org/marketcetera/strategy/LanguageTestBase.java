@@ -2680,7 +2680,7 @@ public abstract class LanguageTestBase
         int index = 0;
         for(DataReceived datum : messages) {
             TypesTestBase.assertOrderFIXEquals(inExpectedOrders[index++],
-                                               (FIXOrder)datum.getData());
+                                               (FIXOrder)datum.getData(),true);
         }
         recorder.resetDataReceived();
     }

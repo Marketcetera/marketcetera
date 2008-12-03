@@ -24,10 +24,11 @@
    resource="db/orm.xml"/>
 
   <bean
+   id="metc_db_init"
    class="org.marketcetera.persist.ExecuteSQLFromFile">
     <constructor-arg>
       <list>
-        <value>file:src/main/sample_data/conf/001_create_user_schema.sql</value>
+        <value>file:src/main/sample_data/conf/create_server_schema.sql</value>
       </list>
     </constructor-arg>
     <constructor-arg
@@ -42,5 +43,5 @@
   <bean
    id="metc_jpa_vendor"
    class="org.marketcetera.persist.HibernateVendor"
-   depends-on="metc_db_vendor"/>
+   depends-on="metc_db_vendor,metc_db_init"/>
 </beans>

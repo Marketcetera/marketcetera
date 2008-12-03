@@ -73,6 +73,9 @@ class FIXUtil {
         }
         return null;
     }
+    static void setOrderID(Message inMessage, String inOrderID) {
+        inMessage.setField(new ClOrdID(inOrderID));
+    }
     static BigDecimal getPrice(Message inMessage) {
         if (inMessage.isSetField(Price.FIELD)) {
             try {

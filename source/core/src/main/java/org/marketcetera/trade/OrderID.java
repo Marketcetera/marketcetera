@@ -2,6 +2,7 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /* $License$ */
@@ -15,6 +16,7 @@ import java.io.Serializable;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
+@Embeddable
 public class OrderID implements Serializable {
     /**
      * Creates an instance, given the text value of the OrderID.
@@ -22,10 +24,7 @@ public class OrderID implements Serializable {
      * @param inValue the text value of the OrderID. Cannot be null.
      */
     public OrderID(String inValue) {
-        if(inValue == null) {
-            throw new NullPointerException();
-        }
-        mValue = inValue;
+        setValue(inValue);
     }
 
     /**
@@ -58,6 +57,24 @@ public class OrderID implements Serializable {
         return getValue();
     }
 
-    private final String mValue;
+    /**
+     * Sets the value of the ID.
+     *
+     * @param inValue the value of this ID. Cannot be null
+     */
+    private void setValue(String inValue) {
+        if(inValue == null) {
+            throw new NullPointerException();
+        }
+        mValue = inValue;
+    }
+
+    /**
+     * Defined for JPA.
+     */
+    OrderID() {
+    }
+
+    private String mValue;
     private static final long serialVersionUID = 1L;
 }

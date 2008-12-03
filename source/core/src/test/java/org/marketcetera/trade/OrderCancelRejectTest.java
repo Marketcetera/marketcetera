@@ -5,10 +5,8 @@ import org.marketcetera.module.ExpectedFailure;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.field.*;
 import quickfix.field.converter.UtcTimestampConverter;
 
@@ -61,8 +59,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
         Message msg = getSystemMessageFactory().newOrderCancelReject();
         OrderCancelReject report = sFactory.createOrderCancelReject(msg, null);
         assertReportBaseValues(report, null, null, null, null, null, null, null);
-        ReportID reportID = report.getReportID();
-        assertNotNull(reportID);
+        assertNull(report.getReportID());
         //Verify toString() doesn't fail.
         report.toString();
 
@@ -85,9 +82,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
         report = sFactory.createOrderCancelReject(msg, cID);
         assertReportBaseValues(report, cID, orderID, orderStatus, origOrderID,
                 sendingTime, text, destOrderID);
-        assertNotNull(report.getReportID());
-        assertTrue(report.getReportID().compareTo(reportID) > 0);
-        //Verify toString() doesn't fail.
+        assertNull(report.getReportID());
         report.toString();
         
         //Verify FIX fields returned in the map.
