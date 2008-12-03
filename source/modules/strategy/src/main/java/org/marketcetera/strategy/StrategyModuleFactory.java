@@ -37,6 +37,7 @@ public final class StrategyModuleFactory
               true,
               false,
               String.class,
+              String.class,
               Object.class,
               File.class,
               Properties.class,

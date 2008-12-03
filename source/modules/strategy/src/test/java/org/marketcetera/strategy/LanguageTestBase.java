@@ -958,6 +958,7 @@ public abstract class LanguageTestBase
     {
         StrategyCoordinates strategy = getStrategyCompiles();
         ModuleURN strategyModule = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                              "MyStrategy",
                                                               strategy.getName(),
                                                               getLanguage(),
                                                               strategy.getFile(),
@@ -984,6 +985,7 @@ public abstract class LanguageTestBase
         int index = 0;
         while (index++ < 500) {
             ModuleURN strategyModule = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                                  "MyStrategy",
                                                                   strategy.getName(),
                                                                   getLanguage(),
                                                                   strategy.getFile(),
@@ -1009,6 +1011,7 @@ public abstract class LanguageTestBase
         int index = 0;
         while (index++ < 500) {
             ModuleURN strategyModule = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                                  null,
                                                                   strategy.getName(),
                                                                   getLanguage(),
                                                                   strategy.getFile(),

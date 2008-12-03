@@ -42,6 +42,8 @@ public interface Messages
                                                                           "invalid_language_error"); //$NON-NLS-1$
     static final I18NMessage0P EMPTY_NAME_ERROR = new I18NMessage0P(LOGGER,
                                                                     "empty_name_error"); //$NON-NLS-1$
+    static final I18NMessage0P EMPTY_INSTANCE_ERROR = new I18NMessage0P(LOGGER,
+                                                                        "empty_instance_error"); //$NON-NLS-1$
     static final I18NMessage1P FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE = new I18NMessage1P(LOGGER,
                                                                                           "file_does_not_exist_or_is_not_readable"); //$NON-NLS-1$
     static final I18NMessage0P FAILED_TO_START = new I18NMessage0P(LOGGER,

@@ -7,11 +7,13 @@ import static org.junit.Assert.assertTrue;
 import static org.marketcetera.module.Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_NUM;
 import static org.marketcetera.module.Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_TYPE;
 import static org.marketcetera.module.Messages.DATAFLOW_REQ_MODULE_STOPPED;
+import static org.marketcetera.module.Messages.DUPLICATE_MODULE_URN;
 import static org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE;
 import static org.marketcetera.module.Messages.INVALID_URN_SCHEME;
 import static org.marketcetera.module.Messages.MODULE_NOT_FOUND;
 import static org.marketcetera.module.Messages.MODULE_NOT_RECEIVER;
 import static org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE;
+import static org.marketcetera.strategy.Messages.EMPTY_INSTANCE_ERROR;
 import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
 import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
 import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
@@ -82,6 +84,7 @@ public class StrategyModuleTest
     {
         assertTrue(moduleManager.getModuleInstances(StrategyModuleFactory.PROVIDER_URN).isEmpty());
         ModuleURN strategy = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                        "MyStategy",
                                                         JavaLanguageTest.JAVA_STRATEGY_NAME,
                                                         Language.JAVA,
                                                         JavaLanguageTest.JAVA_STRATEGY,
@@ -133,6 +136,7 @@ public class StrategyModuleTest
         // muddle types
         doWrongTypeParameterTest(0,
                                  this,
+                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
@@ -140,30 +144,43 @@ public class StrategyModuleTest
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(1,
-                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                 "MyStrategyURN",
                                  this,
+                                 Language.JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(2,
+                                 "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 Language.JAVA,
                                  this,
+                                 JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(3,
+                                 "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
-                                 JavaLanguageTest.JAVA_STRATEGY,
                                  this,
+                                 new Properties(),
                                  new String[0],
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(4,
+                                 "MyStrategyURN",
+                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                 Language.JAVA,
+                                 JavaLanguageTest.JAVA_STRATEGY,
+                                 this,
+                                 new String[0],
+                                 ordersURN,
+                                 suggestionsURN);
+        doWrongTypeParameterTest(5,
+                                 "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
@@ -171,7 +188,8 @@ public class StrategyModuleTest
                                  this,
                                  ordersURN,
                                  suggestionsURN);
-        doWrongTypeParameterTest(5,
+        doWrongTypeParameterTest(6,
+                                 "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
@@ -179,7 +197,8 @@ public class StrategyModuleTest
                                  new String[0],
                                  this,
                                  suggestionsURN);
-        doWrongTypeParameterTest(6,
+        doWrongTypeParameterTest(7,
+                                 "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
                                  Language.JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
@@ -319,18 +338,20 @@ public class StrategyModuleTest
     {
         final int[] index = new int[1];
         for(index[0]=0;index[0]<7;index[0]++) {
-            // parameters 4, 5, 6, and 7 are optional, so nulls are allowed
-            if(index[0] == 3 ||
+            // parameters 1, 5, 6, 7, and 8 are optional, so nulls are allowed
+            if(index[0] == 0 ||
                index[0] == 4 ||
                index[0] == 5 ||
-               index[0] == 6) {
-                verifyStrategyStartsAndStops((index[0]==0 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
-                                             (index[0]==1 ? null : Language.JAVA),
-                                             (index[0]==2 ? null : JavaLanguageTest.JAVA_STRATEGY),
-                                             (index[0]==3 ? null : new Properties()),
-                                             (index[0]==4 ? null : new String[0]),
-                                             (index[0]==5 ? null : ordersURN),
-                                             (index[0]==6 ? null : suggestionsURN));
+               index[0] == 6 ||
+               index[0] == 7) {
+                verifyStrategyStartsAndStops((index[0]==0 ? null : "MyStrategy"),
+                                             (index[0]==1 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
+                                             (index[0]==2 ? null : Language.JAVA),
+                                             (index[0]==3 ? null : JavaLanguageTest.JAVA_STRATEGY),
+                                             (index[0]==4 ? null : new Properties()),
+                                             (index[0]==5 ? null : new String[0]),
+                                             (index[0]==6 ? null : ordersURN),
+                                             (index[0]==7 ? null : suggestionsURN));
             } else {
                 new ExpectedFailure<ModuleCreationException>(NULL_PARAMETER_ERROR,
                                                              index[0] + 1,
@@ -339,17 +360,52 @@ public class StrategyModuleTest
                     protected void run()
                         throws Exception
                     {
-                        verifyStrategyStartsAndStops((index[0]==0 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
-                                                     (index[0]==1 ? null : Language.JAVA),
-                                                     (index[0]==2 ? null : JavaLanguageTest.JAVA_STRATEGY),
-                                                     (index[0]==3 ? null : new Properties()),
-                                                     (index[0]==4 ? null : new String[0]),
-                                                     (index[0]==5 ? null : ordersURN),
-                                                     (index[0]==6 ? null : suggestionsURN));
+                        verifyStrategyStartsAndStops((index[0]==0 ? null : "MyStrategy"),
+                                                     (index[0]==1 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
+                                                     (index[0]==2 ? null : Language.JAVA),
+                                                     (index[0]==3 ? null : JavaLanguageTest.JAVA_STRATEGY),
+                                                     (index[0]==4 ? null : new Properties()),
+                                                     (index[0]==5 ? null : new String[0]),
+                                                     (index[0]==6 ? null : ordersURN),
+                                                     (index[0]==7 ? null : suggestionsURN));
                     }
                 };
             }
         }
+    }
+    /**
+     * Tests permutations of an instance name.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void instanceParameterTest()
+        throws Exception
+    {
+        final String emptyInstance = "";
+        new ExpectedFailure<ModuleCreationException>(EMPTY_INSTANCE_ERROR) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                verifyStrategyStartsAndStops(emptyInstance,
+                                             JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                             Language.JAVA,
+                                             JavaLanguageTest.JAVA_STRATEGY,
+                                             null,
+                                             null,
+                                             null,
+                                             null);
+            }
+        };
+        verifyStrategyStartsAndStops("MyStrategyInstance",
+                                     JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                     Language.JAVA,
+                                     JavaLanguageTest.JAVA_STRATEGY,
+                                     null,
+                                     null,
+                                     null,
+                                     null);
     }
     /**
      * Tests permutations of strategy name.
@@ -769,6 +825,7 @@ public class StrategyModuleTest
         assertTrue(moduleManager.getModuleInfo(dataSink).getState().isStarted());
         assertFalse(moduleManager.getModuleInfo(dataSink).isEmitter());
         ModuleURN strategy = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                        "MyStrategy",
                                                         JavaLanguageTest.JAVA_STRATEGY_NAME,
                                                         Language.JAVA,
                                                         JavaLanguageTest.JAVA_STRATEGY,
@@ -780,6 +837,56 @@ public class StrategyModuleTest
         assertTrue(moduleManager.getModuleInfo(strategy).getState().isStarted());
         moduleManager.stop(strategy);
         moduleManager.deleteModule(strategy);
+    }
+    /**
+     * Tests what happens if duplicate instance names are specified.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void duplicateInstanceNames()
+        throws Exception
+    {
+        ModuleURN strategy1 = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                         "MyNewStrategy",
+                                                         JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                                         Language.JAVA,
+                                                         JavaLanguageTest.JAVA_STRATEGY,
+                                                         null,
+                                                         null,
+                                                         null,
+                                                         null);
+        // try to create a strategy with the same specified instance name
+        new ExpectedFailure<ModuleCreationException>(DUPLICATE_MODULE_URN,
+                                                     "metc:strategy:system:MyNewStrategy") {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                           "MyNewStrategy",
+                                           JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                           Language.JAVA,
+                                           JavaLanguageTest.JAVA_STRATEGY,
+                                           null,
+                                           null,
+                                           null,
+                                           null);
+            }
+        };
+        // delete the first one
+        moduleManager.deleteModule(strategy1);
+        // now it can be created again with the same name
+        strategy1 = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                               "MyNewStrategy",
+                                               JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                               Language.JAVA,
+                                               JavaLanguageTest.JAVA_STRATEGY,
+                                               null,
+                                               null,
+                                               null,
+                                               null);
+        moduleManager.deleteModule(strategy1);
     }
     /**
      * Executes a single permutation of a strategy attribute get/set test.
@@ -876,8 +983,8 @@ public class StrategyModuleTest
                                           final Object...inParameters)
         throws Exception
     {
-        // special case for parameter 2 (1 by 0-indexed counting, of course), language - the module factory framework cannot check for us
-        if(badParameter != 1) {
+        // special case for parameter 3 (2 by 0-indexed counting, of course), language - the module factory framework cannot check for us
+        if(badParameter != 2) {
             new ExpectedFailure<ModuleCreationException>(CANNOT_CREATE_MODULE_WRONG_PARAM_TYPE,
                                                          StrategyModuleFactory.PROVIDER_URN.toString(),
                                                          badParameter,
@@ -915,11 +1022,11 @@ public class StrategyModuleTest
     {
         if(inParameters != null) {
             assertFalse("This test is supposed to test an incorrect number of parameters",
-                        inParameters.length == 7);
+                        inParameters.length == 8);
         }
         new ExpectedFailure<ModuleCreationException>(CANNOT_CREATE_MODULE_WRONG_PARAM_NUM,
                                                      StrategyModuleFactory.PROVIDER_URN.toString(),
-                                                     7,
+                                                     8,
                                                      (inParameters == null) ? 0 : inParameters.length) {
             @Override
             protected void run()
@@ -941,5 +1048,5 @@ public class StrategyModuleTest
     /**
      * should match the signature of {@link StrategyModule#StrategyModule(ModuleURN, String, Language, File, Properties, ModuleURN, ModuleURN)}. 
      */
-    private static final Class<?>[] expectedTypes = new Class<?>[] { String.class, Language.class, File.class, Properties.class, String[].class, ModuleURN.class, ModuleURN.class };
+    private static final Class<?>[] expectedTypes = new Class<?>[] { String.class, String.class, Language.class, File.class, Properties.class, String[].class, ModuleURN.class, ModuleURN.class };
 }
