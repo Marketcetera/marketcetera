@@ -147,6 +147,13 @@ public abstract class Factory {
      * broker / destination specific, it is required that a
      * {@link Order#getDestinationID()}  destinationID}
      * be specified when sending this message to the server. 
+     * <p>
+     * Do note that this API will overwrite the <code>ClOrdID</code> field
+     * value with a system generated value. It's recommended that the
+     * ClOrdID field value is the one that is sent to the server. If the
+     * ClOrdID field value is not unique, it may result in data consistency
+     * issues in the system and hence it's recommended that the clients
+     * depend on the system generated value. 
      *
      * @param inMessage The FIX message for the order. Cannot be null.
      *
@@ -205,27 +212,6 @@ public abstract class Factory {
     public abstract OrderCancelReject createOrderCancelReject(
             Message inMessage, DestinationID inDestinationID)
             throws MessageCreationException;
-
-    /**
-     * Initializes the starting ID value for ReportIDs that are assigned
-     * by this class to the reports created by it. The supplied value
-     * has to be greater than the current value otherwise the operation
-     * will fail with an exception.
-     * <p>
-     * The next ID value will be greater than the value supplied to
-     * this method.
-     * <p>
-     * This method should be invoke right at the beginning of
-     * the application's initialization. 
-     *
-     * @param inValue the new start value for reportIDs. Supplied value
-     * has to be greater than the current value.
-     *
-     * @throws IDException if the supplied value is less than the current
-     * value.
-     */
-    public abstract void initReportIDValue(long inValue)
-            throws IDException;
 
     /**
      * Initializes the orderID factory that should be used to assign

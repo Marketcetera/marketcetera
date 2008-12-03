@@ -55,7 +55,7 @@ public enum Side {
      *
      * @return the FIX char value for this instance.
      */
-    char getFIXValue() {
+    public char getFIXValue() {
         return mFIXValue;
     }
 
@@ -64,7 +64,7 @@ public enum Side {
      *
      * @param inFIXValue the FIX char value for this instance.
      */
-    private Side(char inFIXValue) {
+    Side(char inFIXValue) {
         mFIXValue = inFIXValue;
     }
 

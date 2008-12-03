@@ -8,12 +8,8 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.ors.dest.Destinations;
-import org.marketcetera.trade.DestinationID;
-import org.marketcetera.trade.ExecutionReportImpl;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MessageCreationException;
-import org.marketcetera.trade.OrderCancelRejectImpl;
-import org.marketcetera.trade.Originator;
+import org.marketcetera.ors.history.ReportHistoryServices;
+import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
@@ -22,9 +18,7 @@ import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.wrappers.RemoteException;
-import quickfix.field.OrigClOrdID;
-import quickfix.fix44.ExecutionReport;
-import quickfix.fix44.OrderCancelReject;
+import org.marketcetera.persist.PersistenceException;
 
 /**
  * The implementation of the application's web services.
@@ -46,6 +40,7 @@ public class ServiceImpl
 
     private final Destinations mDestinations;
     private final IDFactory mIDFactory;
+    private final ReportHistoryServices mHistoryServices;
 
 
     // CONSTRUCTORS.
@@ -56,16 +51,19 @@ public class ServiceImpl
      *
      * @param sessionManager The session manager, which may be null.
      * @param destinations The destinations.
+     * @param inHistoryServices The report history service provider.
      */    
 
     public ServiceImpl
-        (SessionManager<ClientSession> sessionManager,
-         Destinations destinations,
-         IDFactory idFactory)
+            (SessionManager<ClientSession> sessionManager,
+             Destinations destinations,
+             IDFactory idFactory,
+             ReportHistoryServices inHistoryServices)
     {
         super(sessionManager);
         mDestinations=destinations;
         mIDFactory=idFactory;
+        mHistoryServices=inHistoryServices;
     }
 
 
@@ -103,27 +101,14 @@ public class ServiceImpl
 
     private ReportBaseImpl[] getReportsSinceImpl
         (Date date)
-        throws MessageCreationException
-    {
-        Factory f=Factory.getInstance();
-        DestinationID dID=new DestinationID("me");
-        ExecutionReport er=new ExecutionReport();
-        er.set(new OrigClOrdID("42"));
-        OrderCancelReject ocr=new OrderCancelReject();
-        ocr.set(new OrigClOrdID("43"));
-        return new ReportBaseImpl[] {
-            (ExecutionReportImpl)
-            f.createExecutionReport(er,dID,Originator.Server),
-            (OrderCancelRejectImpl)
-            f.createOrderCancelReject(ocr,dID)
-        };
+            throws ReportPersistenceException, PersistenceException {
+        return mHistoryServices.getReportsSince(date);
     }
 
     private BigDecimal getPositionAsOfImpl
         (Date date,
-         MSymbol symbol)
-    {
-        return new BigDecimal(date.getTime());
+         MSymbol symbol) throws PersistenceException {
+        return mHistoryServices.getPositionAsOf(date,symbol);
     }
 
     private String getNextOrderIDImpl()
@@ -163,8 +148,7 @@ public class ServiceImpl
             protected ReportBaseImpl[] call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws MessageCreationException
-            {
+                    throws ReportPersistenceException, PersistenceException {
                 return getReportsSinceImpl(date);
             }}).execute(context);
     }
@@ -182,7 +166,7 @@ public class ServiceImpl
             protected BigDecimal call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-            {
+                    throws PersistenceException {
                 return getPositionAsOfImpl(date,symbol);
             }}).execute(context);
     }

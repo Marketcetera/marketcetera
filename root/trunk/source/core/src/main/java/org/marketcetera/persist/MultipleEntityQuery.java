@@ -5,6 +5,7 @@ import static org.marketcetera.persist.JPQLConstants.*;
 
 import javax.persistence.Query;
 import java.util.List;
+import java.util.Date;
 
 /* $License$ */
 /**
@@ -33,6 +34,7 @@ import java.util.List;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class MultipleEntityQuery
         extends QueryBase {
+
     /**
      * Ordering that will order the results in ascending order by the
      * date time the entity was last updated.
@@ -136,6 +138,48 @@ public abstract class MultipleEntityQuery
     }
 
     /**
+     * Gets the last updated after filter for this query. If set, the
+     * query will match records that were updated after the filter date.
+     *
+     * @return the last updated after filter.
+     */
+    public Date getUpdatedAfterFilter() {
+        return mUpdatedAfterFilter;
+    }
+
+    /**
+     * Sets the last updated after filter for this query.
+     *
+     * @param inUpdatedAfterFilter the last updated filter for this query.
+     * Can be null.
+     * @see #getUpdatedAfterFilter()
+     */
+    public void setUpdatedAfterFilter(Date inUpdatedAfterFilter) {
+        mUpdatedAfterFilter = inUpdatedAfterFilter;
+    }
+
+    /**
+     * Gets the last updated before filter for this query. If set, the
+     * query will match records that were updated before the filter date.
+     *
+     * @return the last updated before filter.
+     */
+    public Date getUpdatedBeforeFilter() {
+        return mUpdatedBeforeFilter;
+    }
+
+    /**
+     * Sets the last updated before filter for this query.
+     *
+     * @param inUpdatedBeforeFilter the last updated before filter for this
+     * query. Can be null.
+     * @see #getUpdatedBeforeFilter() 
+     */
+    public void setUpdatedBeforeFilter(Date inUpdatedBeforeFilter) {
+        mUpdatedBeforeFilter = inUpdatedBeforeFilter;
+    }
+
+    /**
      * Constructs an instance, specifying a query string.
      *
      * @param fromClause the JPQL from clause string
@@ -206,6 +250,15 @@ public abstract class MultipleEntityQuery
         }
     }
 
+    @Override
+    protected void addWhereClauses(StringBuilder queryString) {
+        super.addWhereClauses(queryString);
+        addFilterIfNotNull(queryString, EntityBase.ATTRIBUTE_LAST_UPDATED,
+                mUpdatedAfterFilter, true);
+        addFilterIfNotNull(queryString, EntityBase.ATTRIBUTE_LAST_UPDATED,
+                mUpdatedBeforeFilter, false);
+    }
+
     /**
      * Adds the filter, if its not null, to the supplied queryString.
      * A where expression is added to the supplied query string for
@@ -261,6 +314,35 @@ public abstract class MultipleEntityQuery
     }
 
     /**
+     * Adds the filter, if it's not null, to teh supplied queryString.
+     * A where expression is added to the supplied query string for the
+     * filter. The filter value is added as a parameter to the query.
+     *
+     * @param inQueryString the query string
+     * @param inAttributeName the name of the entity's attribute.
+     * @param inFilterValue the filter value, if the supplied value is null,
+     * this method does nothing.
+     * @param inSelectGreater true if the matched values should be greater
+     * than the filter value, false if the matched values should be less
+     * than the filter value. 
+     */
+    protected final void addFilterIfNotNull(StringBuilder inQueryString,
+                                    String inAttributeName,
+                                    Date inFilterValue,
+                                    boolean inSelectGreater) {
+        if(inFilterValue != null) {
+            String filterParameter = inAttributeName + FILTER_SUFFIX;
+            andWhereExpression(inQueryString, getEntityAlias(), DOT,
+                    inAttributeName, S,
+                    inSelectGreater
+                            ? GREATER_THAN
+                            : LESS_THAN,
+                    S, PARAMETER_PREFIX, filterParameter);
+            setParameter(filterParameter, inFilterValue);
+        }
+    }
+
+    /**
      * Converts the supplied filter to a JPQL friendly expression value.
      * In the supplied filter, <code>'?'</code> character may be used
      * to match any character and <code>'*'</code>
@@ -293,6 +375,8 @@ public abstract class MultipleEntityQuery
      * If the specified entity ordering should be reversed.
      */
     private boolean reverseOrder = false;
+    private Date mUpdatedAfterFilter;
+    private Date mUpdatedBeforeFilter;
     /**
      * The ordering that should be used for the query.
      */

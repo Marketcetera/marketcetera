@@ -11,12 +11,7 @@ import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.DestinationID;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MessageCreationException;
-import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.*;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -919,7 +914,9 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     
     public void testDuplicateReports() throws Exception {
     	ExecutionReport report1 = createReport(getTestableExecutionReport());
-    	ExecutionReport report2 = createReport(getTestableExecutionReport());
+        ReportBaseImpl.assignReportID((ReportBaseImpl) report1, new ReportID(12));
+        ExecutionReport report2 = createReport(getTestableExecutionReport());
+        ReportBaseImpl.assignReportID((ReportBaseImpl) report2, new ReportID(22));
     	TradeReportsHistory history = createMessageHistory();
     	history.addIncomingMessage(report1);
     	assertEquals(1, history.size());

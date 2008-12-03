@@ -3,6 +3,7 @@ package org.marketcetera.persist;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import static org.marketcetera.persist.Messages.DEFAULT_ENTITY_NAME;
 import org.junit.Test;
 import org.junit.Before;
@@ -676,7 +677,10 @@ public abstract class EntityTestBase<E extends EntityBase,
      */
     protected List<MultiQueryFilterTestHelper<E,S>> getFilterTestHelpers()
             throws Exception {
-        return new LinkedList<MultiQueryFilterTestHelper<E, S>>();
+        LinkedList<MultiQueryFilterTestHelper<E, S>> helpers = new LinkedList<MultiQueryFilterTestHelper<E, S>>();
+        helpers.add(dateFilterHelper(EntityBase.ATTRIBUTE_LAST_UPDATED, "updatedAfterFilter", true));
+        helpers.add(dateFilterHelper(EntityBase.ATTRIBUTE_LAST_UPDATED, "updatedBeforeFilter", false));
+        return helpers;
     }
 
     /**
@@ -728,6 +732,25 @@ public abstract class EntityTestBase<E extends EntityBase,
         return new MultiQueryStringFilterTestHelper<E,S>(
                 getEntityClass(), attributeName, getMultiQueryClass(),
                 filterName, getAllQuery());
+    }
+
+    /**
+     * Creates an instance of filter test helper for date attributes.
+     *
+     * @param attributeName the attribute name
+     * @param filterName the filter attribute name on the multi query
+     * @param isAfter if the filter matches dates after the filter date.
+     *
+     * @return the filter test helper instance
+     *
+     * @throws Exception if there was an error
+     */
+    protected final MultiQueryFilterTestHelper<E,S> dateFilterHelper(
+            String attributeName, String filterName, boolean isAfter)
+            throws Exception {
+        return new MultiQueryDateFilterTestHelper<E,S>(
+                getEntityClass(), attributeName, getMultiQueryClass(),
+                filterName, getAllQuery(), isAfter);
     }
     /**
      * Creates an instance of filter test helper for boolean attributes.

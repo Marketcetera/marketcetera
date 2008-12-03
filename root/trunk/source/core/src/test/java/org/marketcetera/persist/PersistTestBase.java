@@ -174,7 +174,7 @@ public class PersistTestBase {
      * @param d2 the second date
      * @param type the date comparison precision
      */
-    protected static void assertCalendarEquals(Date d1, Date d2,
+    public static void assertCalendarEquals(Date d1, Date d2,
                                                TemporalType type) {
         if(d1 == null && d2 == null) {
             return;
@@ -196,6 +196,16 @@ public class PersistTestBase {
             org.junit.Assert.assertEquals(c1.get(Calendar.MINUTE),c2.get(Calendar.MINUTE));
             org.junit.Assert.assertEquals(c1.get(Calendar.SECOND),c2.get(Calendar.SECOND));
         }
+    }
+
+    /**
+     * Sleeps for the minimal time that the db can differentiate between.
+     *
+     * @throws InterruptedException if interrupted.
+     */
+    public static void sleepForSignificantTime() throws InterruptedException {
+        //The db can only tell time atleast a second apart
+        Thread.sleep(1000);
     }
 
     /**

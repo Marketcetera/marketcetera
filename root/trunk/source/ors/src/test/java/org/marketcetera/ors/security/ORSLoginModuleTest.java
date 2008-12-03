@@ -9,7 +9,6 @@ import static org.marketcetera.ors.security.Messages.USER_LOGIN_ERROR;
 import static org.marketcetera.ors.security.Messages.USER_LOGIN_ERROR_LOG;
 import static org.marketcetera.ors.security.Messages.USER_LOGIN_LOG;
 import static org.marketcetera.ors.security.Messages.USER_LOGOUT_LOG;
-import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.util.test.TestCaseBase;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
@@ -163,7 +162,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
         return new String[] {
             "file:"+DIR_ROOT+File.separator+ //$NON-NLS-1$
             "conf"+File.separator+ //$NON-NLS-1$
-            "security_test.xml"}; //$NON-NLS-1$
+            "persist_tests.xml"}; //$NON-NLS-1$
     }
 
     private static String randomString() {

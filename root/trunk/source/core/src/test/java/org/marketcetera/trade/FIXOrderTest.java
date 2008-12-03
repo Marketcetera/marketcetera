@@ -8,6 +8,8 @@ import org.marketcetera.module.ExpectedFailure;
 import org.junit.Test;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import quickfix.Message;
 import quickfix.field.*;
 
@@ -101,22 +103,32 @@ public class FIXOrderTest extends TypesTestBase {
     public void checkFIX() throws Exception {
         Message msg = FIXVersion.FIX44.getMessageFactory().newBasicOrder();
         DestinationID id = new DestinationID("blah");
+        //Remove ClOrdID.
+        msg.removeField(ClOrdID.FIELD);
+        assertFalse(msg.isSetField(ClOrdID.FIELD));
         FIXOrder order = sFactory.createOrder(msg, id);
         assertSame(msg, order.getMessage());
+        //Verify an orderID is assigned.
+        assertNotNull(getClOrdID(order));
         //Verify toString() doesn't fail
         order.toString();
 
         //Test map of fields
-        String clOrdID = "blah";
         String account = "myacc";
         BigDecimal qty = new BigDecimal("234.34");
         MSymbol symbol = new MSymbol("IBM", SecurityType.CommonStock);
         BigDecimal price = new BigDecimal("3498.343");
-        msg = FIXVersion.FIX44.getMessageFactory().newLimitOrder(clOrdID,
+        msg = FIXVersion.FIX44.getMessageFactory().newLimitOrder("blah",
                 quickfix.field.Side.BUY, qty, symbol, price,
                 quickfix.field.TimeInForce.DAY, account);
+        //Remove ClOrdID.
+        msg.removeField(ClOrdID.FIELD);
+        assertFalse(msg.isSetField(ClOrdID.FIELD));
         order = sFactory.createOrder(msg, id);
         assertOrderValues(order, id, SecurityType.CommonStock);
+        //Verify an orderID is assigned.
+        String clOrdID = getClOrdID(order);
+        assertNotNull(clOrdID);
         HashMap<Integer,String> expected = new HashMap<Integer, String>();
         expected.put(Account.FIELD, account);
         expected.put(Symbol.FIELD, symbol.getFullSymbol());
@@ -147,5 +159,9 @@ public class FIXOrderTest extends TypesTestBase {
         assertEquals(expected, actualCopy);
         //Verify toString() doesn't fail
         order.toString();
+    }
+
+    private static String getClOrdID(FIXOrder inOrder) throws Exception {
+        return inOrder.getMessage().getString(ClOrdID.FIELD);
     }
 }

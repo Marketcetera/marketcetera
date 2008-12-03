@@ -30,6 +30,8 @@ public interface JPQLConstants {
     static final String L = "(";                         //$NON-NLS-1$
     static final String R = ")";                         //$NON-NLS-1$
     static final String EQUALS = "=";                    //$NON-NLS-1$
+    static final String GREATER_THAN = ">";              //$NON-NLS-1$
+    static final String LESS_THAN = "<";                 //$NON-NLS-1$
     static final String DOT = ".";                       //$NON-NLS-1$
     static final String COUNT_ALL = "count(*)";          //$NON-NLS-1$
     static final String PARAMETER_PREFIX = ":";          //$NON-NLS-1$
