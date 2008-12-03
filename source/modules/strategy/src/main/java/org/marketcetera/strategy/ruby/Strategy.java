@@ -2,7 +2,6 @@ package org.marketcetera.strategy.ruby;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.ClassVersion;
@@ -470,10 +469,10 @@ public class Strategy
      *
      * @param inOrderID an <code>OrderID</code> value corresponding to an <code>OrderSingle</code>
      *   generated during this session by this strategy via {@link #send_order(OrderSingle)} or {@link #cancel_replace(OrderID, OrderSingle)}.
-     * @return a <code>List&lt;ExecutionReport&gt;</code> value containing the <code>ExecutionReport</code> objects as limited according to
+     * @return an <code>ExecutionReport[]</code> value containing the <code>ExecutionReport</code> objects as limited according to
      *   the conditions enumerated above
      */
-    public final List<ExecutionReport> get_execution_reports(OrderID inOrderID)
+    public final ExecutionReport[] get_execution_reports(OrderID inOrderID)
     {
         return getExecutionReports(inOrderID);
     }
@@ -522,9 +521,9 @@ public class Strategy
      * <p>These values can be used to create and send orders with {@link #send_message(Message, DestinationID)}
      * or {@link #send_order(OrderSingle)}.
      *
-     * @return a <code>List&lt;DestinationStatus&gt;</code> value
+     * @return a <code>DestinationStatus[]</code> value
      */
-    public final List<DestinationStatus> get_destinations()
+    public final DestinationStatus[] get_destinations()
     {
         return getDestinations();
     }

@@ -1,5 +1,10 @@
 package org.marketcetera.strategy;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.bsf.BSFException;
+import org.jruby.exceptions.RaiseException;
 import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
@@ -25,6 +30,14 @@ class RubyExecutor
         super(inStrategy);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Executor#interpretRuntimeException(java.lang.Exception)
+     */
+    @Override
+    public String interpretRuntimeException(Exception inE)
+    {
+        return exceptionAsString(inE);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.AbstractExecutor#preprocess(java.lang.String)
      */
     @Override
@@ -47,5 +60,61 @@ class RubyExecutor
             throws StrategyException
     {
         return new BeanScriptingFrameworkEngine();
+    }
+    /**
+     * Attempts to interpret the given exception in a Ruby context.
+     *
+     * @param inE an <code>Exception</code>
+     * @return a <code>String</code> describing the exception's contents
+     */
+    static String exceptionAsString(Exception inE)
+    {
+        RaiseException raiseException = null;
+        if(inE instanceof RaiseException) {
+            raiseException = (RaiseException)inE;
+        } else if(inE instanceof BSFException &&
+                 ((BSFException)inE).getTargetException() instanceof RaiseException) {
+            raiseException = (RaiseException)((BSFException)inE).getTargetException();
+        }
+        if(raiseException != null) {
+            return String.format("%s %s", //$NON-NLS-1$
+                                 raiseException.getException().toString(),
+                                 raiseException.getException().backtrace().toString());
+        }
+        return inE.toString();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Executor#translateMethodName(java.lang.String)
+     */
+    @Override
+    public String translateMethodName(String inMethodName)
+    {
+        return methodNames.get(inMethodName);
+    }
+    /**
+     * method name translation
+     */
+    private static final Map<String,String> methodNames = new HashMap<String,String>();
+    /**
+     * static initialized for class
+     */
+    static
+    {
+        methodNames.put("onAsk", //$NON-NLS-1$
+                        "on_ask"); //$NON-NLS-1$
+        methodNames.put("onBid", //$NON-NLS-1$
+                        "on_bid"); //$NON-NLS-1$
+        methodNames.put("onCancel", //$NON-NLS-1$
+                        "on_cancel"); //$NON-NLS-1$
+        methodNames.put("onExecutionReport", //$NON-NLS-1$
+                        "on_execution_report"); //$NON-NLS-1$
+        methodNames.put("onTrade", //$NON-NLS-1$
+                        "on_trade"); //$NON-NLS-1$
+        methodNames.put("onOther", //$NON-NLS-1$
+                        "on_other"); //$NON-NLS-1$
+        methodNames.put("onStart", //$NON-NLS-1$
+                        "on_start"); //$NON-NLS-1$
+        methodNames.put("onStop", //$NON-NLS-1$
+                        "on_stop"); //$NON-NLS-1$
     }
 }

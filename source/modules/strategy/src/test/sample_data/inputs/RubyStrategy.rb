@@ -16,14 +16,12 @@ class RubyStrategy < Strategy
       end
       shouldLoop = get_parameter("shouldLoopOnStart")
       if(shouldLoop != nil)
-          while(true)
-              shouldStopLoop = get_parameter("shouldStopLoop")
-              if(shouldStopLoop != nil)
-                break
-              end
-              puts "sleeping..."
+          shouldStopLoop = get_property("shouldStopLoop")
+          while(shouldStopLoop == nil)
               sleep 0.1
+              shouldStopLoop = get_property("shouldStopLoop")
           end
+          set_property "loopDone", "true"
       end
       marketDataSource = get_parameter("shouldRequestData")
       if(marketDataSource != nil)
@@ -60,13 +58,8 @@ class RubyStrategy < Strategy
      end
      if(get_property("askForDestinations") != nil)
         destinations = get_destinations
-        iterator = destinations.iterator
         counter = 0
-        while iterator.hasNext
-            destination = iterator.next
-            set_property counter.to_s, destination.toString
-            counter += 1
-        end
+        destinations.each { |destination| set_property counter.to_s, destination.toString; counter += 1 }
      end
      set_property("onStart",
                    Long.toString(System.currentTimeMillis()))

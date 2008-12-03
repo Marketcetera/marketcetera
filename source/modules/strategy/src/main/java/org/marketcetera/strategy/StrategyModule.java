@@ -130,7 +130,7 @@ public final class StrategyModule
         } else if(requestPayload instanceof InternalRequest) {
             InternalRequest internalRequest = (InternalRequest)requestPayload;
             SLF4JLoggerProxy.debug(StrategyModule.class,
-                                   "{} received a request to set up a specialized data flow to {}",
+                                   "{} received a request to set up a specialized data flow to {}", //$NON-NLS-1$
                                    strategy,
                                    internalRequest.originalRequester); //$NON-NLS-1$
             internalDataFlows.put(internalRequest.originalRequester,
@@ -160,8 +160,8 @@ public final class StrategyModule
             throws UnsupportedDataTypeException, StopDataFlowException
     {
         assertStateForReceiveData();
-        SLF4JLoggerProxy.debug(this,
-                               "Strategy {} received {}", //$NON-NLS-1$
+        SLF4JLoggerProxy.trace(Strategy.STRATEGY_MESSAGES,
+                               "{} received {}", //$NON-NLS-1$
                                strategy,
                                inData);
         strategy.dataReceived(inData);
@@ -192,7 +192,7 @@ public final class StrategyModule
         if(inRequest == null ||
            inSource == null ||
            inSource.isEmpty()) {
-            INVALID_MARKET_DATA_REQUEST.warn(StrategyModule.class,
+            INVALID_MARKET_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                              strategy,
                                              inRequest,
                                              inSource);
@@ -209,7 +209,7 @@ public final class StrategyModule
                                        dataFlowID);
             }
         } catch (Exception e) {
-            MARKET_DATA_REQUEST_FAILED.warn(this,
+            MARKET_DATA_REQUEST_FAILED.warn(Strategy.STRATEGY_MESSAGES,
                                             e,
                                             inRequest,
                                             inSource);
@@ -236,7 +236,7 @@ public final class StrategyModule
            inCEPSource.isEmpty() ||
            inNamespace == null ||
            inNamespace.isEmpty()) {
-            INVALID_COMBINED_DATA_REQUEST.warn(StrategyModule.class,
+            INVALID_COMBINED_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                                strategy,
                                                inRequest,
                                                inMarketDataSource,
@@ -267,7 +267,7 @@ public final class StrategyModule
             }
             return requestID;
         } catch (Exception e) {
-            COMBINED_DATA_REQUEST_FAILED.warn(StrategyModule.class,
+            COMBINED_DATA_REQUEST_FAILED.warn(Strategy.STRATEGY_MESSAGES,
                                               e,
                                               inRequest,
                                               inMarketDataSource,
@@ -288,9 +288,8 @@ public final class StrategyModule
             List<Long> activeRequests = new ArrayList<Long>(marketDataRequests.keySet());
             for(long request : activeRequests) {
                 try {
-                    cancelDataRequest(request);
                 } catch (Exception e) {
-                    UNABLE_TO_CANCEL_MARKET_DATA_REQUEST.warn(StrategyModule.class,
+                    UNABLE_TO_CANCEL_MARKET_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                                               e,
                                                               strategy,
                                                               request);
@@ -306,7 +305,7 @@ public final class StrategyModule
     {
         synchronized(marketDataRequests) {
             if(!marketDataRequests.containsKey(inDataRequestID)) {
-                NO_MARKET_DATA_HANDLE.warn(this,
+                NO_MARKET_DATA_HANDLE.warn(Strategy.STRATEGY_MESSAGES,
                                            strategy,
                                            inDataRequestID);
                 return;
@@ -314,7 +313,7 @@ public final class StrategyModule
             try {
                 cancelDataRequest(inDataRequestID);
             } catch (Exception e) {
-                UNABLE_TO_CANCEL_MARKET_DATA_REQUEST.warn(StrategyModule.class,
+                UNABLE_TO_CANCEL_MARKET_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                                           e,
                                                           strategy,
                                                           inDataRequestID);
@@ -334,7 +333,7 @@ public final class StrategyModule
                 try {
                     cancelDataRequest(request);
                 } catch (Exception e) {
-                    UNABLE_TO_CANCEL_CEP_REQUEST.warn(StrategyModule.class,
+                    UNABLE_TO_CANCEL_CEP_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                                       e,
                                                       strategy,
                                                       request);
@@ -350,7 +349,7 @@ public final class StrategyModule
     {
         synchronized(cepRequests) {
             if(!cepRequests.containsKey(inDataRequestID)) {
-                NO_CEP_HANDLE.warn(StrategyModule.class,
+                NO_CEP_HANDLE.warn(Strategy.STRATEGY_MESSAGES,
                                    strategy,
                                    inDataRequestID);
                 return;
@@ -358,7 +357,7 @@ public final class StrategyModule
             try {
                 cancelDataRequest(inDataRequestID);
             } catch (Exception e) {
-                UNABLE_TO_CANCEL_CEP_REQUEST.warn(StrategyModule.class,
+                UNABLE_TO_CANCEL_CEP_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                                   e,
                                                   strategy,
                                                   inDataRequestID);
@@ -375,7 +374,7 @@ public final class StrategyModule
     {
         if(inStatements == null ||
            inStatements.length == 0) {
-            INVALID_CEP_REQUEST.warn(StrategyModule.class,
+            INVALID_CEP_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                      strategy,
                                      Arrays.toString(inStatements),
                                      String.valueOf(inSource) + ":" + String.valueOf(inNamespace)); //$NON-NLS-1$
@@ -394,8 +393,7 @@ public final class StrategyModule
                                                                false));
             }
         } catch (Exception e) {
-            // warn, but do not cause the strategy to stop working
-            CEP_REQUEST_FAILED.warn(this,
+            CEP_REQUEST_FAILED.warn(Strategy.STRATEGY_MESSAGES,
                                     e,
                                     Arrays.toString(inStatements),
                                     inSource);
@@ -502,7 +500,7 @@ public final class StrategyModule
     {
         if(inMessage == null ||
            inDestination == null) {
-            INVALID_MESSAGE.warn(StrategyModule.class,
+            INVALID_MESSAGE.warn(Strategy.STRATEGY_MESSAGES,
                                  strategy);
             return;
         }
@@ -510,7 +508,7 @@ public final class StrategyModule
             publish(Factory.getInstance().createOrder(inMessage,
                                                       inDestination));
         } catch (Exception e) {
-            SEND_MESSAGE_FAILED.warn(StrategyModule.class,
+            SEND_MESSAGE_FAILED.warn(Strategy.STRATEGY_MESSAGES,
                                      e,
                                      strategy,
                                      inMessage,
@@ -524,7 +522,7 @@ public final class StrategyModule
     public void sendOrder(OrderSingle inOrder)
     {
         if(inOrder == null) {
-            INVALID_ORDER.warn(StrategyModule.class,
+            INVALID_ORDER.warn(Strategy.STRATEGY_MESSAGES,
                                strategy);
             return;
         }
@@ -537,7 +535,7 @@ public final class StrategyModule
     public void sendSuggestion(Suggestion inSuggestion)
     {
         if(inSuggestion == null) {
-            INVALID_TRADE_SUGGESTION.warn(StrategyModule.class,
+            INVALID_TRADE_SUGGESTION.warn(Strategy.STRATEGY_MESSAGES,
                                           strategy);
             return;
         }
@@ -553,7 +551,7 @@ public final class StrategyModule
     {
         // event must not be null, but the other two parameters may be
         if(inEvent == null) {
-            INVALID_EVENT.warn(StrategyModule.class,
+            INVALID_EVENT.warn(Strategy.STRATEGY_MESSAGES,
                                strategy);
             return;
         }
@@ -571,7 +569,7 @@ public final class StrategyModule
             } catch (Exception e) {
                 // warn that the event was not sent to CEP, but continue to send to subscribers
                 // this may not be an error as the CEP module may not exist
-                CANNOT_SEND_EVENT_TO_CEP.warn(StrategyModule.class,
+                CANNOT_SEND_EVENT_TO_CEP.warn(Strategy.STRATEGY_MESSAGES,
                                               e,
                                               strategy,
                                               inEvent,
@@ -784,7 +782,7 @@ public final class StrategyModule
             } catch (Exception e) {
                 EXECUTION_REPORT_REQUEST_FAILED.warn(StrategyModule.class,
                                                      name,
-                                                     ordersDestination);
+                                                     ClientModuleFactory.INSTANCE_URN);
             }
         }
         try {
@@ -798,12 +796,27 @@ public final class StrategyModule
                                         getURN().instanceName(),
                                         this,
                                         this);
+            // make sure that an endless loop does not derail the module start process
+            // note that this implies it is the strategy author's responsibility to manage concurrency in the case
+            //  of a strategy with a long preStart, i.e. messages could start coming in before the preStart loop completes
             strategy.start();
+//            // TODO for now, because of significant issues this pattern raises, synchronously wait for the start loop to end
+//            //  this should be resolved before release
+//            executor.submit(new Callable<Strategy>() {
+//                @Override
+//                public Strategy call()
+//                        throws Exception
+//                {
+//                    strategy.start();
+//                    return strategy;
+//                }
+//            }).get();
         } catch (Exception e) {
             throw new ModuleException(e,
                                       FAILED_TO_START);
         }
     }
+//    private static final ExecutorService executor = Executors.newCachedThreadPool();
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
      */
@@ -813,8 +826,20 @@ public final class StrategyModule
     {
         cancelAllMarketDataRequests();
         cancelAllCEPRequests();
+        // TODO for now, because of significant issues this pattern raises, synchronously wait for the start loop to end
+        //  this should be resolved before release
         try {
             strategy.stop();
+//            // make sure that an endless loop does not derail the module stop process
+//            executor.submit(new Callable<Strategy>() {
+//                @Override
+//                public Strategy call()
+//                        throws Exception
+//                {
+//                    strategy.stop();
+//                    return strategy;
+//                }
+//            }).get();
         } catch (Exception e) {
             // a strategy may not prevent itself from being stopped
             STOP_ERROR.warn(StrategyModule.class,
@@ -957,7 +982,7 @@ public final class StrategyModule
                                                          false));
             establishedConnection = internalDataFlows.get(inCEPModule);
             if(establishedConnection == null) {
-                CANNOT_CREATE_CONNECTION.warn(StrategyModule.class,
+                CANNOT_CREATE_CONNECTION.warn(Strategy.STRATEGY_MESSAGES,
                                               strategy,
                                               inCEPModule);
                 return;
@@ -1025,7 +1050,7 @@ public final class StrategyModule
      */
     private void publish(Object inObject)
     {
-        SLF4JLoggerProxy.debug(this,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} publishing {}", //$NON-NLS-1$
                                strategy,
                                inObject);

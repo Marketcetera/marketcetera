@@ -322,16 +322,15 @@ public abstract class LanguageTestBase
         parameters.setProperty("shouldFailOnStop",
                                "true");
         // runtime error in onStop
-        // TODO this is not working as expected
-//        final ModuleURN strategyURN = createStrategy(strategy.getName(),
-//                                                     getLanguage(),
-//                                                     strategy.getFile(),
-//                                                     parameters,
-//                                                     null,
-//                                                     null,
-//                                                     null);
-//        doSuccessfulStartTest(strategyURN);
-//        moduleManager.stop(strategyURN);
+        final ModuleURN strategyURN = createStrategy(strategy.getName(),
+                                                     getLanguage(),
+                                                     strategy.getFile(),
+                                                     parameters,
+                                                     null,
+                                                     null,
+                                                     null);
+        doSuccessfulStartTest(strategyURN);
+        moduleManager.stop(strategyURN);
         // runtime error in each callback
         doCallbackFailsTest("shouldFailOnAsk",
                             new String[] { "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther" });
@@ -344,6 +343,11 @@ public abstract class LanguageTestBase
         doCallbackFailsTest("shouldFailOnOther",
                             new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade" });
     }
+    /**
+     * Tests that a strategy may have an arbitrarily long onStart.
+     *
+     * @throws Exception if an error occurs
+     */
     @Test@Ignore
     public void endlessLoopOnStart()
         throws Exception
@@ -352,13 +356,24 @@ public abstract class LanguageTestBase
         final Properties parameters = new Properties();
         parameters.setProperty("shouldLoopOnStart",
                                "true");
-        doSuccessfulStartTest(createStrategy(strategy.getName(),
-                                             getLanguage(),
-                                             strategy.getFile(),
-                                             parameters,
-                                             null,
-                                             null,
-                                             null));
+        assertNull(AbstractRunningStrategy.getProperty("loopDone"));
+        createStrategy(strategy.getName(),
+                       getLanguage(),
+                       strategy.getFile(),
+                       parameters,
+                       null,
+                       null,
+                       null);
+        // strategy onStart never completed, should still be running
+        Thread.sleep(5000);
+        // this line proves that control was returned to us from moduleManager after starting the module even though the
+        //  onStart method is still running
+        assertNull(AbstractRunningStrategy.getProperty("loopDone"));
+        // tell the loop to stop
+        AbstractRunningStrategy.setProperty("shouldStopLoop",
+                                            "true");
+        Thread.sleep(500);
+        assertNotNull(AbstractRunningStrategy.getProperty("loopDone"));
     }
     /**
      * Tests receipt of market data from a valid, started market data provider.
@@ -1376,8 +1391,8 @@ public abstract class LanguageTestBase
                                             "true");
         // trigger cancel
         runningStrategy.onTrade(tradeEvent);
-        assertEquals(AbstractRunningStrategy.getProperty("ordersCanceled"),
-                     "0");
+        assertEquals("0",
+                     AbstractRunningStrategy.getProperty("ordersCanceled"));
         // create an order to cancel
         runningStrategy.onAsk(askEvent);
         // trigger cancel
@@ -1448,6 +1463,8 @@ public abstract class LanguageTestBase
         // start and stop the strategy
         stopStrategy(strategy);
         startStrategy(strategy);
+        assertEquals(1,
+                     StrategyImpl.getRunningStrategies().size());
         AbstractRunningStrategy.setProperty("orderCanceled",
                                             "");
         runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
@@ -2768,9 +2785,9 @@ public abstract class LanguageTestBase
                                                   new BigDecimal("10000")));
         assertEquals(inExecutionReportCount,
                      Integer.parseInt(AbstractRunningStrategy.getProperty("executionReportCount")));
-        List<ExecutionReport> actualExecutionReports = ((AbstractRunningStrategy)runningStrategy.getRunningStrategy()).getExecutionReports(orderID);
+        ExecutionReport[] actualExecutionReports = ((AbstractRunningStrategy)runningStrategy.getRunningStrategy()).getExecutionReports(orderID);
         assertEquals(expectedExecutionReports.size(),
-                     actualExecutionReports.size());
+                     actualExecutionReports.length);
         int index = 0;
         for(ExecutionReport actualExecutionReport : actualExecutionReports) {
             TypesTestBase.assertExecReportEquals(expectedExecutionReports.get(index++),

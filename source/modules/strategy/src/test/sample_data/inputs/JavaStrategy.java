@@ -29,17 +29,18 @@ public class JavaStrategy
         String shouldLoop = getParameter("shouldLoopOnStart");
         if(shouldLoop != null) {
             while(true) {
-                String shouldStopLoop = getParameter("shouldStopLoop");
+                String shouldStopLoop = getProperty("shouldStopLoop");
                 if(shouldStopLoop != null) {
                     break;
                 }
-                System.out.println("sleeping...");
                 try {
                     Thread.sleep(100);
                 } catch (Exception e) {
-                    // do something
+                    // swallow exception
                 }
             }
+            setProperty("loopDone",
+                        "true");
         }
         String marketDataSource = getParameter("shouldRequestData");
         if(marketDataSource != null) {

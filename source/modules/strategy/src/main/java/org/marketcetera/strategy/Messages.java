@@ -116,4 +116,8 @@ public interface Messages
                                                                                  "invalid_combined_data_request"); //$NON-NLS-1$
     static final I18NMessage5P COMBINED_DATA_REQUEST_FAILED = new I18NMessage5P(LOGGER,
                                                                                 "combined_data_request_failed"); //$NON-NLS-1$
+    static final I18NMessage1P STRATEGY_COMPILATION_NULL_RESULT = new I18NMessage1P(LOGGER,
+                                                                                    "strategy_compilation_null_result"); //$NON-NLS-1$
+    static final I18NMessage3P RUNTIME_ERROR = new I18NMessage3P(LOGGER,
+                                                                 "runtime_error"); //$NON-NLS-1$
 }

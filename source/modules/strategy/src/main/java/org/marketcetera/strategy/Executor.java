@@ -18,15 +18,29 @@ interface Executor
      * Starts execution of the {@link Strategy}.
      *
      * @return a <code>RunningStrategy</code> value
-     * @throws StrategyException if an error occurs
+     * @throws Exception if an error occurs
      */
     RunningStrategy start()
-        throws StrategyException;
+        throws Exception;
     /**
      * Stops execution of a {@link Strategy}.
      *
-     * @throws StrategyException if an error occurs
+     * @throws Exception if an error occurs
      */
     void stop()
-        throws StrategyException;
+        throws Exception;
+    /**
+     * Returns an interpretation of the given exception.
+     *
+     * @param inE an <code>Exception</code> value
+     * @return a <code>String</code> value containing a description of the exception
+     */
+    String interpretRuntimeException(Exception inE);
+    /**
+     * Returns the name of the method rendered for the appropriate language.
+     *
+     * @param inMethodName a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    String translateMethodName(String inMethodName);
 }

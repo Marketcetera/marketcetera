@@ -42,4 +42,20 @@ class JavaExecutor
     {
         return new JavaCompilerExecutionEngine();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Executor#interpretRuntimeException(java.lang.Exception)
+     */
+    @Override
+    public String interpretRuntimeException(Exception inE)
+    {
+        return inE.toString();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Executor#translateMethodName(java.lang.String)
+     */
+    @Override
+    public String translateMethodName(String inMethodName)
+    {
+        return inMethodName;
+    }
 }
