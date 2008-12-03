@@ -45,7 +45,7 @@ class FactoryImpl extends Factory {
             order.setDestinationID(inLatestReport.getDestinationID());
             order.setDestinationOrderID(inLatestReport.getDestinationOrderID());
             order.setOriginalOrderID(inLatestReport.getOrderID());
-            order.setQuantity(inLatestReport.getLeavesQuantity());
+            order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
             order.setSymbol(inLatestReport.getSymbol());
         }
@@ -63,7 +63,7 @@ class FactoryImpl extends Factory {
             order.setOrderType(inLatestReport.getOrderType());
             order.setOriginalOrderID(inLatestReport.getOrderID());
             order.setPrice(inLatestReport.getLastPrice());
-            order.setQuantity(inLatestReport.getLeavesQuantity());
+            order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
             order.setSymbol(inLatestReport.getSymbol());
             order.setTimeInForce(inLatestReport.getTimeInForce());
