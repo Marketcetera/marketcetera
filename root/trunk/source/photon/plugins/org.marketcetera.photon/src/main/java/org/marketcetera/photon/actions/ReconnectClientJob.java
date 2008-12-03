@@ -78,30 +78,6 @@ public class ReconnectClientJob
 		InterruptedException {
 			try {
 				mService.initClient(mParameters);
-				final DestinationsStatus destinationsStatus = mService.getClient().getDestinationsStatus();
-				PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							BrokerManager.getCurrent().setBrokersStatus(destinationsStatus);
-						} catch (Throwable ex) {
-							setFailure(ex);
-						}
-					}
-				});
-				sBrokerNotificationListener.setService(mService);
-				mService.getClient().removeDestinationStatusListener(sBrokerNotificationListener);
-				TimeOfDay time = TimeOfDay.create(PhotonPlugin.getDefault()
-						.getPreferenceStore().getString(
-								PhotonPlugin.SESSION_START_TIME_PREFERENCE));
-				if (time != null) {
-					ReportBase[] reports = mService.getClient()
-							.getReportsSince(time.getLastOccurrence());
-					for (ReportBase reportBase : reports) {
-						PhotonPlugin.getDefault().getTradeReportsHistory()
-								.addIncomingMessage(reportBase);
-					}
-				}
 			} catch (Throwable ex) {
 				setFailure(ex);
 			}				
@@ -218,6 +194,24 @@ public class ReconnectClientJob
 					monitor.worked(1);
 					feedService.afterPropertiesSet();
 					monitor.worked(1);
+					
+
+					final DestinationsStatus destinationsStatus = feedService.getClient().getDestinationsStatus();
+					BrokerManager.getCurrent().setBrokersStatus(destinationsStatus);
+					sBrokerNotificationListener.setService(feedService);
+					feedService.getClient().addDestinationStatusListener(sBrokerNotificationListener);
+					
+					TimeOfDay time = TimeOfDay.create(PhotonPlugin.getDefault()
+							.getPreferenceStore().getString(
+									PhotonPlugin.SESSION_START_TIME_PREFERENCE));
+					if (time != null) {
+						ReportBase[] reports = feedService.getClient()
+								.getReportsSince(time.getLastOccurrence());
+						for (ReportBase reportBase : reports) {
+							PhotonPlugin.getDefault().getTradeReportsHistory()
+									.addIncomingMessage(reportBase);
+						}
+					}
 		
 					succeeded = true;
 					logger.info(MESSAGE_QUEUE_CONNECTED.getText(url));
