@@ -29,7 +29,7 @@ public interface Messages {
 	 */
 	static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
 
-	/* 
+	/*
 	 * UI Text
 	 */
 	static final I18NMessage0P STRATEGYUI_FILE_LABEL = new I18NMessage0P(
@@ -131,16 +131,16 @@ public interface Messages {
 	static final I18NMessage0P SEND_ORDERS_HANDLER_SEND_ORDERS_FAILURE_SEE_DETAILS = new I18NMessage0P(
 			LOGGER, "send_orders_handler.send_orders_failure.see_details"); //$NON-NLS-1$
 	static final I18NMessage0P OPEN_SUGGESTION_HANDLER_CONVERSION_FAILURE = new I18NMessage0P(
-            LOGGER, "open_suggestions_handler.conversion_failure"); //$NON-NLS-1$
-	
+			LOGGER, "open_suggestions_handler.conversion_failure"); //$NON-NLS-1$
+
 	/*
 	 * Module information
 	 */
 	static final I18NMessage0P TRADE_SUGGESTION_RECEIVER_DESCRIPTION = new I18NMessage0P(
 			LOGGER, "trade_suggestion_receiver.description"); //$NON-NLS-1$
-	
+
 	/*
-	 * Log Messages 
+	 * Log Messages
 	 */
 	static final I18NMessage2P NEW_RUBY_STRATEGY_CREATION_FAILED = new I18NMessage2P(
 			LOGGER, "new_ruby_strategy.creation_failed"); //$NON-NLS-1$
@@ -154,9 +154,10 @@ public interface Messages {
 			LOGGER, "strategy_manager.invalid_destination"); //$NON-NLS-1$
 	static final I18NMessage1P STRATEGY_MANAGER_STRATEGY_START_FAILED = new I18NMessage1P(
 			LOGGER, "strategy_manager.strategy_start_failed"); //$NON-NLS-1$
+	static final I18NMessage1P STRATEGY_MANAGER_STRATEGY_STOP_FAILED = new I18NMessage1P(
+			LOGGER, "strategy_manager.strategy_stop_failed"); //$NON-NLS-1$
 	static final I18NMessage1P TRADE_SUGGESTION_RECEIVER_INVALID_DATA_TYPE = new I18NMessage1P(
 			LOGGER, "trade_suggestion_receiver.invalid_data_type"); //$NON-NLS-1$
 	static final I18NMessage0P TRADE_SUGGESTION_RECEIVER_INVALID_DATA_NO_ORDER = new I18NMessage0P(
 			LOGGER, "trade_suggestion_receiver.invalid_data_no_order"); //$NON-NLS-1$
 }
-	

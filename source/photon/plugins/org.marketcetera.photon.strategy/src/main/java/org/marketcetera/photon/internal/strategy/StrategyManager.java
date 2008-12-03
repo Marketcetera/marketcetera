@@ -24,7 +24,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.XMLMemento;
-import org.jruby.exceptions.RaiseException;
 import org.marketcetera.core.Util;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
@@ -33,7 +32,6 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.internal.strategy.Strategy.Destination;
 import org.marketcetera.photon.internal.strategy.Strategy.State;
 import org.marketcetera.photon.module.ModulePlugin;
-import org.marketcetera.scripting.ScriptLoggingUtil;
 import org.marketcetera.strategy.Language;
 import org.marketcetera.strategy.StrategyMXBean;
 import org.marketcetera.strategy.StrategyModuleFactory;
@@ -47,9 +45,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * Manages a collection of {@link Strategy} objects and interfaces with the
  * underlying Module Framework.
  * 
- * This class manages a {@link WritableList} of {@link Strategy} objects, and
- * as such, it is thread safe. An exception will be thrown if it is accessed
- * from any thread other than the one that created it.
+ * This class manages a {@link WritableList} of {@link Strategy} objects, and as
+ * such, it is thread safe. An exception will be thrown if it is accessed from
+ * any thread other than the one that created it.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -117,8 +115,9 @@ public final class StrategyManager {
 	 */
 	private static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
 
-	private final MBeanServerConnection mMBeanServer = ModulePlugin.getDefault().getMBeanServerConnection();
-	
+	private final MBeanServerConnection mMBeanServer = ModulePlugin
+			.getDefault().getMBeanServerConnection();
+
 	private final ModuleManager mModuleManager = ModulePlugin.getDefault()
 			.getModuleManager();
 
@@ -152,15 +151,11 @@ public final class StrategyManager {
 			mModuleManager.start(strategy.getURN());
 			strategy.setState(State.RUNNING);
 		} catch (ModuleException e) {
-			e.getI18NBoundMessage().error(this, e);
 			PhotonPlugin.getMainConsoleLogger().error(
 					Messages.STRATEGY_MANAGER_STRATEGY_START_FAILED
 							.getText(strategy.getDisplayName()));
-			if (e.getCause() instanceof RaiseException) {
-				ScriptLoggingUtil.error(PhotonPlugin.getMainConsoleLogger(),
-						(RaiseException) e.getCause());
-				return;
-			}
+			Messages.STRATEGY_MANAGER_STRATEGY_START_FAILED.error(this, e,
+					strategy.getDisplayName());
 		}
 	}
 
@@ -175,8 +170,11 @@ public final class StrategyManager {
 			mModuleManager.stop(strategy.getURN());
 			strategy.setState(State.STOPPED);
 		} catch (ModuleException e) {
-			// TODO: report to user
-			e.getI18NBoundMessage().error(this);
+			PhotonPlugin.getMainConsoleLogger().error(
+					Messages.STRATEGY_MANAGER_STRATEGY_STOP_FAILED
+							.getText(strategy.getDisplayName()));
+			Messages.STRATEGY_MANAGER_STRATEGY_STOP_FAILED.error(this, e,
+					strategy.getDisplayName());
 		}
 	}
 
@@ -210,7 +208,7 @@ public final class StrategyManager {
 			strategy.setParameters(parameters);
 			saveState();
 		} catch (Exception e) {
-			// TODO: report to user
+			PhotonPlugin.getMainConsoleLogger().error(e.getLocalizedMessage());
 			ExceptUtils.swallow(e);
 		}
 	}
@@ -232,7 +230,7 @@ public final class StrategyManager {
 			strategy.setDestination(destination);
 			saveState();
 		} catch (Exception e) {
-			// TODO: report to user
+			PhotonPlugin.getMainConsoleLogger().error(e.getLocalizedMessage());
 			ExceptUtils.swallow(e);
 		}
 	}
@@ -271,8 +269,8 @@ public final class StrategyManager {
 			strategy.setState(State.STOPPED);
 			mStrategies.add(strategy);
 		} catch (ModuleException e) {
-			// TODO: report to user
-			e.getI18NBoundMessage().error(this);
+			PhotonPlugin.getMainConsoleLogger().error(e.getLocalizedMessage());
+			ExceptUtils.swallow(e);
 		}
 	}
 
@@ -307,8 +305,8 @@ public final class StrategyManager {
 			mStrategies.remove(strategy);
 			saveState();
 		} catch (ModuleException e) {
-			// TODO: report to user
-			e.getI18NBoundMessage().error(this);
+			PhotonPlugin.getMainConsoleLogger().error(e.getLocalizedMessage());
+			ExceptUtils.swallow(e);
 		}
 	}
 
@@ -369,7 +367,8 @@ public final class StrategyManager {
 									.getString(DESTINATION_ATTRIBUTE));
 						} catch (Exception e) {
 							// Let it default to sink
-							Messages.STRATEGY_MANAGER_INVALID_DESTINATION.warn(this, e, script);
+							Messages.STRATEGY_MANAGER_INVALID_DESTINATION.warn(
+									this, e, script);
 						}
 						Properties properties = new Properties();
 						for (IMemento propertyMem : strategyMem

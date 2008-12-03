@@ -112,6 +112,7 @@ public class ApplicationWorkbenchWindowAdvisor
 		}
 		assert(mainConsole != null);
 		mainConsoleLogger.addAppender(new PhotonConsoleAppender(mainConsole));
+		Logger.getLogger(PhotonPlugin.STRATEGY_LOGGER_NAME).addAppender(new PhotonConsoleAppender(mainConsole)); //$NON-NLS-1$
 		// loop through a second time to find the secondary consoles.
 		for (IConsole console : consoles) {
 			PhotonConsole photonConsole = (PhotonConsole) console;
