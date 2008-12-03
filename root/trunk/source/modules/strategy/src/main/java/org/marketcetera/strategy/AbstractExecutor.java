@@ -1,8 +1,11 @@
 package org.marketcetera.strategy;
 
 import static org.marketcetera.strategy.Messages.NO_STRATEGY_CLASS;
+import static org.marketcetera.strategy.Messages.RUNTIME_ERROR;
+import static org.marketcetera.strategy.Messages.STRATEGY_COMPILATION_NULL_RESULT;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 /* $License$ */
 
@@ -22,7 +25,7 @@ abstract class AbstractExecutor
      */
     @Override
     public final RunningStrategy start()
-        throws StrategyException
+        throws Exception
     {
         String script = getStrategy().getScript();
         String processedScript = preprocess(script);
@@ -31,8 +34,10 @@ abstract class AbstractExecutor
                        processedScript);
         Object objectReturned = engine.start();
         if(objectReturned == null) {
-            // TODO throw no object returned error
-            throw new NullPointerException();
+            STRATEGY_COMPILATION_NULL_RESULT.error(Strategy.STRATEGY_MESSAGES,
+                                                   getStrategy());
+            throw new StrategyException(new I18NBoundMessage1P(STRATEGY_COMPILATION_NULL_RESULT,
+                                                               getStrategy().toString()));
         }
         if(objectReturned instanceof RunningStrategy) {
             RunningStrategy runningStrategy = (RunningStrategy)objectReturned;
@@ -46,10 +51,18 @@ abstract class AbstractExecutor
             // make the parameters available to the strategy 
             abstractRunningStrategy.setStrategy(getStrategy());
             this.runningStrategy = runningStrategy;
-            // TODO put into executorservice to avoid inappropriate delay in startup
-            runningStrategy.onStart();
+            try {
+                runningStrategy.onStart();
+            } catch (Exception e) {
+                RUNTIME_ERROR.error(Strategy.STRATEGY_MESSAGES,
+                                    getStrategy(),
+                                    translateMethodName("onStart"), //$NON-NLS-1$
+                                    interpretRuntimeException(e));
+                throw e;
+            }
             return runningStrategy;
         } else {
+            NO_STRATEGY_CLASS.error(Strategy.STRATEGY_MESSAGES);
             throw new StrategyException(NO_STRATEGY_CLASS);
         }
     }
@@ -58,13 +71,21 @@ abstract class AbstractExecutor
      */
     @Override
     public final void stop()
-        throws StrategyException
+        throws Exception
     {
         assert(runningStrategy != null);
         assert(runningStrategy instanceof AbstractRunningStrategy);
         AbstractRunningStrategy abstractRunningStrategy = (AbstractRunningStrategy)runningStrategy;
         abstractRunningStrategy.stop();
-        runningStrategy.onStop();
+        try {
+            runningStrategy.onStop();
+        } catch (Exception e) {
+            RUNTIME_ERROR.error(Strategy.STRATEGY_MESSAGES,
+                                getStrategy(),
+                                translateMethodName("onStop"), //$NON-NLS-1$
+                                interpretRuntimeException(e));
+            throw e;
+        }
         engine.stop();
     }
     /**

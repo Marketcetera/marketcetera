@@ -1,5 +1,4 @@
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
@@ -77,9 +76,9 @@ public class Orders
     {
         String orderID = getProperty("orderID");
         if(orderID != null) {
-            List<ExecutionReport> exeReports = getExecutionReports(new OrderID(orderID));
+            ExecutionReport[] exeReports = getExecutionReports(new OrderID(orderID));
             setProperty("executionReportCount",
-                        Integer.toString(exeReports.size()));
+                        Integer.toString(exeReports.length));
         }
     }
     /* (non-Javadoc)

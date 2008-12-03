@@ -17,6 +17,10 @@ import org.marketcetera.core.ClassVersion;
 interface Strategy
 {
     /**
+     * logger category which collects strategy messages
+     */
+    public static final String STRATEGY_MESSAGES = "strategy.messages"; //$NON-NLS-1$
+    /**
      * Sends data received from an external source to a strategy.
      *
      * @param inData an <code>Object</code> value
@@ -62,10 +66,10 @@ interface Strategy
     /**
      * Stops the execution of the strategy.
      *
-     * @throws StrategyException if an error occurred while stopping the strategy
+     * @throws Exception  if an error occurred while stopping the strategy
      */
     public void stop()
-        throws StrategyException;
+        throws Exception;
     /**
      * Gets the strategy status.
      *

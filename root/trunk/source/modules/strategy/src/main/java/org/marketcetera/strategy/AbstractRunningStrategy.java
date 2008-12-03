@@ -3,6 +3,7 @@ package org.marketcetera.strategy;
 import static org.marketcetera.strategy.Messages.CALLBACK_ERROR;
 import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_DESTINATIONS;
 import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_POSITION;
+import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.INVALID_CANCEL;
 import static org.marketcetera.strategy.Messages.INVALID_CEP_REQUEST;
@@ -192,7 +193,7 @@ public abstract class AbstractRunningStrategy
            !inSymbols.isEmpty()) {
             try {
                 MarketDataRequest request = constructMarketDataRequest(inSymbols);
-                SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                        "{} requesting market data {} from {}", //$NON-NLS-1$
                                        strategy,
                                        request,
@@ -200,7 +201,7 @@ public abstract class AbstractRunningStrategy
                 return strategy.getOutboundServicesProvider().requestMarketData(request,
                                                                                 inSource);
             } catch (Exception e) {
-                INVALID_MARKET_DATA_REQUEST.warn(AbstractRunningStrategy.class,
+                INVALID_MARKET_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                                  e,
                                                  strategy,
                                                  inSymbols,
@@ -208,7 +209,7 @@ public abstract class AbstractRunningStrategy
                 return 0;
             }
         }
-        INVALID_MARKET_DATA_REQUEST.warn(AbstractRunningStrategy.class,
+        INVALID_MARKET_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                          strategy,
                                          inSymbols,
                                          inSource);
@@ -235,7 +236,7 @@ public abstract class AbstractRunningStrategy
            inSymbols.isEmpty() ||
            inMarketDataSource == null ||
            inMarketDataSource.isEmpty()) {
-            INVALID_MARKET_DATA_REQUEST.warn(AbstractRunningStrategy.class,
+            INVALID_MARKET_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                              strategy,
                                              inSymbols,
                                              inMarketDataSource);
@@ -245,7 +246,7 @@ public abstract class AbstractRunningStrategy
            inStatements.length == 0 ||
            inCepSource == null ||
            inCepSource.isEmpty()) {
-            INVALID_CEP_REQUEST.warn(AbstractRunningStrategy.class,
+            INVALID_CEP_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                      strategy,
                                      Arrays.toString(inStatements),
                                      inCepSource);
@@ -257,7 +258,7 @@ public abstract class AbstractRunningStrategy
             // construct market data request
             marketDataRequest = constructMarketDataRequest(inSymbols);
             // retrieve CEP default namespace
-            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+            SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                    "{} requesting market data {} from {} with cep query {} from {}:{}", //$NON-NLS-1$
                                    strategy,
                                    marketDataRequest.toString(),
@@ -271,7 +272,7 @@ public abstract class AbstractRunningStrategy
                                                                                    inCepSource,
                                                                                    namespace);
         } catch (Exception e) {
-            COMBINED_DATA_REQUEST_FAILED.warn(AbstractRunningStrategy.class,
+            COMBINED_DATA_REQUEST_FAILED.warn(Strategy.STRATEGY_MESSAGES,
                                               e,
                                               marketDataRequest,
                                               inMarketDataSource,
@@ -311,9 +312,18 @@ public abstract class AbstractRunningStrategy
     protected final long requestCEPData(String[] inStatements,
                                         String inSource)
     {
-        if(inStatements != null &&
-           inStatements.length > 0) {
-            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        if(inStatements == null ||
+                inStatements.length == 0 ||
+                inSource == null ||
+                inSource.isEmpty()) {
+                 INVALID_CEP_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
+                                          strategy,
+                                          Arrays.toString(inStatements),
+                                          inSource);
+                 return 0;
+             }
+        try {
+            SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                    "{} requesting CEP data {} from {} ({})", //$NON-NLS-1$
                                    strategy,
                                    Arrays.toString(inStatements),
@@ -322,12 +332,12 @@ public abstract class AbstractRunningStrategy
             return strategy.getOutboundServicesProvider().requestCEPData(inStatements,
                                                                          inSource,
                                                                          strategy.getDefaultNamespace());
+        } catch (Exception e) {
+            CEP_REQUEST_FAILED.warn(Strategy.STRATEGY_MESSAGES,
+                                     e,
+                                     strategy);
+            return 0;
         }
-        INVALID_CEP_REQUEST.warn(AbstractRunningStrategy.class,
-                                 strategy,
-                                 Arrays.toString(inStatements),
-                                 inSource);
-        return 0;
     }
     /**
      * Cancels the given complex event processor data request.
@@ -336,7 +346,7 @@ public abstract class AbstractRunningStrategy
      */
     protected final void cancelCEPRequest(long inRequestID)
     {
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} canceling CEP request {}", //$NON-NLS-1$
                                strategy,
                                inRequestID);
@@ -361,16 +371,17 @@ public abstract class AbstractRunningStrategy
      *            <code>OrderSingle</code> generated during this session by this
      *            strategy via {@link #sendOrder(OrderSingle)} or
      *            {@link #cancelReplace(OrderID, OrderSingle)}.
-     * @return a <code>List&lt;ExecutionReport&gt;</code> value containing the
+     * @return an <code>ExecutionReport[]</code> value containing the
      *         <code>ExecutionReport</code> objects as limited according to the
      *         conditions enumerated above
      */
-    protected final List<ExecutionReport> getExecutionReports(OrderID inOrderID)
+    protected final ExecutionReport[] getExecutionReports(OrderID inOrderID)
     {
         if (inOrderID == null) {
-            return new ArrayList<ExecutionReport>();
+            return new ExecutionReport[0];
         }
-        return submittedOrderManager.getExecutionReports(inOrderID);
+        List<ExecutionReport> reports = submittedOrderManager.getExecutionReports(inOrderID); 
+        return reports.toArray(new ExecutionReport[reports.size()]);
     }
     /**
      * Suggests a trade.
@@ -388,17 +399,16 @@ public abstract class AbstractRunningStrategy
            inScore == null ||
            inIdentifier == null ||
            inIdentifier.isEmpty()) {
-            INVALID_TRADE_SUGGESTION.warn(AbstractRunningStrategy.class,
+            INVALID_TRADE_SUGGESTION.warn(Strategy.STRATEGY_MESSAGES,
                                           strategy);
             return;
         }
         assert(strategy != null);
-        // TODO consider defensive copying.  if used here, it should probably be used in all service and action calls
         OrderSingleSuggestion suggestion = Factory.getInstance().createOrderSingleSuggestion();
         suggestion.setOrder(inOrder);
         suggestion.setScore(inScore);
         suggestion.setIdentifier(inIdentifier);
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} suggesting trade {}", //$NON-NLS-1$
                                strategy,
                                suggestion);
@@ -414,11 +424,11 @@ public abstract class AbstractRunningStrategy
     {
         if(inOrder == null ||
            inOrder.getOrderID() == null) {
-            INVALID_ORDER.warn(AbstractRunningStrategy.class,
+            INVALID_ORDER.warn(Strategy.STRATEGY_MESSAGES,
                                strategy);
             return null;
         }
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} sending order {}({})", //$NON-NLS-1$
                                strategy,
                                inOrder,
@@ -441,13 +451,13 @@ public abstract class AbstractRunningStrategy
     protected final boolean cancelOrder(OrderID inOrderID)
     {
         if(inOrderID == null) {
-            INVALID_CANCEL.warn(AbstractRunningStrategy.class,
+            INVALID_CANCEL.warn(Strategy.STRATEGY_MESSAGES,
                                 strategy);
             return false;
         }
         Entry order = submittedOrderManager.remove(inOrderID);
         if(order == null) {
-            INVALID_ORDERID.warn(AbstractRunningStrategy.class,
+            INVALID_ORDERID.warn(Strategy.STRATEGY_MESSAGES,
                                  strategy,
                                  inOrderID);
             return false;
@@ -455,7 +465,7 @@ public abstract class AbstractRunningStrategy
         OrderCancel cancelRequest;
         // first, try to find an ExecutionReport for this order
         List<ExecutionReport> executionReports = order.executionReports;
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} found {} execution report(s) for {}", //$NON-NLS-1$
                                strategy,
                                executionReports.size(),
@@ -472,7 +482,7 @@ public abstract class AbstractRunningStrategy
             cancelRequest.setSymbol(order.underlyingOrder.getSymbol());
             cancelRequest.setSide(order.underlyingOrder.getSide());
         }
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} submitting cancel request {}", //$NON-NLS-1$
                                strategy,
                                cancelRequest);
@@ -491,7 +501,7 @@ public abstract class AbstractRunningStrategy
      */
     protected final int cancelAllOrders()
     {
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} submitting request to cancel all orders", //$NON-NLS-1$
                                strategy);
         // gets a copy of the submitted orders list - iterate over the copy in
@@ -503,13 +513,13 @@ public abstract class AbstractRunningStrategy
                     count += 1;
                 }
             } catch (Exception e) {
-                ORDER_CANCEL_FAILED.warn(AbstractRunningStrategy.class,
+                ORDER_CANCEL_FAILED.warn(Strategy.STRATEGY_MESSAGES,
                                          e,
                                          strategy,
                                          order.getOrderID());
             }
         }
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} submitted request to cancel {} order(s)", //$NON-NLS-1$
                                strategy,
                                count);
@@ -532,13 +542,13 @@ public abstract class AbstractRunningStrategy
         if(inOrderID == null ||
            inNewOrder == null ||
            inNewOrder.getOrderID() == null) {
-            INVALID_REPLACEMENT_ORDER.warn(AbstractRunningStrategy.class,
+            INVALID_REPLACEMENT_ORDER.warn(Strategy.STRATEGY_MESSAGES,
                                            strategy);
             return null;
         }
         Entry order = submittedOrderManager.remove(inOrderID);
         if(order == null) {
-            INVALID_ORDERID.warn(AbstractRunningStrategy.class,
+            INVALID_ORDERID.warn(Strategy.STRATEGY_MESSAGES,
                                  strategy,
                                  inOrderID);
             return null;
@@ -546,7 +556,7 @@ public abstract class AbstractRunningStrategy
         assert(inNewOrder.getOrderID() != null);
         // first, try to find an ExecutionReport for this order
         List<ExecutionReport> executionReports = order.executionReports;
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} found {} execution report(s) for {}", //$NON-NLS-1$
                                strategy,
                                executionReports.size(),
@@ -566,7 +576,7 @@ public abstract class AbstractRunningStrategy
         replaceOrder.setQuantity(inNewOrder.getQuantity());
         replaceOrder.setPrice(inNewOrder.getPrice());
         replaceOrder.setTimeInForce(inNewOrder.getTimeInForce());
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} submitting cancel replace request {}", //$NON-NLS-1$
                                strategy,
                                replaceOrder);
@@ -585,11 +595,11 @@ public abstract class AbstractRunningStrategy
     {
         if(inMessage == null ||
            inDestination == null) {
-            INVALID_MESSAGE.warn(AbstractRunningStrategy.class,
+            INVALID_MESSAGE.warn(Strategy.STRATEGY_MESSAGES,
                                  strategy);
             return;
         }
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} sending FIX message {} to {}", //$NON-NLS-1$
                                strategy,
                                inMessage,
@@ -611,14 +621,14 @@ public abstract class AbstractRunningStrategy
         if(inEvent == null ||
            inProvider == null ||
            inProvider.isEmpty()) {
-            INVALID_EVENT_TO_CEP.warn(AbstractRunningStrategy.class,
+            INVALID_EVENT_TO_CEP.warn(Strategy.STRATEGY_MESSAGES,
                                       strategy,
                                       inEvent,
                                       inProvider);
             return;
         }
         String namespace = strategy.getDefaultNamespace();
-        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} sending {} to CEP {}:{}", //$NON-NLS-1$
                                strategy,
                                inEvent,
@@ -636,7 +646,7 @@ public abstract class AbstractRunningStrategy
     protected final void sendEvent(EventBase inEvent)
     {
        if(inEvent == null) {
-           INVALID_EVENT.warn(AbstractRunningStrategy.class,
+           INVALID_EVENT.warn(Strategy.STRATEGY_MESSAGES,
                               strategy);
            return;
        }
@@ -697,22 +707,22 @@ public abstract class AbstractRunningStrategy
      * <p>These values can be used to create and send orders with {@link #sendMessage(Message, DestinationID)}
      * or {@link #sendOrder(OrderSingle)}.
      *
-     * @return a <code>List&lt;DestinationStatus&gt;</code> value
+     * @return a <code>DestinationStatus[]</code> value
      */
-    protected final List<DestinationStatus> getDestinations()
+    protected final DestinationStatus[] getDestinations()
     {
         try {
             List<DestinationStatus> destinations = strategy.getInboundServicesProvider().getDestinations();
-            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+            SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                    "{} received the following destinations: {}", //$NON-NLS-1$
                                    strategy,
                                    destinations == null ? "null" : Arrays.toString(destinations.toArray())); //$NON-NLS-1$
-            return destinations;
+            return destinations.toArray(new DestinationStatus[destinations.size()]);
         } catch (Exception e) {
-            CANNOT_RETRIEVE_DESTINATIONS.warn(AbstractRunningStrategy.class,
+            CANNOT_RETRIEVE_DESTINATIONS.warn(Strategy.STRATEGY_MESSAGES,
                                               e,
                                               strategy);
-            return new ArrayList<DestinationStatus>();
+            return new DestinationStatus[0];
         }
     }
     /**
@@ -728,7 +738,7 @@ public abstract class AbstractRunningStrategy
         if(inDate == null ||
            inSymbol == null ||
            inSymbol.isEmpty()) {
-            INVALID_POSITION_REQUEST.warn(AbstractRunningStrategy.class,
+            INVALID_POSITION_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                           strategy,
                                           inDate,
                                           inSymbol);
@@ -737,7 +747,7 @@ public abstract class AbstractRunningStrategy
         try {
             BigDecimal result = strategy.getInboundServicesProvider().getPositionAsOf(inDate,
                                                                                       new MSymbol(inSymbol)); 
-            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+            SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                    "{} found position {} as of {} for {}", //$NON-NLS-1$
                                    strategy,
                                    result,
@@ -745,7 +755,7 @@ public abstract class AbstractRunningStrategy
                                    inSymbol);
             return result;
         } catch (Exception e) {
-            CANNOT_RETRIEVE_POSITION.warn(AbstractRunningStrategy.class,
+            CANNOT_RETRIEVE_POSITION.warn(Strategy.STRATEGY_MESSAGES,
                                           e,
                                           strategy,
                                           inSymbol,
@@ -821,14 +831,14 @@ public abstract class AbstractRunningStrategy
         @Override
         public void run()
         {
-            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+            SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                    "Executing callback for {} at {}", //$NON-NLS-1$
                                    strategy,
                                    new Date());
             try {
                 strategy.onCallback(data);
             } catch (Exception e) {
-                CALLBACK_ERROR.warn(AbstractRunningStrategy.class,
+                CALLBACK_ERROR.warn(Strategy.STRATEGY_MESSAGES,
                                     strategy);
             }
         }

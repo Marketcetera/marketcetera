@@ -3,6 +3,7 @@ package org.marketcetera.strategy;
 import static org.marketcetera.strategy.Status.ERROR;
 import static org.marketcetera.strategy.Status.NOT_RUNNING;
 import static org.marketcetera.strategy.Status.RUNNING;
+import static org.marketcetera.strategy.Messages.RUNTIME_ERROR;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,11 +56,11 @@ class StrategyImpl
     {
         try {
             setExecutor(getLanguage().getExecutor(this));
+            setRunningStrategy(getExecutor().start());
         } catch (Exception e) {
             setStatus(ERROR);
             throw new StrategyException(e);
         }
-        setRunningStrategy(getExecutor().start());
         setStatus(RUNNING);
     }
     /* (non-Javadoc)
@@ -67,10 +68,13 @@ class StrategyImpl
      */
     @Override
     public final void stop()
-        throws StrategyException
+        throws Exception
     {
-        getExecutor().stop();
-        setStatus(NOT_RUNNING);
+        try {
+            getExecutor().stop();
+        } finally {
+            setStatus(NOT_RUNNING);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.Strategy#dataReceived(java.lang.Object)
@@ -78,33 +82,53 @@ class StrategyImpl
     @Override
     public final void dataReceived(Object inData)
     {
-        RunningStrategy runningStrategy = getRunningStrategy();
-        if(inData instanceof AskEvent) {
-            runningStrategy.onAsk((AskEvent)inData);
-            return;
-        }
-        if(inData instanceof BidEvent) {
-            runningStrategy.onBid((BidEvent)inData);
-            return;
-        }
-        if(inData instanceof OrderCancelReject) {
-            runningStrategy.onCancel((OrderCancelReject)inData);
-            return;
-        }
-        if(inData instanceof ExecutionReport) {
-            if(runningStrategy instanceof AbstractRunningStrategy) {
-                ((AbstractRunningStrategy)runningStrategy).onExecutionReportRedirected((ExecutionReport)inData);
-            } else {
-                runningStrategy.onExecutionReport((ExecutionReport)inData);
+        String method = "onOther"; //$NON-NLS-1$
+        try {
+            RunningStrategy runningStrategy = getRunningStrategy();
+            if(inData instanceof AskEvent) {
+                method = "onAsk"; //$NON-NLS-1$
+                runningStrategy.onAsk((AskEvent)inData);
+                return;
             }
-            return;
+            if(inData instanceof BidEvent) {
+                method = "onBid"; //$NON-NLS-1$
+                runningStrategy.onBid((BidEvent)inData);
+                return;
+            }
+            if(inData instanceof OrderCancelReject) {
+                method = "onCancel"; //$NON-NLS-1$
+                runningStrategy.onCancel((OrderCancelReject)inData);
+                return;
+            }
+            if(inData instanceof ExecutionReport) {
+                method = "onExecutionReport"; //$NON-NLS-1$
+                if(runningStrategy instanceof AbstractRunningStrategy) {
+                    ((AbstractRunningStrategy)runningStrategy).onExecutionReportRedirected((ExecutionReport)inData);
+                } else {
+                    runningStrategy.onExecutionReport((ExecutionReport)inData);
+                }
+                return;
+            }
+            if(inData instanceof TradeEvent) {
+                method = "onTrade"; //$NON-NLS-1$
+                runningStrategy.onTrade((TradeEvent)inData);
+                return;
+            }
+            // catch-all for every other type of data
+            runningStrategy.onOther(inData);
+        } catch (Exception e) {
+            Executor executor = getExecutor();
+            String methodName = method;
+            String exceptionTranslation = e.toString();
+            if(executor != null) {
+                methodName = getExecutor().translateMethodName(method);
+                exceptionTranslation = getExecutor().interpretRuntimeException(e);
+            }
+            RUNTIME_ERROR.warn(Strategy.STRATEGY_MESSAGES,
+                               this,
+                               methodName,
+                               exceptionTranslation);
         }
-        if(inData instanceof TradeEvent) {
-            runningStrategy.onTrade((TradeEvent)inData);
-            return;
-        }
-        // catch-all for every other type of data
-        runningStrategy.onOther(inData);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.Strategy#getCode()

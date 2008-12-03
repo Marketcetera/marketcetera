@@ -139,20 +139,27 @@ public class JavaCompilerExecutionEngine
         // wait for the compilation job to complete
         if (!compilationJob.call()) {
             // compilation failed, deal with the errors
-            // TODO this needs to be put to a special logger category *and* tacked on to a specialized compilation exception
+            CompilationFailed failed = new CompilationFailed(strategy);
             for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                // TODO this goes to stderr for now to give a little help to QA and others, but this stuff will go away
-                System.err.println(diagnostic.getCode());
-                System.err.println(diagnostic.getKind());
-                System.err.println(diagnostic.getPosition());
-                System.err.println(diagnostic.getStartPosition());
-                System.err.println(diagnostic.getEndPosition());
-                System.err.println(diagnostic.getSource());
-                System.err.println(diagnostic.getMessage(null));
-                System.err.println(diagnostic);
+                if(diagnostic.getKind().equals(Diagnostic.Kind.ERROR)) {
+                    failed.addDiagnostic(CompilationFailed.Diagnostic.error(diagnostic.toString()));
+                } else {
+                    failed.addDiagnostic(CompilationFailed.Diagnostic.warning(diagnostic.toString()));
+                }
             }
-            throw new CompilationFailed(new I18NBoundMessage1P(COMPILATION_FAILED,
-                                                               strategy.toString()));
+            COMPILATION_FAILED.error(Strategy.STRATEGY_MESSAGES,
+                                     strategy);
+            SLF4JLoggerProxy.error(Strategy.STRATEGY_MESSAGES,
+                                   failed.toString());
+            throw failed;
+        } else {
+            // compilation succeeded with or without warnings
+            for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+                SLF4JLoggerProxy.warn(Strategy.STRATEGY_MESSAGES,
+                                      String.format("%s: %s", //$NON-NLS-1$
+                                                    diagnostic.getKind(),
+                                                    diagnostic));
+            }
         }
         // strategy has compiled successfully and is now held in our specializedFileManager
         try {
@@ -177,9 +184,11 @@ public class JavaCompilerExecutionEngine
             //  thing: the black magic of the compiler, in-memory objects, and the classloader somehow malfunctioned.
             //  this would be a warranty repair: nothing the user can do.  might as well call it a compilation problem
             //  as well as call it anything else.
+            COMPILATION_FAILED.error(Strategy.STRATEGY_MESSAGES,
+                                     e,
+                                     strategy);
             throw new CompilationFailed(e,
-                                        new I18NBoundMessage1P(COMPILATION_FAILED,
-                                                               strategy.toString()));
+                                        strategy);
         }
     }
     /* (non-Javadoc)
@@ -256,7 +265,7 @@ public class JavaCompilerExecutionEngine
          * Create a new InMemoryClassLoader instance.
          *
          * @param inOutput a <code>Map&lt;String,InMemoryJavaFileObject&gt;</code> value in which to cache class definitions
-         * @param inParent TODO
+         * @param inParent a <code>ClassLoader</code> value containing the parent classloader to use
          */
         private InMemoryClassLoader(Map<String,InMemoryJavaFileObject> inOutput,
                                     ClassLoader inParent)

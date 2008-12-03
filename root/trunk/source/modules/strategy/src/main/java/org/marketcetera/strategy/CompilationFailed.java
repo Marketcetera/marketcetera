@@ -1,6 +1,11 @@
 package org.marketcetera.strategy;
 
-import org.marketcetera.util.log.I18NBoundMessage;
+import static org.marketcetera.strategy.Messages.COMPILATION_FAILED;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -13,27 +18,23 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-class CompilationFailed
+public class CompilationFailed
         extends StrategyException
 {
     private static final long serialVersionUID = -8620960760410053024L;
     /**
-     * Create a new CompilationFailed instance.
-     *
-     * @param inNested
+     * the list of diagnostics provided by the compiler
      */
-    public CompilationFailed(Throwable inNested)
-    {
-        super(inNested);
-    }
+    private final List<Diagnostic> diagnostics = new ArrayList<Diagnostic>();
     /**
      * Create a new CompilationFailed instance.
      *
      * @param inMessage
      */
-    public CompilationFailed(I18NBoundMessage inMessage)
+    public CompilationFailed(Strategy inStrategy)
     {
-        super(inMessage);
+        super(new I18NBoundMessage1P(COMPILATION_FAILED,
+                                     inStrategy.toString()));
     }
     /**
      * Create a new CompilationFailed instance.
@@ -42,9 +43,140 @@ class CompilationFailed
      * @param inMessage
      */
     public CompilationFailed(Throwable inNested,
-            I18NBoundMessage inMessage)
+                             Strategy inStrategy)
     {
         super(inNested,
-              inMessage);
+              new I18NBoundMessage1P(COMPILATION_FAILED,
+                                     inStrategy.toString()));
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Throwable#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder output = new StringBuilder();
+        for(Diagnostic diagnostic : getDiagnostics()) {
+            output.append(diagnostic).append(System.getProperty("line.separator")); //$NON-NLS-1$
+        }
+        return output.toString();
+    }
+    /**
+     * Gets the diagnostic information provided by the compiler.
+     *
+     * @return a <code>List&lt;Diagnostic&gt;</code> value
+     */
+    public List<Diagnostic> getDiagnostics()
+    {
+        return new ArrayList<Diagnostic>(diagnostics);
+    }
+    /**
+     * Adds a piece of diagnostic information.
+     *
+     * @param inDiagnostic a <code>Diagnostic</code> value
+     */
+    void addDiagnostic(Diagnostic inDiagnostic)
+    {
+        diagnostics.add(inDiagnostic);
+    }
+    /**
+     * Indicates what type of diagnostic was returned from the compiler.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    public static enum Type
+    {
+        /**
+         * a compilation warning
+         */
+        WARNING,
+        /**
+         * a compilation failure
+         */
+        ERROR
+    }
+    /**
+     * Diagnostic information provided by the compiler for a compilation error or warning.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    public static class Diagnostic
+    {
+        /**
+         * Creates a warning diagnostic.
+         *
+         * @param inMessage a <code>String</code> value
+         * @return a <code>Diagnostic</code> value
+         */
+        public static Diagnostic warning(String inMessage)
+        {
+            return new Diagnostic(Type.WARNING,
+                                  inMessage);
+        }
+        /**
+         * Creates an error diagnostic.
+         *
+         * @param inMessage a <code>String</code> value
+         * @return a <code>Diagnostic</code> value
+         */
+        public static Diagnostic error(String inMessage)
+        {
+            return new Diagnostic(Type.ERROR,
+                                  inMessage);
+        }
+        /**
+         * the type of the diagnostic
+         */
+        private final Type type;
+        /**
+         * the message from the compiler
+         */
+        private final String message;
+        /**
+         * Create a new Diagnostic instance.
+         *
+         * @param inType a <code>Type</code> value
+         * @param inMessage a <code>String</code> value
+         */
+        private Diagnostic(Type inType,
+                           String inMessage)
+        {
+            type = inType;
+            message = inMessage;
+        }
+        /**
+         * Get the type value.
+         *
+         * @return a <code>Type</code> value
+         */
+        public final Type getType()
+        {
+            return type;
+        }
+        /**
+         * Get the message value.
+         *
+         * @return a <code>String</code> value
+         */
+        public final String getMessage()
+        {
+            return message;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return String.format("%s: %s", //$NON-NLS-1$
+                                 type,
+                                 message);
+        }
     }
 }
