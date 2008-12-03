@@ -188,6 +188,37 @@ public abstract class CEPTestBase extends ModuleTestBase {
     /** Subclasses should implement a test that verifies the right exception is thrown in case of invalid type name in select */
     public abstract void testUnknownAlias() throws Exception;
 
+    /** Verify that a request with valid java class name can be created */
+    @Test(timeout=120000)
+    public void testValidJavaClass() throws Exception {
+        final DataFlowID flow1 = sManager.createDataFlow(new DataRequest[] {
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
+                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new BidEvent(1, 2, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        new AskEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                }),
+                new DataRequest(getModuleURN(), "select * from "+java.awt.BorderLayout.class.getName())
+        });
+        
+        sManager.cancel(flow1);
+    }
+
+    // send in an unmapped java object, like Integer for instance and verify that it gets filtered correctly.
+    @Test(timeout=120000)
+    public void testUnmappedJavaObject() throws Exception {
+        final DataFlowID flow1 = sManager.createDataFlow(new DataRequest[] {
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, new Object[] {
+                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new BidEvent(1, 2, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        37,
+                        new AskEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                }),
+                new DataRequest(getModuleURN(), "select * from "+java.lang.Integer.class.getName())
+        });
+        assertEquals(37, sSink.getReceived().take());
+        sManager.cancel(flow1);
+    }
+
     /** Setup two data flows
      * Send some events through first one
      * Cancel it
@@ -245,11 +276,11 @@ public abstract class CEPTestBase extends ModuleTestBase {
         final DataFlowID flow3 = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> System: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        new BidEvent(1, 2, "ZOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
                         new AskEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300")),
                         tradeEvent,
                 }),
-                // System -> Sink: only get 1 bid event
+                // CEP -> Sink: should only get trade event
                 new DataRequest(getModuleURN(), "select * from "+TradeEvent.class.getName())
         });
         TradeEvent theTrade = (TradeEvent) sSink.getReceived().take();
@@ -265,6 +296,8 @@ public abstract class CEPTestBase extends ModuleTestBase {
             }
         }.run();
     }
+
+    /** Test multiple data flows with same queries but different sinks. Make sure that  
 
     /** Run all the varous event types through */
     @Test(timeout=120000)
