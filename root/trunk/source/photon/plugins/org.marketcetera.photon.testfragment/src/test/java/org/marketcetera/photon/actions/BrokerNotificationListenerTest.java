@@ -18,12 +18,12 @@ import org.marketcetera.photon.actions.ReconnectClientJob.BrokerNotificationList
 import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage1P;
 import org.mockito.ArgumentMatcher;
 
 /**
- * Test {@link BrokerNotificationListener}. 
- *
+ * Test {@link BrokerNotificationListener}.
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
@@ -65,7 +65,7 @@ public class BrokerNotificationListenerTest {
 			INotification notification = (INotification) argument;
 			if (notification.getSeverity() == Severity.HIGH) {
 				I18NMessage0P subject;
-				I18NMessage2P details;
+				I18NMessage1P details;
 				if (mStatus.getLoggedOn()) {
 					subject = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE;
 					details = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE_DETAILS;
@@ -74,8 +74,10 @@ public class BrokerNotificationListenerTest {
 					details = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS;
 				}
 				return subject.getText().equals(notification.getSubject())
-						&& details.getText(mStatus.getName(), mStatus.getId())
-								.equals(notification.getBody());
+						&& details.getText(
+								Messages.BROKER_LABEL_PATTERN.getText(mStatus
+										.getName(), mStatus.getId())).equals(
+								notification.getBody());
 			}
 			return false;
 		}

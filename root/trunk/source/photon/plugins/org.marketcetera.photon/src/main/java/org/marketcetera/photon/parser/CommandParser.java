@@ -196,8 +196,7 @@ public class CommandParser
 	final Parser<String> brokerParser = Parsers.token("brokerParser", new FromToken<String>(){ //$NON-NLS-1$
         private static final long serialVersionUID = 1L;
         public String fromToken(Tok tok) {
-			String text = ((TypedToken<?>)tok.getToken()).getText();
-			return Messages.COMMAND_PARSER_AUTO_SELECT_BROKER_KEYWORD.getText().equals(text) ? null : text;
+			return ((TypedToken<?>)tok.getToken()).getText();
 		}
 	});
 
@@ -228,7 +227,9 @@ public class CommandParser
 					String accountID = null;
 					if (vals.length > i && vals[i] != null) {
 						broker = (String) vals[i++];
-						if (brokerIdValidator != null && broker != null && !brokerIdValidator.isValid(broker)) {
+						if (Messages.COMMAND_PARSER_AUTO_SELECT_BROKER_KEYWORD.getText().equals(broker)) {
+							broker = null;
+						} else if (brokerIdValidator != null && !brokerIdValidator.isValid(broker)) {
 							throw new jfun.parsec.UserException(COMMAND_PARSER_INVALID_BROKER_ID.getText(broker, COMMAND_PARSER_AUTO_SELECT_BROKER_KEYWORD.getText()));
 						}
 						if (vals.length > i && vals[i] != null) {

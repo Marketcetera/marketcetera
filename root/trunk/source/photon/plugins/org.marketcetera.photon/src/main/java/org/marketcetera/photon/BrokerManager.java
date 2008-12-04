@@ -3,9 +3,11 @@ package org.marketcetera.photon;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.databinding.observable.list.ComputedList;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.client.dest.DestinationsStatus;
 import org.marketcetera.trade.DestinationID;
@@ -30,7 +32,8 @@ public final class BrokerManager implements IBrokerIdValidator {
 	/**
 	 * The default/null broker.
 	 */
-	public static final Broker AUTO_SELECT_BROKER = new Broker(Messages.BROKER_MANAGER_AUTO_SELECT.getText(), null);
+	public static final Broker AUTO_SELECT_BROKER = new Broker(
+			Messages.BROKER_MANAGER_AUTO_SELECT.getText(), null);
 
 	/**
 	 * Returns the singleton instance for the currently running plug-in.
@@ -80,9 +83,15 @@ public final class BrokerManager implements IBrokerIdValidator {
 
 	@Override
 	public boolean isValid(String brokerId) {
+		if (StringUtils.isBlank(brokerId)) {
+			return false;
+		}
 		for (Object object : mAvailableBrokers) {
-			if (((DestinationStatus) object).getId().equals(brokerId))
+			Broker broker = (Broker) object;
+			if (broker.getId() != null && broker.getId().getValue() != null
+					&& broker.getId().getValue().equals(brokerId)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -104,12 +113,42 @@ public final class BrokerManager implements IBrokerIdValidator {
 			mId = id;
 		}
 
+		/**
+		 * Returns the broker name.
+		 * 
+		 * @return the broker name
+		 */
 		public String getName() {
 			return mName;
 		}
 
+		/**
+		 * Returns the broker id.
+		 * 
+		 * @return the broker id
+		 */
 		public DestinationID getId() {
 			return mId;
+		}
+	}
+
+	/**
+	 * Adapter for displaying {@link Broker} objects.
+	 * 
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
+	 */
+	@ClassVersion("$Id$")
+	public final static class BrokerLabelProvider extends LabelProvider {
+
+		@Override
+		public String getText(Object element) {
+			Broker broker = (Broker) element;
+			if (broker == BrokerManager.AUTO_SELECT_BROKER)
+				return broker.getName();
+			return Messages.BROKER_LABEL_PATTERN.getText(broker.getName(),
+					broker.getId());
 		}
 	}
 

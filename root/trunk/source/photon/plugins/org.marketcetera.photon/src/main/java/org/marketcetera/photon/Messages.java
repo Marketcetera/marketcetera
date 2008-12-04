@@ -484,13 +484,15 @@ public interface Messages
 			"broker_support_table_format.broker_column");//$NON-NLS-1$
 	public static final I18NMessage0P BROKER_MANAGER_AUTO_SELECT = new I18NMessage0P(LOGGER,
 			"broker_manager.auto_select");//$NON-NLS-1$
+	public static final I18NMessage2P BROKER_LABEL_PATTERN = new I18NMessage2P(
+			LOGGER, "broker_label_pattern");//$NON-NLS-1$
 	public static final I18NMessage0P BROKER_NOTIFICATION_BROKER_AVAILABLE = new I18NMessage0P(
 			LOGGER, "broker_notification.broker_available");//$NON-NLS-1$
-	public static final I18NMessage2P BROKER_NOTIFICATION_BROKER_AVAILABLE_DETAILS = new I18NMessage2P(
+	public static final I18NMessage1P BROKER_NOTIFICATION_BROKER_AVAILABLE_DETAILS = new I18NMessage1P(
 			LOGGER, "broker_notification.broker_available_details");//$NON-NLS-1$
 	public static final I18NMessage0P BROKER_NOTIFICATION_BROKER_UNAVAILABLE = new I18NMessage0P(
 			LOGGER, "broker_notification.broker_unavailable");//$NON-NLS-1$
-	public static final I18NMessage2P BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS = new I18NMessage2P(
+	public static final I18NMessage1P BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS = new I18NMessage1P(
 			LOGGER, "broker_notification.broker_unavailable_details");//$NON-NLS-1$
 	public static final I18NMessage1P BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED = new I18NMessage1P(
 			LOGGER, "broker_notification.error_occurred");//$NON-NLS-1$

@@ -1,6 +1,5 @@
 package org.marketcetera.photon.views;
 
-import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,7 +34,6 @@ import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
@@ -67,6 +65,7 @@ import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.BrokerManager.Broker;
+import org.marketcetera.photon.BrokerManager.BrokerLabelProvider;
 import org.marketcetera.photon.parser.ILexerFIXImage;
 import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.SideImage;
@@ -240,15 +239,7 @@ public abstract class OrderTicketView
 		mDestinationViewer = new ComboViewer(ticket.getBrokerCombo());
 		ObservableListContentProvider destinationContentProvider = new ObservableListContentProvider();
 		mDestinationViewer.setContentProvider(destinationContentProvider);
-		mDestinationViewer.setLabelProvider(new LabelProvider() {
-			@Override
-			public String getText(Object element) {
-				if (element == BrokerManager.AUTO_SELECT_BROKER)
-					return "Default";
-				Broker destination = (Broker) element;
-				return MessageFormat.format("{0} ({1})", destination.getName(), destination.getId().getValue());
-			}
-		});
+		mDestinationViewer.setLabelProvider(new BrokerLabelProvider());
 		mDestinationViewer.setInput(BrokerManager.getCurrent().getAvailableBrokers());
 		
 		addComboChoicesFromLexerEnum(ticket.getTifCombo(), TimeInForceImage.values());
