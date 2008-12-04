@@ -53,8 +53,6 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
     /**
      * Helper function intended to be overwritten by subclasses.
      * Thsi is where the real requiest for IDs happens
-     * It is wrapped by a try/catch block higher up, so that we can
-     * fall back onto an inMemory id factory if the request fails.
      */
     protected void performIDRequest() throws Exception {
         Connection dbConnection = null;

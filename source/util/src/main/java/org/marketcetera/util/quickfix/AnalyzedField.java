@@ -73,7 +73,8 @@ public class AnalyzedField
         String value=getQFieldValueAsString();
         if (nameQDict.hasFieldValue(getQFieldTag())) {
             if (nameQDict.isFieldValue(getQFieldTag(),value)) {
-                mValue=nameQDict.getValueName(getQFieldTag(),value);
+                mValue=Messages.ENUM_FIELD_VALUE.getText
+                    (value,nameQDict.getValueName(getQFieldTag(),value));
             }  else {
                 mValue=Messages.INVALID_FIELD_VALUE.getText(value);
             }

@@ -75,16 +75,6 @@ public interface Messages
     static final I18NMessage0P ERROR_NULL_MSYMBOL = 
         new I18NMessage0P(LOGGER,"error_null_msymbol"); //$NON-NLS-1$
 
-    // Database errors
-    static final I18NMessage1P ERROR_DB_ID_FETCH = 
-        new I18NMessage1P(LOGGER,"error_db_id_fetch"); //$NON-NLS-1$
-    static final I18NMessage0P ERROR_DBFACTORY_HTTP_PARSER_INIT = 
-        new I18NMessage0P(LOGGER,"error_dbfactory_http_parser_init"); //$NON-NLS-1$
-    static final I18NMessage0P ERROR_DBFACTORY_MISSING_PARSER = 
-        new I18NMessage0P(LOGGER,"error_dbfactory_missing_parser"); //$NON-NLS-1$
-    static final I18NMessage2P ERROR_DBFACTORY_INIT = 
-        new I18NMessage2P(LOGGER,"error_dbfactory_init"); //$NON-NLS-1$
-
     // FIX errors
     static final I18NMessage1P ERROR_FIX_UNEXPECTED_MSGTYPE = 
         new I18NMessage1P(LOGGER,"error_fix_unexpected_msgtype"); //$NON-NLS-1$

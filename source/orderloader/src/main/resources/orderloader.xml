@@ -39,10 +39,6 @@
         <property name="defaultDestination" ref="requestQueue"/>
     </bean>
 
-    <bean id="idFactoryURL" class="java.lang.String">
-        <constructor-arg value="http://${metc.tradebase.host}:${metc.tradebase.port}/id_repository/get_next_batch"/>
-    </bean>
-
     <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
     <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory"/>
     <bean id="fixDictionaryPath" factory-bean="fixVersionEnum" factory-method="getDataDictionaryURL"/>

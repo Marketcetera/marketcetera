@@ -57,7 +57,7 @@ public class AnalyzedMessageTest
         assertEquals
             (TEST_HEADER+"5"+
              SystemUtils.LINE_SEPARATOR+
-             " MsgType [35R] = NewOrderSingle"+
+             " MsgType [35R] = NewOrderSingle [D]"+
              TEST_FOOTER+"181",msgA.toString());
     }
 
@@ -98,7 +98,7 @@ public class AnalyzedMessageTest
              SystemUtils.LINE_SEPARATOR+
              " MsgSeqNum [34R] = 1"+
              SystemUtils.LINE_SEPARATOR+
-             " MsgType [35R] = NewOrderSingle"+
+             " MsgType [35R] = NewOrderSingle [D]"+
              SystemUtils.LINE_SEPARATOR+
              " SenderCompID [49R] = me"+
              SystemUtils.LINE_SEPARATOR+
@@ -113,11 +113,11 @@ public class AnalyzedMessageTest
              " ClOrdID [11R] = a"+
              SystemUtils.LINE_SEPARATOR+
              " HandlInst [21R] = "+
-             "AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION"+
+             "AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION [1]"+
              SystemUtils.LINE_SEPARATOR+
-             " OrdType [40R] = LIMIT"+
+             " OrdType [40R] = LIMIT [2]"+
              SystemUtils.LINE_SEPARATOR+
-             " Side [54R] = BUY"+
+             " Side [54R] = BUY [1]"+
              SystemUtils.LINE_SEPARATOR+
              " Symbol [55R] = METC"+
              SystemUtils.LINE_SEPARATOR+
@@ -157,7 +157,7 @@ public class AnalyzedMessageTest
         assertEquals
             (TEST_HEADER+"69"+
              SystemUtils.LINE_SEPARATOR+
-             " MsgType [35R] = MarketDataSnapshotFullRefresh"+
+             " MsgType [35R] = MarketDataSnapshotFullRefresh [W]"+
              SystemUtils.LINE_SEPARATOR+
              "Body"+
              SystemUtils.LINE_SEPARATOR+
@@ -167,7 +167,7 @@ public class AnalyzedMessageTest
              SystemUtils.LINE_SEPARATOR+
              "  Group 1"+
              SystemUtils.LINE_SEPARATOR+
-             "   MDEntryType [269R] = BID"+
+             "   MDEntryType [269R] = BID [0]"+
              SystemUtils.LINE_SEPARATOR+
              "   OrderID [37] = ID1"+
              SystemUtils.LINE_SEPARATOR+
@@ -242,7 +242,7 @@ public class AnalyzedMessageTest
         assertEquals
             (TEST_HEADER+"137"+
              SystemUtils.LINE_SEPARATOR+
-             " MsgType [35R] = MassQuote"+
+             " MsgType [35R] = MassQuote [i]"+
              SystemUtils.LINE_SEPARATOR+
              "Body"+
              SystemUtils.LINE_SEPARATOR+
@@ -322,7 +322,7 @@ public class AnalyzedMessageTest
         assertEquals
             (TEST_HEADER+"10"+
              SystemUtils.LINE_SEPARATOR+
-             " MsgType [35R] = NewOrderSingle"+
+             " MsgType [35R] = NewOrderSingle [D]"+
              SystemUtils.LINE_SEPARATOR+
              "Body"+
              SystemUtils.LINE_SEPARATOR+
@@ -350,7 +350,7 @@ public class AnalyzedMessageTest
         assertEquals
             (TEST_HEADER+"17"+
              SystemUtils.LINE_SEPARATOR+
-             " MsgType [35R] = MarketDataSnapshotFullRefresh"+
+             " MsgType [35R] = MarketDataSnapshotFullRefresh [W]"+
              SystemUtils.LINE_SEPARATOR+
              "Body"+
              SystemUtils.LINE_SEPARATOR+
