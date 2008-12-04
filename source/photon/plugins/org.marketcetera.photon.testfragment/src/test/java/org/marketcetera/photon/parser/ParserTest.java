@@ -29,6 +29,7 @@ import quickfix.field.BeginSeqNo;
 import quickfix.field.EndSeqNo;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
+import quickfix.field.OpenClose;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.PutOrCall;
@@ -396,6 +397,7 @@ public class ParserTest extends FIXVersionedTestCase {
 				.getString(MaturityMonthYear.FIELD));
 		assertEquals(putOrCall, message.getInt(PutOrCall.FIELD));
 		assertEquals(message.getString(SecurityType.FIELD), SecurityType.OPTION);
+		assertFalse(message.isSetField(OpenClose.FIELD));
 	}
 
 	public void testResendRequest() throws FieldNotFound {

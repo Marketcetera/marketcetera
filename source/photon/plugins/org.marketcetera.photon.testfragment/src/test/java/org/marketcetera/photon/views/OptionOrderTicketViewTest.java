@@ -249,7 +249,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals("", ticket.getPutOrCallCombo().getText());
 		assertEquals("", ticket.getPriceText().getText());
 		assertEquals("", ticket.getTifCombo().getText());
-		assertEquals("Open", ticket.getOpenCloseCombo().getText());
+		assertEquals("", ticket.getOpenCloseCombo().getText());
 		
 		ticket.getSideCombo().setText("S");
 		ticket.getQuantityText().setText("45");

@@ -39,7 +39,6 @@ import quickfix.FieldMap;
 import quickfix.FieldType;
 import quickfix.Message;
 import quickfix.field.MaturityMonthYear;
-import quickfix.field.OpenClose;
 import quickfix.field.OrderQty;
 import quickfix.field.PutOrCall;
 import quickfix.field.SecurityType;
@@ -255,9 +254,6 @@ public class CommandParser
 							FIXMessageUtil.copyFields(message,optionSpecifier);
 						} else {
 							message.setString(SecurityType.FIELD, SecurityType.OPTION);
-						}
-						if (dataDictionary.isField(OpenClose.FIELD)){
-							message.setField(new OpenClose(OpenClose.OPEN));
 						}
 					} else {
 						message.setString(SecurityType.FIELD, SecurityType.COMMON_STOCK);
