@@ -1,4 +1,5 @@
 # Methods added to this helper will be available to all templates in the application.
+require 'tzinfo'
 
 arb = ActiveRecord::Base
 def arb.sanitize_sql_accessor(*args)
@@ -10,6 +11,7 @@ module ApplicationHelper
   
   RJUST_NUMBER_CLASS_STR = " class='number'"
   RJUST_NUMBER_CLASS_NEG_STR = " class='negative'"
+  LOCAL_TZ = TZInfo::Timezone.get(TZ_ID)
 
 
   def auto_complete_for_currency_alpha_code

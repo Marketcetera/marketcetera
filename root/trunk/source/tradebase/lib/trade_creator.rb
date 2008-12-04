@@ -1,6 +1,5 @@
 # Library to create trades
 require 'bigdecimal'
-require 'tzinfo'
 
 module TradeCreator
   include MessageLogsHelper
@@ -31,18 +30,13 @@ module TradeCreator
     symbol =   getStringFieldValueIfPresent(qfMessage, Quickfix::Symbol.new)
     price = getStringFieldValueIfPresent(qfMessage, Quickfix::LastPx.new)
     account = getStringFieldValueIfPresent(qfMessage, Quickfix::Account.new)
-
-    # convert from UTC to local time zone
     sendingTime_UTC = getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::SendingTime.new)
-    pacificTZ = TZInfo::Timezone.get('America/Los_Angeles')
-    sendingTime  = ((pacificTZ.utc_to_local(DateTime.parse(sendingTime_UTC))).to_s(:db)) 
-
     commission = getStringFieldValueIfPresent(qfMessage, Quickfix::Commission.new)
 
     logger.debug("creating trade for "+Side.get_human_side(@side) + " " + quantity + " " +
             symbol + " @ "+price + "/["+commission+"] in <"+account+">")
 
-    theTrade.create_trade(quantity, symbol, BigDecimal(price), BigDecimal(commission),  currency, account, sendingTime)
+    theTrade.create_trade(quantity, symbol, BigDecimal(price), BigDecimal(commission),  currency, account, sendingTime_UTC)
     theTrade.trade_type = TradeTypeTrade
     theTrade.imported_fix_msg = dbMessage.text
     theTrade.save

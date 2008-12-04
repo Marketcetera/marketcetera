@@ -5,6 +5,13 @@ require 'trades_controller'
 # Re-raise errors caught by the controller.
 class TradesController; def rescue_action(e) raise e end; end
 
+# Override the timezones to be Europe/Minsk (EET)
+module ApplicationHelper
+  TZ_ID = 'Europe/Minsk'
+  LOCAL_TZ = TZInfo::Timezone.get(TZ_ID)
+  ENV['TZ'] = 'EET'
+end
+
 class TradesControllerTest < MarketceteraTestBase
   fixtures :messages_log, :currencies
 
@@ -90,8 +97,8 @@ class TradesControllerTest < MarketceteraTestBase
     assert_tag :tag => "td", :content => "very long comment with..."
     assert_tag :tag => "td", :content => "A&nbsp;COU...PACES"
 
-    # verify the post-date is displayed according to format
-    assert_tag :tag => 'td', :content => /20-Oct-06 12:23:00 P/
+    # verify the post-date is displayed according to format and translated from UTC to EST: time should be October 20, 2006 at 3:23:00 PM EEST
+    assert_tag :tag => 'td', :content => /20-Oct-06 15:23:00 EEST/
   end
 
   # bug #123

@@ -12,18 +12,14 @@
 </div>
 <% end %>
 <p>
-This is a set of diagnostic checks that may only make sense if you are running Tradebase on the
-<a href="http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/Appliance">Marketcetera Appliance</a>,
-or if you have the rest of the Marketcetera Platform running on the same server as the Tradebase.<br>
+This is a set of diagnostic checks that may only make sense if you have the rest of the Marketcetera Platform
+  running on the same server as the Tradebase.<br>
 </p>
 <p/>
 <h3>ORS Information</h3>
 <%     if (@jmx_info[0].index("Error") != nil)
       @jmx_info = ["There was an error connecting to the ORS on this machine so it appears to be down.<br/>
-                Please verify that you have an ORS running on the same machine as Tradebase.</p>
-                <p>If you are running the Marketcetera Appliance, please see the
-                <a href='http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/Appliance#ApplianceConfiguration'>
-                appliance configuration</a> writeup for more information."]
+                Please verify that you have an ORS running on the same machine as Tradebase.</p>"]
     end
 %>
 <p><% @jmx_info.each {|s| %>

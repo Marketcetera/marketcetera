@@ -67,7 +67,7 @@ class TradesController < ApplicationController
                           total_commission,
                           currency_alpha_code,
                           account_nickname,
-                          (trade_date.to_s(:db)))
+                          Time.parse(trade_date.to_s).utc.to_s(:db))
         logger.debug("after createEqtyTrade, qty is: "+@trade.quantity.to_s)
 
         if @trade.save
