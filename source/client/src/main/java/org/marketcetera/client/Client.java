@@ -103,7 +103,7 @@ public interface Client {
      *
      * @param inDate The date in UTC. Cannot be null.
      *
-     * @return All the reports since the supplied date.
+     * @return All the reports since the supplied date, may be empty.
      *
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.

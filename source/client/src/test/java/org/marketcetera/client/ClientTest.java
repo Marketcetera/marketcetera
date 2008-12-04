@@ -6,6 +6,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.*;
+
 import static org.marketcetera.trade.TypesTestBase.*;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.LoggerConfiguration;
@@ -15,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.After;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -219,16 +221,36 @@ public class ClientTest {
         assertEquals("N2",d.getName());
         assertEquals("ID2",d.getId().getValue());
 
+        Factory f=Factory.getInstance();
+        DestinationID dID=new DestinationID("me");
+        quickfix.fix44.ExecutionReport er=new quickfix.fix44.ExecutionReport();
+        er.set(new OrigClOrdID("42"));
+        quickfix.fix44.OrderCancelReject ocr=new quickfix.fix44.OrderCancelReject();
+        ocr.set(new OrigClOrdID("43"));
+        ReportBaseImpl[] reports = new ReportBaseImpl[] {
+            (ExecutionReportImpl)
+            f.createExecutionReport(er,dID,Originator.Server),
+            (OrderCancelRejectImpl)
+            f.createOrderCancelReject(ocr,dID)
+        };
+        MockServiceImpl.sReports = reports;
         ReportBase[] rs = getClient().getReportsSince(new Date());
         assertEquals(2,rs.length);
-        DestinationID dID = new DestinationID("me");
-        ExecutionReport er = (ExecutionReport)rs[0];
-        assertEquals(dID,er.getDestinationID());
-        assertEquals(Originator.Server,er.getOriginator());
-        assertEquals("42",er.getOriginalOrderID().getValue());
-        OrderCancelReject ocr = (OrderCancelReject)rs[1];
-        assertEquals(dID,ocr.getDestinationID());
-        assertEquals("43",ocr.getOriginalOrderID().getValue());
+        ExecutionReport report = (ExecutionReport)rs[0];
+        assertEquals(dID,report.getDestinationID());
+        assertEquals(Originator.Server,report.getOriginator());
+        assertEquals("42",report.getOriginalOrderID().getValue());
+        OrderCancelReject crreport = (OrderCancelReject)rs[1];
+        assertEquals(dID,crreport.getDestinationID());
+        assertEquals("43",crreport.getOriginalOrderID().getValue());
+        
+        MockServiceImpl.sReports = new ReportBaseImpl[0];
+        rs = getClient().getReportsSince(new Date());
+        assertEquals(0,rs.length);
+        
+        MockServiceImpl.sReports = null;
+        rs = getClient().getReportsSince(new Date());
+        assertEquals(0,rs.length);
 
         assertEquals(BigDecimal.TEN,getClient().getPositionAsOf
                      (new Date(10),null));
