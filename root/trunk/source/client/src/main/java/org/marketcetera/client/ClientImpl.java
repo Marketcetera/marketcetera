@@ -3,7 +3,6 @@ package org.marketcetera.client;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.log.*;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.tags.AppId;
@@ -108,7 +107,8 @@ class ClientImpl implements Client {
     {
         failIfClosed();
         try {
-            return mService.getReportsSince(getServiceContext(),inDate);
+            ReportBaseImpl[] reports = mService.getReportsSince(getServiceContext(),inDate);
+            return reports == null ? new ReportBase[0] : reports;
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
         }
