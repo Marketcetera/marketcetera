@@ -11,7 +11,6 @@ import java.net.UnknownHostException;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class DBBackedIDFactory extends ExternalIDFactory {
-    protected InMemoryIDFactory inMemoryFactory;
 
     protected DBBackedIDFactory(String prefix) {
         super(prefix);
@@ -19,36 +18,16 @@ public abstract class DBBackedIDFactory extends ExternalIDFactory {
 
     /** Lock the table to prevent concurrent access with {@link java.sql.ResultSet#CONCUR_UPDATABLE} */
     public void grabIDs() throws NoMoreIDsException {
-        if (inMemoryFactory != null){
-            return;
-        }
+
         factoryValidityCheck();
 
-        boolean succeeded = false;
         try {
             performIDRequest();
-            succeeded = true;
         } catch (SQLException e) {
             throw new NoMoreIDsException(e);
 	    } catch (Throwable t){
 	    	throw new NoMoreIDsException(t);
-	    } finally {
-			if (!succeeded){
-				try {
-					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis(),InetAddress.getLocalHost().toString()+"-"); //$NON-NLS-1$
-				} catch (UnknownHostException e) {
-					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis());
-				}
-			}
 		}
-    }
-
-    public String getNext() throws NoMoreIDsException {
-        if (inMemoryFactory == null){
-            return super.getNext();
-        } else {
-            return inMemoryFactory.getNext();
-        }
     }
 
     public void init() throws ClassNotFoundException, NoMoreIDsException {
@@ -73,8 +52,6 @@ public abstract class DBBackedIDFactory extends ExternalIDFactory {
 
     /** Helper function intended to be overwritten by subclasses.
      * Thsi is where the real requiest for IDs happens
-     * It is wrapped by a try/catch block higher up, so that we can
-     * fall back onto an inMemory id factory if the request fails.
      */
     protected abstract void performIDRequest() throws Exception;
 

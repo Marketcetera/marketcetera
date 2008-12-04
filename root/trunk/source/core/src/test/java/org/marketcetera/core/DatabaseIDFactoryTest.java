@@ -45,34 +45,6 @@ public class DatabaseIDFactoryTest extends TestCase {
         return new MarketceteraTestSuite(DatabaseIDFactoryTest.class);
     }
 
-    /**
-     * Verify that when a DB is inaccessible we still get an in-memory set of ids
-     *
-     * @throws Exception if there were errors
-     */
-    public void testFailThroughInMemory() throws Exception {
-        DatabaseIDFactory factory = new DatabaseIDFactory(mDataSource, "notable", "nocol", 13); //$NON-NLS-1$ //$NON-NLS-2$
-        boolean dbInaccessble = false;
-        try {
-            factory.init();
-        } catch(Exception ignored ) {
-            dbInaccessble = true;
-            SLF4JLoggerProxy.debug(this, "expected exception: {}", ignored.getMessage()); //$NON-NLS-1$
-        }
-        assertTrue("for some reason db access didn't error out", dbInaccessble); //$NON-NLS-1$
-        String next = factory.getNext();
-        assertNotNull(next);
-        assertTrue("doesn't look like an inMemoryIDFactory id: "+next, next.contains(InetAddress.getLocalHost().toString())); //$NON-NLS-1$
-        String previous = next;
-        for(int i=0;i < 20; i++){
-            String cur = factory.getNext();
-            assertNotNull(cur);
-            assertNotSame("getting same ids in a row", cur, previous); //$NON-NLS-1$
-            previous = cur;
-        }
-    }
-
-
 
     /**
      * needs to have a valid mySQL db in order to run this code

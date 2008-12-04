@@ -19,7 +19,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.HttpDatabaseIDFactory;
+import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.util.auth.StandardAuthentication;
@@ -71,7 +71,6 @@ public class OrderLoader
     implements Messages
 {
     private static final String JMS_SENDER_NAME = "outgoingJmsTemplate"; //$NON-NLS-1$
-    private static final String ID_FACTORY_URL_NAME = "idFactoryURL"; //$NON-NLS-1$
     private static final String POOLED_CONNECTION_FACTORY_NAME = "pooledConnectionFactory"; //$NON-NLS-1$
 
     private static final String CFG_BASE_FILE_NAME=
@@ -107,13 +106,15 @@ public class OrderLoader
         failedOrders = new Vector<String>();
         createApplicationContext
             (new String[] {getConfigName()},parentContext,true);
-        URL idFactoryURL = new URL((String) getAppCtx().getBean(ID_FACTORY_URL_NAME));
-        idFactory = new HttpDatabaseIDFactory(idFactoryURL);
+        idFactory = new InMemoryIDFactory(System.currentTimeMillis());
         try {
             idFactory.getNext();
         } catch(NoMoreIDsException ex) {
             // don't print the entire stacktrace, just the message
-            org.marketcetera.core.Messages.ERROR_DBFACTORY_INIT.warn(this, idFactoryURL, ex.getMessage());
+
+            // Not using the log since this code will go away before
+            // 1.0 (the ORS client will handle ID generation).
+            System.err.println(ex.getMessage());
         }
     }
 
