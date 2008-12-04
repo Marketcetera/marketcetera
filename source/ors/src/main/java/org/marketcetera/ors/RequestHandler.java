@@ -45,6 +45,7 @@ import quickfix.field.LastPx;
 import quickfix.field.LastShares;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
+import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.SendingTime;
@@ -237,16 +238,17 @@ public class RequestHandler
                     (ex,new I18NBoundMessage1P
                      (Messages.RH_UNAVAILABLE_DESTINATION,d.toString()));  
             }
-            if (msg instanceof OrderSingle) {
-                try {
-                    reply=Factory.getInstance().createExecutionReport
-                        (executionReportFromNewOrder(qMsg),dID,
-                         Originator.Server);
-                } catch (FieldNotFound ex) {
-                    throw new I18NException
+            Message report;
+            try {
+                report=createExecutionReport(qMsg);
+            } catch (FieldNotFound ex) {
+                throw new I18NException
                     (ex,new I18NBoundMessage1P
                      (Messages.RH_REPORT_FAILED_SENT,qMsg));
-                }
+            }
+            if (report!=null) {
+                reply=Factory.getInstance().createExecutionReport
+                    (report,dID,Originator.Server);
             }
         } catch (I18NException ex) {
             Messages.RH_MESSAGE_REJECTED.error(this,ex,msg);
@@ -345,48 +347,91 @@ public class RequestHandler
         return rejection;
     }
 
-
-    protected Message executionReportFromNewOrder(Message newOrder)
-        throws CoreException, FieldNotFound {
-        if (FIXMessageUtil.isOrderSingle(newOrder)){
-            String clOrdId = newOrder.getString(ClOrdID.FIELD);
-            char side = newOrder.getChar(Side.FIELD);
-            String symbol = newOrder.getString(Symbol.FIELD);
-            BigDecimal orderQty = new BigDecimal(newOrder.getString(OrderQty.FIELD)); //non-i18n
-            BigDecimal orderPrice = null;
-            try {
-                String strPrice = newOrder.getString(Price.FIELD);
-                orderPrice =  new BigDecimal(strPrice); //non-i18n
-            } catch(FieldNotFound ex) {
-                // leave as null
-            }
-
-            String inAccount = null;
-            try {
-                inAccount = newOrder.getString(Account.FIELD);
-            } catch (FieldNotFound ex) {
-                // only set the Account field if it's there
-            }
-
-            Message execReport = getMsgFactory().newExecutionReport(
-                        null,
-                        clOrdId,
-                        getNextExecId().getValue(),
-                        OrdStatus.PENDING_NEW,
-                        side,
-                        orderQty,
-                        orderPrice,
-                        BigDecimal.ZERO,
-                        BigDecimal.ZERO,
-                        BigDecimal.ZERO,
-                        BigDecimal.ZERO,
-                        new MSymbol(symbol),
-                        inAccount);
-            execReport.getHeader().setField(new SendingTime(new Date())); //non-i18n
-            FIXMessageUtil.fillFieldsFromExistingMessage(execReport, newOrder, false);
-            return execReport;
+    protected Message createExecutionReport
+        (Message msg)
+        throws CoreException,
+               FieldNotFound
+    {
+        Message report;
+        if (FIXMessageUtil.isOrderSingle(msg)) {
+            report=getMsgFactory().newExecutionReport
+                (null,
+                 getOptFieldStr(msg,ClOrdID.FIELD),
+                 getNextExecId().getValue(),
+                 OrdStatus.PENDING_NEW,
+                 getOptFieldChar(msg,Side.FIELD),
+                 getOptFieldNum(msg,OrderQty.FIELD),
+                 getOptFieldNum(msg,Price.FIELD),
+                 BigDecimal.ZERO,
+                 BigDecimal.ZERO,
+                 BigDecimal.ZERO,
+                 BigDecimal.ZERO,
+                 getOptFieldSymbol(msg,Symbol.FIELD),
+                 getOptFieldStr(msg,Account.FIELD));
+        } else if (FIXMessageUtil.isCancelReplaceRequest(msg)) {
+            report=getMsgFactory().newExecutionReport
+                (getOptFieldStr(msg,OrderID.FIELD),
+                 getOptFieldStr(msg,ClOrdID.FIELD),
+                 getNextExecId().getValue(),
+                 OrdStatus.PENDING_REPLACE,
+                 getOptFieldChar(msg,Side.FIELD),
+                 getOptFieldNum(msg,OrderQty.FIELD),
+                 getOptFieldNum(msg,Price.FIELD),
+                 BigDecimal.ZERO,
+                 BigDecimal.ZERO,
+                 BigDecimal.ZERO,
+                 BigDecimal.ZERO,
+                 getOptFieldSymbol(msg,Symbol.FIELD),
+                 getOptFieldStr(msg,Account.FIELD));
         } else {
             return null;
         }
+        report.getHeader().setField(new SendingTime(new Date())); //non-i18n
+        FIXMessageUtil.fillFieldsFromExistingMessage(report,msg,false);
+        return report;
+    }
+
+    private static String getOptFieldStr
+        (Message msg,
+         int field)
+    {
+        try {
+            return msg.getString(field);
+        } catch(FieldNotFound ex) {
+            return null;
+        }
+    }
+
+    private static char getOptFieldChar
+        (Message msg,
+         int field)
+    {
+        try {
+            return msg.getChar(field);
+        } catch(FieldNotFound ex) {
+            return '\0';
+        }
+    }
+
+    private static BigDecimal getOptFieldNum
+        (Message msg,
+         int field)
+    {
+        String str=getOptFieldStr(msg,field);
+        if (str==null) {
+            return null;
+        }
+        return new BigDecimal(str);
+    }
+
+    private static MSymbol getOptFieldSymbol
+        (Message msg,
+         int field)
+    {
+        String str=getOptFieldStr(msg,field);
+        if (str==null) {
+            return null;
+        }
+        return new MSymbol(str);
     }
 }
