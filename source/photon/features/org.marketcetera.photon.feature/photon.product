@@ -16,6 +16,10 @@ Visit http://www.marketcetera.org
    </aboutInfo>
 
    <configIni use="default">
+      <linux>/org.marketcetera.photon.feature/config.ini</linux>
+      <macosx>/org.marketcetera.photon.feature/config.ini</macosx>
+      <solaris>/org.marketcetera.photon.feature/config.ini</solaris>
+      <win32>/org.marketcetera.photon.feature/config.ini</win32>
    </configIni>
 
    <launcherArgs>
