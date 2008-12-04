@@ -28,7 +28,7 @@
    class="org.marketcetera.persist.ExecuteSQLFromFile">
     <constructor-arg>
       <list>
-        <value>file:src/main/sample_data/conf/create_server_schema.sql</value>
+        <value>file:src/main/sample_data/create_server_schema.sql</value>
       </list>
     </constructor-arg>
     <constructor-arg
@@ -39,7 +39,6 @@
    id="metc_db_vendor"
    class="org.marketcetera.persist.MySQLDBVendor"/>
 
-  <!-- Inject DB initiailzation before any ORM stuff. -->
   <bean
    id="metc_jpa_vendor"
    class="org.marketcetera.persist.HibernateVendor"

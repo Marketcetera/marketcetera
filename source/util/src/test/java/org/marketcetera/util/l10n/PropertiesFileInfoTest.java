@@ -48,11 +48,11 @@ public class PropertiesFileInfoTest
                 new PropertyMessageInfo
                 ("m7.msg",7,"Text {0} {1} {2} {3} {4} {5} {6}"),
                 new PropertyMessageInfo
-                ("m8.msg",8,"Text {0} {1} {2} {3} {4} {5} {6} {7,date,full}"),
+                ("m8.msg",8,"Text {0} {1} {2} {3} {4} {5} {6} {7}"),
                 new PropertyMessageInfo
                 ("b1.ttl",0,"B Text"),
                 new PropertyMessageInfo
-                ("b2.ttl",1,"B Text {0}")
+                ("b2.ttl",1,"B Text {0,date,full}")
             },info.getMessageInfo());
     }
 

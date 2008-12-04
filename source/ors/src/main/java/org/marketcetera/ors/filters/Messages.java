@@ -58,4 +58,12 @@ public interface Messages
         new I18NMessage3P(LOGGER,"min_price"); //$NON-NLS-1$
     static final I18NMessage3P MAX_PRICE= 
         new I18NMessage3P(LOGGER,"max_price"); //$NON-NLS-1$
+
+
+    // LEGACY CODE.
+
+    static final I18NMessage1P ERROR_UNRECOGNIZED_ROUTE = 
+        new I18NMessage1P(LOGGER,"error_unrecognized_route"); //$NON-NLS-1$
+    static final I18NMessage1P ORDER_MODIFIER_WRONG_FIELD_FORMAT = 
+        new I18NMessage1P(LOGGER,"order_modifier_wrong_field_format"); //$NON-NLS-1$
 }

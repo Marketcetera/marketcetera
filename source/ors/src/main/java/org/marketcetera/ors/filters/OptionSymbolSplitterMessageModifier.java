@@ -1,11 +1,11 @@
-package org.marketcetera.quickfix.messagemodifiers;
+package org.marketcetera.ors.filters;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.quickfix.MessageModifier;
+import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.SecurityType;
@@ -20,8 +20,14 @@ import quickfix.field.Symbol;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class OptionSymbolSplitterMessageModifier implements MessageModifier {
-    public boolean modifyMessage(Message message, FIXMessageAugmentor fixMessageAugmentor)
-            throws CoreException {
+
+    @Override
+    public boolean modifyMessage
+        (Message message,
+         ReportHistoryServices historyServices,
+         FIXMessageAugmentor fixMessageAugmentor)
+        throws CoreException
+    {
         try {
             if(FIXMessageUtil.isOrderSingle(message) &&
                     SecurityType.OPTION.equals(message.getString(SecurityType.FIELD))) {

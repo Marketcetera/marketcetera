@@ -1,8 +1,9 @@
-package org.marketcetera.quickfix;
+package org.marketcetera.ors.filters;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.*;
+import org.marketcetera.quickfix.*;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor;
 import quickfix.FieldNotFound;
@@ -18,7 +19,6 @@ import java.util.prefs.BackingStoreException;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
 public class MessageRouteManagerTest extends TestCase
 {
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();

@@ -1,14 +1,12 @@
-package org.marketcetera.ors;
-
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.CoreException;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.MessageModifier;
-import org.marketcetera.quickfix.TransactionTimeInsertMessageModifier;
-import quickfix.Message;
+package org.marketcetera.ors.filters;
 
 import java.util.LinkedList;
 import java.util.List;
+import org.marketcetera.core.CoreException;
+import org.marketcetera.ors.history.ReportHistoryServices;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.util.misc.ClassVersion;
+import quickfix.Message;
 
 /**
  * Object that encapsulates a collection of message modifiers and
@@ -23,6 +21,7 @@ import java.util.List;
 public class MessageModifierManager {
     private List<MessageModifier> messageModifiers;
     private FIXMessageFactory msgFactory;
+    private ReportHistoryServices mHistoryServices; 
 
     public MessageModifierManager() {}
 
@@ -43,11 +42,23 @@ public class MessageModifierManager {
         this.msgFactory = msgFactory;
     }
 
+    public ReportHistoryServices getHistoryServices()
+    {
+        return mHistoryServices;
+    }
+
+    public void setHistoryServices
+        (ReportHistoryServices historyServices)
+    {
+        mHistoryServices=historyServices;
+    }
+
     /** Apply all the order modifiers to this message */
     public void modifyMessage(Message inMessage) throws CoreException
     {
         for (MessageModifier oneModifier : messageModifiers) {
-            oneModifier.modifyMessage(inMessage, msgFactory.getMsgAugmentor());
+            oneModifier.modifyMessage
+                (inMessage, getHistoryServices(), msgFactory.getMsgAugmentor());
         }
     }
 

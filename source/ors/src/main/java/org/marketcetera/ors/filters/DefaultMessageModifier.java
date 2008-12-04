@@ -1,18 +1,20 @@
-package org.marketcetera.quickfix;
+package org.marketcetera.ors.filters;
 
-import org.marketcetera.core.ClassVersion;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.MsgType;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Takes in a collection of message/header/trailer fields to always
@@ -100,7 +102,13 @@ public class DefaultMessageModifier implements MessageModifier {
         setFieldsHelper(fields, MessageFieldType.TRAILER);
     }
 
-    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws CoreException {
+    @Override
+    public boolean modifyMessage
+        (Message message,
+         ReportHistoryServices historyServices,
+         FIXMessageAugmentor augmentor)
+        throws CoreException
+    {
         String msgType = null;
         boolean modified = false;
 

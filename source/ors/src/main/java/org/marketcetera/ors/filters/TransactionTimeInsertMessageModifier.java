@@ -1,13 +1,13 @@
-package org.marketcetera.quickfix;
+package org.marketcetera.ors.filters;
 
-import org.marketcetera.core.ClassVersion;
+import java.util.Date;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import org.marketcetera.util.misc.ClassVersion;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.TransactTime;
-
-import java.util.Date;
 
 /**
  * Inserts the {@link TransactTime} field into an order if it's not currently present
@@ -18,10 +18,13 @@ import java.util.Date;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class TransactionTimeInsertMessageModifier implements MessageModifier
 {
-    public TransactionTimeInsertMessageModifier() {
-    }
-
-    public boolean modifyMessage(Message order, FIXMessageAugmentor augmentor) throws CoreException {
+    @Override
+    public boolean modifyMessage
+        (Message order,
+         ReportHistoryServices historyServices,
+         FIXMessageAugmentor augmentor)
+        throws CoreException
+    {
         /** Only put the field in if it's not present */
         try {
             // test for presence

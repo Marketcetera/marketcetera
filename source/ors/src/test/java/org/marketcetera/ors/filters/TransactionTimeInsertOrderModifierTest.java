@@ -1,10 +1,10 @@
-package org.marketcetera.quickfix;
+package org.marketcetera.ors.filters;
 
 import junit.framework.Test;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.quickfix.FIXVersion;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.MsgType;
@@ -12,9 +12,9 @@ import quickfix.field.TransactTime;
 
 /**
  * @author Toli Kuznets
- * @version $Id
+ * @version $Id$
  */
-@ClassVersion("Id") //$NON-NLS-1$
+
 public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase {
     public TransactionTimeInsertOrderModifierTest(String inName, FIXVersion version) {
         super(inName, version);
@@ -35,7 +35,7 @@ public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase
             }
         }.run();
 
-        mod.modifyMessage(msg, msgFactory.getMsgAugmentor());
+        mod.modifyMessage(msg, null, msgFactory.getMsgAugmentor());
         new ExpectedTestFailure(FieldNotFound.class) {
             protected void execute() throws Throwable {
                 msg.getString(TransactTime.FIELD);
@@ -56,7 +56,7 @@ public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase
         }.run();
 
 
-        mod.modifyMessage(msg, msgFactory.getMsgAugmentor());
+        mod.modifyMessage(msg, null, msgFactory.getMsgAugmentor());
 
         assertNotNull("TransactTime was not set", msg.getString(TransactTime.FIELD)); //$NON-NLS-1$
     }

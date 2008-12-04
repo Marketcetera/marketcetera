@@ -10,12 +10,12 @@ import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.ors.config.SpringConfig;
 import org.marketcetera.ors.dest.Destinations;
 import org.marketcetera.ors.dest.Selector;
+import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.jms.JmsManager;
 import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.ors.ws.DBAuthenticator;
 import org.marketcetera.ors.ws.ServiceImpl;
-import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXVersion;
@@ -122,11 +122,9 @@ public class OrderRoutingSystem
         context.registerShutdownHook();
         context.start();
 
-        // Create History Services
-        ReportHistoryServices historyServices=new ReportHistoryServices();
-
         // Create resource managers.
 
+        ReportHistoryServices historyServices=new ReportHistoryServices();
         SpringConfig cfg=SpringConfig.getSingleton();
         if (cfg==null) {
             throw new I18NException(Messages.APP_NO_CONFIGURATION);
@@ -134,7 +132,8 @@ public class OrderRoutingSystem
         JmsManager jmsMgr=new JmsManager
             (cfg.getIncomingConnectionFactory(),
              cfg.getOutgoingConnectionFactory());
-        Destinations destinations=new Destinations(cfg.getDestinations());
+        Destinations destinations=new Destinations
+            (cfg.getDestinations(),historyServices);
         Selector selector=new Selector(destinations,cfg.getSelector());
         cfg.getIDFactory().init();
         LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());

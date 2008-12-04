@@ -10,6 +10,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.ors.dest.Destinations;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
+import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
@@ -18,7 +19,6 @@ import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.wrappers.RemoteException;
-import org.marketcetera.persist.PersistenceException;
 
 /**
  * The implementation of the application's web services.
@@ -47,23 +47,23 @@ public class ServiceImpl
 
     /**
      * Creates a new service implementation with the given session
-     * manager and destinations.
+     * manager, destinations, and report history services provider.
      *
      * @param sessionManager The session manager, which may be null.
      * @param destinations The destinations.
-     * @param inHistoryServices The report history service provider.
+     * @param historyServices The report history services provider.
      */    
 
     public ServiceImpl
-            (SessionManager<ClientSession> sessionManager,
-             Destinations destinations,
-             IDFactory idFactory,
-             ReportHistoryServices inHistoryServices)
+        (SessionManager<ClientSession> sessionManager,
+         Destinations destinations,
+         IDFactory idFactory,
+         ReportHistoryServices historyServices)
     {
         super(sessionManager);
         mDestinations=destinations;
         mIDFactory=idFactory;
-        mHistoryServices=inHistoryServices;
+        mHistoryServices=historyServices;
     }
 
 
@@ -81,7 +81,7 @@ public class ServiceImpl
     }
 
     /**
-     * Returbs the receiver's ID factory.
+     * Returns the receiver's ID factory.
      *
      * @return The factory.
      */
@@ -89,6 +89,17 @@ public class ServiceImpl
     public IDFactory getIDFactory()
     {
         return mIDFactory;
+    }
+
+    /**
+     * Returns the receiver's report history services provider.
+     *
+     * @return The provider.
+     */
+
+    public ReportHistoryServices getHistoryServices()
+    {
+        return mHistoryServices;
     }
 
 
@@ -101,14 +112,18 @@ public class ServiceImpl
 
     private ReportBaseImpl[] getReportsSinceImpl
         (Date date)
-            throws ReportPersistenceException, PersistenceException {
-        return mHistoryServices.getReportsSince(date);
+        throws ReportPersistenceException,
+               PersistenceException
+    {
+        return getHistoryServices().getReportsSince(date);
     }
 
     private BigDecimal getPositionAsOfImpl
         (Date date,
-         MSymbol symbol) throws PersistenceException {
-        return mHistoryServices.getPositionAsOf(date,symbol);
+         MSymbol symbol)
+        throws PersistenceException
+    {
+        return getHistoryServices().getPositionAsOf(date,symbol);
     }
 
     private String getNextOrderIDImpl()
@@ -148,7 +163,9 @@ public class ServiceImpl
             protected ReportBaseImpl[] call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                    throws ReportPersistenceException, PersistenceException {
+                throws ReportPersistenceException,
+                       PersistenceException
+            {
                 return getReportsSinceImpl(date);
             }}).execute(context);
     }
@@ -166,7 +183,8 @@ public class ServiceImpl
             protected BigDecimal call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                    throws PersistenceException {
+                throws PersistenceException
+            {
                 return getPositionAsOfImpl(date,symbol);
             }}).execute(context);
     }
