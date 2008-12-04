@@ -39,8 +39,6 @@ public interface Messages
 
     static final I18NMessage1P GROUP_NUMBER_COULD_NOT_TRANSLATE = 
         new I18NMessage1P(LOGGER,"group_number_could_not_translate"); //$NON-NLS-1$
-    static final I18NMessage1P ORDER_MODIFIER_WRONG_FIELD_FORMAT = 
-        new I18NMessage1P(LOGGER,"order_modifier_wrong_field_format"); //$NON-NLS-1$
 
     static final I18NMessage0P FIX_OUTGOING_NO_MSGTYPE = 
         new I18NMessage0P(LOGGER,"fix_outgoing_no_msgtype"); //$NON-NLS-1$
@@ -54,9 +52,6 @@ public interface Messages
         new I18NMessage1P(LOGGER,"fix_fnf_nomsg"); //$NON-NLS-1$
     static final I18NMessage2P FIX_FNF_MSG = 
         new I18NMessage2P(LOGGER,"fix_fnf_msg"); //$NON-NLS-1$
-
-    static final I18NMessage1P ERROR_UNRECOGNIZED_ROUTE = 
-        new I18NMessage1P(LOGGER,"error_unrecognized_route"); //$NON-NLS-1$
 
     static final I18NMessage0P ERROR_WRITING_EVENT_TO_LOG = 
         new I18NMessage0P(LOGGER,"error_writing_event_to_log"); //$NON-NLS-1$

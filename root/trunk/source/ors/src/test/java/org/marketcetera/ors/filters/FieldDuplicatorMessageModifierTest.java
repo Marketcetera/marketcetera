@@ -1,8 +1,7 @@
-package org.marketcetera.quickfix.messagemodifiers;
+package org.marketcetera.ors.filters;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
@@ -20,7 +19,6 @@ import java.math.BigDecimal;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
 public class FieldDuplicatorMessageModifierTest extends TestCase {
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 
@@ -35,21 +33,21 @@ public class FieldDuplicatorMessageModifierTest extends TestCase {
     public void testFieldExists() throws Exception {
         Message msg = FIXMessageUtilTest.createNOS("ABC", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         FieldDuplicatorMessageModifier mmod = new FieldDuplicatorMessageModifier(Symbol.FIELD, 7632);
-        assertTrue(mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+        assertTrue(mmod.modifyMessage(msg, null, new NoOpFIXMessageAugmentor()));
         assertEquals("ABC", msg.getString(7632)); //$NON-NLS-1$
     }
 
     public void testFieldDNE() throws Exception {
         Message msg = FIXMessageUtilTest.createNOS("ABC", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         FieldDuplicatorMessageModifier mmod = new FieldDuplicatorMessageModifier(7631, 7632);
-        assertFalse(mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+        assertFalse(mmod.modifyMessage(msg, null, new NoOpFIXMessageAugmentor()));
         assertFalse(msg.isSetField(7632));
     }
 
     public void testNotStringField() throws Exception {
         Message msg = FIXMessageUtilTest.createNOS("ABC", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         FieldDuplicatorMessageModifier mmod = new FieldDuplicatorMessageModifier(Price.FIELD, 7632);
-        assertTrue(mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+        assertTrue(mmod.modifyMessage(msg, null, new NoOpFIXMessageAugmentor()));
         assertEquals("23.33", msg.getString(7632)); //$NON-NLS-1$
     }
 }

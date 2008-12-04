@@ -1,8 +1,9 @@
-package org.marketcetera.quickfix;
+package org.marketcetera.ors.filters;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import org.marketcetera.util.misc.ClassVersion;
 import quickfix.Message;
 
 /**
@@ -24,5 +25,9 @@ public interface MessageModifier {
      * @return true if the modifier has modified the message, false otherwise
      * @throws CoreException
      */
-    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws CoreException;
+    public boolean modifyMessage
+        (Message message,
+         ReportHistoryServices historyServices,
+         FIXMessageAugmentor augmentor)
+        throws CoreException;
 }

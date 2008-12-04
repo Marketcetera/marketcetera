@@ -82,7 +82,7 @@ public class MessageComparatorTest
             },comparator.getExtraSrcInfo());
         assertArrayPermutation
             (new MessageInfo[] {
-                new PropertyMessageInfo("b2.ttl",1,"B Text {0}")
+                new PropertyMessageInfo("b2.ttl",1,"B Text {0,date,full}")
             },comparator.getExtraDstInfo());
 
         assertEquals

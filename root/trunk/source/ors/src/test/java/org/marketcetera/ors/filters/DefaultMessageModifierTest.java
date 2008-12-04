@@ -1,4 +1,4 @@
-package org.marketcetera.quickfix;
+package org.marketcetera.ors.filters;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,10 +7,11 @@ import java.util.prefs.BackingStoreException;
 import junit.framework.Test;
 import junit.framework.TestCase;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -22,7 +23,7 @@ import quickfix.field.MsgType;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+
 public class DefaultMessageModifierTest extends TestCase {
     private static final String HEADER_57_VAL = "asdf"; //$NON-NLS-1$
     private static final String FIELD_21_VAL = "qwer"; //$NON-NLS-1$
@@ -46,7 +47,7 @@ public class DefaultMessageModifierTest extends TestCase {
 
         Message aMessage = msgFactory.newBasicOrder();
 
-        modifier.modifyMessage(aMessage, null);
+        modifier.modifyMessage(aMessage, null, null);
         StringField outField = new StringField(111);
         assertEquals(testValue, aMessage.getField(outField).getValue());
         final Message outerMessage = aMessage;
@@ -79,7 +80,7 @@ public class DefaultMessageModifierTest extends TestCase {
         Message aMessage = msgFactory.newBasicOrder();
         aMessage.setField(new StringField(111, originalValue));
 
-        modifier.modifyMessage(aMessage, null);
+        modifier.modifyMessage(aMessage, null, null);
         StringField outField = new StringField(111);
         assertEquals(originalValue, aMessage.getField(outField).getValue());
 
@@ -99,9 +100,9 @@ public class DefaultMessageModifierTest extends TestCase {
         
         Message logon = msgFactory.createMessage(MsgType.LOGON);
 
-        assertTrue(mod.modifyMessage(heartbeat, null));
-        assertTrue(mod.modifyMessage(newOrderSingle, null));
-        assertTrue(mod.modifyMessage(logon, null));
+        assertTrue(mod.modifyMessage(heartbeat, null, null));
+        assertTrue(mod.modifyMessage(newOrderSingle, null, null));
+        assertTrue(mod.modifyMessage(logon, null, null));
 
         assertEquals(HEADER_57_VAL, heartbeat.getHeader().getString(57));
         assertFalse(heartbeat.isSetField(21));
@@ -134,7 +135,7 @@ public class DefaultMessageModifierTest extends TestCase {
         Message msg = msgFactory.newBasicOrder();
         // taking this out explicitly to allow the order modifier to set it.
         msg.removeField(HandlInst.FIELD);
-        assertTrue(mod.modifyMessage(msg, null));
+        assertTrue(mod.modifyMessage(msg, null, null));
         assertEquals(HEADER_57_VAL, msg.getHeader().getString(57));
         assertEquals(FIELD_21_VAL, msg.getString(21));
         assertEquals(TRAILER_28_VAL, msg.getTrailer().getString(28));

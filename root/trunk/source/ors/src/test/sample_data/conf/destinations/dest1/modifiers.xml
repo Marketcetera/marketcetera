@@ -18,12 +18,12 @@
 
   <bean
    id="metc_dest1_modifiers"
-   class="org.marketcetera.ors.MessageModifierManager">
+   class="org.marketcetera.ors.filters.MessageModifierManager">
     <property
      name="messageModifiers">
       <list>
         <bean
-         class="org.marketcetera.quickfix.DefaultMessageModifier">
+         class="org.marketcetera.ors.filters.DefaultMessageModifier">
           <property
            name="headerFields">
             <map>

@@ -5,7 +5,7 @@ import org.marketcetera.core.*;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.NullQuickFIXSender;
-import org.marketcetera.quickfix.MessageRouteManager;
+import org.marketcetera.ors.filters.MessageRouteManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;

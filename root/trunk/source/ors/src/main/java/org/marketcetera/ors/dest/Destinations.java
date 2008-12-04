@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.SpringSessionSettings;
@@ -37,13 +38,17 @@ public class Destinations
 
     /**
      * Creates a new collective representation based on the given
-     * destination configurations.
+     * destination configurations. Any message modifiers are
+     * configured to rely on the given report history services
+     * provider for persistence operations.
      *
      * @param springDestinations The configurations.
+     * @param historyServices The report history services provider.
      */
 
     public Destinations
-        (SpringDestinations springDestinations)
+        (SpringDestinations springDestinations,
+         ReportHistoryServices historyServices)
     {
         mSpringDestinations=springDestinations;
         int capacity=getSpringDestinations().getDestinations().size();
@@ -51,7 +56,7 @@ public class Destinations
         mDestinationIDMap=new HashMap<DestinationID,Destination>(capacity);
         mSessionIDMap=new HashMap<SessionID,Destination>(capacity);
         for (SpringDestination sd:getSpringDestinations().getDestinations()) {
-            Destination d=new Destination(sd);
+            Destination d=new Destination(sd,historyServices);
             mDestinations.add(d);
             mDestinationIDMap.put(d.getDestinationID(),d);
             mSessionIDMap.put(d.getSessionID(),d);

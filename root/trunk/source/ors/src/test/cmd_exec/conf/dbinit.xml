@@ -25,7 +25,7 @@
    class="org.marketcetera.persist.ExecuteSQLFromFile">
     <constructor-arg>
       <list>
-        <value>file:src/main/sample_data/conf/create_server_schema.sql</value>
+        <value>file:src/main/sample_data/create_server_schema.sql</value>
         <value>file:src/test/sample_data/conf/dbinit/101_create_admin_user.sql</value>
       </list>
     </constructor-arg>

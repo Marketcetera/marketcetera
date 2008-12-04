@@ -1,11 +1,12 @@
 package org.marketcetera.ors.dest;
 
 import org.marketcetera.client.dest.DestinationStatus;
-import org.marketcetera.ors.MessageModifierManager;
+import org.marketcetera.ors.filters.MessageModifierManager;
+import org.marketcetera.ors.filters.MessageRouteManager;
+import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.MessageRouteManager;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -41,18 +42,23 @@ public class Destination
     // CONSTRUCTORS.
 
     /**
-     * Creates a new destination based on the given configuration.
+     * Creates a new destination based on the given configuration. Its
+     * message modifiers are configured to rely on the given report
+     * history services provider for persistence operations.
      *
      * @param springDestination The configuration.
+     * @param historyServices The report history services provider.
      */
 
     public Destination
-        (SpringDestination springDestination)
+        (SpringDestination springDestination,
+         ReportHistoryServices historyServices)
     {
         mSpringDestination=springDestination;
         mDestinationID=new DestinationID(getSpringDestination().getId());
         if (getModifiers()!=null) {
             getModifiers().setMessageFactory(getFIXMessageFactory());
+            getModifiers().setHistoryServices(historyServices);
         }
     }
 

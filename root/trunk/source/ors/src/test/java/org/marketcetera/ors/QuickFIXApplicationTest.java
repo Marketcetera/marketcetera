@@ -2,7 +2,7 @@ package org.marketcetera.ors;
 
 import junit.framework.Test;
 import org.marketcetera.core.*;
-import org.marketcetera.ors.MessageModifierManager;
+import org.marketcetera.ors.filters.MessageModifierManager;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.QuickFIXApplication;
 import org.marketcetera.quickfix.*;

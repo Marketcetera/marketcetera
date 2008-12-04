@@ -1,21 +1,28 @@
-package org.marketcetera.quickfix;
-
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.CoreException;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.*;
+package org.marketcetera.ors.filters;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.marketcetera.core.CoreException;
+import org.marketcetera.ors.history.ReportHistoryServices;
+import org.marketcetera.quickfix.MarketceteraFIXException;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import org.marketcetera.util.misc.ClassVersion;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.DeliverToCompID;
+import quickfix.field.ExDestination;
+import quickfix.field.MsgType;
+import quickfix.field.SecurityType;
+import quickfix.field.Symbol;
+import quickfix.field.SymbolSfx;
+import quickfix.field.TargetSubID;
 
 /**
  * $Id$
  * @author gmiller
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class MessageRouteManager implements MessageModifier {
+public class MessageRouteManager {
 
 
     public static final String FIELD_57_METHOD = "field:57"; //$NON-NLS-1$
@@ -66,7 +73,11 @@ public class MessageRouteManager implements MessageModifier {
 
     protected Map<String,String> getRoutesMap() { return mRoutes; }
 
-    public boolean modifyMessage(Message anOrder, FIXMessageAugmentor augmentor) throws CoreException {
+    public boolean modifyMessage
+        (Message anOrder,
+         FIXMessageAugmentor augmentor)
+        throws CoreException
+    {
         try {
             boolean isModified = false;
 
