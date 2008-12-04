@@ -28,7 +28,7 @@
             <div id="side" class="data view_data"><%=df Side.get_human_side(@trade.side.to_s) %></div>
             
             <label for="trade_date" class="view_background">Trade Date</label>
-            <div id="trade_date" class="data view_data"><%=df @trade.journal.post_date.strftime(DATETIME_FORMAT) %></div>
+            <div id="trade_date" class="data view_data"><%=df @trade.journal_post_date_local_TZ %></div>
             
             <label for="total_commission" class="view_background">Total Commission</label>
             <div id="total_commission" class="data view_data"><%=df @trade.send('total_commission') %></div>

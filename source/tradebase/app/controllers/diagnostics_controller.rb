@@ -60,7 +60,7 @@ class DiagnosticsController < ApplicationController
   # Displays the ORS server log
   def ors_log_display
     if !(RUBY_PLATFORM =~ /mswin32/)
-      @log = %x{tail -2000 /opt/marketcetera/ors/logs/ors.log}
+      @log = %x{tail -2000 ../ors/logs/ors.log}
     else # windows only - can be used for *nix in the future
       if ((File.exist?("#{ENV['METC_HOME']}" + "\\ors\\logs\\ors.log")))
          lines = File.readlines("#{ENV['METC_HOME']}" + "\\ors\\logs\\ors.log")

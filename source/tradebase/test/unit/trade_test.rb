@@ -77,7 +77,7 @@ class TradeTest < MarketceteraTestBase
   def test_create_equity_trade
     theTrade = Trade.new(:quantity => 20, :price_per_share => 420.23, :side => Side::QF_SIDE_CODE[:buy])
     theTrade.tradeable = @equity
-    tradeDate = Date.civil(2006, 7, 8)
+    tradeDate = DateTime.civil(2006, 7, 8)
     account = "beer money-"+Date.new.to_s
     assert theTrade.create_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate)
     theTrade.save
@@ -90,6 +90,8 @@ class TradeTest < MarketceteraTestBase
     assert_nums_equal 19.99, theTrade.total_commission
     assert_nums_equal 420.23 * theTrade.quantity, theTrade.total_price
     assert_equal "BUY 20.0 TOLI 420.23", theTrade.journal.description
+
+    assert_equal "07-Jul-06 17:00:00 PDT", theTrade.journal_post_date_local_TZ
 
     assert_equal SubAccountType::DESCRIPTIONS.length, theTrade.account.sub_accounts.length
   end

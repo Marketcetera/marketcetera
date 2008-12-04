@@ -1,4 +1,5 @@
 class Trade < ActiveRecord::Base
+  include ApplicationHelper
 
   belongs_to :journal
   belongs_to :account
@@ -46,6 +47,16 @@ class Trade < ActiveRecord::Base
     (self.journal.nil?) ? nil : self.journal.post_date
   end
   
+  def journal_post_date_local_TZ
+   date = (self.journal.nil?) ? nil : self.journal.post_date
+   if(date.nil?)
+     return nil
+   end
+   ld = LOCAL_TZ.utc_to_local(date)
+   # figure out what timezone that time was and append that (ie PST or PDT for that date)
+   ld.strftime(DATETIME_FORMAT) + " " +Time.local(ld.year, ld.month, ld.day, ld.hour, ld.min, ld.sec).zone
+  end
+
   def journal_post_date=(inDate)
       logger.debug("setting the journal post date: "+inDate.to_s)
     if(!self.journal.nil?) 
