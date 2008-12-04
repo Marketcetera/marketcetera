@@ -14,6 +14,7 @@ import org.marketcetera.client.dest.DestinationsStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.photon.BrokerManager;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
@@ -454,7 +455,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
         assertEquals("1", ticket.getPriceText().getText());
         assertEquals("QWER", ticket.getSymbolText().getText());
         assertEquals("DAY", ticket.getTifCombo().getText());
-        assertEquals("Default", ticket.getBrokerCombo().getText());
+        assertEquals(Messages.BROKER_MANAGER_AUTO_SELECT.getText(), ticket.getBrokerCombo().getText());
 
         // verify Side/Symbol/TIF are disabled for cancel/replace
         assertFalse("Side should not be enabled", ticket.getSideCombo().isEnabled());
@@ -503,7 +504,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
         controller.setBrokerId("gs");
         assertEquals("Goldman Sachs (gs)", ticket.getBrokerCombo().getText());
         controller.setBrokerId(null);
-        assertEquals("Default", ticket.getBrokerCombo().getText());
+        assertEquals(Messages.BROKER_MANAGER_AUTO_SELECT.getText(), ticket.getBrokerCombo().getText());
         controller.setOrderMessage(buy);
         controller.setBrokerId("gs");
         controller.clear();

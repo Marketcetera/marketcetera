@@ -31,7 +31,7 @@ import org.marketcetera.photon.ui.LoginDialog;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleContext;
@@ -47,24 +47,20 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since $Release$
- *
+ * 
  */
 @ClassVersion("$Id$")
-public class ReconnectClientJob
-    extends UIJob
-    implements Messages
-{
-	private static final AtomicBoolean sReconnectInProgress = new AtomicBoolean(false);
+public class ReconnectClientJob extends UIJob implements Messages {
+	private static final AtomicBoolean sReconnectInProgress = new AtomicBoolean(
+			false);
 	private final boolean mDisconnectOnly;
 	private static final BrokerNotificationListener sBrokerNotificationListener = new BrokerNotificationListener();
 
-	private static class CreateApplicationContextRunnable
-		implements IRunnableWithProgress
-	{
+	private static class CreateApplicationContextRunnable implements
+			IRunnableWithProgress {
 		private ClientParameters mParameters;
-		private Throwable failure=null;
+		private Throwable failure = null;
 		private ClientFeedService mService;
-		
 
 		public CreateApplicationContextRunnable(ClientParameters inParameters,
 				ClientFeedService inFeedService) {
@@ -74,15 +70,14 @@ public class ReconnectClientJob
 
 		@Override
 		public void run(IProgressMonitor monitor)
-		throws InvocationTargetException,
-		InterruptedException {
+				throws InvocationTargetException, InterruptedException {
 			try {
 				mService.initClient(mParameters);
 			} catch (Throwable ex) {
 				setFailure(ex);
-			}				
+			}
 		}
-		
+
 		public Throwable getFailure() {
 			return failure;
 		}
@@ -92,18 +87,20 @@ public class ReconnectClientJob
 		}
 	}
 
-	
 	public ReconnectClientJob(String name) {
 		this(name, false);
 	}
-	
+
 	public ReconnectClientJob(String name, boolean disconnectOnly) {
 		super(name);
 		this.mDisconnectOnly = disconnectOnly;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.
+	 * IProgressMonitor)
 	 */
 	@Override
 	public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -114,96 +111,106 @@ public class ReconnectClientJob
 		BundleContext bundleContext;
 
 		try {
-	
-			bundleContext = PhotonPlugin.getDefault().getBundleContext();
-			clientFeedTracker = new ServiceTracker(bundleContext, ClientFeedService.class.getName(), null);
-			clientFeedTracker.open();
-	
-			Logger logger = PhotonPlugin.getDefault().getMainLogger();
-			
-			try {
-				monitor.beginTask(DISCONNECT_MESSAGE_SERVER.getText(),
-				                  2);
-				disconnect(clientFeedTracker);
-			} catch (Exception ex){
-				logger.error(CANNOT_DISCONNECT_FROM_MESSAGE_QUEUE.getText(),
-				             ex);
-			}
-			
-			if (!mDisconnectOnly){
-				boolean succeeded = false;
-		
-				ClientFeedService feedService = new ClientFeedService();
-				ServiceRegistration registration = bundleContext.registerService(
-						ClientFeedService.class.getName(), feedService, null);
-				feedService.setServiceRegistration(registration);
-		
-				try {
-					monitor.beginTask(RECONNECT_MESSAGE_SERVER.getText(),
-					                  3);
 
-					ScopedPreferenceStore prefs = PhotonPlugin.getDefault().getPreferenceStore();
-					String url = prefs.getString(ConnectionConstants.CLIENT_URL_KEY);
-					String hostname = prefs.getString(ConnectionConstants.WEB_APP_HOST_KEY);
-					int port = prefs.getInt(ConnectionConstants.WEB_APP_PORT_KEY);
-					String idPrefix = prefs.getString(ConnectionConstants.ORDER_ID_PREFIX_KEY);
-					Random random=new Random();
+			bundleContext = PhotonPlugin.getDefault().getBundleContext();
+			clientFeedTracker = new ServiceTracker(bundleContext,
+					ClientFeedService.class.getName(), null);
+			clientFeedTracker.open();
+
+			Logger logger = PhotonPlugin.getDefault().getMainLogger();
+
+			try {
+				monitor.beginTask(DISCONNECT_MESSAGE_SERVER.getText(), 2);
+				disconnect(clientFeedTracker);
+			} catch (Exception ex) {
+				logger
+						.error(CANNOT_DISCONNECT_FROM_MESSAGE_QUEUE.getText(),
+								ex);
+			}
+
+			if (!mDisconnectOnly) {
+				boolean succeeded = false;
+
+				ClientFeedService feedService = new ClientFeedService();
+				ServiceRegistration registration = bundleContext
+						.registerService(ClientFeedService.class.getName(),
+								feedService, null);
+				feedService.setServiceRegistration(registration);
+
+				try {
+					monitor.beginTask(RECONNECT_MESSAGE_SERVER.getText(), 3);
+
+					ScopedPreferenceStore prefs = PhotonPlugin.getDefault()
+							.getPreferenceStore();
+					String url = prefs
+							.getString(ConnectionConstants.CLIENT_URL_KEY);
+					String hostname = prefs
+							.getString(ConnectionConstants.WEB_APP_HOST_KEY);
+					int port = prefs
+							.getInt(ConnectionConstants.WEB_APP_PORT_KEY);
+					String idPrefix = prefs
+							.getString(ConnectionConstants.ORDER_ID_PREFIX_KEY);
+					Random random = new Random();
 					LoginDialog loginDialog = new LoginDialog(null);
-					while (true){
+					while (true) {
 						try {
-							if (loginDialog.open() != Window.OK){
+							if (loginDialog.open() != Window.OK) {
 								return Status.CANCEL_STATUS;
 							}
 						} catch (SWTException ex) {
-							logger.error(CANNOT_SHOW_ORS_DIALOG.getText(),
-							             ex);
+							logger.error(CANNOT_SHOW_ORS_DIALOG.getText(), ex);
 							return Status.CANCEL_STATUS;
 						}
-						ConnectionDetails details=loginDialog.getConnectionDetails();
+						ConnectionDetails details = loginDialog
+								.getConnectionDetails();
 						ClientParameters parameters = new ClientParameters(
-								details.getUserId(), 
-								details.getPassword() == null
-								? null
-										: details.getPassword().toCharArray(), 
-										url, hostname, port, idPrefix);
-						ProgressMonitorDialog progress = new ProgressMonitorDialog(null);
+								details.getUserId(),
+								details.getPassword() == null ? null : details
+										.getPassword().toCharArray(), url,
+								hostname, port, idPrefix);
+						ProgressMonitorDialog progress = new ProgressMonitorDialog(
+								null);
 						progress.setCancelable(false);
-						CreateApplicationContextRunnable runnable=new CreateApplicationContextRunnable(
+						CreateApplicationContextRunnable runnable = new CreateApplicationContextRunnable(
 								parameters, feedService);
 						try {
-							progress.run(true, true,runnable);
-						} catch (InvocationTargetException ex){
+							progress.run(true, true, runnable);
+						} catch (InvocationTargetException ex) {
 							logger.error(CANNOT_SHOW_PROGRESS_DIALOG.getText(),
-							             ex);
+									ex);
 							return Status.CANCEL_STATUS;
-						} catch (InterruptedException ex){
-                            logger.error(CANNOT_SHOW_PROGRESS_DIALOG.getText(),
-                                         ex);
+						} catch (InterruptedException ex) {
+							logger.error(CANNOT_SHOW_PROGRESS_DIALOG.getText(),
+									ex);
 							return Status.CANCEL_STATUS;
-						} 
-						Throwable failure=runnable.getFailure();
-						if (failure==null) {
+						}
+						Throwable failure = runnable.getFailure();
+						if (failure == null) {
 							break;
 						}
-						Thread.sleep(500+random.nextInt(1000));
+						Thread.sleep(500 + random.nextInt(1000));
 						logger.error(CLIENT_CONNECTION_FAILED.getText(),
-						             failure);
+								failure);
 					}
-			
 
 					monitor.worked(1);
 					feedService.afterPropertiesSet();
 					monitor.worked(1);
-					
 
-					final DestinationsStatus destinationsStatus = feedService.getClient().getDestinationsStatus();
-					BrokerManager.getCurrent().setBrokersStatus(destinationsStatus);
+					final DestinationsStatus destinationsStatus = feedService
+							.getClient().getDestinationsStatus();
+					BrokerManager.getCurrent().setBrokersStatus(
+							destinationsStatus);
 					sBrokerNotificationListener.setService(feedService);
-					feedService.getClient().addDestinationStatusListener(sBrokerNotificationListener);
-					
-					TimeOfDay time = TimeOfDay.create(PhotonPlugin.getDefault()
-							.getPreferenceStore().getString(
-									PhotonPlugin.SESSION_START_TIME_PREFERENCE));
+					feedService.getClient().addDestinationStatusListener(
+							sBrokerNotificationListener);
+
+					TimeOfDay time = TimeOfDay
+							.create(PhotonPlugin
+									.getDefault()
+									.getPreferenceStore()
+									.getString(
+											PhotonPlugin.SESSION_START_TIME_PREFERENCE));
 					if (time != null) {
 						ReportBase[] reports = feedService.getClient()
 								.getReportsSince(time.getLastOccurrence());
@@ -212,12 +219,11 @@ public class ReconnectClientJob
 									.addIncomingMessage(reportBase);
 						}
 					}
-		
+
 					succeeded = true;
 					logger.info(MESSAGE_QUEUE_CONNECTED.getText(url));
-				} catch (Throwable t){
-                    logger.error(CANNOT_CONNECT_TO_MESSAGE_QUEUE.getText(),
-                                 t);
+				} catch (Throwable t) {
+					logger.error(CANNOT_CONNECT_TO_MESSAGE_QUEUE.getText(), t);
 				} finally {
 					sReconnectInProgress.set(false);
 					feedService.setExceptionOccurred(!succeeded);
@@ -233,19 +239,20 @@ public class ReconnectClientJob
 		return Status.OK_STATUS;
 	}
 
-    public static void disconnect(ServiceTracker clientFeedTracker)
-    {
-		ClientFeedService feed = (ClientFeedService) clientFeedTracker.getService();
+	public static void disconnect(ServiceTracker clientFeedTracker) {
+		ClientFeedService feed = (ClientFeedService) clientFeedTracker
+				.getService();
 
-		if (feed != null){
+		if (feed != null) {
 			try {
-				feed.getClient().removeDestinationStatusListener(sBrokerNotificationListener);
+				feed.getClient().removeDestinationStatusListener(
+						sBrokerNotificationListener);
 			} catch (ClientInitException e) {
 				// already disconnected
 			}
 			sBrokerNotificationListener.setService(null);
 			ServiceRegistration serviceRegistration;
-			if (((serviceRegistration = feed.getServiceRegistration())!=null)){
+			if (((serviceRegistration = feed.getServiceRegistration()) != null)) {
 				serviceRegistration.unregister();
 			}
 			feed.disconnect();
@@ -261,23 +268,25 @@ public class ReconnectClientJob
 	public boolean shouldSchedule() {
 		return !sReconnectInProgress.get();
 	}
-	
+
 	/**
 	 * Handles broker status updates.
-	 *
+	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
 	 * @since $Release$
 	 */
 	@ClassVersion("$Id$")
-	static class BrokerNotificationListener implements DestinationStatusListener {
-		
+	static class BrokerNotificationListener implements
+			DestinationStatusListener {
+
 		private ClientFeedService mService;
-		
+
 		/**
 		 * Set the service to use to receive destination statuses.
 		 * 
-		 * @param service the service
+		 * @param service
+		 *            the service
 		 */
 		void setService(ClientFeedService service) {
 			mService = service;
@@ -291,7 +300,7 @@ public class ReconnectClientJob
 			}
 			try {
 				I18NMessage0P subject;
-				I18NMessage2P details;
+				I18NMessage1P details;
 				if (status.getLoggedOn()) {
 					subject = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE;
 					details = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE_DETAILS;
@@ -300,8 +309,10 @@ public class ReconnectClientJob
 					details = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS;
 				}
 				NotificationManager.getNotificationManager().publish(
-						Notification.high(subject.getText(), details.getText(
-								status.getName(), status.getId()), getClass()));
+						Notification.high(subject.getText(), details
+								.getText(Messages.BROKER_LABEL_PATTERN.getText(
+										status.getName(), status.getId())),
+								getClass()));
 				final DestinationsStatus destinationsStatus = mService
 						.getClient().getDestinationsStatus();
 				PlatformUI.getWorkbench().getDisplay().asyncExec(
@@ -313,10 +324,10 @@ public class ReconnectClientJob
 							}
 						});
 			} catch (Throwable e) {
-				Messages.BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED.getText(status);
+				Messages.BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED
+						.getText(status);
 			}
 		}
 	}
 
-	
 }

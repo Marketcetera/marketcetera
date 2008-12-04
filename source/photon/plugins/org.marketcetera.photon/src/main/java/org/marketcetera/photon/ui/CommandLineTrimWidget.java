@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.swt.IFocusService;
+import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.Messages;
@@ -61,7 +62,7 @@ public class CommandLineTrimWidget
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		commandParser.setMessageFactory(plugin.getMessageFactory());
 		commandParser.setDataDictionary(plugin.getFIXDataDictionary().getDictionary());
-		
+		commandParser.setBrokerValidator(BrokerManager.getCurrent());
 	}
 
 	@Override
