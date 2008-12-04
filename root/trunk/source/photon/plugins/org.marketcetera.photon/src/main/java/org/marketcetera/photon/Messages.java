@@ -100,6 +100,8 @@ public interface Messages
                                                                     "web_help_action"); //$NON-NLS-1$
     public static I18NMessage0P WEB_HELP_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
                                                                                 "web_help_action_description"); //$NON-NLS-1$
+    public static I18NMessage1P WEB_HELP_ERROR = new I18NMessage1P(LOGGER,
+			"web_help_error"); //$NON-NLS-1$
     public static I18NMessage0P FOCUS_COMMAND_ACTION = new I18NMessage0P(LOGGER,
                                                                          "focus_command_action"); //$NON-NLS-1$
     public static I18NMessage0P FOCUS_COMMAND_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,

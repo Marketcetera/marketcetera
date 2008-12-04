@@ -1,85 +1,71 @@
 package org.marketcetera.photon.actions;
 
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.MessageFormat;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.marketcetera.photon.Messages;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.util.misc.ClassVersion;
+
 /* $License$ */
 
 /**
- * WebHelpAction opens the Marketcetera help site in an external 
- * browser, using {@link IWorkbenchBrowserSupport#createBrowser(String)}
- * and {@link IWebBrowser#openURL(URL)}.
+ * WebHelpAction opens the Marketcetera help site in an external browser, using
+ * {@link IWorkbenchBrowserSupport#createBrowser(String)} and
+ * {@link IWebBrowser#openURL(URL)}.
  * 
  * @author gmiller
  * @version $Id$
  * @since $Release$
- *
  */
 @ClassVersion("$Id$")
-public class WebHelpAction 
-    extends Action 
-    implements IWorkbenchAction, Messages
-{
+public class WebHelpAction extends Action {
 
 	public static final String ID = "org.marketcetera.photon.actions.HelpBrowserAction"; //$NON-NLS-1$
-	private static final String MAIN_HELP_URL = "http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/PhotonGuide"; //$NON-NLS-1$
+	private static final String MAIN_HELP_URL = MessageFormat
+			.format(
+					"http://www.marketcetera.com/masha/docs?version={0}&qualifier=photon", //$NON-NLS-1$
+					PhotonPlugin.getDefault().getBundle().getHeaders().get(
+							"Bundle-Version")); //$NON-NLS-1$
+	private IWorkbenchWindow mWindow;
+
 	/**
 	 * Create the default instance of HelpBrowserAction, setting the ID, text,
 	 * tool-tip text, and image to the defaults.
 	 */
-	public WebHelpAction(IWorkbenchWindow window){
+	public WebHelpAction(IWorkbenchWindow window) {
 		setId(ID);
-		setText(WEB_HELP_ACTION.getText());
-		setToolTipText(WEB_HELP_ACTION_DESCRIPTION.getText());
+		setText(Messages.WEB_HELP_ACTION.getText());
+		setToolTipText(Messages.WEB_HELP_ACTION_DESCRIPTION.getText());
+		mWindow = window;
 	}
-	/**
-	 *  
-	 * Default implementation does nothing.
-	 * 
-	 * @see org.eclipse.ui.actions.ActionFactory$IWorkbenchAction#dispose()
-	 */
-	public void dispose() {
-		// TODO Auto-generated method stub
-	}
-	
+
 	/**
 	 * Attempt to open help in a browser
-	 * 
-	 * @see org.eclipse.jface.action.Action#run()
 	 */
+	@Override
 	public void run() {
-
-		//maybe do this at some point?
-		//window.getWorkbench().getHelpSystem().displayHelpResource(MAIN_HELP_URL);
+		// maybe do this at some point?
+		// window.getWorkbench().getHelpSystem().displayHelpResource(MAIN_HELP_URL);
 		// for now, just show it in an external browser
-		
-		IWorkbenchBrowserSupport browserSupport = PlatformUI.getWorkbench()
-				.getBrowserSupport();
-		IWebBrowser browser;
 		try {
-			browser = browserSupport.createBrowser("_blank"); //$NON-NLS-1$
+			IWorkbenchBrowserSupport browserSupport = mWindow.getWorkbench()
+					.getBrowserSupport();
+			IWebBrowser browser = browserSupport.createBrowser("_blank"); //$NON-NLS-1$
 			browser.openURL(new URL(MAIN_HELP_URL));
-			
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			Messages.WEB_HELP_ERROR.error(this, e, MAIN_HELP_URL);
+			ErrorDialog.openError(mWindow.getShell(), null,
+					Messages.WEB_HELP_ERROR.getText(MAIN_HELP_URL), new Status(
+							IStatus.ERROR, PhotonPlugin.ID, e
+									.getLocalizedMessage()));
 		}
 	}
 }
-
-
