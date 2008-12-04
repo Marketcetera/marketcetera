@@ -311,7 +311,6 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 		Message aMessage = getMessageFactory().newBasicOrder();
 		aMessage.setString(SecurityType.FIELD, SecurityType.OPTION);
 		aMessage.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
-		aMessage.setField(new OpenClose(OpenClose.OPEN));
 		return aMessage;
 	}
 	
