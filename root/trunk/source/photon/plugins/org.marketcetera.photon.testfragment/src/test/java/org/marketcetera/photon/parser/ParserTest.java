@@ -152,6 +152,15 @@ public class ParserTest extends FIXVersionedTestCase {
 		assertEquals(result.getString(SecurityType.FIELD),
 				SecurityType.COMMON_STOCK);
 
+		// Verify EG-216
+		order = "S 0 IBM 0";
+		command = aParser.parseNewOrder(order);
+		result = command.getMessage();
+		verifyNewOrder(result, Side.SELL, new BigDecimal("0"), "IBM",
+				new BigDecimal("0"), TimeInForce.DAY, null);
+		assertEquals(result.getString(SecurityType.FIELD),
+				SecurityType.COMMON_STOCK);
+
 		(new ExpectedTestFailure(ParserException.class) {
 			protected void execute() throws Throwable {
 				String innerOrder = "A 100 IBM 94.8 gs DAY AAA?A/a-A";

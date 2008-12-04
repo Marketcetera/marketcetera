@@ -88,6 +88,7 @@ public class CommandParser
 				private static final long serialVersionUID = 625605776498362995L;
                 public Object fromToken(Tok tok) {
 					String stringImage = ((TypedToken<?>)tok.getToken()).getText().toUpperCase();
+					PriceImage.LIMIT.setImage("0"); //$NON-NLS-1$
 					PriceImage pi =  PriceImage.fromName(stringImage);
 					if (pi == null){
 						try {
