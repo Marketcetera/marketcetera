@@ -19,7 +19,7 @@ BaseCurrency="USD"
 # DateTime should look like this: 04-Jan-08 13:32:23 - timezone gets appended separately
 DATETIME_FORMAT = "%d-%b-%y %H:%M:%S"
 
-TZ_ID = "US/Pacific"  # Should be auto-substituted at install: TimeZone.getDefault().getID() in Java
+TZ_ID = "US/Pacific"
 
 # Whether or not to treat Account as Strategy for incoming recorded trades
 StrategyAsAccount = true
