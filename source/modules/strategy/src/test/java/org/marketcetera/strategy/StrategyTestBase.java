@@ -1,9 +1,9 @@
 package org.marketcetera.strategy;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
 
 import java.beans.ExceptionListener;
@@ -25,6 +25,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.JMX;
@@ -47,6 +48,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
@@ -1259,8 +1261,10 @@ public class StrategyTestBase
     }
     /**
      * Asserts that the values in the common strategy storage area for some well-known testing keys are not null.
+     * @throws Exception if an error occurs
      */
     protected void verifyNonNullProperties()
+        throws Exception
     {
         verifyPropertyNonNull("onAsk");
         verifyPropertyNonNull("onBid");
@@ -1283,14 +1287,20 @@ public class StrategyTestBase
      *
      * @param inKey a <code>String</code> value
      * @return a <code>String</code> value or null
+     * @throws Exception if an error occurs
      */
-    protected String verifyPropertyNonNull(String inKey)
+    protected String verifyPropertyNonNull(final String inKey)
+        throws Exception
     {
-        Properties properties = AbstractRunningStrategy.getProperties();
-        String property = properties.getProperty(inKey);
-        assertNotNull(inKey + " is supposed to be non-null",
-                      property);
-        return property;
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return AbstractRunningStrategy.getProperty(inKey) != null;
+            }
+        });
+        return AbstractRunningStrategy.getProperty(inKey);
     }
     /**
      * Verifies the given property is null.
@@ -1387,6 +1397,25 @@ public class StrategyTestBase
             runningStrategy = runningStrategies.iterator().next();
         }
         return runningStrategy;
+    }
+    /**
+     * Gets the strategy represented by the given URN.
+     * 
+     * <p>Note that the given strategy must be running or this method will fail.
+     *
+     * @param index a <code>ModuleURN</code> value containing the URN of the strategy to retrieve
+     * @return a <code>StrategyImpl</code> value
+     */
+    protected final StrategyImpl getRunningStrategy(ModuleURN inStrategy)
+    {
+        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
+        for(StrategyImpl strategy : runningStrategies) {
+            if(strategy.getDefaultNamespace().equals(inStrategy.instanceName())) {
+                return strategy;
+            }
+        }
+        fail(inStrategy + " not currently running");
+        return null;
     }
     /**
      * Gets the first strategy in the list of strategies currently running.

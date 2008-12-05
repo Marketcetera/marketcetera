@@ -30,11 +30,11 @@ public class Part1
     @Override
     public void onCallback(Object inData)
     {
-        long callbackCounter = Long.parseLong(getProperty("onCallback"));
+        int callbackCounter = Integer.parseInt(getProperty("onCallback"));
         callbackCounter += 1;
         setProperty("onCallback",
-                    Long.toString(callbackCounter));
-        setProperty("callback" + Long.toString(callbackCounter),
+                    Integer.toString(callbackCounter));
+        setProperty("callback" + Integer.toString(callbackCounter),
                     this.toString());
     }
     /* (non-Javadoc)

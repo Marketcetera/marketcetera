@@ -46,8 +46,8 @@ public class JavaStrategy
         if(marketDataSource != null) {
             String symbols = getParameter("symbols");
             setProperty("requestID",
-                        Long.toString(requestMarketData(symbols,
-                                                        marketDataSource)));
+                        Integer.toString(requestMarketData(symbols,
+                                                           marketDataSource)));
         }
         if(getParameter("shouldRequestCEPData") != null) {
             String cepDataSource = getParameter("source");
@@ -60,8 +60,8 @@ public class JavaStrategy
                     statements = null;
                 }
                 setProperty("requestID",
-                            Long.toString(requestCEPData(statements,
-                                                         cepDataSource)));
+                            Integer.toString(requestCEPData(statements,
+                                                            cepDataSource)));
             }
         }
         doRequestParameterCallbacks();
@@ -70,7 +70,7 @@ public class JavaStrategy
             notifyLow("low subject",
                       Long.toString(System.nanoTime()));
             notifyMedium("medium subject",
-                           Long.toString(System.nanoTime()));
+                         Long.toString(System.nanoTime()));
             notifyHigh("high subject",
                        Long.toString(System.nanoTime()));
         }
@@ -151,7 +151,7 @@ public class JavaStrategy
         String shouldCancel = getProperty("shouldCancel");
         if(shouldCancel != null) {
             String requestToCancel = getProperty("requestID");
-            cancelMarketDataRequest(Long.parseLong(requestToCancel));
+            cancelMarketDataRequest(Integer.parseInt(requestToCancel));
         }
         String shouldFail = getParameter("shouldFailOnCallback");
         if(shouldFail != null) { 
@@ -208,7 +208,7 @@ public class JavaStrategy
             int x = 10 / 0;
         }
         if(getProperty("shouldCancelCEPData") != null) {
-            cancelCEPRequest(Long.parseLong(getProperty("requestID")));
+            cancelCEPRequest(Integer.parseInt(getProperty("requestID")));
         }
         setProperty("onOther",
                     data.toString());

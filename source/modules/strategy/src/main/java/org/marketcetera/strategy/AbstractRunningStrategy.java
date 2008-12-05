@@ -184,10 +184,10 @@ public abstract class AbstractRunningStrategy
      *
      * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols
      * @param inSource a <code>String</code> value containing a string corresponding to a market data provider identifier
-     * @return a <code>long</code> value containing the handle of the request or 0 if the request failed
+     * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
      */
-    protected final long requestMarketData(String inSymbols,
-                                           String inSource)
+    protected final int requestMarketData(String inSymbols,
+                                          String inSource)
     {
         if(inSymbols != null &&
            !inSymbols.isEmpty()) {
@@ -225,12 +225,12 @@ public abstract class AbstractRunningStrategy
      *   event processor that handles them.
      * @param inCepSource a <code>String</code> value containing the name of the complex event processor
      *   to which to send the query request
-     * @return a <code>long</code> value containing the handle of the request or 0 if the request failed
+     * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
      */
-    protected final long requestProcessedMarketData(String inSymbols,
-                                                    String inMarketDataSource,
-                                                    String[] inStatements,
-                                                    String inCepSource)
+    protected final int requestProcessedMarketData(String inSymbols,
+                                                   String inMarketDataSource,
+                                                   String[] inStatements,
+                                                   String inCepSource)
     {
         if(inSymbols == null ||
            inSymbols.isEmpty() ||
@@ -285,10 +285,14 @@ public abstract class AbstractRunningStrategy
     /**
      * Cancels the given market data request.
      *
-     * @param inRequestID a <code>long</code> value containing the identifier of the data request to cancel
+     * @param inRequestID an <code>int</code> value containing the identifier of the data request to cancel
      */
-    protected final void cancelMarketDataRequest(long inRequestID)
+    protected final void cancelMarketDataRequest(int inRequestID)
     {
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
+                               "{} cancelling market data request {}", //$NON-NLS-1$
+                               strategy,
+                               inRequestID);
         strategy.getOutboundServicesProvider().cancelMarketDataRequest(inRequestID);
     }
     /**
@@ -296,6 +300,9 @@ public abstract class AbstractRunningStrategy
      */
     protected final void cancelAllMarketDataRequests()
     {
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
+                               "{} cancelling all market data requests", //$NON-NLS-1$
+                               strategy);
         strategy.getOutboundServicesProvider().cancelAllMarketDataRequests();
     }
     /**
@@ -306,16 +313,16 @@ public abstract class AbstractRunningStrategy
      *   event processor that handles them.
      * @param inSource a <code>String</code> value containing the name of the complex event processor
      *   to which to send the query request
-     * @return a <code>long</code> value containing the identifier of this request or 0 if the request
+     * @return an <code>int</code> value containing the identifier of this request or 0 if the request
      *   failed
      */
-    protected final long requestCEPData(String[] inStatements,
-                                        String inSource)
+    protected final int requestCEPData(String[] inStatements,
+                                       String inSource)
     {
         if(inStatements == null ||
-                inStatements.length == 0 ||
-                inSource == null ||
-                inSource.isEmpty()) {
+           inStatements.length == 0 ||
+           inSource == null ||
+           inSource.isEmpty()) {
                  INVALID_CEP_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                           strategy,
                                           Arrays.toString(inStatements),
@@ -342,9 +349,9 @@ public abstract class AbstractRunningStrategy
     /**
      * Cancels the given complex event processor data request.
      *
-     * @param inRequestID a <code>long</code> value containing the identifier of the data request to cancel
+     * @param inRequestID an <code>int</code> value containing the identifier of the data request to cancel
      */
-    protected final void cancelCEPRequest(long inRequestID)
+    protected final void cancelCEPRequest(int inRequestID)
     {
         SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} canceling CEP request {}", //$NON-NLS-1$
@@ -357,6 +364,9 @@ public abstract class AbstractRunningStrategy
      */
     protected final void cancelAllCEPRequests()
     {
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
+                               "{} cancelling all cep requests", //$NON-NLS-1$
+                               strategy);
         strategy.getOutboundServicesProvider().cancelAllCEPRequests();
     }
     /**

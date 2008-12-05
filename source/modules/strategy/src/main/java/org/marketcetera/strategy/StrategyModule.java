@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientManager;
@@ -187,8 +187,8 @@ public final class StrategyModule
      * @see org.marketcetera.strategy.OutboundServices#marketDataRequest(org.marketcetera.marketdata.MarketDataRequest, java.lang.String)
      */
     @Override
-    public long requestMarketData(MarketDataRequest inRequest,
-                                  String inSource)
+    public int requestMarketData(MarketDataRequest inRequest,
+                                 String inSource)
     {
         if(inRequest == null ||
            inSource == null ||
@@ -199,7 +199,7 @@ public final class StrategyModule
                                              inSource);
             return 0;
         }
-        long requestID = counter.incrementAndGet();
+        int requestID = counter.incrementAndGet();
         try {
             DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inSource),
                                                                                                        inRequest),
@@ -222,11 +222,11 @@ public final class StrategyModule
      * @see org.marketcetera.strategy.OutboundServicesProvider#requestMarketDataWithCEP(org.marketcetera.marketdata.MarketDataRequest, java.lang.String, java.lang.String[], java.lang.String, java.lang.String)
      */
     @Override
-    public long requestProcessedMarketData(MarketDataRequest inRequest,
-                                           String inMarketDataSource,
-                                           String[] inStatements,
-                                           String inCEPSource,
-                                           String inNamespace)
+    public int requestProcessedMarketData(MarketDataRequest inRequest,
+                                          String inMarketDataSource,
+                                          String[] inStatements,
+                                          String inCEPSource,
+                                          String inNamespace)
     {
         if(inRequest == null ||
            inMarketDataSource == null ||
@@ -246,7 +246,7 @@ public final class StrategyModule
                                                inNamespace);
             return 0;
         }
-        long requestID = counter.incrementAndGet();
+        int requestID = counter.incrementAndGet();
         // construct a request that connects the provider to the cep query
         try {
             DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inMarketDataSource),
@@ -286,9 +286,10 @@ public final class StrategyModule
     {
         synchronized(marketDataRequests) {
             // create a copy of the list because the cancel call is going to modify the collection
-            List<Long> activeRequests = new ArrayList<Long>(marketDataRequests.keySet());
-            for(long request : activeRequests) {
+            List<Integer> activeRequests = new ArrayList<Integer>(marketDataRequests.keySet());
+            for(int request : activeRequests) {
                 try {
+                    cancelDataRequest(request);
                 } catch (Exception e) {
                     UNABLE_TO_CANCEL_MARKET_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
                                                               e,
@@ -299,10 +300,10 @@ public final class StrategyModule
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServices#cancelMarketDataRequest(long)
+     * @see org.marketcetera.strategy.OutboundServices#cancelMarketDataRequest(int)
      */
     @Override
-    public void cancelMarketDataRequest(long inDataRequestID)
+    public void cancelMarketDataRequest(int inDataRequestID)
     {
         synchronized(marketDataRequests) {
             if(!marketDataRequests.containsKey(inDataRequestID)) {
@@ -329,8 +330,8 @@ public final class StrategyModule
     {
         synchronized(cepRequests) {
             // create a copy of the list because the cancel call is going to modify the collection
-            List<Long> activeRequests = new ArrayList<Long>(cepRequests.keySet());
-            for(long request : activeRequests) {
+            List<Integer> activeRequests = new ArrayList<Integer>(cepRequests.keySet());
+            for(int request : activeRequests) {
                 try {
                     cancelDataRequest(request);
                 } catch (Exception e) {
@@ -343,10 +344,10 @@ public final class StrategyModule
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelCEPRequest(long)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelCEPRequest(int)
      */
     @Override
-    public void cancelCEPRequest(long inDataRequestID)
+    public void cancelCEPRequest(int inDataRequestID)
     {
         synchronized(cepRequests) {
             if(!cepRequests.containsKey(inDataRequestID)) {
@@ -369,9 +370,9 @@ public final class StrategyModule
      * @see org.marketcetera.strategy.OutboundServicesProvider#requestCEPData(java.lang.String[], java.lang.String)
      */
     @Override
-    public long requestCEPData(String[] inStatements,
-                               String inSource,
-                               String inNamespace)
+    public int requestCEPData(String[] inStatements,
+                              String inSource,
+                              String inNamespace)
     {
         if(inStatements == null ||
            inStatements.length == 0) {
@@ -381,7 +382,7 @@ public final class StrategyModule
                                      String.valueOf(inSource) + ":" + String.valueOf(inNamespace)); //$NON-NLS-1$
             return 0;
         }
-        long requestID = counter.incrementAndGet();
+        int requestID = counter.incrementAndGet();
         ModuleURN providerURN = constructCepUrn(inSource,
                                                 inNamespace);
         try {
@@ -893,7 +894,7 @@ public final class StrategyModule
         return new ModuleURN(StrategyModuleFactory.PROVIDER_URN,
                              String.format("strategy%s%s", //$NON-NLS-1$
                                            sanitizedName,
-                                           Long.toHexString(counter.incrementAndGet())));
+                                           Integer.toHexString(counter.incrementAndGet())));
     }
     /**
      * Constructs a <code>ModuleURN</code> for a <code>CEP</code> module from the given components. 
@@ -1103,10 +1104,10 @@ public final class StrategyModule
      * Cancels the given request whether it's a market data request, a cep request,
      * or both.
      *
-     * @param inRequest a <code>long</code> value containing a request handle
+     * @param inRequest an <code>int</code> value containing a request handle
      * @throws ModuleException if an error occurs
      */
-    private void cancelDataRequest(long inRequest)
+    private void cancelDataRequest(int inRequest)
         throws ModuleException
     {
         DataFlowID dataFlowID = marketDataRequests.remove(inRequest);
@@ -1182,15 +1183,15 @@ public final class StrategyModule
     /**
      * counter used to guarantee unique identifiers
      */
-    private static final AtomicLong counter = new AtomicLong();
+    private static final AtomicInteger counter = new AtomicInteger();
     /**
      * active market data requests for this strategy 
      */
-    private final Map<Long,DataFlowID> marketDataRequests = new HashMap<Long,DataFlowID>();
+    private final Map<Integer,DataFlowID> marketDataRequests = new HashMap<Integer,DataFlowID>();
     /**
      * active cep requests for this strategy 
      */
-    private final Map<Long,DataFlowID> cepRequests = new HashMap<Long,DataFlowID>();
+    private final Map<Integer,DataFlowID> cepRequests = new HashMap<Integer,DataFlowID>();
     /**
      * the list of dataflows started during the lifetime of this strategy
      */

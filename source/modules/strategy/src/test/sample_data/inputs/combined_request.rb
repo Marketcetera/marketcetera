@@ -1,5 +1,5 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "java.lang.Long"
+include_class "java.lang.Integer"
 
 class CombinedRequest < Strategy
   def on_start
@@ -13,9 +13,9 @@ class CombinedRequest < Strategy
   def on_callback data
       requestIDString = get_property "requestID"
       if(get_property("cancelCep") != nil)
-          cancel_cep_request Long.parseLong requestIDString
+          cancel_cep_request Integer.parseInt requestIDString
       else
-          cancel_market_data_request Long.parseLong requestIDString
+          cancel_market_data_request Integer.parseInt requestIDString
       end
   end
   def on_ask ask
@@ -47,9 +47,9 @@ class CombinedRequest < Strategy
       compressedStatements = get_property "statements"
       if(compressedStatements != nil) 
           statements = compressedStatements.split("#")
-          set_property("requestID", Long.toString(request_processed_market_data(symbols, marketDataSource, statements.to_java(:string), cepSource)))
+          set_property("requestID", Integer.toString(request_processed_market_data(symbols, marketDataSource, statements.to_java(:string), cepSource)))
       else
-          set_property("requestID", Long.toString(request_processed_market_data(symbols, marketDataSource, nil, cepSource)))
+          set_property("requestID", Integer.toString(request_processed_market_data(symbols, marketDataSource, nil, cepSource)))
       end
   end  
 end
