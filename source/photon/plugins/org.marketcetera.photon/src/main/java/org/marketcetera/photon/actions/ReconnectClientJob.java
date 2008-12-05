@@ -25,10 +25,10 @@ import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.PhotonPreferences;
 import org.marketcetera.photon.TimeOfDay;
 import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.photon.ui.LoginDialog;
-import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
@@ -143,13 +143,13 @@ public class ReconnectClientJob extends UIJob implements Messages {
 					ScopedPreferenceStore prefs = PhotonPlugin.getDefault()
 							.getPreferenceStore();
 					String url = prefs
-							.getString(ConnectionConstants.CLIENT_URL_KEY);
+							.getString(PhotonPreferences.JMS_URL);
 					String hostname = prefs
-							.getString(ConnectionConstants.WEB_APP_HOST_KEY);
+							.getString(PhotonPreferences.WEB_SERVICE_HOST);
 					int port = prefs
-							.getInt(ConnectionConstants.WEB_APP_PORT_KEY);
+							.getInt(PhotonPreferences.WEB_SERVICE_PORT);
 					String idPrefix = prefs
-							.getString(ConnectionConstants.ORDER_ID_PREFIX_KEY);
+							.getString(PhotonPreferences.ORDER_ID_PREFIX);
 					Random random = new Random();
 					LoginDialog loginDialog = new LoginDialog(null);
 					while (true) {
@@ -210,7 +210,7 @@ public class ReconnectClientJob extends UIJob implements Messages {
 									.getDefault()
 									.getPreferenceStore()
 									.getString(
-											PhotonPlugin.SESSION_START_TIME_PREFERENCE));
+											PhotonPreferences.TRADING_HISTORY_START_TIME));
 					if (time != null) {
 						ReportBase[] reports = feedService.getClient()
 								.getReportsSince(time.getLastOccurrence());

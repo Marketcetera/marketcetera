@@ -15,12 +15,12 @@ import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.PhotonPreferences;
 import org.marketcetera.photon.marketdata.MarketDataFeed.FeedStatusEvent;
 import org.marketcetera.photon.marketdata.MarketDataFeed.IFeedStatusChangedListener;
 import org.marketcetera.photon.marketdata.MarketDataReceiverModule.IConfigurationProvider;
 import org.marketcetera.photon.marketdata.MarketDataReceiverModule.MarketDataSubscriber;
 import org.marketcetera.photon.module.ModulePlugin;
-import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -98,7 +98,7 @@ public final class MarketDataManager {
 
 	private String getPreferencesProviderId() {
 		return PhotonPlugin.getDefault().getPreferenceStore().getString(
-				ConnectionConstants.MARKETDATA_STARTUP_KEY);
+				PhotonPreferences.DEFAULT_MARKETDATA_PROVIDER);
 	}
 
 	/**
