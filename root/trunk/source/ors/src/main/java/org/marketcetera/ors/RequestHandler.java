@@ -383,6 +383,21 @@ public class RequestHandler
                  BigDecimal.ZERO,
                  getOptFieldSymbol(msg,Symbol.FIELD),
                  getOptFieldStr(msg,Account.FIELD));
+        } else if (FIXMessageUtil.isCancelRequest(msg)) {
+            report=getMsgFactory().newExecutionReport
+                (getOptFieldStr(msg,OrderID.FIELD),
+                 getOptFieldStr(msg,ClOrdID.FIELD),
+                 getNextExecId().getValue(),
+                 OrdStatus.PENDING_CANCEL,
+                 getOptFieldChar(msg,Side.FIELD),
+                 getOptFieldNum(msg,OrderQty.FIELD),
+                 getOptFieldNum(msg,Price.FIELD),
+                 BigDecimal.ZERO,
+                 BigDecimal.ZERO,
+                 BigDecimal.ZERO,
+                 BigDecimal.ZERO,
+                 getOptFieldSymbol(msg,Symbol.FIELD),
+                 getOptFieldStr(msg,Account.FIELD));
         } else {
             return null;
         }
