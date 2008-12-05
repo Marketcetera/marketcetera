@@ -299,9 +299,12 @@ public final class StrategyManager {
 	 *            strategy to remove
 	 */
 	public void removeStrategy(Strategy strategy) {
-		stop(strategy);
 		try {
-			mModuleManager.deleteModule(strategy.getURN());
+			ModuleURN urn = strategy.getURN();
+			if (mModuleManager.getModuleInfo(urn).getState().isStarted()) {
+				stop(strategy);
+			}
+			mModuleManager.deleteModule(urn);
 			mStrategies.remove(strategy);
 			saveState();
 		} catch (ModuleException e) {
