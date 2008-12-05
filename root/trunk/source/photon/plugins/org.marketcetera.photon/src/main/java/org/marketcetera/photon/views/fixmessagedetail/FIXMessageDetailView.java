@@ -35,7 +35,7 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.TableComparatorChooser;
-import org.marketcetera.photon.views.MessagesView;
+import org.marketcetera.photon.views.AbstractFIXMessagesView;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXValueExtractor;
@@ -102,7 +102,7 @@ public class FIXMessageDetailView
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		if (part instanceof MessagesView) {
+		if (part instanceof AbstractFIXMessagesView) {
 			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 			boolean shouldClear = true;
 			// only display message detail for a single message
