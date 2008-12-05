@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -205,18 +206,21 @@ public class ReconnectClientJob extends UIJob implements Messages {
 					feedService.getClient().addDestinationStatusListener(
 							sBrokerNotificationListener);
 
-					TimeOfDay time = TimeOfDay
-							.create(PhotonPlugin
-									.getDefault()
-									.getPreferenceStore()
-									.getString(
-											PhotonPreferences.TRADING_HISTORY_START_TIME));
-					if (time != null) {
-						ReportBase[] reports = feedService.getClient()
-								.getReportsSince(time.getLastOccurrence());
-						for (ReportBase reportBase : reports) {
-							PhotonPlugin.getDefault().getTradeReportsHistory()
-									.addIncomingMessage(reportBase);
+					String timeString = PhotonPlugin
+							.getDefault()
+							.getPreferenceStore()
+							.getString(
+									PhotonPreferences.TRADING_HISTORY_START_TIME);
+					if (StringUtils.isNotEmpty(timeString)) {
+						TimeOfDay time = TimeOfDay
+								.create(timeString);
+						if (time != null) {
+							ReportBase[] reports = feedService.getClient()
+									.getReportsSince(time.getLastOccurrence());
+							for (ReportBase reportBase : reports) {
+								PhotonPlugin.getDefault().getTradeReportsHistory()
+										.addIncomingMessage(reportBase);
+							}
 						}
 					}
 
