@@ -6,6 +6,7 @@ import org.marketcetera.ors.filters.MessageRouteManager;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.DestinationID;
@@ -30,6 +31,12 @@ import quickfix.SessionID;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class Destination
 {
+
+    // CLASS DATA
+
+    private static final String HEARTBEAT_CATEGORY=
+        Destination.class.getName()+".HEARTBEATS";
+
 
     // INSTANCE DATA.
 
@@ -249,9 +256,12 @@ public class Destination
     public void logMessage
         (Message msg)
     {
-        if (SLF4JLoggerProxy.isDebugEnabled(this)) {
+        Object category=(FIXMessageUtil.isHeartbeat(msg)?
+                         HEARTBEAT_CATEGORY:this);
+        if (SLF4JLoggerProxy.isDebugEnabled(category)) {
             Messages.ANALYZED_MESSAGE.debug
-                (this,new AnalyzedMessage(getDataDictionary(),msg).toString());
+                (category,
+                 new AnalyzedMessage(getDataDictionary(),msg).toString());
         }        
     }
 

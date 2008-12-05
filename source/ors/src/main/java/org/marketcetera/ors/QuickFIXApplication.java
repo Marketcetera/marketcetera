@@ -42,6 +42,12 @@ public class QuickFIXApplication
     implements Application
 {
 
+    // CLASS DATA
+
+    private static final String HEARTBEAT_CATEGORY=
+        QuickFIXApplication.class.getName()+".HEARTBEATS";
+
+
     // INSTANCE DATA.
 
     private final Destinations mDestinations;
@@ -111,6 +117,15 @@ public class QuickFIXApplication
         return mToTradeRecorder;
     }
 
+    private Object getCategory
+        (Message msg)
+    {
+        if (FIXMessageUtil.isHeartbeat(msg)) {
+            return HEARTBEAT_CATEGORY;
+        }
+        return this;
+    }
+
     private void updateStatus
         (Destination d,
          boolean status)
@@ -128,7 +143,7 @@ public class QuickFIXApplication
          Message msg,
          Originator originator)
     {
-        Messages.QF_SENDING_REPLY.info(this,msg,d);
+        Messages.QF_SENDING_REPLY.info(getCategory(msg),msg,d);
         if (getToClientTrades()==null) {
             return;
         }
@@ -137,11 +152,11 @@ public class QuickFIXApplication
             reply=FIXConverter.fromQMessage
                 (msg,originator,d.getDestinationID());
         } catch (MessageCreationException ex) {
-            Messages.QF_REPORT_FAILED.error(this,ex);
+            Messages.QF_REPORT_FAILED.error(getCategory(msg),ex);
             return;
         }
         if (reply==null) {
-            Messages.QF_REPORT_TYPE_UNSUPPORTED.info(this);
+            Messages.QF_REPORT_TYPE_UNSUPPORTED.info(getCategory(msg));
             return;
         }
         getPersister().persistReply(reply);
@@ -152,7 +167,7 @@ public class QuickFIXApplication
         (Destination d,
          Message msg)
     {
-        Messages.QF_SENDING_TRADE_RECORD.info(this,msg,d);
+        Messages.QF_SENDING_TRADE_RECORD.info(getCategory(msg),msg,d);
         if (getToTradeRecorder()==null) {
             return;
         }
@@ -190,7 +205,7 @@ public class QuickFIXApplication
          SessionID session)
     {
         Destination d=getDestinations().getDestination(session);
-        Messages.QF_TO_ADMIN.info(this,msg,d);
+        Messages.QF_TO_ADMIN.info(getCategory(msg),msg,d);
         d.logMessage(msg);
 
         // Apply message modifiers.
@@ -199,7 +214,7 @@ public class QuickFIXApplication
             try {
                 d.getModifiers().modifyMessage(msg);
             } catch (CoreException ex) {
-                Messages.QF_MODIFICATION_FAILED.warn(this,ex);
+                Messages.QF_MODIFICATION_FAILED.warn(getCategory(msg),ex);
             }
         }
 
@@ -217,7 +232,7 @@ public class QuickFIXApplication
                 msg.setString(Text.FIELD,Messages.QF_IN_MESSAGE_REJECTED.
                               getText(msgTypeName,msg.getString(Text.FIELD)));
             } catch (FieldNotFound ex) {
-                Messages.QF_MODIFICATION_FAILED.warn(this,ex);
+                Messages.QF_MODIFICATION_FAILED.warn(getCategory(msg),ex);
                 // Send original message instead of modified one.
             }
             sendToClientTrades(d,msg,Originator.Server);
@@ -230,7 +245,7 @@ public class QuickFIXApplication
          SessionID session)
     {
         Destination d=getDestinations().getDestination(session);
-        Messages.QF_FROM_ADMIN.info(this,msg,d);
+        Messages.QF_FROM_ADMIN.info(getCategory(msg),msg,d);
         d.logMessage(msg);
 
         // Do not propagate heartbeats to client.
@@ -245,7 +260,7 @@ public class QuickFIXApplication
         throws DoNotSend
     {
         Destination d=getDestinations().getDestination(session);
-        Messages.QF_TO_APP.info(this,msg,d);
+        Messages.QF_TO_APP.info(getCategory(msg),msg,d);
         d.logMessage(msg);
     }
 
@@ -257,13 +272,13 @@ public class QuickFIXApplication
                FieldNotFound
     {
         Destination d=getDestinations().getDestination(session);
-        Messages.QF_FROM_APP.info(this,msg,d);
+        Messages.QF_FROM_APP.info(getCategory(msg),msg,d);
         d.logMessage(msg);
 
         // Accept only certain message types.
 
         if (!getSupportedMessages().isAccepted(msg)){
-            Messages.QF_DISALLOWED_MESSAGE.info(this);
+            Messages.QF_DISALLOWED_MESSAGE.info(getCategory(msg));
             throw new UnsupportedMessageType();
         }
 
@@ -271,7 +286,7 @@ public class QuickFIXApplication
 
         if (FIXMessageUtil.isTradingSessionStatus(msg)) {
             Messages.QF_TRADE_SESSION_STATUS.info
-                (this,d.getFIXDataDictionary().getHumanFieldValue
+                (getCategory(msg),d.getFIXDataDictionary().getHumanFieldValue
                  (TradSesStatus.FIELD,msg.getString(TradSesStatus.FIELD)));
         }
 
@@ -291,7 +306,7 @@ public class QuickFIXApplication
                      (msg.getHeader().getString(DeliverToCompID.FIELD)));
                 getSender().sendToTarget(reject);
             } catch (SessionNotFound ex) {
-                Messages.QF_COMP_ID_REJECT_FAILED.error(this,ex);
+                Messages.QF_COMP_ID_REJECT_FAILED.error(getCategory(msg),ex);
             }
             return;
         }

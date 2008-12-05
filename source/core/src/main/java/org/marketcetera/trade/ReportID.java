@@ -4,6 +4,9 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
+
 /* $License$ */
 /**
  * A uniqueID for every report received by the system. The report IDs
@@ -13,6 +16,7 @@ import java.io.Serializable;
  * @version $Id$
  * @since $Release$
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ReportID implements Serializable, Comparable<ReportID> {
     @Override
