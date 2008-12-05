@@ -248,16 +248,14 @@ public interface Messages
                                                                       "fix_version_label"); //$NON-NLS-1$
     public static I18NMessage0P FIX_VERSION_TOOLTIP = new I18NMessage0P(LOGGER,
                                                                         "fix_version_tooltip"); //$NON-NLS-1$
-    public static I18NMessage0P CLIENT_SERVER_URL_LABEL = new I18NMessage0P(LOGGER,
-                                                                         "client_server_url_label"); //$NON-NLS-1$
-    public static I18NMessage0P INCOMING_TOPIC_LABEL = new I18NMessage0P(LOGGER,
-                                                                         "incoming_topic_label"); //$NON-NLS-1$
-    public static I18NMessage0P OUTGOING_QUEUE_LABEL = new I18NMessage0P(LOGGER,
-                                                                         "outgoing_queue_label"); //$NON-NLS-1$
-    public static I18NMessage0P WEB_APP_HOST_LABEL = new I18NMessage0P(LOGGER,
-                                                                       "web_app_host_label"); //$NON-NLS-1$
-    public static I18NMessage0P WEB_APP_PORT_LABEL = new I18NMessage0P(LOGGER,
-                                                                       "web_app_port_label"); //$NON-NLS-1$
+    public static I18NMessage0P CONNECTION_PREFERENCES_JMS_URL_LABEL = new I18NMessage0P(
+			LOGGER, "connection_preferences.jms_url.label"); //$NON-NLS-1$
+    public static I18NMessage0P CONNECTION_PREFERENCES_SERVER_LABEL = new I18NMessage0P(
+			LOGGER, "connection_preferences.server.label"); //$NON-NLS-1$
+    public static I18NMessage0P CONNECTION_PREFERENCES_WEB_SERVICE_HOST_LABEL = new I18NMessage0P(
+			LOGGER, "connection_preferences.web_service_host.label"); //$NON-NLS-1$
+	public static I18NMessage0P CONNECTION_PREFERENCES_WEB_SERVICE_PORT_LABEL = new I18NMessage0P(
+			LOGGER, "connection_preferences.web_service_port.label"); //$NON-NLS-1$
     public static I18NMessage0P MARKET_DATA_FEED_LABEL = new I18NMessage0P(LOGGER,
                                                                            "market_data_feed_label"); //$NON-NLS-1$
     public static I18NMessage0P ORDER_ID_PREFIX_LABEL = new I18NMessage0P(LOGGER,

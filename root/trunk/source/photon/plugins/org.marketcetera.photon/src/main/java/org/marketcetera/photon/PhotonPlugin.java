@@ -114,8 +114,6 @@ public class PhotonPlugin
 	private MarketDataManager marketDataManager;
 
 	private BrokerManager mDestinationManager;
-	
-	public static final String SESSION_START_TIME_PREFERENCE = "TRADING_HISTORY_START_TIME"; //$NON-NLS-1$
 
 	/**
 	 * The constructor.
@@ -139,7 +137,7 @@ public class PhotonPlugin
 		
 		new DefaultScope().getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true); //$NON-NLS-1$ //$NON-NLS-2$
 
-		String level = getPreferenceStore().getString(PhotonPage.LOG_LEVEL_KEY);
+		String level = getPreferenceStore().getString(PhotonPreferences.CONSOLE_LOG_LEVEL);
 		changeLogLevel(level == null ? PhotonPage.LOG_LEVEL_VALUE_INFO : level);
 		
 		// This sets the internal broker to use on thread per "listener"?
@@ -518,7 +516,7 @@ public class PhotonPlugin
 	}
 	
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(PhotonPage.LOG_LEVEL_KEY)){
+		if (event.getProperty().equals(PhotonPreferences.CONSOLE_LOG_LEVEL)){
 			PhotonPlugin.getDefault().changeLogLevel(""+event.getNewValue()); //$NON-NLS-1$
 		}
 	}

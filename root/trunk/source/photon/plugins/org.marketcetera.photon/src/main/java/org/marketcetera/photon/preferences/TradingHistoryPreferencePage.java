@@ -12,6 +12,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.PhotonPreferences;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -43,7 +44,7 @@ public class TradingHistoryPreferencePage extends FieldEditorPreferencePage
 	@Override
 	protected void createFieldEditors() {
 		addField(new TimeOfDayFieldEditor(
-				PhotonPlugin.SESSION_START_TIME_PREFERENCE,
+				PhotonPreferences.TRADING_HISTORY_START_TIME,
 				Messages.TRADING_HISTORY_PREFERENCE_PAGE_SESSION_START_TIME_LABEL
 						.getText(), getFieldEditorParent(), true));
 	}

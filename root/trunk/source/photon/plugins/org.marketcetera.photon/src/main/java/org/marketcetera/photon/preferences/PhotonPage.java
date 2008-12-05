@@ -9,13 +9,13 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.PhotonPreferences;
 
 public class PhotonPage
     extends FieldEditorPreferencePage
     implements IWorkbenchPreferencePage, Messages
 {
 
-	public static final String LOG_LEVEL_KEY = "photon.log.level"; //$NON-NLS-1$
 	public static final String LOG_LEVEL_VALUE_ERROR = "error"; //$NON-NLS-1$
 	public static final String LOG_LEVEL_VALUE_WARN = "warn"; //$NON-NLS-1$
 	public static final String LOG_LEVEL_VALUE_INFO = "info"; //$NON-NLS-1$
@@ -28,7 +28,7 @@ public class PhotonPage
 
 	@Override
 	protected void createFieldEditors() {
-		RadioGroupFieldEditor editor = new RadioGroupFieldEditor(LOG_LEVEL_KEY,
+		RadioGroupFieldEditor editor = new RadioGroupFieldEditor(PhotonPreferences.CONSOLE_LOG_LEVEL,
 		                                                         LOG_LEVEL_LABEL.getText(),
 		                                                         1,
 		                                                         new String[][] { { LOG_LEVEL_ERROR_LABEL.getText(),
