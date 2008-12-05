@@ -70,10 +70,10 @@ interface OutboundServicesProvider
      * 
      * @param inRequest a <code>MarketDataRequest</code> value indicating what data to request
      * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
-     * @return a <code>long</code> value containing an identifier corresponding to this market data request
+     * @return an <code>int</code> value containing an identifier corresponding to this market data request
      */
-    long requestMarketData(MarketDataRequest inRequest,
-                           String inSource);
+    int requestMarketData(MarketDataRequest inRequest,
+                          String inSource);
     /**
      * Creates a market data request processed by a complex event processor. 
      *
@@ -85,22 +85,22 @@ interface OutboundServicesProvider
      * @param inStatements a <code>String[]</code> value indicating what data to request
      * @param inSource a <code>String</code> value indicating what complex event processor provider from which to request the data
      * @param inNamespace a <code>String</code> value indicating what complex event processor namespace to use
-     * @return a <code>long</code> value containing the request handle or 0 if the request failed
+     * @return an <code>int</code> value containing the request handle or 0 if the request failed
      */
-    long requestProcessedMarketData(MarketDataRequest inRequest,
-                                    String inMarketDataSource,
-                                    String[] inStatements,
-                                    String inCEPSource,
-                                    String inNamespace);
+    int requestProcessedMarketData(MarketDataRequest inRequest,
+                                   String inMarketDataSource,
+                                   String[] inStatements,
+                                   String inCEPSource,
+                                   String inNamespace);
     /**
      * Cancels a given market data request.
      * 
      * <p>If the given <code>inDataRequestID</code> identifier does not correspond to an active market data
      * request, this method does nothing.
      *
-     * @param inDataRequestID a <code>long</code> value identifying the market data request to cancel
+     * @param inDataRequestID an <code>int</code> value identifying the market data request to cancel
      */
-    void cancelMarketDataRequest(long inDataRequestID);
+    void cancelMarketDataRequest(int inDataRequestID);
     /**
      * Cancels all market data requests for this strategy.
      *
@@ -116,20 +116,20 @@ interface OutboundServicesProvider
      * @param inStatements a <code>String[]</code> value indicating what data to request
      * @param inSource a <code>String</code> value indicating what complex event processor provider from which to request the data
      * @param inNamespace a <code>String</code> value indicating what complex event processor namespace to use
-     * @return a <code>long</code> value containing an identifier corresponding to this complex event processor request
+     * @return an <code>int</code> value containing an identifier corresponding to this complex event processor request
      */
-    long requestCEPData(String[] inStatements,
-                        String inSource,
-                        String inNamespace);
+    int requestCEPData(String[] inStatements,
+                       String inSource,
+                       String inNamespace);
     /**
      * Cancels a given complex event processor data request.
      * 
      * <p>If the given <code>inDataRequestID</code> identifier does not correspond to an active complex event processor data
      * request, this method does nothing.
      *
-     * @param inDataRequestID a <code>long</code> value identifying the complex event processor request to cancel
+     * @param inDataRequestID an <code>int</code> value identifying the complex event processor request to cancel
      */
-    void cancelCEPRequest(long inDataRequestID);
+    void cancelCEPRequest(int inDataRequestID);
     /**
      * Cancels all complex event processor requests for this strategy.
      *

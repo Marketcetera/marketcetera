@@ -445,8 +445,8 @@ public abstract class LanguageTestBase
     public void cancelMarketDataRequest()
         throws Exception
     {
-        getMarketData(BogusFeedModuleFactory.IDENTIFIER,
-                      "GOOG,YHOO,MSFT,METC");
+        ModuleURN strategy = getMarketData(BogusFeedModuleFactory.IDENTIFIER,
+                                           "GOOG,YHOO,MSFT,METC");
         // TODO same note as above: create a market data provider that deterministically produces data 
         Thread.sleep(5000);
         // market data request has produced some data, verify that now
@@ -468,7 +468,8 @@ public abstract class LanguageTestBase
                                Long.toString(id));
         // execute the onCallback method in the running strategy to force the market data
         //  request cancel
-        getFirstRunningStrategyAsAbstractRunningStrategy().onCallback(this);
+        getRunningStrategy(strategy).getRunningStrategy().onCallback(this);
+        setPropertiesToNull();
         // collect more market data, or, give it the chance to, anyway
         Thread.sleep(5000);
         // make sure no more data was received
@@ -1252,6 +1253,25 @@ public abstract class LanguageTestBase
         });
     }
     /**
+     * Tests a strategy's ability to retrieve available destinations.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void destinations()
+        throws Exception
+    {
+        // call should fail
+        MockClient.getDestinationsFails = true;
+        doDestinationTest(new DestinationStatus[0]);
+        // succeeds and returns a non-empty list
+        MockClient.getDestinationsFails = false;
+        doDestinationTest(destinations.getDestinations().toArray(new DestinationStatus[destinations.getDestinations().size()]));
+        // succeeds and returns an empty list
+        destinations.setDestinations(new ArrayList<DestinationStatus>());
+        doDestinationTest(new DestinationStatus[0]);
+    }
+    /**
      * Test a strategy's ability to create and send orders.
      *
      * @throws Exception if an error occurs
@@ -1684,25 +1704,6 @@ public abstract class LanguageTestBase
                        expectedValue);
     }
     /**
-     * Tests a strategy's ability to retrieve available destinations.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void destinations()
-        throws Exception
-    {
-        // call should fail
-        MockClient.getDestinationsFails = true;
-        doDestinationTest(new DestinationStatus[0]);
-        // succeeds and returns a non-empty list
-        MockClient.getDestinationsFails = false;
-        doDestinationTest(destinations.getDestinations().toArray(new DestinationStatus[destinations.getDestinations().size()]));
-        // succeeds and returns an empty list
-        destinations.setDestinations(new ArrayList<DestinationStatus>());
-        doDestinationTest(new DestinationStatus[0]);
-    }
-    /**
      * Tests that two strategies with the same class name can co-exist.
      *
      * @throws Exception
@@ -1981,13 +1982,13 @@ public abstract class LanguageTestBase
                      suggestions.size());
         String requestIDString = AbstractRunningStrategy.getProperty("requestID");
         assertNotNull(requestIDString);
-        // issue a cancel request for a non-existant id
-        long badID = System.nanoTime();
-        assertFalse(Long.parseLong(requestIDString) == badID);
+        // issue a cancel request for a non-existent id
+        int badID = 10500;
+        assertFalse(Integer.parseInt(requestIDString) == badID);
         AbstractRunningStrategy.setProperty("shouldCancelCEPData",
                                             "true");
         AbstractRunningStrategy.setProperty("requestID",
-                                            Long.toString(badID));
+                                            Integer.toString(badID));
         // the strategy is still running and it has an active CEP query
         // if we send an "onOther" to the strategy, it will trigger a cancel request
         StrategyImpl strategy = getFirstRunningStrategy();

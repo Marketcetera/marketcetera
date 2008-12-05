@@ -43,7 +43,7 @@ public class CombinedRequest
     @Override
     public void onCallback(Object inData)
     {
-        long requestID = Long.parseLong(getProperty("requestID"));
+        int requestID = Integer.parseInt(getProperty("requestID"));
         if(getProperty("cancelCep") != null) {
             cancelCEPRequest(requestID);
         } else {
@@ -124,7 +124,7 @@ public class CombinedRequest
         }
         String cepSource = getProperty("cepSource");
         setProperty("requestID",
-                    Long.toString(requestProcessedMarketData(symbols,
+                    Integer.toString(requestProcessedMarketData(symbols,
                                                              marketDataSource,
                                                              statements,
                                                              cepSource)));

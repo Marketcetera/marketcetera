@@ -93,7 +93,7 @@ public class Orders
                         "1");
         } else {
             setProperty("executionReportsReceived",
-                        Long.toString(Long.parseLong(executionReportsReceived) + 1));
+                        Integer.toString(Integer.parseInt(executionReportsReceived) + 1));
         }
     }
     /* (non-Javadoc)
@@ -105,7 +105,7 @@ public class Orders
         if(getProperty("cancelAll") != null) {
             int ordersCanceled = cancelAllOrders();
             setProperty("ordersCanceled",
-                        Long.toString(ordersCanceled));
+                        Integer.toString(ordersCanceled));
         }
     }
     /* (non-Javadoc)

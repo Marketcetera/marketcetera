@@ -274,10 +274,10 @@ public class Strategy
      * 
      * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols for which to request data
      * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
-     * @return a <code>long</code> value containing an identifier corresponding to this market data request or 0 if the request failed
+     * @return an <code>int</code> value containing an identifier corresponding to this market data request or 0 if the request failed
      */
-    public final long request_market_data(String inSymbols,
-                                          String inSource)
+    public final int request_market_data(String inSymbols,
+                                         String inSource)
     {
         return requestMarketData(inSymbols,
                                  inSource);
@@ -292,12 +292,12 @@ public class Strategy
      *   event processor that handles them.
      * @param inCepSource a <code>String</code> value containing the name of the complex event processor
      *   to which to send the query request
-     * @return a <code>long</code> value containing the handle of the request or 0 if the request failed
+     * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
      */
-    public final long request_processed_market_data(String inSymbols,
-                                                    String inMarketDataSource,
-                                                    String[] inStatements,
-                                                    String inCepSource)
+    public final int request_processed_market_data(String inSymbols,
+                                                   String inMarketDataSource,
+                                                   String[] inStatements,
+                                                   String inCepSource)
     {
         return requestProcessedMarketData(inSymbols,
                                           inMarketDataSource,
@@ -310,9 +310,9 @@ public class Strategy
      * <p>If the given <code>inRequestID</code> identifier does not correspond to an active market data
      * request, this method does nothing.
      *
-     * @param inRequestID a <code>long</code> value identifying the market data request to cancel
+     * @param inRequestID an <code>int</code> value identifying the market data request to cancel
      */
-    public final void cancel_market_data_request(long inRequestID)
+    public final void cancel_market_data_request(int inRequestID)
     {
         cancelMarketDataRequest(inRequestID);
     }
@@ -330,10 +330,10 @@ public class Strategy
      * 
      * @param inStatements a <code>String[]</code> value containing an array of statements that comprises the request
      * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
-     * @return a <code>long</code> value containing an identifier corresponding to this market data request or 0 if the request failed
+     * @return an <code>int</code> value containing an identifier corresponding to this market data request or 0 if the request failed
      */
-    public final long request_cep_data(String[] inStatements,
-                                       String inSource)
+    public final int request_cep_data(String[] inStatements,
+                                      String inSource)
     {
         return requestCEPData(inStatements,
                               inSource);
@@ -344,9 +344,9 @@ public class Strategy
      * <p>If the given <code>inRequestID</code> identifier does not correspond to an active complex event processor data
      * request, this method does nothing.
      *
-     * @param inRequestID a <code>long</code> value identifying the complex event processor data request to cancel
+     * @param inRequestID an <code>int</code> value identifying the complex event processor data request to cancel
      */
-    public final void cancel_cep_request(long inRequestID)
+    public final void cancel_cep_request(int inRequestID)
     {
         cancelCEPRequest(inRequestID);
     }

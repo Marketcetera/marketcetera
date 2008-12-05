@@ -27,8 +27,7 @@ class RubyStrategy < Strategy
       if(marketDataSource != nil)
           symbols = get_parameter("symbols")
           set_property("requestID",
-                       Long.toString(request_market_data(symbols,
-                                                         marketDataSource)))
+                       (request_market_data(symbols, marketDataSource)).to_s)
       end
       if(get_parameter("shouldRequestCEPData") != nil)
           do_cep_request
@@ -99,7 +98,7 @@ class RubyStrategy < Strategy
     shouldCancel = get_property("shouldCancel")
     if(shouldCancel != nil)
         requestToCancel = get_property("requestID")
-        cancel_market_data_request(Long.parseLong(requestToCancel))
+        cancel_market_data_request Long.parseLong(requestToCancel)
     end
       shouldFail = get_parameter("shouldFailOnCallback")
       if(shouldFail != nil) 
