@@ -11,8 +11,7 @@ import quickfix.Message;
 /**
  * Object that encapsulates a collection of message modifiers and
  * provides functions to apply all the modifiers to a particular message.
- * Can be used both in the {@link QuickFIXApplication} for to-admin messages (ie Logon)
- * and in {@link RequestHandler} for outgoing messages
+ *
  * @author toli
  * @version $Id$
  */

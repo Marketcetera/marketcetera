@@ -2,6 +2,7 @@ package org.marketcetera.ors;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
@@ -14,23 +15,22 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
-import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.quickfix.AnalyzedMessage;
+import quickfix.ConfigError;
+import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.SessionNotFound;
@@ -39,18 +39,22 @@ import quickfix.field.AvgPx;
 import quickfix.field.BusinessRejectReason;
 import quickfix.field.ClOrdID;
 import quickfix.field.CumQty;
+import quickfix.field.CxlRejResponseTo;
 import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
 import quickfix.field.LastPx;
 import quickfix.field.LastShares;
-import quickfix.field.MsgType;
+import quickfix.field.MsgSeqNum;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
+import quickfix.field.SecurityType;
+import quickfix.field.SenderCompID;
 import quickfix.field.SendingTime;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
+import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 
 /**
@@ -68,6 +72,22 @@ public class RequestHandler
     implements ReplyHandler<TradeMessage>
 {
 
+    // CLASS DATA.
+
+    private static final String SELF_SENDER_COMP_ID=
+        "ORS"; //$NON-NLS-1$
+    private static final String SELF_TARGET_COMP_ID=
+        "ORS Client"; //$NON-NLS-1$
+    private static final String SELF_ORDER_ID=
+        "NONE"; //$NON-NLS-1$
+    private static final String UNKNOWN_EXEC_ID=
+        "ERROR"; //$NON-NLS-1$
+    private static final char SOH=
+        '\u0001';
+    private static final char SOH_REPLACE=
+        '|';
+
+
     // INSTANCE DATA.
 
     private final Destinations mDestinations;
@@ -76,6 +96,7 @@ public class RequestHandler
     private final ReplyPersister mPersister;
     private final IQuickFIXSender mSender;
     private final IDFactory mIDFactory;
+    private final DataDictionary mDataDictionary;
 
 
     // CONSTRUCTORS.
@@ -87,6 +108,7 @@ public class RequestHandler
          ReplyPersister persister,
          IQuickFIXSender sender,
          IDFactory idFactory)
+        throws ConfigError
     {
         mDestinations=destinations;
         mSelector=selector;
@@ -94,6 +116,8 @@ public class RequestHandler
         mPersister=persister;
         mSender=sender;
         mIDFactory=idFactory;
+        mDataDictionary=new DataDictionary
+            (FIXVersion.FIX_SYSTEM.getDataDictionaryURL());
     }
 
 
@@ -134,276 +158,15 @@ public class RequestHandler
         return FIXVersion.FIX_SYSTEM.getMessageFactory();
     }
 
+    public DataDictionary getDataDictionary()
+    {
+        return mDataDictionary;
+    }
+
     private ExecID getNextExecId()
         throws CoreException
     {
         return new ExecID(getIDFactory().getNext());
-    }
-
-
-    // ReplyHandler.
-
-    @Override
-    public TradeMessage replyToMessage
-        (TradeMessage msg)
-    {
-        DestinationID dID=null;
-        Message qMsg=null;
-        TradeMessage reply=null;
-        try {
-
-            // Reject null messages.
-
-            if (msg==null) {
-                throw new I18NException(Messages.RH_NULL_MESSAGE);
-            }
-
-            // Reject messages of unsupported types.
-
-            if (!(msg instanceof OrderSingle) &&
-                !(msg instanceof OrderCancel) &&                
-                !(msg instanceof OrderReplace) &&                
-                !(msg instanceof FIXOrder)) {
-                throw new I18NException(Messages.RH_UNSUPPORTED_MESSAGE);
-            }
-            Order om=(Order)msg;
-
-            // Identify destination.
-
-            dID=om.getDestinationID();
-            if (dID==null) {
-                dID=getSelector().chooseDestination(om);
-            }
-            if (dID==null) {
-                throw new I18NException(Messages.RH_UNKNOWN_DESTINATION);
-            }
-
-            // Ensure destination is available.
-
-            Destination d=getDestinations().getDestination(dID);
-            if (!d.getLoggedOn()) {
-                throw new I18NException
-                    (new I18NBoundMessage1P
-                     (Messages.RH_UNAVAILABLE_DESTINATION,d.toString()));  
-            }
-
-            // Convert to a FIX message.
-
-            try {
-                qMsg=FIXConverter.toQMessage
-                    (d.getFIXMessageFactory(),d.getFIXVersion(),om);
-            } catch (I18NException ex) {
-                throw new I18NException(ex,Messages.RH_CONVERSION_FAILED);
-            }
-
-            // Ensure the order is allowed.
-
-            try {
-                getAllowedOrders().assertAccepted(qMsg);
-            } catch (CoreException ex) {
-                throw new I18NException(ex,Messages.RH_ORDER_DISALLOWED);
-            }
-
-            // Apply message modifiers.
-
-            if (d.getModifiers()!=null) {
-                try {
-                    d.getModifiers().modifyMessage(qMsg);
-                } catch (CoreException ex) {
-                    throw new I18NException
-                        (ex,new I18NBoundMessage1P
-                         (Messages.RH_MODIFICATION_FAILED,d.toString()));  
-                }
-            }
-
-            // Apply order routing.
-
-            if (d.getRoutes()!=null) {
-                try {
-                    d.getRoutes().modifyMessage
-                        (qMsg,d.getFIXMessageAugmentor());
-                } catch (CoreException ex) {
-                    throw new I18NException
-                        (ex,new I18NBoundMessage1P
-                         (Messages.RH_ROUTING_FAILED,d.toString()));  
-                }
-            }
-
-            // Send message to QuickFIX/J.
-
-            try {
-                getSender().sendToTarget(qMsg,d.getSessionID());
-            } catch (SessionNotFound ex) {
-                throw new I18NException
-                    (ex,new I18NBoundMessage1P
-                     (Messages.RH_UNAVAILABLE_DESTINATION,d.toString()));  
-            }
-            Message report;
-            try {
-                report=createExecutionReport(qMsg);
-            } catch (FieldNotFound ex) {
-                throw new I18NException
-                    (ex,new I18NBoundMessage1P
-                     (Messages.RH_REPORT_FAILED_SENT,qMsg));
-            }
-            if (report!=null) {
-                reply=Factory.getInstance().createExecutionReport
-                    (report,dID,Originator.Server);
-            }
-        } catch (I18NException ex) {
-            Messages.RH_MESSAGE_REJECTED.error(this,ex,msg);
-            Message report;
-            try {
-                if (ex.getI18NBoundMessage()==Messages.RH_UNSUPPORTED_MESSAGE) {
-                    report=getMsgFactory().newBusinessMessageReject
-                        (msg.getClass().getName(),
-                         BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE,
-                         ex.getLocalizedDetail());
-                } else {
-                    report=createRejectionMessage(ex,msg,qMsg);
-                }
-            } catch (CoreException ex2) {
-                Messages.RH_REPORT_FAILED.error(this,ex,msg);
-                return null;
-            }
-            try {
-                reply=FIXConverter.fromQMessage
-                    (report,Originator.Server,dID);
-            } catch (MessageCreationException ex2) {
-                Messages.RH_REPORT_FAILED.error(this,ex2,msg);
-                return null;
-            }
-            if (reply==null) {
-                Messages.RH_REPORT_TYPE_UNSUPPORTED.info(this,msg);
-            }
-        }
-        if (reply!=null) {
-            getPersister().persistReply(reply);
-        }
-        return reply;
-	}
-
-
-    // LEGACY CODE.
-
-    /** Creates a rejection message based on the message that causes the rejection
-     * Currently, if it's an orderCancel then we send back an OrderCancelReject,
-     * otherwise we always send back the ExecutionReport.
-     * @param existingOrder
-     * @return Corresponding rejection Message
-     */
-    protected Message createRejectionMessage
-        (Exception causeEx,
-         TradeMessage order,
-         Message existingOrder)
-        throws CoreException
-    {
-        Message rejection = null;
-        if(FIXMessageUtil.isCancelReplaceRequest(existingOrder) ||
-           FIXMessageUtil.isCancelRequest(existingOrder) )
-        {
-            rejection = getMsgFactory().newOrderCancelReject();
-        } else {
-            rejection = getMsgFactory().createMessage(MsgType.EXECUTION_REPORT);
-            rejection.setField(getNextExecId());
-            rejection.setField(new AvgPx(0));
-            rejection.setField(new CumQty(0));
-            rejection.setField(new LastShares(0));
-            rejection.setField(new LastPx(0));
-            rejection.setField(new ExecTransType(ExecTransType.STATUS));
-        }
-
-        rejection.setField(new OrdStatus(OrdStatus.REJECTED));
-        if (existingOrder!=null) {
-            FIXMessageUtil.fillFieldsFromExistingMessage(rejection,  existingOrder);
-        }
-        
-        
-        String msg = (causeEx.getLocalizedMessage() == null) ? causeEx.toString() : causeEx.getLocalizedMessage();
-        Messages.ERROR_MESSAGE_EXCEPTION.error(this, msg, existingOrder);
-        SLF4JLoggerProxy.debug(this, causeEx, "Reason for above rejection: {}", msg); //$NON-NLS-1$
-        rejection.setString(Text.FIELD, msg);
-        // manually set the ClOrdID since it's not required in the dictionary but is for electronic orders
-        if (order instanceof OrderBase) {
-            rejection.setField(new ClOrdID(((OrderBase)order).getOrderID().
-                                           getValue()));
-        } else if (order instanceof FIXOrder) {
-            try {
-                rejection.setField
-                    (new ClOrdID(((FIXOrder)order).getMessage().
-                                 getString(ClOrdID.FIELD)));
-            } catch(FieldNotFound ignored) {
-                // don't set it if it's not there
-            }
-        }
-        try {
-            getMsgFactory().getMsgAugmentor().executionReportAugment(rejection);
-        } catch (FieldNotFound fieldNotFound) {
-            MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fieldNotFound);
-            SLF4JLoggerProxy.debug(this, mfix, "Could not find field"); //$NON-NLS-1$
-            // ignore the exception since we are already sending a reject
-        }
-        rejection.getHeader().setField(new SendingTime(new Date())); //non-i18n
-        return rejection;
-    }
-
-    protected Message createExecutionReport
-        (Message msg)
-        throws CoreException,
-               FieldNotFound
-    {
-        Message report;
-        if (FIXMessageUtil.isOrderSingle(msg)) {
-            report=getMsgFactory().newExecutionReport
-                (null,
-                 getOptFieldStr(msg,ClOrdID.FIELD),
-                 getNextExecId().getValue(),
-                 OrdStatus.PENDING_NEW,
-                 getOptFieldChar(msg,Side.FIELD),
-                 getOptFieldNum(msg,OrderQty.FIELD),
-                 getOptFieldNum(msg,Price.FIELD),
-                 BigDecimal.ZERO,
-                 BigDecimal.ZERO,
-                 BigDecimal.ZERO,
-                 BigDecimal.ZERO,
-                 getOptFieldSymbol(msg,Symbol.FIELD),
-                 getOptFieldStr(msg,Account.FIELD));
-        } else if (FIXMessageUtil.isCancelReplaceRequest(msg)) {
-            report=getMsgFactory().newExecutionReport
-                (getOptFieldStr(msg,OrderID.FIELD),
-                 getOptFieldStr(msg,ClOrdID.FIELD),
-                 getNextExecId().getValue(),
-                 OrdStatus.PENDING_REPLACE,
-                 getOptFieldChar(msg,Side.FIELD),
-                 getOptFieldNum(msg,OrderQty.FIELD),
-                 getOptFieldNum(msg,Price.FIELD),
-                 BigDecimal.ZERO,
-                 BigDecimal.ZERO,
-                 BigDecimal.ZERO,
-                 BigDecimal.ZERO,
-                 getOptFieldSymbol(msg,Symbol.FIELD),
-                 getOptFieldStr(msg,Account.FIELD));
-        } else if (FIXMessageUtil.isCancelRequest(msg)) {
-            report=getMsgFactory().newExecutionReport
-                (getOptFieldStr(msg,OrderID.FIELD),
-                 getOptFieldStr(msg,ClOrdID.FIELD),
-                 getNextExecId().getValue(),
-                 OrdStatus.PENDING_CANCEL,
-                 getOptFieldChar(msg,Side.FIELD),
-                 getOptFieldNum(msg,OrderQty.FIELD),
-                 getOptFieldNum(msg,Price.FIELD),
-                 BigDecimal.ZERO,
-                 BigDecimal.ZERO,
-                 BigDecimal.ZERO,
-                 BigDecimal.ZERO,
-                 getOptFieldSymbol(msg,Symbol.FIELD),
-                 getOptFieldStr(msg,Account.FIELD));
-        } else {
-            return null;
-        }
-        report.getHeader().setField(new SendingTime(new Date())); //non-i18n
-        FIXMessageUtil.fillFieldsFromExistingMessage(report,msg,false);
-        return report;
     }
 
     private static String getOptFieldStr
@@ -440,13 +203,345 @@ public class RequestHandler
     }
 
     private static MSymbol getOptFieldSymbol
-        (Message msg,
-         int field)
+        (Message msg)
     {
-        String str=getOptFieldStr(msg,field);
+        String str=getOptFieldStr(msg,Symbol.FIELD);
         if (str==null) {
             return null;
         }
-        return new MSymbol(str);
+        return new MSymbol
+            (str,org.marketcetera.trade.SecurityType.getInstanceForFIXValue
+             (getOptFieldStr(msg,SecurityType.FIELD)));
     }
+
+    private static void addRequiredFields
+        (Message msg)
+    {
+        msg.getHeader().setField(new MsgSeqNum(0));
+        msg.getHeader().setField(new SenderCompID(SELF_SENDER_COMP_ID));
+        msg.getHeader().setField(new TargetCompID(SELF_TARGET_COMP_ID));
+        msg.getHeader().setField(new SendingTime(new Date())); //non-i18n
+
+        // This indirectly adds body length and checksum.
+        msg.toString();
+    }
+
+    /**
+     * Creates a QuickFIX/J rejection (always of the system FIX
+     * version) if processing of the given message failed with the
+     * given exception.
+     *
+     * @param ex The exception.
+     * @param msg The message, in FIX Agnostic form. It may be null.
+     *
+     * @return The rejection.
+     */
+
+    private Message createRejection
+        (I18NException ex,
+         TradeMessage msg)
+    {
+        // Special handling of unsupported incoming messages.
+
+        if (ex.getI18NBoundMessage()==Messages.RH_UNSUPPORTED_MESSAGE) {
+            return getMsgFactory().newBusinessMessageReject
+                (msg.getClass().getName(),
+                 BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE,
+                 ex.getLocalizedDetail().replace(SOH,SOH_REPLACE));
+        }
+
+        // Attempt conversion of incoming message into a QuickFIX/J
+        // message using the system FIX dictionary.
+
+        Message qMsg=null;
+        if (msg instanceof Order) {
+            try {
+                qMsg=FIXConverter.toQMessage
+                    (getMsgFactory(),FIXVersion.FIX_SYSTEM,(Order)msg);
+            } catch (I18NException ex2) {
+                Messages.RH_REJ_CONVERSION_FAILED.warn(this,ex2,msg);
+            }
+        }
+
+        // Create basic rejection shell.
+
+        Message qMsgReply;
+        boolean orderCancelType=
+            (FIXMessageUtil.isCancelRequest(qMsg) ||
+             FIXMessageUtil.isCancelReplaceRequest(qMsg));
+        if (orderCancelType) {
+            qMsgReply=getMsgFactory().newOrderCancelRejectEmpty();
+            char reason;
+            if (FIXMessageUtil.isCancelRequest(qMsg)) {
+                reason=CxlRejResponseTo.ORDER_CANCEL_REQUEST;
+            } else {
+                reason=CxlRejResponseTo.ORDER_CANCEL_REPLACE_REQUEST;
+            }
+            qMsgReply.setField(new CxlRejResponseTo(reason));
+        } else {
+            qMsgReply=getMsgFactory().newExecutionReportEmpty();
+            try {
+                qMsgReply.setField(getNextExecId());
+            } catch (CoreException ex2) {
+                Messages.RH_REJ_ID_GENERATION_FAILED.warn(this,ex2);
+                qMsgReply.setField(new ExecID(UNKNOWN_EXEC_ID));
+            }
+            qMsgReply.setField(new AvgPx(0));
+            qMsgReply.setField(new CumQty(0));
+            qMsgReply.setField(new LastShares(0));
+            qMsgReply.setField(new LastPx(0));
+            qMsgReply.setField(new ExecTransType(ExecTransType.STATUS));
+        }
+        qMsgReply.setField(new OrdStatus(OrdStatus.REJECTED));
+        qMsgReply.setString(Text.FIELD,ex.getLocalizedDetail().replace
+                            (SOH,SOH_REPLACE));
+
+        // Add all the fields of the incoming message.
+
+        if (qMsg!=null) {
+            FIXMessageUtil.fillFieldsFromExistingMessage(qMsgReply,qMsg,false);
+        }
+
+        // Add an order ID, if there was none from the incoming message.
+
+        if (!qMsgReply.isSetField(OrderID.FIELD)) {
+            qMsgReply.setField(new OrderID(SELF_ORDER_ID));
+        }
+
+        // Augment rejection.
+
+        if (!orderCancelType) {
+            try {
+                getMsgFactory().getMsgAugmentor().executionReportAugment
+                    (qMsgReply);
+            } catch (FieldNotFound ex2) {
+                Messages.RH_REJ_AUGMENTATION_FAILED.warn(this,ex2,qMsgReply);
+            }
+        }
+
+        // Add required header/trailer fields.
+
+        addRequiredFields(qMsgReply);
+        return qMsgReply;
+    }
+
+    /**
+     * Creates a QuickFIX/J ACK execution report (always of the system
+     * FIX version) for the given message.
+     *
+     * @param qMsg The message, in QuickFIX/J form.
+     *
+     * @return The report. It may be null if a report cannot be
+     * generated for the given message type.
+     *
+     * @throws CoreException Thrown if there is a problem.
+     * @throws FieldNotFound Thrown if there is a QuickFIX/J problem.
+     */
+
+    private Message createExecutionReport
+        (Message qMsg)
+        throws CoreException,
+               FieldNotFound
+    {
+        // Choose status that matches that of the incoming message.
+
+        char ordStatus;
+        String orderID;
+        if (FIXMessageUtil.isOrderSingle(qMsg)) {
+            ordStatus=OrdStatus.PENDING_NEW;
+            orderID=SELF_ORDER_ID;
+        } else if (FIXMessageUtil.isCancelReplaceRequest(qMsg)) {
+            ordStatus=OrdStatus.PENDING_REPLACE;
+            orderID=getOptFieldStr(qMsg,OrderID.FIELD);
+        } else if (FIXMessageUtil.isCancelRequest(qMsg)) {
+            ordStatus=OrdStatus.PENDING_CANCEL;
+            orderID=getOptFieldStr(qMsg,OrderID.FIELD);
+        } else {
+            return null;
+        }
+
+        // Create execution report.
+
+        Message qMsgReply=getMsgFactory().newExecutionReport
+            (orderID,
+             getOptFieldStr(qMsg,ClOrdID.FIELD),
+             getNextExecId().getValue(),
+             ordStatus,
+             getOptFieldChar(qMsg,Side.FIELD),
+             getOptFieldNum(qMsg,OrderQty.FIELD),
+             getOptFieldNum(qMsg,Price.FIELD),
+             BigDecimal.ZERO,
+             BigDecimal.ZERO,
+             BigDecimal.ZERO,
+             BigDecimal.ZERO,
+             getOptFieldSymbol(qMsg),
+             getOptFieldStr(qMsg,Account.FIELD));
+
+        // Add all the fields of the incoming message.
+
+        FIXMessageUtil.fillFieldsFromExistingMessage(qMsgReply,qMsg,false);
+
+        // Add required header/trailer fields.
+
+        addRequiredFields(qMsgReply);
+        return qMsgReply;
+    }
+
+
+    // ReplyHandler.
+
+    @Override
+    public TradeMessage replyToMessage
+        (TradeMessage msg)
+    {
+        Messages.RH_RECEIVED_MESSAGE.info(this,msg);
+        DestinationID dID=null;
+        Destination d=null;
+        Message qMsg=null;
+        Message qMsgReply=null;
+        try {
+
+            // Reject null messages.
+
+            if (msg==null) {
+                throw new I18NException(Messages.RH_NULL_MESSAGE);
+            }
+
+            // Reject messages of unsupported types.
+
+            if (!(msg instanceof OrderSingle) &&
+                !(msg instanceof OrderCancel) &&                
+                !(msg instanceof OrderReplace) &&                
+                !(msg instanceof FIXOrder)) {
+                throw new I18NException(Messages.RH_UNSUPPORTED_MESSAGE);
+            }
+            Order oMsg=(Order)msg;
+
+            // Identify destination.
+
+            dID=oMsg.getDestinationID();
+            if (dID==null) {
+                dID=getSelector().chooseDestination(oMsg);
+            }
+            if (dID==null) {
+                throw new I18NException(Messages.RH_UNKNOWN_DESTINATION);
+            }
+
+            // Ensure destination ID maps to existing destination.
+
+            d=getDestinations().getDestination(dID);
+            if (d==null) {
+                throw new I18NException(Messages.RH_UNKNOWN_DESTINATION_ID);
+            }
+
+            // Convert to a QuickFIX/J message.
+
+            try {
+                qMsg=FIXConverter.toQMessage
+                    (d.getFIXMessageFactory(),d.getFIXVersion(),oMsg);
+            } catch (I18NException ex) {
+                throw new I18NException(ex,Messages.RH_CONVERSION_FAILED);
+            }
+            d.logMessage(qMsg);
+
+            // Ensure destination is available.
+
+            if (!d.getLoggedOn()) {
+                throw new I18NException(Messages.RH_UNAVAILABLE_DESTINATION);
+            }
+
+            // Ensure the order is allowed.
+
+            try {
+                getAllowedOrders().assertAccepted(qMsg);
+            } catch (CoreException ex) {
+                throw new I18NException(ex,Messages.RH_ORDER_DISALLOWED);
+            }
+
+            // Apply message modifiers.
+
+            if (d.getModifiers()!=null) {
+                try {
+                    d.getModifiers().modifyMessage(qMsg);
+                } catch (CoreException ex) {
+                    throw new I18NException(ex,Messages.RH_MODIFICATION_FAILED);
+                }
+            }
+
+            // Apply order routing.
+
+            if (d.getRoutes()!=null) {
+                try {
+                    d.getRoutes().modifyMessage
+                        (qMsg,d.getFIXMessageAugmentor());
+                } catch (CoreException ex) {
+                    throw new I18NException(ex,Messages.RH_ROUTING_FAILED);
+                }
+            }
+
+            // Send message to QuickFIX/J.
+
+            try {
+                getSender().sendToTarget(qMsg,d.getSessionID());
+            } catch (SessionNotFound ex) {
+                throw new I18NException(ex,Messages.RH_UNAVAILABLE_DESTINATION);
+            }
+
+            // Compose ACK execution report (with pending status).
+
+            try {
+                qMsgReply=createExecutionReport(qMsg);
+                if (qMsgReply==null) {
+                    Messages.RH_ACK_FAILED_WARN.warn
+                        (this,msg,qMsg,d.toString());
+                }
+            } catch (FieldNotFound ex) {
+                throw new I18NException(ex,Messages.RH_ACK_FAILED);
+            } catch (CoreException ex) {
+                throw new I18NException(ex,Messages.RH_ACK_FAILED);
+            }
+        } catch (I18NException ex) {
+            Messages.RH_MESSAGE_PROCESSING_FAILED.error
+                (this,ex,msg,qMsg,
+                 ObjectUtils.toString(d,ObjectUtils.toString(dID)));
+            qMsgReply=createRejection(ex,msg);
+        }
+
+        // If the reply could not be created, we are done (a
+        // warning/error has already been reported).
+
+        if (qMsgReply==null) {
+            return null;
+        }
+        if (SLF4JLoggerProxy.isDebugEnabled(this)) {
+            Messages.RH_ANALYZED_MESSAGE.debug
+                (this,new AnalyzedMessage
+                 (getDataDictionary(),qMsgReply).toString());
+        }
+
+        // Convert reply to FIX Agnostic messsage.
+
+        TradeMessage reply=null;
+        try {
+            reply=FIXConverter.fromQMessage(qMsgReply,Originator.Server,dID);
+            if (reply==null) {
+                Messages.RH_REPORT_TYPE_UNSUPPORTED.warn(this,qMsgReply);
+            }
+        } catch (MessageCreationException ex) {
+            Messages.RH_REPORT_FAILED.error(this,ex,qMsgReply);
+        }
+
+        // If the reply could not be packaged in FIX Agnostic format,
+        // we are done (a warning/error has already been reported).
+
+        if (reply==null) {
+            return null;
+        }
+
+        // Persist and send reply.
+        
+        getPersister().persistReply(reply);
+        Messages.RH_SENDING_REPLY.info(this,reply);
+        return reply;
+	}
 }

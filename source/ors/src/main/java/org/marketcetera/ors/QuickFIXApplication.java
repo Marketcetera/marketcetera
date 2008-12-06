@@ -138,40 +138,52 @@ public class QuickFIXApplication
         getToClientStatus().convertAndSend(d.getStatus());
     }
 
+    private void sendTradeRecord
+        (Message msg)
+    {
+        Messages.QF_SENDING_TRADE_RECORD.info(getCategory(msg),msg);
+        if (getToTradeRecorder()==null) {
+            return;
+        }
+        getToTradeRecorder().convertAndSend(msg);
+    }
+
     private void sendToClientTrades
         (Destination d,
          Message msg,
          Originator originator)
     {
-        Messages.QF_SENDING_REPLY.info(getCategory(msg),msg,d);
         if (getToClientTrades()==null) {
             return;
         }
+
+        // Convert reply to FIX Agnostic messsage.
+
         TradeMessage reply=null;
         try {
             reply=FIXConverter.fromQMessage
                 (msg,originator,d.getDestinationID());
+            if (reply==null) {
+                Messages.QF_REPORT_TYPE_UNSUPPORTED.warn
+                    (getCategory(msg),msg,d.toString());
+            }
         } catch (MessageCreationException ex) {
-            Messages.QF_REPORT_FAILED.error(getCategory(msg),ex);
-            return;
+            Messages.QF_REPORT_FAILED.error
+                (getCategory(msg),ex,msg,d.toString());
         }
-        if (reply==null) {
-            Messages.QF_REPORT_TYPE_UNSUPPORTED.info(getCategory(msg));
-            return;
-        }
-        getPersister().persistReply(reply);
-        getToClientTrades().convertAndSend(reply);
-    }
 
-    private void sendTradeRecord
-        (Destination d,
-         Message msg)
-    {
-        Messages.QF_SENDING_TRADE_RECORD.info(getCategory(msg),msg,d);
-        if (getToTradeRecorder()==null) {
+        // If reply could not be packaged in FIX Agnostic format, we
+        // are done (an error has already been reported).
+
+        if (reply==null) {
             return;
         }
-        getToTradeRecorder().convertAndSend(msg);
+
+        // Persist and send reply.
+        
+        getPersister().persistReply(reply);
+        Messages.QF_SENDING_REPLY.info(getCategory(msg),reply);
+        getToClientTrades().convertAndSend(reply);
     }
 
 
@@ -214,7 +226,8 @@ public class QuickFIXApplication
             try {
                 d.getModifiers().modifyMessage(msg);
             } catch (CoreException ex) {
-                Messages.QF_MODIFICATION_FAILED.warn(getCategory(msg),ex);
+                Messages.QF_MODIFICATION_FAILED.warn
+                    (getCategory(msg),ex,msg,d.toString());
             }
         }
 
@@ -232,7 +245,8 @@ public class QuickFIXApplication
                 msg.setString(Text.FIELD,Messages.QF_IN_MESSAGE_REJECTED.
                               getText(msgTypeName,msg.getString(Text.FIELD)));
             } catch (FieldNotFound ex) {
-                Messages.QF_MODIFICATION_FAILED.warn(getCategory(msg),ex);
+                Messages.QF_MODIFICATION_FAILED.warn
+                    (getCategory(msg),ex,msg,d.toString());
                 // Send original message instead of modified one.
             }
             sendToClientTrades(d,msg,Originator.Server);
@@ -248,7 +262,7 @@ public class QuickFIXApplication
         Messages.QF_FROM_ADMIN.info(getCategory(msg),msg,d);
         d.logMessage(msg);
 
-        // Do not propagate heartbeats to client.
+        // Send message to client.
 
         sendToClientTrades(d,msg,Originator.Destination);
     }
@@ -304,9 +318,10 @@ public class QuickFIXApplication
                 reject.setString
                     (Text.FIELD,Messages.QF_COMP_ID_REJECT.getText
                      (msg.getHeader().getString(DeliverToCompID.FIELD)));
-                getSender().sendToTarget(reject);
+                getSender().sendToTarget(reject,session);
             } catch (SessionNotFound ex) {
-                Messages.QF_COMP_ID_REJECT_FAILED.error(getCategory(msg),ex);
+                Messages.QF_COMP_ID_REJECT_FAILED.error
+                    (getCategory(msg),ex,d.toString());
             }
             return;
         }
@@ -317,7 +332,7 @@ public class QuickFIXApplication
             char ordStatus=msg.getChar(OrdStatus.FIELD);
             if ((ordStatus==OrdStatus.FILLED) ||
                 (ordStatus==OrdStatus.PARTIALLY_FILLED)) {
-                sendTradeRecord(d,msg);
+                sendTradeRecord(msg);
             }
         }
     }
