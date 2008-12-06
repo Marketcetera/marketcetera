@@ -622,6 +622,8 @@ public final class FIXConverter
      * @param fixVersion The FIX version. 
      * @param o The order.
      *
+     * @return The QuickFIX/J message.
+     *
      * @throws I18NException Thrown if conversion fails.
      */
 

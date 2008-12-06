@@ -558,8 +558,24 @@ public class FIXMessageFactory {
     public Message newOrderEmpty()
     {
         Message msg=msgFactory.create
-            (beginString, MsgType.ORDER_SINGLE);
+            (beginString,MsgType.ORDER_SINGLE);
         addHandlingInst(msg);
+        addTransactionTimeIfNeeded(msg);
+        return msg;
+    }
+
+    public Message newOrderCancelRejectEmpty()
+    {
+        Message msg = msgFactory.create
+            (beginString,MsgType.ORDER_CANCEL_REJECT);
+        addTransactionTimeIfNeeded(msg);
+        return msg;
+    }
+
+    public Message newExecutionReportEmpty()
+    {
+        Message msg = msgFactory.create
+            (beginString,MsgType.EXECUTION_REPORT);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
