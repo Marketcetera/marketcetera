@@ -10,6 +10,7 @@ import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.messagehistory.MessageVisitor;
@@ -149,15 +150,21 @@ public class PhotonController
 	protected void handleExecutionReport(ExecutionReport inReport) throws FieldNotFound, NoMoreIDsException {
 
 		if (OrderStatus.Rejected == inReport.getOrderStatus()) {
+			// TODO: improve ExecutionReport API to expose encoded text
 			String rejectReason = inReport.getText();
 			if(rejectReason == null) {
-				rejectReason = "Unknown"; //$NON-NLS-1$
+				if (inReport instanceof HasFIXMessage) {
+					rejectReason = FIXMessageUtil.getTextOrEncodedText(((HasFIXMessage) inReport).getMessage(), Messages.UNKNOWN_VALUE.getText());
+				} else {
+					rejectReason = Messages.UNKNOWN_VALUE.getText();
+				}
 			}
 			
 			org.marketcetera.trade.OrderID orderID = inReport.getOrderID();
 			
+			MSymbol symbol = inReport.getSymbol();
 			String rejectMsg = REJECT_MESSAGE.getText(orderID.getValue(),
-			                                          inReport.getSymbol().getFullSymbol(),
+			                                          symbol == null ? Messages.UNKNOWN_VALUE.getText() : symbol.getFullSymbol(),
 			                                          rejectReason);
 			internalMainLogger.error(rejectMsg);
 		}
