@@ -29,18 +29,18 @@ import quickfix.SessionID;
 /* $License$ */
 
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class Destination
+public class Broker
 {
 
     // CLASS DATA
 
     private static final String HEARTBEAT_CATEGORY=
-        Destination.class.getName()+".HEARTBEATS";
+        Broker.class.getName()+".HEARTBEATS";
 
 
     // INSTANCE DATA.
 
-    private final SpringDestination mSpringDestination;
+    private final SpringBroker mSpringBroker;
     private final DestinationID mDestinationID;
     private FIXDataDictionary mDataDictionary;
     private boolean mLoggedOn;
@@ -53,16 +53,16 @@ public class Destination
      * message modifiers are configured to rely on the given report
      * history services provider for persistence operations.
      *
-     * @param springDestination The configuration.
+     * @param springBroker The configuration.
      * @param historyServices The report history services provider.
      */
 
-    public Destination
-        (SpringDestination springDestination,
+    public Broker
+        (SpringBroker springBroker,
          ReportHistoryServices historyServices)
     {
-        mSpringDestination=springDestination;
-        mDestinationID=new DestinationID(getSpringDestination().getId());
+        mSpringBroker=springBroker;
+        mDestinationID=new DestinationID(getSpringBroker().getId());
         if (getModifiers()!=null) {
             getModifiers().setMessageFactory(getFIXMessageFactory());
             getModifiers().setHistoryServices(historyServices);
@@ -78,9 +78,9 @@ public class Destination
      * @return The configuration.
      */
 
-    public SpringDestination getSpringDestination()
+    public SpringBroker getSpringBroker()
     {
-        return mSpringDestination;
+        return mSpringBroker;
     }
 
     /**
@@ -103,7 +103,7 @@ public class Destination
 
     public String getName()
     {
-        return getSpringDestination().getName();
+        return getSpringBroker().getName();
     }
 
     /**
@@ -125,7 +125,7 @@ public class Destination
 
     public SessionID getSessionID()
     {
-        return getSpringDestination().getDescriptor().getQSessionID();
+        return getSpringBroker().getDescriptor().getQSessionID();
     }
 
     /**
@@ -158,7 +158,7 @@ public class Destination
 
     public MessageModifierManager getModifiers()
     {
-        return getSpringDestination().getModifiers();
+        return getSpringBroker().getModifiers();
     }
 
     /**
@@ -169,7 +169,7 @@ public class Destination
 
     public MessageRouteManager getRoutes()
     {
-        return getSpringDestination().getRoutes();
+        return getSpringBroker().getRoutes();
     }
 
     /**

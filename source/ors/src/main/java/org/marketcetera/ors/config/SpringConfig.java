@@ -2,7 +2,7 @@ package org.marketcetera.ors.config;
 
 import javax.jms.ConnectionFactory;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.ors.brokers.SpringDestinations;
+import org.marketcetera.ors.brokers.SpringBrokers;
 import org.marketcetera.ors.brokers.SpringSelector;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.ors.filters.MessageFilterNoop;
@@ -40,7 +40,7 @@ public class SpringConfig
 
     // INSTANCE DATA.
 
-    private SpringDestinations mDestinations;
+    private SpringBrokers mDestinations;
     private SpringSelector mSelector;
     private MessageFilter mSupportedMessages;
     private OrderFilter mAllowedOrders;
@@ -87,7 +87,7 @@ public class SpringConfig
      */
 
     public SpringConfig
-        (SpringDestinations destinations,
+        (SpringBrokers destinations,
          SpringSelector selector,
          MessageFilter supportedMessages,
          OrderFilter allowedOrders,
@@ -151,7 +151,7 @@ public class SpringConfig
      */
 
     public void setDestinations
-        (SpringDestinations destinations)
+        (SpringBrokers destinations)
     {
         mDestinations=destinations;
     }
@@ -162,7 +162,7 @@ public class SpringConfig
      * @return The configurations.
      */
 
-    public SpringDestinations getDestinations()
+    public SpringBrokers getDestinations()
     {
         return mDestinations;
     }

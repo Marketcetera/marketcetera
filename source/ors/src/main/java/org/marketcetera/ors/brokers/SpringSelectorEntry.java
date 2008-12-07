@@ -22,7 +22,7 @@ public class SpringSelectorEntry
     // INSTANCE DATA.
 
     private String mTargetType;
-    private SpringDestination mDestination;
+    private SpringBroker mDestination;
     private boolean mSkipIfUnavailable;
 
 
@@ -58,7 +58,7 @@ public class SpringSelectorEntry
      */
 
     public void setDestination
-        (SpringDestination destination)
+        (SpringBroker destination)
     {
         mDestination=destination;
     }
@@ -69,7 +69,7 @@ public class SpringSelectorEntry
      * @return The destination.
      */
 
-    public SpringDestination getDestination()
+    public SpringBroker getDestination()
     {
         return mDestination;
     }

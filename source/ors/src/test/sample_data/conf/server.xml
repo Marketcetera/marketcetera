@@ -21,7 +21,7 @@
   <import
    resource="messaging/main.xml"/>
   <import
-   resource="destinations/main.xml"/>
+   resource="brokers/main.xml"/>
   <import
    resource="filters/main.xml"/>
   <import

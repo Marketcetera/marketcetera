@@ -23,7 +23,7 @@ public class Selector
 
     // INSTANCE DATA.
 
-    private final Destinations mDestinations;
+    private final Brokers mDestinations;
     private final SpringSelector mSpringSelector;
     private List<SelectorEntry> mEntries;
     private final DestinationID mDefaultDestinationID;
@@ -38,7 +38,7 @@ public class Selector
      */
 
     public Selector
-        (Destinations destinations,
+        (Brokers destinations,
          SpringSelector springSelector)
     {
         mDestinations=destinations;
@@ -61,7 +61,7 @@ public class Selector
 
     // INSTANCE METHODS.
 
-    private Destinations getDestinations()
+    private Brokers getDestinations()
     {
         return mDestinations;
     }

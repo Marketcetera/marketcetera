@@ -19,14 +19,14 @@ import org.springframework.beans.factory.InitializingBean;
 /* $License$ */
 
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class SpringDestinations
+public class SpringBrokers
     implements InitializingBean
 {
 
     // INSTANCE DATA.
 
     private SpringSessionSettings mSessionSettings;
-    private List<SpringDestination> mDestinations;
+    private List<SpringBroker> mDestinations;
 
 
     // INSTANCE METHODS.
@@ -64,7 +64,7 @@ public class SpringDestinations
      */
 
     public void setDestinations
-        (List<SpringDestination> destinations)
+        (List<SpringBroker> destinations)
     {
         mDestinations=destinations;
     }
@@ -75,7 +75,7 @@ public class SpringDestinations
      * @return The configurations.
      */
 
-    public List<SpringDestination> getDestinations()
+    public List<SpringBroker> getDestinations()
     {
         return mDestinations;
     }
@@ -95,7 +95,7 @@ public class SpringDestinations
         }
         List<SpringSessionDescriptor> list=
             new ArrayList<SpringSessionDescriptor>(getDestinations().size());
-        for (SpringDestination d:getDestinations()) {
+        for (SpringBroker d:getDestinations()) {
             list.add(d.getDescriptor());
         }
         getSettings().setDescriptors(list);

@@ -25,7 +25,7 @@
 
   <bean
    id="metc_dest1_destination"
-   class="org.marketcetera.ors.brokers.SpringDestination">
+   class="org.marketcetera.ors.brokers.SpringBroker">
     <property
      name="name"
      value="Marketcetera Exchange 1"/>

@@ -7,7 +7,7 @@ import javax.management.ObjectName;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.client.Service;
 import org.marketcetera.core.ApplicationBase;
-import org.marketcetera.ors.brokers.Destinations;
+import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.config.SpringConfig;
 import org.marketcetera.ors.history.ReportHistoryServices;
@@ -132,8 +132,7 @@ public class OrderRoutingSystem
         JmsManager jmsMgr=new JmsManager
             (cfg.getIncomingConnectionFactory(),
              cfg.getOutgoingConnectionFactory());
-        Destinations destinations=new Destinations
-            (cfg.getDestinations(),historyServices);
+        Brokers destinations=new Brokers(cfg.getDestinations(),historyServices);
         Selector selector=new Selector(destinations,cfg.getSelector());
         cfg.getIDFactory().init();
         LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
