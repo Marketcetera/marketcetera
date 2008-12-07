@@ -25,7 +25,7 @@
 
   <bean
    id="metc_destinations"
-   class="org.marketcetera.ors.dest.SpringDestinations">
+   class="org.marketcetera.ors.brokers.SpringDestinations">
     <property
      name="settings"
      ref="metc_qsettings"/>

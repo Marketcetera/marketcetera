@@ -3,11 +3,11 @@ package org.marketcetera.ors.mbeans;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.ors.dest.Destination;
+import org.marketcetera.ors.brokers.Destination;
+import org.marketcetera.ors.brokers.Destinations;
 import org.marketcetera.quickfix.IQuickFIXSender;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.ors.dest.Destinations;
 
 import quickfix.Message;
 import quickfix.SessionID;

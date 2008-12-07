@@ -2,8 +2,8 @@ package org.marketcetera.ors.config;
 
 import javax.jms.ConnectionFactory;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.ors.dest.SpringDestinations;
-import org.marketcetera.ors.dest.SpringSelector;
+import org.marketcetera.ors.brokers.SpringDestinations;
+import org.marketcetera.ors.brokers.SpringSelector;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.ors.filters.MessageFilterNoop;
 import org.marketcetera.ors.filters.OrderFilter;
@@ -403,7 +403,7 @@ public class SpringConfig
         throws I18NException
     {
         if (getDestinations()==null) {
-            throw new I18NException(Messages.NO_DESTINATIONS);
+            throw new I18NException(Messages.NO_BROKERS);
         }
         if (getSelector()==null) {
             throw new I18NException(Messages.NO_SELECTOR);

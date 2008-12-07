@@ -18,7 +18,7 @@
 
   <bean
    id="metc_selector"
-   class="org.marketcetera.ors.dest.SpringSelector">
+   class="org.marketcetera.ors.brokers.SpringSelector">
     <property
      name="defaultDestination"
 	 ref="metc_destination"/>

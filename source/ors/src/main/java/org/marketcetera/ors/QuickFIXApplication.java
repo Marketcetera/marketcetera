@@ -1,8 +1,8 @@
 package org.marketcetera.ors;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.dest.Destination;
-import org.marketcetera.ors.dest.Destinations;
+import org.marketcetera.ors.brokers.Destination;
+import org.marketcetera.ors.brokers.Destinations;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.IQuickFIXSender;

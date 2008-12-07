@@ -6,9 +6,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.ors.dest.Destination;
-import org.marketcetera.ors.dest.Destinations;
-import org.marketcetera.ors.dest.Selector;
+import org.marketcetera.ors.brokers.Destination;
+import org.marketcetera.ors.brokers.Destinations;
+import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.filters.OrderFilter;
 import org.marketcetera.ors.jms.ReplyHandler;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -424,14 +424,14 @@ public class RequestHandler
                 dID=getSelector().chooseDestination(oMsg);
             }
             if (dID==null) {
-                throw new I18NException(Messages.RH_UNKNOWN_DESTINATION);
+                throw new I18NException(Messages.RH_UNKNOWN_BROKER);
             }
 
             // Ensure destination ID maps to existing destination.
 
             d=getDestinations().getDestination(dID);
             if (d==null) {
-                throw new I18NException(Messages.RH_UNKNOWN_DESTINATION_ID);
+                throw new I18NException(Messages.RH_UNKNOWN_BROKER_ID);
             }
 
             // Convert to a QuickFIX/J message.
@@ -447,7 +447,7 @@ public class RequestHandler
             // Ensure destination is available.
 
             if (!d.getLoggedOn()) {
-                throw new I18NException(Messages.RH_UNAVAILABLE_DESTINATION);
+                throw new I18NException(Messages.RH_UNAVAILABLE_BROKER);
             }
 
             // Ensure the order is allowed.
@@ -484,7 +484,7 @@ public class RequestHandler
             try {
                 getSender().sendToTarget(qMsg,d.getSessionID());
             } catch (SessionNotFound ex) {
-                throw new I18NException(ex,Messages.RH_UNAVAILABLE_DESTINATION);
+                throw new I18NException(ex,Messages.RH_UNAVAILABLE_BROKER);
             }
 
             // Compose ACK execution report (with pending status).

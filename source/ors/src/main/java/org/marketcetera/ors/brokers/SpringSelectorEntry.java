@@ -1,4 +1,4 @@
-package org.marketcetera.ors.dest;
+package org.marketcetera.ors.brokers;
 
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
@@ -109,7 +109,7 @@ public class SpringSelectorEntry
             throw new I18NException(Messages.NO_TARGET_TYPE);
         }
         if (getDestination()==null) {
-            throw new I18NException(Messages.NO_DESTINATION);
+            throw new I18NException(Messages.NO_BROKER);
         }
     }
 }

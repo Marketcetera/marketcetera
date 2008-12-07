@@ -103,12 +103,12 @@ public interface Messages
         new I18NMessage0P(LOGGER,"rh_null_message"); //$NON-NLS-1$
     static final I18NMessage0P RH_UNSUPPORTED_MESSAGE=
         new I18NMessage0P(LOGGER,"rh_unsupported_message"); //$NON-NLS-1$
-    static final I18NMessage0P RH_UNKNOWN_DESTINATION=
-        new I18NMessage0P(LOGGER,"rh_unknown_destination"); //$NON-NLS-1$
-    static final I18NMessage0P RH_UNKNOWN_DESTINATION_ID=
-        new I18NMessage0P(LOGGER,"rh_unknown_destination_id"); //$NON-NLS-1$
-    static final I18NMessage0P RH_UNAVAILABLE_DESTINATION=
-        new I18NMessage0P(LOGGER,"rh_unavailable_destination"); //$NON-NLS-1$
+    static final I18NMessage0P RH_UNKNOWN_BROKER=
+        new I18NMessage0P(LOGGER,"rh_unknown_broker"); //$NON-NLS-1$
+    static final I18NMessage0P RH_UNKNOWN_BROKER_ID=
+        new I18NMessage0P(LOGGER,"rh_unknown_broker_id"); //$NON-NLS-1$
+    static final I18NMessage0P RH_UNAVAILABLE_BROKER=
+        new I18NMessage0P(LOGGER,"rh_unavailable_broker"); //$NON-NLS-1$
     static final I18NMessage0P RH_CONVERSION_FAILED=
         new I18NMessage0P(LOGGER,"rh_conversion_failed"); //$NON-NLS-1$
     static final I18NMessage0P RH_ORDER_DISALLOWED=

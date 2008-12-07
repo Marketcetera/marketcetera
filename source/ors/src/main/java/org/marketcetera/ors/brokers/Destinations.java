@@ -1,4 +1,4 @@
-package org.marketcetera.ors.dest;
+package org.marketcetera.ors.brokers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -151,7 +151,7 @@ public class Destinations
     {
         Destination d=mDestinationIDMap.get(destinationID);
         if (d==null) {
-            Messages.INVALID_DESTINATION_ID.error(this,destinationID);
+            Messages.INVALID_BROKER_ID.error(this,destinationID);
         }
         return d;
     }
