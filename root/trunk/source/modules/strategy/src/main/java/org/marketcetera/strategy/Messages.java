@@ -122,4 +122,26 @@ public interface Messages
                                                                                     "strategy_compilation_null_result"); //$NON-NLS-1$
     static final I18NMessage3P RUNTIME_ERROR = new I18NMessage3P(LOGGER,
                                                                  "runtime_error"); //$NON-NLS-1$
+    static final I18NMessage2P CANNOT_REQUEST_DATA = new I18NMessage2P(LOGGER,
+                                                                       "cannot_request_data"); //$NON-NLS-1$
+    static final I18NMessage2P CANNOT_SEND_DATA = new I18NMessage2P(LOGGER,
+                                                                       "cannot_send_data"); //$NON-NLS-1$
+    static final I18NMessage3P INVALID_STATUS_TO_RECEIVE_DATA = new I18NMessage3P(LOGGER,
+                                                                                  "invalid_status_to_receive_data"); //$NON-NLS-1$
+    static final I18NMessage3P CANNOT_CHANGE_STATE = new I18NMessage3P(LOGGER,
+                                                                       "cannot_change_state"); //$NON-NLS-1$
+    static final I18NMessage2P STRATEGY_STILL_RUNNING = new I18NMessage2P(LOGGER,
+                                                                          "strategy_still_running"); //$NON-NLS-1$
+    static final I18NMessage1P INTERRUPT_START_ERROR = new I18NMessage1P(LOGGER,
+                                                                         "interrupt_start_error"); //$NON-NLS-1$
+    static final I18NMessage2P CANNOT_STOP = new I18NMessage2P(LOGGER,
+                                                               "cannot_stop"); //$NON-NLS-1$
+    static final I18NMessage1P ERROR_WAITING_FOR_STOP = new I18NMessage1P(LOGGER,
+                                                                          "error_waiting_for_stop"); //$NON-NLS-1$
+    static final I18NMessage1P INTERRUPT_STOP_ERROR = new I18NMessage1P(LOGGER,
+                                                                        "interrupt_stop_error"); //$NON-NLS-1$
+    static final I18NMessage0P BEAN_ATTRIBUTE_CHANGED = new I18NMessage0P(LOGGER,
+                                                                        "bean_attribute_changed"); //$NON-NLS-1$
+    static final I18NMessage0P STATUS_CHANGED = new I18NMessage0P(LOGGER,
+                                                                  "status_changed"); //$NON-NLS-1$
 }

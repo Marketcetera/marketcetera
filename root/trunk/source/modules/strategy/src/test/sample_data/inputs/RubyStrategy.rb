@@ -6,9 +6,11 @@ include_class "java.math.BigDecimal"
 include_class "java.lang.System"
 include_class "java.lang.Long"
 include_class "java.util.Date"
+include_class 'java.lang.InterruptedException'
 
 class RubyStrategy < Strategy
   def on_start
+      set_property "onStartBegins", Long.toString(System.currentTimeMillis())
       @callbackCounter = 0
       shouldFail = get_parameter("shouldFailOnStart")
       if(shouldFail != nil) 
@@ -17,10 +19,14 @@ class RubyStrategy < Strategy
       shouldLoop = get_parameter("shouldLoopOnStart")
       if(shouldLoop != nil)
           shouldStopLoop = get_property("shouldStopLoop")
-          while(shouldStopLoop == nil)
-              sleep 0.1
-              shouldStopLoop = get_property("shouldStopLoop")
-          end
+          begin
+              while(shouldStopLoop == nil)
+                  sleep 0.1
+                  shouldStopLoop = get_property("shouldStopLoop")
+              end
+              rescue InterruptedException => e
+                  break
+              end
           set_property "loopDone", "true"
       end
       marketDataSource = get_parameter("shouldRequestData")
@@ -64,9 +70,26 @@ class RubyStrategy < Strategy
                    Long.toString(System.currentTimeMillis()))
   end
   def on_stop
-      shouldFail = get_parameter("shouldFailOnStop")
+      set_property "onStopBegins", Long.toString(System.currentTimeMillis())
+      shouldFail = get_property("shouldFailOnStop")
       if(shouldFail != nil) 
           10 / 0
+      end
+      marketDataSource = get_parameter("shouldRequestDataOnStop")
+      if(marketDataSource != nil)
+          symbols = get_parameter("symbols")
+          set_property("requestID",
+                       Long.toString(request_market_data(symbols,
+                                                         marketDataSource)))
+      end
+      shouldLoop = get_parameter("shouldLoopOnStop")
+      if(shouldLoop != nil)
+          shouldStopLoop = get_property("shouldStopLoop")
+          while(shouldStopLoop == nil)
+              sleep 0.1
+              shouldStopLoop = get_property("shouldStopLoop")
+          end
+          set_property "loopDone", "true"
       end
       set_property("onStop",
                    Long.toString(System.currentTimeMillis()))

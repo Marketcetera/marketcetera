@@ -1,5 +1,6 @@
 package org.marketcetera.strategy;
 
+import static org.marketcetera.strategy.Messages.BEAN_ATTRIBUTE_CHANGED;
 import static org.marketcetera.strategy.Messages.CANNOT_CREATE_CONNECTION;
 import static org.marketcetera.strategy.Messages.CANNOT_INITIALIZE_CLIENT;
 import static org.marketcetera.strategy.Messages.CANNOT_SEND_EVENT_TO_CEP;
@@ -25,9 +26,12 @@ import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
 import static org.marketcetera.strategy.Messages.SEND_MESSAGE_FAILED;
+import static org.marketcetera.strategy.Messages.STATUS_CHANGED;
 import static org.marketcetera.strategy.Messages.STOP_ERROR;
+import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
 import static org.marketcetera.strategy.Messages.UNABLE_TO_CANCEL_CEP_REQUEST;
 import static org.marketcetera.strategy.Messages.UNABLE_TO_CANCEL_MARKET_DATA_REQUEST;
+import static org.marketcetera.strategy.Status.UNSTARTED;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -39,6 +43,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import javax.management.AttributeChangeNotification;
+import javax.management.ListenerNotFoundException;
+import javax.management.MBeanNotificationInfo;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationFilter;
+import javax.management.NotificationListener;
 
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientManager;
@@ -63,6 +76,7 @@ import org.marketcetera.module.IllegalRequestParameterValue;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.StopDataFlowException;
@@ -92,9 +106,9 @@ import quickfix.Message;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public final class StrategyModule
+final class StrategyModule
         extends Module
-        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider, StrategyMXBean, InboundServicesProvider
+        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider, StrategyMXBean, InboundServicesProvider, NotificationEmitter
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
@@ -161,7 +175,7 @@ public final class StrategyModule
             throws UnsupportedDataTypeException, StopDataFlowException
     {
         assertStateForReceiveData();
-        SLF4JLoggerProxy.trace(Strategy.STRATEGY_MESSAGES,
+        SLF4JLoggerProxy.trace(StrategyModule.class,
                                "{} received {}", //$NON-NLS-1$
                                strategy,
                                inData);
@@ -605,6 +619,83 @@ public final class StrategyModule
                                          inSymbol);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#getStatus()
+     */
+    @Override
+    public String getStatus()
+    {
+        return strategy.getStatus().toString();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#interrupt()
+     */
+    @Override
+    public void interrupt()
+    {
+        if(strategy != null) {
+            strategy.getExecutor().interrupt();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#statusChanged(org.marketcetera.strategy.Status, org.marketcetera.strategy.Status)
+     */
+    @Override
+    public void statusChanged(Status inOldStatus,
+                              Status inNewStatus)
+    {
+        notificationDelegate.sendNotification(new AttributeChangeNotification(this,
+                                                                              jmxNotificationCounter.getAndIncrement(),
+                                                                              System.currentTimeMillis(),
+                                                                              STATUS_CHANGED.getText(),
+                                                                              "Status", //$NON-NLS-1$
+                                                                              "String", //$NON-NLS-1$
+                                                                              inOldStatus,
+                                                                              inNewStatus));
+    }
+    /* (non-Javadoc)
+     * @see javax.management.NotificationEmitter#removeNotificationListener(javax.management.NotificationListener, javax.management.NotificationFilter, java.lang.Object)
+     */
+    @Override
+    public void removeNotificationListener(NotificationListener inListener,
+                                           NotificationFilter inFilter,
+                                           Object inHandback)
+            throws ListenerNotFoundException
+    {
+        notificationDelegate.removeNotificationListener(inListener,
+                                                        inFilter,
+                                                        inHandback);
+    }
+    /* (non-Javadoc)
+     * @see javax.management.NotificationBroadcaster#addNotificationListener(javax.management.NotificationListener, javax.management.NotificationFilter, java.lang.Object)
+     */
+    @Override
+    public void addNotificationListener(NotificationListener inListener,
+                                        NotificationFilter inFilter,
+                                        Object inHandback)
+            throws IllegalArgumentException
+    {
+        notificationDelegate.addNotificationListener(inListener,
+                                                     inFilter,
+                                                     inHandback);
+    }
+    /* (non-Javadoc)
+     * @see javax.management.NotificationBroadcaster#getNotificationInfo()
+     */
+    @Override
+    public MBeanNotificationInfo[] getNotificationInfo()
+    {
+        return notificationDelegate.getNotificationInfo();
+    }
+    /* (non-Javadoc)
+     * @see javax.management.NotificationBroadcaster#removeNotificationListener(javax.management.NotificationListener)
+     */
+    @Override
+    public void removeNotificationListener(NotificationListener inListener)
+            throws ListenerNotFoundException
+    {
+        notificationDelegate.removeNotificationListener(inListener);
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -778,6 +869,16 @@ public final class StrategyModule
     protected void preStart()
             throws ModuleException
     {
+        // this is a special case.  if the strategy has already been started and stopped, but the strategy is still running
+        //  either its onStart or onStop loop, both of which are run asynchronously, do not allow a new strategy to start
+        //  with the same URN.  the old one *must* finish first.
+        if(strategy != null) {
+            if(!strategy.getStatus().canChangeStatusTo(UNSTARTED)) {
+                throw new ModuleStateException(new I18NBoundMessage2P(STRATEGY_STILL_RUNNING,
+                                                                      strategy.toString(),
+                                                                      strategy.getStatus()));
+            }
+        }
         assertStateForPreStart();
         // add destination data flows, if specified by the object parameters
         synchronized(dataFlows) {
@@ -815,27 +916,12 @@ public final class StrategyModule
                                         getURN().instanceName(),
                                         this,
                                         this);
-            // make sure that an endless loop does not derail the module start process
-            // note that this implies it is the strategy author's responsibility to manage concurrency in the case
-            //  of a strategy with a long preStart, i.e. messages could start coming in before the preStart loop completes
             strategy.start();
-//            // TODO for now, because of significant issues this pattern raises, synchronously wait for the start loop to end
-//            //  this should be resolved before release
-//            executor.submit(new Callable<Strategy>() {
-//                @Override
-//                public Strategy call()
-//                        throws Exception
-//                {
-//                    strategy.start();
-//                    return strategy;
-//                }
-//            }).get();
         } catch (Exception e) {
             throw new ModuleException(e,
                                       FAILED_TO_START);
         }
     }
-//    private static final ExecutorService executor = Executors.newCachedThreadPool();
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
      */
@@ -845,22 +931,12 @@ public final class StrategyModule
     {
         cancelAllMarketDataRequests();
         cancelAllCEPRequests();
-        // TODO for now, because of significant issues this pattern raises, synchronously wait for the start loop to end
-        //  this should be resolved before release
         try {
             strategy.stop();
-//            // make sure that an endless loop does not derail the module stop process
-//            executor.submit(new Callable<Strategy>() {
-//                @Override
-//                public Strategy call()
-//                        throws Exception
-//                {
-//                    strategy.stop();
-//                    return strategy;
-//                }
-//            }).get();
+        } catch (ModuleException e) {
+            throw e;
         } catch (Exception e) {
-            // a strategy may not prevent itself from being stopped
+            // otherwise a strategy may not prevent itself from being stopped
             STOP_ERROR.warn(StrategyModule.class,
                             e,
                             strategy);
@@ -974,6 +1050,10 @@ public final class StrategyModule
         classpath = inClasspath;
         ordersDestination = inOrdersInstance;
         suggestionsDestination = inSuggestionsInstance;
+        MBeanNotificationInfo notifyInfo = new MBeanNotificationInfo(new String[] { AttributeChangeNotification.ATTRIBUTE_CHANGE },
+                                                                     AttributeChangeNotification.class.getName(),
+                                                                     BEAN_ATTRIBUTE_CHANGED.getText());
+        notificationDelegate = new NotificationBroadcasterSupport(notifyInfo);
     }
     /**
      * Sends the given event to the <code>CEP</code> module specified.
@@ -1171,7 +1251,7 @@ public final class StrategyModule
     /**
      * the strategy object that represents the actual running strategy
      */
-    private Strategy strategy;
+    private StrategyImpl strategy;
     /**
      * services for data flow creation
      */
@@ -1200,6 +1280,14 @@ public final class StrategyModule
      * the collection of data flows created to send data to a specific URN
      */
     private final Map<ModuleURN,DataEmitterSupport> internalDataFlows = new HashMap<ModuleURN,DataEmitterSupport>();
+    /**
+     * provides JMX notification support 
+     */
+    private final NotificationBroadcasterSupport notificationDelegate;
+    /**
+     * counter used for JMX notifications
+     */
+    private final AtomicLong jmxNotificationCounter = new AtomicLong();
     /**
      * Request for data that comes from within strategy to strategy.
      *

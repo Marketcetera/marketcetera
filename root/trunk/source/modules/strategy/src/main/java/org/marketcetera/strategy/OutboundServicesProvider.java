@@ -144,5 +144,13 @@ interface OutboundServicesProvider
      */
     void sendMessage(Message inMessage,
                      DestinationID inDestination);
+    /**
+     * Broadcast a change in strategy status.
+     *
+     * @param inOldStatus a <code>Status</code> value
+     * @param inNewStatus a <code>Status</code> value
+     */
+    void statusChanged(Status inOldStatus,
+                       Status inNewStatus);
 }
 

@@ -10,9 +10,13 @@ import static org.marketcetera.module.Messages.DATAFLOW_REQ_MODULE_STOPPED;
 import static org.marketcetera.module.Messages.DUPLICATE_MODULE_URN;
 import static org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE;
 import static org.marketcetera.module.Messages.INVALID_URN_SCHEME;
+import static org.marketcetera.module.Messages.MODULE_ALREADY_STARTED;
 import static org.marketcetera.module.Messages.MODULE_NOT_FOUND;
 import static org.marketcetera.module.Messages.MODULE_NOT_RECEIVER;
+import static org.marketcetera.module.Messages.STOP_FAILED_MODULE_NOT_STARTED;
 import static org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE;
+import static org.marketcetera.strategy.Language.JAVA;
+import static org.marketcetera.strategy.Language.RUBY;
 import static org.marketcetera.strategy.Messages.EMPTY_INSTANCE_ERROR;
 import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
 import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
@@ -20,12 +24,26 @@ import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
 import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
+import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
+import static org.marketcetera.strategy.Status.RUNNING;
+import static org.marketcetera.strategy.Status.STARTING;
+import static org.marketcetera.strategy.Status.STOPPED;
+import static org.marketcetera.strategy.Status.STOPPING;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+
+import javax.management.AttributeChangeNotification;
+import javax.management.Notification;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationListener;
 
 import org.junit.Test;
 import org.marketcetera.core.Util;
+import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataFlowException;
@@ -86,7 +104,7 @@ public class StrategyModuleTest
         ModuleURN strategy = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                         "MyStategy",
                                                         JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                                        Language.JAVA,
+                                                        JAVA,
                                                         JavaLanguageTest.JAVA_STRATEGY,
                                                         new Properties(),
                                                         new String[0],
@@ -97,9 +115,9 @@ public class StrategyModuleTest
         assertEquals(strategy,
                      moduleManager.getModuleInstances(StrategyModuleFactory.PROVIDER_URN).get(0));
         assertFalse(moduleManager.getModuleInfo(strategy).getState().isStarted());
-        moduleManager.start(strategy);
+        startStrategy(strategy);
         assertTrue(moduleManager.getModuleInfo(strategy).getState().isStarted());
-        moduleManager.stop(strategy);
+        stopStrategy(strategy);
         assertEquals(1,
                      moduleManager.getModuleInstances(StrategyModuleFactory.PROVIDER_URN).size());
         assertEquals(strategy,
@@ -120,16 +138,16 @@ public class StrategyModuleTest
         doWrongParameterCountTest(new Object[0]);
         doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME);
         doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                  Language.JAVA);
+                                  JAVA);
         doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                  Language.JAVA,
+                                  JAVA,
                                   JavaLanguageTest.JAVA_STRATEGY);
         doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                  Language.JAVA,
+                                  JAVA,
                                   JavaLanguageTest.JAVA_STRATEGY,
                                   new Properties());
         doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                  Language.JAVA,
+                                  JAVA,
                                   JavaLanguageTest.JAVA_STRATEGY,
                                   new Properties(),
                                   ordersURN);
@@ -137,7 +155,7 @@ public class StrategyModuleTest
         doWrongTypeParameterTest(0,
                                  this,
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 Language.JAVA,
+                                 JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
@@ -146,7 +164,7 @@ public class StrategyModuleTest
         doWrongTypeParameterTest(1,
                                  "MyStrategyURN",
                                  this,
-                                 Language.JAVA,
+                                 JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
@@ -164,7 +182,7 @@ public class StrategyModuleTest
         doWrongTypeParameterTest(3,
                                  "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 Language.JAVA,
+                                 JAVA,
                                  this,
                                  new Properties(),
                                  new String[0],
@@ -173,7 +191,7 @@ public class StrategyModuleTest
         doWrongTypeParameterTest(4,
                                  "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 Language.JAVA,
+                                 JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
                                  this,
                                  new String[0],
@@ -182,7 +200,7 @@ public class StrategyModuleTest
         doWrongTypeParameterTest(5,
                                  "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 Language.JAVA,
+                                 JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  this,
@@ -191,7 +209,7 @@ public class StrategyModuleTest
         doWrongTypeParameterTest(6,
                                  "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 Language.JAVA,
+                                 JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
@@ -200,7 +218,7 @@ public class StrategyModuleTest
         doWrongTypeParameterTest(7,
                                  "MyStrategyURN",
                                  JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 Language.JAVA,
+                                 JAVA,
                                  JavaLanguageTest.JAVA_STRATEGY,
                                  new Properties(),
                                  new String[0],
@@ -208,7 +226,7 @@ public class StrategyModuleTest
                                  this);
         // create a good 'un just to prove we can
         ModuleURN strategy = createStrategy(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                            Language.JAVA,
+                                            JAVA,
                                             JavaLanguageTest.JAVA_STRATEGY,
                                             new Properties(),
                                             new String[0],
@@ -229,7 +247,7 @@ public class StrategyModuleTest
         throws Exception
     {
         ModuleURN strategy = createStrategy(RubyLanguageTest.STRATEGY_NAME,
-                                            Language.RUBY,
+                                            RUBY,
                                             RubyLanguageTest.STRATEGY,
                                             new Properties(),
                                             new String[0],
@@ -310,7 +328,7 @@ public class StrategyModuleTest
     {
         // set up a strategy and plumb it externally with a market data provider
         ModuleURN strategy = createStrategy(RubyLanguageTest.STRATEGY_NAME,
-                                            Language.RUBY,
+                                            RUBY,
                                             RubyLanguageTest.STRATEGY,
                                             new Properties(),
                                             new String[0],
@@ -346,7 +364,7 @@ public class StrategyModuleTest
                index[0] == 7) {
                 verifyStrategyStartsAndStops((index[0]==0 ? null : "MyStrategy"),
                                              (index[0]==1 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
-                                             (index[0]==2 ? null : Language.JAVA),
+                                             (index[0]==2 ? null : JAVA),
                                              (index[0]==3 ? null : JavaLanguageTest.JAVA_STRATEGY),
                                              (index[0]==4 ? null : new Properties()),
                                              (index[0]==5 ? null : new String[0]),
@@ -362,7 +380,7 @@ public class StrategyModuleTest
                     {
                         verifyStrategyStartsAndStops((index[0]==0 ? null : "MyStrategy"),
                                                      (index[0]==1 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
-                                                     (index[0]==2 ? null : Language.JAVA),
+                                                     (index[0]==2 ? null : JAVA),
                                                      (index[0]==3 ? null : JavaLanguageTest.JAVA_STRATEGY),
                                                      (index[0]==4 ? null : new Properties()),
                                                      (index[0]==5 ? null : new String[0]),
@@ -390,7 +408,7 @@ public class StrategyModuleTest
             {
                 verifyStrategyStartsAndStops(emptyInstance,
                                              JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             Language.JAVA,
+                                             JAVA,
                                              JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
@@ -400,7 +418,7 @@ public class StrategyModuleTest
         };
         verifyStrategyStartsAndStops("MyStrategyInstance",
                                      JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     Language.JAVA,
+                                     JAVA,
                                      JavaLanguageTest.JAVA_STRATEGY,
                                      null,
                                      null,
@@ -423,7 +441,7 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(emptyName,
-                                             Language.JAVA,
+                                             JAVA,
                                              JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
@@ -432,7 +450,7 @@ public class StrategyModuleTest
             }
         };
         verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     Language.JAVA,
+                                     JAVA,
                                      JavaLanguageTest.JAVA_STRATEGY,
                                      null,
                                      null,
@@ -449,7 +467,7 @@ public class StrategyModuleTest
         throws Exception
     {
         final String invalidLanguage = "Language-" + System.currentTimeMillis();
-        String validLanguage = Language.JAVA.toString();
+        String validLanguage = JAVA.toString();
         String validMixedCaseLanguage = "JaVa";
         new ExpectedFailure<ModuleCreationException>(INVALID_LANGUAGE_ERROR,
                                                      invalidLanguage) {
@@ -501,7 +519,7 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             Language.JAVA,
+                                             JAVA,
                                              badFile,
                                              null,
                                              null,
@@ -522,7 +540,7 @@ public class StrategyModuleTest
         Properties properties = new Properties();
         // empty properties
         verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     Language.JAVA,
+                                     JAVA,
                                      JavaLanguageTest.JAVA_STRATEGY,
                                      properties,
                                      null,
@@ -532,7 +550,7 @@ public class StrategyModuleTest
         properties.setProperty("some-key",
                                "some value " + System.nanoTime());
         verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     Language.JAVA,
+                                     JAVA,
                                      JavaLanguageTest.JAVA_STRATEGY,
                                      properties,
                                      null,
@@ -550,7 +568,7 @@ public class StrategyModuleTest
     {
         // empty classpath
         verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     Language.JAVA,
+                                     JAVA,
                                      JavaLanguageTest.JAVA_STRATEGY,
                                      null,
                                      new String[0],
@@ -558,7 +576,7 @@ public class StrategyModuleTest
                                      null);
         // non-empty classpath
         verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     Language.JAVA,
+                                     JAVA,
                                      JavaLanguageTest.JAVA_STRATEGY,
                                      null,
                                      new String[] { "/some/path/here", "/some/other/path with spaces/here" },
@@ -590,7 +608,7 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             Language.JAVA,
+                                             JAVA,
                                              JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
@@ -606,7 +624,7 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             Language.JAVA,
+                                             JAVA,
                                              JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
@@ -622,7 +640,7 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             Language.JAVA,
+                                             JAVA,
                                              JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
@@ -639,7 +657,7 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             Language.JAVA,
+                                             JAVA,
                                              JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
@@ -655,7 +673,7 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             Language.JAVA,
+                                             JAVA,
                                              JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
@@ -671,7 +689,7 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             Language.JAVA,
+                                             JAVA,
                                              JavaLanguageTest.JAVA_STRATEGY,
                                              null,
                                              null,
@@ -827,15 +845,15 @@ public class StrategyModuleTest
         ModuleURN strategy = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                         "MyStrategy",
                                                         JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                                        Language.JAVA,
+                                                        JAVA,
                                                         JavaLanguageTest.JAVA_STRATEGY,
                                                         null,
                                                         null,
                                                         dataSink,
                                                         null);
-        moduleManager.start(strategy);
+        startStrategy(strategy);
         assertTrue(moduleManager.getModuleInfo(strategy).getState().isStarted());
-        moduleManager.stop(strategy);
+        stopStrategy(strategy);
         moduleManager.deleteModule(strategy);
     }
     /**
@@ -850,7 +868,7 @@ public class StrategyModuleTest
         ModuleURN strategy1 = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                          "MyNewStrategy",
                                                          JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                                         Language.JAVA,
+                                                         JAVA,
                                                          JavaLanguageTest.JAVA_STRATEGY,
                                                          null,
                                                          null,
@@ -866,7 +884,7 @@ public class StrategyModuleTest
                 moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                            "MyNewStrategy",
                                            JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                           Language.JAVA,
+                                           JAVA,
                                            JavaLanguageTest.JAVA_STRATEGY,
                                            null,
                                            null,
@@ -880,13 +898,193 @@ public class StrategyModuleTest
         strategy1 = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                "MyNewStrategy",
                                                JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                               Language.JAVA,
+                                               JAVA,
                                                JavaLanguageTest.JAVA_STRATEGY,
                                                null,
                                                null,
                                                null,
                                                null);
         moduleManager.deleteModule(strategy1);
+    }
+    /**
+     * Tests that starting or stopping a strategy succeeds or fails depending on the strategy state.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void strategyStateChanges()
+        throws Exception
+    {
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldLoopOnStart",
+                               "true");
+        parameters.setProperty("shouldLoopOnStop",
+                               "true");
+        verifyPropertyNull("loopDone");
+        verifyPropertyNull("onStartBegins");
+        // need to manually start the strategy because it will be in "STARTING" status for a long long time
+        final ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                   null,
+                                                   JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                                   JAVA,
+                                                   JavaLanguageTest.JAVA_STRATEGY,
+                                                   parameters,
+                                                   null,
+                                                   null,
+                                                   null);
+        // wait until the strategy enters "STARTING"
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return getStatus(strategyURN).equals(STARTING) &&
+                       AbstractRunningStrategy.getProperty("onStartBegins") != null;
+            }
+        });
+        // strategy is now looping
+        // reset start counter
+        AbstractRunningStrategy.setProperty("onStartBegins",
+                                            null);
+        // test to see what happens if the strategy is started again by the moduleManager
+        new ExpectedFailure<ModuleStateException>(MODULE_ALREADY_STARTED,
+                                                  strategyURN.toString()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.start(strategyURN);
+            }
+        };
+        // release the running strategy (or it will keep running beyond the end of the test)
+        AbstractRunningStrategy.setProperty("shouldStopLoop",
+                                            "true");
+        // wait for the strategy to become ready
+        verifyStrategyReady(strategyURN);
+        StrategyImpl strategy = getRunningStrategy(strategyURN);
+        verifyStrategyStatus(strategyURN,
+                             RUNNING);
+        // try to start again
+        new ExpectedFailure<ModuleStateException>(MODULE_ALREADY_STARTED,
+                                                  strategyURN.toString()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.start(strategyURN);
+            }
+        };
+        // change status to STOPPING
+        // make sure the strategy loops in onStop so we have time to play with it
+        // reset all our flags and counters
+        setPropertiesToNull();
+        moduleManager.stop(strategyURN);
+        // wait until the strategy enters "STOPPING"
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return getStatus(strategyURN).equals(STOPPING) &&
+                       AbstractRunningStrategy.getProperty("onStopBegins") != null;
+            }
+        });
+        // strategy is now looping
+        // reset stop counter
+        AbstractRunningStrategy.setProperty("onStopBegins",
+                                            null);
+        // module is listed as stopped
+        assertFalse(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
+        // test stopping
+        new ExpectedFailure<ModuleStateException>(STOP_FAILED_MODULE_NOT_STARTED,
+                                                  strategyURN.toString()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.stop(strategyURN);
+            }
+        };
+        // test starting
+        new ExpectedFailure<ModuleStateException>(STRATEGY_STILL_RUNNING,
+                                                  strategy.toString(),
+                                                  strategy.getStatus()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.start(strategyURN);
+            }
+        };
+        // let the strategy stop
+        AbstractRunningStrategy.setProperty("shouldStopLoop",
+                                            "true");
+        // wait for the strategy to stop
+        verifyStrategyStopped(strategyURN);
+        verifyStrategyStatus(strategyURN,
+                             STOPPED);
+        // now the strategy can start again
+        moduleManager.start(strategyURN);
+        verifyStrategyReady(strategyURN);
+    }
+    /**
+     * Tests strategy status changes through the strategy lifecycle.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void statusNotification()
+        throws Exception
+    {
+        // create a strategy (but don't start it yet)
+        ModuleURN strategyURN = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                           "MyStategy",
+                                                           JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                                           JAVA,
+                                                           JavaLanguageTest.JAVA_STRATEGY,
+                                                           null,
+                                                           null,
+                                                           null,
+                                                           null);
+        // not started yet
+        assertFalse(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
+        // can get the JMX interface for an unstarted strategy
+        StrategyMXBean strategyInterface = getMXProxy(strategyURN);
+        final List<String> statusChanges = new ArrayList<String>();
+        // add a subscriber
+        NotificationListener subscriber = new NotificationListener() {
+            @Override
+            public void handleNotification(Notification inNotification,
+                                           Object inHandback)
+            {
+                if(inNotification instanceof AttributeChangeNotification) {
+                    AttributeChangeNotification change = (AttributeChangeNotification)inNotification;
+                    statusChanges.add(change.getOldValue() + "->" + change.getNewValue());
+                }
+            }};
+        ((NotificationEmitter)strategyInterface).addNotificationListener(subscriber,
+                                                                         null,
+                                                                         null);
+        assertTrue(statusChanges.isEmpty());
+        // start the module
+        moduleManager.start(strategyURN);
+        verifyStrategyReady(strategyURN);
+        // verify that the strategy changes were received (UNSTARTED->COMPILING, COMPILING->STARTING, STARTING->RUNNING)
+        assertEquals(3,
+                     statusChanges.size());
+        assertEquals("UNSTARTED->COMPILING",
+                     statusChanges.get(0));
+        assertEquals("COMPILING->STARTING",
+                     statusChanges.get(1));
+        assertEquals("STARTING->RUNNING",
+                     statusChanges.get(2));
+        // disconnect the listener
+        ((NotificationEmitter)strategyInterface).removeNotificationListener(subscriber);
+        // empty the list
+        statusChanges.clear();
+        moduleManager.stop(strategyURN);
+        // make sure the change list hasn't grown
+        assertTrue(statusChanges.isEmpty());
     }
     /**
      * Executes a single permutation of a strategy attribute get/set test.
@@ -909,13 +1107,15 @@ public class StrategyModuleTest
         throws Exception
     {
         ModuleURN strategy = createStrategy(RubyLanguageTest.STRATEGY_NAME,
-                                            Language.RUBY,
+                                            RUBY,
                                             RubyLanguageTest.STRATEGY,
                                             inStartingParameters,
                                             null,
                                             inOrdersStart,
                                             inSuggestionsStart);
         StrategyMXBean mxBeanInterface = getMXProxy(strategy);
+        verifyStrategyStatus(strategy,
+                             RUNNING);
         if(inOrdersStart == null) {
             assertNull(mxBeanInterface.getOrdersDestination());
         } else {
@@ -967,8 +1167,12 @@ public class StrategyModuleTest
                          expectedProperties);
         }
         // cycle the module
-        moduleManager.stop(strategy);
-        moduleManager.start(strategy);
+        stopStrategy(strategy);
+        verifyStrategyStatus(strategy,
+                             STOPPED);
+        startStrategy(strategy);
+        verifyStrategyStatus(strategy,
+                             RUNNING);
         return strategy;
     }
     /**

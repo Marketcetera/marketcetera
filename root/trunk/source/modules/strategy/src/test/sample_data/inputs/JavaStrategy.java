@@ -21,6 +21,8 @@ public class JavaStrategy
     @Override
     public void onStart()
     {
+        setProperty("onStartBegins",
+                    Long.toString(System.currentTimeMillis()));
         callbackCounter = 0;
         String shouldFail = getParameter("shouldFailOnStart");
         if(shouldFail != null) {
@@ -36,7 +38,8 @@ public class JavaStrategy
                 try {
                     Thread.sleep(100);
                 } catch (Exception e) {
-                    // swallow exception
+                    // loop has been interrupted, stop onStart method
+                    break;
                 }
             }
             setProperty("loopDone",
@@ -108,9 +111,35 @@ public class JavaStrategy
     @Override
     public void onStop()
     {
-        String shouldFail = getParameter("shouldFailOnStop");
+        setProperty("onStopBegins",
+                    Long.toString(System.currentTimeMillis()));
+        String shouldFail = getProperty("shouldFailOnStop");
         if(shouldFail != null) { 
             int x = 10 / 0;
+        }
+        String marketDataSource = getParameter("shouldRequestDataOnStop");
+        if(marketDataSource != null) {
+            String symbols = getParameter("symbols");
+            setProperty("requestID",
+                        Long.toString(requestMarketData(symbols,
+                                                        marketDataSource)));
+        }
+        String shouldLoop = getParameter("shouldLoopOnStop");
+        if(shouldLoop != null) {
+            while(true) {
+                String shouldStopLoop = getProperty("shouldStopLoop");
+                if(shouldStopLoop != null) {
+                    break;
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    // thread has been interrupted
+                    break;
+                }
+            }
+            setProperty("loopDone",
+                        "true");
         }
         setProperty("onStop",
                     Long.toString(System.currentTimeMillis()));

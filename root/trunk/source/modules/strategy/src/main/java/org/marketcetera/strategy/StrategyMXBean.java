@@ -6,6 +6,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.DisplayName;
+import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
 
@@ -95,4 +96,20 @@ public interface StrategyMXBean
      */
     @DisplayName("The destination to which to send trade suggestions created by the strategy")
     public String getSuggestionsDestination();
+    /**
+     * Gets the strategy status. 
+     *
+     * @return a <code>String</code> value corresponding to a value in {@link Status}.
+     */
+    @DisplayName("Gets the strategy status")
+    public String getStatus();
+    /**
+     * Attempts to interrupt and halt a running strategy.
+     *
+     * <p>Interrupting a strategy makes a best-effort attempt to stop it.  Under certain circumstances, this
+     * method may not stop a running strategy, e.g. if the strategy deliberately ignores thread interrupts.
+     * This method may be executed more than once, if necessary.
+     */
+    @DisplayName("Makes a best-effort to interrupt and halt a strategy")
+    public void interrupt();
 }

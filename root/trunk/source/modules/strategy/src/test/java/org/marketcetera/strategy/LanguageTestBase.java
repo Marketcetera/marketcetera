@@ -6,7 +6,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.marketcetera.module.Messages.MODULE_ALREADY_STARTED;
+import static org.marketcetera.module.Messages.STOP_FAILED_MODULE_NOT_STARTED;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
+import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
+import static org.marketcetera.strategy.Status.FAILED;
+import static org.marketcetera.strategy.Status.RUNNING;
+import static org.marketcetera.strategy.Status.STARTING;
+import static org.marketcetera.strategy.Status.STOPPED;
+import static org.marketcetera.strategy.Status.STOPPING;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,7 +26,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.core.MSymbol;
@@ -35,6 +42,7 @@ import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.quickfix.FIXVersion;
@@ -304,33 +312,35 @@ public abstract class LanguageTestBase
         final Properties parameters = new Properties();
         parameters.setProperty("shouldFailOnStart",
                                "true");
-        new ExpectedFailure<ModuleException>(FAILED_TO_START) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                doSuccessfulStartTest(createStrategy(strategy.getName(),
-                                                     getLanguage(),
-                                                     strategy.getFile(),
-                                                     parameters,
-                                                     null,
-                                                     null,
-                                                     null));
-            }
-        };
+        // failed "onStart" means that the strategy is in error status and will not receive any data
+        ModuleURN strategyURN = createStrategy(strategy.getName(),
+                                               getLanguage(),
+                                               strategy.getFile(),
+                                               parameters,
+                                               null,
+                                               null,
+                                               null);
+        // "onStart" has completed, but verify that the last statement in the strategy was never executed
+        verifyPropertyNull("onStart");
+        // verify the status of the strategy
+        verifyStrategyStatus(strategyURN,
+                             FAILED);
+        setPropertiesToNull();
         parameters.clear();
-        parameters.setProperty("shouldFailOnStop",
-                               "true");
+        AbstractRunningStrategy.setProperty("shouldFailOnStop",
+                                            "true");
         // runtime error in onStop
-        final ModuleURN strategyURN = createStrategy(strategy.getName(),
-                                                     getLanguage(),
-                                                     strategy.getFile(),
-                                                     parameters,
-                                                     null,
-                                                     null,
-                                                     null);
+        strategyURN = createStrategy(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     parameters,
+                                     null,
+                                     null,
+                                     null);
         doSuccessfulStartTest(strategyURN);
-        moduleManager.stop(strategyURN);
+        stopStrategy(strategyURN);
+        AbstractRunningStrategy.setProperty("shouldFailOnStop",
+                                            null);
         // runtime error in each callback
         doCallbackFailsTest("shouldFailOnAsk",
                             new String[] { "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther" });
@@ -344,12 +354,12 @@ public abstract class LanguageTestBase
                             new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade" });
     }
     /**
-     * Tests that a strategy may have an arbitrarily long onStart.
+     * Tests a strategy with an arbitrarily long onStart.
      *
      * @throws Exception if an error occurs
      */
-    @Test@Ignore
-    public void endlessLoopOnStart()
+    @Test
+    public void longRunningStart()
         throws Exception
     {
         final StrategyCoordinates strategy = getStrategyCompiles();
@@ -357,23 +367,156 @@ public abstract class LanguageTestBase
         parameters.setProperty("shouldLoopOnStart",
                                "true");
         assertNull(AbstractRunningStrategy.getProperty("loopDone"));
-        createStrategy(strategy.getName(),
-                       getLanguage(),
-                       strategy.getFile(),
-                       parameters,
-                       null,
-                       null,
-                       null);
-        // strategy onStart never completed, should still be running
+        // need to manually start the strategy because it will be in "STARTING" status for a long long time
+        final ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                   null,
+                                                   strategy.getName(),
+                                                   getLanguage(),
+                                                   strategy.getFile(),
+                                                   parameters,
+                                                   null,
+                                                   null,
+                                                   null);
+        // wait until the strategy enters "STARTING"
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return getStatus(strategyURN).equals(STARTING);
+            }
+        });
+        // take a little snooze - long enough that the strategy "onStart" will have completed if it was going to
         Thread.sleep(5000);
-        // this line proves that control was returned to us from moduleManager after starting the module even though the
-        //  onStart method is still running
+        // verify the status hasn't changed and that "onStart" hasn't completed
         assertNull(AbstractRunningStrategy.getProperty("loopDone"));
+        verifyStrategyStatus(strategyURN,
+                             STARTING);
         // tell the loop to stop
         AbstractRunningStrategy.setProperty("shouldStopLoop",
                                             "true");
-        Thread.sleep(500);
+        // wait until the strategy has time to complete
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return getStatus(strategyURN).equals(RUNNING);
+            }
+        });
+        // verify that the "onStart" loop completed
         assertNotNull(AbstractRunningStrategy.getProperty("loopDone"));
+    }
+    /**
+     * Tests a strategy with an arbitrarily long onStop.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void longRunningStop()
+        throws Exception
+    {
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldLoopOnStop",
+                               "true");
+        final ModuleURN strategyURN = createStrategy(strategy.getName(),
+                                                     getLanguage(),
+                                                     strategy.getFile(),
+                                                     parameters,
+                                                     null,
+                                                     null,
+                                                     null);
+        // being stop process
+        assertNull(AbstractRunningStrategy.getProperty("loopDone"));
+        moduleManager.stop(strategyURN);
+        // wait until the strategy enters "STOPPING" status
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return getStatus(strategyURN).equals(STOPPING);
+            }
+        });
+        // take a little snooze - long enough that the strategy "onStop" will have completed if it was going to
+        Thread.sleep(5000);
+        // verify the status hasn't changed and that "onStop" hasn't completed
+        assertNull(AbstractRunningStrategy.getProperty("loopDone"));
+        verifyStrategyStatus(strategyURN,
+                             STOPPING);
+        // tell the loop to stop
+        AbstractRunningStrategy.setProperty("shouldStopLoop",
+                                            "true");
+        // wait until the strategy has time to complete
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return getStatus(strategyURN).equals(STOPPED);
+            }
+        });
+        // verify that the "onStop" loop completed
+        assertNotNull(AbstractRunningStrategy.getProperty("loopDone"));
+    }
+    /**
+     * This test makes sure that data cannot be requested or sent after stop has begun.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void restrictedActionsDuringStop()
+        throws Exception
+    {
+        StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        // set up stop loop to request data *and* to delay stopping long enough for the request to be honored (if it were allowed)
+        parameters.setProperty("shouldRequestDataOnStop",
+                               "bogus");
+        parameters.setProperty("symbols",
+                               "METC");
+        parameters.setProperty("shouldLoopOnStop",
+                               "true");
+        final ModuleURN strategyURN = createStrategy(strategy.getName(),
+                                                     getLanguage(),
+                                                     strategy.getFile(),
+                                                     parameters,
+                                                     null,
+                                                     null,
+                                                     null);
+        // strategy is in running state
+        // nothing received
+        verifyNullProperties();
+        // no market data request made yet
+        verifyPropertyNull("requestID");
+        // the stop loop marker is not present
+        verifyPropertyNull("loopDone");
+        // trigger begin of stop loop
+        moduleManager.stop(strategyURN);
+        // wait until the strategy enters "STOPPING" status
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return getStatus(strategyURN).equals(STOPPING);
+            }
+        });
+        // strategy will wait in this status until we tell it to stop
+        // wait long enough for some data to have leaked through
+        Thread.sleep(5000);
+        // tell the loop to complete its stop
+        AbstractRunningStrategy.setProperty("shouldStopLoop",
+                                            "true");
+        // wait until strategy stops
+        verifyStrategyStopped(strategyURN);
+        // make sure the loop completed normally
+        verifyPropertyNonNull("loopDone");
+        // make sure that no data was received and that the request failed
+        verifyNullProperties();
+        assertEquals("0",
+                     verifyPropertyNonNull("requestID"));
     }
     /**
      * Tests receipt of market data from a valid, started market data provider.
@@ -445,8 +588,8 @@ public abstract class LanguageTestBase
     public void cancelMarketDataRequest()
         throws Exception
     {
-        ModuleURN strategy = getMarketData(BogusFeedModuleFactory.IDENTIFIER,
-                                           "GOOG,YHOO,MSFT,METC");
+        ModuleURN strategyURN = getMarketData(BogusFeedModuleFactory.IDENTIFIER,
+                                              "GOOG,YHOO,MSFT,METC");
         // TODO same note as above: create a market data provider that deterministically produces data 
         Thread.sleep(5000);
         // market data request has produced some data, verify that now
@@ -468,7 +611,7 @@ public abstract class LanguageTestBase
                                Long.toString(id));
         // execute the onCallback method in the running strategy to force the market data
         //  request cancel
-        getRunningStrategy(strategy).getRunningStrategy().onCallback(this);
+        getRunningStrategy(strategyURN).getRunningStrategy().onCallback(this);
         setPropertiesToNull();
         // collect more market data, or, give it the chance to, anyway
         Thread.sleep(5000);
@@ -503,7 +646,7 @@ public abstract class LanguageTestBase
                                Long.toString(System.currentTimeMillis()));
         // execute the onCallback method in the running strategy to force the market data
         //  request cancel
-        getFirstRunningStrategyAsAbstractRunningStrategy().onCallback(this);
+        getRunningStrategy(strategyURN).getRunningStrategy().onCallback(this);
         // no error should result from this
         // plumb the faux market data provider to the strategy to verify the strategy
         //  is still working
@@ -1409,7 +1552,7 @@ public abstract class LanguageTestBase
         // cancel 0 orders
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
                                             ordersURN);
-        AbstractRunningStrategy runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         AbstractRunningStrategy.setProperty("cancelAll",
                                             "true");
         // trigger cancel
@@ -1437,7 +1580,7 @@ public abstract class LanguageTestBase
         stopStrategy(strategy);
         startStrategy(strategy);
         // trigger a cancel (should do nothing)
-        runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         runningStrategy.onTrade(tradeEvent);
         assertEquals("0",
                      AbstractRunningStrategy.getProperty("ordersCanceled"));
@@ -1467,7 +1610,7 @@ public abstract class LanguageTestBase
         // try to cancel an order with a null orderID
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
                                             ordersURN);
-        AbstractRunningStrategy runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         assertNull(AbstractRunningStrategy.getProperty("orderCanceled"));
         runningStrategy.onOther(this);
         assertEquals("false",
@@ -1490,7 +1633,7 @@ public abstract class LanguageTestBase
                      StrategyImpl.getRunningStrategies().size());
         AbstractRunningStrategy.setProperty("orderCanceled",
                                             "");
-        runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         // make sure that order cannot be canceled now
         runningStrategy.onOther(new OrderID(orderIDString));
         assertEquals("false",
@@ -1557,7 +1700,7 @@ public abstract class LanguageTestBase
         // create a strategy to use as our test vehicle
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
                                             ordersURN);
-        AbstractRunningStrategy runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         // submit an order
         assertNull(AbstractRunningStrategy.getProperty("orderID"));
         runningStrategy.onAsk(askEvent);
@@ -1619,7 +1762,7 @@ public abstract class LanguageTestBase
         // cycle the strategy
         stopStrategy(strategy);
         startStrategy(strategy);
-        runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         AbstractRunningStrategy.setProperty("newOrderID",
                                             null);
         // try to cancel/replace again, won't work because the order to be replaced was in the last strategy session (before the stop)
@@ -1991,7 +2134,7 @@ public abstract class LanguageTestBase
                                             Integer.toString(badID));
         // the strategy is still running and it has an active CEP query
         // if we send an "onOther" to the strategy, it will trigger a cancel request
-        StrategyImpl strategy = getFirstRunningStrategy();
+        StrategyImpl strategy = getRunningStrategy(theStrategy);
         strategy.getRunningStrategy().onOther(this);
         ModuleURN cepModuleURN = new ModuleURN("metc:cep:esper:" + strategy.getDefaultNamespace());
         // verify that the cancel did not affect the existing query by triggering another set of suggestions via the CEP query
@@ -2035,7 +2178,7 @@ public abstract class LanguageTestBase
                                new String[] { "select * from trade" },
                                events,
                                false).size());
-        StrategyImpl strategy = getFirstRunningStrategy();
+        StrategyImpl strategy = getRunningStrategy(theStrategy);
         strategy.getRunningStrategy().onCallback(this);
         ModuleURN cepModuleURN = new ModuleURN("metc:cep:esper:" + strategy.getDefaultNamespace());
         feedEventsToCEP(events,
@@ -2070,7 +2213,7 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("source",
                                             "esper");
         // get a handle to that strategy
-        StrategyImpl strategy = getFirstRunningStrategy();
+        StrategyImpl strategy = getRunningStrategy(theStrategy);
         // begin testing
         assertNull(AbstractRunningStrategy.getProperty("ask"));
         assertNull(AbstractRunningStrategy.getProperty("askCount"));
@@ -2157,7 +2300,7 @@ public abstract class LanguageTestBase
                                      null,
                                      null);
         // get a handle to the running strategy
-        StrategyImpl strategy = getFirstRunningStrategy();
+        StrategyImpl strategy = getRunningStrategy(theStrategy);
         // begin testing
         assertTrue(eventSubscriber.getDataReceived().isEmpty());
         assertTrue(allSubscriber.getDataReceived().isEmpty());
@@ -2290,8 +2433,190 @@ public abstract class LanguageTestBase
         // test cancellation of a combined request
         AbstractRunningStrategy.setProperty("cancelCep",
                                             "true");
-        AbstractRunningStrategy runningStrategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(theStrategy).getRunningStrategy();
         runningStrategy.onCallback(this);
+    }
+    /**
+     * Tests that starting or stopping a strategy succeeds or fails depending on the strategy state.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void stateChanges()
+        throws Exception
+    {
+        StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldLoopOnStart",
+                               "true");
+        parameters.setProperty("shouldLoopOnStop",
+                               "true");
+        verifyPropertyNull("loopDone");
+        verifyPropertyNull("onStartBegins");
+        // strategy doesn't exist yet
+        // need to manually start the strategy because it will be in "STARTING" status for a long long time (UNSTARTED->COMPILING->STARTING)
+        final ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                   null,
+                                                   strategy.getName(),
+                                                   getLanguage(),
+                                                   strategy.getFile(),
+                                                   parameters,
+                                                   null,
+                                                   null,
+                                                   null);
+        // strategy is now somewhere in the journey from UNSTARTED->COMPILING->STARTING.  this change is atomic with respect
+        //  to module operations
+        // wait until the strategy enters "STARTING"
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return getStatus(strategyURN).equals(STARTING) &&
+                       AbstractRunningStrategy.getProperty("onStartBegins") != null;
+            }
+        });
+        // strategy is in STARTING state and will stay there until released by instrumentation that affects the running strategy
+        // strategy is now looping
+        // reset start counter
+        AbstractRunningStrategy.setProperty("onStartBegins",
+                                            null);
+        // test to see what happens if the strategy is started again by the moduleManager (STARTING->UNSTARTED)
+        new ExpectedFailure<ModuleStateException>(MODULE_ALREADY_STARTED,
+                                                  strategyURN.toString()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.start(strategyURN);
+            }
+        };
+        verifyStrategyStatus(strategyURN,
+                             STARTING);
+        StrategyImpl strategyImpl = getRunningStrategy(strategyURN);
+        // make sure the strategy module still thinks we're starting
+        assertTrue(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
+        // try to stop the module (STARTING->STOPPING)
+        new ExpectedFailure<ModuleStateException>(STRATEGY_STILL_RUNNING,
+                                                  strategyImpl.toString(),
+                                                  STARTING) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.stop(strategyURN);
+            }
+        };
+        // module is still started
+        assertTrue(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
+        // release the running strategy (or it will keep running beyond the end of the test)
+        AbstractRunningStrategy.setProperty("shouldStopLoop",
+                                            "true");
+        // strategy is now moving from STARTING->RUNNING
+        // wait for the strategy to become ready
+        verifyStrategyReady(strategyURN);
+        // strategy is in RUNNING state
+        verifyStrategyStatus(strategyURN,
+                             RUNNING);
+        // try to start again (RUNNING->UNSTARTED)
+        new ExpectedFailure<ModuleStateException>(MODULE_ALREADY_STARTED,
+                                                  strategyURN.toString()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.start(strategyURN);
+            }
+        };
+        // change status to STOPPING
+        // make sure the strategy loops in onStop so we have time to play with it
+        // reset all our flags and counters
+        setPropertiesToNull();
+        moduleManager.stop(strategyURN);
+        // wait until the strategy enters "STOPPING"
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return getStatus(strategyURN).equals(STOPPING) &&
+                       AbstractRunningStrategy.getProperty("onStopBegins") != null;
+            }
+        });
+        // strategy is now looping
+        // reset stop counter
+        AbstractRunningStrategy.setProperty("onStopBegins",
+                                            null);
+        // module is listed as stopped
+        assertFalse(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
+        // test stopping (STOPPING->STOPPING)
+        new ExpectedFailure<ModuleStateException>(STOP_FAILED_MODULE_NOT_STARTED,
+                                                  strategyURN.toString()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.stop(strategyURN);
+            }
+        };
+        // test starting (STOPPING->UNSTARTED)
+        new ExpectedFailure<ModuleStateException>(STRATEGY_STILL_RUNNING,
+                                                  strategyImpl.toString(),
+                                                  strategyImpl.getStatus()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.start(strategyURN);
+            }
+        };
+        // let the strategy stop
+        AbstractRunningStrategy.setProperty("shouldStopLoop",
+                                            "true");
+        // wait for the strategy to stop
+        verifyStrategyStopped(strategyURN);
+        verifyStrategyStatus(strategyURN,
+                             STOPPED);
+        // module is listed as stopped
+        assertFalse(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
+        // cannot stop again (STOPPED->STOPPING)
+        new ExpectedFailure<ModuleStateException>(STOP_FAILED_MODULE_NOT_STARTED,
+                strategyURN.toString()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.stop(strategyURN);
+            }
+        };
+        // can start again (STOPPED->UNSTARTED->...)
+        moduleManager.start(strategyURN);
+        // (...->RUNNING)
+        verifyStrategyReady(strategyURN);
+        verifyStrategyStatus(strategyURN,
+                             RUNNING);
+        // strategy is RUNNING
+        // move it to FAILED (RUNNING->STOPPING->FAILED)
+        AbstractRunningStrategy.setProperty("shouldFailOnStop",
+                                            "true");
+        stopStrategy(strategyURN);
+        verifyStrategyStatus(strategyURN,
+                             FAILED);
+        AbstractRunningStrategy.setProperty("shouldFailOnStop",
+                                            null);
+        // try to stop (FAILED->STOPPING)
+        new ExpectedFailure<ModuleStateException>(STOP_FAILED_MODULE_NOT_STARTED,
+                strategyURN.toString()) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.stop(strategyURN);
+            }
+        };
+        // make sure it can start again (FAILED->UNSTARTED)
+        moduleManager.start(strategyURN);
+        verifyStrategyReady(strategyURN);
     }
     /**
      * Gets the language to use for this test.
@@ -2384,6 +2709,64 @@ public abstract class LanguageTestBase
      */
     protected abstract StrategyCoordinates getCombinedStrategy();
     /**
+     * Executes a single interrupt test.
+     *
+     * @param inLoopOnStart a <code>boolean</code> value if the start loop should hang
+     * @param inLoopOnStop a <code>boolean</code> value if the stop loop should hang
+     * @throws Exception if an error occurs
+     */
+    protected void doInterruptTest(boolean inLoopOnStart,
+                                   boolean inLoopOnStop)
+        throws Exception
+    {
+        Properties parameters = new Properties();
+        if(inLoopOnStart) {
+            parameters.setProperty("shouldLoopOnStart",
+                                   "true");
+        }
+        if(inLoopOnStop) {
+            parameters.setProperty("shouldLoopOnStop",
+                                   "true");
+        }
+        StrategyCoordinates strategy = getStrategyCompiles();
+        final ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                   null,
+                                                   strategy.getName(),
+                                                   getLanguage(),
+                                                   strategy.getFile(),
+                                                   parameters,
+                                                   null,
+                                                   null,
+                                                   null);
+        // wait for the appropriate condition before continuing
+        if(inLoopOnStart) {
+            // wait for the property to enter STARTING and the start loop to actually begin
+            MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    return getStatus(strategyURN).equals(STARTING) &&
+                           AbstractRunningStrategy.getProperty("onStartBegins") != null;
+                }
+            });
+            // strategy is looping in "onStart"
+            verifyStrategyStatus(strategyURN,
+                                 STARTING);
+        } else {
+            verifyStrategyReady(strategyURN);
+            verifyStrategyStatus(strategyURN,
+                                 RUNNING);
+        }
+        // strategy is in STARTING or RUNNING state
+        // try to interrupt
+        StrategyMXBean mxInterface = getMXProxy(strategyURN);
+        mxInterface.interrupt();
+        // status always ends up as STOPPED after interrupt
+        verifyStrategyStatus(strategyURN,
+                             STOPPED);
+    }
+    /**
      * Executes a single processed market data request test. 
      *
      * @param inSucceeds a <code>boolean</code> value indicating whether the test is expected to succeed or not
@@ -2392,7 +2775,7 @@ public abstract class LanguageTestBase
     private void executeProcessedMarketDataRequest(boolean inSucceeds)
         throws Exception
     {
-        AbstractRunningStrategy strategy = getFirstRunningStrategyAsAbstractRunningStrategy();
+        AbstractRunningStrategy strategy = (AbstractRunningStrategy)getRunningStrategy(theStrategy).getRunningStrategy();
         AbstractRunningStrategy.setProperty("finished",
                                             null);
         // start test
@@ -2562,9 +2945,7 @@ public abstract class LanguageTestBase
                                      null,
                                      null,
                                      suggestionsURN);
-        Strategy strategy = getFirstRunningStrategy();
-        assertEquals(theStrategy.instanceName(),
-                     strategy.getDefaultNamespace());
+        StrategyImpl strategy = getRunningStrategy(theStrategy);
         ModuleURN cepModuleURN = new ModuleURN("metc:cep:" + inProvider + ":" + strategy.getDefaultNamespace());
         long requestID = 0;
         if(AbstractRunningStrategy.getProperty("requestID") != null) {
@@ -2761,7 +3142,7 @@ public abstract class LanguageTestBase
                                             "METC");
         // generate expected order
         List<ExecutionReport> expectedExecutionReports = new ArrayList<ExecutionReport>();
-        StrategyImpl runningStrategy = getFirstRunningStrategy();
+        StrategyImpl runningStrategy = getRunningStrategy(theStrategy);
         OrderID orderID = null;
         if(inSendOrders) {
             // this will trigger the strategy to submit an order
@@ -2829,7 +3210,7 @@ public abstract class LanguageTestBase
                                                   (OrderSingle)datum.getData(),
                                                   true);
         }
-        StrategyImpl runningStrategy = getFirstRunningStrategy();
+        StrategyImpl runningStrategy = getRunningStrategy(inStrategy);
         List<OrderSingle> actualCumulativeOrders = ((AbstractRunningStrategy)runningStrategy.getRunningStrategy()).getSubmittedOrders();
         assertEquals(inExpectedCumulativeOrders.size(),
                      actualCumulativeOrders.size());
@@ -2879,15 +3260,15 @@ public abstract class LanguageTestBase
         throws Exception
     {
         // start the strategy pointing at the orders receiver for its orders
-        ModuleURN strategy = createStrategy(inStrategy.getName(),
-                                            getLanguage(),
-                                            inStrategy.getFile(),
-                                            null,
-                                            null,
-                                            inOrdersURN,
-                                            null);
-        setupMockORSConnection(strategy);
-        return strategy;
+        theStrategy = createStrategy(inStrategy.getName(),
+                                     getLanguage(),
+                                     inStrategy.getFile(),
+                                     null,
+                                     null,
+                                     inOrdersURN,
+                                     null);
+        setupMockORSConnection(theStrategy);
+        return theStrategy;
     }
     /**
      * Creates a strategy that requests market data from the given provider for the given symbols.
@@ -2938,6 +3319,7 @@ public abstract class LanguageTestBase
     protected void doSuccessfulStartTestNoVerification(ModuleURN inStrategy)
         throws Exception
     {
+        verifyStrategyReady(inStrategy);
         // create an emitter module that will emit the types of data that the strategy must be able to process
         ModuleURN dataEmitterURN = createModule(StrategyTestBase.StrategyDataEmissionModule.Factory.PROVIDER_URN);
         // plumb the emitter together with the strategy (the data is transmitted when the request is made)
