@@ -1,9 +1,14 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Status.ERROR;
-import static org.marketcetera.strategy.Status.NOT_RUNNING;
-import static org.marketcetera.strategy.Status.RUNNING;
+import static org.marketcetera.strategy.Messages.CANNOT_CHANGE_STATE;
+import static org.marketcetera.strategy.Messages.INVALID_STATUS_TO_RECEIVE_DATA;
 import static org.marketcetera.strategy.Messages.RUNTIME_ERROR;
+import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
+import static org.marketcetera.strategy.Status.COMPILING;
+import static org.marketcetera.strategy.Status.FAILED;
+import static org.marketcetera.strategy.Status.STOPPED;
+import static org.marketcetera.strategy.Status.STOPPING;
+import static org.marketcetera.strategy.Status.UNSTARTED;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +21,10 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 
 /* $License$ */
 
@@ -54,14 +61,32 @@ class StrategyImpl
     public final void start()
         throws StrategyException
     {
+        // start and stop need to be protected in case someone tries to start a strategy that
+        //  is already started or stop one that is already stopping - other state changes are
+        //  internally dictated so, for example, the user could not direct a change from 
+        //  COMPILING to STARTING except through start
+        if(!getStatus().canChangeStatusTo(COMPILING)) {
+            CANNOT_CHANGE_STATE.warn(Strategy.STRATEGY_MESSAGES,
+                                     this,
+                                     getStatus(),
+                                     COMPILING);
+            return;
+        }
         try {
             setExecutor(getLanguage().getExecutor(this));
+            setStatus(COMPILING);
             setRunningStrategy(getExecutor().start());
+            // intentionally not setting status to "RUNNING" because the
+            //  "onStart" method, successful completion of which is required
+            //  to be in "RUNNING" status, is being executed asynchronously.
+            //  it is the responsibility of the "onStart" executor to determine
+            //  the status of the strategy - except in the case where an exception
+            //  is thrown initializing the execution of "onStart" - this is caught
+            //  below
         } catch (Exception e) {
-            setStatus(ERROR);
+            setStatus(FAILED);
             throw new StrategyException(e);
         }
-        setStatus(RUNNING);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.Strategy#stop()
@@ -70,10 +95,38 @@ class StrategyImpl
     public final void stop()
         throws Exception
     {
+        // start and stop need to be protected in case someone tries to start a strategy that
+        //  is already started or stop one that is already stopping or stopped - other state changes are
+        //  internally dictated so, for example, the user could not direct a change from 
+        //  COMPILING to STARTING except through start
+        if(!getStatus().canChangeStatusTo(STOPPING)) {
+            CANNOT_CHANGE_STATE.warn(Strategy.STRATEGY_MESSAGES,
+                                     this,
+                                     getStatus(),
+                                     STOPPING);
+            throw new ModuleStateException(new I18NBoundMessage2P(STRATEGY_STILL_RUNNING,
+                                                                  this.toString(),
+                                                                  getStatus()));
+        }
+        // if the strategy is at FAILED or STOPPED, this is not an error case to now try to stop it, but nothing
+        //  more needs (or is allowed) to be done (and the status should not change)
+        if(getStatus().equals(FAILED) ||
+           getStatus().equals(STOPPED)) {
+            return;
+        }
         try {
+            setStatus(STOPPING);
             getExecutor().stop();
-        } finally {
-            setStatus(NOT_RUNNING);
+            // intentionally not setting status to "STOPPED" because the
+            //  "onStop" method, successful completion of which is required
+            //  to be in "STOPPED" status, is being executed asynchronously.
+            //  it is the responsibility of the "onStop" executor to determine
+            //  the status of the strategy - except in the case where an exception
+            //  is thrown initializing the execution of "onStop" - this is caught
+            //  below
+        } catch (Exception e) {
+            setStatus(FAILED);
+            throw e;
         }
     }
     /* (non-Javadoc)
@@ -82,6 +135,14 @@ class StrategyImpl
     @Override
     public final void dataReceived(Object inData)
     {
+        // make sure that the strategy is in a state to receive incoming data
+        if(!getStatus().canReceiveData()) {
+            INVALID_STATUS_TO_RECEIVE_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                                this,
+                                                inData,
+                                                getStatus());
+            return;
+        }
         String method = "onOther"; //$NON-NLS-1$
         try {
             RunningStrategy runningStrategy = getRunningStrategy();
@@ -241,7 +302,7 @@ class StrategyImpl
                  InboundServicesProvider inInboundServicesProvider)
         throws IOException
     {
-        status = NOT_RUNNING;
+        status = UNSTARTED;
         name = inName;
         uniqueIdentifier = inUniqueIdentifier;
         language = inType;
@@ -319,11 +380,13 @@ class StrategyImpl
      *
      * @param inStatus a <code>Status</code> value
      */
-    private void setStatus(Status inStatus)
+    final void setStatus(Status inStatus)
     {
+        assert(status.canChangeStatusTo(inStatus));
+        Status oldStatus = status;
         status = inStatus;
         // update the running strategy collection
-        if(status.equals(RUNNING)) {
+        if(status.isRunning()) {
             synchronized(runningStrategies) {
                 runningStrategies.add(this);
             }
@@ -332,6 +395,9 @@ class StrategyImpl
                 runningStrategies.remove(this);
             }
         }
+        // notify that the status has changed
+        getOutboundServicesProvider().statusChanged(oldStatus,
+                                                    inStatus);
     }
     /**
      * Sets the runningStrategy value.

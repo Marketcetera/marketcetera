@@ -80,6 +80,24 @@ public class JavaLanguageTest
                                                            null));
         verifyPropertyNonNull("onStart");
     }
+    /**
+     * Tests that a strategy's start and stop loops can be interrupted.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void interrupt()
+        throws Exception
+    {
+        doInterruptTest(false,
+                        false);
+        doInterruptTest(false,
+                        true);
+        doInterruptTest(true,
+                        false);
+        doInterruptTest(true,
+                        true);
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.LanguageTestBase#getEmptyStrategy()
      */

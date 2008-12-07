@@ -1,8 +1,10 @@
 package org.marketcetera.strategy;
 
 import static org.marketcetera.strategy.Messages.CALLBACK_ERROR;
+import static org.marketcetera.strategy.Messages.CANNOT_REQUEST_DATA;
 import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_DESTINATIONS;
 import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_POSITION;
+import static org.marketcetera.strategy.Messages.CANNOT_SEND_DATA;
 import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.INVALID_CANCEL;
@@ -101,6 +103,9 @@ public abstract class AbstractRunningStrategy
      */
     final void stop()
     {
+        // no new callbacks will be allowed
+        callbackService.shutdown();
+        // terminate existing callbacks, best effort
         callbackService.shutdownNow();
     }
     /**
@@ -189,6 +194,12 @@ public abstract class AbstractRunningStrategy
     protected final int requestMarketData(String inSymbols,
                                           String inSource)
     {
+        if(!canReceiveData()) {
+            CANNOT_REQUEST_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                     strategy,
+                                     strategy.getStatus());
+            return 0;
+        }
         if(inSymbols != null &&
            !inSymbols.isEmpty()) {
             try {
@@ -232,6 +243,12 @@ public abstract class AbstractRunningStrategy
                                                    String[] inStatements,
                                                    String inCepSource)
     {
+        if(!canReceiveData()) {
+            CANNOT_REQUEST_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                     strategy,
+                                     strategy.getStatus());
+            return 0;
+        }
         if(inSymbols == null ||
            inSymbols.isEmpty() ||
            inMarketDataSource == null ||
@@ -319,6 +336,12 @@ public abstract class AbstractRunningStrategy
     protected final int requestCEPData(String[] inStatements,
                                        String inSource)
     {
+        if(!canReceiveData()) {
+            CANNOT_REQUEST_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                     strategy,
+                                     strategy.getStatus());
+            return 0;
+        }
         if(inStatements == null ||
            inStatements.length == 0 ||
            inSource == null ||
@@ -405,6 +428,12 @@ public abstract class AbstractRunningStrategy
                                       BigDecimal inScore,
                                       String inIdentifier)
     {
+        if(!canSendData()) {
+            CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                  strategy,
+                                  strategy.getStatus());
+            return;
+        }
         if(inOrder == null ||
            inScore == null ||
            inIdentifier == null ||
@@ -428,10 +457,16 @@ public abstract class AbstractRunningStrategy
      * Sends an order to order subscribers.
      * 
      * @param inOrder an <code>OrderSingle</code> value
-     * @return an <code>OrderID</code> value representing the submitted order
+     * @return an <code>OrderID</code> value representing the submitted order or null if the order could not be sent
      */
     protected final OrderID sendOrder(OrderSingle inOrder)
     {
+        if(!canSendData()) {
+            CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                  strategy,
+                                  strategy.getStatus());
+            return null;
+        }
         if(inOrder == null ||
            inOrder.getOrderID() == null) {
             INVALID_ORDER.warn(Strategy.STRATEGY_MESSAGES,
@@ -460,6 +495,12 @@ public abstract class AbstractRunningStrategy
      */
     protected final boolean cancelOrder(OrderID inOrderID)
     {
+        if(!canSendData()) {
+            CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                  strategy,
+                                  strategy.getStatus());
+            return false;
+        }
         if(inOrderID == null) {
             INVALID_CANCEL.warn(Strategy.STRATEGY_MESSAGES,
                                 strategy);
@@ -507,10 +548,16 @@ public abstract class AbstractRunningStrategy
      * attempt to cancel one order fails, that order will be skipped and the
      * others will still be attempted in their turn.
      * 
-     * @return an <code>int</code> value containing the number of orders to cancel
+     * @return an <code>int</code> value containing the number of orders for which cancels were submitted
      */
     protected final int cancelAllOrders()
     {
+        if(!canSendData()) {
+            CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                  strategy,
+                                  strategy.getStatus());
+            return 0;
+        }
         SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} submitting request to cancel all orders", //$NON-NLS-1$
                                strategy);
@@ -544,11 +591,17 @@ public abstract class AbstractRunningStrategy
      * 
      * @param inOrderID an <code>OrderID</code> value containing the order to cancel
      * @param inNewOrder an <code>OrderSingle</code> value containing the order with which to replace the existing order
-     * @return an <code>OrderID</code> value containing the <code>OrderID</code> of the new order
+     * @return an <code>OrderID</code> value containing the <code>OrderID</code> of the new order or null if the old order could not be canceled and the new one could not be sent
      */
     protected final OrderID cancelReplace(OrderID inOrderID,
                                           OrderSingle inNewOrder)
     {
+        if(!canSendData()) {
+            CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                  strategy,
+                                  strategy.getStatus());
+            return null;
+        }
         if(inOrderID == null ||
            inNewOrder == null ||
            inNewOrder.getOrderID() == null) {
@@ -603,6 +656,12 @@ public abstract class AbstractRunningStrategy
     protected final void sendMessage(Message inMessage,
                                      DestinationID inDestination)
     {
+        if(!canSendData()) {
+            CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                  strategy,
+                                  strategy.getStatus());
+            return;
+        }
         if(inMessage == null ||
            inDestination == null) {
             INVALID_MESSAGE.warn(Strategy.STRATEGY_MESSAGES,
@@ -628,6 +687,12 @@ public abstract class AbstractRunningStrategy
     protected final void sendEventToCEP(EventBase inEvent,
                                         String inProvider)
     {
+        if(!canSendData()) {
+            CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                  strategy,
+                                  strategy.getStatus());
+            return;
+        }
         if(inEvent == null ||
            inProvider == null ||
            inProvider.isEmpty()) {
@@ -655,6 +720,12 @@ public abstract class AbstractRunningStrategy
      */
     protected final void sendEvent(EventBase inEvent)
     {
+        if(!canSendData()) {
+            CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                  strategy,
+                                  strategy.getStatus());
+            return;
+        }
        if(inEvent == null) {
            INVALID_EVENT.warn(Strategy.STRATEGY_MESSAGES,
                               strategy);
@@ -722,6 +793,12 @@ public abstract class AbstractRunningStrategy
     protected final DestinationStatus[] getDestinations()
     {
         try {
+            if(!canReceiveData()) {
+                CANNOT_REQUEST_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                         strategy,
+                                         strategy.getStatus());
+                return new DestinationStatus[0];
+            }
             List<DestinationStatus> destinations = strategy.getInboundServicesProvider().getDestinations();
             SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                    "{} received the following destinations: {}", //$NON-NLS-1$
@@ -745,6 +822,12 @@ public abstract class AbstractRunningStrategy
     protected final BigDecimal getPositionAsOf(Date inDate,
                                                String inSymbol)
     {
+        if(!canReceiveData()) {
+            CANNOT_REQUEST_DATA.warn(Strategy.STRATEGY_MESSAGES,
+                                     strategy,
+                                     strategy.getStatus());
+            return null;
+        }
         if(inDate == null ||
            inSymbol == null ||
            inSymbol.isEmpty()) {
@@ -785,6 +868,24 @@ public abstract class AbstractRunningStrategy
     {
         return (MarketDataRequest)DataRequest.newRequestFromString(String.format("type=marketdata:symbols=%s", //$NON-NLS-1$
                                                                                  inSymbols));
+    }
+    /**
+     * Indicates if outgoing data can be sent.
+     *
+     * @return a <code>boolean</code> value
+     */
+    private boolean canSendData()
+    {
+        return strategy.getStatus().canSendData();
+    }
+    /**
+     * Indicates if incoming data can be received.
+     *
+     * @return a <code>boolean</code> value
+     */
+    private boolean canReceiveData()
+    {
+        return strategy.getStatus().canReceiveData();
     }
     /**
      * common properties store shared among all strategies
