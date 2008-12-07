@@ -1,4 +1,4 @@
-package org.marketcetera.ors.dest;
+package org.marketcetera.ors.brokers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +91,7 @@ public class SpringDestinations
             throw new I18NException(Messages.NO_SETTINGS);
         }
         if (getDestinations()==null) {
-            throw new I18NException(Messages.NO_DESTINATIONS);
+            throw new I18NException(Messages.NO_BROKERS);
         }
         List<SpringSessionDescriptor> list=
             new ArrayList<SpringSessionDescriptor>(getDestinations().size());

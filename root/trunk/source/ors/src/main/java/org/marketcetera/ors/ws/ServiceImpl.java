@@ -7,7 +7,7 @@ import org.marketcetera.client.dest.DestinationsStatus;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.ors.dest.Destinations;
+import org.marketcetera.ors.brokers.Destinations;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.persist.PersistenceException;

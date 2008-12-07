@@ -1,4 +1,4 @@
-package org.marketcetera.ors.dest;
+package org.marketcetera.ors.brokers;
 
 import org.junit.Test;
 import org.marketcetera.util.l10n.MessageComparator;

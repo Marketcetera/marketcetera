@@ -1,4 +1,4 @@
-package org.marketcetera.ors.dest;
+package org.marketcetera.ors.brokers;
 
 import org.marketcetera.client.dest.DestinationStatus;
 import org.marketcetera.ors.filters.MessageModifierManager;
@@ -270,7 +270,7 @@ public class Destination
 
     public String toString()
     {
-        return Messages.DESTINATION_STRING.getText
+        return Messages.BROKER_STRING.getText
             (getDestinationID().getValue(),getSessionID(),getName());
     }
 }
