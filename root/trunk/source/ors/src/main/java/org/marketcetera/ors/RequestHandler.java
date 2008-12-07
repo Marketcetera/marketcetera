@@ -6,8 +6,8 @@ import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.ors.brokers.Destination;
-import org.marketcetera.ors.brokers.Destinations;
+import org.marketcetera.ors.brokers.Broker;
+import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.filters.OrderFilter;
 import org.marketcetera.ors.jms.ReplyHandler;
@@ -90,7 +90,7 @@ public class RequestHandler
 
     // INSTANCE DATA.
 
-    private final Destinations mDestinations;
+    private final Brokers mDestinations;
     private final Selector mSelector;
     private final OrderFilter mAllowedOrders;
     private final ReplyPersister mPersister;
@@ -102,7 +102,7 @@ public class RequestHandler
     // CONSTRUCTORS.
 
     public RequestHandler
-        (Destinations destinations,
+        (Brokers destinations,
          Selector selector,
          OrderFilter allowedOrders,
          ReplyPersister persister,
@@ -123,7 +123,7 @@ public class RequestHandler
 
     // INSTANCE METHODS.
 
-    public Destinations getDestinations()
+    public Brokers getDestinations()
     {
         return mDestinations;
     }
@@ -396,7 +396,7 @@ public class RequestHandler
     {
         Messages.RH_RECEIVED_MESSAGE.info(this,msg);
         DestinationID dID=null;
-        Destination d=null;
+        Broker d=null;
         Message qMsg=null;
         Message qMsgReply=null;
         try {

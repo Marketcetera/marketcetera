@@ -23,15 +23,15 @@ import quickfix.SessionID;
 /* $License$ */
 
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class Destinations
+public class Brokers
 {
 
     // INSTANCE DATA.
 
-    private final SpringDestinations mSpringDestinations;
-    private final List<Destination> mDestinations;
-    private final Map<DestinationID,Destination> mDestinationIDMap;
-    private final Map<SessionID,Destination> mSessionIDMap;
+    private final SpringBrokers mSpringBrokers;
+    private final List<Broker> mDestinations;
+    private final Map<DestinationID,Broker> mDestinationIDMap;
+    private final Map<SessionID,Broker> mSessionIDMap;
 
 
     // CONSTRUCTORS.
@@ -42,21 +42,21 @@ public class Destinations
      * configured to rely on the given report history services
      * provider for persistence operations.
      *
-     * @param springDestinations The configurations.
+     * @param springBrokers The configurations.
      * @param historyServices The report history services provider.
      */
 
-    public Destinations
-        (SpringDestinations springDestinations,
+    public Brokers
+        (SpringBrokers springBrokers,
          ReportHistoryServices historyServices)
     {
-        mSpringDestinations=springDestinations;
-        int capacity=getSpringDestinations().getDestinations().size();
-        mDestinations=new ArrayList<Destination>(capacity);
-        mDestinationIDMap=new HashMap<DestinationID,Destination>(capacity);
-        mSessionIDMap=new HashMap<SessionID,Destination>(capacity);
-        for (SpringDestination sd:getSpringDestinations().getDestinations()) {
-            Destination d=new Destination(sd,historyServices);
+        mSpringBrokers=springBrokers;
+        int capacity=getSpringBrokers().getDestinations().size();
+        mDestinations=new ArrayList<Broker>(capacity);
+        mDestinationIDMap=new HashMap<DestinationID,Broker>(capacity);
+        mSessionIDMap=new HashMap<SessionID,Broker>(capacity);
+        for (SpringBroker sd:getSpringBrokers().getDestinations()) {
+            Broker d=new Broker(sd,historyServices);
             mDestinations.add(d);
             mDestinationIDMap.put(d.getDestinationID(),d);
             mSessionIDMap.put(d.getSessionID(),d);
@@ -72,9 +72,9 @@ public class Destinations
      * @return The configurations.
      */
 
-    public SpringDestinations getSpringDestinations()
+    public SpringBrokers getSpringBrokers()
     {
-        return mSpringDestinations;
+        return mSpringBrokers;
     }
 
     /**
@@ -83,7 +83,7 @@ public class Destinations
      * @return The destinations.
      */
 
-    public List<Destination> getDestinations()
+    public List<Broker> getDestinations()
     {
         return mDestinations;
     }
@@ -98,7 +98,7 @@ public class Destinations
     {
         List<DestinationStatus> list=
             new ArrayList<DestinationStatus>(getDestinations().size());
-        for (Destination d:getDestinations()) {
+        for (Broker d:getDestinations()) {
             list.add(d.getStatus());
         }
         return new DestinationsStatus(list);
@@ -113,7 +113,7 @@ public class Destinations
 
     public SpringSessionSettings getSettings()
     {
-        return getSpringDestinations().getSettings();
+        return getSpringBrokers().getSettings();
     }
 
     /**
@@ -126,10 +126,10 @@ public class Destinations
      * @return The destination. It may be null.
      */
 
-    public Destination getDestination
+    public Broker getDestination
         (SessionID sessionID)
     {
-        Destination d=mSessionIDMap.get(sessionID);
+        Broker d=mSessionIDMap.get(sessionID);
         if (d==null) {
             Messages.INVALID_SESSION_ID.error(this,sessionID);
         }
@@ -146,10 +146,10 @@ public class Destinations
      * @return The destination. It may be null.
      */
 
-    public Destination getDestination
+    public Broker getDestination
         (DestinationID destinationID)
     {
-        Destination d=mDestinationIDMap.get(destinationID);
+        Broker d=mDestinationIDMap.get(destinationID);
         if (d==null) {
             Messages.INVALID_BROKER_ID.error(this,destinationID);
         }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Main destination configuration.
+  - Main primary destination configuration.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$
@@ -17,23 +17,19 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <import
-   resource="dest/main.xml"/>
-  <import
-   resource="qsettings.xml"/>
-  <import
-   resource="selector.xml"/>
+   resource="qdescriptor.xml"/>
 
   <bean
-   id="metc_destinations"
-   class="org.marketcetera.ors.brokers.SpringDestinations">
+   id="metc_destination"
+   class="org.marketcetera.ors.brokers.SpringBroker">
     <property
-     name="settings"
-     ref="metc_qsettings"/>
+     name="name"
+     value="Marketcetera Exchange"/>
     <property
-     name="destinations">
-      <list>
-        <ref bean="metc_destination"/>
-      </list>
-    </property>
+     name="id"
+     value="metc"/>
+    <property
+     name="descriptor"
+     ref="metc_qdescriptor"/>
   </bean>
 </beans>

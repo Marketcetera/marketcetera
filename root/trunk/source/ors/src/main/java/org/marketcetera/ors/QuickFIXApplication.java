@@ -1,8 +1,8 @@
 package org.marketcetera.ors;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.brokers.Destination;
-import org.marketcetera.ors.brokers.Destinations;
+import org.marketcetera.ors.brokers.Broker;
+import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.IQuickFIXSender;
@@ -50,7 +50,7 @@ public class QuickFIXApplication
 
     // INSTANCE DATA.
 
-    private final Destinations mDestinations;
+    private final Brokers mDestinations;
     private final MessageFilter mSupportedMessages;
     private final ReplyPersister mPersister;
     private final IQuickFIXSender mSender;
@@ -62,7 +62,7 @@ public class QuickFIXApplication
     // CONSTRUCTORS.
 
     public QuickFIXApplication
-        (Destinations destinations,
+        (Brokers destinations,
          MessageFilter supportedMessages,
          ReplyPersister persister,
          IQuickFIXSender sender,
@@ -82,7 +82,7 @@ public class QuickFIXApplication
 
     // INSTANCE METHODS.
 
-    public Destinations getDestinations()
+    public Brokers getDestinations()
     {
         return mDestinations;
     }
@@ -127,7 +127,7 @@ public class QuickFIXApplication
     }
 
     private void updateStatus
-        (Destination d,
+        (Broker d,
          boolean status)
     {
         Messages.QF_SENDING_STATUS.info(this,status,d);
@@ -149,7 +149,7 @@ public class QuickFIXApplication
     }
 
     private void sendToClientTrades
-        (Destination d,
+        (Broker d,
          Message msg,
          Originator originator)
     {
@@ -197,7 +197,7 @@ public class QuickFIXApplication
 	public void onLogon
         (SessionID session)
     {
-        Destination d=getDestinations().getDestination(session);
+        Broker d=getDestinations().getDestination(session);
         updateStatus(d,true);
         // fromAdmin() will forward an execution report following the
         // logon; there is no need to send a message from here.
@@ -207,7 +207,7 @@ public class QuickFIXApplication
 	public void onLogout
         (SessionID session)
     {
-        Destination d=getDestinations().getDestination(session);
+        Broker d=getDestinations().getDestination(session);
         updateStatus(d,false);
     }
 
@@ -216,7 +216,7 @@ public class QuickFIXApplication
         (Message msg,
          SessionID session)
     {
-        Destination d=getDestinations().getDestination(session);
+        Broker d=getDestinations().getDestination(session);
         Messages.QF_TO_ADMIN.info(getCategory(msg),msg,d);
         d.logMessage(msg);
 
@@ -258,7 +258,7 @@ public class QuickFIXApplication
         (Message msg,
          SessionID session)
     {
-        Destination d=getDestinations().getDestination(session);
+        Broker d=getDestinations().getDestination(session);
         Messages.QF_FROM_ADMIN.info(getCategory(msg),msg,d);
         d.logMessage(msg);
 
@@ -273,7 +273,7 @@ public class QuickFIXApplication
          SessionID session)
         throws DoNotSend
     {
-        Destination d=getDestinations().getDestination(session);
+        Broker d=getDestinations().getDestination(session);
         Messages.QF_TO_APP.info(getCategory(msg),msg,d);
         d.logMessage(msg);
     }
@@ -285,7 +285,7 @@ public class QuickFIXApplication
         throws UnsupportedMessageType,
                FieldNotFound
     {
-        Destination d=getDestinations().getDestination(session);
+        Broker d=getDestinations().getDestination(session);
         Messages.QF_FROM_APP.info(getCategory(msg),msg,d);
         d.logMessage(msg);
 

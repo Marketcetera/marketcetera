@@ -7,7 +7,7 @@ import org.marketcetera.client.dest.DestinationsStatus;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.ors.brokers.Destinations;
+import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.persist.PersistenceException;
@@ -38,7 +38,7 @@ public class ServiceImpl
 
     // INSTANCE DATA.
 
-    private final Destinations mDestinations;
+    private final Brokers mDestinations;
     private final IDFactory mIDFactory;
     private final ReportHistoryServices mHistoryServices;
 
@@ -56,7 +56,7 @@ public class ServiceImpl
 
     public ServiceImpl
         (SessionManager<ClientSession> sessionManager,
-         Destinations destinations,
+         Brokers destinations,
          IDFactory idFactory,
          ReportHistoryServices historyServices)
     {
@@ -75,7 +75,7 @@ public class ServiceImpl
      * @return The destinations.
      */
 
-    private Destinations getDestinations()
+    private Brokers getDestinations()
     {
         return mDestinations;
     }

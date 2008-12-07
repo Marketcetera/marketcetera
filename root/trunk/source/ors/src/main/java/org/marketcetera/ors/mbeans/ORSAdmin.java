@@ -3,8 +3,8 @@ package org.marketcetera.ors.mbeans;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.ors.brokers.Destination;
-import org.marketcetera.ors.brokers.Destinations;
+import org.marketcetera.ors.brokers.Broker;
+import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.quickfix.IQuickFIXSender;
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -23,11 +23,11 @@ import quickfix.field.*;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ORSAdmin implements ORSAdminMBean {
-    private Destinations destinations;
+    private Brokers destinations;
     protected IQuickFIXSender quickFIXSender;
     private IDFactory idFactory;
 
-    public ORSAdmin(Destinations destinations,
+    public ORSAdmin(Brokers destinations,
                     IQuickFIXSender qfSender,
                     IDFactory idFactory)
             throws NoMoreIDsException, ClassNotFoundException {
@@ -37,7 +37,7 @@ public class ORSAdmin implements ORSAdminMBean {
     }
 
     public void sendPasswordReset(String destination, String oldPassword, String newPassword) {
-        Destination d=destinations.getDestination(new DestinationID(destination));
+        Broker d=destinations.getDestination(new DestinationID(destination));
         SLF4JLoggerProxy.debug(this, "Trade session halted, resetting password"); //$NON-NLS-1$
         SessionID session = d.getSessionID();
         Message msg = d.getFIXMessageFactory().createMessage(MsgType.USER_REQUEST);

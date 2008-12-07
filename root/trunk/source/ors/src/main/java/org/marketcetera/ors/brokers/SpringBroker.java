@@ -18,7 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
 /* $License$ */
 
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class SpringDestination
+public class SpringBroker
     implements InitializingBean
 {
 
