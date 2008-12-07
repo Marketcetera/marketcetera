@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -115,11 +117,15 @@ public class JavaCompilerExecutionEngine
         List<String> options = new ArrayList<String>();
         // first, add the classpath needed, if any
         StringBuffer classpathString = new StringBuffer();
-        // start with the existing classpath with which the process was started and add any extra dir/paths needed by the strategy
-        classpathString.append(System.getProperty("java.class.path")).append(File.pathSeparator); //$NON-NLS-1$
         if(strategy.getClasspath() != null) {
             for(String pathElement : strategy.getClasspath()) {
-                classpathString.append(File.pathSeparator).append(pathElement.trim());
+                classpathString.append(pathElement.trim()).append(File.pathSeparator);
+            }
+        }
+        // add jars we are given by the parent class loader, if any
+        if(JavaCompilerExecutionEngine.class.getClassLoader() instanceof URLClassLoader) {
+            for(URL url : (((URLClassLoader)JavaCompilerExecutionEngine.class.getClassLoader()).getURLs())) {
+                classpathString.append(url.getFile()).append(File.pathSeparator);
             }
         }
         // put the classpath string in place with the classpath command-line option 
