@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.marketcetera.photon.feature"
-      label="Photon Feature"
+      label="%featureName"
       version="1.0.0"
-      provider-name="Marketcetera, Inc."
+      provider-name="%providerName"
       plugin="org.marketcetera.photon">
 
-   <description url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/Photon">
-      Marketcetera Photon Feature
+   <description url="http://www.marketcetera.org/confluence/display/PN/Photon">
+      %description
    </description>
 
-   <copyright url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/License">
-      Marketcetera Licensing Terms
+   <copyright>
+      %copyright
    </copyright>
 
-   <license url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/License">
-      Marketcetera Open-Source Licensing
+   <license url="%licenseURL">
+      %license
    </license>
 
    <url>
-      <update label="Marketcetera update site" url="http://repo.marketcetera.org/eclipse/"/>
+      <update label="%updateSiteName" url="http://repo.marketcetera.org/eclipse/"/>
    </url>
 
    <includes
