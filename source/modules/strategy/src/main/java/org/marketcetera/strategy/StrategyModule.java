@@ -512,23 +512,23 @@ final class StrategyModule
      */
     @Override
     public void sendMessage(Message inMessage,
-                            BrokerID inDestination)
+                            BrokerID inBroker)
     {
         if(inMessage == null ||
-           inDestination == null) {
+           inBroker == null) {
             INVALID_MESSAGE.warn(Strategy.STRATEGY_MESSAGES,
                                  strategy);
             return;
         }
         try {
             publish(Factory.getInstance().createOrder(inMessage,
-                                                      inDestination));
+                                                      inBroker));
         } catch (Exception e) {
             SEND_MESSAGE_FAILED.warn(Strategy.STRATEGY_MESSAGES,
                                      e,
                                      strategy,
                                      inMessage,
-                                     inDestination);
+                                     inBroker);
         }
     }
     /* (non-Javadoc)
@@ -597,10 +597,10 @@ final class StrategyModule
         publish(inEvent);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.InboundServicesProvider#getDestinations()
+     * @see org.marketcetera.strategy.InboundServicesProvider#getBrokers()
      */
     @Override
-    public List<BrokerStatus> getDestinations()
+    public List<BrokerStatus> getBrokers()
         throws ConnectionException
     {
         assert(orsClient != null);

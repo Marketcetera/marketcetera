@@ -82,8 +82,8 @@ public interface Messages
                                                                        "order_cancel_failed"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_REPLACEMENT_ORDER = new I18NMessage1P(LOGGER,
                                                                              "invalid_replacement_order"); //$NON-NLS-1$
-    static final I18NMessage1P CANNOT_RETRIEVE_DESTINATIONS = new I18NMessage1P(LOGGER,
-                                                                                "cannot_retrieve_destinations"); //$NON-NLS-1$
+    static final I18NMessage1P CANNOT_RETRIEVE_BROKERS = new I18NMessage1P(LOGGER,
+                                                                                "cannot_retrieve_brokers"); //$NON-NLS-1$
     static final I18NMessage3P INVALID_POSITION_REQUEST = new I18NMessage3P(LOGGER,
                                                                             "invalid_position_request"); //$NON-NLS-1$
     static final I18NMessage3P CANNOT_RETRIEVE_POSITION = new I18NMessage3P(LOGGER,

@@ -1073,11 +1073,11 @@ public abstract class LanguageTestBase
                                "true");
         doMessageTest(parameters,
                       new FIXOrder[0]);
-        // null destination
+        // null broker
         parameters.clear();
         parameters.setProperty("date",
                                Long.toString(messageDate.getTime()));
-        parameters.setProperty("nullDestination",
+        parameters.setProperty("nullBroker",
                                "true");
         doMessageTest(parameters,
                       new FIXOrder[0]);
@@ -1089,7 +1089,7 @@ public abstract class LanguageTestBase
         msg.setField(new TransactTime(messageDate));
         doMessageTest(parameters,
                       new FIXOrder[] { Factory.getInstance().createOrder(msg,
-                                                                         new BrokerID("some-destination")) } );
+                                                                         new BrokerID("some-broker")) } );
     }
     /**
      * Takes a single strategy and starts and stops it many times.
@@ -1396,23 +1396,23 @@ public abstract class LanguageTestBase
         });
     }
     /**
-     * Tests a strategy's ability to retrieve available destinations.
+     * Tests a strategy's ability to retrieve available brokers.
      *
      * @throws Exception if an error occurs
      */
     @Test
-    public void destinations()
+    public void brokers()
         throws Exception
     {
         // call should fail
-        MockClient.getDestinationsFails = true;
-        doDestinationTest(new BrokerStatus[0]);
+        MockClient.getBrokersFails = true;
+        doBrokerTest(new BrokerStatus[0]);
         // succeeds and returns a non-empty list
-        MockClient.getDestinationsFails = false;
-        doDestinationTest(destinations.getBrokers().toArray(new BrokerStatus[destinations.getBrokers().size()]));
+        MockClient.getBrokersFails = false;
+        doBrokerTest(brokers.getBrokers().toArray(new BrokerStatus[brokers.getBrokers().size()]));
         // succeeds and returns an empty list
-        destinations.setBrokers(new ArrayList<BrokerStatus>());
-        doDestinationTest(new BrokerStatus[0]);
+        brokers.setBrokers(new ArrayList<BrokerStatus>());
+        doBrokerTest(new BrokerStatus[0]);
     }
     /**
      * Test a strategy's ability to create and send orders.
@@ -2964,17 +2964,17 @@ public abstract class LanguageTestBase
         return suggestions;
     }
     /**
-     * Performs a single destinations test.
+     * Performs a single brokers test.
      *
-     * @param inExpectedDestinations a <code>DestinationStatus[]</code> value containing the expected destinations
+     * @param inExpectedBrokers a <code>BrokerStatus[]</code> value containing the expected brokers
      * @throws Exception if an error occurs
      */
-    private void doDestinationTest(BrokerStatus[] inExpectedDestinations)
+    private void doBrokerTest(BrokerStatus[] inExpectedBrokers)
         throws Exception
     {
         StrategyCoordinates strategy = getStrategyCompiles();
         AbstractRunningStrategy.getProperties().clear();
-        AbstractRunningStrategy.setProperty("askForDestinations",
+        AbstractRunningStrategy.setProperty("askForBrokers",
                                             "true");
         verifyStrategyStartsAndStops(strategy.getName(),
                                      getLanguage(),
@@ -2984,14 +2984,14 @@ public abstract class LanguageTestBase
                                      null,
                                      null);
         int counter = 0;
-        for(BrokerStatus destination : inExpectedDestinations)
+        for(BrokerStatus broker : inExpectedBrokers)
         {
-            assertEquals(destination.toString(),
+            assertEquals(broker.toString(),
                          AbstractRunningStrategy.getProperty("" + counter++));
         }
         // verify there are no extra properties
-        assertNull("Property " + inExpectedDestinations.length + " was non-null",
-                   AbstractRunningStrategy.getProperty("" + inExpectedDestinations.length));
+        assertNull("Property " + inExpectedBrokers.length + " was non-null",
+                   AbstractRunningStrategy.getProperty("" + inExpectedBrokers.length));
     }
     /**
      * Executes a single iteration of the get-current-position test.

@@ -2,7 +2,7 @@ package org.marketcetera.strategy;
 
 import static org.marketcetera.strategy.Messages.CALLBACK_ERROR;
 import static org.marketcetera.strategy.Messages.CANNOT_REQUEST_DATA;
-import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_DESTINATIONS;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_BROKERS;
 import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_POSITION;
 import static org.marketcetera.strategy.Messages.CANNOT_SEND_DATA;
 import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
@@ -651,10 +651,10 @@ public abstract class AbstractRunningStrategy
      * Sends a FIX message.
      *
      * @param inMessage a <code>Message</code> value
-     * @param inDestination a <code>BrokerID</code> value
+     * @param inBroker a <code>BrokerID</code> value
      */
     protected final void sendMessage(Message inMessage,
-                                     BrokerID inDestination)
+                                     BrokerID inBroker)
     {
         if(!canSendData()) {
             CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
@@ -663,7 +663,7 @@ public abstract class AbstractRunningStrategy
             return;
         }
         if(inMessage == null ||
-           inDestination == null) {
+           inBroker == null) {
             INVALID_MESSAGE.warn(Strategy.STRATEGY_MESSAGES,
                                  strategy);
             return;
@@ -672,9 +672,9 @@ public abstract class AbstractRunningStrategy
                                "{} sending FIX message {} to {}", //$NON-NLS-1$
                                strategy,
                                inMessage,
-                               inDestination);
+                               inBroker);
         strategy.getOutboundServicesProvider().sendMessage(inMessage,
-                                                           inDestination);
+                                                           inBroker);
     }
     /**
      * Sends the given event to the CEP module indicated by the provider.
@@ -783,14 +783,14 @@ public abstract class AbstractRunningStrategy
                              inData);
     }
     /**
-     * Returns the list of destinations known to the system.
+     * Returns the list of brokers known to the system.
      *
      * <p>These values can be used to create and send orders with {@link #sendMessage(Message, BrokerID)}
      * or {@link #sendOrder(OrderSingle)}.
      *
-     * @return a <code>DestinationStatus[]</code> value
+     * @return a <code>BrokerStatus[]</code> value
      */
-    protected final BrokerStatus[] getDestinations()
+    protected final BrokerStatus[] getBrokers()
     {
         try {
             if(!canReceiveData()) {
@@ -799,16 +799,16 @@ public abstract class AbstractRunningStrategy
                                          strategy.getStatus());
                 return new BrokerStatus[0];
             }
-            List<BrokerStatus> destinations = strategy.getInboundServicesProvider().getDestinations();
+            List<BrokerStatus> brokers = strategy.getInboundServicesProvider().getBrokers();
             SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                                   "{} received the following destinations: {}", //$NON-NLS-1$
+                                   "{} received the following brokers: {}", //$NON-NLS-1$
                                    strategy,
-                                   destinations == null ? "null" : Arrays.toString(destinations.toArray())); //$NON-NLS-1$
-            return destinations.toArray(new BrokerStatus[destinations.size()]);
+                                   brokers == null ? "null" : Arrays.toString(brokers.toArray())); //$NON-NLS-1$
+            return brokers.toArray(new BrokerStatus[brokers.size()]);
         } catch (Exception e) {
-            CANNOT_RETRIEVE_DESTINATIONS.warn(Strategy.STRATEGY_MESSAGES,
-                                              e,
-                                              strategy);
+            CANNOT_RETRIEVE_BROKERS.warn(Strategy.STRATEGY_MESSAGES,
+                                         e,
+                                         strategy);
             return new BrokerStatus[0];
         }
     }

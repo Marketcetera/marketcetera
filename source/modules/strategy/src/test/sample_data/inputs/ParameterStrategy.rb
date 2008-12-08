@@ -2,7 +2,7 @@ include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.trade.Factory"
 include_class "java.math.BigDecimal"
 include_class "org.marketcetera.quickfix.FIXVersion"
-include_class "org.marketcetera.trade.DestinationID"
+include_class "org.marketcetera.trade.BrokerID"
 
 class ParameterStrategy < Strategy
   def on_ask(ask)
@@ -37,7 +37,7 @@ class ParameterStrategy < Strategy
       emitMessage = get_parameter("emitMessage")
       if(emitMessage != nil)
           message = FIXVersion.getFIXVersion("FIX.0.0").getMessageFactory().newBasicOrder()
-          send_message(message, DestinationID.new("some-destination"))
+          send_message(message, BrokerID.new("some-broker"))
       end
   end  
   def on_other(data)
