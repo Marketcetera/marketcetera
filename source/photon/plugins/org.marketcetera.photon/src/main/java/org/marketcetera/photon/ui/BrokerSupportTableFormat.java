@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -48,7 +48,7 @@ public class BrokerSupportTableFormat extends FIXMessageTableFormat<ReportHolder
 	protected String convertColumnValueToText(ReportHolder baseObject,
 			int columnIndex) {
 		if (columnIndex == mIndex) {
-			DestinationID destinationID = baseObject.getDestinationID();
+			BrokerID destinationID = baseObject.getBrokerID();
 			return destinationID == null ? null : destinationID.getValue();
 		}
 		return super.convertColumnValueToText(baseObject, columnIndex);
