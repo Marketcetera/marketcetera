@@ -9,17 +9,16 @@ import javax.xml.bind.annotation.XmlAccessType;
 
 /* $License$ */
 /**
- * Instances of this class uniquely identify a FIX Destination / Broker to
- * which an order can be sent or from which a response to a request can
- * be received.
- *
+ * Instances of this class uniquely identify a FIX Broker to which an order can
+ * be sent or from which a response to a request can be received.
+ * 
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since $Release$
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class DestinationID implements Serializable {
+@ClassVersion("$Id$")
+public class BrokerID implements Serializable {
 
     /**
      * Returns the text value of the ID.
@@ -35,7 +34,7 @@ public class DestinationID implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DestinationID that = (DestinationID) o;
+        BrokerID that = (BrokerID) o;
 
         return mValue.equals(that.mValue);
 
@@ -54,7 +53,7 @@ public class DestinationID implements Serializable {
      *
      * @param inValue the string ID value. Cannot be null.
      */
-    public DestinationID(String inValue) {
+    public BrokerID(String inValue) {
         if(inValue == null) {
             throw new NullPointerException();
         }
@@ -66,7 +65,7 @@ public class DestinationID implements Serializable {
      * by JAXB.
      */
 
-    protected DestinationID() {
+    protected BrokerID() {
         mValue = null;
     }
 

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import org.junit.Test;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Originator;
@@ -35,7 +35,7 @@ public class ReportHolderTest {
                         BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
                         BigDecimal.ONE, new MSymbol("123"), "asdf");
         ExecutionReport report = Factory.getInstance().createExecutionReport(
-                message, new DestinationID("ABC"), Originator.Server);
+                message, new BrokerID("ABC"), Originator.Server);
         ReportHolder holder = new ReportHolder(report);
         assertEquals(message, holder.getMessage());
     }

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /* $License$ */
 /**
  * Tests all the ID classes in this package. Tested classes
- * include {@link OrderID} & {@link DestinationID}.
+ * include {@link OrderID} & {@link BrokerID}.
  * <p>
  * Also tests 
  * {@link Factory#setOrderIDFactory(org.marketcetera.core.IDFactory)} 
@@ -52,24 +52,24 @@ public class IDTest {
     }
 
     /**
-     * Verify {@link DestinationID}
+     * Verify {@link BrokerID}
      *
      * @throws Exception if there were errors.
      */
     @Test
-    public void destinationID() throws Exception {
+    public void brokerID() throws Exception {
         new ExpectedFailure<NullPointerException>(null){
             protected void run() throws Exception {
-                new DestinationID(null);
+                new BrokerID(null);
             }
         };
-        EqualityAssert.assertEquality(new DestinationID("broke-132"),
-                new DestinationID("broke-132"),
-                new DestinationID(""), new DestinationID("brokr-132"),
-                new DestinationID("broke-133"),
-                new DestinationID("xyzkji3948992"));
+        EqualityAssert.assertEquality(new BrokerID("broke-132"),
+                new BrokerID("broke-132"),
+                new BrokerID(""), new BrokerID("brokr-132"),
+                new BrokerID("broke-133"),
+                new BrokerID("xyzkji3948992"));
 
-        DestinationID id = new DestinationID("yes");
+        BrokerID id = new BrokerID("yes");
         assertEquals("yes", id.getValue());
         assertEquals("yes", id.toString());
         SerializableAssert.assertSerializable(id);
@@ -133,7 +133,7 @@ public class IDTest {
     private ReportID getNextReportID() throws MessageCreationException {
         return Factory.getInstance().createExecutionReport(
                 TypesTestBase.createEmptyExecReport(),
-                new DestinationID("bro"), Originator.Server).getReportID();
+                new BrokerID("bro"), Originator.Server).getReportID();
     }
 
     /**

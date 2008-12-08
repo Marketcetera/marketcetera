@@ -36,8 +36,8 @@ public class LatestExecutionReportFunction extends LatestReportFunction {
 
     @Override
     protected boolean isLater(ReportHolder inHolder1, ReportHolder inHolder2) {
-        boolean hasOrderID1 = inHolder1.getReport().getDestinationOrderID() != null;
-        boolean hasOrderID2 = inHolder2.getReport().getDestinationOrderID() != null;
+        boolean hasOrderID1 = inHolder1.getReport().getBrokerOrderID() != null;
+        boolean hasOrderID2 = inHolder2.getReport().getBrokerOrderID() != null;
         if ((hasOrderID1 && hasOrderID2) || (!hasOrderID1 && !hasOrderID2)){
             return super.isLater(inHolder1, inHolder2);
         } else {

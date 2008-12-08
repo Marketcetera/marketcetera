@@ -34,13 +34,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.broker.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderCancel;
@@ -528,7 +528,7 @@ public abstract class AbstractRunningStrategy
             // use an empty execution report
             cancelRequest = Factory.getInstance().createOrderCancel(null);
             cancelRequest.setOriginalOrderID(inOrderID);
-            cancelRequest.setDestinationID(order.underlyingOrder.getDestinationID());
+            cancelRequest.setBrokerID(order.underlyingOrder.getBrokerID());
             cancelRequest.setQuantity(order.underlyingOrder.getQuantity());
             cancelRequest.setSymbol(order.underlyingOrder.getSymbol());
             cancelRequest.setSide(order.underlyingOrder.getSide());
@@ -631,7 +631,7 @@ public abstract class AbstractRunningStrategy
         } else {
             replaceOrder = Factory.getInstance().createOrderReplace(null);
             replaceOrder.setOriginalOrderID(inOrderID);
-            replaceOrder.setDestinationID(order.underlyingOrder.getDestinationID());
+            replaceOrder.setBrokerID(order.underlyingOrder.getBrokerID());
             replaceOrder.setSymbol(order.underlyingOrder.getSymbol());
             replaceOrder.setSide(order.underlyingOrder.getSide());
             replaceOrder.setOrderType(order.underlyingOrder.getOrderType());
@@ -651,10 +651,10 @@ public abstract class AbstractRunningStrategy
      * Sends a FIX message.
      *
      * @param inMessage a <code>Message</code> value
-     * @param inDestination a <code>DestinationID</code> value
+     * @param inDestination a <code>BrokerID</code> value
      */
     protected final void sendMessage(Message inMessage,
-                                     DestinationID inDestination)
+                                     BrokerID inDestination)
     {
         if(!canSendData()) {
             CANNOT_SEND_DATA.warn(Strategy.STRATEGY_MESSAGES,
@@ -785,31 +785,31 @@ public abstract class AbstractRunningStrategy
     /**
      * Returns the list of destinations known to the system.
      *
-     * <p>These values can be used to create and send orders with {@link #sendMessage(Message, DestinationID)}
+     * <p>These values can be used to create and send orders with {@link #sendMessage(Message, BrokerID)}
      * or {@link #sendOrder(OrderSingle)}.
      *
      * @return a <code>DestinationStatus[]</code> value
      */
-    protected final DestinationStatus[] getDestinations()
+    protected final BrokerStatus[] getDestinations()
     {
         try {
             if(!canReceiveData()) {
                 CANNOT_REQUEST_DATA.warn(Strategy.STRATEGY_MESSAGES,
                                          strategy,
                                          strategy.getStatus());
-                return new DestinationStatus[0];
+                return new BrokerStatus[0];
             }
-            List<DestinationStatus> destinations = strategy.getInboundServicesProvider().getDestinations();
+            List<BrokerStatus> destinations = strategy.getInboundServicesProvider().getDestinations();
             SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                    "{} received the following destinations: {}", //$NON-NLS-1$
                                    strategy,
                                    destinations == null ? "null" : Arrays.toString(destinations.toArray())); //$NON-NLS-1$
-            return destinations.toArray(new DestinationStatus[destinations.size()]);
+            return destinations.toArray(new BrokerStatus[destinations.size()]);
         } catch (Exception e) {
             CANNOT_RETRIEVE_DESTINATIONS.warn(Strategy.STRATEGY_MESSAGES,
                                               e,
                                               strategy);
-            return new DestinationStatus[0];
+            return new BrokerStatus[0];
         }
     }
     /**

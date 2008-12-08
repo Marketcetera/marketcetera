@@ -10,14 +10,14 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public enum Originator {
     /**
      * Indicates that the report was originated by the system's server.
      */
     Server,
     /**
-     * Indicates that the report was originated by the broker / FIX destination. 
+     * Indicates that the report was originated by the FIX broker. 
      */
-    Destination
+    Broker
 }

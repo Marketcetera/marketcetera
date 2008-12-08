@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 
 /* $License$ */
 /**
- * Tests {@link Factory#createOrder(quickfix.Message, DestinationID)}
+ * Tests {@link Factory#createOrder(quickfix.Message, BrokerID)}
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -34,7 +34,7 @@ public class FIXOrderTest extends TypesTestBase {
      */
     @Test
     public void checkFIXWrap() throws Exception {
-        final DestinationID id = new DestinationID("blah");
+        final BrokerID id = new BrokerID("blah");
         //Null value check for message.
         new ExpectedFailure<NullPointerException>(null){
             protected void run() throws Exception {
@@ -68,15 +68,15 @@ public class FIXOrderTest extends TypesTestBase {
     }
 
     /**
-     * Tests destinationID initialization, setters and getters.
+     * Tests brokerID initialization, setters and getters.
      *
      * @throws Exception if there were errors.
      */
     @Test
-    public void checkDestinationID() throws Exception {
+    public void checkBrokerID() throws Exception {
         final Message msg = FIXVersion.FIX44.getMessageFactory().newBasicOrder();
-        final DestinationID id = new DestinationID("blah");
-        // null destination not allowed.
+        final BrokerID id = new BrokerID("blah");
+        // null broker not allowed.
         new ExpectedFailure<NullPointerException>(null){
             protected void run() throws Exception {
                 sFactory.createOrder(msg, null);
@@ -84,12 +84,12 @@ public class FIXOrderTest extends TypesTestBase {
         };
         final FIXOrder order = sFactory.createOrder(msg, id);
         assertOrderValues(order,id, null);
-        DestinationID cID = new DestinationID("meh");
-        order.setDestinationID(cID);
+        BrokerID cID = new BrokerID("meh");
+        order.setBrokerID(cID);
         assertOrderValues(order,cID, null);
         new ExpectedFailure<NullPointerException>(null) {
             protected void run() throws Exception {
-                order.setDestinationID(null);
+                order.setBrokerID(null);
             }
         };
     }
@@ -102,7 +102,7 @@ public class FIXOrderTest extends TypesTestBase {
     @Test
     public void checkFIX() throws Exception {
         Message msg = FIXVersion.FIX44.getMessageFactory().newBasicOrder();
-        DestinationID id = new DestinationID("blah");
+        BrokerID id = new BrokerID("blah");
         //Remove ClOrdID.
         msg.removeField(ClOrdID.FIELD);
         assertFalse(msg.isSetField(ClOrdID.FIELD));

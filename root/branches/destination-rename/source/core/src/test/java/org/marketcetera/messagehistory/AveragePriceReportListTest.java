@@ -9,7 +9,7 @@ import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MessageCreationException;
@@ -163,6 +163,6 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
     private ExecutionReport createReport(Message message)
             throws MessageCreationException {
         return Factory.getInstance().createExecutionReport(message,
-                new DestinationID("null"), Originator.Server);
+                new BrokerID("null"), Originator.Server);
     }
 }

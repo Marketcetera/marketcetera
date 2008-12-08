@@ -57,7 +57,7 @@ import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientModuleFactory;
 import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.broker.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Util;
@@ -82,7 +82,7 @@ import org.marketcetera.module.RequestID;
 import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderCancel;
@@ -512,7 +512,7 @@ final class StrategyModule
      */
     @Override
     public void sendMessage(Message inMessage,
-                            DestinationID inDestination)
+                            BrokerID inDestination)
     {
         if(inMessage == null ||
            inDestination == null) {
@@ -600,11 +600,11 @@ final class StrategyModule
      * @see org.marketcetera.strategy.InboundServicesProvider#getDestinations()
      */
     @Override
-    public List<DestinationStatus> getDestinations()
+    public List<BrokerStatus> getDestinations()
         throws ConnectionException
     {
         assert(orsClient != null);
-        return orsClient.getDestinationsStatus().getDestinations();
+        return orsClient.getBrokersStatus().getBrokers();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.InboundServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.core.MSymbol)

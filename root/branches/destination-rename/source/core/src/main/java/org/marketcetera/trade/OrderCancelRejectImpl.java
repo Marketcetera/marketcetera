@@ -13,18 +13,18 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class OrderCancelRejectImpl extends ReportBaseImpl
         implements OrderCancelReject {
     /**
      * Creates an instance.
      *
      * @param inMessage The FIX Message instance.
-     * @param inDestinationID the broker / destinationID from which this
+     * @param inBrokerID the brokerID from which this report originated.
      */
     OrderCancelRejectImpl(Message inMessage,
-                          DestinationID inDestinationID) {
-        super(inMessage, inDestinationID);
+                          BrokerID inBrokerID) {
+        super(inMessage, inBrokerID);
     }
 
     /**
@@ -37,14 +37,14 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
     @Override
     public String toString() {
         return Messages.ORDER_CANCEL_REJECT_TO_STRING.getText(
-                String.valueOf(getDestinationID()),
+                String.valueOf(getBrokerID()),
                 String.valueOf(getOrderID()),
                 String.valueOf(getOrderStatus()),
                 String.valueOf(getOriginalOrderID()),
                 String.valueOf(getReportID()),
                 String.valueOf(getSendingTime()),
                 String.valueOf(getText()),
-                String.valueOf(getDestinationOrderID()),
+                String.valueOf(getBrokerOrderID()),
                 String.valueOf(getMessage())
         );
     }

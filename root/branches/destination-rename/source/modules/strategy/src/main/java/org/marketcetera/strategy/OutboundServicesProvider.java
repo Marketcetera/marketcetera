@@ -3,7 +3,7 @@ package org.marketcetera.strategy;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataEmitter;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
@@ -140,10 +140,10 @@ interface OutboundServicesProvider
      * Sends a FIX message to Order subscribers.
      *
      * @param inMessage a <code>Message</code> value
-     * @param inDestination a <code>DestinationID</code> value
+     * @param inDestination a <code>BrokerID</code> value
      */
     void sendMessage(Message inMessage,
-                     DestinationID inDestination);
+                     BrokerID inDestination);
     /**
      * Broadcast a change in strategy status.
      *

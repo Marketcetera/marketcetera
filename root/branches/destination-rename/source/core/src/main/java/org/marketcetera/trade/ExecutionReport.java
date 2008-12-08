@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * Represents an execution report of an order. Instances of this
  * message can be created via
- * {@link Factory#createExecutionReport(quickfix.Message, DestinationID, Originator)}.
+ * {@link Factory#createExecutionReport(quickfix.Message, BrokerID, Originator)}.
  * <p>
  * The enum attributes of this type have a null value, in case a value
  * is not specified for that attribute / field in the underlying FIX Message.
@@ -42,7 +42,7 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
 
     /**
      * Unique identifier of execution as assigned by the
-     * Broker / Destination.
+     * Broker.
      *
      * @return the unique identifier of the execution.
      */

@@ -31,7 +31,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
      */
     @Test
     public void failures() throws Exception {
-        final DestinationID cID = new DestinationID("blah");
+        final BrokerID cID = new BrokerID("blah");
         // null message
         new ExpectedFailure<NullPointerException>(null){
              protected void run() throws Exception {
@@ -64,7 +64,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
         report.toString();
 
         //report with fields filled in
-        DestinationID cID = new DestinationID("bro1");
+        BrokerID cID = new BrokerID("bro1");
         String destOrderID = "brok3";
         OrderID orderID = new OrderID("ord3");
         OrderID origOrderID = new OrderID("ord2");

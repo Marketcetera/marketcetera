@@ -11,7 +11,7 @@ import org.marketcetera.util.log.*;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Messages {
     /**
      * The message provider
@@ -95,8 +95,8 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "log_error_receive_exec_report");   //$NON-NLS-1$
     static final I18NMessage1P LOG_ERROR_RECEIVE_CANCEL_REJECT =
             new I18NMessage1P(LOGGER, "log_error_receive_cancel_reject");   //$NON-NLS-1$
-    static final I18NMessage1P LOG_ERROR_RECEIVE_DEST_STATUS =
-            new I18NMessage1P(LOGGER, "log_error_receive_dest_status");   //$NON-NLS-1$
+    static final I18NMessage1P LOG_ERROR_RECEIVE_BROKER_STATUS =
+            new I18NMessage1P(LOGGER, "log_error_receive_broker_status");   //$NON-NLS-1$
     static final I18NMessage1P LOG_ERROR_NOTIFY_EXCEPTION =
             new I18NMessage1P(LOGGER, "log_error_notify_exception");   //$NON-NLS-1$
     static final I18NMessage1P LOG_ERROR_SEND_EXCEPTION =

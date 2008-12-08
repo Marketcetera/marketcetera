@@ -62,7 +62,7 @@ public class OrderCancelTest extends TypesTestBase {
                 SecurityType.Option);
         String account = "what?";
         BigDecimal orderQty = new BigDecimal("34.5");
-        DestinationID cID = new DestinationID("iam");
+        BrokerID cID = new BrokerID("iam");
         //Create an exec report.
         report = createExecReport(orderID, side,
                 symbol, account, destOrderID, orderQty);
@@ -129,7 +129,7 @@ public class OrderCancelTest extends TypesTestBase {
 
     /**
      * Verifies conversion of System FIX message to OrderCancel via
-     * {@link Factory#createOrderCancel(quickfix.Message, DestinationID)}
+     * {@link Factory#createOrderCancel(quickfix.Message, BrokerID)}
      *
      * @throws Exception if there were errors.
      */
@@ -149,7 +149,7 @@ public class OrderCancelTest extends TypesTestBase {
         checkSetters(order);
 
         //An order with all fields set.
-        DestinationID destinationID = new DestinationID("meh");
+        BrokerID brokerID = new BrokerID("meh");
         String destOrderID = "bord1";
         String origOrderID = "testOrderID";
         BigDecimal qty = new BigDecimal("23434.56989");
@@ -161,8 +161,8 @@ public class OrderCancelTest extends TypesTestBase {
                 side.getFIXValue(), qty, symbol, null);
         msg.setField(new Account(account));
         msg.setField(new quickfix.field.OrderID(destOrderID));
-        order = sFactory.createOrderCancel(msg, destinationID);
-        assertOrderValues(order, destinationID, securityType);
+        order = sFactory.createOrderCancel(msg, brokerID);
+        assertOrderValues(order, brokerID, securityType);
         assertOrderBaseValues(order, expectedOrderID, account, null,
                 qty, side, symbol);
         OrderID originalOrderID = new OrderID(origOrderID);
@@ -199,13 +199,13 @@ public class OrderCancelTest extends TypesTestBase {
         expectedMap.put(String.valueOf(SolicitedFlag.FIELD),
                 BooleanConverter.convert(boolValue));
         
-        order = sFactory.createOrderCancel(msg, destinationID);
+        order = sFactory.createOrderCancel(msg, brokerID);
 
         assertOrderCancel(order, expectedOrderID, originalOrderID, side,
                 symbol, securityType, qty, destOrderID, account,
-                destinationID, expectedMap);
+                brokerID, expectedMap);
 
-        assertNotSame(order, sFactory.createOrderCancel(msg, destinationID));
+        assertNotSame(order, sFactory.createOrderCancel(msg, brokerID));
     }
 
     /**
@@ -215,11 +215,11 @@ public class OrderCancelTest extends TypesTestBase {
      */
     @Test
     public void systemFIXWrapFailures() throws Exception {
-        final DestinationID destinationID = new DestinationID("meh");
+        final BrokerID brokerID = new BrokerID("meh");
         //Null check for message parameter
         new ExpectedFailure<NullPointerException>(null) {
             protected void run() throws Exception {
-                sFactory.createOrderCancel(null, destinationID);
+                sFactory.createOrderCancel(null, brokerID);
             }
         };
 

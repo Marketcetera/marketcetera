@@ -8,7 +8,7 @@
     The goal of the messages in this package is to enable a user
     to be able to send orders and receive reports without having to worry
     about the actual protocol or if the protocol is FIX, the actual version
-    of FIX used by the broker / destination.
+    of FIX used by the broker.
 </p>
 <p>
     There are two types of messages that can be exchanged with the trading
@@ -20,7 +20,7 @@
 </ol>
 <p>
     These messages can either be specified in the protocol that is used
-    by the broker / destination or they can be specified via various types
+    by the broker or they can be specified via various types
     defined in this package.
 </p>
 <h3>Types</h3>
@@ -30,7 +30,7 @@
     is the most prevalent protocol for communicating with the brokers and
     the types in this package support the most common but a limited set
     of features supported by FIX, mechanisms are provided to
-    interact with FIX destinations using FIX messages.
+    interact with FIX brokers using FIX messages.
 </p>
 <p>
     The types created by the {@link org.marketcetera.trade.Factory factory}
@@ -41,19 +41,19 @@
     interface and if it does, they can obtain a reference to the underlying
     FIX message and manipulate it directly.
     Typically, all the reports wrap a FIX Message, however this may not be
-    true if the broker / destination doesn't use FIX for communications,
+    true if the broker doesn't use FIX for communications,
     which might be rare but not impossible.
 </p>
 <p>
     The downside of using FIX Messages directly is that one ends up depending
     on the exact format of messages expected and provided by the
-    broker / destination and one may need to modify the code to be able to
-    integrate with a different broker / destination.
+    broker and one may need to modify the code to be able to
+    integrate with a different broker.
 </p>
 <p>
     Whereas the benefit of using java types defined in this package
     is that the system will ensure that those messages can be exchanged with
-    any brokers / destinations that the server is integrated with. However
+    any brokerss that the server is integrated with. However
     it may be necessary to use the FIX messages if one wants to use
     FIX features that are not exposed via the types provided in this package. 
 </p>
@@ -76,24 +76,24 @@
 <p>
     Users are encouraged to use one of the above-mentioned types of the
     orders as the system will be able to send such orders to any connected
-    broker / destination, after translating them to the messaging protocol
-    supported by the broker / destination.
+    broker, after translating them to the messaging protocol
+    supported by the broker.
 </p>
 <p>
     Since the set of order features exposed via the above-mentioned order
     types is limited, a mechanism to create orders based on raw FIX messages
-    is {@link org.marketcetera.trade.Factory#createOrder(quickfix.Message,org.marketcetera.trade.DestinationID) provided}.
+    is {@link org.marketcetera.trade.Factory#createOrder(quickfix.Message,org.marketcetera.trade.BrokerID) provided}.
     Do note that if this mechanism is used, the order may fail
     if it doesn't exactly match the FIX version used by the
-    broker / destination or if it doesn't contain the set of fields that
-    the broker / destination requires to be set.
+    broker or if it doesn't contain the set of fields that
+    the broker requires to be set.
 </p>
 <h3>Reports</h3>
 <p>
-    The reports corresponding to the orders sent to the broker / destination
+    The reports corresponding to the orders sent to the broker
     are wrapped in one of the following types, by the system, to enable
     users to process them without having to concern themselves with the
-    exact format of reports provided by the broker / destination.
+    exact format of reports provided by the broker.
 </p>
 <ol>
     <li>{@link org.marketcetera.trade.ExecutionReport Execution Reports}</li>

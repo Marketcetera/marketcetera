@@ -16,7 +16,7 @@ import java.util.Date;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 class FIXUtil {
     static String getAccount(Message inMessage) {
         if (inMessage.isSetField(Account.FIELD)) {
@@ -292,7 +292,7 @@ class FIXUtil {
         }
         return null;
     }
-    static String getDestinationOrderID(Message inMessage) {
+    static String getBrokerOrderID(Message inMessage) {
         if (inMessage.isSetField(quickfix.field.OrderID.FIELD)) {
             try {
                 return inMessage.getString(quickfix.field.OrderID.FIELD);
