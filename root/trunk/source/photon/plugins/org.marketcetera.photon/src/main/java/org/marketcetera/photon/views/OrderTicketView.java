@@ -89,7 +89,7 @@ import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 
 import quickfix.DataDictionary;
 import quickfix.FieldType;
@@ -154,7 +154,7 @@ public abstract class OrderTicketView
 
 	private AggregateValidationStatus aggregateValidationStatus;
 
-	private ComboViewer mDestinationViewer;
+	private ComboViewer mAvailableBrokersViewer;
 
 	/**
 	 * Create a new order ticket view.  Get the error and warning images out of the
@@ -236,11 +236,11 @@ public abstract class OrderTicketView
 		ticket.getSideCombo().add(SideImage.SELL.getImage());
 		ticket.getSideCombo().add(SideImage.SELL_SHORT.getImage());
 		
-		mDestinationViewer = new ComboViewer(ticket.getBrokerCombo());
-		ObservableListContentProvider destinationContentProvider = new ObservableListContentProvider();
-		mDestinationViewer.setContentProvider(destinationContentProvider);
-		mDestinationViewer.setLabelProvider(new BrokerLabelProvider());
-		mDestinationViewer.setInput(BrokerManager.getCurrent().getAvailableBrokers());
+		mAvailableBrokersViewer = new ComboViewer(ticket.getBrokerCombo());
+		ObservableListContentProvider brokerContentProvider = new ObservableListContentProvider();
+		mAvailableBrokersViewer.setContentProvider(brokerContentProvider);
+		mAvailableBrokersViewer.setLabelProvider(new BrokerLabelProvider());
+		mAvailableBrokersViewer.setInput(BrokerManager.getCurrent().getAvailableBrokers());
 		
 		addComboChoicesFromLexerEnum(ticket.getTifCombo(), TimeInForceImage.values());
 		
@@ -671,14 +671,14 @@ public abstract class OrderTicketView
 			}
 			{
 				Control whichControl = getOrderTicket().getBrokerCombo();
-				IObservableValue observable = ViewersObservables.observeSingleSelection(mDestinationViewer);
+				IObservableValue observable = ViewersObservables.observeSingleSelection(mAvailableBrokersViewer);
 				Binding binding = bindMessageValue( 
 						observable,
 						BeansObservables.observeValue(model, "brokerId"), //$NON-NLS-1$
 						new UpdateValueStrategy().setConverter(new Converter(Broker.class, String.class) {
 							@Override
 							public Object convert(Object fromObject) {
-								DestinationID id = ((Broker) fromObject).getId();
+								BrokerID id = ((Broker) fromObject).getId();
 								return id == null ? null : id.getValue();
 							}
 						}),
@@ -689,7 +689,7 @@ public abstract class OrderTicketView
 									return BrokerManager.AUTO_SELECT_BROKER;
 								}									
 								for (Object obj : BrokerManager.getCurrent().getAvailableBrokers()) {
-									DestinationID id = ((Broker) obj).getId();
+									BrokerID id = ((Broker) obj).getId();
 									if (id != null && id.getValue() != null && id.getValue().equals(fromObject)) {
 										return obj;
 									}

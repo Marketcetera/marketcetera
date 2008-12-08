@@ -5,7 +5,7 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
@@ -71,7 +71,7 @@ public class ParameterStrategy
         if(emitMessage != null) {
             Message message = FIXVersion.FIX_SYSTEM.getMessageFactory().newBasicOrder();
             sendMessage(message,
-                        new DestinationID("some-destination"));
+                        new BrokerID("some-broker"));
         }
     }
 

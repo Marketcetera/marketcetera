@@ -1,6 +1,6 @@
 package org.marketcetera.client;
 
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateless.Node;
@@ -41,7 +41,7 @@ import quickfix.field.OrigClOrdID;
 /* $License$ */
 /**
  * Tests the client functionality including transmission of trades,
- * reports, and destination status to and from a mock server over JMS.
+ * reports, and broker status to and from a mock server over JMS.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -211,10 +211,10 @@ public class ClientTest {
     public void webServices() throws Exception {
         initClient();
 
-        List<DestinationStatus> ds =
-            getClient().getDestinationsStatus().getDestinations();
+        List<BrokerStatus> ds =
+            getClient().getBrokersStatus().getBrokers();
         assertEquals(2,ds.size());
-        DestinationStatus d = ds.get(0);
+        BrokerStatus d = ds.get(0);
         assertEquals("N1",d.getName());
         assertEquals("ID1",d.getId().getValue());
         d = ds.get(1);
@@ -222,7 +222,7 @@ public class ClientTest {
         assertEquals("ID2",d.getId().getValue());
 
         Factory f=Factory.getInstance();
-        DestinationID dID=new DestinationID("me");
+        BrokerID dID=new BrokerID("me");
         quickfix.fix44.ExecutionReport er=new quickfix.fix44.ExecutionReport();
         er.set(new OrigClOrdID("42"));
         quickfix.fix44.OrderCancelReject ocr=new quickfix.fix44.OrderCancelReject();
@@ -237,11 +237,11 @@ public class ClientTest {
         ReportBase[] rs = getClient().getReportsSince(new Date());
         assertEquals(2,rs.length);
         ExecutionReport report = (ExecutionReport)rs[0];
-        assertEquals(dID,report.getDestinationID());
+        assertEquals(dID,report.getBrokerID());
         assertEquals(Originator.Server,report.getOriginator());
         assertEquals("42",report.getOriginalOrderID().getValue());
         OrderCancelReject crreport = (OrderCancelReject)rs[1];
-        assertEquals(dID,crreport.getDestinationID());
+        assertEquals(dID,crreport.getBrokerID());
         assertEquals("43",crreport.getOriginalOrderID().getValue());
         
         MockServiceImpl.sReports = new ReportBaseImpl[0];
@@ -267,7 +267,7 @@ public class ClientTest {
         map.put("101","value1");
         map.put("201","value2");
         order.setCustomFields(map);
-        order.setDestinationID(new DestinationID("brokerA"));
+        order.setBrokerID(new BrokerID("brokerA"));
         order.setOrderID(new OrderID("ord1"));
         order.setOrderType(OrderType.Limit);
         order.setPrice(new BigDecimal("83.43"));
@@ -435,12 +435,12 @@ public class ClientTest {
         //Create our own status listener
         StatusReplyListener chitChat = new StatusReplyListener();
         //Add it to the client
-        getClient().addDestinationStatusListener(chitChat);
+        getClient().addBrokerStatusListener(chitChat);
         try {
-            DestinationStatus status = triggerStatus();
+            BrokerStatus status = triggerStatus();
             //Verify our listener got it.
-            DestinationStatus receivedStatus = chitChat.getStatus();
-            assertTrue(receivedStatus instanceof DestinationStatus);
+            BrokerStatus receivedStatus = chitChat.getStatus();
+            assertTrue(receivedStatus instanceof BrokerStatus);
             assertEquals(status.toString(), receivedStatus.toString());
             //Now set our reply listener to fail
             chitChat.setFail(true);
@@ -450,11 +450,11 @@ public class ClientTest {
             status = triggerStatus();
             //Verify our listener got it.
             receivedStatus = chitChat.getStatus();
-            assertTrue(receivedStatus instanceof DestinationStatus);
+            assertTrue(receivedStatus instanceof BrokerStatus);
             assertEquals(status.toString(), receivedStatus.toString());
 
             //Now remove our listener.
-            getClient().removeDestinationStatusListener(chitChat);
+            getClient().removeBrokerStatusListener(chitChat);
             chitChat.clear();
             assertNull(chitChat.peekStatus());
             //Send another order
@@ -462,7 +462,7 @@ public class ClientTest {
             //Verify our listener didn't get it
             assertNull(chitChat.peekStatus());
         } finally {
-            getClient().removeDestinationStatusListener(chitChat);
+            getClient().removeBrokerStatusListener(chitChat);
         }
     }
 
@@ -484,7 +484,7 @@ public class ClientTest {
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.addDestinationStatusListener(null);
+                client.addBrokerStatusListener(null);
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
@@ -514,7 +514,7 @@ public class ClientTest {
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.getDestinationsStatus();
+                client.getBrokersStatus();
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
@@ -539,7 +539,7 @@ public class ClientTest {
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.removeDestinationStatusListener(null);
+                client.removeBrokerStatusListener(null);
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
@@ -590,18 +590,18 @@ public class ClientTest {
         return report;
     }
 
-    private DestinationStatus triggerStatus() throws Exception {
+    private BrokerStatus triggerStatus() throws Exception {
         //Clean up any dirty state from previous failures
         clearAll();
         //Create a status for the mock server to send back
-        DestinationStatus status =
-            new DestinationStatus("me",new DestinationID("myID"),true);
+        BrokerStatus status =
+            new BrokerStatus("me",new BrokerID("myID"),true);
         sServer.getHandler().addToSendStatus(status);
         //Send the status
         sServer.getStatusSender().convertAndSend(status);
         //Verify received status
-        DestinationStatus receivedStatus = mStatusReplies.getStatus();
-        assertTrue(receivedStatus instanceof DestinationStatus);
+        BrokerStatus receivedStatus = mStatusReplies.getStatus();
+        assertTrue(receivedStatus instanceof BrokerStatus);
         assertEquals(status.toString(),receivedStatus.toString());
         return status;
     }
@@ -816,7 +816,7 @@ public class ClientTest {
                 new BigDecimal("783343.49"), new BigDecimal("598.34"),
                 new BigDecimal("234343.49"), new BigDecimal("798.34"),
                 new MSymbol("IBM", SecurityType.CommonStock), "my acc"),
-                new DestinationID("bro"), Originator.Destination);
+                new BrokerID("bro"), Originator.Broker);
     }
 
     /**
@@ -833,7 +833,7 @@ public class ClientTest {
                         new ClOrdID("clord" + sCounter.getAndIncrement()),
                         new OrigClOrdID("origord1"),
                         "what?", null),
-                new DestinationID("bro"));
+                new BrokerID("bro"));
     }
 
     static OrderSingle createOrderSingle() {
@@ -865,7 +865,7 @@ public class ClientTest {
                         new MSymbol("IBM", SecurityType.Option),
                         new BigDecimal("9834.23"),
                         quickfix.field.TimeInForce.DAY, "no"),
-                new DestinationID("bro"));
+                new BrokerID("bro"));
     }
 
     private void clearAll() {
@@ -893,7 +893,7 @@ public class ClientTest {
         mClient = ClientManager.getInstance();
         mClient.addExceptionListener(mListener);
         mClient.addReportListener(mReplies);
-        mClient.addDestinationStatusListener(mStatusReplies);
+        mClient.addBrokerStatusListener(mStatusReplies);
         assertEquals(parameters, mClient.getParameters());
         assertNotNull(mClient.getLastConnectTime());
         assertTrue(mClient.getLastConnectTime().compareTo(currentTime) >= 0);
@@ -971,9 +971,9 @@ public class ClientTest {
                 new LinkedBlockingQueue<ReportBase>();
     }
     private static class StatusReplyListener
-        implements DestinationStatusListener {
+        implements BrokerStatusListener {
 
-        public void receiveDestinationStatus(DestinationStatus inStatus) {
+        public void receiveBrokerStatus(BrokerStatus inStatus) {
             //Use add() instead of put() as these need to be non-blocking.
             mStatus.add(inStatus);
             if (mFail) {
@@ -981,11 +981,11 @@ public class ClientTest {
             }
         }
 
-        public DestinationStatus getStatus() throws InterruptedException {
+        public BrokerStatus getStatus() throws InterruptedException {
             //Use take as we should block until a message is available.
             return mStatus.take();
         }
-        public DestinationStatus peekStatus() {
+        public BrokerStatus peekStatus() {
             return mStatus.peek();
         }
         public void setFail(boolean isFail) {
@@ -996,7 +996,7 @@ public class ClientTest {
             mFail = false;
         }
         private boolean mFail = false;
-        private BlockingQueue<DestinationStatus> mStatus =
-                new LinkedBlockingQueue<DestinationStatus>();
+        private BlockingQueue<BrokerStatus> mStatus =
+                new LinkedBlockingQueue<BrokerStatus>();
     }
 }

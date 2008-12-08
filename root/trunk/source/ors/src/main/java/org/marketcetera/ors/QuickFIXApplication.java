@@ -264,7 +264,7 @@ public class QuickFIXApplication
 
         // Send message to client.
 
-        sendToClientTrades(b,msg,Originator.Destination);
+        sendToClientTrades(b,msg,Originator.Broker);
     }
 
     @Override
@@ -306,7 +306,7 @@ public class QuickFIXApplication
 
         // Send message to client.
 
-        sendToClientTrades(b,msg,Originator.Destination);
+        sendToClientTrades(b,msg,Originator.Broker);
 
         // OpenFIX certification: we reject all DeliverToCompID since
         // we don't redeliver.

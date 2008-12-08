@@ -3,7 +3,7 @@ package org.marketcetera.strategy.ruby;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationManager;
@@ -13,7 +13,7 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
@@ -376,16 +376,16 @@ public class Strategy
                      inIdentifier);
     }
     /**
-     * Sends a <code>FIX</code> message to all destinations to which orders are sent.
+     * Sends a <code>FIX</code> message to all subscribers to which orders are sent.
      *
      * @param inMessage a <code>Message</code> value
-     * @param inDestination a <code>Destination</code> value
+     * @param inBroker a <code>BrokerID</code> value
      */
     public final void send_message(Message inMessage,
-                                   DestinationID inDestination)
+                                   BrokerID inBroker)
     {
         sendMessage(inMessage,
-                    inDestination);
+                    inBroker);
     }
     /**
      * Sends the given event to the CEP module indicated by the provider.
@@ -411,7 +411,7 @@ public class Strategy
         sendEvent(inEvent);
     }
     /**
-     * Sends an order to all destinations to which orders are sent.
+     * Sends an order to all subscribers to which orders are sent.
      *
      * @param inOrder an <code>OrderSingle</code> value
      * @return an <code>OrderID</code> value representing the order sent
@@ -516,16 +516,16 @@ public class Strategy
                                                                                Strategy.class));
     }
     /**
-     * Returns the list of destinations known to the system.
+     * Returns the list of brokers known to the system.
      *
-     * <p>These values can be used to create and send orders with {@link #send_message(Message, DestinationID)}
+     * <p>These values can be used to create and send orders with {@link #send_message(Message, BrokerID)}
      * or {@link #send_order(OrderSingle)}.
      *
-     * @return a <code>DestinationStatus[]</code> value
+     * @return a <code>BrokerStatus[]</code> value
      */
-    public final DestinationStatus[] get_destinations()
+    public final BrokerStatus[] get_brokers()
     {
-        return getDestinations();
+        return getBrokers();
     }
     /**
      * Gets the position in the given security at the given point in time.

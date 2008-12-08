@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 
-import org.marketcetera.client.dest.DestinationStatus;
-import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
@@ -51,12 +51,12 @@ public class MockServiceImpl
 
     // INSTANCE METHODS.
 
-    private DestinationsStatus getDestinationsStatusImpl()
+    private BrokersStatus getBrokersStatusImpl()
     {
-        LinkedList<DestinationStatus> list=new LinkedList<DestinationStatus>();
-        list.add(new DestinationStatus("N1",new DestinationID("ID1"),true));
-        list.add(new DestinationStatus("N2",new DestinationID("ID2"),false));
-        return new DestinationsStatus(list);
+        LinkedList<BrokerStatus> list=new LinkedList<BrokerStatus>();
+        list.add(new BrokerStatus("N1",new BrokerID("ID1"),true));
+        list.add(new BrokerStatus("N2",new BrokerID("ID2"),false));
+        return new BrokersStatus(list);
     }
 
     private ReportBaseImpl[] getReportsSinceImpl
@@ -82,18 +82,18 @@ public class MockServiceImpl
     // Service.
 
     @Override
-    public DestinationsStatus getDestinationsStatus
+    public BrokersStatus getBrokersStatus
         (ClientContext context)
         throws RemoteException
     {
-        return (new RemoteCaller<Object,DestinationsStatus>
+        return (new RemoteCaller<Object,BrokersStatus>
                 (getSessionManager()) {
             @Override
-            protected DestinationsStatus call
+            protected BrokersStatus call
                 (ClientContext context,
                  SessionHolder<Object> sessionHolder)
             {
-                return getDestinationsStatusImpl();
+                return getBrokersStatusImpl();
             }}).execute(context);
     }
 

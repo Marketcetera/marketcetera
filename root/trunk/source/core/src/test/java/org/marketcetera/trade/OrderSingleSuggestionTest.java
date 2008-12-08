@@ -55,7 +55,7 @@ public class OrderSingleSuggestionTest extends TypesTestBase {
         custom.put("343","what?");
         custom.put("737","no");
         order.setCustomFields(custom);
-        order.setDestinationID(new DestinationID("bro"));
+        order.setBrokerID(new BrokerID("bro"));
         order.setOrderCapacity(OrderCapacity.Agency);
         order.setOrderID(new OrderID("orde"));
         order.setOrderType(OrderType.Limit);

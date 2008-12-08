@@ -143,7 +143,7 @@ public class CancelReplaceOrderActionDelegate
 						.getOrderTicketController(originalOrderMessage);
 				if (controller != null) {
 					controller.setOrderMessage(cancelReplaceMessage);
-					controller.setBrokerId(originalReport.getDestinationID() == null ? null : originalReport.getDestinationID().getValue());
+					controller.setBrokerId(originalReport.getBrokerID() == null ? null : originalReport.getBrokerID().getValue());
 				}
 			} catch (FieldNotFound e) {
                 PhotonPlugin.getMainConsoleLogger().error(CANNOT_CANCEL.getText(),

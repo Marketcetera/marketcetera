@@ -70,22 +70,22 @@ public class PersistentReportTest extends ReportsTestBase {
     }
 
     /**
-     * Verifies that we get a db constraint failure if destinationID is
+     * Verifies that we get a db constraint failure if brokerID is
      * null.
      *
      * @throws Exception if there were errors
      */
     @Test
-    public void nullDestinationFailure() throws Exception {
-        //null destination in cancel reject
-        nonNullCVCheck("destinationID", new Callable<Object>(){
+    public void nullBrokerFailure() throws Exception {
+        //null broker in cancel reject
+        nonNullCVCheck("brokerID", new Callable<Object>(){
             public Object call() throws Exception {
                 PersistentReport.save(createCancelReject(null));
                 return null;
             }
         });
-        //null destination in exec report
-        nonNullCVCheck("destinationID", new Callable<Object>(){
+        //null broker in exec report
+        nonNullCVCheck("brokerID", new Callable<Object>(){
             public Object call() throws Exception {
                 PersistentReport.save(createExecReport("o1",null, "i",
                         Side.Buy, OrderStatus.DoneForDay, BigDecimal.ONE,

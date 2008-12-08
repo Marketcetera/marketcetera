@@ -8,11 +8,11 @@ import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.client.dest.DestinationStatus;
-import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.test.DefaultRealm;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 
 
 /* $License$ */
@@ -41,10 +41,10 @@ public class BrokerManagerTest {
 	@Test
 	public void testAvailableBrokers() {
 		BrokerManager fixture = new BrokerManager();
-		DestinationStatus status1 = new DestinationStatus("1", new DestinationID("1"), true);
-		DestinationStatus status2 = new DestinationStatus("2", new DestinationID("2"), false);
-		DestinationStatus status3 = new DestinationStatus("3", new DestinationID("3"), true);
-		DestinationsStatus statuses =  new DestinationsStatus(Arrays.asList(status1, status2, status3));
+		BrokerStatus status1 = new BrokerStatus("1", new BrokerID("1"), true);
+		BrokerStatus status2 = new BrokerStatus("2", new BrokerID("2"), false);
+		BrokerStatus status3 = new BrokerStatus("3", new BrokerID("3"), true);
+		BrokersStatus statuses =  new BrokersStatus(Arrays.asList(status1, status2, status3));
 		fixture.setBrokersStatus(statuses);
 		assertEquals(2, fixture.getAvailableBrokers().size());
 		assertSame(status1, fixture.getAvailableBrokers().get(0));

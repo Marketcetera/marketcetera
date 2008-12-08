@@ -113,7 +113,7 @@ public class PhotonPlugin
 	
 	private MarketDataManager marketDataManager;
 
-	private BrokerManager mDestinationManager;
+	private BrokerManager mBrokerManager;
 
 	/**
 	 * The constructor.
@@ -526,12 +526,12 @@ public class PhotonPlugin
 	 * Typically, this should be accessed through
 	 * {@link BrokerManager#getCurrent()}.
 	 * 
-	 * @return the DestinationManager singleton for this plug-in
+	 * @return the BrokerManager singleton for this plug-in
 	 */
 	public BrokerManager getBrokerManager() {
-		if (mDestinationManager == null) {
-			mDestinationManager = new BrokerManager();
+		if (mBrokerManager == null) {
+			mBrokerManager = new BrokerManager();
 		}
-		return mDestinationManager;
+		return mBrokerManager;
 	}
 }

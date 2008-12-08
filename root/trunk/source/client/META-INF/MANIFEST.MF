@@ -10,4 +10,4 @@ Require-Bundle: org.marketcetera.core,
  org.junit4;resolution:=optional
 Eclipse-RegisterBuddy: org.marketcetera.core
 Export-Package: org.marketcetera.client,
- org.marketcetera.client.dest
+ org.marketcetera.client.brokers

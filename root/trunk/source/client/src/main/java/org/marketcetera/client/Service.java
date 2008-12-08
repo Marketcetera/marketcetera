@@ -3,7 +3,8 @@ package org.marketcetera.client;
 import java.math.BigDecimal;
 import java.util.Date;
 import javax.jws.WebService;
-import org.marketcetera.client.dest.DestinationsStatus;
+
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
@@ -22,12 +23,12 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
 /* $License$ */
 
 @WebService
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Service
     extends ServiceBase
 {
     /**
-     * Returns the server's destination status to the client with the
+     * Returns the server's broker status to the client with the
      * given context.
      *
      * @param context The context.
@@ -38,7 +39,7 @@ public interface Service
      * completed.
      */
 
-    DestinationsStatus getDestinationsStatus
+    BrokersStatus getBrokersStatus
         (ClientContext context)
         throws RemoteException;
 

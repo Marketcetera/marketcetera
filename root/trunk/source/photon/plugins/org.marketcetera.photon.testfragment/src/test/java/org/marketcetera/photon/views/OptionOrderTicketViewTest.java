@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.client.dest.DestinationStatus;
-import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.MockEventTranslator;
@@ -21,7 +21,7 @@ import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -498,9 +498,9 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
     
     public void testBrokerId() {
     	IOptionOrderTicket ticket = ((OptionOrderTicketView)getTestView()).getOptionOrderTicket();
-    	DestinationStatus status1 = new DestinationStatus("Goldman Sachs", new DestinationID("gs"), true);
-		DestinationStatus status2 = new DestinationStatus("Exchange Simulator", new DestinationID("metc"), false);
-		DestinationsStatus statuses =  new DestinationsStatus(Arrays.asList(status1, status2));
+    	BrokerStatus status1 = new BrokerStatus("Goldman Sachs", new BrokerID("gs"), true);
+		BrokerStatus status2 = new BrokerStatus("Exchange Simulator", new BrokerID("metc"), false);
+		BrokersStatus statuses =  new BrokersStatus(Arrays.asList(status1, status2));
     	BrokerManager.getCurrent().setBrokersStatus(statuses);
         final String optionRoot = "MSQ";
         final String callContractSpecifier = "GE";
@@ -518,7 +518,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
         // last broker is saved
         assertEquals("Goldman Sachs (gs)", ticket.getBrokerCombo().getText());
         controller.setBrokerId(null);
-        BrokerManager.getCurrent().setBrokersStatus(new DestinationsStatus(new ArrayList<DestinationStatus>()));
+        BrokerManager.getCurrent().setBrokersStatus(new BrokersStatus(new ArrayList<BrokerStatus>()));
     }
 }
 

@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -37,10 +37,10 @@ public class BrokerSupportTableFormat extends FIXMessageTableFormat<ReportHolder
 	@Override
 	protected void recreateAllColumns(List<Integer> fieldsToShow) {
 		super.recreateAllColumns(fieldsToShow);
-		TableColumn destination = new TableColumn(getTable(), SWT.LEFT);
-		destination.setText(Messages.BROKER_SUPPORT_TABLE_FORMAT_BROKER_COLUMN.getText());
-		destination.setMoveable(false);
-		destination.setWidth(70);
+		TableColumn broker = new TableColumn(getTable(), SWT.LEFT);
+		broker.setText(Messages.BROKER_SUPPORT_TABLE_FORMAT_BROKER_COLUMN.getText());
+		broker.setMoveable(false);
+		broker.setWidth(70);
 		mIndex  = getTable().getColumnCount() - 1;
 	}
 	
@@ -48,8 +48,8 @@ public class BrokerSupportTableFormat extends FIXMessageTableFormat<ReportHolder
 	protected String convertColumnValueToText(ReportHolder baseObject,
 			int columnIndex) {
 		if (columnIndex == mIndex) {
-			DestinationID destinationID = baseObject.getDestinationID();
-			return destinationID == null ? null : destinationID.getValue();
+			BrokerID brokerID = baseObject.getBrokerID();
+			return brokerID == null ? null : brokerID.getValue();
 		}
 		return super.convertColumnValueToText(baseObject, columnIndex);
 	}

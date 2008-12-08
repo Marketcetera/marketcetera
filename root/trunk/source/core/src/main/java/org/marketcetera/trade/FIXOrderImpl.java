@@ -20,39 +20,39 @@ class FIXOrderImpl extends FIXMessageWrapper implements FIXOrder {
     }
 
     @Override
-    public DestinationID getDestinationID() {
-        return mDestinationID;
+    public BrokerID getBrokerID() {
+        return mBrokerID;
     }
 
     @Override
-    public void setDestinationID(DestinationID inDestinationID) {
-        if(inDestinationID == null) {
+    public void setBrokerID(BrokerID inBrokerID) {
+        if(inBrokerID == null) {
             throw new NullPointerException();
         }
-        mDestinationID = inDestinationID;
+        mBrokerID = inBrokerID;
     }
     /**
      * Creates an instance.
      *
      * @param inMessage The FIX Message instance. Cannot be null.
-     * @param inDestinationID the ID of the destination / broker to which
+     * @param inBrokerID the ID of the broker to which
      * this order should be sent. Cannot be null.
      */
-    FIXOrderImpl(Message inMessage, DestinationID inDestinationID) {
+    FIXOrderImpl(Message inMessage, BrokerID inBrokerID) {
         super(inMessage);
-        if(inMessage == null || inDestinationID == null) {
+        if(inMessage == null || inBrokerID == null) {
             throw new NullPointerException();
         }
-        mDestinationID = inDestinationID;
+        mBrokerID = inBrokerID;
     }
 
     @Override
     public String toString() {
         return Messages.FIX_ORDER_TO_STRING.getText(
-                getDestinationID().getValue(),
+                getBrokerID().getValue(),
                 String.valueOf(getMessage()));
     }
 
-    private DestinationID mDestinationID;
+    private BrokerID mBrokerID;
     private static final long serialVersionUID = 1L;
 }

@@ -42,11 +42,11 @@ import org.junit.BeforeClass;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.DestinationStatusListener;
+import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
-import org.marketcetera.client.dest.DestinationStatus;
-import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
@@ -73,7 +73,7 @@ import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.OrderCancel;
@@ -502,7 +502,7 @@ public class StrategyTestBase
                                                                                               new MSymbol("Symbol"),
                                                                                               "account");
             inSupport.send(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
-                                                                                              new DestinationID("some-destination"),
+                                                                                              new BrokerID("some-broker"),
                                                                                               Originator.Server));
             // send an object that doesn't fit one of the categories
             inSupport.send(this);
@@ -552,16 +552,13 @@ public class StrategyTestBase
         implements Client
     {
         /**
-         * indicates whether calls to {@link #getDestinationsStatus()} should fail automatically
+         * indicates whether calls to {@link #getBrokersStatus()} should fail automatically
          */
-        public static boolean getDestinationsFails = false;
+        public static boolean getBrokersFails = false;
         /**
          * indicates whether calls to {@link #getPositionAsOf(Date, MSymbol)} should fail automatically
          */
         public static boolean getPositionFails = false;
-        /**
-         * destinations to return
-         */
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#addExceptionListener(java.beans.ExceptionListener)
          */
@@ -579,10 +576,10 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#addDestinationStatusListener(org.marketcetera.client.DestinationStatusListener)
+         * @see org.marketcetera.client.Client#addBrokerStatusListener(org.marketcetera.client.BrokerStatusListener)
          */
         @Override
-        public void addDestinationStatusListener(DestinationStatusListener inArg0)
+        public void addBrokerStatusListener(BrokerStatusListener inArg0)
         {
             throw new UnsupportedOperationException();
         }
@@ -595,16 +592,16 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getDestinationsStatus()
+         * @see org.marketcetera.client.Client#getBrokersStatus()
          */
         @Override
-        public DestinationsStatus getDestinationsStatus()
+        public BrokersStatus getBrokersStatus()
                 throws ConnectionException
         {
-            if(getDestinationsFails) {
+            if(getBrokersFails) {
                 throw new NullPointerException("This exception is expected");
             }
-            return destinations;
+            return brokers;
         }
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#getLastConnectTime()
@@ -683,10 +680,10 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#removeDestinationStatusListener(org.marketcetera.client.DestinationStatusListener)
+         * @see org.marketcetera.client.Client#removeBrokerStatusListener(org.marketcetera.client.BrokerStatusListener)
          */
         @Override
-        public void removeDestinationStatusListener(DestinationStatusListener inArg0)
+        public void removeBrokerStatusListener(BrokerStatusListener inArg0)
         {
             throw new UnsupportedOperationException();
         }
@@ -727,21 +724,21 @@ public class StrategyTestBase
         }
     }
     /**
-     * Generates a random set of destination status objects.
+     * Generates a random set of broker status objects.
      *
-     * @return a <code>DestinationStatus</code> value
+     * @return a <code>BrokerStatus</code> value
      */
-    public static final DestinationsStatus generateDestinationsStatus()
+    public static final BrokersStatus generateBrokersStatus()
     {
-        List<DestinationStatus> destinations = new ArrayList<DestinationStatus>();
+        List<BrokerStatus> brokers = new ArrayList<BrokerStatus>();
         for(int counter=0;counter<10;counter++) {
-            destinations.add(new DestinationStatus("Destination-" + System.nanoTime(),
-                                                   new DestinationID("destination-" + ++counter),
-                                                   random.nextBoolean()));
+            brokers.add(new BrokerStatus("Broker-" + System.nanoTime(),
+                                         new BrokerID("broker-" + ++counter),
+                                         random.nextBoolean()));
         }
-        // make sure at least one destination is logged on
-        destinations.get(destinations.size()-1).setLoggedOn(true);
-        return new DestinationsStatus(destinations);
+        // make sure at least one broker is logged on
+        brokers.get(brokers.size()-1).setLoggedOn(true);
+        return new BrokersStatus(brokers);
     }
     /**
      * A period of time during which a value is in effect.
@@ -1030,8 +1027,8 @@ public class StrategyTestBase
     public void setup()
         throws Exception
     {
-        destinations = generateDestinationsStatus();
-        MockClient.getDestinationsFails = false;
+        brokers = generateBrokersStatus();
+        MockClient.getBrokersFails = false;
         MockClient.getPositionFails = false;
         executionReportMultiplicity = 1;
         MockRecorderModule.shouldSendExecutionReports = true;
@@ -1201,8 +1198,8 @@ public class StrategyTestBase
                                                                                                inOrder.getAccount());
                 rawExeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
                 reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
-                                                                                               inOrder.getDestinationID(),
-                                                                                               Originator.Destination));
+                                                                                               inOrder.getBrokerID(),
+                                                                                               Originator.Broker));
                 lastQuantity = thisQuantity;
             }
             Message rawExeReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport(inOrder.getOrderID().toString(),
@@ -1220,8 +1217,8 @@ public class StrategyTestBase
                                                                                            inOrder.getAccount());
             rawExeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
             reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
-                                                                                           inOrder.getDestinationID(),
-                                                                                           Originator.Destination));
+                                                                                           inOrder.getBrokerID(),
+                                                                                           Originator.Broker));
         }
         return reports;
     }
@@ -1515,9 +1512,9 @@ public class StrategyTestBase
      */
     protected final static Map<MSymbol,Position> positions = new HashMap<MSymbol,Position>();
     /**
-     * a set of test destinations
+     * a set of test brokers
      */
-    protected static DestinationsStatus destinations;
+    protected static BrokersStatus brokers;
     /**
      * determines how many execution reports should be produced for each order received
      */

@@ -57,7 +57,7 @@ public class OrderSingleTest extends TypesTestBase {
 
     /**
      * Verifies conversion of System FIX message to OrderSingle via
-     * {@link Factory#createOrderSingle(quickfix.Message, DestinationID)}
+     * {@link Factory#createOrderSingle(quickfix.Message, BrokerID)}
      *
      * @throws Exception if there were errors.
      */
@@ -77,7 +77,7 @@ public class OrderSingleTest extends TypesTestBase {
         check(order);
 
         //A limit order with all the fields set.
-        DestinationID destinationID = new DestinationID("meh");
+        BrokerID brokerID = new BrokerID("meh");
         OrderID orderID = new OrderID("testOrderID");
         BigDecimal qty = new BigDecimal("23434.56989");
         BigDecimal price = new BigDecimal("98923.2345");
@@ -89,8 +89,8 @@ public class OrderSingleTest extends TypesTestBase {
                 TimeInForce.AtTheClose.getFIXValue(), account);
         msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.INDIVIDUAL));
         msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
-        order = sFactory.createOrderSingle(msg, destinationID);
-        assertOrderValues(order, destinationID, securityType);
+        order = sFactory.createOrderSingle(msg, brokerID);
+        assertOrderValues(order, brokerID, securityType);
         assertOrderBaseValues(order, expectedOrderID, account, null, qty, Side.Buy, symbol);
         OrderCapacity orderCapacity = OrderCapacity.Individual;
         PositionEffect positionEffect = PositionEffect.Close;
@@ -103,7 +103,7 @@ public class OrderSingleTest extends TypesTestBase {
         //verify the clone
         assertOrderSingle(order, expectedOrderID, Side.Buy, qty, price,
                 TimeInForce.AtTheClose, OrderType.Limit, symbol, securityType,
-                account, orderCapacity, positionEffect, destinationID, null);
+                account, orderCapacity, positionEffect, brokerID, null);
 
         //A market order with all fields set.
         Side side = Side.Sell;
@@ -154,21 +154,21 @@ public class OrderSingleTest extends TypesTestBase {
         expectedMap.put(String.valueOf(SolicitedFlag.FIELD),
                 BooleanConverter.convert(boolValue));
 
-        order = sFactory.createOrderSingle(msg, destinationID);
+        order = sFactory.createOrderSingle(msg, brokerID);
 
         BigDecimal expectedPrice = null;
         assertOrderSingle(order, expectedOrderID, side, qty, expectedPrice,
                 tif, orderType, symbol, securityType, account, orderCapacity,
-                positionEffect, destinationID, expectedMap);
+                positionEffect, brokerID, expectedMap);
         //Verify toString() doesn't fail
         order.toString();
         order = check(order);
         //Verify the clone
         assertOrderSingle(order, expectedOrderID, side, qty, expectedPrice,
                 tif, orderType, symbol, securityType, account, orderCapacity,
-                positionEffect, destinationID, expectedMap);
+                positionEffect, brokerID, expectedMap);
         
-        assertNotSame(order, sFactory.createOrderSingle(msg, destinationID));
+        assertNotSame(order, sFactory.createOrderSingle(msg, brokerID));
     }
 
     /**
@@ -178,11 +178,11 @@ public class OrderSingleTest extends TypesTestBase {
      */
     @Test
     public void systemFIXWrapFailures() throws Exception {
-        final DestinationID destinationID = new DestinationID("meh");
+        final BrokerID brokerID = new BrokerID("meh");
         //Null check for message parameter
         new ExpectedFailure<NullPointerException>(null) {
             protected void run() throws Exception {
-                sFactory.createOrderSingle(null, destinationID);
+                sFactory.createOrderSingle(null, brokerID);
             }
         };
 

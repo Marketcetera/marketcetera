@@ -81,7 +81,7 @@ public class MockMessageHandler {
                     new BigDecimal("783343.49"), new BigDecimal("598.34"),
                     new BigDecimal("234343.49"), new BigDecimal("798.34"),
                     new MSymbol("IBM", SecurityType.CommonStock), "my acc"),
-                    new DestinationID("bro"), Originator.Destination);
+                    new BrokerID("bro"), Originator.Broker);
         } catch (MessageCreationException e) {
             throw new RuntimeException(e);
         } catch (FieldNotFound e) {
