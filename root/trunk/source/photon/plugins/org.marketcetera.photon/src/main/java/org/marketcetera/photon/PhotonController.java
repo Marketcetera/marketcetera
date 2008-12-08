@@ -223,7 +223,7 @@ public class PhotonController
 		} catch (FieldNotFound ignored) {	}
 		try {
 			ExecutionReport report = Factory.getInstance().createExecutionReport(
-					latestMessage, DEFAULT_BROKER, Originator.Server);
+					latestMessage, latestExecutionReport.getBrokerID(), Originator.Server);
 			sendOrder(Factory.getInstance().createOrderCancel(report));
 		} catch (MessageCreationException e) {
 			internalMainLogger.error(CANNOT_SEND_CANCEL_FOR_REASON.getText(clOrdID,
