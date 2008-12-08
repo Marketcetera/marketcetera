@@ -13,7 +13,7 @@ import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MessageCreationException;
@@ -90,7 +90,7 @@ public class OrderManagerTest extends TestCase {
 		for (Message aMessage : messages) {
 			photonController.receiveExecutionReport(
 					Factory.getInstance().createExecutionReport(aMessage, 
-							new DestinationID("bro"), Originator.Server));
+							new BrokerID("bro"), Originator.Server));
 		}
 		EventList<ReportHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(2, historyList.size());
@@ -132,7 +132,7 @@ public class OrderManagerTest extends TestCase {
 	public void testReceiveExecutionReport() throws Exception {
 		Message message = getTestableExecutionReport();
 		photonController.receiveExecutionReport(Factory.getInstance().
-				createExecutionReport(message,new DestinationID("bro"), 
+				createExecutionReport(message,new BrokerID("bro"), 
 						Originator.Server)); 
 		EventList<ReportHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(1, historyList.size());
@@ -241,7 +241,7 @@ public class OrderManagerTest extends TestCase {
 	public static ExecutionReport createReport(Message message)
 			throws MessageCreationException {
 		return Factory.getInstance().createExecutionReport(message,
-				new DestinationID("null"), Originator.Server);
+				new BrokerID("null"), Originator.Server);
 	}
 
 }

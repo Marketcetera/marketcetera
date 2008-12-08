@@ -66,7 +66,7 @@ public class OrderReplaceTest extends TypesTestBase {
         String account = "what?";
         OrderType orderType = OrderType.Limit;
         TimeInForce fillOrKill = TimeInForce.FillOrKill;
-        DestinationID cID = new DestinationID("iam");
+        BrokerID cID = new BrokerID("iam");
         //Create an exec report.
         report = createExecReport(orderID, side, orderQty, lastPrice,
                 symbol, account, orderType, fillOrKill, destOrderID,
@@ -133,7 +133,7 @@ public class OrderReplaceTest extends TypesTestBase {
 
     /**
      * Verifies conversion of System FIX message to OrderReplace via
-     * {@link org.marketcetera.trade.Factory#createOrderReplace(quickfix.Message, DestinationID)}
+     * {@link org.marketcetera.trade.Factory#createOrderReplace(quickfix.Message, BrokerID)}
      *
      * @throws Exception if there were errors.
      */
@@ -154,7 +154,7 @@ public class OrderReplaceTest extends TypesTestBase {
         checkSetters(order);
 
         //A limit order with all the fields set.
-        DestinationID destinationID = new DestinationID("meh");
+        BrokerID brokerID = new BrokerID("meh");
         OrderID orderID = new OrderID("testOrderID");
         String destOrderID = "brokerd1";
         BigDecimal qty = new BigDecimal("23434.56989");
@@ -167,11 +167,11 @@ public class OrderReplaceTest extends TypesTestBase {
                 orderID.getValue(), Side.Buy, qty, price, symbol, account,
                 OrderType.Limit, TimeInForce.AtTheClose, destOrderID,
                 OrderCapacity.Individual, positionEffect));
-        order = sFactory.createOrderReplace(msg, destinationID);
+        order = sFactory.createOrderReplace(msg, brokerID);
         assertOrderReplace(order, expectedOrderID, orderID, destOrderID,
                 OrderType.Limit, Side.Buy, qty,
                 msg.getField(new Price()).getValue(), symbol, securityType,
-                TimeInForce.AtTheClose, account, destinationID, positionEffect,
+                TimeInForce.AtTheClose, account, brokerID, positionEffect,
                 OrderCapacity.Individual, null);
         //Verify toString() doesn't fail
         order.toString();
@@ -222,11 +222,11 @@ public class OrderReplaceTest extends TypesTestBase {
         expectedMap.put(String.valueOf(SolicitedFlag.FIELD),
                 BooleanConverter.convert(boolValue));
 
-        order = sFactory.createOrderReplace(msg, destinationID);
+        order = sFactory.createOrderReplace(msg, brokerID);
         BigDecimal expectedPrice = msg.getField(new Price()).getValue();
         assertOrderReplace(order, expectedOrderID, orderID, destOrderID,
                 orderType, side, qty, expectedPrice, symbol, securityType,
-                tif, account, destinationID, positionEffect, orderCapacity,
+                tif, account, brokerID, positionEffect, orderCapacity,
                 expectedMap);
     }
 
@@ -237,11 +237,11 @@ public class OrderReplaceTest extends TypesTestBase {
      */
     @Test
     public void systemFIXWrapFailures() throws Exception {
-        final DestinationID destinationID = new DestinationID("meh");
+        final BrokerID brokerID = new BrokerID("meh");
         //Null check for message parameter
         new ExpectedFailure<NullPointerException>(null) {
             protected void run() throws Exception {
-                sFactory.createOrderReplace(null, destinationID);
+                sFactory.createOrderReplace(null, brokerID);
             }
         };
         final Message msg = createEmptyExecReport();

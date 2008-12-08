@@ -122,7 +122,7 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
                 String.valueOf(getAccount()),
                 String.valueOf(getAveragePrice()),
                 String.valueOf(getCumulativeQuantity()),
-                String.valueOf(getDestinationID()),
+                String.valueOf(getBrokerID()),
                 String.valueOf(getExecutionID()),
                 String.valueOf(getExecutionType()),
                 String.valueOf(getLastMarket()),
@@ -144,7 +144,7 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
                 String.valueOf(getText()),
                 String.valueOf(getTimeInForce()),
                 String.valueOf(getTransactTime()),
-                String.valueOf(getDestinationOrderID()),
+                String.valueOf(getBrokerOrderID()),
                 String.valueOf(getMessage())
         );
     }
@@ -153,13 +153,13 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
      * Creates an instance.
      *
      * @param inMessage The FIX Message of type execution report.
-     * @param inDestinationID the destinationID from which this
+     * @param inBrokerID the brokerID from which this report originated.
      * @param inOriginator the originator of this message.
      */
     ExecutionReportImpl(Message inMessage,
-                        DestinationID inDestinationID,
+                        BrokerID inBrokerID,
                         Originator inOriginator) {
-        super(inMessage, inDestinationID);
+        super(inMessage, inBrokerID);
         mOriginator = inOriginator;
     }
 

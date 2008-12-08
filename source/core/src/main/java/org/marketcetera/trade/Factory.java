@@ -12,7 +12,7 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class Factory {
     /**
      * Returns a factory instance that can be used to create various messages.
@@ -35,8 +35,8 @@ public abstract class Factory {
      *  new single order message.
      *
      * @param inMessage A System FIX New Single Order Message. Cannot be null.
-     * @param inDestinationID the optional ID of the destination / broker
-     * to which this order should be sent to. Can be null.
+     * @param inBrokerID the optional ID of the broker to which this order should 
+     * be sent to. Can be null.
      *
      * @return a new order to trade a security based on the supplied message.
      *
@@ -45,7 +45,7 @@ public abstract class Factory {
      */
     public abstract OrderSingle createOrderSingle(
             Message inMessage,
-            DestinationID inDestinationID)
+            BrokerID inBrokerID)
             throws MessageCreationException;
 
     /**
@@ -61,7 +61,7 @@ public abstract class Factory {
      * report should be the latest execution report for the order on a
      * best-effort basis. If the execution report supplied happens to not
      * be the latest execution report, the returned order might be
-     * rejected by the broker / destination.
+     * rejected by the broker.
      *
      * @param inLatestReport the latest execution report for the order
      * that needs to be cancelled. Can be null. If a null value is supplied
@@ -82,8 +82,8 @@ public abstract class Factory {
      *
      * @param inMessage A System FIX Order Cancel message. Cannot be null.
      *
-     * @param inDestinationID the optional ID of the destination / broker
-     * to which this order should be sent to. Can be null.
+     * @param inBrokerID the optional ID of the broker to which this order 
+     * should be sent to. Can be null.
      * 
      * @return An order cancel message based on the supplied message.
      *
@@ -92,7 +92,7 @@ public abstract class Factory {
      */
     public abstract OrderCancel createOrderCancel(
             Message inMessage,
-            DestinationID inDestinationID)
+            BrokerID inBrokerID)
             throws MessageCreationException;
 
     /**
@@ -101,7 +101,7 @@ public abstract class Factory {
      * report should be the latest execution report for the order on a
      * best-effort basis. If the execution report supplied happens to not
      * be the latest execution report, the returned order might be
-     * rejected by the broker / destination.
+     * rejected by the broker.
      *
      * @param inLatestReport the latest execution report for the order
      * that needs to be cancelled. If null, an uninitialized order instance
@@ -122,7 +122,7 @@ public abstract class Factory {
      *
      * @param inMessage A System FIX Order Replace message. Cannot be null.
      *
-     * @param inDestinationID the optional ID of the destination / broker
+     * @param inBrokerID the optional ID of the broker
      * to which this order should be sent to. Can be null.
      * 
      * @return An Order Replace message based on the supplied message.
@@ -132,7 +132,7 @@ public abstract class Factory {
      */
     public abstract OrderReplace createOrderReplace(
             Message inMessage,
-            DestinationID inDestinationID)
+            BrokerID inBrokerID)
             throws MessageCreationException;
 
     /**
@@ -142,10 +142,10 @@ public abstract class Factory {
      * out this trade.
      * <p>
      * Orders created via this method will have to be created such that
-     * they can be accepted by the broker / destination without requiring any
+     * they can be accepted by the broker without requiring any
      * transformations. Since the contents of the message may be
-     * broker / destination specific, it is required that a
-     * {@link Order#getDestinationID()}  destinationID}
+     * broker specific, it is required that a
+     * {@link Order#getBrokerID()}  brokerID}
      * be specified when sending this message to the server. 
      * <p>
      * Do note that this API will overwrite the <code>ClOrdID</code> field
@@ -157,7 +157,7 @@ public abstract class Factory {
      *
      * @param inMessage The FIX message for the order. Cannot be null.
      *
-     * @param inDestinationID the optional ID of the destination / broker
+     * @param inBrokerID the optional ID of the broker
      * to which this order should be sent to. Cannot be null.
      * 
      * @return The order wrapping the supplied FIX Message in a form
@@ -168,7 +168,7 @@ public abstract class Factory {
      * the supplied FIX Message.
      */
     public abstract FIXOrder createOrder(Message inMessage,
-                                      DestinationID inDestinationID)
+                                      BrokerID inBrokerID)
             throws MessageCreationException;
 
     /**
@@ -177,7 +177,7 @@ public abstract class Factory {
      *
      * @param inMessage the execution report FIX message. Cannot be null.
      *
-     * @param inDestinationID the ID of the destination from which this
+     * @param inBrokerID the ID of the broker from which this
      * message was received.
      *
      * @param inOriginator the originator of this message. Cannot be null.
@@ -190,7 +190,7 @@ public abstract class Factory {
      * the supplied FIX Message.
      */
     public abstract ExecutionReport createExecutionReport(
-            Message inMessage, DestinationID inDestinationID,
+            Message inMessage, BrokerID inBrokerID,
             Originator inOriginator)
             throws MessageCreationException;
     /**
@@ -199,7 +199,7 @@ public abstract class Factory {
      *
      * @param inMessage the order cancel FIX Message. Cannot be null.
      *
-     * @param inDestinationID the ID of the destination from which this
+     * @param inBrokerID the ID of the broker from which this
      * message was received.
      * 
      * @return an order cancel reject message wrapping the supplied
@@ -210,7 +210,7 @@ public abstract class Factory {
      * supplied FIX Message.
      */
     public abstract OrderCancelReject createOrderCancelReject(
-            Message inMessage, DestinationID inDestinationID)
+            Message inMessage, BrokerID inBrokerID)
             throws MessageCreationException;
 
     /**

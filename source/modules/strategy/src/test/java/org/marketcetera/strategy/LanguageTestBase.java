@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.broker.BrokerStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -47,7 +47,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
@@ -1089,7 +1089,7 @@ public abstract class LanguageTestBase
         msg.setField(new TransactTime(messageDate));
         doMessageTest(parameters,
                       new FIXOrder[] { Factory.getInstance().createOrder(msg,
-                                                                         new DestinationID("some-destination")) } );
+                                                                         new BrokerID("some-destination")) } );
     }
     /**
      * Takes a single strategy and starts and stops it many times.
@@ -1406,13 +1406,13 @@ public abstract class LanguageTestBase
     {
         // call should fail
         MockClient.getDestinationsFails = true;
-        doDestinationTest(new DestinationStatus[0]);
+        doDestinationTest(new BrokerStatus[0]);
         // succeeds and returns a non-empty list
         MockClient.getDestinationsFails = false;
-        doDestinationTest(destinations.getDestinations().toArray(new DestinationStatus[destinations.getDestinations().size()]));
+        doDestinationTest(destinations.getBrokers().toArray(new BrokerStatus[destinations.getBrokers().size()]));
         // succeeds and returns an empty list
-        destinations.setDestinations(new ArrayList<DestinationStatus>());
-        doDestinationTest(new DestinationStatus[0]);
+        destinations.setBrokers(new ArrayList<BrokerStatus>());
+        doDestinationTest(new BrokerStatus[0]);
     }
     /**
      * Test a strategy's ability to create and send orders.
@@ -2969,7 +2969,7 @@ public abstract class LanguageTestBase
      * @param inExpectedDestinations a <code>DestinationStatus[]</code> value containing the expected destinations
      * @throws Exception if an error occurs
      */
-    private void doDestinationTest(DestinationStatus[] inExpectedDestinations)
+    private void doDestinationTest(BrokerStatus[] inExpectedDestinations)
         throws Exception
     {
         StrategyCoordinates strategy = getStrategyCompiles();
@@ -2984,7 +2984,7 @@ public abstract class LanguageTestBase
                                      null,
                                      null);
         int counter = 0;
-        for(DestinationStatus destination : inExpectedDestinations)
+        for(BrokerStatus destination : inExpectedDestinations)
         {
             assertEquals(destination.toString(),
                          AbstractRunningStrategy.getProperty("" + counter++));

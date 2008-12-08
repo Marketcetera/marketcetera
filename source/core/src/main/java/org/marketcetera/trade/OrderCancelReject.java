@@ -6,7 +6,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Represents the rejection of an {@link OrderCancel} or a
  * {@link OrderReplace}. Instances of this message can be created via
- * {@link Factory#createOrderCancelReject(quickfix.Message, DestinationID)}.
+ * {@link Factory#createOrderCancelReject(quickfix.Message, BrokerID)}.
  * <p>
  * The enum attributes of this type have a null value, in case a value
  * is not specified for that attribute / field in the underlying FIX Message.

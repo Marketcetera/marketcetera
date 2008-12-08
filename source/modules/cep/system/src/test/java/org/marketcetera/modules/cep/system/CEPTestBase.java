@@ -81,40 +81,40 @@ public abstract class CEPTestBase extends ModuleTestBase {
         not1 = Notification.low("kathmandu", "kathmandu", this.getClass());
         not2 = Notification.low("pokhara", "pokhara", this.getClass());
         os1 = sFactory.createOrderSingle();
-        os1.setDestinationID(new DestinationID("os1"));
+        os1.setBrokerID(new BrokerID("os1"));
         os2 = sFactory.createOrderSingle();
-        os2.setDestinationID(new DestinationID("os2"));
+        os2.setBrokerID(new BrokerID("os2"));
         // order cancel
         Message nos = FIXMessageUtilTest.createNOS("LADA", BigDecimal.ZERO, BigDecimal.ZERO, 'a', FIXVersion.FIX_SYSTEM.getMessageFactory());
         Message can1 = FIXVersion.FIX_SYSTEM.getMessageFactory().newCancelFromMessage(nos);
-        oc1 = sFactory.createOrderCancel(can1, new DestinationID("dest1"));
+        oc1 = sFactory.createOrderCancel(can1, new BrokerID("dest1"));
         Message can2 = FIXVersion.FIX_SYSTEM.getMessageFactory().newCancelFromMessage(nos);
         can2.setField(new Symbol("ZAPO"));
-        oc2 = sFactory.createOrderCancel(can2, new DestinationID("dest2"));
+        oc2 = sFactory.createOrderCancel(can2, new BrokerID("dest2"));
         // order replace
         Message cxr1 = FIXVersion.FIX_SYSTEM.getMessageFactory().newCancelReplaceFromMessage(nos);
-        or1 = sFactory.createOrderReplace(cxr1, new DestinationID("lada"));
+        or1 = sFactory.createOrderReplace(cxr1, new BrokerID("lada"));
         Message cxr2 = FIXVersion.FIX_SYSTEM.getMessageFactory().newCancelReplaceFromMessage(nos);
         cxr2.setField(new Symbol("ZAPO"));
-        or2 = sFactory.createOrderReplace(cxr2, new DestinationID("zapo"));
+        or2 = sFactory.createOrderReplace(cxr2, new BrokerID("zapo"));
         // fix order
         nos = FIXMessageUtilTest.createNOS("fixORDER", BigDecimal.ZERO, BigDecimal.ZERO, 'a', FIXVersion.FIX_SYSTEM.getMessageFactory());
-        fo1 = Factory.getInstance().createOrder(nos, new DestinationID("chuck"));
-        fo2 = Factory.getInstance().createOrder(nos, new DestinationID("morgan"));
+        fo1 = Factory.getInstance().createOrder(nos, new BrokerID("chuck"));
+        fo2 = Factory.getInstance().createOrder(nos, new BrokerID("morgan"));
         // order cancel reject
         Message rej1 = FIXVersion.FIX42.getMessageFactory().newOrderCancelReject();
         rej1.setField(new Text("GOOG"));
-        ocr1 = sFactory.createOrderCancelReject(rej1, new DestinationID("dest"));
+        ocr1 = sFactory.createOrderCancelReject(rej1, new BrokerID("dest"));
         Message rej2 = FIXVersion.FIX42.getMessageFactory().newOrderCancelReject();
         rej2.setField(new Text("CSCO"));
-        ocr2 = sFactory.createOrderCancelReject(rej2, new DestinationID("dest"));
+        ocr2 = sFactory.createOrderCancelReject(rej2, new BrokerID("dest"));
         // execution report
         Message er1_fix = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderid", "clOrdID", "execID", 'a', 'b', BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IFLI"), "acct");
-        er1 = sFactory.createExecutionReport(er1_fix, new DestinationID("dest1"), Originator.Server);
+        er1 = sFactory.createExecutionReport(er1_fix, new BrokerID("dest1"), Originator.Server);
         Message er2_fix = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderid", "clOrdID", "execID", 'a', 'b', BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("GOOG"), "acct");
-        er2 = sFactory.createExecutionReport(er2_fix, new DestinationID("dest2"), Originator.Server);
+        er2 = sFactory.createExecutionReport(er2_fix, new BrokerID("dest2"), Originator.Server);
         // map
         map1 = new HashMap<Integer, String>();
         map1.put(0, "bob");

@@ -24,12 +24,12 @@ class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderReplace {
     }
 
     @Override
-    public String getDestinationOrderID() {
+    public String getBrokerOrderID() {
         return mDestOrderID;
     }
 
     @Override
-    public void setDestinationOrderID(String inDestOrderID) {
+    public void setBrokerOrderID(String inDestOrderID) {
         mDestOrderID = inDestOrderID;
     }
 
@@ -38,7 +38,7 @@ class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderReplace {
         return Messages.ORDER_REPLACE_TO_STRING.getText(
                 String.valueOf(getAccount()),
                 String.valueOf(getCustomFields()),
-                String.valueOf(getDestinationID()),
+                String.valueOf(getBrokerID()),
                 String.valueOf(getOrderCapacity()),
                 String.valueOf(getOrderID()),
                 String.valueOf(getOrderType()),
@@ -50,7 +50,7 @@ class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderReplace {
                 String.valueOf(getSide()),
                 String.valueOf(getSymbol()),
                 String.valueOf(getTimeInForce()),
-                String.valueOf(getDestinationOrderID())
+                String.valueOf(getBrokerOrderID())
         );
     }
 

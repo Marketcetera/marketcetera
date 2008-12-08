@@ -172,7 +172,7 @@ public class TypesTestBase {
     }
 
     protected static void assertOrderEquals(Order inOrder1, Order inOrder2) {
-        assertEquals(inOrder1.getDestinationID(), inOrder2.getDestinationID());
+        assertEquals(inOrder1.getBrokerID(), inOrder2.getBrokerID());
         assertEquals(inOrder1.getSecurityType(), inOrder2.getSecurityType());
     }
 
@@ -186,7 +186,7 @@ public class TypesTestBase {
         assertOrderEquals(inOrder1, inOrder2);
         assertEquals(inOrder1.getAccount(), inOrder2.getAccount());
         assertEquals(inOrder1.getCustomFields(), inOrder2.getCustomFields());
-        assertEquals(inOrder1.getDestinationID(), inOrder2.getDestinationID());
+        assertEquals(inOrder1.getBrokerID(), inOrder2.getBrokerID());
         if (!inIgnoreOrderID) {
         assertEquals(inOrder1.getOrderID(), inOrder2.getOrderID());
         }
@@ -213,20 +213,20 @@ public class TypesTestBase {
         assertOrderBaseEquals(inOrder1, inOrder2, inIgnoreOrderID);
         assertEquals(inOrder1.getOriginalOrderID(),
                 inOrder2.getOriginalOrderID());
-        assertEquals(inOrder1.getDestinationOrderID(),
-                inOrder2.getDestinationOrderID());
+        assertEquals(inOrder1.getBrokerOrderID(),
+                inOrder2.getBrokerOrderID());
     }
 
     protected static void assertReportBaseEquals(ReportBase inReport1,
                                                ReportBase inReport2) {
-        assertEquals(inReport1.getDestinationID(), inReport2.getDestinationID());
+        assertEquals(inReport1.getBrokerID(), inReport2.getBrokerID());
         assertEquals(inReport1.getOrderID(), inReport2.getOrderID());
         assertEquals(inReport1.getOrderStatus(), inReport2.getOrderStatus());
         assertEquals(inReport1.getOriginalOrderID(), inReport2.getOriginalOrderID());
         assertEquals(inReport1.getSendingTime(), inReport2.getSendingTime());
         assertEquals(inReport1.getText(), inReport2.getText());
-        assertEquals(inReport1.getDestinationOrderID(),
-                inReport2.getDestinationOrderID());
+        assertEquals(inReport1.getBrokerOrderID(),
+                inReport2.getBrokerOrderID());
     }
 
     /**
@@ -248,11 +248,11 @@ public class TypesTestBase {
     }
 
     protected static void checkOrderSetters(Order inOrder) {
-        DestinationID id = new DestinationID("whatever");
-        inOrder.setDestinationID(id);
-        assertEquals(id, inOrder.getDestinationID());
-        inOrder.setDestinationID(null);
-        assertEquals(null, inOrder.getDestinationID());
+        BrokerID id = new BrokerID("whatever");
+        inOrder.setBrokerID(id);
+        assertEquals(id, inOrder.getBrokerID());
+        inOrder.setBrokerID(null);
+        assertEquals(null, inOrder.getBrokerID());
     }
 
     protected static void checkOrderBaseSetters(OrderBase inOrder) {
@@ -399,9 +399,9 @@ public class TypesTestBase {
     }
 
     protected static void assertOrderValues(Order inOrder,
-                                    DestinationID inDestinationID,
+                                    BrokerID inBrokerID,
                                     SecurityType inType) {
-        assertEquals(inDestinationID, inOrder.getDestinationID());
+        assertEquals(inBrokerID, inOrder.getBrokerID());
         assertEquals(inType, inOrder.getSecurityType());
     }
 
@@ -420,26 +420,26 @@ public class TypesTestBase {
 
     protected static void assertRelatedOrderValues(RelatedOrder inOrder,
                                                    OrderID inOrigOrderID,
-                                                   String inDestinationOrderID) {
+                                                   String inBrokerOrderID) {
         assertEquals(inOrigOrderID,  inOrder.getOriginalOrderID());
-        assertEquals(inDestinationOrderID,  inOrder.getDestinationOrderID());
+        assertEquals(inBrokerOrderID,  inOrder.getBrokerOrderID());
     }
 
     protected static void assertReportBaseValues(ReportBase inReport,
-                                              DestinationID inDestinationID,
+                                              BrokerID inBrokerID,
                                               OrderID inOrderID,
                                               OrderStatus inOrderStatus,
                                               OrderID inOrigOrderID,
                                                  Date inSendingTime,
                                                  String inText,
-                                                 String inDestinationOrderID) {
-        assertEquals(inDestinationID, inReport.getDestinationID());
+                                                 String inBrokerOrderID) {
+        assertEquals(inBrokerID, inReport.getBrokerID());
         assertEquals(inOrderID, inReport.getOrderID());
         assertEquals(inOrderStatus, inReport.getOrderStatus());
         assertEquals(inOrigOrderID,  inReport.getOriginalOrderID());
         assertEquals(inSendingTime,  inReport.getSendingTime());
         assertEquals(inText, inReport.getText());
-        assertEquals(inDestinationOrderID, inReport.getDestinationOrderID());
+        assertEquals(inBrokerOrderID, inReport.getBrokerOrderID());
     }
 
     protected static void assertExecReportValues(ExecutionReport inReport,
@@ -517,10 +517,10 @@ public class TypesTestBase {
                                          String inAccount,
                                          OrderCapacity inOrderCapacity,
                                          PositionEffect inPositionEffect,
-                                         DestinationID inDestinationID,
+                                         BrokerID inBrokerID,
                                          Map<String, String> inCustomFields) {
         assertNotNull(inOrder);
-        assertOrderValues(inOrder, inDestinationID, inSecurityType);
+        assertOrderValues(inOrder, inBrokerID, inSecurityType);
         assertOrderBaseValues(inOrder, inOrderID, inAccount, inCustomFields, inQty,
                 inSide, inSymbol);
         assertNROrderValues(inOrder, inOrderType, inPrice,
@@ -537,10 +537,10 @@ public class TypesTestBase {
                                          BigDecimal inQty,
                                          String inDestOrderID,
                                          String inAccount,
-                                         DestinationID inDestinationID,
+                                         BrokerID inBrokerID,
                                          Map<String, String> inCustomFields) {
         assertNotNull(inOrder);
-        assertOrderValues(inOrder, inDestinationID, inSecurityType);
+        assertOrderValues(inOrder, inBrokerID, inSecurityType);
         assertOrderBaseValues(inOrder, inOrderID, inAccount,
                 inCustomFields, inQty, inSide, inSymbol);
         assertRelatedOrderValues(inOrder, inOriginalOrderID, inDestOrderID);
@@ -558,11 +558,11 @@ public class TypesTestBase {
                                           SecurityType inSecurityType,
                                           TimeInForce inTif,
                                           String inAccount,
-                                          DestinationID inDestinationID,
+                                          BrokerID inBrokerID,
                                           PositionEffect inPositionEffect,
                                           OrderCapacity inOrderCapacity,
                                           Map<String, String> inCustomFields) {
-        assertOrderValues(inOrder, inDestinationID, inSecurityType);
+        assertOrderValues(inOrder, inBrokerID, inSecurityType);
         assertOrderBaseValues(inOrder, inOrderID, inAccount, inCustomFields, inQty,
                 inSide, inSymbol);
         assertNROrderValues(inOrder, inOrderType,

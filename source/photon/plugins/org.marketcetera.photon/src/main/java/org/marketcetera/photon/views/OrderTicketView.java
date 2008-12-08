@@ -89,7 +89,7 @@ import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 
 import quickfix.DataDictionary;
 import quickfix.FieldType;
@@ -678,7 +678,7 @@ public abstract class OrderTicketView
 						new UpdateValueStrategy().setConverter(new Converter(Broker.class, String.class) {
 							@Override
 							public Object convert(Object fromObject) {
-								DestinationID id = ((Broker) fromObject).getId();
+								BrokerID id = ((Broker) fromObject).getId();
 								return id == null ? null : id.getValue();
 							}
 						}),
@@ -689,7 +689,7 @@ public abstract class OrderTicketView
 									return BrokerManager.AUTO_SELECT_BROKER;
 								}									
 								for (Object obj : BrokerManager.getCurrent().getAvailableBrokers()) {
-									DestinationID id = ((Broker) obj).getId();
+									BrokerID id = ((Broker) obj).getId();
 									if (id != null && id.getValue() != null && id.getValue().equals(fromObject)) {
 										return obj;
 									}

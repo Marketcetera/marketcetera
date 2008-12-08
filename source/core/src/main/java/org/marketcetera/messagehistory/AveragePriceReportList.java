@@ -137,7 +137,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                         averagePriceMessage.setField(new Account(execReport.getAccount()));
 
                                     try {
-                                        mAveragePricesList.add(new ReportHolder(Factory.getInstance().createExecutionReport(averagePriceMessage, execReport.getDestinationID(), Originator.Server)));
+                                        mAveragePricesList.add(new ReportHolder(Factory.getInstance().createExecutionReport(averagePriceMessage, execReport.getBrokerID(), Originator.Server)));
                                         averagePriceIndex = mAveragePricesList.size()-1;
                                         mAveragePriceIndexes.put(symbolSide, averagePriceIndex);
                                         updates.addInsert(averagePriceIndex);

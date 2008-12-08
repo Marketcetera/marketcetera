@@ -18,9 +18,9 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.progress.UIJob;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientParameters;
-import org.marketcetera.client.DestinationStatusListener;
-import org.marketcetera.client.dest.DestinationStatus;
-import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.client.BrokerStatusListener;
+import org.marketcetera.client.broker.BrokerStatus;
+import org.marketcetera.client.broker.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.photon.BrokerManager;
@@ -198,12 +198,12 @@ public class ReconnectClientJob extends UIJob implements Messages {
 					feedService.afterPropertiesSet();
 					monitor.worked(1);
 
-					final DestinationsStatus destinationsStatus = feedService
-							.getClient().getDestinationsStatus();
+					final BrokersStatus destinationsStatus = feedService
+							.getClient().getBrokersStatus();
 					BrokerManager.getCurrent().setBrokersStatus(
 							destinationsStatus);
 					sBrokerNotificationListener.setService(feedService);
-					feedService.getClient().addDestinationStatusListener(
+					feedService.getClient().addBrokerStatusListener(
 							sBrokerNotificationListener);
 
 					String timeString = PhotonPlugin
@@ -249,7 +249,7 @@ public class ReconnectClientJob extends UIJob implements Messages {
 
 		if (feed != null) {
 			try {
-				feed.getClient().removeDestinationStatusListener(
+				feed.getClient().removeBrokerStatusListener(
 						sBrokerNotificationListener);
 			} catch (ClientInitException e) {
 				// already disconnected
@@ -282,7 +282,7 @@ public class ReconnectClientJob extends UIJob implements Messages {
 	 */
 	@ClassVersion("$Id$")
 	static class BrokerNotificationListener implements
-			DestinationStatusListener {
+			BrokerStatusListener {
 
 		private ClientFeedService mService;
 
@@ -297,7 +297,7 @@ public class ReconnectClientJob extends UIJob implements Messages {
 		}
 
 		@Override
-		public void receiveDestinationStatus(final DestinationStatus status) {
+		public void receiveBrokerStatus(final BrokerStatus status) {
 			if (mService == null) {
 				SLF4JLoggerProxy.error(this, new IllegalStateException());
 				return;
@@ -317,8 +317,8 @@ public class ReconnectClientJob extends UIJob implements Messages {
 								.getText(Messages.BROKER_LABEL_PATTERN.getText(
 										status.getName(), status.getId())),
 								getClass()));
-				final DestinationsStatus destinationsStatus = mService
-						.getClient().getDestinationsStatus();
+				final BrokersStatus destinationsStatus = mService
+						.getClient().getBrokersStatus();
 				PlatformUI.getWorkbench().getDisplay().asyncExec(
 						new Runnable() {
 							@Override

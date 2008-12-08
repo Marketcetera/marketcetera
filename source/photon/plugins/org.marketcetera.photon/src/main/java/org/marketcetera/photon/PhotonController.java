@@ -18,7 +18,7 @@ import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
@@ -63,7 +63,7 @@ public class PhotonController
 
 	private final ServiceTracker mClientServiceTracker;
 
-	public static final DestinationID DEFAULT_DESTINATION = null; 
+	public static final BrokerID DEFAULT_DESTINATION = null; 
 
 	/** Creates a new instance of OrderManager.  Also gets a reference to
 	 *  the Client service using a {@link ServiceTracker}
@@ -123,10 +123,10 @@ public class PhotonController
 	}
 	
 	public void handleInternalMessage(Message aMessage, String brokerId) {
-		handleInternalMessage(aMessage, brokerId == null ? null : new DestinationID(brokerId));
+		handleInternalMessage(aMessage, brokerId == null ? null : new BrokerID(brokerId));
 	}
 	
-	public void handleInternalMessage(Message aMessage, DestinationID destination) {
+	public void handleInternalMessage(Message aMessage, BrokerID destination) {
 		Factory factory = Factory.getInstance();
 	
 		try {

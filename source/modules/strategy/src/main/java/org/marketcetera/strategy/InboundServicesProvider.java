@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.broker.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 
@@ -27,7 +27,7 @@ public interface InboundServicesProvider
      * @return a <code>List&lt;DestinationStatus&gt;</code> value
      * @throws ConnectionException if the information could not be retrieved
      */
-    public List<DestinationStatus> getDestinations()
+    public List<BrokerStatus> getDestinations()
         throws ConnectionException;
     /**
      * Gets the position in the given security at the given point in time.

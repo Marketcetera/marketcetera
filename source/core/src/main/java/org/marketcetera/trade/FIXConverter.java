@@ -213,33 +213,33 @@ public final class FIXConverter
     }
 
     /**
-     * Adds the given destination order ID to the given QuickFIX/J
+     * Adds the given broker order ID to the given QuickFIX/J
      * message (of the given FIX version).
      *
-     * @param destinationOrderID The destination order ID. It may be
+     * @param brokerOrderID The broker order ID. It may be
      * null.
      * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
-     * @param required True if the destination order ID is required
+     * @param required True if the broker order ID is required
      * but is not set.
      *
-     * @throws I18NException Thrown if the destination order ID is
+     * @throws I18NException Thrown if the broker order ID is
      * required but is not set.
      */
 
-    private static void addDestinationOrderID
-        (String destinationOrderID,
+    private static void addBrokerOrderID
+        (String brokerOrderID,
          FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
     {
-        if (destinationOrderID==null) {
+        if (brokerOrderID==null) {
             if (required) {
-                throw new I18NException(Messages.NO_DESTINATION_ORDER_ID);
+                throw new I18NException(Messages.NO_BROKER_ORDER_ID);
             }
         } else{
-            msg.setField(new quickfix.field.OrderID(destinationOrderID));
+            msg.setField(new quickfix.field.OrderID(brokerOrderID));
         }
     }
 
@@ -566,7 +566,7 @@ public final class FIXConverter
         addSymbol(o.getSymbol(),fixVersion,msg,true);
         addSide(o.getSide(),fixVersion,msg,true);
         addQuantity(o.getQuantity(),fixVersion,msg,false);
-        addDestinationOrderID(o.getDestinationOrderID(),fixVersion,msg,false);
+        addBrokerOrderID(o.getBrokerOrderID(),fixVersion,msg,false);
         addAccount(o.getAccount(),fixVersion,msg,false);
         addSecurityType(o.getSecurityType(),fixVersion,msg,false);
         addCustomFields(o,msg);
@@ -607,7 +607,7 @@ public final class FIXConverter
         addTimeInForce(o.getTimeInForce(),fixVersion,msg,false);
         addPositionEffect(o.getPositionEffect(),fixVersion,msg,false);
         addOrderCapacity(o.getOrderCapacity(),fixVersion,msg,false);
-        addDestinationOrderID(o.getDestinationOrderID(),fixVersion,msg,false);
+        addBrokerOrderID(o.getBrokerOrderID(),fixVersion,msg,false);
         addCustomFields(o,msg);
         fixFactory.getMsgAugmentor().cancelReplaceRequestAugment(msg);
         return msg;
@@ -655,7 +655,7 @@ public final class FIXConverter
      *
      * @param msg The QuickFIX/J message.
      * @param originator The message originator.
-     * @param destinationID The ID of the destination which generated
+     * @param brokerID The ID of the broker which generated
      * the QuickFIX/J message. It may be null.
      *
      * @return The FIX Agnostic message. It is null if conversion is
@@ -668,16 +668,16 @@ public final class FIXConverter
     public static TradeMessage fromQMessage
         (Message msg,
          Originator originator,
-         DestinationID destinationID)
+         BrokerID brokerID)
         throws MessageCreationException
     {
         if (FIXMessageUtil.isExecutionReport(msg)) {
             return Factory.getInstance().createExecutionReport
-                (msg,destinationID,originator);
+                (msg,brokerID,originator);
         }
         if (FIXMessageUtil.isCancelReject(msg)) {
             return Factory.getInstance().createOrderCancelReject
-                (msg,destinationID);
+                (msg,brokerID);
         }
         return null;
     }

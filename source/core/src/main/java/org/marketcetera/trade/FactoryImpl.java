@@ -22,7 +22,7 @@ import java.util.*;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 class FactoryImpl extends Factory {
     @Override
     public OrderSingle createOrderSingle() {
@@ -42,8 +42,8 @@ class FactoryImpl extends Factory {
         assignOrderID(order);
         if (inLatestReport != null) {
             order.setAccount(inLatestReport.getAccount());
-            order.setDestinationID(inLatestReport.getDestinationID());
-            order.setDestinationOrderID(inLatestReport.getDestinationOrderID());
+            order.setBrokerID(inLatestReport.getBrokerID());
+            order.setBrokerOrderID(inLatestReport.getBrokerOrderID());
             order.setOriginalOrderID(inLatestReport.getOrderID());
             order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
@@ -58,8 +58,8 @@ class FactoryImpl extends Factory {
         assignOrderID(order);
         if (inLatestReport != null) {
             order.setAccount(inLatestReport.getAccount());
-            order.setDestinationID(inLatestReport.getDestinationID());
-            order.setDestinationOrderID(inLatestReport.getDestinationOrderID());
+            order.setBrokerID(inLatestReport.getBrokerID());
+            order.setBrokerOrderID(inLatestReport.getBrokerOrderID());
             order.setOrderType(inLatestReport.getOrderType());
             order.setOriginalOrderID(inLatestReport.getOrderID());
             order.setPrice(inLatestReport.getLastPrice());
@@ -74,16 +74,16 @@ class FactoryImpl extends Factory {
     }
 
     @Override
-    public FIXOrder createOrder(Message inMessage, DestinationID inDestinationID)
+    public FIXOrder createOrder(Message inMessage, BrokerID inBrokerID)
             throws MessageCreationException {
         assignOrderID(inMessage);
-        return new FIXOrderImpl(inMessage, inDestinationID);
+        return new FIXOrderImpl(inMessage, inBrokerID);
     }
 
     @Override
     public ExecutionReport createExecutionReport(
             Message inMessage,
-            DestinationID inDestinationID, Originator inOriginator)
+            BrokerID inBrokerID, Originator inOriginator)
             throws MessageCreationException {
         if(inMessage == null) {
             throw new NullPointerException();
@@ -93,7 +93,7 @@ class FactoryImpl extends Factory {
         }
         if(FIXMessageUtil.isExecutionReport(inMessage)) {
             return new ExecutionReportImpl(inMessage,
-                    inDestinationID, inOriginator);
+                    inBrokerID, inOriginator);
         } else {
             throw new MessageCreationException(new I18NBoundMessage1P(
                     Messages.NOT_EXECUTION_REPORT, inMessage.toString()));
@@ -103,14 +103,14 @@ class FactoryImpl extends Factory {
     @Override
     public OrderCancelReject createOrderCancelReject(
             Message inMessage,
-            DestinationID inDestinationID)
+            BrokerID inBrokerID)
             throws MessageCreationException {
         if(inMessage == null) {
             throw new NullPointerException();
         }
         if(FIXMessageUtil.isCancelReject(inMessage)) {
             return new OrderCancelRejectImpl(
-                    inMessage, inDestinationID);
+                    inMessage, inBrokerID);
         } else {
             throw new MessageCreationException(new I18NBoundMessage1P(
                     Messages.NOT_CANCEL_REJECT, inMessage.toString()));
@@ -119,7 +119,7 @@ class FactoryImpl extends Factory {
 
     @Override
     public OrderSingle createOrderSingle(Message inMessage, 
-                                         DestinationID inDestinationID)
+                                         BrokerID inBrokerID)
             throws MessageCreationException {
         checkSystemMessage(inMessage);
         if(!FIXMessageUtil.isOrderSingle(inMessage)) {
@@ -128,7 +128,7 @@ class FactoryImpl extends Factory {
         }
         OrderSingle order = createOrderSingle();
         order.setAccount(FIXUtil.getAccount(inMessage));
-        order.setDestinationID(inDestinationID);
+        order.setBrokerID(inBrokerID);
         order.setCustomFields(getFieldMap(inMessage, SystemFIXMessageFactory.ORDER_SINGLE_FIELDS));
         order.setOrderID(FIXUtil.getOrderID(inMessage));
         order.setOrderType(FIXUtil.getOrderType(inMessage));
@@ -145,7 +145,7 @@ class FactoryImpl extends Factory {
 
     @Override
     public OrderCancel createOrderCancel(Message inMessage,
-                                         DestinationID inDestinationID)
+                                         BrokerID inBrokerID)
             throws MessageCreationException {
         checkSystemMessage(inMessage);
         if(!FIXMessageUtil.isCancelRequest(inMessage)) {
@@ -154,8 +154,8 @@ class FactoryImpl extends Factory {
         }
         OrderCancel order = new OrderCancelImpl();
         order.setAccount(FIXUtil.getAccount(inMessage));
-        order.setDestinationID(inDestinationID);
-        order.setDestinationOrderID(FIXUtil.getDestinationOrderID(inMessage));
+        order.setBrokerID(inBrokerID);
+        order.setBrokerOrderID(FIXUtil.getBrokerOrderID(inMessage));
         order.setCustomFields(getFieldMap(inMessage, SystemFIXMessageFactory.ORDER_CANCEL_FIELDS));
         order.setOrderID(FIXUtil.getOrderID(inMessage));
         order.setOriginalOrderID(FIXUtil.getOriginalOrderID(inMessage));
@@ -169,7 +169,7 @@ class FactoryImpl extends Factory {
     @Override
     public OrderReplace createOrderReplace(
             Message inMessage,
-            DestinationID inDestinationID)
+            BrokerID inBrokerID)
             throws MessageCreationException {
         checkSystemMessage(inMessage);
         if(!FIXMessageUtil.isCancelReplaceRequest(inMessage)) {
@@ -178,8 +178,8 @@ class FactoryImpl extends Factory {
         }
         OrderReplace order = new OrderReplaceImpl();
         order.setAccount(FIXUtil.getAccount(inMessage));
-        order.setDestinationID(inDestinationID);
-        order.setDestinationOrderID(FIXUtil.getDestinationOrderID(inMessage));
+        order.setBrokerID(inBrokerID);
+        order.setBrokerOrderID(FIXUtil.getBrokerOrderID(inMessage));
         order.setCustomFields(getFieldMap(inMessage, SystemFIXMessageFactory.ORDER_REPLACE_FIELDS));
         order.setOrderID(FIXUtil.getOrderID(inMessage));
         order.setOrderType(FIXUtil.getOrderType(inMessage));

@@ -72,8 +72,8 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"no_order_id"); //$NON-NLS-1$
     static final I18NMessage0P NO_ORIGINAL_ORDER_ID=
         new I18NMessage0P(LOGGER,"no_original_order_id"); //$NON-NLS-1$
-    static final I18NMessage0P NO_DESTINATION_ORDER_ID=
-        new I18NMessage0P(LOGGER,"no_destination_order_id"); //$NON-NLS-1$
+    static final I18NMessage0P NO_BROKER_ORDER_ID=
+        new I18NMessage0P(LOGGER,"no_broker_order_id"); //$NON-NLS-1$
     static final I18NMessage1P NO_SIDE=
         new I18NMessage1P(LOGGER,"no_side"); //$NON-NLS-1$
     static final I18NMessage1P NO_SECURITY_TYPE=

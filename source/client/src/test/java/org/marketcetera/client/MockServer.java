@@ -9,7 +9,7 @@ import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.MessageCreationException;
 import org.springframework.jms.core.JmsTemplate;
@@ -159,11 +159,11 @@ public class MockServer {
             try {
                 if (FIXMessageUtil.isExecutionReport(message)) {
                     getHandler().addToSend(Factory.getInstance().createExecutionReport(
-                        message, new DestinationID("default"),
+                        message, new BrokerID("default"),
                             Originator.Server));
                 } else if(FIXMessageUtil.isCancelReject(message)) {
                     getHandler().addToSend(Factory.getInstance().createOrderCancelReject(
-                        message, new DestinationID("default")));
+                        message, new BrokerID("default")));
                 } else {
                     SLF4JLoggerProxy.warn(this, "Ignoring:{}", message);
                 }

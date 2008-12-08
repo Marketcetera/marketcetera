@@ -29,7 +29,7 @@ class OrderSingleImpl extends NewOrReplaceOrderImpl implements OrderSingle {
         return Messages.ORDER_SINGLE_TO_STRING.getText(
                 String.valueOf(getAccount()),
                 String.valueOf(getCustomFields()),
-                String.valueOf(getDestinationID()),
+                String.valueOf(getBrokerID()),
                 String.valueOf(getOrderCapacity()),
                 String.valueOf(getOrderID()),
                 String.valueOf(getOrderType()),

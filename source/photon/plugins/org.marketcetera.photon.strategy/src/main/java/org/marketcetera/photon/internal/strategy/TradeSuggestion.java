@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.OrderCapacity;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
@@ -166,8 +166,8 @@ public class TradeSuggestion {
 	 * 
 	 * @return the destination ID
 	 */
-	public DestinationID getDestinationID() {
-		return getOrder().getDestinationID();
+	public BrokerID getDestinationID() {
+		return getOrder().getBrokerID();
 	}
 
 	/**

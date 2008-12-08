@@ -3,7 +3,7 @@ package org.marketcetera.strategy.ruby;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.broker.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationManager;
@@ -13,7 +13,7 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
@@ -382,7 +382,7 @@ public class Strategy
      * @param inDestination a <code>Destination</code> value
      */
     public final void send_message(Message inMessage,
-                                   DestinationID inDestination)
+                                   BrokerID inDestination)
     {
         sendMessage(inMessage,
                     inDestination);
@@ -518,12 +518,12 @@ public class Strategy
     /**
      * Returns the list of destinations known to the system.
      *
-     * <p>These values can be used to create and send orders with {@link #send_message(Message, DestinationID)}
+     * <p>These values can be used to create and send orders with {@link #send_message(Message, BrokerID)}
      * or {@link #send_order(OrderSingle)}.
      *
      * @return a <code>DestinationStatus[]</code> value
      */
-    public final DestinationStatus[] get_destinations()
+    public final BrokerStatus[] get_destinations()
     {
         return getDestinations();
     }
