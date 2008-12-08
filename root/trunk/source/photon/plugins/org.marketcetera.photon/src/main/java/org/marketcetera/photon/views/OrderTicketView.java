@@ -803,16 +803,20 @@ public abstract class OrderTicketView
 						return Boolean.class;
 					}
 				}));
+        handleFocusOnNewOrderMessage(model);
+    }
 
-		// FIX for bug #438
-		if (FIXMessageUtil.isOrderSingle(model.getOrderMessage())){
-			getOrderTicket().getSideCombo().setFocus();
-		} else {
-			getOrderTicket().getPriceText().setFocus();
-		}
-	}
+    /** Subclasses can override in case these fields don't exist */
+    protected void handleFocusOnNewOrderMessage(OrderTicketModel model) {
+        // FIX for bug #438
+        if (FIXMessageUtil.isOrderSingle(model.getOrderMessage())){
+            getOrderTicket().getSideCombo().setFocus();
+        } else {
+            getOrderTicket().getPriceText().setFocus();
+        }
+    }
 
-	/**
+    /**
 	 * This method unbinds the current order (or replace) message from the UI.
 	 * It loops through the known binding objects, first clearing out a UI representation
 	 * for any Combo and Text controls, then calling {@link Binding#dispose()}.
