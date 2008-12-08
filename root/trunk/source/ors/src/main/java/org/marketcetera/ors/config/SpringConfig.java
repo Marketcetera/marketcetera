@@ -40,7 +40,7 @@ public class SpringConfig
 
     // INSTANCE DATA.
 
-    private SpringBrokers mDestinations;
+    private SpringBrokers mBrokers;
     private SpringSelector mSelector;
     private MessageFilter mSupportedMessages;
     private OrderFilter mAllowedOrders;
@@ -73,8 +73,8 @@ public class SpringConfig
      * Creates a new application configuration with the given
      * properties. The new configuration becomes the global singleton.
      *
-     * @param destinations The destination configurations.
-     * @param selector The destination selector.
+     * @param brokers The broker configurations.
+     * @param selector The broker selector.
      * @param supportedMessages The filter of supported messages.
      * @param allowedOrders The filter of allowed orders.
      * @param serverHost The host name for web services.
@@ -87,7 +87,7 @@ public class SpringConfig
      */
 
     public SpringConfig
-        (SpringBrokers destinations,
+        (SpringBrokers brokers,
          SpringSelector selector,
          MessageFilter supportedMessages,
          OrderFilter allowedOrders,
@@ -99,7 +99,7 @@ public class SpringConfig
          IDFactory idFactory)
         throws I18NException
     {
-        setDestinations(destinations);
+        setBrokers(brokers);
         setSelector(selector);
         setSupportedMessages(supportedMessages);
         setAllowedOrders(allowedOrders);
@@ -143,32 +143,32 @@ public class SpringConfig
     // INSTANCE METHODS.
 
     /**
-     * Sets the receiver's destination configurations to the given
-     * ones. A non-null value should be set during the receiver's
+     * Sets the receiver's broker configurations to the given ones. A
+     * non-null value should be set during the receiver's
      * initialization.
      *
-     * @param destinations The configurations.
+     * @param brokers The configurations.
      */
 
-    public void setDestinations
-        (SpringBrokers destinations)
+    public void setBrokers
+        (SpringBrokers brokers)
     {
-        mDestinations=destinations;
+        mBrokers=brokers;
     }
 
     /**
-     * Returns the receiver's destination configurations.
+     * Returns the receiver's broker configurations.
      *
      * @return The configurations.
      */
 
-    public SpringBrokers getDestinations()
+    public SpringBrokers getBrokers()
     {
-        return mDestinations;
+        return mBrokers;
     }
 
     /**
-     * Sets the receiver's destination selector to the given one. A
+     * Sets the receiver's broker selector to the given one. A
      * non-null value should be set during the receiver's
      * initialization.
      *
@@ -182,7 +182,7 @@ public class SpringConfig
     }
 
     /**
-     * Returns the receiver's destination selector.
+     * Returns the receiver's broker selector.
      *
      * @return The selector.
      */
@@ -402,7 +402,7 @@ public class SpringConfig
     public void afterPropertiesSet()
         throws I18NException
     {
-        if (getDestinations()==null) {
+        if (getBrokers()==null) {
             throw new I18NException(Messages.NO_BROKERS);
         }
         if (getSelector()==null) {

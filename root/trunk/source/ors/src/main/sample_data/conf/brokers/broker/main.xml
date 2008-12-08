@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Destination 1 configuration: routes.
+  - Main primary broker configuration.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$
@@ -16,28 +16,20 @@
  "http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+  <import
+   resource="qdescriptor.xml"/>
+
   <bean
-   id="metc_dest1_routes"
-   class="org.marketcetera.ors.filters.MessageRouteManager">
+   id="metc_broker"
+   class="org.marketcetera.ors.brokers.SpringBroker">
     <property
-     name="separateSuffix"
-     value="false"/>
+     name="name"
+     value="Marketcetera Exchange"/>
     <property
-     name="routeMethod"
-     value="field:100"/>
+     name="id"
+     value="metc"/>
     <property
-     name="routes">
-      <map>
-        <entry
-         key="N"
-         value="SIGMA"/>
-        <entry
-         key="IM"
-         value="Milan"/>
-        <entry
-         key="A"
-         value="B"/>
-      </map>
-    </property>
+     name="descriptor"
+     ref="metc_qdescriptor"/>
   </bean>
 </beans>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Destination configuration: QuickFIX/J session settings.
+  - Broker configuration: QuickFIX/J session settings.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$

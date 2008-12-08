@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Destination 2 configuration: message modifiers.
+  - Broker 1 configuration: message modifiers.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$
@@ -17,7 +17,7 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean
-   id="metc_dest2_modifiers"
+   id="metc_broker1_modifiers"
    class="org.marketcetera.ors.filters.MessageModifierManager">
     <property
      name="messageModifiers">
@@ -27,6 +27,11 @@
           <property
            name="headerFields">
             <map>
+<!--
+              <entry
+               key="50(A)"
+               value="headerValue"/>
+-->
             </map>
           </property>
           <property
@@ -34,19 +39,14 @@
             <map>
 <!--
               <entry
-               key="99(A)"
-               value="anotherMessageValue"/>
+               key="37(A)"
+               value="messageValue"/>
 -->
             </map>
           </property>
           <property
            name="trailerFields">
             <map>
-<!--
-              <entry
-               key="37(A)"
-               value="trailerValue"/>
--->
             </map>
           </property>
         </bean>

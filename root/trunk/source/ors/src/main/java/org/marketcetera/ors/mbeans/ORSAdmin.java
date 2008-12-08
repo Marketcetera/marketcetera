@@ -23,24 +23,24 @@ import quickfix.field.*;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ORSAdmin implements ORSAdminMBean {
-    private Brokers destinations;
+    private Brokers brokers;
     protected IQuickFIXSender quickFIXSender;
     private IDFactory idFactory;
 
-    public ORSAdmin(Brokers destinations,
+    public ORSAdmin(Brokers brokers,
                     IQuickFIXSender qfSender,
                     IDFactory idFactory)
             throws NoMoreIDsException, ClassNotFoundException {
-        this.destinations = destinations;
+        this.brokers = brokers;
         quickFIXSender = qfSender;
         this.idFactory = idFactory;
     }
 
-    public void sendPasswordReset(String destination, String oldPassword, String newPassword) {
-        Broker d=destinations.getDestination(new DestinationID(destination));
+    public void sendPasswordReset(String broker, String oldPassword, String newPassword) {
+        Broker b=brokers.getBroker(new DestinationID(broker));
         SLF4JLoggerProxy.debug(this, "Trade session halted, resetting password"); //$NON-NLS-1$
-        SessionID session = d.getSessionID();
-        Message msg = d.getFIXMessageFactory().createMessage(MsgType.USER_REQUEST);
+        SessionID session = b.getSessionID();
+        Message msg = b.getFIXMessageFactory().createMessage(MsgType.USER_REQUEST);
         // in case of Currenex that uses FIX.4.2 right message won't be created to set the type manually
         if (!msg.getHeader().isSetField(MsgType.FIELD)) {
             msg.getHeader().setField(new MsgType(MsgType.USER_REQUEST));

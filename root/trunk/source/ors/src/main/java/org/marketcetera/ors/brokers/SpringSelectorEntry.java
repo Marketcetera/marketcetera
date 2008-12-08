@@ -22,7 +22,7 @@ public class SpringSelectorEntry
     // INSTANCE DATA.
 
     private String mTargetType;
-    private SpringBroker mDestination;
+    private SpringBroker mBroker;
     private boolean mSkipIfUnavailable;
 
 
@@ -52,26 +52,26 @@ public class SpringSelectorEntry
     }
 
     /**
-     * Sets the receiver's destination to the given one.
+     * Sets the receiver's broker to the given one.
      *
-     * @param destination The destination.
+     * @param broker The broker.
      */
 
-    public void setDestination
-        (SpringBroker destination)
+    public void setBroker
+        (SpringBroker broker)
     {
-        mDestination=destination;
+        mBroker=broker;
     }
 
     /**
-     * Returns the receiver's destination.
+     * Returns the receiver's broker.
      *
-     * @return The destination.
+     * @return The broker.
      */
 
-    public SpringBroker getDestination()
+    public SpringBroker getBroker()
     {
-        return mDestination;
+        return mBroker;
     }
 
     /**
@@ -108,7 +108,7 @@ public class SpringSelectorEntry
         if (getTargetType()==null) {
             throw new I18NException(Messages.NO_TARGET_TYPE);
         }
-        if (getDestination()==null) {
+        if (getBroker()==null) {
             throw new I18NException(Messages.NO_BROKER);
         }
     }

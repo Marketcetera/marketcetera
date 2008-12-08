@@ -9,7 +9,7 @@ import org.marketcetera.util.quickfix.SpringSessionSettings;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * The collective Spring-based configuration of all destinations.
+ * The collective Spring-based configuration of all brokers.
  *
  * @author tlerios@marketcetera.com
  * @since $Release$
@@ -26,7 +26,7 @@ public class SpringBrokers
     // INSTANCE DATA.
 
     private SpringSessionSettings mSessionSettings;
-    private List<SpringBroker> mDestinations;
+    private List<SpringBroker> mBrokers;
 
 
     // INSTANCE METHODS.
@@ -57,27 +57,27 @@ public class SpringBrokers
     }
 
     /**
-     * Sets the configurations of the receiver's destinations to the
-     * given ones.
+     * Sets the configurations of the receiver's brokers to the given
+     * ones.
      *
-     * @param destinations The configurations.
+     * @param brokers The configurations.
      */
 
-    public void setDestinations
-        (List<SpringBroker> destinations)
+    public void setBrokers
+        (List<SpringBroker> brokers)
     {
-        mDestinations=destinations;
+        mBrokers=brokers;
     }
 
     /**
-     * Returns the configurations of the receiver's destinations.
+     * Returns the configurations of the receiver's brokers.
      *
      * @return The configurations.
      */
 
-    public List<SpringBroker> getDestinations()
+    public List<SpringBroker> getBrokers()
     {
-        return mDestinations;
+        return mBrokers;
     }
 
 
@@ -90,13 +90,13 @@ public class SpringBrokers
         if (getSettings()==null) {
             throw new I18NException(Messages.NO_SETTINGS);
         }
-        if (getDestinations()==null) {
+        if (getBrokers()==null) {
             throw new I18NException(Messages.NO_BROKERS);
         }
         List<SpringSessionDescriptor> list=
-            new ArrayList<SpringSessionDescriptor>(getDestinations().size());
-        for (SpringBroker d:getDestinations()) {
-            list.add(d.getDescriptor());
+            new ArrayList<SpringSessionDescriptor>(getBrokers().size());
+        for (SpringBroker b:getBrokers()) {
+            list.add(b.getDescriptor());
         }
         getSettings().setDescriptors(list);
     }

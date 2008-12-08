@@ -24,7 +24,7 @@ public class SelectorEntry
 
     private final SpringSelectorEntry mSpringSelectorEntry;
     private final SecurityType mTargetType;
-    private final DestinationID mDestinationID;
+    private final DestinationID mBrokerID;
 
 
     // CONSTRUCTORS.
@@ -48,8 +48,8 @@ public class SelectorEntry
                   getSpringSelectorEntry().getTargetType()));
                                            
         }
-        mDestinationID=new DestinationID
-            (getSpringSelectorEntry().getDestination().getId());
+        mBrokerID=new DestinationID
+            (getSpringSelectorEntry().getBroker().getId());
     }
 
 
@@ -78,14 +78,14 @@ public class SelectorEntry
     }
 
     /**
-     * Returns the receiver's destination ID.
+     * Returns the receiver's broker ID.
      *
      * @return The ID.
      */
 
-    public DestinationID getDestination()
+    public DestinationID getBroker()
     {
-        return mDestinationID;
+        return mBrokerID;
     }
 
     /**

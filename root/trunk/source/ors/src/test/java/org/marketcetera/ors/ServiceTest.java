@@ -34,15 +34,15 @@ public class ServiceTest
         startORS(new String[0]);
         Service s=getORSService();
 
-        List<DestinationStatus> ds=
+        List<DestinationStatus> bs=
             s.getDestinationsStatus(getORSClientContext()).getDestinations();
-        assertEquals(2,ds.size());
-        DestinationStatus d=ds.get(0);
-        assertEquals("Marketcetera Exchange 1",d.getName());
-        assertEquals("metc1",d.getId().getValue());
-        d=ds.get(1);
-        assertEquals("Marketcetera Exchange 2",d.getName());
-        assertEquals("metc2",d.getId().getValue());
+        assertEquals(2,bs.size());
+        DestinationStatus b=bs.get(0);
+        assertEquals("Marketcetera Exchange 1",b.getName());
+        assertEquals("metc1",b.getId().getValue());
+        b=bs.get(1);
+        assertEquals("Marketcetera Exchange 2",b.getName());
+        assertEquals("metc2",b.getId().getValue());
 
         ReportBaseImpl[] rs=s.getReportsSince
             (getORSClientContext(),new Date());

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Destination configuration: destination selector.
+  - Broker configuration: broker selector.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$
@@ -26,30 +26,30 @@
          class="org.marketcetera.ors.brokers.SpringSelectorEntry">
           <property
            name="targetType"
-	       value="CS"/> <!-- Common Stock. -->
+           value="CS"/> <!-- Common Stock. -->
           <property
-           name="destination"
-	       ref="metc_dest2_destination"/>
+           name="broker"
+           ref="metc_broker2_broker"/>
           <property
            name="skipIfUnavailable"
-	       value="true"/>
+           value="true"/>
         </bean>
         <bean
          class="org.marketcetera.ors.brokers.SpringSelectorEntry">
           <property
            name="targetType"
-	       value="OPT"/> <!-- Option. -->
+           value="OPT"/> <!-- Option. -->
           <property
-           name="destination"
-	       ref="metc_dest2_destination"/>
+           name="broker"
+           ref="metc_broker2_broker"/>
           <property
            name="skipIfUnavailable"
-	       value="false"/>
+           value="false"/>
         </bean>
       </list>
     </property>
     <property
-     name="defaultDestination"
-	 ref="metc_dest1_destination"/>
+     name="defaultBroker"
+     ref="metc_broker1_broker"/>
   </bean>
 </beans>

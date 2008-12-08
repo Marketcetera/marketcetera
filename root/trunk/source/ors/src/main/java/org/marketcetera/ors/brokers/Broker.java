@@ -19,7 +19,7 @@ import quickfix.Session;
 import quickfix.SessionID;
 
 /**
- * The in-memory representation of a single destination.
+ * The in-memory representation of a single broker.
  *
  * @author tlerios@marketcetera.com
  * @since $Release$
@@ -41,7 +41,7 @@ public class Broker
     // INSTANCE DATA.
 
     private final SpringBroker mSpringBroker;
-    private final DestinationID mDestinationID;
+    private final DestinationID mBrokerID;
     private FIXDataDictionary mDataDictionary;
     private boolean mLoggedOn;
 
@@ -49,7 +49,7 @@ public class Broker
     // CONSTRUCTORS.
 
     /**
-     * Creates a new destination based on the given configuration. Its
+     * Creates a new broker based on the given configuration. Its
      * message modifiers are configured to rely on the given report
      * history services provider for persistence operations.
      *
@@ -62,7 +62,7 @@ public class Broker
          ReportHistoryServices historyServices)
     {
         mSpringBroker=springBroker;
-        mDestinationID=new DestinationID(getSpringBroker().getId());
+        mBrokerID=new DestinationID(getSpringBroker().getId());
         if (getModifiers()!=null) {
             getModifiers().setMessageFactory(getFIXMessageFactory());
             getModifiers().setHistoryServices(historyServices);
@@ -91,8 +91,7 @@ public class Broker
 
     public DestinationStatus getStatus()
     {
-        return new DestinationStatus
-            (getName(),getDestinationID(),getLoggedOn());
+        return new DestinationStatus(getName(),getBrokerID(),getLoggedOn());
     }
 
     /**
@@ -107,14 +106,14 @@ public class Broker
     }
 
     /**
-     * Returns the receiver's destination ID.
+     * Returns the receiver's broker ID.
      *
      * @return The ID.
      */
 
-    public DestinationID getDestinationID()
+    public DestinationID getBrokerID()
     {
-        return mDestinationID;
+        return mBrokerID;
     }
 
     /**
@@ -271,6 +270,6 @@ public class Broker
     public String toString()
     {
         return Messages.BROKER_STRING.getText
-            (getDestinationID().getValue(),getSessionID(),getName());
+            (getBrokerID().getValue(),getSessionID(),getName());
     }
 }

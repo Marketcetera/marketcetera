@@ -13,7 +13,7 @@ import org.marketcetera.util.quickfix.SpringSessionSettings;
 import quickfix.SessionID;
 
 /**
- * The collective in-memory representation of all destinations.
+ * The collective in-memory representation of all brokers.
  *
  * @author tlerios@marketcetera.com
  * @since $Release$
@@ -29,8 +29,8 @@ public class Brokers
     // INSTANCE DATA.
 
     private final SpringBrokers mSpringBrokers;
-    private final List<Broker> mDestinations;
-    private final Map<DestinationID,Broker> mDestinationIDMap;
+    private final List<Broker> mBrokers;
+    private final Map<DestinationID,Broker> mBrokerIDMap;
     private final Map<SessionID,Broker> mSessionIDMap;
 
 
@@ -38,9 +38,9 @@ public class Brokers
 
     /**
      * Creates a new collective representation based on the given
-     * destination configurations. Any message modifiers are
-     * configured to rely on the given report history services
-     * provider for persistence operations.
+     * broker configurations. Any message modifiers are configured to
+     * rely on the given report history services provider for
+     * persistence operations.
      *
      * @param springBrokers The configurations.
      * @param historyServices The report history services provider.
@@ -51,15 +51,15 @@ public class Brokers
          ReportHistoryServices historyServices)
     {
         mSpringBrokers=springBrokers;
-        int capacity=getSpringBrokers().getDestinations().size();
-        mDestinations=new ArrayList<Broker>(capacity);
-        mDestinationIDMap=new HashMap<DestinationID,Broker>(capacity);
+        int capacity=getSpringBrokers().getBrokers().size();
+        mBrokers=new ArrayList<Broker>(capacity);
+        mBrokerIDMap=new HashMap<DestinationID,Broker>(capacity);
         mSessionIDMap=new HashMap<SessionID,Broker>(capacity);
-        for (SpringBroker sd:getSpringBrokers().getDestinations()) {
-            Broker d=new Broker(sd,historyServices);
-            mDestinations.add(d);
-            mDestinationIDMap.put(d.getDestinationID(),d);
-            mSessionIDMap.put(d.getSessionID(),d);
+        for (SpringBroker sb:getSpringBrokers().getBrokers()) {
+            Broker b=new Broker(sb,historyServices);
+            mBrokers.add(b);
+            mBrokerIDMap.put(b.getBrokerID(),b);
+            mSessionIDMap.put(b.getSessionID(),b);
         }
     }
 
@@ -67,7 +67,7 @@ public class Brokers
     // INSTANCE METHODS.
 
     /**
-     * Returns the receiver's destination configurations.
+     * Returns the receiver's broker configurations.
      *
      * @return The configurations.
      */
@@ -78,18 +78,18 @@ public class Brokers
     }
 
     /**
-     * Returns the receiver's destinations.
+     * Returns the receiver's brokers.
      *
-     * @return The destinations.
+     * @return The brokers.
      */
 
-    public List<Broker> getDestinations()
+    public List<Broker> getBrokers()
     {
-        return mDestinations;
+        return mBrokers;
     }
 
     /**
-     * Returns the status of the receiver's destinations.
+     * Returns the status of the receiver's brokers.
      *
      * @return The status.
      */
@@ -97,9 +97,9 @@ public class Brokers
     public DestinationsStatus getStatus()
     {
         List<DestinationStatus> list=
-            new ArrayList<DestinationStatus>(getDestinations().size());
-        for (Broker d:getDestinations()) {
-            list.add(d.getStatus());
+            new ArrayList<DestinationStatus>(getBrokers().size());
+        for (Broker b:getBrokers()) {
+            list.add(b.getStatus());
         }
         return new DestinationsStatus(list);
     }
@@ -117,42 +117,42 @@ public class Brokers
     }
 
     /**
-     * Returns the receiver's destination for the given QuickFIX/J
-     * session ID. It logs an error and returns null if there is no
-     * destination for the given ID.
+     * Returns the receiver's broker for the given QuickFIX/J session
+     * ID. It logs an error and returns null if there is no broker for
+     * the given ID.
      *
      * @param sessionID The ID.
      *
-     * @return The destination. It may be null.
+     * @return The broker. It may be null.
      */
 
-    public Broker getDestination
+    public Broker getBroker
         (SessionID sessionID)
     {
-        Broker d=mSessionIDMap.get(sessionID);
-        if (d==null) {
+        Broker b=mSessionIDMap.get(sessionID);
+        if (b==null) {
             Messages.INVALID_SESSION_ID.error(this,sessionID);
         }
-        return d;
+        return b;
     }
 
     /**
-     * Returns the receiver's destination for the given destination
-     * ID. It logs an error and returns null if there is no
-     * destination for the given ID.
+     * Returns the receiver's broker for the given broker ID. It logs
+     * an error and returns null if there is no broker for the given
+     * ID.
      *
-     * @param destinationID The ID.
+     * @param brokerID The ID.
      *
-     * @return The destination. It may be null.
+     * @return The broker. It may be null.
      */
 
-    public Broker getDestination
-        (DestinationID destinationID)
+    public Broker getBroker
+        (DestinationID brokerID)
     {
-        Broker d=mDestinationIDMap.get(destinationID);
-        if (d==null) {
-            Messages.INVALID_BROKER_ID.error(this,destinationID);
+        Broker b=mBrokerIDMap.get(brokerID);
+        if (b==null) {
+            Messages.INVALID_BROKER_ID.error(this,brokerID);
         }
-        return d;
+        return b;
     }
 }

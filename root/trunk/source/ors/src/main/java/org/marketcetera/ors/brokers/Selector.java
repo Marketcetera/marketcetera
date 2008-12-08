@@ -23,10 +23,10 @@ public class Selector
 
     // INSTANCE DATA.
 
-    private final Brokers mDestinations;
+    private final Brokers mBrokers;
     private final SpringSelector mSpringSelector;
     private List<SelectorEntry> mEntries;
-    private final DestinationID mDefaultDestinationID;
+    private final DestinationID mDefaultBrokerID;
 
 
     // CONSTRUCTORS.
@@ -38,10 +38,10 @@ public class Selector
      */
 
     public Selector
-        (Brokers destinations,
+        (Brokers brokers,
          SpringSelector springSelector)
     {
-        mDestinations=destinations;
+        mBrokers=brokers;
         mSpringSelector=springSelector;
         if (getSpringSelector().getEntries()!=null) {
             mEntries=new ArrayList<SelectorEntry>
@@ -50,20 +50,20 @@ public class Selector
                 mEntries.add(new SelectorEntry(se));
             }
         }
-        if (getSpringSelector().getDefaultDestination()!=null) {
-            mDefaultDestinationID=new DestinationID
-                (getSpringSelector().getDefaultDestination().getId());
+        if (getSpringSelector().getDefaultBroker()!=null) {
+            mDefaultBrokerID=new DestinationID
+                (getSpringSelector().getDefaultBroker().getId());
         } else {
-            mDefaultDestinationID=null;
+            mDefaultBrokerID=null;
         }
     }
 
 
     // INSTANCE METHODS.
 
-    private Brokers getDestinations()
+    private Brokers getBrokers()
     {
-        return mDestinations;
+        return mBrokers;
     }
 
     /**
@@ -89,34 +89,34 @@ public class Selector
     }
 
     /**
-     * Returns the receiver's default destination ID.
+     * Returns the receiver's default broker ID.
      *
      * @return The ID. It may be null.
      */
 
-    public DestinationID getDefaultDestination()
+    public DestinationID getDefaultBroker()
     {
-        return mDefaultDestinationID;
+        return mDefaultBrokerID;
     }
 
     /**
-     * Returns the ID of the destination the receiver selects for the
-     * given order.
+     * Returns the ID of the broker the receiver selects for the given
+     * order.
      *
      * @param order The order.
      *
-     * @return The ID of the selected destination, or null if the
-     * selector cannot make a selection.
+     * @return The ID of the selected broker, or null if the selector
+     * cannot make a selection.
      */
 
-    public DestinationID chooseDestination
+    public DestinationID chooseBroker
         (Order order)
     {
-        // Destination was explicit.
+        // Broker was explicit.
 
-        DestinationID orderDest=order.getDestinationID();
-        if (orderDest!=null) {
-            return orderDest;
+        DestinationID bID=order.getDestinationID();
+        if (bID!=null) {
+            return bID;
         }
 
         // Search through entries (if any) for one that matches the
@@ -127,20 +127,19 @@ public class Selector
             (getEntries()!=null)) {
             for (SelectorEntry e:getEntries()) {
                 if (e.getSkipIfUnavailable() &&
-                    !getDestinations().getDestination(e.getDestination()).
-                    getLoggedOn()) {
+                    !getBrokers().getBroker(e.getBroker()).getLoggedOn()) {
                     continue;
                 }
                 if (e.getTargetType().equals(orderType)) {
-                    return e.getDestination();
+                    return e.getBroker();
                 }
             }
         }
 
         // Return the default, if any.
 
-        if (getDefaultDestination()!=null) {
-            return getDefaultDestination();
+        if (getDefaultBroker()!=null) {
+            return getDefaultBroker();
         }
 
         // No match.

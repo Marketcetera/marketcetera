@@ -38,7 +38,7 @@ public class ServiceImpl
 
     // INSTANCE DATA.
 
-    private final Brokers mDestinations;
+    private final Brokers mBrokers;
     private final IDFactory mIDFactory;
     private final ReportHistoryServices mHistoryServices;
 
@@ -47,21 +47,21 @@ public class ServiceImpl
 
     /**
      * Creates a new service implementation with the given session
-     * manager, destinations, and report history services provider.
+     * manager, brokers, and report history services provider.
      *
      * @param sessionManager The session manager, which may be null.
-     * @param destinations The destinations.
+     * @param brokers The brokers.
      * @param historyServices The report history services provider.
      */    
 
     public ServiceImpl
         (SessionManager<ClientSession> sessionManager,
-         Brokers destinations,
+         Brokers brokers,
          IDFactory idFactory,
          ReportHistoryServices historyServices)
     {
         super(sessionManager);
-        mDestinations=destinations;
+        mBrokers=brokers;
         mIDFactory=idFactory;
         mHistoryServices=historyServices;
     }
@@ -70,14 +70,14 @@ public class ServiceImpl
     // INSTANCE METHODS.
 
     /**
-     * Returns the receiver's destinations.
+     * Returns the receiver's brokers.
      *
-     * @return The destinations.
+     * @return The brokers.
      */
 
-    private Brokers getDestinations()
+    private Brokers getBrokers()
     {
-        return mDestinations;
+        return mBrokers;
     }
 
     /**
@@ -105,9 +105,9 @@ public class ServiceImpl
 
     // Service IMPLEMENTATIONS.
 
-    private DestinationsStatus getDestinationsStatusImpl()
+    private DestinationsStatus getBrokersStatusImpl()
     {
-        return getDestinations().getStatus();
+        return getBrokers().getStatus();
     }
 
     private ReportBaseImpl[] getReportsSinceImpl
@@ -147,7 +147,7 @@ public class ServiceImpl
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
             {
-                return getDestinationsStatusImpl();
+                return getBrokersStatusImpl();
             }}).execute(context);
     }
 
