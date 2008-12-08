@@ -99,9 +99,9 @@ public class TradeSuggestionsView extends ViewPart implements ITableProvider {
 						Messages.TRADE_SUGGESTION_SCORE_LABEL.getText()),
 				ColumnConfiguration.hidden().beanProperty("account").heading( //$NON-NLS-1$
 						Messages.TRADE_SUGGESTION_ACCOUNT_LABEL.getText()),
-				ColumnConfiguration.hidden().beanProperty("destinationID") //$NON-NLS-1$
+				ColumnConfiguration.hidden().beanProperty("brokerID") //$NON-NLS-1$
 						.heading(
-								Messages.TRADE_SUGGESTION_DESTINATION_ID_LABEL
+								Messages.TRADE_SUGGESTION_BROKER_ID_LABEL
 										.getText()),
 				ColumnConfiguration.defaults().beanProperty("timestamp") //$NON-NLS-1$
 						.heading(

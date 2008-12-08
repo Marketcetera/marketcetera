@@ -31,7 +31,7 @@ import org.mockito.ArgumentMatcher;
 public class BrokerNotificationListenerTest {
 
 	@Test
-	public void testReceiveDestinationStatus() throws Exception {
+	public void testReceiveBrokerStatus() throws Exception {
 		ISubscriber mockSubscriber = mock(ISubscriber.class);
 		stub(mockSubscriber.isInteresting(anyObject())).toReturn(true);
 		Client mockClient = mock(Client.class);

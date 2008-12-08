@@ -63,7 +63,7 @@ public class PhotonController
 
 	private final ServiceTracker mClientServiceTracker;
 
-	public static final BrokerID DEFAULT_DESTINATION = null; 
+	public static final BrokerID DEFAULT_BROKER = null; 
 
 	/** Creates a new instance of OrderManager.  Also gets a reference to
 	 *  the Client service using a {@link ServiceTracker}
@@ -119,23 +119,23 @@ public class PhotonController
 	}
 
 	public void handleInternalMessage(Message aMessage) {
-		handleInternalMessage(aMessage, DEFAULT_DESTINATION);
+		handleInternalMessage(aMessage, DEFAULT_BROKER);
 	}
 	
 	public void handleInternalMessage(Message aMessage, String brokerId) {
 		handleInternalMessage(aMessage, brokerId == null ? null : new BrokerID(brokerId));
 	}
 	
-	public void handleInternalMessage(Message aMessage, BrokerID destination) {
+	public void handleInternalMessage(Message aMessage, BrokerID broker) {
 		Factory factory = Factory.getInstance();
 	
 		try {
 			if (FIXMessageUtil.isOrderSingle(aMessage)) {
-				sendOrder(factory.createOrderSingle(aMessage, destination));
+				sendOrder(factory.createOrderSingle(aMessage, broker));
 			} else if (FIXMessageUtil.isCancelRequest(aMessage)) {
-				sendOrder(factory.createOrderCancel(aMessage, destination));
+				sendOrder(factory.createOrderCancel(aMessage, broker));
 			} else if (FIXMessageUtil.isCancelReplaceRequest(aMessage)) {
-				sendOrder(factory.createOrderReplace(aMessage, destination));
+				sendOrder(factory.createOrderReplace(aMessage, broker));
 			} else {
 				internalMainLogger.warn(UNKNOWN_INTERNAL_MESSAGE_TYPE.
 						getText(aMessage.toString()));
@@ -223,7 +223,7 @@ public class PhotonController
 		} catch (FieldNotFound ignored) {	}
 		try {
 			ExecutionReport report = Factory.getInstance().createExecutionReport(
-					latestMessage, DEFAULT_DESTINATION, Originator.Server);
+					latestMessage, DEFAULT_BROKER, Originator.Server);
 			sendOrder(Factory.getInstance().createOrderCancel(report));
 		} catch (MessageCreationException e) {
 			internalMainLogger.error(CANNOT_SEND_CANCEL_FOR_REASON.getText(clOrdID,
