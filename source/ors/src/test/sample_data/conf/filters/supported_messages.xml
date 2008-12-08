@@ -21,7 +21,7 @@
    class="org.marketcetera.ors.filters.MessageTypeFilter">
     <property
      name="acceptUnknown"
-	 value="false"/>
+     value="false"/>
     <property
      name="acceptedMessages">
       <set>

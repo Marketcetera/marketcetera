@@ -41,5 +41,7 @@ public class SendMessage
         }
         sendMessage(message,
                     destination);
+        setProperty("onStart",
+                    Long.toString(System.currentTimeMillis()));
     }
 }

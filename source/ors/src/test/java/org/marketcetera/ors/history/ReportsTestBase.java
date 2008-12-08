@@ -58,7 +58,7 @@ public class ReportsTestBase extends TestCaseBase {
 
     static OrderCancelReject createCancelReject()
             throws MessageCreationException {
-        return createCancelReject(DEST);
+        return createCancelReject(BROKER);
     }
     static OrderCancelReject createCancelReject(DestinationID inDestID)
             throws MessageCreationException {
@@ -80,7 +80,7 @@ public class ReportsTestBase extends TestCaseBase {
             throws Exception {
         return createExecReport(inOrderID, inOrigOrderID, inSymbol,
                 inSide, inOrderStatus, inCumQuantity, inAvgPrice,
-                inLastQty, inLastPrice, DEST);
+                inLastQty, inLastPrice, BROKER);
     }
     static ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
@@ -202,7 +202,7 @@ public class ReportsTestBase extends TestCaseBase {
         return report;
     }
 
-    private static final DestinationID DEST = new DestinationID("TestDest");
+    private static final DestinationID BROKER = new DestinationID("TestBroker");
     private static FIXMessageFactory sMessageFactory;
     protected static ReportHistoryServices sServices;
 }

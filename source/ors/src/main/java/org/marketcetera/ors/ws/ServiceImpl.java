@@ -7,7 +7,7 @@ import org.marketcetera.client.dest.DestinationsStatus;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.ors.dest.Destinations;
+import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.persist.PersistenceException;
@@ -38,7 +38,7 @@ public class ServiceImpl
 
     // INSTANCE DATA.
 
-    private final Destinations mDestinations;
+    private final Brokers mBrokers;
     private final IDFactory mIDFactory;
     private final ReportHistoryServices mHistoryServices;
 
@@ -47,21 +47,21 @@ public class ServiceImpl
 
     /**
      * Creates a new service implementation with the given session
-     * manager, destinations, and report history services provider.
+     * manager, brokers, and report history services provider.
      *
      * @param sessionManager The session manager, which may be null.
-     * @param destinations The destinations.
+     * @param brokers The brokers.
      * @param historyServices The report history services provider.
      */    
 
     public ServiceImpl
         (SessionManager<ClientSession> sessionManager,
-         Destinations destinations,
+         Brokers brokers,
          IDFactory idFactory,
          ReportHistoryServices historyServices)
     {
         super(sessionManager);
-        mDestinations=destinations;
+        mBrokers=brokers;
         mIDFactory=idFactory;
         mHistoryServices=historyServices;
     }
@@ -70,14 +70,14 @@ public class ServiceImpl
     // INSTANCE METHODS.
 
     /**
-     * Returns the receiver's destinations.
+     * Returns the receiver's brokers.
      *
-     * @return The destinations.
+     * @return The brokers.
      */
 
-    private Destinations getDestinations()
+    private Brokers getBrokers()
     {
-        return mDestinations;
+        return mBrokers;
     }
 
     /**
@@ -105,9 +105,9 @@ public class ServiceImpl
 
     // Service IMPLEMENTATIONS.
 
-    private DestinationsStatus getDestinationsStatusImpl()
+    private DestinationsStatus getBrokersStatusImpl()
     {
-        return getDestinations().getStatus();
+        return getBrokers().getStatus();
     }
 
     private ReportBaseImpl[] getReportsSinceImpl
@@ -147,7 +147,7 @@ public class ServiceImpl
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
             {
-                return getDestinationsStatusImpl();
+                return getBrokersStatusImpl();
             }}).execute(context);
     }
 

@@ -1,10 +1,14 @@
 package org.marketcetera.strategy;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
+import static org.marketcetera.strategy.Status.FAILED;
+import static org.marketcetera.strategy.Status.RUNNING;
+import static org.marketcetera.strategy.Status.STOPPED;
 
 import java.beans.ExceptionListener;
 import java.io.File;
@@ -1122,6 +1126,7 @@ public class StrategyTestBase
     {
         moduleManager.start(inStrategyURN);
         setupMockORSConnection(inStrategyURN);
+        verifyStrategyReady(inStrategyURN);
     }
     /**
      * Stops the given strategy and cancels all active data flows.
@@ -1134,6 +1139,7 @@ public class StrategyTestBase
     {
         cancelDataFlows(null);
         moduleManager.stop(inStrategyURN);
+        verifyStrategyStopped(inStrategyURN);
     }
     /**
      * Sets up a connection to the testing ORSClient for execution reports.
@@ -1248,6 +1254,70 @@ public class StrategyTestBase
         moduleManager.deleteModule(urn);
     }
     /**
+     * Waits until the given strategy has either started or erred out.
+     *
+     * @param inStrategyURN a <code>ModuleURN</code> value
+     * @throws Exception if an error occurs
+     */
+    protected void verifyStrategyReady(final ModuleURN inStrategyURN)
+        throws Exception
+    {
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                Status status = getStatus(inStrategyURN);
+                return status.equals(RUNNING) || status.equals(FAILED);
+            }
+        });
+    }
+    /**
+     * Waits until the given strategy has stopped, either with or without error.
+     *
+     * @param inStrategyURN a <code>ModuleURN</code> value
+     * @throws Exception if an error occurs
+     */
+    protected void verifyStrategyStopped(final ModuleURN inStrategyURN)
+        throws Exception
+    {
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                Status status = getStatus(inStrategyURN);
+                return status.equals(STOPPED) || status.equals(FAILED);
+            }
+        });
+    }
+    /**
+     * Verifies that the given strategy is at the given status.
+     *
+     * @param inStrategy a <code>ModuleURN</code> value
+     * @param inStatus a <code>Status</code> value
+     * @throws Exception if an error occurs
+     */
+    protected void verifyStrategyStatus(ModuleURN inStrategy,
+                                        Status inStatus)
+        throws Exception
+    {
+        assertEquals(inStatus,
+                     getStatus(inStrategy));
+    }
+    /**
+     * Returns the status of the given strategy.
+     *
+     * @param inStrategy a <code>ModuleURN</code> value
+     * @return a <code>Status</code> value
+     * @throws Exception if an error occurs
+     */
+    protected Status getStatus(ModuleURN inStrategy)
+        throws Exception
+    {
+        return Status.valueOf(getMXProxy(inStrategy).getStatus());
+    }
+    /**
      * Asserts that the values in the common strategy storage area for some well-known testing keys are null.
      */
     protected void verifyNullProperties()
@@ -1331,8 +1401,10 @@ public class StrategyTestBase
         if(inParameters.length <= 7) {
             actualParameters.addFirst(null);
         }
-        return createModule(StrategyModuleFactory.PROVIDER_URN,
-                            actualParameters.toArray());
+        ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
+                                             actualParameters.toArray());
+        verifyStrategyReady(strategyURN);
+        return strategyURN;
     }
     /**
      * Creates and starts a module with the given URN and the given parameters.
@@ -1375,66 +1447,24 @@ public class StrategyTestBase
                                   true);
     }
     /**
-     * Gets the first strategy in the list of strategies currently running.
-     *
-     * @return a <code>StrategyImpl</code> value
-     */
-    protected final StrategyImpl getFirstRunningStrategy()
-    {
-        return getRunningStrategy(0);
-    }
-    /**
-     * Gets the strategy and the given index in the list of strategies currently running.
-     *
-     * @param index an <code>int</code> value containing a zero-based index
-     * @return a <code>StrategyImpl</code> value
-     */
-    protected final StrategyImpl getRunningStrategy(int index)
-    {
-        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
-        StrategyImpl runningStrategy = runningStrategies.iterator().next();
-        for(int i=0;i<=index;i++) {
-            runningStrategy = runningStrategies.iterator().next();
-        }
-        return runningStrategy;
-    }
-    /**
-     * Gets the strategy represented by the given URN.
+     * Gets a handle to the given strategy;
      * 
-     * <p>Note that the given strategy must be running or this method will fail.
+     * @param inStrategyURN a <code>ModuleURN</code> value
+     * 
+     * <p>Note that this method will <em>fail</em> if the given strategy is not running
      *
-     * @param index a <code>ModuleURN</code> value containing the URN of the strategy to retrieve
      * @return a <code>StrategyImpl</code> value
      */
-    protected final StrategyImpl getRunningStrategy(ModuleURN inStrategy)
+    protected final StrategyImpl getRunningStrategy(ModuleURN inStrategyURN)
     {
         Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
-        for(StrategyImpl strategy : runningStrategies) {
-            if(strategy.getDefaultNamespace().equals(inStrategy.instanceName())) {
-                return strategy;
+        for(StrategyImpl runningStrategy : runningStrategies) {
+            if(runningStrategy.getDefaultNamespace().equals(inStrategyURN.instanceName())) {
+                return runningStrategy;
             }
         }
-        fail(inStrategy + " not currently running");
+        fail(inStrategyURN + " not currently running");
         return null;
-    }
-    /**
-     * Gets the first strategy in the list of strategies currently running.
-     *
-     * @return an <code>AbstractRunningStrategy</code> value
-     */
-    protected final AbstractRunningStrategy getFirstRunningStrategyAsAbstractRunningStrategy()
-    {
-        return getRunningStrategyAsAbstractRunningStrategy(0);
-    }
-    /**
-     * Gets the strategy and the given index in the list of strategies currently running.
-     *
-     * @param index an <code>int</code> value containing a zero-based index
-     * @return an <code>AbstractRunningStrategy</code> value
-     */
-    protected final AbstractRunningStrategy getRunningStrategyAsAbstractRunningStrategy(int index)
-    {
-        return (AbstractRunningStrategy)getRunningStrategy(index).getRunningStrategy();
     }
     /**
      * random number generator for public use

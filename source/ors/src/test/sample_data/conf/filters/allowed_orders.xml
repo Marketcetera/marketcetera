@@ -21,7 +21,7 @@
    class="org.marketcetera.ors.filters.OrderLimitFilter">
     <property
      name="disallowMarketOrders"
-     value="false"/>	
+     value="false"/>
     <property
      name="minPrice"
      value="0"/>

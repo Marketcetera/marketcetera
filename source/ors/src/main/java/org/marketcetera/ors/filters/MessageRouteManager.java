@@ -3,7 +3,6 @@ package org.marketcetera.ors.filters;
 import java.util.HashMap;
 import java.util.Map;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.misc.ClassVersion;

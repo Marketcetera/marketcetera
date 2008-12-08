@@ -140,7 +140,7 @@ class PersistentReport extends EntityBase {
     private void setDestinationID(DestinationID inDestinationID) {
         mDestinationID = inDestinationID;
     }
-    @Column(name = "destinationID", nullable = false)
+    @Column(name = "brokerID", nullable = false)
     private String getDestinationIDAsString() {
         return getDestinationID() == null
                 ? null

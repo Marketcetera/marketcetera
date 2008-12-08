@@ -37,8 +37,8 @@ public interface Messages
      * The messages.
      */
 
-    static final I18NMessage0P NO_DESTINATIONS=
-        new I18NMessage0P(LOGGER,"no_destinations"); //$NON-NLS-1$
+    static final I18NMessage0P NO_BROKERS=
+        new I18NMessage0P(LOGGER,"no_brokers"); //$NON-NLS-1$
     static final I18NMessage0P NO_SELECTOR=
         new I18NMessage0P(LOGGER,"no_selector"); //$NON-NLS-1$
     static final I18NMessage0P NO_INCOMING_CONNECTION_FACTORY=

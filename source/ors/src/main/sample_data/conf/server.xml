@@ -21,15 +21,15 @@
   <import
    resource="messaging/main.xml"/>
   <import
-   resource="destinations/main.xml"/>
+   resource="brokers/main.xml"/>
   <import
    resource="db/main.xml"/>
 
   <bean
    class="org.marketcetera.ors.config.SpringConfig">
     <property
-     name="destinations"
-     ref="metc_destinations"/>
+     name="brokers"
+     ref="metc_brokers"/>
     <property
      name="selector"
      ref="metc_selector"/>

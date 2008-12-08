@@ -1,8 +1,8 @@
 package org.marketcetera.ors;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.dest.Destination;
-import org.marketcetera.ors.dest.Destinations;
+import org.marketcetera.ors.brokers.Broker;
+import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.IQuickFIXSender;
@@ -50,7 +50,7 @@ public class QuickFIXApplication
 
     // INSTANCE DATA.
 
-    private final Destinations mDestinations;
+    private final Brokers mBrokers;
     private final MessageFilter mSupportedMessages;
     private final ReplyPersister mPersister;
     private final IQuickFIXSender mSender;
@@ -62,7 +62,7 @@ public class QuickFIXApplication
     // CONSTRUCTORS.
 
     public QuickFIXApplication
-        (Destinations destinations,
+        (Brokers brokers,
          MessageFilter supportedMessages,
          ReplyPersister persister,
          IQuickFIXSender sender,
@@ -70,7 +70,7 @@ public class QuickFIXApplication
          JmsOperations toClientStatus,
          JmsOperations toTradeRecorder)
     {
-        mDestinations=destinations;
+        mBrokers=brokers;
         mSupportedMessages=supportedMessages;
         mPersister=persister;
         mSender=sender;
@@ -82,9 +82,9 @@ public class QuickFIXApplication
 
     // INSTANCE METHODS.
 
-    public Destinations getDestinations()
+    public Brokers getBrokers()
     {
-        return mDestinations;
+        return mBrokers;
     }
 
     public MessageFilter getSupportedMessages()
@@ -127,51 +127,63 @@ public class QuickFIXApplication
     }
 
     private void updateStatus
-        (Destination d,
+        (Broker b,
          boolean status)
     {
-        Messages.QF_SENDING_STATUS.info(this,status,d);
-        d.setLoggedOn(status);
+        Messages.QF_SENDING_STATUS.info(this,status,b);
+        b.setLoggedOn(status);
         if (getToClientStatus()==null) {
             return;
         }
-        getToClientStatus().convertAndSend(d.getStatus());
-    }
-
-    private void sendToClientTrades
-        (Destination d,
-         Message msg,
-         Originator originator)
-    {
-        Messages.QF_SENDING_REPLY.info(getCategory(msg),msg,d);
-        if (getToClientTrades()==null) {
-            return;
-        }
-        TradeMessage reply=null;
-        try {
-            reply=FIXConverter.fromQMessage
-                (msg,originator,d.getDestinationID());
-        } catch (MessageCreationException ex) {
-            Messages.QF_REPORT_FAILED.error(getCategory(msg),ex);
-            return;
-        }
-        if (reply==null) {
-            Messages.QF_REPORT_TYPE_UNSUPPORTED.info(getCategory(msg));
-            return;
-        }
-        getPersister().persistReply(reply);
-        getToClientTrades().convertAndSend(reply);
+        getToClientStatus().convertAndSend(b.getStatus());
     }
 
     private void sendTradeRecord
-        (Destination d,
-         Message msg)
+        (Message msg)
     {
-        Messages.QF_SENDING_TRADE_RECORD.info(getCategory(msg),msg,d);
+        Messages.QF_SENDING_TRADE_RECORD.info(getCategory(msg),msg);
         if (getToTradeRecorder()==null) {
             return;
         }
         getToTradeRecorder().convertAndSend(msg);
+    }
+
+    private void sendToClientTrades
+        (Broker b,
+         Message msg,
+         Originator originator)
+    {
+        if (getToClientTrades()==null) {
+            return;
+        }
+
+        // Convert reply to FIX Agnostic messsage.
+
+        TradeMessage reply=null;
+        try {
+            reply=FIXConverter.fromQMessage
+                (msg,originator,b.getBrokerID());
+            if (reply==null) {
+                Messages.QF_REPORT_TYPE_UNSUPPORTED.warn
+                    (getCategory(msg),msg,b.toString());
+            }
+        } catch (MessageCreationException ex) {
+            Messages.QF_REPORT_FAILED.error
+                (getCategory(msg),ex,msg,b.toString());
+        }
+
+        // If reply could not be packaged in FIX Agnostic format, we
+        // are done (an error has already been reported).
+
+        if (reply==null) {
+            return;
+        }
+
+        // Persist and send reply.
+        
+        getPersister().persistReply(reply);
+        Messages.QF_SENDING_REPLY.info(getCategory(msg),reply);
+        getToClientTrades().convertAndSend(reply);
     }
 
 
@@ -185,8 +197,8 @@ public class QuickFIXApplication
 	public void onLogon
         (SessionID session)
     {
-        Destination d=getDestinations().getDestination(session);
-        updateStatus(d,true);
+        Broker b=getBrokers().getBroker(session);
+        updateStatus(b,true);
         // fromAdmin() will forward an execution report following the
         // logon; there is no need to send a message from here.
     }
@@ -195,8 +207,8 @@ public class QuickFIXApplication
 	public void onLogout
         (SessionID session)
     {
-        Destination d=getDestinations().getDestination(session);
-        updateStatus(d,false);
+        Broker b=getBrokers().getBroker(session);
+        updateStatus(b,false);
     }
 
     @Override
@@ -204,17 +216,18 @@ public class QuickFIXApplication
         (Message msg,
          SessionID session)
     {
-        Destination d=getDestinations().getDestination(session);
-        Messages.QF_TO_ADMIN.info(getCategory(msg),msg,d);
-        d.logMessage(msg);
+        Broker b=getBrokers().getBroker(session);
+        Messages.QF_TO_ADMIN.info(getCategory(msg),msg,b);
+        b.logMessage(msg);
 
         // Apply message modifiers.
 
-        if (d.getModifiers()!=null) {
+        if (b.getModifiers()!=null) {
             try {
-                d.getModifiers().modifyMessage(msg);
+                b.getModifiers().modifyMessage(msg);
             } catch (CoreException ex) {
-                Messages.QF_MODIFICATION_FAILED.warn(getCategory(msg),ex);
+                Messages.QF_MODIFICATION_FAILED.warn
+                    (getCategory(msg),ex,msg,b.toString());
             }
         }
 
@@ -227,15 +240,16 @@ public class QuickFIXApplication
             try {
                 String msgType=(msg.isSetField(MsgType.FIELD)?null:
                                 msg.getString(RefMsgType.FIELD));
-                String msgTypeName=d.getFIXDataDictionary().
+                String msgTypeName=b.getFIXDataDictionary().
                     getHumanFieldValue(MsgType.FIELD, msgType);
                 msg.setString(Text.FIELD,Messages.QF_IN_MESSAGE_REJECTED.
                               getText(msgTypeName,msg.getString(Text.FIELD)));
             } catch (FieldNotFound ex) {
-                Messages.QF_MODIFICATION_FAILED.warn(getCategory(msg),ex);
+                Messages.QF_MODIFICATION_FAILED.warn
+                    (getCategory(msg),ex,msg,b.toString());
                 // Send original message instead of modified one.
             }
-            sendToClientTrades(d,msg,Originator.Server);
+            sendToClientTrades(b,msg,Originator.Server);
         }
     }
 
@@ -244,13 +258,13 @@ public class QuickFIXApplication
         (Message msg,
          SessionID session)
     {
-        Destination d=getDestinations().getDestination(session);
-        Messages.QF_FROM_ADMIN.info(getCategory(msg),msg,d);
-        d.logMessage(msg);
+        Broker b=getBrokers().getBroker(session);
+        Messages.QF_FROM_ADMIN.info(getCategory(msg),msg,b);
+        b.logMessage(msg);
 
-        // Do not propagate heartbeats to client.
+        // Send message to client.
 
-        sendToClientTrades(d,msg,Originator.Destination);
+        sendToClientTrades(b,msg,Originator.Destination);
     }
 
     @Override
@@ -259,9 +273,9 @@ public class QuickFIXApplication
          SessionID session)
         throws DoNotSend
     {
-        Destination d=getDestinations().getDestination(session);
-        Messages.QF_TO_APP.info(getCategory(msg),msg,d);
-        d.logMessage(msg);
+        Broker b=getBrokers().getBroker(session);
+        Messages.QF_TO_APP.info(getCategory(msg),msg,b);
+        b.logMessage(msg);
     }
 
     @Override
@@ -271,9 +285,9 @@ public class QuickFIXApplication
         throws UnsupportedMessageType,
                FieldNotFound
     {
-        Destination d=getDestinations().getDestination(session);
-        Messages.QF_FROM_APP.info(getCategory(msg),msg,d);
-        d.logMessage(msg);
+        Broker b=getBrokers().getBroker(session);
+        Messages.QF_FROM_APP.info(getCategory(msg),msg,b);
+        b.logMessage(msg);
 
         // Accept only certain message types.
 
@@ -286,27 +300,28 @@ public class QuickFIXApplication
 
         if (FIXMessageUtil.isTradingSessionStatus(msg)) {
             Messages.QF_TRADE_SESSION_STATUS.info
-                (getCategory(msg),d.getFIXDataDictionary().getHumanFieldValue
+                (getCategory(msg),b.getFIXDataDictionary().getHumanFieldValue
                  (TradSesStatus.FIELD,msg.getString(TradSesStatus.FIELD)));
         }
 
         // Send message to client.
 
-        sendToClientTrades(d,msg,Originator.Destination);
+        sendToClientTrades(b,msg,Originator.Destination);
 
         // OpenFIX certification: we reject all DeliverToCompID since
         // we don't redeliver.
 
         if (msg.getHeader().isSetField(DeliverToCompID.FIELD)) {
             try {
-                Message reject=d.getFIXMessageFactory().createSessionReject
+                Message reject=b.getFIXMessageFactory().createSessionReject
                     (msg,SessionRejectReason.COMPID_PROBLEM);
                 reject.setString
                     (Text.FIELD,Messages.QF_COMP_ID_REJECT.getText
                      (msg.getHeader().getString(DeliverToCompID.FIELD)));
-                getSender().sendToTarget(reject);
+                getSender().sendToTarget(reject,session);
             } catch (SessionNotFound ex) {
-                Messages.QF_COMP_ID_REJECT_FAILED.error(getCategory(msg),ex);
+                Messages.QF_COMP_ID_REJECT_FAILED.error
+                    (getCategory(msg),ex,b.toString());
             }
             return;
         }
@@ -317,7 +332,7 @@ public class QuickFIXApplication
             char ordStatus=msg.getChar(OrdStatus.FIELD);
             if ((ordStatus==OrdStatus.FILLED) ||
                 (ordStatus==OrdStatus.PARTIALLY_FILLED)) {
-                sendTradeRecord(d,msg);
+                sendTradeRecord(msg);
             }
         }
     }
