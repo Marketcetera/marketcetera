@@ -1,6 +1,6 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.quickfix.FIXVersion"
-include_class "org.marketcetera.trade.DestinationID"
+include_class "org.marketcetera.trade.BrokerID"
 include_class "java.lang.Long"
 include_class "java.util.Date"
 include_class "quickfix.field.TransactTime"
@@ -17,13 +17,13 @@ class SendMessage < Strategy
             message = nil
         end
 
-        nullDestination = get_parameter("nullDestination")
-        if(nullDestination == nil)
-            destination = DestinationID.new("some-destination")
+        nullBroker = get_parameter("nullBroker")
+        if(nullBroker == nil)
+            broker = BrokerID.new("some-broker")
         else
-            destination = nil
+            broker = nil
         end
         
-        send_message(message, destination)
+        send_message(message, broker)
     end  
 end

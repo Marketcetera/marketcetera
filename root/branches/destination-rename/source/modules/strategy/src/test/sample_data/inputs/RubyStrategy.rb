@@ -61,10 +61,10 @@ class RubyStrategy < Strategy
          end
          set_property "position", resultString
      end
-     if(get_property("askForDestinations") != nil)
-        destinations = get_destinations
+     if(get_property("askForBrokers") != nil)
+        brokers = get_brokers
         counter = 0
-        destinations.each { |destination| set_property counter.to_s, destination.toString; counter += 1 }
+        brokers.each { |broker| set_property counter.to_s, broker.toString; counter += 1 }
      end
      set_property("onStart",
                    Long.toString(System.currentTimeMillis()))
