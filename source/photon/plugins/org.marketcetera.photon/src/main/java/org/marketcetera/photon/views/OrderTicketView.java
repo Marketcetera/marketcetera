@@ -154,7 +154,7 @@ public abstract class OrderTicketView
 
 	private AggregateValidationStatus aggregateValidationStatus;
 
-	private ComboViewer mDestinationViewer;
+	private ComboViewer mAvailableBrokersViewer;
 
 	/**
 	 * Create a new order ticket view.  Get the error and warning images out of the
@@ -236,11 +236,11 @@ public abstract class OrderTicketView
 		ticket.getSideCombo().add(SideImage.SELL.getImage());
 		ticket.getSideCombo().add(SideImage.SELL_SHORT.getImage());
 		
-		mDestinationViewer = new ComboViewer(ticket.getBrokerCombo());
-		ObservableListContentProvider destinationContentProvider = new ObservableListContentProvider();
-		mDestinationViewer.setContentProvider(destinationContentProvider);
-		mDestinationViewer.setLabelProvider(new BrokerLabelProvider());
-		mDestinationViewer.setInput(BrokerManager.getCurrent().getAvailableBrokers());
+		mAvailableBrokersViewer = new ComboViewer(ticket.getBrokerCombo());
+		ObservableListContentProvider brokerContentProvider = new ObservableListContentProvider();
+		mAvailableBrokersViewer.setContentProvider(brokerContentProvider);
+		mAvailableBrokersViewer.setLabelProvider(new BrokerLabelProvider());
+		mAvailableBrokersViewer.setInput(BrokerManager.getCurrent().getAvailableBrokers());
 		
 		addComboChoicesFromLexerEnum(ticket.getTifCombo(), TimeInForceImage.values());
 		
@@ -671,7 +671,7 @@ public abstract class OrderTicketView
 			}
 			{
 				Control whichControl = getOrderTicket().getBrokerCombo();
-				IObservableValue observable = ViewersObservables.observeSingleSelection(mDestinationViewer);
+				IObservableValue observable = ViewersObservables.observeSingleSelection(mAvailableBrokersViewer);
 				Binding binding = bindMessageValue( 
 						observable,
 						BeansObservables.observeValue(model, "brokerId"), //$NON-NLS-1$

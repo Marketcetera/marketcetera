@@ -162,11 +162,11 @@ public class TradeSuggestion {
 	}
 
 	/**
-	 * Returns the destination ID.
+	 * Returns the broker ID.
 	 * 
-	 * @return the destination ID
+	 * @return the broker ID
 	 */
-	public BrokerID getDestinationID() {
+	public BrokerID getBrokerID() {
 		return getOrder().getBrokerID();
 	}
 

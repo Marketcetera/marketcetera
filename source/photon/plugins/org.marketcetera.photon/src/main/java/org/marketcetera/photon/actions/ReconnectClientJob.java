@@ -198,10 +198,10 @@ public class ReconnectClientJob extends UIJob implements Messages {
 					feedService.afterPropertiesSet();
 					monitor.worked(1);
 
-					final BrokersStatus destinationsStatus = feedService
+					final BrokersStatus brokersStatus = feedService
 							.getClient().getBrokersStatus();
 					BrokerManager.getCurrent().setBrokersStatus(
-							destinationsStatus);
+							brokersStatus);
 					sBrokerNotificationListener.setService(feedService);
 					feedService.getClient().addBrokerStatusListener(
 							sBrokerNotificationListener);
@@ -287,7 +287,7 @@ public class ReconnectClientJob extends UIJob implements Messages {
 		private ClientFeedService mService;
 
 		/**
-		 * Set the service to use to receive destination statuses.
+		 * Set the service to use to receive broker statuses.
 		 * 
 		 * @param service
 		 *            the service
@@ -317,14 +317,14 @@ public class ReconnectClientJob extends UIJob implements Messages {
 								.getText(Messages.BROKER_LABEL_PATTERN.getText(
 										status.getName(), status.getId())),
 								getClass()));
-				final BrokersStatus destinationsStatus = mService
+				final BrokersStatus brokersStatus = mService
 						.getClient().getBrokersStatus();
 				PlatformUI.getWorkbench().getDisplay().asyncExec(
 						new Runnable() {
 							@Override
 							public void run() {
 								BrokerManager.getCurrent().setBrokersStatus(
-										destinationsStatus);
+										brokersStatus);
 							}
 						});
 			} catch (Throwable e) {
