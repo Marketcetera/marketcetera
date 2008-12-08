@@ -1,4 +1,4 @@
-package org.marketcetera.client.broker;
+package org.marketcetera.client.brokers;
 
 import java.io.Serializable;
 import org.marketcetera.trade.BrokerID;

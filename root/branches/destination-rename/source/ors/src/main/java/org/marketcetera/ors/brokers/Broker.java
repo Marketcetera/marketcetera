@@ -1,6 +1,6 @@
 package org.marketcetera.ors.brokers;
 
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.ors.filters.MessageModifierManager;
 import org.marketcetera.ors.filters.MessageRouteManager;
 import org.marketcetera.ors.history.ReportHistoryServices;
@@ -9,7 +9,7 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
@@ -41,7 +41,7 @@ public class Broker
     // INSTANCE DATA.
 
     private final SpringBroker mSpringBroker;
-    private final DestinationID mBrokerID;
+    private final BrokerID mBrokerID;
     private FIXDataDictionary mDataDictionary;
     private boolean mLoggedOn;
 
@@ -62,7 +62,7 @@ public class Broker
          ReportHistoryServices historyServices)
     {
         mSpringBroker=springBroker;
-        mBrokerID=new DestinationID(getSpringBroker().getId());
+        mBrokerID=new BrokerID(getSpringBroker().getId());
         if (getModifiers()!=null) {
             getModifiers().setMessageFactory(getFIXMessageFactory());
             getModifiers().setHistoryServices(historyServices);
@@ -89,9 +89,9 @@ public class Broker
      * @return The status.
      */
 
-    public DestinationStatus getStatus()
+    public BrokerStatus getStatus()
     {
-        return new DestinationStatus(getName(),getBrokerID(),getLoggedOn());
+        return new BrokerStatus(getName(),getBrokerID(),getLoggedOn());
     }
 
     /**
@@ -111,7 +111,7 @@ public class Broker
      * @return The ID.
      */
 
-    public DestinationID getBrokerID()
+    public BrokerID getBrokerID()
     {
         return mBrokerID;
     }

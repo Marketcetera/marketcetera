@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.broker.BrokerStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 

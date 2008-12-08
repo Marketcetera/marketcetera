@@ -3,7 +3,7 @@ package org.marketcetera.strategy.ruby;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.client.broker.BrokerStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationManager;

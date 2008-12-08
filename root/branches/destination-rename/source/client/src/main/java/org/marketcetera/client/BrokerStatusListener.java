@@ -1,6 +1,6 @@
 package org.marketcetera.client;
 
-import org.marketcetera.client.broker.BrokerStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**

@@ -3,7 +3,7 @@ package org.marketcetera.ors.ws;
 import java.math.BigDecimal;
 import java.util.Date;
 import org.marketcetera.client.Service;
-import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
@@ -105,7 +105,7 @@ public class ServiceImpl
 
     // Service IMPLEMENTATIONS.
 
-    private DestinationsStatus getBrokersStatusImpl()
+    private BrokersStatus getBrokersStatusImpl()
     {
         return getBrokers().getStatus();
     }
@@ -136,14 +136,14 @@ public class ServiceImpl
     // Service.
 
     @Override
-    public DestinationsStatus getDestinationsStatus
+    public BrokersStatus getBrokersStatus
         (ClientContext context)
         throws RemoteException
     {
-        return (new RemoteCaller<ClientSession,DestinationsStatus>
+        return (new RemoteCaller<ClientSession,BrokersStatus>
                 (getSessionManager()) {
             @Override
-            protected DestinationsStatus call
+            protected BrokersStatus call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
             {

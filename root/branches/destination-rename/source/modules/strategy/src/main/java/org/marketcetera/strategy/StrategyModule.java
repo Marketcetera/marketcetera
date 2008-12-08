@@ -57,7 +57,7 @@ import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientModuleFactory;
 import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.broker.BrokerStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Util;

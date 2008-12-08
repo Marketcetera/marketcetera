@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 
-import org.marketcetera.client.broker.BrokerStatus;
-import org.marketcetera.client.broker.BrokersStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.MessageCreationException;

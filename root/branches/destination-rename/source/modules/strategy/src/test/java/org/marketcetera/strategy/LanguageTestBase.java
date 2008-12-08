@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
-import org.marketcetera.client.broker.BrokerStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.publisher.ISubscriber;
