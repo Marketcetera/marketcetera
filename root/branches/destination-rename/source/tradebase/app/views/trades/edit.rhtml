@@ -1,0 +1,17 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Trades", :action_name => "Update Trade", :top_level_controller => 'trades' } %>
+<h1>Update Trade</h1>
+
+<% form_tag :action => 'update', :id => @trade do -%>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Update', :class => "submit floatright" %>
+  <% if !@trade.class.name.match("Forex").nil? %>
+    <script type="text/javascript">
+        //<![CDATA[
+          change_to_forex();
+        //]]>
+    </script>
+  <% end %>  
+<% end -%>
+
+<%= button_to 'Cancel', {:action => 'show', :id => @trade}, {:class => "reset floatright"} %>
