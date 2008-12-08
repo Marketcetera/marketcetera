@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.marketcetera.client.Client;
-import org.marketcetera.client.broker.BrokerStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.notifications.INotification.Severity;

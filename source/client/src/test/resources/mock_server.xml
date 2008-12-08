@@ -68,7 +68,7 @@
       <bean
        class="org.apache.activemq.command.ActiveMQTopic">
         <constructor-arg
-         value="ors-destination-status"/>
+         value="ors-broker-status"/>
       </bean>
     </property>
   </bean>

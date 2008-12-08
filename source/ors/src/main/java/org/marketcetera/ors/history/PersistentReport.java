@@ -48,7 +48,7 @@ class PersistentReport extends EntityBase {
      */
     PersistentReport(ReportBase inReport) {
         mReportBase = inReport;
-        setDestinationID(inReport.getDestinationID());
+        setBrokerID(inReport.getBrokerID());
         setSendingTime(inReport.getSendingTime());
         if(inReport instanceof HasFIXMessage) {
             setFixMessage(((HasFIXMessage) inReport).getMessage().toString());
@@ -85,12 +85,12 @@ class PersistentReport extends EntityBase {
             switch(mReportType) {
                 case ExecutionReport:
                     returnValue =  Factory.getInstance().createExecutionReport(
-                            fixMessage, getDestinationID(),
+                            fixMessage, getBrokerID(),
                             getOriginator());
                     break;
                 case CancelReject:
                     returnValue =  Factory.getInstance().createOrderCancelReject(
-                            fixMessage, getDestinationID());
+                            fixMessage, getBrokerID());
                     break;
                 default:
                     //You added new report types but forgot to update the code
@@ -133,23 +133,23 @@ class PersistentReport extends EntityBase {
     }
 
     @Transient
-    private DestinationID getDestinationID() {
-        return mDestinationID;
+    private BrokerID getBrokerID() {
+        return mBrokerID;
     }
 
-    private void setDestinationID(DestinationID inDestinationID) {
-        mDestinationID = inDestinationID;
+    private void setBrokerID(BrokerID inBrokerID) {
+        mBrokerID = inBrokerID;
     }
     @Column(name = "brokerID", nullable = false)
-    private String getDestinationIDAsString() {
-        return getDestinationID() == null
+    private String getBrokerIDAsString() {
+        return getBrokerID() == null
                 ? null
-                : getDestinationID().toString();
+                : getBrokerID().toString();
     }
-    private void setDestinationIDAsString(String inValue) {
-        setDestinationID(inValue == null
+    private void setBrokerIDAsString(String inValue) {
+        setBrokerID(inValue == null
                 ? null
-                : new DestinationID(inValue));
+                : new BrokerID(inValue));
     }
 
     @Lob
@@ -196,7 +196,7 @@ class PersistentReport extends EntityBase {
     static final String ENTITY_NAME = PersistentReport.class.getSimpleName();
 
     private Originator mOriginator;
-    private DestinationID mDestinationID;
+    private BrokerID mBrokerID;
     private String mFixMessage;
     private Date mSendingTime;
     private ReportType mReportType;

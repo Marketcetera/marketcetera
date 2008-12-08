@@ -2,7 +2,7 @@ package org.marketcetera.ors.brokers;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.util.misc.ClassVersion;
@@ -26,7 +26,7 @@ public class Selector
     private final Brokers mBrokers;
     private final SpringSelector mSpringSelector;
     private List<SelectorEntry> mEntries;
-    private final DestinationID mDefaultBrokerID;
+    private final BrokerID mDefaultBrokerID;
 
 
     // CONSTRUCTORS.
@@ -51,7 +51,7 @@ public class Selector
             }
         }
         if (getSpringSelector().getDefaultBroker()!=null) {
-            mDefaultBrokerID=new DestinationID
+            mDefaultBrokerID=new BrokerID
                 (getSpringSelector().getDefaultBroker().getId());
         } else {
             mDefaultBrokerID=null;
@@ -94,7 +94,7 @@ public class Selector
      * @return The ID. It may be null.
      */
 
-    public DestinationID getDefaultBroker()
+    public BrokerID getDefaultBroker()
     {
         return mDefaultBrokerID;
     }
@@ -109,12 +109,12 @@ public class Selector
      * cannot make a selection.
      */
 
-    public DestinationID chooseBroker
+    public BrokerID chooseBroker
         (Order order)
     {
         // Broker was explicit.
 
-        DestinationID bID=order.getDestinationID();
+        BrokerID bID=order.getBrokerID();
         if (bID!=null) {
             return bID;
         }

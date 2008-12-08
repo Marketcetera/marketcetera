@@ -6,7 +6,7 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Message;
@@ -37,7 +37,7 @@ public class ORSAdmin implements ORSAdminMBean {
     }
 
     public void sendPasswordReset(String broker, String oldPassword, String newPassword) {
-        Broker b=brokers.getBroker(new DestinationID(broker));
+        Broker b=brokers.getBroker(new BrokerID(broker));
         SLF4JLoggerProxy.debug(this, "Trade session halted, resetting password"); //$NON-NLS-1$
         SessionID session = b.getSessionID();
         Message msg = b.getFIXMessageFactory().createMessage(MsgType.USER_REQUEST);

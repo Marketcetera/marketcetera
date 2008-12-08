@@ -2,7 +2,7 @@ package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.*;
-import org.marketcetera.client.broker.BrokerStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ExceptionListener;
