@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Destination 2 configuration: routes.
+  - Broker 1 configuration: routes.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$
@@ -17,7 +17,7 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean
-   id="metc_dest2_routes"
+   id="metc_broker1_routes"
    class="org.marketcetera.ors.filters.MessageRouteManager">
     <property
      name="separateSuffix"
@@ -30,10 +30,13 @@
       <map>
         <entry
          key="N"
-         value="NONE"/>
+         value="SIGMA"/>
         <entry
-         key="IN"
-         value="Naples"/>
+         key="IM"
+         value="Milan"/>
+        <entry
+         key="A"
+         value="B"/>
       </map>
     </property>
   </bean>

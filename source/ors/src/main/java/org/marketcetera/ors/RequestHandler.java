@@ -90,7 +90,7 @@ public class RequestHandler
 
     // INSTANCE DATA.
 
-    private final Brokers mDestinations;
+    private final Brokers mBrokers;
     private final Selector mSelector;
     private final OrderFilter mAllowedOrders;
     private final ReplyPersister mPersister;
@@ -102,7 +102,7 @@ public class RequestHandler
     // CONSTRUCTORS.
 
     public RequestHandler
-        (Brokers destinations,
+        (Brokers brokers,
          Selector selector,
          OrderFilter allowedOrders,
          ReplyPersister persister,
@@ -110,7 +110,7 @@ public class RequestHandler
          IDFactory idFactory)
         throws ConfigError
     {
-        mDestinations=destinations;
+        mBrokers=brokers;
         mSelector=selector;
         mAllowedOrders=allowedOrders;
         mPersister=persister;
@@ -123,9 +123,9 @@ public class RequestHandler
 
     // INSTANCE METHODS.
 
-    public Brokers getDestinations()
+    public Brokers getBrokers()
     {
-        return mDestinations;
+        return mBrokers;
     }
 
     public Selector getSelector()
@@ -395,8 +395,8 @@ public class RequestHandler
         (TradeMessage msg)
     {
         Messages.RH_RECEIVED_MESSAGE.info(this,msg);
-        DestinationID dID=null;
-        Broker d=null;
+        DestinationID bID=null;
+        Broker b=null;
         Message qMsg=null;
         Message qMsgReply=null;
         try {
@@ -417,20 +417,20 @@ public class RequestHandler
             }
             Order oMsg=(Order)msg;
 
-            // Identify destination.
+            // Identify broker.
 
-            dID=oMsg.getDestinationID();
-            if (dID==null) {
-                dID=getSelector().chooseDestination(oMsg);
+            bID=oMsg.getDestinationID();
+            if (bID==null) {
+                bID=getSelector().chooseBroker(oMsg);
             }
-            if (dID==null) {
+            if (bID==null) {
                 throw new I18NException(Messages.RH_UNKNOWN_BROKER);
             }
 
-            // Ensure destination ID maps to existing destination.
+            // Ensure broker ID maps to existing broker.
 
-            d=getDestinations().getDestination(dID);
-            if (d==null) {
+            b=getBrokers().getBroker(bID);
+            if (b==null) {
                 throw new I18NException(Messages.RH_UNKNOWN_BROKER_ID);
             }
 
@@ -438,15 +438,15 @@ public class RequestHandler
 
             try {
                 qMsg=FIXConverter.toQMessage
-                    (d.getFIXMessageFactory(),d.getFIXVersion(),oMsg);
+                    (b.getFIXMessageFactory(),b.getFIXVersion(),oMsg);
             } catch (I18NException ex) {
                 throw new I18NException(ex,Messages.RH_CONVERSION_FAILED);
             }
-            d.logMessage(qMsg);
+            b.logMessage(qMsg);
 
-            // Ensure destination is available.
+            // Ensure broker is available.
 
-            if (!d.getLoggedOn()) {
+            if (!b.getLoggedOn()) {
                 throw new I18NException(Messages.RH_UNAVAILABLE_BROKER);
             }
 
@@ -460,9 +460,9 @@ public class RequestHandler
 
             // Apply message modifiers.
 
-            if (d.getModifiers()!=null) {
+            if (b.getModifiers()!=null) {
                 try {
-                    d.getModifiers().modifyMessage(qMsg);
+                    b.getModifiers().modifyMessage(qMsg);
                 } catch (CoreException ex) {
                     throw new I18NException(ex,Messages.RH_MODIFICATION_FAILED);
                 }
@@ -470,10 +470,10 @@ public class RequestHandler
 
             // Apply order routing.
 
-            if (d.getRoutes()!=null) {
+            if (b.getRoutes()!=null) {
                 try {
-                    d.getRoutes().modifyMessage
-                        (qMsg,d.getFIXMessageAugmentor());
+                    b.getRoutes().modifyMessage
+                        (qMsg,b.getFIXMessageAugmentor());
                 } catch (CoreException ex) {
                     throw new I18NException(ex,Messages.RH_ROUTING_FAILED);
                 }
@@ -482,7 +482,7 @@ public class RequestHandler
             // Send message to QuickFIX/J.
 
             try {
-                getSender().sendToTarget(qMsg,d.getSessionID());
+                getSender().sendToTarget(qMsg,b.getSessionID());
             } catch (SessionNotFound ex) {
                 throw new I18NException(ex,Messages.RH_UNAVAILABLE_BROKER);
             }
@@ -493,7 +493,7 @@ public class RequestHandler
                 qMsgReply=createExecutionReport(qMsg);
                 if (qMsgReply==null) {
                     Messages.RH_ACK_FAILED_WARN.warn
-                        (this,msg,qMsg,d.toString());
+                        (this,msg,qMsg,b.toString());
                 }
             } catch (FieldNotFound ex) {
                 throw new I18NException(ex,Messages.RH_ACK_FAILED);
@@ -503,7 +503,7 @@ public class RequestHandler
         } catch (I18NException ex) {
             Messages.RH_MESSAGE_PROCESSING_FAILED.error
                 (this,ex,msg,qMsg,
-                 ObjectUtils.toString(d,ObjectUtils.toString(dID)));
+                 ObjectUtils.toString(b,ObjectUtils.toString(bID)));
             qMsgReply=createRejection(ex,msg);
         }
 
@@ -523,7 +523,7 @@ public class RequestHandler
 
         TradeMessage reply=null;
         try {
-            reply=FIXConverter.fromQMessage(qMsgReply,Originator.Server,dID);
+            reply=FIXConverter.fromQMessage(qMsgReply,Originator.Server,bID);
             if (reply==null) {
                 Messages.RH_REPORT_TYPE_UNSUPPORTED.warn(this,qMsgReply);
             }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Main primary destination configuration.
+  - Main broker 2 configuration.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$
@@ -18,18 +18,28 @@
 
   <import
    resource="qdescriptor.xml"/>
+  <import
+   resource="modifiers.xml"/>
+  <import
+   resource="routes.xml"/>
 
   <bean
-   id="metc_destination"
+   id="metc_broker2_broker"
    class="org.marketcetera.ors.brokers.SpringBroker">
     <property
      name="name"
-     value="Marketcetera Exchange"/>
+     value="Marketcetera Exchange 2"/>
     <property
      name="id"
-     value="metc"/>
+     value="metc2"/>
     <property
      name="descriptor"
-     ref="metc_qdescriptor"/>
+     ref="metc_broker2_qdescriptor"/>
+    <property
+     name="modifiers"
+     ref="metc_broker2_modifiers"/>
+    <property
+     name="routes"
+     ref="metc_broker2_routes"/>
   </bean>
 </beans>

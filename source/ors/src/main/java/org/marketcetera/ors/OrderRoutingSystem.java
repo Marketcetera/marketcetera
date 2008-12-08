@@ -59,7 +59,7 @@ public class OrderRoutingSystem
         "properties.xml"; //$NON-NLS-1$
     private static final String REPLY_TOPIC=
         "ors-messages"; //$NON-NLS-1$
-    private static final String DESTINATION_STATUS_TOPIC=
+    private static final String BROKER_STATUS_TOPIC=
         "ors-destination-status"; //$NON-NLS-1$
     private static final String REQUEST_QUEUE=
         "ors-commands"; //$NON-NLS-1$
@@ -132,8 +132,8 @@ public class OrderRoutingSystem
         JmsManager jmsMgr=new JmsManager
             (cfg.getIncomingConnectionFactory(),
              cfg.getOutgoingConnectionFactory());
-        Brokers destinations=new Brokers(cfg.getDestinations(),historyServices);
-        Selector selector=new Selector(destinations,cfg.getSelector());
+        Brokers brokers=new Brokers(cfg.getBrokers(),historyServices);
+        Selector selector=new Selector(brokers,cfg.getSelector());
         cfg.getIDFactory().init();
         LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
         localIdFactory.init();
@@ -154,12 +154,10 @@ public class OrderRoutingSystem
              SessionManager.INFINITE_SESSION_LIFESPAN:
              (cfg.getServerSessionLife()*1000));
         Server<ClientSession> server=new Server<ClientSession>
-            (cfg.getServerHost(),
-             cfg.getServerPort(),
-             new DBAuthenticator(),
-             sessionManager);
+            (cfg.getServerHost(),cfg.getServerPort(),
+             new DBAuthenticator(),sessionManager);
         server.publish
-            (new ServiceImpl(sessionManager,destinations,
+            (new ServiceImpl(sessionManager,brokers,
                              cfg.getIDFactory(),historyServices),
              Service.class);
 
@@ -167,22 +165,22 @@ public class OrderRoutingSystem
 
         QuickFIXSender sender=new QuickFIXSender();
         RequestHandler handler=new RequestHandler
-            (destinations,selector,cfg.getAllowedOrders(),
+            (brokers,selector,cfg.getAllowedOrders(),
              persister,sender,localIdFactory);
         jmsMgr.getIncomingJmsFactory().registerHandlerTM
             (handler,REQUEST_QUEUE,false,REPLY_TOPIC,true);
         QuickFIXApplication app=new QuickFIXApplication
-            (destinations,cfg.getSupportedMessages(),persister,sender,
+            (brokers,cfg.getSupportedMessages(),persister,sender,
              jmsMgr.getOutgoingJmsFactory().createJmsTemplateTM
              (REPLY_TOPIC,true),
              jmsMgr.getOutgoingJmsFactory().createJmsTemplate
-             (DESTINATION_STATUS_TOPIC,true),
+             (BROKER_STATUS_TOPIC,true),
              jmsMgr.getOutgoingJmsFactory().createJmsTemplateQ
              (TRADE_RECORDER_QUEUE,false));
 
-        // Initiate destination connections.
+        // Initiate broker connections.
 
-        SpringSessionSettings settings=destinations.getSettings();
+        SpringSessionSettings settings=brokers.getSettings();
         SocketInitiator initiator=new SocketInitiator
             (app,settings.getQMessageStoreFactory(),
              settings.getQSettings(),settings.getQLogFactory(),
@@ -194,7 +192,7 @@ public class OrderRoutingSystem
         MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
         (new JmxExporter(mbeanServer)).export(initiator);
         mbeanServer.registerMBean
-            (new ORSAdmin(destinations,sender,localIdFactory),
+            (new ORSAdmin(brokers,sender,localIdFactory),
              new ObjectName(JMX_NAME));
     }
 

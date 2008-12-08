@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Destination 2 configuration: QuickFIX/J session descriptor.
+  - Broker 2 configuration: QuickFIX/J session descriptor.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$
@@ -17,32 +17,32 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean
-   id="metc_dest2_qdescriptor"
+   id="metc_broker2_qdescriptor"
    class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
     <property
      name="dictionary">
       <map>
         <entry
          key="BeginString"
-         value="${metc.qf.dest2.begin.string}"/>
+         value="${metc.qf.broker2.begin.string}"/>
         <entry
          key="DataDictionary"
-         value="${metc.qf.dest2.data.dictionary}"/>
+         value="${metc.qf.broker2.data.dictionary}"/>
         <entry
          key="SenderCompID"
-         value="${metc.qf.dest2.sender.comp.id}"/>
+         value="${metc.qf.broker2.sender.comp.id}"/>
         <entry
          key="TargetCompID"
-         value="${metc.qf.dest2.target.comp.id}"/>
+         value="${metc.qf.broker2.target.comp.id}"/>
         <entry
          key="FileStorePath"
-         value="${metc.qf.dest2.store}"/>
+         value="${metc.qf.broker2.store}"/>
         <entry
          key="SocketConnectHost"
-         value="${metc.qf.dest2.destination}"/>
+         value="${metc.qf.broker2.host}"/>
         <entry
          key="SocketConnectPort"
-         value="${metc.qf.dest2.port}"/>
+         value="${metc.qf.broker2.port}"/>
       </map>
     </property>
   </bean>

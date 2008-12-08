@@ -21,7 +21,7 @@ create table reports (
     id bigint not null auto_increment,
     lastUpdated datetime,
     updateCount integer not null,
-    destinationID varchar(255) not null,
+    brokerID varchar(255) not null,
     fixMessage text not null,
     originator integer,
     reportType integer not null,

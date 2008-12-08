@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Primary destination configuration: QuickFIX/J session descriptor.
+  - Primary broker configuration: QuickFIX/J session descriptor.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$
@@ -39,7 +39,7 @@
          value="${metc.qf.store}"/>
         <entry
          key="SocketConnectHost"
-         value="${metc.qf.destination}"/>
+         value="${metc.qf.host}"/>
         <entry
          key="SocketConnectPort"
          value="${metc.qf.port}"/>

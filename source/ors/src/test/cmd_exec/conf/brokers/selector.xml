@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Destination configuration: destination selector.
+  - Broker configuration: broker selector.
   -
   - Author: tlerios@marketcetera.com
   - Since: $Release$
@@ -20,7 +20,7 @@
    id="metc_selector"
    class="org.marketcetera.ors.brokers.SpringSelector">
     <property
-     name="defaultDestination"
-	 ref="metc_destination"/>
+     name="defaultBroker"
+     ref="metc_broker"/>
   </bean>
 </beans>

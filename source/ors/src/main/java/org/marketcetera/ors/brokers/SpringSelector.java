@@ -20,7 +20,7 @@ public class SpringSelector
     // INSTANCE DATA.
 
     private List<SpringSelectorEntry> mEntries;
-    private SpringBroker mDefaultDestination;
+    private SpringBroker mDefaultBroker;
 
 
     // INSTANCE METHODS.
@@ -50,25 +50,25 @@ public class SpringSelector
     }
 
     /**
-     * Sets the receiver's default destination to the given one.
+     * Sets the receiver's default broker to the given one.
      *
-     * @param defaultDestination The destination. It may be null.
+     * @param defaultBroker The broker. It may be null.
      */
 
-    public void setDefaultDestination
-        (SpringBroker defaultDestination)
+    public void setDefaultBroker
+        (SpringBroker defaultBroker)
     {
-        mDefaultDestination=defaultDestination;
+        mDefaultBroker=defaultBroker;
     }
 
     /**
-     * Returns the receiver's default destination.
+     * Returns the receiver's default broker.
      *
-     * @return The destination. It may be null.
+     * @return The broker. It may be null.
      */
 
-    public SpringBroker getDefaultDestination()
+    public SpringBroker getDefaultBroker()
     {
-        return mDefaultDestination;
+        return mDefaultBroker;
     }
 }

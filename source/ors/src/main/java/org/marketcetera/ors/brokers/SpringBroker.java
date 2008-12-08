@@ -8,7 +8,7 @@ import org.marketcetera.util.quickfix.SpringSessionDescriptor;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * The Spring-based configuration of a single destination.
+ * The Spring-based configuration of a single broker.
  *
  * @author tlerios@marketcetera.com
  * @since $Release$
@@ -82,8 +82,7 @@ public class SpringBroker
     }
 
     /**
-     * Sets the receiver's destination ID to the given string form
-     * value.
+     * Sets the receiver's broker ID to the given string form value.
      *
      * @param id The ID.
      */
@@ -95,7 +94,7 @@ public class SpringBroker
     }
 
     /**
-     * Returns the receiver's destination ID, in string form.
+     * Returns the receiver's broker ID, in string form.
      *
      * @return The ID.
      */

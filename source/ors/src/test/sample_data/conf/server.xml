@@ -30,8 +30,8 @@
   <bean
    class="org.marketcetera.ors.config.SpringConfig">
     <property
-     name="destinations"
-     ref="metc_destinations"/>
+     name="brokers"
+     ref="metc_brokers"/>
     <property
      name="selector"
      ref="metc_selector"/>
