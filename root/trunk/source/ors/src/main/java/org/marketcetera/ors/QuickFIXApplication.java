@@ -130,6 +130,9 @@ public class QuickFIXApplication
         (Broker b,
          boolean status)
     {
+        if (b.getLoggedOn()==status) {
+            return;
+        }
         Messages.QF_SENDING_STATUS.info(this,status,b);
         b.setLoggedOn(status);
         if (getToClientStatus()==null) {
