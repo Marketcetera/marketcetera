@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.marketcetera.client.dest.DestinationStatus;
-import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.SpringSessionSettings;
 import quickfix.SessionID;
@@ -30,7 +30,7 @@ public class Brokers
 
     private final SpringBrokers mSpringBrokers;
     private final List<Broker> mBrokers;
-    private final Map<DestinationID,Broker> mBrokerIDMap;
+    private final Map<BrokerID,Broker> mBrokerIDMap;
     private final Map<SessionID,Broker> mSessionIDMap;
 
 
@@ -53,7 +53,7 @@ public class Brokers
         mSpringBrokers=springBrokers;
         int capacity=getSpringBrokers().getBrokers().size();
         mBrokers=new ArrayList<Broker>(capacity);
-        mBrokerIDMap=new HashMap<DestinationID,Broker>(capacity);
+        mBrokerIDMap=new HashMap<BrokerID,Broker>(capacity);
         mSessionIDMap=new HashMap<SessionID,Broker>(capacity);
         for (SpringBroker sb:getSpringBrokers().getBrokers()) {
             Broker b=new Broker(sb,historyServices);
@@ -94,14 +94,14 @@ public class Brokers
      * @return The status.
      */
 
-    public DestinationsStatus getStatus()
+    public BrokersStatus getStatus()
     {
-        List<DestinationStatus> list=
-            new ArrayList<DestinationStatus>(getBrokers().size());
+        List<BrokerStatus> list=
+            new ArrayList<BrokerStatus>(getBrokers().size());
         for (Broker b:getBrokers()) {
             list.add(b.getStatus());
         }
-        return new DestinationsStatus(list);
+        return new BrokersStatus(list);
     }
 
     /**
@@ -147,7 +147,7 @@ public class Brokers
      */
 
     public Broker getBroker
-        (DestinationID brokerID)
+        (BrokerID brokerID)
     {
         Broker b=mBrokerIDMap.get(brokerID);
         if (b==null) {

@@ -9,8 +9,8 @@ import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.trade.*;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.client.dest.DestinationStatus;
-import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -30,7 +30,7 @@ import java.beans.ExceptionListener;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 class ClientImpl implements Client {
 
     @Override
@@ -81,22 +81,22 @@ class ClientImpl implements Client {
     }
 
     @Override
-    public void addDestinationStatusListener
-        (DestinationStatusListener listener)
+    public void addBrokerStatusListener
+        (BrokerStatusListener listener)
     {
         failIfClosed();
-        synchronized (mDestinationStatusListeners) {
-            mDestinationStatusListeners.addFirst(listener);
+        synchronized (mBrokerStatusListeners) {
+            mBrokerStatusListeners.addFirst(listener);
         }
     }
 
     @Override
-    public void removeDestinationStatusListener
-        (DestinationStatusListener listener)
+    public void removeBrokerStatusListener
+        (BrokerStatusListener listener)
     {
         failIfClosed();
-        synchronized (mDestinationStatusListeners) {
-            mDestinationStatusListeners.removeFirstOccurrence(listener);
+        synchronized (mBrokerStatusListeners) {
+            mBrokerStatusListeners.removeFirstOccurrence(listener);
         }
     }
 
@@ -130,12 +130,12 @@ class ClientImpl implements Client {
     }
 
     @Override
-    public DestinationsStatus getDestinationsStatus()
+    public BrokersStatus getBrokersStatus()
         throws ConnectionException
     {
         failIfClosed();
         try {
-            return mService.getDestinationsStatus(getServiceContext());
+            return mService.getBrokersStatus(getServiceContext());
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
         }
@@ -229,16 +229,16 @@ class ClientImpl implements Client {
         }
     }
 
-    void notifyDestinationStatus(DestinationStatus status) {
+    void notifyBrokerStatus(BrokerStatus status) {
         SLF4JLoggerProxy.debug
-            (TRAFFIC,"Received Destination Status:{}",status); //$NON-NLS-1$
-        synchronized (mDestinationStatusListeners) {
-            for (DestinationStatusListener listener:
-                     mDestinationStatusListeners) {
+            (TRAFFIC,"Received Broker Status:{}",status); //$NON-NLS-1$
+        synchronized (mBrokerStatusListeners) {
+            for (BrokerStatusListener listener:
+                     mBrokerStatusListeners) {
                 try {
-                    listener.receiveDestinationStatus(status);
+                    listener.receiveBrokerStatus(status);
                 } catch (Throwable t) {
-                    Messages.LOG_ERROR_RECEIVE_DEST_STATUS.warn(this, t,
+                    Messages.LOG_ERROR_RECEIVE_BROKER_STATUS.warn(this, t,
                             ObjectUtils.toString(status));
                     ExceptUtils.interrupt(t);
                 }
@@ -404,8 +404,8 @@ class ClientImpl implements Client {
     private volatile boolean mClosed = false;
     private final Deque<ReportListener> mReportListeners =
             new LinkedList<ReportListener>();
-    private final Deque<DestinationStatusListener> mDestinationStatusListeners=
-        new LinkedList<DestinationStatusListener>();
+    private final Deque<BrokerStatusListener> mBrokerStatusListeners=
+        new LinkedList<BrokerStatusListener>();
     private final Deque<ExceptionListener> mExceptionListeners =
             new LinkedList<ExceptionListener>();
     private Date mLastConnectTime;

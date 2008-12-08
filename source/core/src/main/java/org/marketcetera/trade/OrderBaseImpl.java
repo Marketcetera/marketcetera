@@ -79,13 +79,13 @@ class OrderBaseImpl implements OrderBase {
     }
 
     @Override
-    public DestinationID getDestinationID() {
-        return mCountepartyID;
+    public BrokerID getBrokerID() {
+        return mBrokerID;
     }
 
     @Override
-    public void setDestinationID(DestinationID inDestinationID) {
-        mCountepartyID = inDestinationID;
+    public void setBrokerID(BrokerID inBrokerID) {
+        mBrokerID = inBrokerID;
     }
 
     @Override
@@ -101,7 +101,7 @@ class OrderBaseImpl implements OrderBase {
     private Side mSide;
     private BigDecimal mQuantity;
     private Map<String,String> mCustomFields;
-    private DestinationID mCountepartyID;
+    private BrokerID mBrokerID;
     private String mAccount;
     private MSymbol mSymbol;
     private static final long serialVersionUID = 1L;

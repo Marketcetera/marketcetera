@@ -7,8 +7,8 @@ import java.io.Serializable;
 /* $License$ */
 /**
  * Common interface for Orders that can either be sent to any
- * broker / destination or are created to work with a
- * specific broker / destination.
+ * broker or are created to work with a
+ * specific broker.
  *
  * This message type is not meant to be used directly.
  *  
@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Order extends Serializable {
     /**
      * Gets the security type for the Order.
@@ -26,19 +26,19 @@ public interface Order extends Serializable {
     SecurityType getSecurityType();
 
     /**
-     * Gets the destinationID to which this order should be sent.
-     * The destinationID can be optionally specified to over-ride the
+     * Gets the brokerID to which this order should be sent.
+     * The brokerID can be optionally specified to over-ride the
      * default order routing mechanisms used on the server to route
-     * this order to the appropriate broker / destination.
+     * this order to the appropriate broker.
      *
-     * @return the destinationID to send this order to.
+     * @return the brokerID to send this order to.
      */
-    DestinationID getDestinationID();
+    BrokerID getBrokerID();
 
     /**
-     * Sets the destinationID to which this order should be sent.
+     * Sets the brokerID to which this order should be sent.
      *
-     * @param inDestinationID the destinationID to send this order to.
+     * @param inBrokerID the brokerID to send this order to.
      */
-    void setDestinationID(DestinationID inDestinationID);
+    void setBrokerID(BrokerID inBrokerID);
 }

@@ -3,7 +3,7 @@ package org.marketcetera.client;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.*;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.client.dest.DestinationsStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 
 import java.util.Date;
 import java.math.BigDecimal;
@@ -28,7 +28,7 @@ import java.beans.ExceptionListener;
  *      {@link #sendOrder(OrderReplace)}, {@link #sendOrder(OrderCancel)},
  *      {@link #sendOrderRaw(FIXOrder)}</li>
  *      <li>{@link #addReportListener(ReportListener) receive reports}</li>
- *      <li>{@link #addDestinationStatusListener(DestinationStatusListener) receive destination status updates}</li>
+ *      <li>{@link #addBrokerStatusListener(BrokerStatusListener) receive broker status updates}</li>
  *      <li>{@link #getReportsSince(Date) fetch past reports} </li>
  *      <li>{@link #getPositionAsOf(Date, MSymbol)}  fetch positions} </li> 
  * </ul>
@@ -37,7 +37,7 @@ import java.beans.ExceptionListener;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Client {
     /**
      * Sends the supplied order to the server.
@@ -84,7 +84,7 @@ public interface Client {
     /**
      * Sends the supplied FIX Message Order to the server.
      * <p>
-     * When supplying raw FIX Message, a destinationID has to be supplied
+     * When supplying raw FIX Message, a brokerID has to be supplied
      *
      * @param inFIXOrder the raw FIX Order to send.
      *
@@ -151,8 +151,8 @@ public interface Client {
     public void removeReportListener(ReportListener inListener);
 
     /**
-     * Adds a destination status listener, which receives all the
-     * destination status changes sent out by the server.
+     * Adds a broker status listener, which receives all the
+     * broker status changes sent out by the server.
      *
      * <p>If the same listener is added more than once, it will receive
      * notifications as many times as it has been added.</p>
@@ -161,24 +161,24 @@ public interface Client {
      * addition.</p>
      *
      * @param listener The listener which should be supplied the
-     * destination status changes.
+     * broker status changes.
      */
-    public void addDestinationStatusListener
-        (DestinationStatusListener listener);
+    public void addBrokerStatusListener
+        (BrokerStatusListener listener);
 
     /**
-     * Removes a destination status listener that was previously added
+     * Removes a broker status listener that was previously added
      * via {@link
-     * #addDestinationStatusListener(DestinationStatusListener)}.
+     * #addBrokerStatusListener(BrokerStatusListener)}.
      *
      * <p>If the listener was added more than once, only its most
      * recently added instance will be removed.</p>
      *
      * @param listener The listener which should stop receiving
-     * destination status changes.
+     * broker status changes.
      */
-    public void removeDestinationStatusListener
-        (DestinationStatusListener listener);
+    public void removeBrokerStatusListener
+        (BrokerStatusListener listener);
 
     /**
      * Adds an exception listener. The exception listeners are notified
@@ -190,7 +190,7 @@ public interface Client {
      * the <code>send*()</code> methods are invoked and when the
      * client receives a message and encounters errors processing it
      * before delivering it to {@link ReportListener} or {@link
-     * DestinationStatusListener}.
+     * BrokerStatusListener}.
      * <p>
      * If the same listener is added more than once, it will receive
      * notifications as many times as it's been added.
@@ -257,7 +257,7 @@ public interface Client {
     public Date getLastConnectTime();
     
     /**
-     * Returns the server's destination status.
+     * Returns the server's broker status.
      *
      * @return The status.
      *
@@ -265,6 +265,6 @@ public interface Client {
      * completed.
      */
 
-    DestinationsStatus getDestinationsStatus() throws ConnectionException;
+    BrokersStatus getBrokersStatus() throws ConnectionException;
 
 }

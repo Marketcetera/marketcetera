@@ -118,8 +118,8 @@ public interface Messages {
 			LOGGER, "trade_suggestion.score.label"); //$NON-NLS-1$
 	static final I18NMessage0P TRADE_SUGGESTION_ACCOUNT_LABEL = new I18NMessage0P(
 			LOGGER, "trade_suggestion.account.label"); //$NON-NLS-1$
-	static final I18NMessage0P TRADE_SUGGESTION_DESTINATION_ID_LABEL = new I18NMessage0P(
-			LOGGER, "trade_suggestion.destination_id.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_BROKER_ID_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.broker_id.label"); //$NON-NLS-1$
 	static final I18NMessage0P TRADE_SUGGESTION_TIMESTAMP_LABEL = new I18NMessage0P(
 			LOGGER, "trade_suggestion.timestamp.label"); //$NON-NLS-1$
 	static final I18NMessage0P SEND_ORDERS_HANDLER_SERVER_FAILURE = new I18NMessage0P(

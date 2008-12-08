@@ -1,13 +1,13 @@
 package org.marketcetera.client;
 
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * A receiver of destination status changes. Objects which need to
- * receive destination status changes must implement this interface,
+ * A receiver of broker status changes. Objects which need to
+ * receive broker status changes must implement this interface,
  * as well as register themselves with a client via {@link
- * Client#addDestinationStatusListener(DestinationStatusListener)}.
+ * Client#addBrokerStatusListener(BrokerStatusListener)}.
  *
  * <p>It's expected that listeners will take a short time to return
  * because all listeners are invoked sequentially.  If a listener
@@ -21,15 +21,15 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
-public interface DestinationStatusListener
+@ClassVersion("$Id$")
+public interface BrokerStatusListener
 {
     /**
-     * Supplies a destination status to the receiver.
+     * Supplies a broker status to the receiver.
      *
      * @param status The status.
      */
 
-    void receiveDestinationStatus
-        (DestinationStatus status);
+    void receiveBrokerStatus
+        (BrokerStatus status);
 }

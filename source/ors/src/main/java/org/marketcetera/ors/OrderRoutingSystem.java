@@ -60,7 +60,7 @@ public class OrderRoutingSystem
     private static final String REPLY_TOPIC=
         "ors-messages"; //$NON-NLS-1$
     private static final String BROKER_STATUS_TOPIC=
-        "ors-destination-status"; //$NON-NLS-1$
+        "ors-broker-status"; //$NON-NLS-1$
     private static final String REQUEST_QUEUE=
         "ors-commands"; //$NON-NLS-1$
     private static final String TRADE_RECORDER_QUEUE=

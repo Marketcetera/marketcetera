@@ -6,9 +6,8 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Represents Order Messages that wrap a FIX Message.
  * Since these wrap FIX Messages, they need to be created such a
- * broker / destination can accept them. Since these messages can
- * be broker / destination specified, a destination needs to be specified
- * when creating these messages. 
+ * broker can accept them. Since these messages can be broker specified,
+ * a broker needs to be specified when creating these messages. 
  * <p>
  * The enum attributes of this type have a null value, in case a value
  * is not specified for that attribute / field in the underlying FIX Message.
@@ -22,6 +21,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface FIXOrder extends TradeMessage, Order, FIXMessageSupport {
 }

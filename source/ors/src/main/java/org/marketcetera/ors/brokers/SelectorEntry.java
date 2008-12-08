@@ -1,6 +1,6 @@
 package org.marketcetera.ors.brokers;
 
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.util.except.I18NRuntimeException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -24,7 +24,7 @@ public class SelectorEntry
 
     private final SpringSelectorEntry mSpringSelectorEntry;
     private final SecurityType mTargetType;
-    private final DestinationID mBrokerID;
+    private final BrokerID mBrokerID;
 
 
     // CONSTRUCTORS.
@@ -48,8 +48,7 @@ public class SelectorEntry
                   getSpringSelectorEntry().getTargetType()));
                                            
         }
-        mBrokerID=new DestinationID
-            (getSpringSelectorEntry().getBroker().getId());
+        mBrokerID=new BrokerID(getSpringSelectorEntry().getBroker().getId());
     }
 
 
@@ -83,7 +82,7 @@ public class SelectorEntry
      * @return The ID.
      */
 
-    public DestinationID getBroker()
+    public BrokerID getBroker()
     {
         return mBrokerID;
     }

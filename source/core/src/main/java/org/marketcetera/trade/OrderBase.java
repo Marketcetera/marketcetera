@@ -8,16 +8,15 @@ import java.util.Map;
 
 /* $License$ */
 /**
- * Orders sent out by the system to Brokers / Destination. Orders of
- * this type can be sent to any broker / destination. The system will
- * translate this order to the appropriate messages / protocol used
- * by the broker / destination. 
+ * Orders sent out by the system to Brokers. Orders of this type can 
+ * be sent to any broker. The system will translate this order to the 
+ * appropriate messages / protocol used by the broker. 
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface OrderBase extends Order {
     /**
      * The client assigned OrderID for this order. The factory

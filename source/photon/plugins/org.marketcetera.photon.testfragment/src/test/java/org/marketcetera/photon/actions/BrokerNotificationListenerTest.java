@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.marketcetera.client.Client;
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.notifications.INotification.Severity;
@@ -16,7 +16,7 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.actions.ReconnectClientJob.BrokerNotificationListener;
 import org.marketcetera.photon.messaging.ClientFeedService;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.mockito.ArgumentMatcher;
@@ -31,7 +31,7 @@ import org.mockito.ArgumentMatcher;
 public class BrokerNotificationListenerTest {
 
 	@Test
-	public void testReceiveDestinationStatus() throws Exception {
+	public void testReceiveBrokerStatus() throws Exception {
 		ISubscriber mockSubscriber = mock(ISubscriber.class);
 		stub(mockSubscriber.isInteresting(anyObject())).toReturn(true);
 		Client mockClient = mock(Client.class);
@@ -39,11 +39,11 @@ public class BrokerNotificationListenerTest {
 		stub(mockService.getClient()).toReturn(mockClient);
 		NotificationManager.getNotificationManager().subscribe(mockSubscriber);
 
-		DestinationStatus status = new DestinationStatus("abc",
-				new DestinationID("abc"), true);
+		BrokerStatus status = new BrokerStatus("abc",
+				new BrokerID("abc"), true);
 		BrokerNotificationListener fixture = new BrokerNotificationListener();
 		fixture.setService(mockService);
-		fixture.receiveDestinationStatus(status);
+		fixture.receiveBrokerStatus(status);
 
 		// have to wait since notifications happen in different thread
 		Thread.sleep(1000);
@@ -54,9 +54,9 @@ public class BrokerNotificationListenerTest {
 	private static class IsExpectedStatusNotification extends
 			ArgumentMatcher<INotification> {
 
-		DestinationStatus mStatus;
+		BrokerStatus mStatus;
 
-		public IsExpectedStatusNotification(DestinationStatus status) {
+		public IsExpectedStatusNotification(BrokerStatus status) {
 			mStatus = status;
 		}
 

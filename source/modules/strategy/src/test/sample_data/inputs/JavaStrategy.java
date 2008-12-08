@@ -1,7 +1,7 @@
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidAskEvent;
@@ -97,11 +97,11 @@ public class JavaStrategy
             setProperty("position",
                         resultString);
         }
-        if(getProperty("askForDestinations") != null) {
+        if(getProperty("askForBrokers") != null) {
             int counter = 0;
-            for(DestinationStatus destination : getDestinations()) {
+            for(BrokerStatus broker : getBrokers()) {
                 setProperty("" + counter++,
-                            destination.toString());
+                            broker.toString());
             }
         }
         setProperty("onStart",

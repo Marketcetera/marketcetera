@@ -104,7 +104,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
                                 new BigDecimal(4.3), new MSymbol("IBM",
                                 SecurityType.Option), new BigDecimal("93.23"),
                                 quickfix.field.TimeInForce.AT_THE_OPENING,
-                                "acc"), new DestinationID("broke"))
+                                "acc"), new BrokerID("broke"))
         };
         //Initialize mock server with reports to return
         ReportBase[] reports = new ReportBase[] {

@@ -23,13 +23,13 @@ class OrderCancelImpl extends OrderBaseImpl implements OrderCancel {
     }
 
     @Override
-    public String getDestinationOrderID() {
-        return mDestOrderID;
+    public String getBrokerOrderID() {
+        return mBrokerOrderID;
     }
 
     @Override
-    public void setDestinationOrderID(String inDestOrderID) {
-        mDestOrderID = inDestOrderID;
+    public void setBrokerOrderID(String inDestOrderID) {
+        mBrokerOrderID = inDestOrderID;
     }
 
     @Override
@@ -37,18 +37,18 @@ class OrderCancelImpl extends OrderBaseImpl implements OrderCancel {
         return Messages.ORDER_CANCEL_TO_STRING.getText(
                 String.valueOf(getAccount()),
                 String.valueOf(getCustomFields()),
-                String.valueOf(getDestinationID()),
+                String.valueOf(getBrokerID()),
                 String.valueOf(getOrderID()),
                 String.valueOf(getOriginalOrderID()),
                 String.valueOf(getQuantity()),
                 String.valueOf(getSecurityType()),
                 String.valueOf(getSide()),
                 String.valueOf(getSymbol()),
-                String.valueOf(getDestinationOrderID())
+                String.valueOf(getBrokerOrderID())
         );
     }
 
     private OrderID mOriginalOrderID;
-    private String mDestOrderID;
+    private String mBrokerOrderID;
     private static final long serialVersionUID = 1L;
 }

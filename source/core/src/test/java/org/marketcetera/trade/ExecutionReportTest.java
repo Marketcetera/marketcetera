@@ -34,7 +34,7 @@ public class ExecutionReportTest extends TypesTestBase {
      */
     @Test
     public void failures() throws Exception {
-        final DestinationID cID = new DestinationID("blah");
+        final BrokerID cID = new BrokerID("blah");
         // null message
         new ExpectedFailure<NullPointerException>(null){
              protected void run() throws Exception {
@@ -79,7 +79,7 @@ public class ExecutionReportTest extends TypesTestBase {
         //Verify toString, doesn't fail.
         report.toString();
         //report with all fields filled in
-        DestinationID cID = new DestinationID("bro1");
+        BrokerID cID = new BrokerID("bro1");
         OrderID orderID = new OrderID("or2");
         String destOrderID = "brokOrd1";
         OrderStatus orderStatus = OrderStatus.PartiallyFilled;
@@ -124,13 +124,13 @@ public class ExecutionReportTest extends TypesTestBase {
 
         //Verify the regular factory method
         report = sFactory.createExecutionReport(msg, cID,
-                Originator.Destination);
+                Originator.Broker);
         assertReportBaseValues(report, cID, orderID, orderStatus,
                 origOrderID, sendingTime, text, destOrderID);
         assertExecReportValues(report, account, avgPrice, cumQty, execID,
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
                 orderQty, orderType, side, symbol, timeInForce,
-                transactTime, Originator.Destination,
+                transactTime, Originator.Broker,
                 OrderCapacity.Proprietary, PositionEffect.Close, true);
         assertNull(report.getReportID());
         //Verify toString() doesn't fail.

@@ -2,7 +2,7 @@ package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.*;
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ExceptionListener;
@@ -18,7 +18,7 @@ import javax.jms.JMSException;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MessagingDelegate implements ExceptionListener {
     /**
      * Receives an execution report from a topic.
@@ -39,15 +39,15 @@ public class MessagingDelegate implements ExceptionListener {
     }
 
     /**
-     * Receives a destination status change from a topic.
+     * Receives a broker status change from a topic.
      *
      * @param status The received status change.
      */
 
     public void handleMessage
-        (DestinationStatus status)
+        (BrokerStatus status)
     {
-        getClientImpl().notifyDestinationStatus(status);
+        getClientImpl().notifyBrokerStatus(status);
     }
 
     /**

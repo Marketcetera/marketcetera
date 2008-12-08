@@ -15,7 +15,7 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.MessageCreationException;
@@ -395,7 +395,7 @@ public class RequestHandler
         (TradeMessage msg)
     {
         Messages.RH_RECEIVED_MESSAGE.info(this,msg);
-        DestinationID bID=null;
+        BrokerID bID=null;
         Broker b=null;
         Message qMsg=null;
         Message qMsgReply=null;
@@ -419,7 +419,7 @@ public class RequestHandler
 
             // Identify broker.
 
-            bID=oMsg.getDestinationID();
+            bID=oMsg.getBrokerID();
             if (bID==null) {
                 bID=getSelector().chooseBroker(oMsg);
             }

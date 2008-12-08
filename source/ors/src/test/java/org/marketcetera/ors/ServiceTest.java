@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import org.junit.Test;
 import org.marketcetera.client.Service;
-import org.marketcetera.client.dest.DestinationStatus;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.symbology.SymbolScheme;
 import org.marketcetera.trade.ReportBaseImpl;
@@ -34,10 +34,10 @@ public class ServiceTest
         startORS(new String[0]);
         Service s=getORSService();
 
-        List<DestinationStatus> bs=
-            s.getDestinationsStatus(getORSClientContext()).getDestinations();
+        List<BrokerStatus> bs=
+            s.getBrokersStatus(getORSClientContext()).getBrokers();
         assertEquals(2,bs.size());
-        DestinationStatus b=bs.get(0);
+        BrokerStatus b=bs.get(0);
         assertEquals("Marketcetera Exchange 1",b.getName());
         assertEquals("metc1",b.getId().getValue());
         b=bs.get(1);

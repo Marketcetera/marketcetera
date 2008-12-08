@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface RelatedOrder extends OrderBase {
     /**
      * The original order ID of the order that is being cancelled or replaced.
@@ -29,16 +29,16 @@ public interface RelatedOrder extends OrderBase {
     void setOriginalOrderID(OrderID inOrderID);
 
     /**
-     * The order ID assigned by destination / broker to the original order.
+     * The order ID assigned by broker to the original order.
      *
-     * @return the destination / broker assigned order ID.
+     * @return the broker assigned order ID.
      */
-    String getDestinationOrderID();
+    String getBrokerOrderID();
 
     /**
-     * Set the destination / broker assigned order ID.
+     * Set the broker assigned order ID.
      * 
-     * @param inDestOrderID the destination / broker assigned order ID.
+     * @param inBrokerOrderID the broker assigned order ID.
      */
-    void setDestinationOrderID(String inDestOrderID);
+    void setBrokerOrderID(String inBrokerOrderID);
 }

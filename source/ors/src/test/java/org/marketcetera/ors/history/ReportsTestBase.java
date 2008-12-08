@@ -60,13 +60,13 @@ public class ReportsTestBase extends TestCaseBase {
             throws MessageCreationException {
         return createCancelReject(BROKER);
     }
-    static OrderCancelReject createCancelReject(DestinationID inDestID)
+    static OrderCancelReject createCancelReject(BrokerID inBrokerID)
             throws MessageCreationException {
         Message msg = sMessageFactory.newOrderCancelReject();
         msg.setField(new ClOrdID("rejord1"));
         msg.setField(new OrigClOrdID("rejorigord1"));
         setSendingTime(msg);
-        return Factory.getInstance().createOrderCancelReject(msg, inDestID);
+        return Factory.getInstance().createOrderCancelReject(msg, inBrokerID);
     }
 
     static ExecutionReport createExecReport(String inOrderID,
@@ -90,7 +90,7 @@ public class ReportsTestBase extends TestCaseBase {
                                             BigDecimal inAvgPrice,
                                             BigDecimal inLastQty,
                                             BigDecimal inLastPrice,
-                                            DestinationID inDestID)
+                                            BrokerID inBrokerID)
             throws Exception {
         Message msg = sMessageFactory.newExecutionReport("ord1", inOrderID,
                 "exec1", inOrderStatus.getFIXValue(), inSide.getFIXValue(),
@@ -102,7 +102,7 @@ public class ReportsTestBase extends TestCaseBase {
         }
         setSendingTime(msg);
         return Factory.getInstance().createExecutionReport(
-                msg, inDestID, Originator.Server);
+                msg, inBrokerID, Originator.Server);
     }
 
     private static void setSendingTime(Message inMsg) {
@@ -202,7 +202,7 @@ public class ReportsTestBase extends TestCaseBase {
         return report;
     }
 
-    private static final DestinationID BROKER = new DestinationID("TestBroker");
+    private static final BrokerID BROKER = new BrokerID("TestBroker");
     private static FIXMessageFactory sMessageFactory;
     protected static ReportHistoryServices sServices;
 }

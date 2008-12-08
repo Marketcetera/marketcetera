@@ -2,7 +2,7 @@ import java.util.Date;
 
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;
@@ -32,15 +32,15 @@ public class SendMessage
         } else {
             message = null;
         }
-        String nullDestination = getParameter("nullDestination");
-        DestinationID destination;
-        if(nullDestination == null) {
-            destination = new DestinationID("some-destination");
+        String nullBroker = getParameter("nullBroker");
+        BrokerID broker;
+        if(nullBroker == null) {
+            broker = new BrokerID("some-broker");
         } else {
-            destination = null;
+            broker = null;
         }
         sendMessage(message,
-                    destination);
+                    broker);
         setProperty("onStart",
                     Long.toString(System.currentTimeMillis()));
     }

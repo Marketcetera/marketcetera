@@ -1,11 +1,11 @@
-package org.marketcetera.client.dest;
+package org.marketcetera.client.brokers;
 
 import java.io.Serializable;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * The web service representation of a single destination's status.
+ * The web service representation of a single broker's status.
  *
  * @author tlerios@marketcetera.com
  * @since $Release$
@@ -14,8 +14,8 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class DestinationStatus
+@ClassVersion("$Id$")
+public class BrokerStatus
     implements Serializable
 {
 
@@ -27,24 +27,24 @@ public class DestinationStatus
     // INSTANCE DATA.
 
     private String mName;
-    private DestinationID mId;
+    private BrokerID mId;
     private boolean mLoggedOn;
 
 
     // CONSTRUCTORS.
 
     /**
-     * Creates a new status representation, given the destination
+     * Creates a new status representation, given the broker
      * information.
      *
-     * @param name The destination name.
-     * @param id The destination ID.
+     * @param name The broker name.
+     * @param id The broker ID.
      * @param loggedOn The logon flag.
      */
 
-    public DestinationStatus
+    public BrokerStatus
         (String name,
-         DestinationID id,
+         BrokerID id,
          boolean loggedOn)
     {
         setName(name);
@@ -57,7 +57,7 @@ public class DestinationStatus
      * intended for use by JAXB.
      */
 
-    protected DestinationStatus() {}
+    protected BrokerStatus() {}
 
 
     // INSTANCE METHODS.
@@ -86,24 +86,24 @@ public class DestinationStatus
     }
 
     /**
-     * Sets the receiver's destination ID to the given value,
+     * Sets the receiver's broker ID to the given value,
      *
      * @param id The ID.
      */
 
     public void setId
-        (DestinationID id)
+        (BrokerID id)
     {
         mId=id;
     }
 
     /**
-     * Returns the receiver's destination ID.
+     * Returns the receiver's broker ID.
      *
      * @return The ID.
      */
 
-    public DestinationID getId()
+    public BrokerID getId()
     {
         return mId;
     }
@@ -131,13 +131,10 @@ public class DestinationStatus
         return mLoggedOn;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString()
     {
-        return String.format("Destination: %s(%s,%s)", //$NON-NLS-1$
+        return String.format("Broker: %s(%s,%s)", //$NON-NLS-1$
                              String.valueOf(mName),
                              String.valueOf(mId),
                              mLoggedOn);

@@ -194,7 +194,7 @@ public class TradeReportsHistory {
                         mAllMessages.add(new ReportHolder(
                                 Factory.getInstance().createExecutionReport(
                                         newExecutionReport,
-                                        inReport.getDestinationID(), Originator.Server), groupID));
+                                        inReport.getBrokerID(), Originator.Server), groupID));
                     } catch (MessageCreationException e) {
                         throw new RuntimeException(Messages.SHOULD_NEVER_HAPPEN_IN_ADDINCOMINGMESSAGE.getText(), e);
                     }

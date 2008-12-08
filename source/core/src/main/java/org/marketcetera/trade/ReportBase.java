@@ -47,11 +47,11 @@ public interface ReportBase extends Serializable {
     String getText();
 
     /**
-     * Gets the ID of the destination from which this report was received.
+     * Gets the ID of the broker from which this report was received.
      *
-     * @return the destination ID from which this report was received.
+     * @return the broker ID from which this report was received.
      */
-    DestinationID getDestinationID();
+    BrokerID getBrokerID();
 
     /**
      * Time of message transmission in UTC.
@@ -61,11 +61,11 @@ public interface ReportBase extends Serializable {
     Date getSendingTime();
     
     /**
-     * The order ID assigned by destination / broker to the original order.
+     * The order ID assigned by broker to the original order.
      *
-     * @return the destination / broker assigned order ID.
+     * @return the broker assigned order ID.
      */
-    String getDestinationOrderID();
+    String getBrokerOrderID();
 
     /**
      * The unique ID for this report.

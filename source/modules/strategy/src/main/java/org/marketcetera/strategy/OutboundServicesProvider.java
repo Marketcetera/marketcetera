@@ -3,7 +3,7 @@ package org.marketcetera.strategy;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataEmitter;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
@@ -27,31 +27,31 @@ import quickfix.Message;
 interface OutboundServicesProvider
 {
     /**
-     * Sends an order to the destination or destinations established in the strategy module.
+     * Sends an order to the subscriber or subscribers established in the strategy module.
      *
      * @param inOrder an <code>OrderSingle</code> value
      */
     void sendOrder(OrderSingle inOrder);
     /**
-     * Sends an order cancel request to the established destination or destinations.
+     * Sends an order cancel request to the established subscriber or subscribers.
      *
      * @param inCancel an <code>OrderCancel</code> value
      */
     void cancelOrder(OrderCancel inCancel);
     /**
-     * Sends an order replace request to the established destination or destinations.
+     * Sends an order replace request to the established subscriber or subscribers.
      *
      * @param inReplace an <code>OrderReplace</code> value
      */
     void cancelReplace(OrderReplace inReplace);
     /**
-     * Sends a trade suggestion to the destination or destinations established in the strategy module.
+     * Sends a trade suggestion to the subscriber or subscribers established in the strategy module.
      *
      * @param inSuggestion a <code>Suggestion</code> value
      */
     void sendSuggestion(Suggestion inSuggestion);
     /**
-     * Sends an event to the destination or destinations established in the strategy module.
+     * Sends an event to the subscriber or subscribers established in the strategy module.
      *
      * @param inEvent an <code>EventBase</code> value containing the event to send
      * @param inProvider a <code>String</code> value containing the value of a CEP provider to which to send the event or null
@@ -140,10 +140,10 @@ interface OutboundServicesProvider
      * Sends a FIX message to Order subscribers.
      *
      * @param inMessage a <code>Message</code> value
-     * @param inDestination a <code>DestinationID</code> value
+     * @param inBroker a <code>BrokerID</code> value
      */
     void sendMessage(Message inMessage,
-                     DestinationID inDestination);
+                     BrokerID inBroker);
     /**
      * Broadcast a change in strategy status.
      *

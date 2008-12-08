@@ -177,7 +177,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         assertNotNull(historyExecutionReportForOrder2);
 
         assertEquals("1001", historyExecutionReportForOrder1
-                .getDestinationOrderID());
+                .getBrokerOrderID());
         assertEquals("2004", historyExecutionReportForOrder1.getExecutionID()); //$NON-NLS-1$
         assertEquals(executionReportForOrder1.getString(ClOrdID.FIELD),
                 historyExecutionReportForOrder1.getOrderID().getValue());
@@ -189,7 +189,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 historyExecutionReportForOrder1.getSymbol().toString());
 
         assertEquals("1003", historyExecutionReportForOrder2
-                .getDestinationOrderID());
+                .getBrokerOrderID());
         assertEquals("2003", historyExecutionReportForOrder2.getExecutionID()); //$NON-NLS-1$
         assertEquals(order2.getString(ClOrdID.FIELD),
                 historyExecutionReportForOrder2.getOrderID().getValue());
@@ -292,7 +292,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                     CxlRejResponseTo.ORDER_CANCEL_REQUEST));
             history.addIncomingMessage(Factory.getInstance()
                     .createOrderCancelReject(cancelReject,
-                            new DestinationID("ABC")));
+                            new BrokerID("ABC")));
 
             assertEquals(
                     OrderStatus.Filled,
@@ -326,7 +326,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                     CxlRejResponseTo.ORDER_CANCEL_REQUEST));
             history.addIncomingMessage(Factory.getInstance()
                     .createOrderCancelReject(cancelReject,
-                            new DestinationID("ABC")));
+                            new BrokerID("ABC")));
 
             assertEquals(
                     OrderStatus.New,
@@ -748,7 +748,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         history.addIncomingMessage(Factory.getInstance().createOrderCancelReject(msgFactory
                 .newOrderCancelReject(new OrderID("1001"), new ClOrdID("1"),
                         new OrigClOrdID("1"), "ABC", new CxlRejReason(
-                                CxlRejReason.TOO_LATE_TO_CANCEL)), new DestinationID("1")));
+                                CxlRejReason.TOO_LATE_TO_CANCEL)), new BrokerID("1")));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
@@ -795,7 +795,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         history.addIncomingMessage(Factory.getInstance().createOrderCancelReject(msgFactory
                 .newOrderCancelReject(new OrderID("1001"), new ClOrdID("1"),
                         new OrigClOrdID("1"), "ABC", new CxlRejReason(
-                                CxlRejReason.TOO_LATE_TO_CANCEL)), new DestinationID("1")));
+                                CxlRejReason.TOO_LATE_TO_CANCEL)), new BrokerID("1")));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
@@ -938,7 +938,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     private ExecutionReport createReport(Message message)
             throws MessageCreationException {
         return Factory.getInstance().createExecutionReport(message,
-                new DestinationID("null"), Originator.Server);
+                new BrokerID("null"), Originator.Server);
     }
 
 }

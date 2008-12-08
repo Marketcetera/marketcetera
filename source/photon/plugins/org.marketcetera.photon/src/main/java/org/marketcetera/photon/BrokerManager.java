@@ -8,9 +8,9 @@ import org.eclipse.core.databinding.observable.list.ComputedList;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.marketcetera.client.dest.DestinationStatus;
-import org.marketcetera.client.dest.DestinationsStatus;
-import org.marketcetera.trade.DestinationID;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -45,7 +45,7 @@ public final class BrokerManager implements IBrokerIdValidator {
 	}
 
 	private IObservableList mBrokers = WritableList
-			.withElementType(DestinationStatus.class);
+			.withElementType(BrokerStatus.class);
 
 	private IObservableList mAvailableBrokers = new AvailableBrokers();
 
@@ -59,9 +59,9 @@ public final class BrokerManager implements IBrokerIdValidator {
 		return mAvailableBrokers;
 	}
 
-	public void setBrokersStatus(DestinationsStatus statuses) {
+	public void setBrokersStatus(BrokersStatus statuses) {
 		mBrokers.clear();
-		mBrokers.addAll(statuses.getDestinations());
+		mBrokers.addAll(statuses.getBrokers());
 	}
 
 	private final class AvailableBrokers extends ComputedList {
@@ -71,7 +71,7 @@ public final class BrokerManager implements IBrokerIdValidator {
 			List<Broker> list = new ArrayList<Broker>();
 			list.add(AUTO_SELECT_BROKER);
 			for (Object object : mBrokers) {
-				DestinationStatus brokerStatus = (DestinationStatus) object;
+				BrokerStatus brokerStatus = (BrokerStatus) object;
 				if (brokerStatus.getLoggedOn()) {
 					list.add(new Broker(brokerStatus.getName(), brokerStatus
 							.getId()));
@@ -106,9 +106,9 @@ public final class BrokerManager implements IBrokerIdValidator {
 	@ClassVersion("$Id$")
 	public final static class Broker {
 		private String mName;
-		private DestinationID mId;
+		private BrokerID mId;
 
-		private Broker(String name, DestinationID id) {
+		private Broker(String name, BrokerID id) {
 			mName = name;
 			mId = id;
 		}
@@ -127,7 +127,7 @@ public final class BrokerManager implements IBrokerIdValidator {
 		 * 
 		 * @return the broker id
 		 */
-		public DestinationID getId() {
+		public BrokerID getId() {
 			return mId;
 		}
 	}
