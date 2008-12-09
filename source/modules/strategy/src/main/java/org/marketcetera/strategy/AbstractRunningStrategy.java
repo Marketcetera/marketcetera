@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -48,6 +49,7 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.Originator;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Message;
@@ -514,17 +516,8 @@ public abstract class AbstractRunningStrategy
             return false;
         }
         OrderCancel cancelRequest;
-        // first, try to find an ExecutionReport for this order
-        List<ExecutionReport> executionReports = order.executionReports;
-        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                               "{} found {} execution report(s) for {}", //$NON-NLS-1$
-                               strategy,
-                               executionReports.size(),
-                               inOrderID);
-        if(!executionReports.isEmpty()) {
-            // use the most recent execution report to seed the cancel request
-            cancelRequest = Factory.getInstance().createOrderCancel(executionReports.get(executionReports.size() - 1));
-        } else {
+        ExecutionReport executionReportToUse = selectExecutionReportForCancel(order);
+        if(executionReportToUse == null) {
             // use an empty execution report
             cancelRequest = Factory.getInstance().createOrderCancel(null);
             cancelRequest.setOriginalOrderID(inOrderID);
@@ -532,6 +525,9 @@ public abstract class AbstractRunningStrategy
             cancelRequest.setQuantity(order.underlyingOrder.getQuantity());
             cancelRequest.setSymbol(order.underlyingOrder.getSymbol());
             cancelRequest.setSide(order.underlyingOrder.getSide());
+        } else {
+            // use the most recent execution report to seed the cancel request
+            cancelRequest = Factory.getInstance().createOrderCancel(executionReportToUse);
         }
         SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
                                "{} submitting cancel request {}", //$NON-NLS-1$
@@ -618,23 +614,17 @@ public abstract class AbstractRunningStrategy
         }
         assert(inNewOrder.getOrderID() != null);
         // first, try to find an ExecutionReport for this order
-        List<ExecutionReport> executionReports = order.executionReports;
-        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                               "{} found {} execution report(s) for {}", //$NON-NLS-1$
-                               strategy,
-                               executionReports.size(),
-                               inOrderID);
+        ExecutionReport executionReport = selectExecutionReportForCancel(order);
         OrderReplace replaceOrder;
-        if(!executionReports.isEmpty()) {
-            replaceOrder = Factory.getInstance().createOrderReplace(executionReports.get(executionReports.size() - 1));
-
-        } else {
+        if(executionReport == null) {
             replaceOrder = Factory.getInstance().createOrderReplace(null);
             replaceOrder.setOriginalOrderID(inOrderID);
             replaceOrder.setBrokerID(order.underlyingOrder.getBrokerID());
             replaceOrder.setSymbol(order.underlyingOrder.getSymbol());
             replaceOrder.setSide(order.underlyingOrder.getSide());
             replaceOrder.setOrderType(order.underlyingOrder.getOrderType());
+        } else {
+            replaceOrder = Factory.getInstance().createOrderReplace(executionReport);
         }
         replaceOrder.setQuantity(inNewOrder.getQuantity());
         replaceOrder.setPrice(inNewOrder.getPrice());
@@ -855,6 +845,41 @@ public abstract class AbstractRunningStrategy
                                           inDate);
             return null;
         }
+    }
+    /**
+     * Searches for an appropriate <code>ExecutionReport</code> suitable for
+     * constructing a cancel order.
+     *
+     * @param inEntry an <code>Entry</code> value representing the order to cancel
+     * @return an <code>ExecutionReport</code> value or null if no appropriate <code>ExecutionReport</code>
+     *   value exists
+     */
+    private ExecutionReport selectExecutionReportForCancel(Entry inEntry)
+    {
+        // first, try to find an ExecutionReport for this order
+        List<ExecutionReport> executionReports = inEntry.executionReports;
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
+                               "{} found {} execution report(s) for {}", //$NON-NLS-1$
+                               strategy,
+                               executionReports.size(),
+                               inEntry);
+        // get list iterator set to last element of the list
+        ListIterator<ExecutionReport> iterator = executionReports.listIterator(executionReports.size());
+        // traverse backwards until a usable execution report is found
+        while(iterator.hasPrevious()) {
+            ExecutionReport report = iterator.previous();
+            if(Originator.Server.equals(report.getOriginator())) {
+                SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
+                                       "{} found {} to create the cancel order", //$NON-NLS-1$
+                                       strategy,
+                                       report);
+                return report;
+            }
+        }
+        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
+                               "{} found no appropriate execution report to create the cancel order", //$NON-NLS-1$
+                               strategy);
+        return null;
     }
     /**
      * Constructs a market data request from the given string of symbols.
