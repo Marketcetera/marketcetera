@@ -1,0 +1,20 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Accounts", :action_name => "List Accounts", :top_level_controller => @controller.controller_name } %>
+<h1>List Accounts</h1>
+
+<table>
+  <tr>
+    <%= show_relevant_table_columns(Account.new, true) %>
+    <th colspan="3"/>
+  </tr>
+  
+<% i=0
+for account in @accounts %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    <%= show_relevant_table_columns(account, false) %>
+    <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => account, :controller_name => 'accounts'} %>
+  </tr>
+<% end %>
+</table>
+
+<%= pagination_links(@account_pages) %>
