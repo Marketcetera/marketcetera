@@ -592,6 +592,12 @@ public final class ModuleManager {
                 //non-module initiated flows have been cancelled.
                 for(DataFlowID flowID: flows) {
                     DataFlow flow = mDataFlows.get(flowID);
+                    //We might not get a data flow for an ID if a module
+                    //that spawned multiple flows is stopped in a previous
+                    //iteration.
+                    if(flow == null) {
+                        continue;
+                    }
                     //Do note that this may fail if the requesting module
                     //is participating in data flows that it didn't initiate.
                     //If that happens, this method will fail, the user will

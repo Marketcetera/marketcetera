@@ -284,4 +284,15 @@ public class StandardAuthentication
     {
         mPasswordHolder.clear();
     }
+
+    /**
+     * Returns the CLI context.
+     *
+     * @return The CLI Context.
+     */
+    
+    public CliContext getCliContext()
+    {
+        return mCliContext;
+    }
 }
