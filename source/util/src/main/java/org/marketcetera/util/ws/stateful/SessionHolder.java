@@ -12,7 +12,7 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
  * safety in manipulating that data.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

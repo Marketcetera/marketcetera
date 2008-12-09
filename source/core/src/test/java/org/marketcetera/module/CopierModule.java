@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  * @author toli@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class CopierModule extends Module implements DataEmitter {
@@ -108,7 +108,7 @@ public class CopierModule extends Module implements DataEmitter {
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     public static class SynchronousRequest
     {

@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$") //$NON-NLS-1$

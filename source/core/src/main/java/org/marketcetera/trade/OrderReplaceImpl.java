@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderReplace {

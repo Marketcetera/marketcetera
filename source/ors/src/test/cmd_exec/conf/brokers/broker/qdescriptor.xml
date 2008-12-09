@@ -4,7 +4,7 @@
   - Primary broker configuration: QuickFIX/J session descriptor.
   -
   - Author: tlerios@marketcetera.com
-  - Since: $Release$
+  - Since: 1.0.0
   - Version: $Id$
   - $License$
   -->

@@ -95,7 +95,7 @@ import quickfix.field.TransactTime;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public class StrategyTestBase
     extends ModuleTestBase
@@ -107,7 +107,7 @@ public class StrategyTestBase
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     public static class StrategyCoordinates
     {
@@ -149,7 +149,7 @@ public class StrategyTestBase
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     public static class MockRecorderModule
         extends Module
@@ -275,7 +275,7 @@ public class StrategyTestBase
          *
          * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
          * @version $Id$
-         * @since $Release$
+         * @since 1.0.0
          */
         public static class Factory
             extends ModuleFactory<MockRecorderModule>
@@ -318,7 +318,7 @@ public class StrategyTestBase
          *
          * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
          * @version $Id$
-         * @since $Release$
+         * @since 1.0.0
          */
         public static class DataReceived
         {
@@ -398,7 +398,7 @@ public class StrategyTestBase
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     public static class StrategyDataEmissionModule
         extends Module
@@ -512,7 +512,7 @@ public class StrategyTestBase
          *
          * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
          * @version $Id$
-         * @since $Release$
+         * @since 1.0.0
          */
         public static class Factory
             extends ModuleFactory<StrategyDataEmissionModule>
@@ -752,7 +752,7 @@ public class StrategyTestBase
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     public static class Interval<T>
         implements Comparable<Interval<T>>
@@ -851,7 +851,7 @@ public class StrategyTestBase
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     public static class Position
     {

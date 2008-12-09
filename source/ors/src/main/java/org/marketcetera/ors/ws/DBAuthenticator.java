@@ -11,7 +11,7 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
  * A session authenticator that uses the database for authentication. 
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

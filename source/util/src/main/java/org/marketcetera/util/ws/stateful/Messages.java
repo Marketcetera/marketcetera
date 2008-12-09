@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The internationalization constants used by this package.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

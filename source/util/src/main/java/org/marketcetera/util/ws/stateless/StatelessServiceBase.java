@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The base interface for all web services. It is a tagging interface.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

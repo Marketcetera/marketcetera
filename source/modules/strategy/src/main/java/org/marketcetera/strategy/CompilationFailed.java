@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public class CompilationFailed
@@ -84,7 +84,7 @@ public class CompilationFailed
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     @ClassVersion("$Id$")
     public static enum Type
@@ -103,7 +103,7 @@ public class CompilationFailed
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     @ClassVersion("$Id$")
     public static class Diagnostic

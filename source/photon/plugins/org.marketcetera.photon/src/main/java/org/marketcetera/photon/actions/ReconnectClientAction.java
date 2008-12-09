@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  * @see ReconnectClientJob#runInUIThread(org.eclipse.core.runtime.IProgressMonitor)
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ReconnectClientAction

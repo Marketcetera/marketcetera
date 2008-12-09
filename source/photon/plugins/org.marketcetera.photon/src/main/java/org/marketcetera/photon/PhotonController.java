@@ -50,7 +50,7 @@ import quickfix.field.OrigClOrdID;
  * 
  * @author gmiller
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public class PhotonController

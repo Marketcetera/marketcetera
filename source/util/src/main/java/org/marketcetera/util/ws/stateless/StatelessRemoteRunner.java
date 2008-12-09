@@ -11,7 +11,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * is implemented by overriding {@link #run(StatelessClientContext)}.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

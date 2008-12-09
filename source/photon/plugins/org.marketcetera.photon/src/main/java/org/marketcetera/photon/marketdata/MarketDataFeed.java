@@ -35,7 +35,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public final class MarketDataFeed {
@@ -234,7 +234,7 @@ public final class MarketDataFeed {
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	public final class FeedStatusEvent extends EventObject {
@@ -272,7 +272,7 @@ public final class MarketDataFeed {
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	public static interface IFeedStatusChangedListener extends EventListener {

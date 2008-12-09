@@ -16,7 +16,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * The application's web services.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

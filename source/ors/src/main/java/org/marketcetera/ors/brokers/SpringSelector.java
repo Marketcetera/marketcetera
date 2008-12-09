@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The Spring-based configuration of the selector.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

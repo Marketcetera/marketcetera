@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * own processing, thereby leading to an endless cycle.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

@@ -42,7 +42,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken, 

@@ -40,7 +40,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 final class NewRubyStrategyWizardPage extends WizardPage {
@@ -172,7 +172,7 @@ final class NewRubyStrategyWizardPage extends WizardPage {
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	@ClassVersion("$Id$")
 	private final class ClassNameValidator extends MultiValidator {

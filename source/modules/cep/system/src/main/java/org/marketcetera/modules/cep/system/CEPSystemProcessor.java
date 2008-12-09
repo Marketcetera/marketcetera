@@ -25,7 +25,7 @@ import java.util.Map;
  * </ul>
  *
  * @author anshul@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

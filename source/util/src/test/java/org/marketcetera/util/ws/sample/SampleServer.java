@@ -13,7 +13,7 @@ import org.marketcetera.util.ws.stateful.SessionManager;
  * via command-line arguments.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

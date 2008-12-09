@@ -12,7 +12,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * result in exceptions/errors being thrown.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

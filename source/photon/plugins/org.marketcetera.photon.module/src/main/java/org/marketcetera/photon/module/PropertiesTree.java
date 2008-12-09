@@ -15,7 +15,7 @@ import java.util.TreeSet;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public class PropertiesTree extends TreeMap<String, String> implements Serializable {
 

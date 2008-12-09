@@ -10,7 +10,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  * @see DataEmitter#requestData(DataRequest, DataEmitterSupport)
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

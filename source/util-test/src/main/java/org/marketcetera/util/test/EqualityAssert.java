@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
  * Assertions for equality (and hash code generation).
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

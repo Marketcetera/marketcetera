@@ -72,7 +72,7 @@ import quickfix.field.TransactTime;
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public abstract class LanguageTestBase
         extends StrategyTestBase
@@ -3374,7 +3374,7 @@ public abstract class LanguageTestBase
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     public @interface PerformanceTest
     {

@@ -61,7 +61,7 @@ import quickfix.field.SecurityType;
  * The main plugin class to be used in the Photon application. This class is not
  * synchronized and should only be accessed from the UI thread.
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public class PhotonPlugin 

@@ -15,7 +15,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @SuppressWarnings("serial")
 public class MockI18NMessage implements I18NBoundMessage {

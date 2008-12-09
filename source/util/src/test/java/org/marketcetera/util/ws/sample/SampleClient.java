@@ -14,7 +14,7 @@ import org.marketcetera.util.ws.wrappers.MarshalledLocale;
  * configured via command-line arguments.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

@@ -30,7 +30,7 @@ import quickfix.field.OrderID;
  * 
  * @author gmiller
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  *
  */
 @ClassVersion("$Id$")

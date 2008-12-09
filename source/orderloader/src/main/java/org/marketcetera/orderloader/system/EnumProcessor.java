@@ -13,7 +13,7 @@ import java.util.Set;
 *
 * @author anshul@marketcetera.com
 * @version $Id$
-* @since $Release$
+* @since 1.0.0
 */
 @ClassVersion("$Id$")
 abstract class EnumProcessor<T extends Enum<T>>

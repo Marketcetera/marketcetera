@@ -12,7 +12,7 @@ import java.util.Date;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @MXBean(true)
 @DisplayName("Management interface for the Client Module instance")  //$NON-NLS-1$

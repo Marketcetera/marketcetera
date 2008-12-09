@@ -21,7 +21,7 @@ import java.math.BigDecimal;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public interface ExecutionReport extends TradeMessage, ReportBase {

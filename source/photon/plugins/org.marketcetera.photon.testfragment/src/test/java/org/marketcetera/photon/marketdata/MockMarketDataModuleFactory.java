@@ -33,7 +33,7 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public class MockMarketDataModuleFactory extends ModuleFactory<Module> {
 
@@ -56,7 +56,7 @@ public class MockMarketDataModuleFactory extends ModuleFactory<Module> {
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	public static class MockMarketDataModule extends Module implements
 			AbstractMarketDataModuleMXBean, NotificationEmitter, DataEmitter {

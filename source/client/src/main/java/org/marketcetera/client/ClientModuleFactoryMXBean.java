@@ -9,7 +9,7 @@ import org.marketcetera.module.DisplayName;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @DisplayName("Management Interface for Client Module Provider")  //$NON-NLS-1$
 @ClassVersion("$Id$") //$NON-NLS-1$

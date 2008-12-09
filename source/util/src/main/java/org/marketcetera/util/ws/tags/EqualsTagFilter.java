@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * candidate tag.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

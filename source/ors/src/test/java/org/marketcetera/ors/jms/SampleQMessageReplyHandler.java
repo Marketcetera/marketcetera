@@ -7,7 +7,7 @@ import quickfix.fix42.NewOrderSingle;
 
 /**
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

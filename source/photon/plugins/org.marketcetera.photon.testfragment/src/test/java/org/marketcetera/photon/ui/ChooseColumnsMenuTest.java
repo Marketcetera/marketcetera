@@ -30,7 +30,7 @@ import org.marketcetera.photon.ui.ChooseColumnsMenu.ITableProvider;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public class ChooseColumnsMenuTest {
 
@@ -134,7 +134,7 @@ public class ChooseColumnsMenuTest {
 	 *
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	private abstract class ChooseColumnsMenuTestCase {
 
@@ -163,7 +163,7 @@ public class ChooseColumnsMenuTest {
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	public static class MockTableView extends ViewPart implements
 			ITableProvider {

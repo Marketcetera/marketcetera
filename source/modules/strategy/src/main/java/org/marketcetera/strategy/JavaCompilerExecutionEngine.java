@@ -43,7 +43,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public class JavaCompilerExecutionEngine
@@ -211,7 +211,7 @@ public class JavaCompilerExecutionEngine
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     @ClassVersion("$Id$")
     private static class SourceJavaFileObject
@@ -257,7 +257,7 @@ public class JavaCompilerExecutionEngine
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     @ClassVersion("$Id$")
     private static class InMemoryClassLoader
@@ -305,7 +305,7 @@ public class JavaCompilerExecutionEngine
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     @ClassVersion("$Id$")
     private class InMemoryFileManager
@@ -439,7 +439,7 @@ public class JavaCompilerExecutionEngine
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     @ClassVersion("$Id$")
     private static class InMemoryJavaFileObject

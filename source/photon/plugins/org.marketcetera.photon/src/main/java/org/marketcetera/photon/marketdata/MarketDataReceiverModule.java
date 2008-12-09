@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public class MarketDataReceiverModule extends Module implements DataReceiver,
@@ -97,7 +97,7 @@ public class MarketDataReceiverModule extends Module implements DataReceiver,
 	 *
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	public interface IConfigurationProvider {
@@ -115,7 +115,7 @@ public class MarketDataReceiverModule extends Module implements DataReceiver,
 	 *
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	public abstract static class MarketDataSubscriber implements EventListener {

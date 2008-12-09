@@ -23,7 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author gmiller
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public class WebHelpAction extends Action {

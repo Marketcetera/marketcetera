@@ -31,7 +31,7 @@ import java.io.File;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ReportsTestBase extends TestCaseBase {

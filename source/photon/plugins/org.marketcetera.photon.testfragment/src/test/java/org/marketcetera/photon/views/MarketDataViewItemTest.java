@@ -26,7 +26,7 @@ import org.marketcetera.photon.test.IsExpectedPropertyChangeEvent;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public class MarketDataViewItemTest {
 

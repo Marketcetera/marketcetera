@@ -103,7 +103,7 @@ import quickfix.Message;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 final class StrategyModule
@@ -1293,7 +1293,7 @@ final class StrategyModule
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     @ClassVersion("$Id$")
     private static class InternalRequest
@@ -1317,7 +1317,7 @@ final class StrategyModule
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.0.0
      */
     @ClassVersion("$Id$")
     private class DataRequester

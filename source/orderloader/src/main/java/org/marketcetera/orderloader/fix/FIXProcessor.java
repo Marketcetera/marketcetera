@@ -30,7 +30,7 @@ import java.math.BigDecimal;
  * @author toli
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public class FIXProcessor extends RowProcessor {

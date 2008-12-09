@@ -8,7 +8,7 @@ import org.marketcetera.util.except.ExceptUtils;
  * A sample message handler. It cannot be an inner class.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 
