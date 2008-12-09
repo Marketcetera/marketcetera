@@ -50,6 +50,8 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 
 	private static final Class<?>[] NUMERIC_TYPES = { Number.class, Date.class,
 			Calendar.class };
+	
+	private static final int NUM_DIGITS = 5;
 
 	private final String assignedViewID;
 
@@ -326,7 +328,12 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 					textValue = DATE_FORMAT.format((Date) objValue);
 				}
 			} else if (objValue instanceof BigDecimal) {
-				textValue = ((BigDecimal) objValue).toPlainString();
+				BigDecimal n = (BigDecimal)objValue;
+				if (n.scale() <= NUM_DIGITS) {
+					return n.toPlainString();
+				} else {
+					return n.setScale(NUM_DIGITS, BigDecimal.ROUND_DOWN).toPlainString() + "..."; //$NON-NLS-1$
+				}
 			}
 
 			if (textValue == null) {
