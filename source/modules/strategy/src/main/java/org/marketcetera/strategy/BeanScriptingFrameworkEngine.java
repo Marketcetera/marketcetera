@@ -31,7 +31,19 @@ class BeanScriptingFrameworkEngine
     /**
      * script engine manager
      */
-    private static final BSFManager scriptManager = new BSFManager();
+    private static final BSFManager scriptManager;
+    /**
+     * static initializer
+     */
+    static {
+        ClassLoader cls = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(BeanScriptingFrameworkEngine.class.getClassLoader());
+            scriptManager = new BSFManager();
+        } finally {
+            Thread.currentThread().setContextClassLoader(cls);
+        }
+    }
     /**
      * the script engine responsible for executing this script
      */
@@ -59,9 +71,11 @@ class BeanScriptingFrameworkEngine
                                inStrategy);
         registerScriptEngines();
         String languageString = inStrategy.getLanguage().name();
+        ClassLoader cls = Thread.currentThread().getContextClassLoader();
         try {
             synchronized(scriptManager) {
                 if(scriptEngine == null) {
+                    Thread.currentThread().setContextClassLoader(BeanScriptingFrameworkEngine.class.getClassLoader());
                     scriptEngine = scriptManager.loadScriptingEngine(languageString);
                     SLF4JLoggerProxy.debug(this,
                                            "Initializing engine..."); //$NON-NLS-1$
@@ -79,6 +93,8 @@ class BeanScriptingFrameworkEngine
             throw new StrategyException(e,
                                         new I18NBoundMessage1P(NO_SUPPORT_FOR_LANGUAGE,
                                                                languageString));
+        } finally {
+            Thread.currentThread().setContextClassLoader(cls);
         }
     }
     /* (non-Javadoc)
