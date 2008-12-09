@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The marshalled form for a locale whose raw form is {@link Locale}.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

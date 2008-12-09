@@ -17,7 +17,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * the interval between scans is normally 5% of the session lifespan.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

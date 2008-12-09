@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class FIXEnumTestBase<F,E extends Enum<E>> {

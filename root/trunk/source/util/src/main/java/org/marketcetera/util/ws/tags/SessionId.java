@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * IDs should be obtained using {@link #generate()}.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

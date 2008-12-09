@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public class SinkConsoleController implements IConsoleFactory, IConsoleListener, Messages {
@@ -123,7 +123,7 @@ public class SinkConsoleController implements IConsoleFactory, IConsoleListener,
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	private final class InternalSubscriber implements SinkDataListener {

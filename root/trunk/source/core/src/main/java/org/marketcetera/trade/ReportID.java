@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlAccessType;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$") //$NON-NLS-1$

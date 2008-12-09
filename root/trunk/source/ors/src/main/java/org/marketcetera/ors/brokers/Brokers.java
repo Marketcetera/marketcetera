@@ -16,7 +16,7 @@ import quickfix.SessionID;
  * The collective in-memory representation of all brokers.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

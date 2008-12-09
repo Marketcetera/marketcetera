@@ -37,7 +37,7 @@ import org.osgi.framework.BundleContext;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public final class ModulePlugin extends AbstractUIPlugin {
 

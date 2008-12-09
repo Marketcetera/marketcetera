@@ -52,7 +52,7 @@ import ca.odell.glazedlists.impl.ThreadSafeList;
  * 
  * @author gmiller
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  *
  */
 @ClassVersion("$Id")

@@ -38,7 +38,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author gmiller
  * @author andrei@lissovski.org
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ApplicationActionBarAdvisor

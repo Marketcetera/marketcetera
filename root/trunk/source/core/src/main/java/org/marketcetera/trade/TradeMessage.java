@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * A tagging interface for all trade messages.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

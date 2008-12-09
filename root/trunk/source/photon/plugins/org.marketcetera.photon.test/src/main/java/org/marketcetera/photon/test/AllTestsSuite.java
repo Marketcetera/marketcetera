@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @RunWith(DynamicSuite.class)
 public class AllTestsSuite {

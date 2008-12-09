@@ -12,7 +12,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MessageCreationException extends I18NException {

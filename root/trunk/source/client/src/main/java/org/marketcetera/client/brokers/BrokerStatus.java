@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The web service representation of a single broker's status.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

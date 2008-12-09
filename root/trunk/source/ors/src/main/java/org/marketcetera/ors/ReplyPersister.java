@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * A persister of trade messages (replies) sent by the ORS to clients.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

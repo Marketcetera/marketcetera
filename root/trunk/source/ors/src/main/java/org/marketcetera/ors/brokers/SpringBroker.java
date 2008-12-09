@@ -11,7 +11,7 @@ import org.springframework.beans.factory.InitializingBean;
  * The Spring-based configuration of a single broker.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

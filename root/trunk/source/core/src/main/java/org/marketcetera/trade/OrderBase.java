@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public interface OrderBase extends Order {

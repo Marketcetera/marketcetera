@@ -22,7 +22,7 @@ import org.marketcetera.util.except.I18NException;
  * {@link MessageConsoleStream}.
  * @author gmiller
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  *
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

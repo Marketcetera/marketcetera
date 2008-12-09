@@ -53,7 +53,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: ModulePropertiesPreferencePage.java 9999 2008-11-04 22:49:55Z
  *          will $
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public final class ModulePropertiesPreferencePage extends PreferencePage
@@ -287,7 +287,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id: ModulePropertiesPreferencePage.java 9999 2008-11-04
 	 *          22:49:55Z will $
-	 * @since $Release$
+	 * @since 1.0.0
 	 */
 	@ClassVersion("$Id$")
 	private final class ModulePropertyNode implements IPropertySource {

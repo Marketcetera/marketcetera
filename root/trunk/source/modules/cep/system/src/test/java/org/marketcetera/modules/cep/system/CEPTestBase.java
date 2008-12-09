@@ -32,7 +32,7 @@ import static junit.framework.Assert.assertSame;
  *
  * @author toli@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public abstract class CEPTestBase extends ModuleTestBase {

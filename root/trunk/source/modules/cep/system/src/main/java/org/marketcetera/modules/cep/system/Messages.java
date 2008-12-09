@@ -8,7 +8,7 @@ import org.marketcetera.util.log.*;
  * Internationalized messages for this package.
  *
  * @author anshul@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

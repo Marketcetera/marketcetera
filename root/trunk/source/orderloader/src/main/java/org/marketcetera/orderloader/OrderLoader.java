@@ -21,7 +21,7 @@ import java.io.FileInputStream;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public class OrderLoader {

@@ -35,7 +35,7 @@ import ca.odell.glazedlists.EventList;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public class AveragePriceReportListTest extends FIXVersionedTestCase {
     public AveragePriceReportListTest(String inName, FIXVersion version) {

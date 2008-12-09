@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
  * Assertions for {@link Comparable}.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

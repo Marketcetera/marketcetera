@@ -16,7 +16,7 @@ import org.marketcetera.client.ConnectionException;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public class ServerOrderProcessor implements OrderProcessor {

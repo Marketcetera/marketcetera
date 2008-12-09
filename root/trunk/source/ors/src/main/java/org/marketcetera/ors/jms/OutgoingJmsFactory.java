@@ -13,7 +13,7 @@ import org.springframework.jms.support.converter.SimpleMessageConverter;
  * connection templates).
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public class GoogleFinanceLookupHandler extends AbstractHandler {

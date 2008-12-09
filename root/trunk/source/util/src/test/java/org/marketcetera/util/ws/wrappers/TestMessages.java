@@ -6,7 +6,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
 
 /**
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

@@ -6,7 +6,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * A type-safe message handler that produces replies.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

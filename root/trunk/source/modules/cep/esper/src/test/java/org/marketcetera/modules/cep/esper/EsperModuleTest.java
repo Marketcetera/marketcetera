@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * Test the Esper module functionality
  * @author toli@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class EsperModuleTest extends CEPTestBase {

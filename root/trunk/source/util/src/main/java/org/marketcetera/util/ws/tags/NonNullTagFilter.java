@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * A tag filter that accepts any non-null tag.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

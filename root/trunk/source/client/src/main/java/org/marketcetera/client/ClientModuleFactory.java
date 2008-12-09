@@ -18,7 +18,7 @@ import org.marketcetera.module.ModuleCreationException;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ClientModuleFactory extends ModuleFactory

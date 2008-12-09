@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The in-memory representation of the selector.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

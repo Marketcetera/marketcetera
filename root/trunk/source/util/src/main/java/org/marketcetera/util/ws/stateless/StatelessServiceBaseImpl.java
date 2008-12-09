@@ -6,7 +6,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The base class for all web services.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

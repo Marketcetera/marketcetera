@@ -20,7 +20,7 @@ import java.util.Map;
  * Set of constants naming pre-defined CEP data types
  * @author toli@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class CEPDataTypes {

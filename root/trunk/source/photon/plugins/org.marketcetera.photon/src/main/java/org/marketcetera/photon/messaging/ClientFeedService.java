@@ -24,7 +24,7 @@ import org.osgi.framework.ServiceRegistration;
  * 
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ClientFeedService

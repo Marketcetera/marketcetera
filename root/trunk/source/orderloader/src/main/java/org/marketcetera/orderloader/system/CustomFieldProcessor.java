@@ -19,7 +19,7 @@ import java.util.LinkedList;
 *
 * @author anshul@marketcetera.com
 * @version $Id$
-* @since $Release$
+* @since 1.0.0
 */
 @ClassVersion("$Id$")
 final class CustomFieldProcessor implements FieldProcessor {

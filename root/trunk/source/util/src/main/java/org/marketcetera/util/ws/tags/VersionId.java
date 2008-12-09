@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * is marshalled to the JVM.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @XmlSeeAlso
     ({ExecutionReportImpl.class,

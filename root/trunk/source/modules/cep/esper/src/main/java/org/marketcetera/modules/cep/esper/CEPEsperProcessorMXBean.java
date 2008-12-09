@@ -12,7 +12,7 @@ import javax.management.MXBean;
  * @author anshul@marketcetera.com
  * @author toli@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 @MXBean(true)

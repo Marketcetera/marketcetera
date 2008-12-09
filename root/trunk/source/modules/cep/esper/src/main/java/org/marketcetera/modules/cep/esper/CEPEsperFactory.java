@@ -17,7 +17,7 @@ import org.marketcetera.module.ModuleURN;
  * @see CEPEsperProcessor
  * @author anshul@marketcetera.com
  * @author toli@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * A generic ID tag.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

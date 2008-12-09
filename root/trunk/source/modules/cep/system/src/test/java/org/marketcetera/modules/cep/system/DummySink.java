@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * @author toli@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public class DummySink implements SinkDataListener {
 

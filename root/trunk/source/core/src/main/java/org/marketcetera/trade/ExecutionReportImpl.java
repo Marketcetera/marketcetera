@@ -16,7 +16,7 @@ import quickfix.Message;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {

@@ -22,7 +22,7 @@ import quickfix.SessionID;
  * The in-memory representation of a single broker.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

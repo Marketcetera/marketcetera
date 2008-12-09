@@ -12,7 +12,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * An authentication service implementation.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.0.0
  * @version $Id$
  */
 

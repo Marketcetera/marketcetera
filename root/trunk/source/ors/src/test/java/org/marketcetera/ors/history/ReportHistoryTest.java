@@ -25,7 +25,7 @@ import quickfix.field.SendingTime;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.0.0
  */
 public class ReportHistoryTest extends ReportsTestBase {
 
