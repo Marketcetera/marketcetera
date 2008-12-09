@@ -29,7 +29,6 @@ import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.parser.SideImage;
-import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.ui.databinding.ErrorDecorationObservable;
 import org.marketcetera.photon.ui.databinding.IsNewOrderMessageConverter;
 import org.marketcetera.photon.ui.databinding.RetainTextObservable;
@@ -132,7 +131,6 @@ public class OptionOrderTicketView
 		optionOrderTicket.getSideCombo().add(SideImage.BUY.getImage());
 		optionOrderTicket.getSideCombo().add(SideImage.SELL.getImage());
 		
-		addComboChoicesFromLexerEnum(optionOrderTicket.getTifCombo(), TimeInForceImage.values());
 		addComboChoicesFromLexerEnum(optionOrderTicket.getPutOrCallCombo(), PutOrCallImage.values());
 		addComboChoicesFromLexerEnum(optionOrderTicket.getOrderCapacityCombo(), OrderCapacityImage.values());
 		addComboChoicesFromLexerEnum(optionOrderTicket.getOpenCloseCombo(), OpenCloseImage.values());
