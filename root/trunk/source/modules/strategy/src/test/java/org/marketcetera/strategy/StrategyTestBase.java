@@ -1218,7 +1218,7 @@ public class StrategyTestBase
             rawExeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
             reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
                                                                                            inOrder.getBrokerID(),
-                                                                                           Originator.Broker));
+                                                                                           Originator.Server));
         }
         return reports;
     }
