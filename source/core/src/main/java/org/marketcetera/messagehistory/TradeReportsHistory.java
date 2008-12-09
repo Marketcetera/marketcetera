@@ -137,13 +137,13 @@ public class TradeReportsHistory {
 
             // The first message that comes in with a specific order id gets stored in a map.  This
             // map is used by #getFirstReport(String) to facilitate CancelReplace
-            // TODO: Change this to look for custom ORS acks
-            if(inReport instanceof ExecutionReport &&
-                    inReport.getOrderID() != null) {
+            if (inReport instanceof ExecutionReport
+                    && inReport.getOrderID() != null) {
                 OrderID id = inReport.getOrderID();
                 OrderStatus status = inReport.getOrderStatus();
-                if(status == OrderStatus.PendingNew ||
-                        status == OrderStatus.PendingReplace) {
+                if (Originator.Server == ((ExecutionReport) inReport)
+                        .getOriginator()
+                        && (status == OrderStatus.PendingNew || status == OrderStatus.PendingReplace)) {
                     synchronized (mOriginalOrderACKs) {
                         if (!mOriginalOrderACKs.containsKey(id)) {
                             mOriginalOrderACKs.put(id, messageHolder);
