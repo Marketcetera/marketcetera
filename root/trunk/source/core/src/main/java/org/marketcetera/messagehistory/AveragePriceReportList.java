@@ -106,8 +106,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                     }
                                 }
                                 // The following block is for the PENDING NEW acks from ORS.
-                                // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
-                                else if (deltaReport.getOrderStatus() == OrderStatus.PendingNew) {
+                                else if (execReport.getOriginator() == Originator.Server && deltaReport.getOrderStatus() == OrderStatus.PendingNew) {
                                     double orderQty = toDouble(averagePriceReport.getOrderQuantity());
                                     orderQty = orderQty + toDouble(execReport.getOrderQuantity());
                                     averagePriceMessage.setDouble(OrderQty.FIELD, orderQty);
@@ -115,17 +114,15 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                             }
                             updates.addUpdate(averagePriceIndex);
                         } else {
-                            // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
                             if (deltaReport instanceof ExecutionReport) {
                                 ExecutionReport execReport = (ExecutionReport) deltaReport;
                                 BigDecimal lastQuantity = execReport.getLastQuantity();
-                                if (deltaReport.getOrderStatus() == OrderStatus.PendingNew || (lastQuantity != null && lastQuantity.compareTo(BigDecimal.ZERO) > 0)) { 
+                                if ((execReport.getOriginator() == Originator.Server && deltaReport.getOrderStatus() == OrderStatus.PendingNew) || (lastQuantity != null && lastQuantity.compareTo(BigDecimal.ZERO) > 0)) { 
                                     Message averagePriceMessage = mMessageFactory.createMessage(MsgType.EXECUTION_REPORT);
                                     averagePriceMessage.setField(deltaMessage.getField(new Side()));
                                     averagePriceMessage.setField(deltaMessage.getField(new Symbol()));
                                     // The following block is for the PENDING NEW acks from ORS.
-                                    // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
-                                    if (deltaReport.getOrderStatus() == OrderStatus.PendingNew){
+                                    if (execReport.getOriginator() == Originator.Server && deltaReport.getOrderStatus() == OrderStatus.PendingNew){
                                         averagePriceMessage.setField(new OrderQty(execReport.getOrderQuantity()));
                                     } else {
                                         if (execReport.getLeavesQuantity() != null)
