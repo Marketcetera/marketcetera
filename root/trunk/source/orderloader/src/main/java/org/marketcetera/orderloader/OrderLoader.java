@@ -1,434 +1,137 @@
 package org.marketcetera.orderloader;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
-
-import javax.jms.JMSException;
-
-import org.apache.activemq.Service;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVStrategy;
-import org.apache.log4j.PropertyConfigurator;
-import org.marketcetera.core.ApplicationBase;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.CoreException;
-import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.util.auth.StandardAuthentication;
-import org.marketcetera.util.log.I18NBoundMessage0P;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.spring.SpringUtils;
-import org.marketcetera.util.unicode.UnicodeInputStreamReader;
-import org.marketcetera.util.unicode.DecodingStrategy;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.jms.core.JmsTemplate;
+import org.marketcetera.orderloader.system.SystemProcessor;
+import org.marketcetera.orderloader.fix.FIXProcessor;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.BrokerID;
 
-import quickfix.Field;
-import quickfix.Message;
-import quickfix.StringField;
-import quickfix.field.ClOrdID;
-import quickfix.field.HandlInst;
-import quickfix.field.MsgType;
-import quickfix.field.OrdType;
-import quickfix.field.OrderQty;
-import quickfix.field.Price;
-import quickfix.field.Side;
-import quickfix.field.TimeInForce;
-import quickfix.field.TransactTime;
+import java.util.Set;
+import java.util.EnumSet;
+import java.util.List;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
 
 /* $License$ */
-
 /**
- *  Simple class to read a CSV file containing orders and load them into the
- * JMS queue of orders
- * * File format is data-driven: the first line of the file determines the field order for the entire file.
- * Example:
- *     Symbol,Side,OrderQty,Price,TimeInForce,Account
- *     IBM,B,100,12.1,DAY,123-ASDF-234
+ * An order loader that reads orders from a supplied csv input file
+ * and processes them. 
  *
- * Special Cases:
- * 1. Price (positive)
- * 2. Quantity (positive integer)
- * @author gmiller
- * @author toli
- * @since 0.5.0
- * $Id$
+ * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class OrderLoader 
-    extends ApplicationBase
-    implements Messages
-{
-    private static final String JMS_SENDER_NAME = "outgoingJmsTemplate"; //$NON-NLS-1$
-    private static final String POOLED_CONNECTION_FACTORY_NAME = "pooledConnectionFactory"; //$NON-NLS-1$
-
-    private static final String CFG_BASE_FILE_NAME=
-        "file:"+CONF_DIR+"orderloader_base.xml"; //$NON-NLS-1$ //$NON-NLS-2$
-
-    private static StandardAuthentication authentication;
-
-    protected static String MKT_PRICE = "MKT"; //$NON-NLS-1$
-    protected static String TIME_LIMIT_DAY = "DAY"; //$NON-NLS-1$
-    public static final String CFG_FILE_NAME = "orderloader.xml"; //$NON-NLS-1$
-
-    private IDFactory idFactory;
-    private JmsTemplate jmsQueueSender;
-
-    protected int numProcessedOrders;
-    protected int numBlankLines;
-    protected int numComments;
-    protected Vector<String> failedOrders;
-    public static final String COMMENT_MARKER = "#"; //$NON-NLS-1$
-
-    public OrderLoader
-        (String username,
-         String password) throws Exception
-    {
-        StaticApplicationContext parentContext=
-            new StaticApplicationContext
-            (new FileSystemXmlApplicationContext(CFG_BASE_FILE_NAME));
-        SpringUtils.addStringBean(parentContext,USERNAME_BEAN_NAME,username);
-        SpringUtils.addStringBean(parentContext,PASSWORD_BEAN_NAME,password);
-        parentContext.refresh();
-
-        numProcessedOrders = numComments = numBlankLines = 0;
-        failedOrders = new Vector<String>();
-        createApplicationContext
-            (new String[] {getConfigName()},parentContext,true);
-        idFactory = new InMemoryIDFactory(System.currentTimeMillis());
-        try {
-            idFactory.getNext();
-        } catch(NoMoreIDsException ex) {
-            // don't print the entire stacktrace, just the message
-
-            // Not using the log since this code will go away before
-            // 1.0 (the ORS client will handle ID generation).
-            System.err.println(ex.getMessage());
-        }
-    }
-
-    protected void addDefaults(Message message) throws NoMoreIDsException
-    {
-        message.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
-        message.setField(new OrdType(OrdType.LIMIT));
-        message.setField(new ClOrdID(idFactory.getNext()));
-        message.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
-        message.setField(new TransactTime()); //i18n_datetime
-    }
-
-    protected void sendMessage(Message message) throws JMSException {
-        SLF4JLoggerProxy.debug(this,
-                               "Sending message: {}", //$NON-NLS-1$
-                               message);
-        jmsQueueSender.convertAndSend(message);
-    }
-
-    /** Prints the usage information for how to start the command and quits
+@ClassVersion("$Id$")
+public class OrderLoader {
+    /**
+     * Creates a new instance that processes orders from a csv input file.
+     *
+     * @param inMode the mode. Can be <code>sys</code> or a FIX version value.
+     * If null, defaults to <code>sys</code>.
+     * @param inBrokerID the broker's ID to which the orders should be sent.
+     * Can be null, if the mode is <code>sys</code>.
+     * @param inOrderProcessor the processor that should process all the orders
+     * parsed out by the order loader. Cannot be null.
+     * @param inFile the csv file that contains orders that need to be parsed.
+     * Cannot be null. 
+     *
+     * @throws OrderParsingException if there were errors
+     * @throws java.io.IOException if there were errors reading data from the
+     * supplied file.
      */
-    protected static void usage()
-    {
-        System.err.println(ERROR_USAGE.getText(OrderLoader.class.getName()));
-        System.err.println(ERROR_EXAMPLE.getText());
-        System.err.println(ERROR_AUTHENTICATION.getText());
-        System.err.println();
-        authentication.printUsage(System.err);
-        System.exit(1);
+    public OrderLoader(String inMode,
+                       BrokerID inBrokerID,
+                       OrderProcessor inOrderProcessor,
+                       File inFile)
+            throws OrderParsingException, IOException {
+        if(inOrderProcessor == null) {
+            throw new NullPointerException();
+        }
+        if(inFile == null) {
+            throw new NullPointerException();
+        }
+        if(inMode == null || inMode.equals(MODE_SYSTEM)) {
+            mRowProcessor = new SystemProcessor(inOrderProcessor, inBrokerID);
+        } else {
+            Set<FIXVersion> supportedValues = EnumSet.allOf(FIXVersion.class);
+            supportedValues.remove(FIXVersion.FIX_SYSTEM);
+            FIXVersion fixVersion;
+            try {
+                fixVersion = FIXVersion.getFIXVersion(inMode);
+            } catch (IllegalArgumentException e) {
+                throw new OrderParsingException(e, new I18NBoundMessage2P(
+                        Messages.INVALID_FIX_VERSION, inMode,
+                        supportedValues.toString()));
+            }
+            if(!supportedValues.contains(fixVersion)) {
+                throw new OrderParsingException(new I18NBoundMessage2P(
+                        Messages.INVALID_FIX_VERSION, inMode,
+                        supportedValues.toString()));
+            }
+            mRowProcessor = new FIXProcessor(inOrderProcessor,
+                    inBrokerID, fixVersion);
+        }
+        mParser = new OrderParser(mRowProcessor);
+        mParser.parseOrders(new FileInputStream(inFile));
     }
 
     /**
-     * @param args
-     * Incoming CSV file format:
-     * Symbol,Side,OrderQty,Price,TimeInForce,Account
-     * IBM,B,100,12.1,DAY,123-ASDF-234
+     * Number of lines of input processed.
+     *
+     * @return number of lines processed.
      */
-    public static void main(String[] args) throws Exception
-    {
-        PropertyConfigurator.configureAndWatch
-            (ApplicationBase.CONF_DIR+LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
-
-        authentication=new StandardAuthentication(CFG_BASE_FILE_NAME,args);
-        if (!authentication.setValues()) {
-            usage();
-        }
-
-        args=authentication.getOtherArgs();
-        if (args.length<1) {
-            System.err.println(ERROR_MISSING_FILE.getText());
-            usage();
-        }
-        if (args.length>1) {
-            System.err.println(ERROR_TOO_MANY_ARGUMENTS.getText());
-            usage();
-        }
-        String file=args[0];
-
-        OrderLoader loader = new OrderLoader
-            (authentication.getUser(),authentication.getPasswordAsString());
-        loader.parseAndSendOrders(new FileInputStream(file));
-        loader.printReport();
-        ((Service) loader.getAppCtx().getBean(POOLED_CONNECTION_FACTORY_NAME)).stop();
-        loader.getAppCtx().stop();
-        loader.getAppCtx().close();
-    }
-
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
-    public void parseAndSendOrders(InputStream inputStream)
-        throws Exception
-    {
-        String[][] rows = new CSVParser(new UnicodeInputStreamReader(
-                inputStream, DecodingStrategy.SIG_REQ),
-                CSVStrategy.EXCEL_STRATEGY).getAllValues();
-
-        if(rows.length < 2) {
-            System.err.println(ERROR_NO_ORDERS.getText());
-            System.exit(1);
-        }
-        jmsQueueSender = (JmsTemplate) getAppCtx().getBean(JMS_SENDER_NAME);
-        Vector<Field<?>> headerRow = null;
-        String[] headerFields = null;
-        for(String[] row : rows) {
-            if(headerRow == null) {
-                headerRow = getFieldOrder(row);
-                headerFields = row;
-            } else {
-                sendOneOrder(headerRow, 
-                             headerFields, 
-                             row);
-            }
-        }
-    }
-
-    /** Prints the summary report of he send orders */
-    private void printReport()
-    {
-        System.out.println(REPORT_SUMMARY.getText());
-        System.out.println(REPORT_PROCESSED_LINES.getText(numProcessedOrders));
-        System.out.println(REPORT_BLANK_LINES.getText(numBlankLines));
-        if(!failedOrders.isEmpty()) {
-            System.err.println(FAILED_MESSAGES.getText(failedOrders.size()));
-            for(String row : failedOrders ) {
-                System.err.println(row);
-            }
-        }
-    }
-
-    protected void sendOneOrder(Vector<Field<?>> inHeaderRow, String[] inHeaderNames, String[] inOrderRow)
-        throws NoMoreIDsException
-    {
-        SLF4JLoggerProxy.debug(this,
-                               "processing row {}", //$NON-NLS-1$
-                               Arrays.toString(inOrderRow));
-        Message message = msgFactory.newBasicOrder();
-        // set defaults first b/c they may be overridden for MKT orders
-        addDefaults(message);
-        try {
-            if(inHeaderRow.size() != inOrderRow.length) {
-                //Blank lines might appear as a row with a single empty record
-                if(inOrderRow.length == 0 ||
-                        (inOrderRow.length == 1 && inOrderRow[0].trim().length() == 0)) {
-                    numBlankLines++;
-                    return;
-                } else {
-                    throw new OrderParsingException(PARSING_WRONG_NUM_FIELDS);
-                }
-            } else if(inOrderRow[0].startsWith(COMMENT_MARKER)) {
-                numComments++;
-            } else {
-                for(int i=0;i<inHeaderRow.size();i++)
-                {
-                    Field<?> theField = inHeaderRow.get(i);
-                    String value = parseMessageValue(theField, inHeaderNames[i], inOrderRow[i], message);
-                    if(value!=null) {
-                        int fieldID = theField.getField();
-                        if(fixDD.getDictionary().isMsgField(MsgType.ORDER_SINGLE, fieldID)) {
-                            message.setField(new StringField(fieldID, value));
-                        } else if(fixDD.getDictionary().isHeaderField(fieldID)) {
-                            message.getHeader().setField(new StringField(fieldID, value));
-                        } else if(fixDD.getDictionary().isTrailerField(fieldID)) {
-                            message.getTrailer().setField(new StringField(fieldID, value));
-                        } else {
-                            // Format the fieldID so it doesn't get localized to 2,345 for example
-                            NumberFormat formatter = NumberFormat.getIntegerInstance();
-                            formatter.setGroupingUsed(false);
-                            throw new CoreException(new I18NBoundMessage2P(PARSING_FIELD_NOT_IN_DICT, 
-                                                                           formatter.format(fieldID), 
-                                                                           value));
-                        }
-                    }
-                }
-
-                fixDD.getDictionary().validate(message, true);
-
-                sendMessage(message);
-                numProcessedOrders++;
-            }
-        } catch (Exception e) {
-            PARSING_ORDER_GEN_ERROR.error(this,
-                                          e,
-                                          Arrays.toString(inOrderRow),
-                                          e.getLocalizedMessage());
-            SLF4JLoggerProxy.debug(this,
-                                   e.getLocalizedMessage(),
-                                   e);
-            failedOrders.add(new StringBuilder().append(Arrays.toString(inOrderRow)).append(": ").append(e.getLocalizedMessage()).toString()); //$NON-NLS-1$
-        }
+    public int getNumLines() {
+        return mParser.getNumLines();
     }
 
     /**
-     * For some fields (day, side, etc) we do custom lookups since the orders may be "DAY", MKT (for price), etc
-     * For all others, delegate to the basic field type lookup
-     * @param inField  the field we are converting
-     * @param inValue  string value
-     * @return Translated data
+     * Number of blank lines.
+     *
+     * @return number of blank lines.
      */
-    protected String parseMessageValue(Field<?> inField, 
-                                       String inFieldName, 
-                                       String inValue,
-                                       Message inMessage)
-        throws OrderParsingException
-    {
-        if(inField instanceof CustomField) {
-            return ((CustomField)inField).parseMessageValue(inValue).toString(); //i18n_number? BigDecimal.toString() might not give the right value
-        }
-
-        switch(inField.getField()) {
-            case Side.FIELD:
-                return getSide(inValue)+""; //$NON-NLS-1$
-            case Price.FIELD:
-                // price must be positive but can be MKT
-                if(MKT_PRICE.equals(inValue)) {
-                    inMessage.setField(new OrdType(OrdType.MARKET));
-                    return null;
-                } else {
-                    BigDecimal price =  null;
-                    try {
-                        price = new BigDecimal(inValue);//i18n_currency
-                    } catch(NumberFormatException ex) {
-                        throw new OrderParsingException(ex, new I18NBoundMessage1P(PARSING_PRICE_VALID_NUM, inValue));
-                    }
-                    if(price.compareTo(BigDecimal.ZERO) <= 0) {
-                        throw new OrderParsingException(new I18NBoundMessage1P(PARSING_PRICE_POSITIVE, price));
-                    }
-                    // just return the original string
-                    return inValue;
-                }
-            case OrderQty.FIELD:
-                // quantity must be a positive integer
-                Integer qty= null;
-                try {
-                    qty = Integer.parseInt(inValue);//i18n_number
-                } catch(NumberFormatException ex) {
-                    throw new OrderParsingException(ex, new I18NBoundMessage1P(PARSING_QTY_INT, inValue));
-                }
-                if(qty <=0) {
-                    throw new OrderParsingException(new I18NBoundMessage1P(PARSING_QTY_POS_INT, inValue));
-                }
-                // just return the original string
-                return inValue;
-            case TimeInForce.FIELD:
-                try {
-                    java.lang.reflect.Field theField = TimeInForce.class.getField(inValue);
-                    return theField.get(null).toString();
-                } catch (Exception ex) {
-                    throw new OrderParsingException(ex, inFieldName, inValue);
-                }
-            default:
-                return inValue;
-        }
+    public int getNumBlankLines() {
+        return mParser.getNumBlankLines();
     }
 
-    protected char getSide(String inValue)
-     {
-         if(inValue != null) {
-             inValue = inValue.toUpperCase();
-         }
-         if("".equals(inValue)) { //$NON-NLS-1$
-             return Side.UNDISCLOSED;
-         }
-         if("B".equals(inValue)) { //$NON-NLS-1$
-             return Side.BUY;
-         }
-         if("S".equals(inValue)) { //$NON-NLS-1$
-             return Side.SELL;
-         }
-         if("SS".equals(inValue)) { //$NON-NLS-1$
-             return Side.SELL_SHORT;
-         }
-         if("SSE".equals(inValue)) { //$NON-NLS-1$
-             return Side.SELL_SHORT_EXEMPT;
-         }
-         return Side.UNDISCLOSED;
-     }
     /**
-     * Parses a row of input to return an array of fields.
+     * Number of lines with comments.
      *
-     * @param inFirstRow a <code>String[]</code> value containing the values to interpret as fields
-     * @return a <code>Vector&lt;Field&lt;&gt;&gt;</code> value or null if the passed values should not be interpreted as fields
-     * @throws OrderParsingException if an error occurs while parsing the passed values
+     * @return number of lines with comments.
      */
-    protected Vector<Field<?>> getFieldOrder(String[] inFirstRow)
-        throws OrderParsingException
-    {
-        if(inFirstRow.length > 0 &&
-           inFirstRow[0].startsWith(COMMENT_MARKER)) {
-            return null;
-        }
-        Vector<Field<?>> result = new Vector<Field<?>>(inFirstRow.length);
-        for(String field : inFirstRow) {
-            result.add(getQuickFixFieldFromName(field));
-        }
-        return result;
+    public int getNumComments() {
+        return mParser.getNumComments();
     }
 
-    /** Translate the incoming field name from String to a FIX standard
-     * using reflection. the quickfix.field package has all of these defined
-     * as quickfix.field.<Name> so we just need to create a class for each english string
+    /**
+     * Number of orders successfully processed.
      *
-     * If the field is not found, it could be a "undertermined" field in which case we check
-     * to see if it parses out to an integer. If it does, we store the int as the field value
-     * Otherwise, we throw an error.
-     *
-     * @param fieldName
-     * @return quickfix object of that type
-     * @throws OrderParsingException
+     * @return number of orders processed.
      */
-    protected Field<?> getQuickFixFieldFromName(String fieldName)
-        throws OrderParsingException
-    {
-        Field<?> theField = null;
-        try {
-            theField = (Field<?>) Class.forName("quickfix.field."+fieldName).newInstance(); //$NON-NLS-1$
-        } catch(ClassNotFoundException ex) {
-            // check to see if this is non-predetermined value (just an int header)
-            return CustomField.getCustomField(fieldName);
-            //throw new OrderParsingException(fieldName, ex);
-        }catch(Exception ex) {
-            throw new OrderParsingException(ex, new I18NBoundMessage1P(Messages.ERROR_PARSING_UNKNOWN, fieldName));
-        }
-        return theField;
+    public int getNumSuccess() {
+        return mRowProcessor.getNumSuccess();
     }
 
-    /** Returns the values of the number of transactions processed */
-    public int getNumProcessedOrders()
-    {
-        return numProcessedOrders;
+    /**
+     * Number of orders that failed to process.
+     *
+     * @return number of orders failed.
+     */
+    public int getNumFailed() {
+        return mRowProcessor.getNumFailed();
     }
 
-    public Vector<String> getFailedOrders()
-    {
-        return failedOrders;
+    /**
+     * Details on failed orders.
+     *
+     * @return details on failed orders.
+     */
+    public List<FailedOrderInfo> getFailedOrders() {
+        return mRowProcessor.getFailedOrders();
     }
 
-    protected String getConfigName()    { return CFG_FILE_NAME; }
+    private final RowProcessor mRowProcessor;
+    private final OrderParser mParser;
+    public static final String MODE_SYSTEM = "sys";  //$NON-NLS-1$
 }

@@ -1,10 +1,9 @@
 package org.marketcetera.orderloader;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.CoreException;
-import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License */
 
@@ -15,9 +14,9 @@ import org.marketcetera.util.log.I18NBoundMessage2P;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class OrderParsingException 
-    extends CoreException
+    extends I18NException
     implements Messages
 {
     private static final long serialVersionUID = 8562647175132494522L;

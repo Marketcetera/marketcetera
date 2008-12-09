@@ -1,10 +1,11 @@
-package org.marketcetera.orderloader;
+package org.marketcetera.orderloader.fix;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.orderloader.OrderParsingException;
 
 import java.math.BigDecimal;
 
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class CustomFieldTest extends TestCase
 {
     public CustomFieldTest(String inName)
@@ -27,7 +28,7 @@ public class CustomFieldTest extends TestCase
 
     public void testParseCustomFieldValue()
     {
-        CustomField cf = new CustomField(1, null);
+        CustomField cf = new CustomField<String>(1, null);
         assertEquals(42, cf.parseMessageValue("42")); //$NON-NLS-1$
         assertEquals(Integer.class, cf.parseMessageValue("42").getClass()); //$NON-NLS-1$
 
@@ -39,7 +40,7 @@ public class CustomFieldTest extends TestCase
 
     public void testGetCustomField() throws Exception
     {
-        assertEquals(new CustomField(123, null), CustomField.getCustomField("123")); //$NON-NLS-1$
+        assertEquals(new CustomField<String>(123, null), CustomField.getCustomField("123")); //$NON-NLS-1$
         (new ExpectedTestFailure(OrderParsingException.class, "not123") { //$NON-NLS-1$
             protected void execute() throws Throwable
             {

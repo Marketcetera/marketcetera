@@ -30,6 +30,8 @@ public class CliContext
 
     private String[] mArgs;
     private CommandLine mCommandLine;
+    private OptionsProvider mOptionsProvider;
+    private ParseException mParseException;
 
 
     // CONSTRUCTORS.
@@ -108,9 +110,13 @@ public class CliContext
         for (CliSetter<?> setter:getSetters()) {
             setter.addOption(options);
         }
+        if(mOptionsProvider != null) {
+            mOptionsProvider.addOptions(options);
+        }
         try {
             mCommandLine=(new GnuParser()).parse(options,getArgs());
         } catch (ParseException ex) {
+            mParseException = ex;
             throw ExceptUtils.wrap(ex,Messages.PARSING_FAILED);
         }
         for (CliSetter<?> setter:getSetters()) {
@@ -118,5 +124,24 @@ public class CliContext
                 setter.setValue(getCommandLine());
             }
         }
+    }
+
+    /**
+     * Sets the options provider.
+     *
+     * @param inOptionsProvider the options provider.
+     */
+    public void setOptionsProvider(OptionsProvider inOptionsProvider) {
+        mOptionsProvider = inOptionsProvider;
+    }
+
+    /**
+     * Returns any failure that was encountered when parsing the command line.
+     * May be null if no failure was encountered parsing the command line.
+     *
+     * @return failure encountered when parsing the command line.
+     */
+    public ParseException getParseException() {
+        return mParseException;
     }
 }

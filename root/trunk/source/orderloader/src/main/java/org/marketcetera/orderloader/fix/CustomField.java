@@ -1,9 +1,11 @@
-package org.marketcetera.orderloader;
+package org.marketcetera.orderloader.fix;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.orderloader.OrderParsingException;
+import org.marketcetera.orderloader.Messages;
 
 import quickfix.Field;
 
@@ -20,7 +22,7 @@ import quickfix.Field;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class CustomField<T>
     extends Field<T>
 {

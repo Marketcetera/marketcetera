@@ -38,14 +38,25 @@
     </file>
     <file>
       <fileMode>420</fileMode>
-      <source>src/test/sample_data/inputs/smallMarket.csv</source>
+      <source>src/test/sample_data/inputs/smallMarketFIX.csv</source>
       <outputDirectory>samples</outputDirectory>
     </file>
     <file>
       <fileMode>420</fileMode>
-      <source>src/test/sample_data/inputs/reasonableOrders.csv</source>
+      <source>src/test/sample_data/inputs/smallMarketSys.csv</source>
       <outputDirectory>samples</outputDirectory>
-      <destName>largeMarket.csv</destName>
+    </file>
+    <file>
+      <fileMode>420</fileMode>
+      <source>src/test/sample_data/inputs/reasonableOrdersFIX.csv</source>
+      <outputDirectory>samples</outputDirectory>
+      <destName>largeMarketFIX.csv</destName>
+    </file>
+    <file>
+      <fileMode>420</fileMode>
+      <source>src/test/sample_data/inputs/reasonableOrdersSys.csv</source>
+      <outputDirectory>samples</outputDirectory>
+      <destName>largeMarketSys.csv</destName>
     </file>
   </files>
 </assembly>

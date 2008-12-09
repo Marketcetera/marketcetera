@@ -33,6 +33,10 @@
       <artifactId>core</artifactId>
     </dependency>
     <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>client</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
     </dependency>
@@ -49,14 +53,6 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
     </dependency>
-    <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jta_1.1_spec</artifactId>
-    </dependency>
 
     <!-- Testing. -->
     <dependency>
@@ -69,7 +65,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>[3.8.1]</version>
     </dependency>
   </dependencies>
 
@@ -77,16 +72,41 @@
 
     <!-- Command-line execution. -->
     <profile>
-      <id>execute</id>
+      <id>executeFIX</id>
       <build>
         <plugins>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.marketcetera.orderloader.OrderLoader</mainClass>
+              <mainClass>org.marketcetera.orderloader.Main</mainClass>
               <arguments>
-                <argument>src/test/sample_data/inputs/smallMarket.csv</argument>
+                <argument>-m</argument>
+                <argument>FIX.4.2</argument>
+                <argument>-b</argument>
+                <argument>metc</argument>
+                <argument>src/test/sample_data/inputs/smallMarketFIX.csv</argument>
+              </arguments>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>executeSys</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.orderloader.Main</mainClass>
+              <arguments>
+                <argument>-m</argument>
+                <argument>sys</argument>
+                <argument>src/test/sample_data/inputs/smallMarketSys.csv</argument>
               </arguments>
               <classpathScope>test</classpathScope>
             </configuration>
@@ -117,7 +137,7 @@
                 <argument>../../tools/scripts/createScript.pl</argument>
                 <argument>${project.build.directory}/${project.artifactId}</argument>
                 <argument>runOrderloader</argument>
-                <argument>org.marketcetera.orderloader.OrderLoader</argument>
+                <argument>org.marketcetera.orderloader.Main</argument>
               </arguments>
             </configuration>
           </plugin>
