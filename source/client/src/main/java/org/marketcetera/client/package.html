@@ -94,7 +94,22 @@
     <li>URL: The URL of the server</li>
     <li>Username: The user name to authenticate to the server.</li>
     <li>Password: The user's password to authenticate to the server.</li>
+    <li>Hostname: The hostname for the server's web service.</li>
+    <li>Port: The port number for the server's web service.</li>
+    <li>IDPrefix: The ID Prefix for all orders sent out by this client.</li>
 </ol>
+<p>
+    To set these parameters by default within a strategy agent, create a file
+    named <code>ors_system.properties</code> with the following contents.
+</p>
+<pre>
+Hostname=127.0.0.1
+Port=9000
+URL=tcp://127.0.0.1:61616
+Username=admin
+Password=admin
+IDPrefix=
+</pre>
 <p>
     Do note that the factory will not attempt to initialize the client if it
     already has been initialized via the Java API.

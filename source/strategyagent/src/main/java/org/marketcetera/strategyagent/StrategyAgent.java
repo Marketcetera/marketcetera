@@ -49,6 +49,7 @@ public class StrategyAgent extends ApplicationBase {
      */
     public static void main(String[] args) {
         initializeLogger(LOGGER_CONF_FILE);
+        Messages.LOG_APP_COPYRIGHT.info(StrategyAgent.class);
         //Run the application.
         run(new StrategyAgent(), args);
     }
