@@ -408,7 +408,7 @@ public class CEPEsperProcessor extends Module
      * A Subscriber class that subscribes to the query statement results
      * and emits them out to the flow that requested that statement.
      */
-    private static class Subscriber {
+    public static class Subscriber {
         /**
          * Creates a new instance.
          *
