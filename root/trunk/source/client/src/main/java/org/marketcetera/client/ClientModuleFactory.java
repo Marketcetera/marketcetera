@@ -118,6 +118,6 @@ public class ClientModuleFactory extends ModuleFactory
     private String mHostname;
     private int mPort;
     private String mIDPrefix;
-    static final ModuleURN PROVIDER_URN = new ModuleURN("metc:ors:system");  //$NON-NLS-1$
+    static final ModuleURN PROVIDER_URN = new ModuleURN("metc:server:system");  //$NON-NLS-1$
     public static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN, "single");  //$NON-NLS-1$
 }
