@@ -494,6 +494,7 @@ public class MarketceteraFeed
     @Override
     protected void doLogout()
     {
+        stop();
     }
     private final Map<String,List<FIXCorrelationFieldSubscription>> mSubscriptionsBySymbol = new HashMap<String,List<FIXCorrelationFieldSubscription>>();    
     /**
