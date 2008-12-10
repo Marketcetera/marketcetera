@@ -68,6 +68,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
     public void reconnect()
     {
         try {
+            feed.logout();
             feed.login(getCredentials());
         } catch (CoreException e) {
             SLF4JLoggerProxy.error(this,
