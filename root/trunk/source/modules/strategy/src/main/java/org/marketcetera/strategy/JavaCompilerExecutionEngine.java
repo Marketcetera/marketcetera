@@ -122,13 +122,16 @@ public class JavaCompilerExecutionEngine
                 classpathString.append(pathElement.trim()).append(File.pathSeparator);
             }
         }
-        // add jars we are given by the parent class loader, if any
-        if(JavaCompilerExecutionEngine.class.getClassLoader() instanceof URLClassLoader) {
-            for(URL url : (((URLClassLoader)JavaCompilerExecutionEngine.class.getClassLoader()).getURLs())) {
-                classpathString.append(url.getFile()).append(File.pathSeparator);
+        // add jars we are given by the parent class loaders, if any
+        ClassLoader currentLoader = getClass().getClassLoader();
+        do {
+            if(currentLoader instanceof URLClassLoader) {
+                for(URL url: ((URLClassLoader)currentLoader).getURLs()) {
+                    classpathString.append(url.getFile()).append(File.pathSeparator);
+                }
             }
-        }
-        // put the classpath string in place with the classpath command-line option 
+        } while((currentLoader = currentLoader.getParent()) != null);
+        // put the classpath string in place with the classpath command-line option
         options.add("-cp"); //$NON-NLS-1$
         options.add(classpathString.toString());
         SLF4JLoggerProxy.debug(JavaCompilerExecutionEngine.class,
