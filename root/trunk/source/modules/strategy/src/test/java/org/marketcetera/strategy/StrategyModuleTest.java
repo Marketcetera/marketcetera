@@ -15,7 +15,6 @@ import static org.marketcetera.module.Messages.MODULE_NOT_FOUND;
 import static org.marketcetera.module.Messages.MODULE_NOT_RECEIVER;
 import static org.marketcetera.module.Messages.STOP_FAILED_MODULE_NOT_STARTED;
 import static org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE;
-import static org.marketcetera.strategy.Language.JAVA;
 import static org.marketcetera.strategy.Language.RUBY;
 import static org.marketcetera.strategy.Messages.EMPTY_INSTANCE_ERROR;
 import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
@@ -103,9 +102,9 @@ public class StrategyModuleTest
         assertTrue(moduleManager.getModuleInstances(StrategyModuleFactory.PROVIDER_URN).isEmpty());
         ModuleURN strategy = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                         "MyStategy",
-                                                        JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                                        JAVA,
-                                                        JavaLanguageTest.JAVA_STRATEGY,
+                                                        RubyLanguageTest.STRATEGY_NAME,
+                                                        RUBY,
+                                                        RubyLanguageTest.STRATEGY,
                                                         new Properties(),
                                                         new String[0],
                                                         ordersURN,
@@ -136,27 +135,27 @@ public class StrategyModuleTest
     {
         doWrongParameterCountTest((Object[])null);
         doWrongParameterCountTest(new Object[0]);
-        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME);
-        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                  JAVA);
-        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                  JAVA,
-                                  JavaLanguageTest.JAVA_STRATEGY);
-        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                  JAVA,
-                                  JavaLanguageTest.JAVA_STRATEGY,
+        doWrongParameterCountTest(RubyLanguageTest.STRATEGY_NAME);
+        doWrongParameterCountTest(RubyLanguageTest.STRATEGY_NAME,
+                                  RUBY);
+        doWrongParameterCountTest(RubyLanguageTest.STRATEGY_NAME,
+                                  RUBY,
+                                  RubyLanguageTest.STRATEGY);
+        doWrongParameterCountTest(RubyLanguageTest.STRATEGY_NAME,
+                                  RUBY,
+                                  RubyLanguageTest.STRATEGY,
                                   new Properties());
-        doWrongParameterCountTest(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                  JAVA,
-                                  JavaLanguageTest.JAVA_STRATEGY,
+        doWrongParameterCountTest(RubyLanguageTest.STRATEGY_NAME,
+                                  RUBY,
+                                  RubyLanguageTest.STRATEGY,
                                   new Properties(),
                                   ordersURN);
         // muddle types
         doWrongTypeParameterTest(0,
                                  this,
-                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 JAVA,
-                                 JavaLanguageTest.JAVA_STRATEGY,
+                                 RubyLanguageTest.STRATEGY_NAME,
+                                 RUBY,
+                                 RubyLanguageTest.STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  ordersURN,
@@ -164,25 +163,25 @@ public class StrategyModuleTest
         doWrongTypeParameterTest(1,
                                  "MyStrategyURN",
                                  this,
-                                 JAVA,
-                                 JavaLanguageTest.JAVA_STRATEGY,
+                                 RUBY,
+                                 RubyLanguageTest.STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(2,
                                  "MyStrategyURN",
-                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
+                                 RubyLanguageTest.STRATEGY_NAME,
                                  this,
-                                 JavaLanguageTest.JAVA_STRATEGY,
+                                 RubyLanguageTest.STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(3,
                                  "MyStrategyURN",
-                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 JAVA,
+                                 RubyLanguageTest.STRATEGY_NAME,
+                                 RUBY,
                                  this,
                                  new Properties(),
                                  new String[0],
@@ -190,44 +189,44 @@ public class StrategyModuleTest
                                  suggestionsURN);
         doWrongTypeParameterTest(4,
                                  "MyStrategyURN",
-                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 JAVA,
-                                 JavaLanguageTest.JAVA_STRATEGY,
+                                 RubyLanguageTest.STRATEGY_NAME,
+                                 RUBY,
+                                 RubyLanguageTest.STRATEGY,
                                  this,
                                  new String[0],
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(5,
                                  "MyStrategyURN",
-                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 JAVA,
-                                 JavaLanguageTest.JAVA_STRATEGY,
+                                 RubyLanguageTest.STRATEGY_NAME,
+                                 RUBY,
+                                 RubyLanguageTest.STRATEGY,
                                  new Properties(),
                                  this,
                                  ordersURN,
                                  suggestionsURN);
         doWrongTypeParameterTest(6,
                                  "MyStrategyURN",
-                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 JAVA,
-                                 JavaLanguageTest.JAVA_STRATEGY,
+                                 RubyLanguageTest.STRATEGY_NAME,
+                                 RUBY,
+                                 RubyLanguageTest.STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  this,
                                  suggestionsURN);
         doWrongTypeParameterTest(7,
                                  "MyStrategyURN",
-                                 JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                 JAVA,
-                                 JavaLanguageTest.JAVA_STRATEGY,
+                                 RubyLanguageTest.STRATEGY_NAME,
+                                 RUBY,
+                                 RubyLanguageTest.STRATEGY,
                                  new Properties(),
                                  new String[0],
                                  ordersURN,
                                  this);
         // create a good 'un just to prove we can
-        ModuleURN strategy = createStrategy(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                            JAVA,
-                                            JavaLanguageTest.JAVA_STRATEGY,
+        ModuleURN strategy = createStrategy(RubyLanguageTest.STRATEGY_NAME,
+                                            RUBY,
+                                            RubyLanguageTest.STRATEGY,
                                             new Properties(),
                                             new String[0],
                                             ordersURN,
@@ -363,9 +362,9 @@ public class StrategyModuleTest
                index[0] == 6 ||
                index[0] == 7) {
                 verifyStrategyStartsAndStops((index[0]==0 ? null : "MyStrategy"),
-                                             (index[0]==1 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
-                                             (index[0]==2 ? null : JAVA),
-                                             (index[0]==3 ? null : JavaLanguageTest.JAVA_STRATEGY),
+                                             (index[0]==1 ? null : RubyLanguageTest.STRATEGY_NAME),
+                                             (index[0]==2 ? null : RUBY),
+                                             (index[0]==3 ? null : RubyLanguageTest.STRATEGY),
                                              (index[0]==4 ? null : new Properties()),
                                              (index[0]==5 ? null : new String[0]),
                                              (index[0]==6 ? null : ordersURN),
@@ -379,9 +378,9 @@ public class StrategyModuleTest
                         throws Exception
                     {
                         verifyStrategyStartsAndStops((index[0]==0 ? null : "MyStrategy"),
-                                                     (index[0]==1 ? null : JavaLanguageTest.JAVA_STRATEGY_NAME),
-                                                     (index[0]==2 ? null : JAVA),
-                                                     (index[0]==3 ? null : JavaLanguageTest.JAVA_STRATEGY),
+                                                     (index[0]==1 ? null : RubyLanguageTest.STRATEGY_NAME),
+                                                     (index[0]==2 ? null : RUBY),
+                                                     (index[0]==3 ? null : RubyLanguageTest.STRATEGY),
                                                      (index[0]==4 ? null : new Properties()),
                                                      (index[0]==5 ? null : new String[0]),
                                                      (index[0]==6 ? null : ordersURN),
@@ -407,9 +406,9 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(emptyInstance,
-                                             JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             JAVA,
-                                             JavaLanguageTest.JAVA_STRATEGY,
+                                             RubyLanguageTest.STRATEGY_NAME,
+                                             RUBY,
+                                             RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
                                              null,
@@ -417,9 +416,9 @@ public class StrategyModuleTest
             }
         };
         verifyStrategyStartsAndStops("MyStrategyInstance",
-                                     JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     JAVA,
-                                     JavaLanguageTest.JAVA_STRATEGY,
+                                     RubyLanguageTest.STRATEGY_NAME,
+                                     RUBY,
+                                     RubyLanguageTest.STRATEGY,
                                      null,
                                      null,
                                      null,
@@ -441,17 +440,17 @@ public class StrategyModuleTest
                 throws Exception
             {
                 verifyStrategyStartsAndStops(emptyName,
-                                             JAVA,
-                                             JavaLanguageTest.JAVA_STRATEGY,
+                                             RUBY,
+                                             RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
                                              null,
                                              null);
             }
         };
-        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     JAVA,
-                                     JavaLanguageTest.JAVA_STRATEGY,
+        verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                     RUBY,
+                                     RubyLanguageTest.STRATEGY,
                                      null,
                                      null,
                                      null,
@@ -467,34 +466,34 @@ public class StrategyModuleTest
         throws Exception
     {
         final String invalidLanguage = "Language-" + System.currentTimeMillis();
-        String validLanguage = JAVA.toString();
-        String validMixedCaseLanguage = "JaVa";
+        String validLanguage = RUBY.toString();
+        String validMixedCaseLanguage = "RuBy";
         new ExpectedFailure<ModuleCreationException>(INVALID_LANGUAGE_ERROR,
                                                      invalidLanguage) {
             @Override
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
+                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
                                              invalidLanguage,
-                                             JavaLanguageTest.JAVA_STRATEGY,
+                                             RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
                                              null,
                                              null);
             }
         };
-        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
+        verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
                                      validLanguage,
-                                     JavaLanguageTest.JAVA_STRATEGY,
+                                     RubyLanguageTest.STRATEGY,
                                      null,
                                      null,
                                      null,
                                      null);
         // test again with a mixed case string
-        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
+        verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
                                      validMixedCaseLanguage,
-                                     JavaLanguageTest.JAVA_STRATEGY,
+                                     RubyLanguageTest.STRATEGY,
                                      null,
                                      null,
                                      null,
@@ -518,8 +517,8 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             JAVA,
+                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                             RUBY,
                                              badFile,
                                              null,
                                              null,
@@ -539,9 +538,9 @@ public class StrategyModuleTest
     {
         Properties properties = new Properties();
         // empty properties
-        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     JAVA,
-                                     JavaLanguageTest.JAVA_STRATEGY,
+        verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                     RUBY,
+                                     RubyLanguageTest.STRATEGY,
                                      properties,
                                      null,
                                      null,
@@ -549,9 +548,9 @@ public class StrategyModuleTest
         // non-empty properties
         properties.setProperty("some-key",
                                "some value " + System.nanoTime());
-        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     JAVA,
-                                     JavaLanguageTest.JAVA_STRATEGY,
+        verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                     RUBY,
+                                     RubyLanguageTest.STRATEGY,
                                      properties,
                                      null,
                                      null,
@@ -567,17 +566,17 @@ public class StrategyModuleTest
         throws Exception
     {
         // empty classpath
-        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     JAVA,
-                                     JavaLanguageTest.JAVA_STRATEGY,
+        verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                     RUBY,
+                                     RubyLanguageTest.STRATEGY,
                                      null,
                                      new String[0],
                                      null,
                                      null);
         // non-empty classpath
-        verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                     JAVA,
-                                     JavaLanguageTest.JAVA_STRATEGY,
+        verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                     RUBY,
+                                     RubyLanguageTest.STRATEGY,
                                      null,
                                      new String[] { "/some/path/here", "/some/other/path with spaces/here" },
                                      null,
@@ -607,9 +606,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             JAVA,
-                                             JavaLanguageTest.JAVA_STRATEGY,
+                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                             RUBY,
+                                             RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
                                              invalidURN,
@@ -623,9 +622,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             JAVA,
-                                             JavaLanguageTest.JAVA_STRATEGY,
+                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                             RUBY,
+                                             RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
                                              validUnstartedURN,
@@ -639,9 +638,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             JAVA,
-                                             JavaLanguageTest.JAVA_STRATEGY,
+                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                             RUBY,
+                                             RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
                                              validURNNotReceiver,
@@ -656,9 +655,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             JAVA,
-                                             JavaLanguageTest.JAVA_STRATEGY,
+                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                             RUBY,
+                                             RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
                                              null,
@@ -672,9 +671,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             JAVA,
-                                             JavaLanguageTest.JAVA_STRATEGY,
+                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                             RUBY,
+                                             RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
                                              null,
@@ -688,9 +687,9 @@ public class StrategyModuleTest
             protected void run()
                 throws Exception
             {
-                verifyStrategyStartsAndStops(JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                             JAVA,
-                                             JavaLanguageTest.JAVA_STRATEGY,
+                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
+                                             RUBY,
+                                             RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
                                              null,
@@ -844,9 +843,9 @@ public class StrategyModuleTest
         assertFalse(moduleManager.getModuleInfo(dataSink).isEmitter());
         ModuleURN strategy = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                         "MyStrategy",
-                                                        JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                                        JAVA,
-                                                        JavaLanguageTest.JAVA_STRATEGY,
+                                                        RubyLanguageTest.STRATEGY_NAME,
+                                                        RUBY,
+                                                        RubyLanguageTest.STRATEGY,
                                                         null,
                                                         null,
                                                         dataSink,
@@ -867,9 +866,9 @@ public class StrategyModuleTest
     {
         ModuleURN strategy1 = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                          "MyNewStrategy",
-                                                         JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                                         JAVA,
-                                                         JavaLanguageTest.JAVA_STRATEGY,
+                                                         RubyLanguageTest.STRATEGY_NAME,
+                                                         RUBY,
+                                                         RubyLanguageTest.STRATEGY,
                                                          null,
                                                          null,
                                                          null,
@@ -883,9 +882,9 @@ public class StrategyModuleTest
             {
                 moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                            "MyNewStrategy",
-                                           JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                           JAVA,
-                                           JavaLanguageTest.JAVA_STRATEGY,
+                                           RubyLanguageTest.STRATEGY_NAME,
+                                           RUBY,
+                                           RubyLanguageTest.STRATEGY,
                                            null,
                                            null,
                                            null,
@@ -897,9 +896,9 @@ public class StrategyModuleTest
         // now it can be created again with the same name
         strategy1 = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                "MyNewStrategy",
-                                               JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                               JAVA,
-                                               JavaLanguageTest.JAVA_STRATEGY,
+                                               RubyLanguageTest.STRATEGY_NAME,
+                                               RUBY,
+                                               RubyLanguageTest.STRATEGY,
                                                null,
                                                null,
                                                null,
@@ -925,9 +924,9 @@ public class StrategyModuleTest
         // need to manually start the strategy because it will be in "STARTING" status for a long long time
         final ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
                                                    null,
-                                                   JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                                   JAVA,
-                                                   JavaLanguageTest.JAVA_STRATEGY,
+                                                   RubyLanguageTest.STRATEGY_NAME,
+                                                   RUBY,
+                                                   RubyLanguageTest.STRATEGY,
                                                    parameters,
                                                    null,
                                                    null,
@@ -1039,9 +1038,9 @@ public class StrategyModuleTest
         // create a strategy (but don't start it yet)
         ModuleURN strategyURN = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                                                            "MyStategy",
-                                                           JavaLanguageTest.JAVA_STRATEGY_NAME,
-                                                           JAVA,
-                                                           JavaLanguageTest.JAVA_STRATEGY,
+                                                           RubyLanguageTest.STRATEGY_NAME,
+                                                           RUBY,
+                                                           RubyLanguageTest.STRATEGY,
                                                            null,
                                                            null,
                                                            null,
