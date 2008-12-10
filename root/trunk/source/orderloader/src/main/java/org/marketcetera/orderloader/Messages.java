@@ -106,7 +106,8 @@ public interface Messages
     static final I18NMessage1P MISSING_REQUIRED_FIELD =
             new I18NMessage1P(LOGGER, "missing_required_field");   //$NON-NLS-1$
 
-
     static final I18NMessage2P LOG_FAILED_ORDER =
             new I18NMessage2P(LOGGER, "log_failed_order");   //$NON-NLS-1$
+    static final I18NMessage0P LOG_APP_COPYRIGHT =
+            new I18NMessage0P(LOGGER, "log_app_copyright");   //$NON-NLS-1$
 }

@@ -38,6 +38,7 @@ public class Main {
     public static void main(String []inArgs) {
         PropertyConfigurator.configureAndWatch
             (CONF_DIR + LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
+        Messages.LOG_APP_COPYRIGHT.info(Main.class);
         Main main = new Main();
         run(inArgs, main);
     }

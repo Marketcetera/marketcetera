@@ -32,7 +32,7 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>core</artifactId>
     </dependency>
-    
+
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>
       <groupId>log4j</groupId>
@@ -49,6 +49,12 @@
     <dependency>
       <groupId>${mvn.public.package}</groupId>
       <artifactId>cep-esper</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Workaround for Issue EG-396 -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>client</artifactId>
       <scope>runtime</scope>
     </dependency>
 

@@ -49,4 +49,7 @@ public interface Messages {
             new I18NMessage2P(LOGGER, "log_command_run_result");  //$NON-NLS-1$
     static final I18NMessage1P CREATE_MODULE_INVALID_SYNTAX =
             new I18NMessage1P(LOGGER, "create_module_invalid_syntax");  //$NON-NLS-1$
+    static final I18NMessage0P LOG_APP_COPYRIGHT =
+            new I18NMessage0P(LOGGER, "log_app_copyright");   //$NON-NLS-1$
+
 }

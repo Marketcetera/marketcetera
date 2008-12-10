@@ -34,7 +34,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
         try {
             return mManager.getProviderInfo(toModuleURN(providerURN));
         } catch (I18NException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -44,7 +44,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
             return toString(mManager.getModuleInstances(
                     toModuleURN(providerURN)));
         } catch (I18NException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -55,7 +55,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
                     new ModuleURN(providerURN), parameters);
             return urn.getValue();
         } catch (ModuleException e) {
-            throw new RuntimeException(e.getLocalizedDetail(),e);
+            throw transformFailure(e);
         }
     }
 
@@ -64,7 +64,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
         try {
             mManager.deleteModule(toModuleURN(inModuleURN));
         } catch (I18NException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -73,7 +73,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
         try {
             return mManager.getModuleInfo(toModuleURN(inModuleURN));
         } catch (I18NException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -82,7 +82,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
         try {
             mManager.start(toModuleURN(inModuleURN));
         } catch (I18NException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -91,7 +91,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
         try {
             mManager.stop(toModuleURN(inModuleURN));
         } catch (I18NException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -100,7 +100,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
         try {
             return mManager.createDataFlow(parseDataRequests(inRequests));
         } catch (ModuleException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -111,7 +111,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
             return mManager.createDataFlow(parseDataRequests(inRequests),
                     inAppendSink);
         } catch (ModuleException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -120,7 +120,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
         try {
             mManager.cancel(toFlowID(inFlowID));
         } catch (I18NException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -134,7 +134,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
         try {
             return mManager.getDataFlowInfo(toFlowID(inFlowID));
         } catch (DataFlowNotFoundException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -143,7 +143,7 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
         try {
             mManager.refresh();
         } catch (I18NException e) {
-            throw new RuntimeException(e.getLocalizedDetail());
+            throw transformFailure(e);
         }
     }
 
@@ -362,6 +362,23 @@ class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
             list.add(urn.getValue());
         }
         return list;
+    }
+
+    /**
+     * Transforms the failure into a runtime exception and copies over the stack
+     * trace. The original exception should not be added to the RuntimeException
+     * as the JMX client may not have the classes available to deserialize
+     * them.
+     *
+     * @param inException the exception that needs to be transformed.
+     *
+     * @return the wrapped runtime exception.
+     */
+    private static RuntimeException transformFailure(I18NException inException) {
+        RuntimeException runtimeException = new RuntimeException(
+                inException.getLocalizedDetail());
+        runtimeException.setStackTrace(inException.getStackTrace());
+        return runtimeException;
     }
 
     private final ModuleManager mManager;
