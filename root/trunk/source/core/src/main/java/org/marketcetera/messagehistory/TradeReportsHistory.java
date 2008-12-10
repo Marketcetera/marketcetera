@@ -36,6 +36,7 @@ import quickfix.field.OrdStatus;
 import quickfix.field.SendingTime;
 import quickfix.field.Text;
 import quickfix.field.TransactTime;
+import ca.odell.glazedlists.AbstractEventList;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -64,6 +65,8 @@ public class TradeReportsHistory {
     private final AveragePriceReportList mAveragePriceList;
 
     private final FilterList<ReportHolder> mLatestExecutionReportsList;
+
+    private FilterList<ReportHolder> mLatestBrokerExecutionReportsList;
 
     private final FilterList<ReportHolder> mLatestMessageList;
 
@@ -94,7 +97,20 @@ public class TradeReportsHistory {
                 new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
                     new LatestReportFunction()), new NotNullReportMatcher());
         mAveragePriceList = new AveragePriceReportList(messageFactory,
-                mAllMessages);
+                mAllMessages); 
+        // In certain cases, we need the latest execution report from the broker, 
+        // i.e. ignoring server ACKS.
+        mLatestBrokerExecutionReportsList = new FilterList<ReportHolder>(
+                new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
+                        new LatestExecutionReportFunction() {
+                            @Override
+                            protected boolean accept(ReportHolder holder) {
+                                ReportBase report = holder.getReport();
+                                return report instanceof ExecutionReport
+                                        && ((ExecutionReport) report)
+                                                .getOriginator() == Originator.Broker;
+                            }
+                        }), new NotNullReportMatcher());
         mOpenOrderList = new FilterList<ReportHolder>(mLatestExecutionReportsList,
                 new OpenOrderReportMatcher());
 
@@ -158,7 +174,7 @@ public class TradeReportsHistory {
                     inReport.getOrderStatus() != null){
                 // Add a new execution report to the stream to update the order status, using the values from the
                 // previous execution report.
-                ReportBase executionReport = getLatestExecutionReport(inReport.getOrderID());
+                ReportBase executionReport = getReport(mLatestBrokerExecutionReportsList, inReport.getOrderID());
                 Message newExecutionReport = mMessageFactory.createMessage(MsgType.EXECUTION_REPORT);
                 Message oldExecutionReport = null;
                 if(executionReport instanceof HasFIXMessage) {
@@ -198,8 +214,6 @@ public class TradeReportsHistory {
                     } catch (MessageCreationException e) {
                         throw new RuntimeException(Messages.SHOULD_NEVER_HAPPEN_IN_ADDINCOMINGMESSAGE.getText(), e);
                     }
-                } else {
-                    throw new IllegalArgumentException(inReport.toString());
                 }
             }
         } finally {
@@ -252,11 +266,15 @@ public class TradeReportsHistory {
     }
 
     public ReportBase getLatestExecutionReport(OrderID clOrdID) {
+        return getReport(mLatestExecutionReportsList, clOrdID);
+    }
+    
+    private ReportBase getReport(EventList<ReportHolder> list, OrderID clOrdID) {
         try {
-            mLatestExecutionReportsList.getReadWriteLock().readLock().lock();
+            list.getReadWriteLock().readLock().lock();
             OrderID groupID = getGroupID(clOrdID);
             if (groupID != null){
-                for (ReportHolder holder : mLatestExecutionReportsList) {
+                for (ReportHolder holder : list) {
                     if (groupID.equals(holder.getGroupID())){
                         return holder.getReport();
                     }
@@ -264,7 +282,7 @@ public class TradeReportsHistory {
             }
             return null;
         } finally {
-            mLatestExecutionReportsList.getReadWriteLock().readLock().unlock();
+            list.getReadWriteLock().readLock().unlock();
         }
     }
 
