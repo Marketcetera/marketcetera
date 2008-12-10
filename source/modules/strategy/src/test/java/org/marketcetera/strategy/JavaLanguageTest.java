@@ -1,8 +1,13 @@
 package org.marketcetera.strategy;
 
+import static org.junit.Assume.assumeTrue;
+import static org.marketcetera.strategy.Language.JAVA;
+
 import java.io.File;
 
 import org.junit.Test;
+
+import com.sun.jna.Platform;
 
 /* $License$ */
 
@@ -69,6 +74,7 @@ public class JavaLanguageTest
     public void nonDefaultPackage()
         throws Exception
     {
+        assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
         StrategyCoordinates strategy = getPackageStrategy();
         verifyNullProperties();
         doSuccessfulStartTestNoVerification(createStrategy(strategy.getName(),
@@ -89,6 +95,7 @@ public class JavaLanguageTest
     public void interrupt()
         throws Exception
     {
+        assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
         doInterruptTest(false,
                         false);
         doInterruptTest(false,
