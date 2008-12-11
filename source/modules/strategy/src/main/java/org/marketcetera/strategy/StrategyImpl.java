@@ -158,7 +158,7 @@ class StrategyImpl
             }
             if(inData instanceof OrderCancelReject) {
                 method = "onCancel"; //$NON-NLS-1$
-                runningStrategy.onCancel((OrderCancelReject)inData);
+                runningStrategy.onCancelReject((OrderCancelReject)inData);
                 return;
             }
             if(inData instanceof ExecutionReport) {

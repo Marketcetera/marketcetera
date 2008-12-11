@@ -12,7 +12,7 @@ class SendEvent < Strategy
         if(get_property("shouldRequestCEPData") != nil)
             do_cep_request
         else
-            cancel_all_cep_requests
+            cancel_all_data_requests
         end
     end
     def on_ask(ask)

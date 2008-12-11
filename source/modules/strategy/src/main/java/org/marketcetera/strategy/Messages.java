@@ -94,14 +94,10 @@ public interface Messages
                                                                                    "execution_report_request_failed"); //$NON-NLS-1$
     static final I18NMessage3P INVALID_CEP_REQUEST = new I18NMessage3P(LOGGER,
                                                                        "invalid_cep_request"); //$NON-NLS-1$
-    static final I18NMessage2P UNABLE_TO_CANCEL_MARKET_DATA_REQUEST = new I18NMessage2P(LOGGER,
-                                                                                        "unable_to_cancel_market_data_request"); //$NON-NLS-1$
-    static final I18NMessage2P NO_MARKET_DATA_HANDLE = new I18NMessage2P(LOGGER,
-                                                                         "no_market_data_handle"); //$NON-NLS-1$
-    static final I18NMessage2P UNABLE_TO_CANCEL_CEP_REQUEST = new I18NMessage2P(LOGGER,
-                                                                                "unable_to_cancel_cep_request"); //$NON-NLS-1$
-    static final I18NMessage2P NO_CEP_HANDLE = new I18NMessage2P(LOGGER,
-                                                                 "no_cep_handle"); //$NON-NLS-1$
+    static final I18NMessage2P UNABLE_TO_CANCEL_DATA_REQUEST = new I18NMessage2P(LOGGER,
+                                                                                 "unable_to_cancel_data_request"); //$NON-NLS-1$
+    static final I18NMessage2P NO_DATA_HANDLE = new I18NMessage2P(LOGGER,
+                                                                  "no_data_handle"); //$NON-NLS-1$
     static final I18NMessage3P SEND_MESSAGE_FAILED = new I18NMessage3P(LOGGER,
                                                                        "send_message_failed"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_EVENT = new I18NMessage1P(LOGGER,

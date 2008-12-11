@@ -180,14 +180,14 @@ public class JavaStrategy
         String shouldCancel = getProperty("shouldCancel");
         if(shouldCancel != null) {
             String requestToCancel = getProperty("requestID");
-            cancelMarketDataRequest(Integer.parseInt(requestToCancel));
+            cancelDataRequest(Integer.parseInt(requestToCancel));
         }
         String shouldFail = getParameter("shouldFailOnCallback");
         if(shouldFail != null) { 
             int x = 10 / 0;
         }
         if(getParameter("shouldRequestCEPData") != null) {
-            cancelAllCEPRequests();
+            cancelAllDataRequests();
         }
         setProperty("onCallback",
                     Integer.toString(callbackCounter));
@@ -205,7 +205,7 @@ public class JavaStrategy
     }  
     
     @Override
-    public void onCancel(OrderCancelReject cancel)
+    public void onCancelReject(OrderCancelReject cancel)
     {
         String shouldFail = getParameter("shouldFailOnCancel");
         if(shouldFail != null) {
@@ -237,7 +237,7 @@ public class JavaStrategy
             int x = 10 / 0;
         }
         if(getProperty("shouldCancelCEPData") != null) {
-            cancelCEPRequest(Integer.parseInt(getProperty("requestID")));
+            cancelDataRequest(Integer.parseInt(getProperty("requestID")));
         }
         setProperty("onOther",
                     data.toString());

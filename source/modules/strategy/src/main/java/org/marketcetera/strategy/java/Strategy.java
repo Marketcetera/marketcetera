@@ -64,7 +64,7 @@ public class Strategy
      * @see org.marketcetera.strategy.RunningStrategy#onCancel(org.marketcetera.trade.OrderCancelReject)
      */
     @Override
-    public void onCancel(OrderCancelReject inCancel)
+    public void onCancelReject(OrderCancelReject inCancel)
     {
     }
     /*

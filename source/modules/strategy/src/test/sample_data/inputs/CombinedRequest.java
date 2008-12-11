@@ -45,9 +45,9 @@ public class CombinedRequest
     {
         int requestID = Integer.parseInt(getProperty("requestID"));
         if(getProperty("cancelCep") != null) {
-            cancelCEPRequest(requestID);
+            cancelDataRequest(requestID);
         } else {
-            cancelMarketDataRequest(requestID);
+            cancelDataRequest(requestID);
         }
     }
     /* (non-Javadoc)

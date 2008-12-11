@@ -59,7 +59,7 @@ public class StrategyWithHelpers
     }  
 
     @Override
-    public void onCancel(OrderCancelReject cancel)
+    public void onCancelReject(OrderCancelReject cancel)
     {
         helper.doesSomething(this,
                              "onCancel",

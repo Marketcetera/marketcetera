@@ -22,7 +22,7 @@ class StrategyWithHelpers < Strategy
         set_property("onTrade",
                      trade.toString());
   end  
-  def on_cancel(cancel)
+  def on_cancel_reject(cancel)
       set_property("onCancel",
                    cancel.toString())
   end  

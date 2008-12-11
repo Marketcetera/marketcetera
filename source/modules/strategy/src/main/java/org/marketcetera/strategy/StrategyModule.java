@@ -20,8 +20,7 @@ import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
 import static org.marketcetera.strategy.Messages.INVALID_ORDER;
 import static org.marketcetera.strategy.Messages.INVALID_TRADE_SUGGESTION;
 import static org.marketcetera.strategy.Messages.MARKET_DATA_REQUEST_FAILED;
-import static org.marketcetera.strategy.Messages.NO_CEP_HANDLE;
-import static org.marketcetera.strategy.Messages.NO_MARKET_DATA_HANDLE;
+import static org.marketcetera.strategy.Messages.NO_DATA_HANDLE;
 import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
@@ -29,8 +28,7 @@ import static org.marketcetera.strategy.Messages.SEND_MESSAGE_FAILED;
 import static org.marketcetera.strategy.Messages.STATUS_CHANGED;
 import static org.marketcetera.strategy.Messages.STOP_ERROR;
 import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
-import static org.marketcetera.strategy.Messages.UNABLE_TO_CANCEL_CEP_REQUEST;
-import static org.marketcetera.strategy.Messages.UNABLE_TO_CANCEL_MARKET_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.UNABLE_TO_CANCEL_DATA_REQUEST;
 import static org.marketcetera.strategy.Status.UNSTARTED;
 
 import java.io.File;
@@ -219,8 +217,8 @@ final class StrategyModule
                                                                                                        inRequest),
                                                                                        new DataRequest(getURN()) },
                                                                    false);
-            synchronized(marketDataRequests) {
-                marketDataRequests.put(requestID,
+            synchronized(dataRequests) {
+                dataRequests.put(requestID,
                                        dataFlowID);
             }
         } catch (Exception e) {
@@ -272,13 +270,9 @@ final class StrategyModule
                                                                                        new DataRequest(getURN()) },
                                                                    false);
             // add request to both counters
-            synchronized(marketDataRequests) {
-                marketDataRequests.put(requestID,
-                                       dataFlowID);
-            }
-            synchronized(cepRequests) {
-                cepRequests.put(requestID,
-                                dataFlowID);
+            synchronized(dataRequests) {
+                dataRequests.put(requestID,
+                                 dataFlowID);
             }
             return requestID;
         } catch (Exception e) {
@@ -293,90 +287,46 @@ final class StrategyModule
         }        
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServices#cancelAllMarketDataRequests()
+     * @see org.marketcetera.strategy.OutboundServices#cancelAllDataRequests()
      */
     @Override
-    public void cancelAllMarketDataRequests()
+    public void cancelAllDataRequests()
     {
-        synchronized(marketDataRequests) {
+        synchronized(dataRequests) {
             // create a copy of the list because the cancel call is going to modify the collection
-            List<Integer> activeRequests = new ArrayList<Integer>(marketDataRequests.keySet());
+            List<Integer> activeRequests = new ArrayList<Integer>(dataRequests.keySet());
             for(int request : activeRequests) {
                 try {
                     cancelDataRequest(request);
                 } catch (Exception e) {
-                    UNABLE_TO_CANCEL_MARKET_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
-                                                              e,
-                                                              strategy,
-                                                              request);
+                    UNABLE_TO_CANCEL_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
+                                                       e,
+                                                       strategy,
+                                                       request);
                 }
             }
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServices#cancelMarketDataRequest(int)
+     * @see org.marketcetera.strategy.OutboundServices#cancelDataRequest(int)
      */
     @Override
-    public void cancelMarketDataRequest(int inDataRequestID)
+    public void cancelDataRequest(int inDataRequestID)
     {
-        synchronized(marketDataRequests) {
-            if(!marketDataRequests.containsKey(inDataRequestID)) {
-                NO_MARKET_DATA_HANDLE.warn(Strategy.STRATEGY_MESSAGES,
-                                           strategy,
-                                           inDataRequestID);
+        synchronized(dataRequests) {
+            if(!dataRequests.containsKey(inDataRequestID)) {
+                NO_DATA_HANDLE.warn(Strategy.STRATEGY_MESSAGES,
+                                    strategy,
+                                    inDataRequestID);
                 return;
             }
             try {
-                cancelDataRequest(inDataRequestID);
+                doCancelDataRequest(inDataRequestID);
             } catch (Exception e) {
-                UNABLE_TO_CANCEL_MARKET_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
-                                                          e,
-                                                          strategy,
-                                                          inDataRequestID);
-            }
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelAllCEPRequests()
-     */
-    @Override
-    public void cancelAllCEPRequests()
-    {
-        synchronized(cepRequests) {
-            // create a copy of the list because the cancel call is going to modify the collection
-            List<Integer> activeRequests = new ArrayList<Integer>(cepRequests.keySet());
-            for(int request : activeRequests) {
-                try {
-                    cancelDataRequest(request);
-                } catch (Exception e) {
-                    UNABLE_TO_CANCEL_CEP_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
-                                                      e,
-                                                      strategy,
-                                                      request);
-                }
-            }
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelCEPRequest(int)
-     */
-    @Override
-    public void cancelCEPRequest(int inDataRequestID)
-    {
-        synchronized(cepRequests) {
-            if(!cepRequests.containsKey(inDataRequestID)) {
-                NO_CEP_HANDLE.warn(Strategy.STRATEGY_MESSAGES,
-                                   strategy,
-                                   inDataRequestID);
-                return;
-            }
-            try {
-                cancelDataRequest(inDataRequestID);
-            } catch (Exception e) {
-                UNABLE_TO_CANCEL_CEP_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
-                                                  e,
-                                                  strategy,
-                                                  inDataRequestID);
+                UNABLE_TO_CANCEL_DATA_REQUEST.warn(Strategy.STRATEGY_MESSAGES,
+                                                   e,
+                                                   strategy,
+                                                   inDataRequestID);
             }
         }
     }
@@ -400,13 +350,13 @@ final class StrategyModule
         ModuleURN providerURN = constructCepUrn(inSource,
                                                 inNamespace);
         try {
-            synchronized(cepRequests) {
-                cepRequests.put(requestID,
-                                dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(providerURN,
-                                                                                                   determineCepStatements(inSource,
-                                                                                                                          inStatements)),
-                                                                                   new DataRequest(getURN()) },
-                                                               false));
+            synchronized(dataRequests) {
+                dataRequests.put(requestID,
+                                 dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(providerURN,
+                                                                                                    determineCepStatements(inSource,
+                                                                                                                           inStatements)),
+                                                                                    new DataRequest(getURN()) },
+                                                                false));
             }
         } catch (Exception e) {
             CEP_REQUEST_FAILED.warn(Strategy.STRATEGY_MESSAGES,
@@ -929,8 +879,7 @@ final class StrategyModule
     protected void preStop()
             throws ModuleException
     {
-        cancelAllMarketDataRequests();
-        cancelAllCEPRequests();
+        cancelAllDataRequests();
         try {
             strategy.stop();
         } catch (ModuleException e) {
@@ -1187,14 +1136,10 @@ final class StrategyModule
      * @param inRequest an <code>int</code> value containing a request handle
      * @throws ModuleException if an error occurs
      */
-    private void cancelDataRequest(int inRequest)
+    private void doCancelDataRequest(int inRequest)
         throws ModuleException
     {
-        DataFlowID dataFlowID = marketDataRequests.remove(inRequest);
-        if(dataFlowID != null) {
-            dataFlowSupport.cancel(dataFlowID);
-        }
-        dataFlowID = cepRequests.remove(inRequest);
+        DataFlowID dataFlowID = dataRequests.remove(inRequest);
         if(dataFlowID != null) {
             dataFlowSupport.cancel(dataFlowID);
         }
@@ -1265,13 +1210,9 @@ final class StrategyModule
      */
     private static final AtomicInteger counter = new AtomicInteger();
     /**
-     * active market data requests for this strategy 
+     * active data requests for this strategy 
      */
-    private final Map<Integer,DataFlowID> marketDataRequests = new HashMap<Integer,DataFlowID>();
-    /**
-     * active cep requests for this strategy 
-     */
-    private final Map<Integer,DataFlowID> cepRequests = new HashMap<Integer,DataFlowID>();
+    private final Map<Integer,DataFlowID> dataRequests = new HashMap<Integer,DataFlowID>();
     /**
      * the list of dataflows started during the lifetime of this strategy
      */
