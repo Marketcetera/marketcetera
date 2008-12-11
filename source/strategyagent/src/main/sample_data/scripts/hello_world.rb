@@ -1,6 +1,6 @@
 #
 # author:anshul@marketcetera.com
-# since $Release$
+# since 1.0.0
 # version: $Id$
 #
 #
