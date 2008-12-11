@@ -312,16 +312,16 @@
                    class="org.marketcetera.photon.ui.CommandLineTrimWidget">
              </control>
              <control>
-                <class class="org.marketcetera.photon.marketdata.MarketDataStatusIndicator">
-                   <parameter name="overlay" value="icons/overlay/m-template.gif"/>
-                </class>
-             </control>
-             <control>
                 <class class="org.marketcetera.photon.ui.StatusImageTrimWidget">
 	               <parameter name="service" value="org.marketcetera.photon.messaging.ClientFeedService"/>
          	       <parameter name="overlay" value="icons/overlay/s-template.gif"/>
          	       <parameter name="name" value="Connection to "/>
 	            </class>
+             </control>
+             <control>
+                <class class="org.marketcetera.photon.marketdata.MarketDataStatusIndicator">
+                   <parameter name="overlay" value="icons/overlay/m-template.gif"/>
+                </class>
              </control>
              <control
                    class="org.marketcetera.photon.ui.ClockTrimWidget">
