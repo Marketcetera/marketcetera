@@ -1,0 +1,11 @@
+#
+# author:anshul@marketcetera.com
+# since $Release$
+# version: $Id$
+#
+# Create the Process Data strategy
+createModule;metc:strategy:system;processData,ProcessData,RUBY,scripts/process_data.rb,,,metc:sink:system,metc:sink:system
+# Start the market data module
+startModule;metc:mdata:marketcetera:single
+# Start the strategy
+startModule;metc:strategy:system:processData

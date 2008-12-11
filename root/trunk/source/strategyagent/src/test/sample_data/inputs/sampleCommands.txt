@@ -13,14 +13,14 @@
 #           parameters declared by the module factory as the
 #           parameter types needed to create a module instance.
 #
-createModule;metc:process:first;metc:process:first:myinstance
+createModule;metc:cep:system;metc:cep:system:myinstance
 #
 # Start Module Command
 #
 # Syntax: startModule;module_instance_urn
 #
 #
-startModule;metc:emit:single:default
+startModule;metc:mdata:bogus:single
 #
 # Create Data Flow Command
 #
@@ -34,4 +34,4 @@ startModule;metc:emit:single:default
 #           request_parameter: is the request parameter for requesting
 #           data from the module instance.
 #
-createDataFlow;metc:emit:single:default;somestring^metc:process:first:myinstance;java.lang.String
+createDataFlow;metc:mdata:bogus:single;type=marketdata:symbols=AAPL^metc:sink:system

@@ -1,0 +1,10 @@
+#
+# author:anshul@marketcetera.com
+# since $Release$
+# version: $Id$
+#
+#
+# Create the Hello World strategy
+createModule;metc:strategy:system;helloWorld,HelloWorld,RUBY,scripts/hello_world.rb,,,metc:sink:system,metc:sink:system
+# Start the strategy
+startModule;metc:strategy:system:helloWorld
