@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class SingleModuleFactory extends ModuleFactory<SingletonModule> {
+public class SingleModuleFactory extends ModuleFactory {
     @Override
     public SingletonModule create(Object... parameters)
             throws ModuleCreationException {

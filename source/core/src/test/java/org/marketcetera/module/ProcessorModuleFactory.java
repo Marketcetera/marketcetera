@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class ProcessorModuleFactory extends ModuleFactory<ProcessorModule> {
+public class ProcessorModuleFactory extends ModuleFactory {
     @Override
     public ProcessorModule create(Object... parameters)
             throws ModuleCreationException {

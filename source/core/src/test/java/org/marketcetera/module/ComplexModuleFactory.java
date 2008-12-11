@@ -18,7 +18,7 @@ import java.net.URL;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class ComplexModuleFactory extends ModuleFactory<MultipleModule> {
+public class ComplexModuleFactory extends ModuleFactory {
     public ComplexModuleFactory() {
         super(PROVIDER_URN, TestMessages.MULTIPLE_2_PROVIDER, true, false,
                 String.class, File.class, URL.class, Date.class);

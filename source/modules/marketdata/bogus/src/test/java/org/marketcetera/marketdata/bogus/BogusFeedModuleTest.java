@@ -1,7 +1,6 @@
 package org.marketcetera.marketdata.bogus;
 
 import org.marketcetera.marketdata.MarketDataModuleTestBase;
-import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
 
@@ -21,7 +20,7 @@ public class BogusFeedModuleTest
      * @see org.marketcetera.marketdata.MarketDataModuleTestBase#getFactory()
      */
     @Override
-    protected ModuleFactory<? extends Module> getFactory()
+    protected ModuleFactory getFactory()
     {
         return new BogusFeedModuleFactory();
     }

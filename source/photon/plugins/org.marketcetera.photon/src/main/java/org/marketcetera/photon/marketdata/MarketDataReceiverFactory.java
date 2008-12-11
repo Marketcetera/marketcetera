@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public class MarketDataReceiverFactory extends
-		ModuleFactory<MarketDataReceiverModule> {
+		ModuleFactory {
 
 	/**
 	 * Provider URN for this factory.

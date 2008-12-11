@@ -278,7 +278,7 @@ public class StrategyTestBase
          * @since 1.0.0
          */
         public static class Factory
-            extends ModuleFactory<MockRecorderModule>
+            extends ModuleFactory
         {
             /**
              * used to generate unique identifiers for the instance counters
@@ -515,7 +515,7 @@ public class StrategyTestBase
          * @since 1.0.0
          */
         public static class Factory
-            extends ModuleFactory<StrategyDataEmissionModule>
+            extends ModuleFactory
         {
             /**
              * used to generate unique identifiers for the instance counters
@@ -1474,7 +1474,7 @@ public class StrategyTestBase
     /**
      * the factory to use to create the market data provider modules
      */
-    protected ModuleFactory<StrategyModule> factory;
+    protected ModuleFactory factory;
     /**
      * test destination of orders
      */

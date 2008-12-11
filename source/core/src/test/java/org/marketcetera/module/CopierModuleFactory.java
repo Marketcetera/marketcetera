@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class CopierModuleFactory extends ModuleFactory<CopierModule> {
+public class CopierModuleFactory extends ModuleFactory {
     public CopierModuleFactory() {
         super(PROVIDER_URN, new I18NMessage0P(Messages.LOGGER, "provider"), false, false);
     }

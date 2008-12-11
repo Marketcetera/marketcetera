@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class MultipleModuleFactory extends ModuleFactory<MultipleModule> {
+public class MultipleModuleFactory extends ModuleFactory {
     @Override
     public MultipleModule create(Object... parameters)
             throws ModuleCreationException {
