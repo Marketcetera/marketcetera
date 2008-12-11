@@ -6,20 +6,15 @@
 #
 'require java'
 include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.Factory"
-include_class "org.marketcetera.trade.OrderType"
-include_class "org.marketcetera.trade.Side"
-include_class "org.marketcetera.trade.TimeInForce"
-include_class "org.marketcetera.core.MSymbol"
-include_class "java.math.BigDecimal"
 
-###############################
-# Order Sender Strategy       #
-###############################
-class OrderSender < Strategy
-    SYMBOLS = "AMZN" # Depends on MD - can be other symbols
+##################################################
+# Strategy that processes market data via CEP    #
+##################################################
+class ProcessData < Strategy
+    SYMBOLS = "AMZN,JAVA" # Depends on MD - can be other symbols
     MARKET_DATA_PROVIDER = "marketcetera" # Can also be activ, bogus, opentick
-    ACCOUNT = "accountable"
+    CEP_QUERY = ["select t.symbol as symbol, t.price * t.size as position from trade t"]
+    CEP_PROVIDER = "esper"
 
     ##########################################
     # Executed when the strategy is started. #
@@ -28,71 +23,15 @@ class OrderSender < Strategy
     #  and other initialization tasks.       #
     ##########################################
     def on_start
-      @requestID = request_market_data SYMBOLS, MARKET_DATA_PROVIDER
-      puts "Issued Market Data Request " + @requestID.to_s
-      @receivedData = false
+      request_processed_market_data(SYMBOLS, MARKET_DATA_PROVIDER, CEP_QUERY.to_java(:string), CEP_PROVIDER)
     end
 
-    ###################################################
-    # Executed when the strategy receives a bid event #
-    ###################################################
-    def on_bid(bid)
-      if @receivedData then
-        return
-      end
-      @receivedData = true
 
-      puts "Bid: " + bid.to_s
-      # Send an order to buy and cancel the request
-      order = Factory.instance.createOrderSingle()
-      order.setAccount ACCOUNT
-      order.setOrderType OrderType::Limit
-      order.setPrice bid.price
-      order.setQuantity bid.size
-      order.setSide Side::Buy
-      order.setSymbol MSymbol.new(bid.symbol)
-      order.setTimeInForce TimeInForce::Day
-      puts "Sending Order " + order.to_s
-
-      order_id = send_order order
-      puts "Sent Order:"+order_id.to_s
-
-      cancel_market_data_request @requestID
-      puts "Cancelled Market Data Request " + @requestID.to_s
-    end
-
-    ####################################################
-    # Executed when the strategy receives an ask event #
-    ####################################################
-    def on_ask(ask)
-      if @receivedData then
-        return
-      end
-      @receivedData = true
-
-      puts "Ask: " + ask.to_s
-      # Send an order to sell and cancel the request
-      order = Factory.instance.createOrderSingle()
-      order.setAccount ACCOUNT
-      order.setOrderType OrderType::Limit
-      order.setPrice ask.price
-      order.setQuantity ask.size
-      order.setSide Side::Sell
-      order.setSymbol MSymbol.new(ask.symbol)
-      order.setTimeInForce TimeInForce::Day
-      puts "Sending Order " + order.to_s
-
-      order_id = send_order order
-      puts "Sent Order:"+order_id.to_s
-
-      cancel_market_data_request @requestID
-      puts "Cancelled Market Data Request " + @requestID.to_s
-    end
-
-    ###########################################################
-    # Executed when the strategy receives an execution report #
-    ###########################################################
-    def on_execution_report(executionReport)
-      puts "Received Execution Report:" + executionReport.to_s
+    ############################################################
+    # Executed when the strategy receives data of a type other #
+    #  than the other callbacks                                #
+    ############################################################
+    def on_other(data)
+      puts "Trade " + data.to_s
     end
 end

@@ -78,9 +78,9 @@ public class Strategy
      * @see org.marketcetera.strategy.RunningStrategy#onCancel(org.marketcetera.trade.OrderCancelReject)
      */
     @Override
-    public final void onCancel(OrderCancelReject inCancel)
+    public final void onCancelReject(OrderCancelReject inCancel)
     {
-        on_cancel(inCancel);
+        on_cancel_reject(inCancel);
     }
     /*
      * (non-Javadoc)
@@ -146,9 +146,9 @@ public class Strategy
     /**
      * Invoked when the <code>Strategy</code> receives an {@link OrderCancelReject}.
      * 
-     * @param inCancel an <code>OrderCancelReject</code> value
+     * @param inCancelReject an <code>OrderCancelReject</code> value
      */
-    protected void on_cancel(OrderCancelReject inCancel)
+    protected void on_cancel_reject(OrderCancelReject inCancelReject)
     {
     }
     /**
@@ -305,25 +305,25 @@ public class Strategy
                                           inCepSource);
     }
     /**
-     * Cancels a given market data request.
+     * Cancels a given data request.
      * 
-     * <p>If the given <code>inRequestID</code> identifier does not correspond to an active market data
+     * <p>If the given <code>inRequestID</code> identifier does not correspond to an active data
      * request, this method does nothing.
      *
-     * @param inRequestID an <code>int</code> value identifying the market data request to cancel
+     * @param inRequestID an <code>int</code> value identifying the data request to cancel
      */
-    public final void cancel_market_data_request(int inRequestID)
+    public final void cancel_data_request(int inRequestID)
     {
-        cancelMarketDataRequest(inRequestID);
+        cancelDataRequest(inRequestID);
     }
     /**
-     * Cancels all market data requests for this {@link Strategy}.
+     * Cancels all data requests for this {@link Strategy}.
      *
-     * <p>If there are no active market data requests for this {@link Strategy}, this method does nothing.
+     * <p>If there are no active data requests for this {@link Strategy}, this method does nothing.
      */
-    public final void cancel_all_market_data_requests()
+    public final void cancel_all_data_requests()
     {
-        cancelAllMarketDataRequests();
+        cancelAllDataRequests();
     }
     /**
      * Creates a complex event processor request.
@@ -337,27 +337,6 @@ public class Strategy
     {
         return requestCEPData(inStatements,
                               inSource);
-    }
-    /**
-     * Cancels a given complex event processor request.
-     * 
-     * <p>If the given <code>inRequestID</code> identifier does not correspond to an active complex event processor data
-     * request, this method does nothing.
-     *
-     * @param inRequestID an <code>int</code> value identifying the complex event processor data request to cancel
-     */
-    public final void cancel_cep_request(int inRequestID)
-    {
-        cancelCEPRequest(inRequestID);
-    }
-    /**
-     * Cancels all complex event processor requests for this {@link Strategy}.
-     *
-     * <p>If there are no active complex event processor requests for this {@link Strategy}, this method does nothing.
-     */
-    public final void cancel_all_cep_requests()
-    {
-        cancelAllCEPRequests();
     }
     /**
      * Suggests a trade.

@@ -302,27 +302,27 @@ public abstract class AbstractRunningStrategy
         }
    }
     /**
-     * Cancels the given market data request.
+     * Cancels the given data request.
      *
      * @param inRequestID an <code>int</code> value containing the identifier of the data request to cancel
      */
-    protected final void cancelMarketDataRequest(int inRequestID)
+    protected final void cancelDataRequest(int inRequestID)
     {
         SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                               "{} cancelling market data request {}", //$NON-NLS-1$
+                               "{} cancelling data request {}", //$NON-NLS-1$
                                strategy,
                                inRequestID);
-        strategy.getOutboundServicesProvider().cancelMarketDataRequest(inRequestID);
+        strategy.getOutboundServicesProvider().cancelDataRequest(inRequestID);
     }
     /**
-     * Cancels all market data requests from this strategy.
+     * Cancels all data requests from this strategy.
      */
-    protected final void cancelAllMarketDataRequests()
+    protected final void cancelAllDataRequests()
     {
         SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                               "{} cancelling all market data requests", //$NON-NLS-1$
+                               "{} cancelling all data requests", //$NON-NLS-1$
                                strategy);
-        strategy.getOutboundServicesProvider().cancelAllMarketDataRequests();
+        strategy.getOutboundServicesProvider().cancelAllDataRequests();
     }
     /**
      * Creates a complex event processor query.
@@ -370,29 +370,6 @@ public abstract class AbstractRunningStrategy
                                      strategy);
             return 0;
         }
-    }
-    /**
-     * Cancels the given complex event processor data request.
-     *
-     * @param inRequestID an <code>int</code> value containing the identifier of the data request to cancel
-     */
-    protected final void cancelCEPRequest(int inRequestID)
-    {
-        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                               "{} canceling CEP request {}", //$NON-NLS-1$
-                               strategy,
-                               inRequestID);
-        strategy.getOutboundServicesProvider().cancelCEPRequest(inRequestID);
-    }
-    /**
-     * Cancels all complex event processor data requests from this strategy.
-     */
-    protected final void cancelAllCEPRequests()
-    {
-        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                               "{} cancelling all cep requests", //$NON-NLS-1$
-                               strategy);
-        strategy.getOutboundServicesProvider().cancelAllCEPRequests();
     }
     /**
      * Gets the <code>ExecutionReport</code> values generated during the current

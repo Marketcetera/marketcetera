@@ -93,20 +93,20 @@ interface OutboundServicesProvider
                                    String inCEPSource,
                                    String inNamespace);
     /**
-     * Cancels a given market data request.
+     * Cancels a given data request.
      * 
-     * <p>If the given <code>inDataRequestID</code> identifier does not correspond to an active market data
+     * <p>If the given <code>inDataRequestID</code> identifier does not correspond to an active data
      * request, this method does nothing.
      *
-     * @param inDataRequestID an <code>int</code> value identifying the market data request to cancel
+     * @param inDataRequestID an <code>int</code> value identifying the data request to cancel
      */
-    void cancelMarketDataRequest(int inDataRequestID);
+    void cancelDataRequest(int inDataRequestID);
     /**
-     * Cancels all market data requests for this strategy.
+     * Cancels all data requests for this strategy.
      *
-     * <p>If there are no active market data requests for this strategy, this method does nothing.
+     * <p>If there are no active data requests for this strategy, this method does nothing.
      */
-    void cancelAllMarketDataRequests();
+    void cancelAllDataRequests();
     /**
      * Creates a complex event processor request.
      * 
@@ -121,21 +121,6 @@ interface OutboundServicesProvider
     int requestCEPData(String[] inStatements,
                        String inSource,
                        String inNamespace);
-    /**
-     * Cancels a given complex event processor data request.
-     * 
-     * <p>If the given <code>inDataRequestID</code> identifier does not correspond to an active complex event processor data
-     * request, this method does nothing.
-     *
-     * @param inDataRequestID an <code>int</code> value identifying the complex event processor request to cancel
-     */
-    void cancelCEPRequest(int inDataRequestID);
-    /**
-     * Cancels all complex event processor requests for this strategy.
-     *
-     * <p>If there are no active complex event processor requests for this strategy, this method does nothing.
-     */
-    void cancelAllCEPRequests();
     /**
      * Sends a FIX message to Order subscribers.
      *

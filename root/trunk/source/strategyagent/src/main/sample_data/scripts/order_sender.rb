@@ -57,7 +57,7 @@ class OrderSender < Strategy
       order_id = send_order order
       puts "Sent Order:"+order_id.to_s
 
-      cancel_market_data_request @requestID
+      cancel_data_request @requestID
       puts "Cancelled Market Data Request " + @requestID.to_s
     end
 
@@ -85,7 +85,7 @@ class OrderSender < Strategy
       order_id = send_order order
       puts "Sent Order:"+order_id.to_s
 
-      cancel_market_data_request @requestID
+      cancel_data_request @requestID
       puts "Cancelled Market Data Request " + @requestID.to_s
     end
 

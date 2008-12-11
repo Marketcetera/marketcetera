@@ -46,9 +46,9 @@ public interface RunningStrategy
     /**
      * Indicates an <code>OrderCancelReject</code> has been received.
      *
-     * @param inCancel an <code>OrderCancelReject</code> value
+     * @param inCancelReject an <code>OrderCancelReject</code> value
      */
-    public void onCancel(OrderCancelReject inCancel);
+    public void onCancelReject(OrderCancelReject inCancelReject);
     /**
      * Indicates an event has occurred that does not fit any of the other callbacks.
      * 

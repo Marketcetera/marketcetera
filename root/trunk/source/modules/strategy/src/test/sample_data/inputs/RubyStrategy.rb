@@ -121,14 +121,14 @@ class RubyStrategy < Strategy
     shouldCancel = get_property("shouldCancel")
     if(shouldCancel != nil)
         requestToCancel = get_property("requestID")
-        cancel_market_data_request Long.parseLong(requestToCancel)
+        cancel_data_request Long.parseLong(requestToCancel)
     end
       shouldFail = get_parameter("shouldFailOnCallback")
       if(shouldFail != nil) 
           10 / 0
       end
       if(get_parameter("shouldRequestCEPData") != nil)
-          cancel_all_cep_requests
+          cancel_all_data_requests
       end
       set_property("onCallback",
                    @callbackCounter.to_s)
@@ -141,7 +141,7 @@ class RubyStrategy < Strategy
       set_property("onExecutionReport",
                    execution_report.toString())
   end  
-  def on_cancel(cancel)
+  def on_cancel_reject(cancel)
       shouldFail = get_parameter("shouldFailOnCancel")
       if(shouldFail != nil) 
           10 / 0
@@ -166,7 +166,7 @@ class RubyStrategy < Strategy
           10 / 0
       end
       if(get_property("shouldCancelCEPData") != nil)
-          cancel_cep_request Long.parseLong get_property "requestID"
+          cancel_data_request Long.parseLong get_property "requestID"
       end
       set_property("onOther",
                    data.toString())

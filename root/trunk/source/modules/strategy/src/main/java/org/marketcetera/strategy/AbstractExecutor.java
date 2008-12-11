@@ -189,8 +189,7 @@ abstract class AbstractExecutor
         interruptStartJob();
         // we have tried to stop the start loop
         // cancel all data requests to make sure more data isn't coming in
-        getStrategy().getOutboundServicesProvider().cancelAllCEPRequests();
-        getStrategy().getOutboundServicesProvider().cancelAllMarketDataRequests();
+        getStrategy().getOutboundServicesProvider().cancelAllDataRequests();
         // the next step is to try to stop the strategy normally
         // make sure the strategy is in a state where the strategy can be stopped
         if(!getStrategy().getStatus().canChangeStatusTo(STOPPING)) {

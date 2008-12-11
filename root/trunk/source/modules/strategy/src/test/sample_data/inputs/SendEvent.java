@@ -36,7 +36,7 @@ public class SendEvent
         if(getProperty("shouldRequestCEPData") != null) {
             doCepRequest();
         } else {
-            cancelAllCEPRequests();
+            cancelAllDataRequests();
         }
     }
     /* (non-Javadoc)
