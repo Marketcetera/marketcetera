@@ -21,7 +21,7 @@ import org.marketcetera.module.ModuleURN;
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public final class CEPEsperFactory extends ModuleFactory<CEPEsperProcessor> {
+public final class CEPEsperFactory extends ModuleFactory {
     /**
      * Creates an instance.
      *

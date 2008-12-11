@@ -155,7 +155,7 @@ public class MarketDataFeedTest {
 		}
 	}
 	
-	public static class NotEmitterFactory extends ModuleFactory<Module> {
+	public static class NotEmitterFactory extends ModuleFactory {
 
 		static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:invalid");
 		static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN, "single");
@@ -170,7 +170,7 @@ public class MarketDataFeedTest {
 		}
 	}
 	
-	public static class NotSingletonFactory extends ModuleFactory<Module> {
+	public static class NotSingletonFactory extends ModuleFactory {
 
 		static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:invalid2");
 		static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN, "single");
@@ -185,7 +185,7 @@ public class MarketDataFeedTest {
 		}
 	}
 	
-	public static class ReconnectUnsupportedFactory extends ModuleFactory<Module> {
+	public static class ReconnectUnsupportedFactory extends ModuleFactory {
 
 		static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:invalid3");
 		static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN, "single");
@@ -205,7 +205,7 @@ public class MarketDataFeedTest {
 		}
 	}
 	
-	public static class PartialInterfaceFactory extends ModuleFactory<Module> {
+	public static class PartialInterfaceFactory extends ModuleFactory {
 
 		static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:invalid4");
 		static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN, "single");

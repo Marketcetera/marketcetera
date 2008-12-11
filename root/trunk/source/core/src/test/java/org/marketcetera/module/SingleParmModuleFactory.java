@@ -12,7 +12,7 @@ import java.net.URI;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class SingleParmModuleFactory extends ModuleFactory<SingletonModule> {
+public class SingleParmModuleFactory extends ModuleFactory {
     @Override
     public SingletonModule create(Object... parameters)
             throws ModuleCreationException {

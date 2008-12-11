@@ -15,7 +15,7 @@ import org.marketcetera.module.ModuleURN;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public final class CSVEmitterFactory extends ModuleFactory<CSVEmitter> {
+public final class CSVEmitterFactory extends ModuleFactory {
     /**
      * Creates an instance.
      *

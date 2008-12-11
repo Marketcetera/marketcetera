@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class TradeSuggestionReceiverFactory extends ModuleFactory<Module> {
+public class TradeSuggestionReceiverFactory extends ModuleFactory {
 
 	/**
 	 * Provider URN for this factory.

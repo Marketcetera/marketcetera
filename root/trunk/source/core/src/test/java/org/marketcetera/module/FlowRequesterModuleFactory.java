@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class FlowRequesterModuleFactory
-        extends ModuleFactory<FlowRequesterModule> {
+        extends ModuleFactory {
     public FlowRequesterModule create(Object... parameters)
             throws ModuleCreationException {
         return new FlowRequesterModule((ModuleURN)parameters[0]);

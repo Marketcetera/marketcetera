@@ -35,7 +35,7 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
  * @version $Id$
  * @since 1.0.0
  */
-public class MockMarketDataModuleFactory extends ModuleFactory<Module> {
+public class MockMarketDataModuleFactory extends ModuleFactory {
 
 	static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:mock");
 	static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN, "single");

@@ -19,7 +19,7 @@ import org.marketcetera.module.ModuleURN;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedModuleFactory
-        extends ModuleFactory<MarketceteraFeedModule>
+        extends ModuleFactory
 {
     /**
      * Create a new MarketceteraFeedModuleFactory instance.

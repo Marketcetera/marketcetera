@@ -21,7 +21,7 @@ import org.marketcetera.module.ModuleURN;
  */
 @ClassVersion("$Id$")
 public final class StrategyModuleFactory
-        extends ModuleFactory<StrategyModule>
+        extends ModuleFactory
 {
     /**
      * use this provider URN to start a strategy

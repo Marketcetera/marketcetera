@@ -2,7 +2,6 @@ package org.marketcetera.marketdata.marketcetera;
 
 import org.junit.Test;
 import org.marketcetera.marketdata.SimulatedMarketDataModuleTestBase;
-import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvider;
@@ -40,7 +39,7 @@ public class MarketceteraFeedModuleTest
      * @see org.marketcetera.marketdata.MarketDataModuleTestBase#getFactory()
      */
     @Override
-    protected ModuleFactory<? extends Module> getFactory()
+    protected ModuleFactory getFactory()
     {
         return new MarketceteraFeedModuleFactory();
     }

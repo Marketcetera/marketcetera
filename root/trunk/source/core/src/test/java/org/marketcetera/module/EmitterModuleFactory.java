@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class EmitterModuleFactory extends ModuleFactory<EmitterModule> {
+public class EmitterModuleFactory extends ModuleFactory {
     public EmitterModuleFactory() {
         super(PROVIDER_URN, TestMessages.EMIT_PROVIDER, false, false);
     }

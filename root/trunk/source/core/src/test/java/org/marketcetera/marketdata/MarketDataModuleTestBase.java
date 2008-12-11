@@ -21,7 +21,6 @@ import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.IllegalRequestParameterValue;
-import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleState;
@@ -57,7 +56,7 @@ public abstract class MarketDataModuleTestBase
     /**
      * the factory to use to create the market data provider modules
      */
-    protected ModuleFactory<? extends Module> factory;
+    protected ModuleFactory factory;
     /**
      * configuration provider to use to set up the module to be tested, if necessary
      */
@@ -229,7 +228,7 @@ public abstract class MarketDataModuleTestBase
      *
      * @return a <code>ModuleFactory&lt;? extends Module&gt;</code> value
      */
-    protected abstract ModuleFactory<? extends Module> getFactory();
+    protected abstract ModuleFactory getFactory();
     /**
      * Returns a <code>ModuleURN</code> instance appropriate for the module to be tested. 
      *

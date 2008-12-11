@@ -16,7 +16,7 @@ import java.util.Properties;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class JMXTestModuleFactory extends ModuleFactory<JMXTestModule>
+public class JMXTestModuleFactory extends ModuleFactory
         implements JMXTestFactoryMXBean {
     @Override
     public JMXTestModule create(Object... parameters)

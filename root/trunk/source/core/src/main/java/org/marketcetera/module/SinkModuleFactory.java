@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
-public final class SinkModuleFactory extends ModuleFactory<SinkModule> {
+public final class SinkModuleFactory extends ModuleFactory {
     /**
      * Creates a new sink module instance.
      *

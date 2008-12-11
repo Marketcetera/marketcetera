@@ -46,7 +46,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
-public abstract class ModuleFactory<T extends Module> {
+public abstract class ModuleFactory {
     /**
      * Creates an instance of the factory, given the parameters.
      *

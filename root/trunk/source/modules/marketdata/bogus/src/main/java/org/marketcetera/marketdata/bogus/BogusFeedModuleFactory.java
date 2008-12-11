@@ -19,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class BogusFeedModuleFactory
-        extends ModuleFactory<BogusFeedModule>
+        extends ModuleFactory
 {
     /**
      * Create a new BogusFeedModuleFactory instance.

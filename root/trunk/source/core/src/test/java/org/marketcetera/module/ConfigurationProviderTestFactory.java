@@ -13,7 +13,7 @@ import java.math.BigInteger;
  */
 @ClassVersion("$Id$")
 public class ConfigurationProviderTestFactory
-        extends ModuleFactory<JMXTestModule>
+        extends ModuleFactory
         implements ConfigurationProviderFactoryMXBean {
 
     public ConfigurationProviderTestFactory() {
