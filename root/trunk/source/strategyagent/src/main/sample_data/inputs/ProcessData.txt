@@ -4,7 +4,7 @@
 # version: $Id$
 #
 # Create the Process Data strategy
-createModule;metc:strategy:system;processData,ProcessData,RUBY,scripts/process_data.rb,,,metc:sink:system,metc:sink:system
+createModule;metc:strategy:system;processData,ProcessData,RUBY,samples/scripts/process_data.rb,,,metc:sink:system,metc:sink:system
 # Start the market data module
 startModule;metc:mdata:marketcetera:single
 # Start the strategy
