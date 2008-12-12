@@ -5,6 +5,6 @@
 #
 #
 # Create the Hello World strategy
-createModule;metc:strategy:system;helloWorld,HelloWorld,RUBY,scripts/hello_world.rb,,,metc:sink:system,metc:sink:system
+createModule;metc:strategy:system;helloWorld,HelloWorld,RUBY,samples/scripts/hello_world.rb,,,metc:sink:system,metc:sink:system
 # Start the strategy
 startModule;metc:strategy:system:helloWorld
