@@ -227,22 +227,30 @@ public class ClientTest {
         er.set(new OrigClOrdID("42"));
         quickfix.fix44.OrderCancelReject ocr=new quickfix.fix44.OrderCancelReject();
         ocr.set(new OrigClOrdID("43"));
-        ReportBaseImpl[] reports = new ReportBaseImpl[] {
-            (ExecutionReportImpl)
-            f.createExecutionReport(er,dID,Originator.Server),
-            (OrderCancelRejectImpl)
-            f.createOrderCancelReject(ocr,dID)
+        ExecutionReportImpl reportImpl = (ExecutionReportImpl)
+                f.createExecutionReport(er, dID, Originator.Server);
+        //Add report ID to test its serialization
+        ReportID reportID = new ReportID(1234);
+        ReportBaseImpl.assignReportID(reportImpl, reportID);
+        OrderCancelRejectImpl reject = (OrderCancelRejectImpl)
+                f.createOrderCancelReject(ocr, dID);
+        ReportID rejectID = new ReportID(2345);
+        ReportBaseImpl.assignReportID(reject, rejectID);
+        MockServiceImpl.sReports = new ReportBaseImpl[] {
+                reportImpl,
+                reject
         };
-        MockServiceImpl.sReports = reports;
         ReportBase[] rs = getClient().getReportsSince(new Date());
         assertEquals(2,rs.length);
         ExecutionReport report = (ExecutionReport)rs[0];
         assertEquals(dID,report.getBrokerID());
         assertEquals(Originator.Server,report.getOriginator());
         assertEquals("42",report.getOriginalOrderID().getValue());
+        assertEquals(reportID, report.getReportID());
         OrderCancelReject crreport = (OrderCancelReject)rs[1];
         assertEquals(dID,crreport.getBrokerID());
         assertEquals("43",crreport.getOriginalOrderID().getValue());
+        assertEquals(rejectID, crreport.getReportID());
         
         MockServiceImpl.sReports = new ReportBaseImpl[0];
         rs = getClient().getReportsSince(new Date());
