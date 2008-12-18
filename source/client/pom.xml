@@ -32,11 +32,19 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jms_1.1_spec</artifactId>
+    </dependency>
 
     <!-- Runtime. -->
     <dependency>
       <groupId>org.apache.xbean</groupId>
       <artifactId>xbean-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-pool</groupId>

@@ -1,4 +1,4 @@
-package org.marketcetera.spring;
+package org.marketcetera.ors.jms;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage1P;
@@ -22,7 +22,7 @@ public interface Messages
      */
 
     static final I18NMessageProvider PROVIDER = 
-        new I18NMessageProvider("spring"); //$NON-NLS-1$
+        new I18NMessageProvider("ors_jms"); //$NON-NLS-1$
 
     /**
      * The logger.

@@ -2,7 +2,7 @@ package org.marketcetera.ors.jms;
 
 import javax.jms.ConnectionFactory;
 import org.marketcetera.client.JMSMessageConverter;
-import org.marketcetera.spring.JMSFIXMessageConverter;
+import org.marketcetera.ors.jms.JMSFIXMessageConverter;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConverter;
