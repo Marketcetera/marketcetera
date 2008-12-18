@@ -198,7 +198,12 @@ public class CEPEsperProcessor extends Module
     protected void preStart() throws ModuleException {
         String configFile = getConfiguration();
         Configuration configuration = new Configuration();
+        ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
         try {
+            //Set the thread context classloader so that esper can load the
+            //correct set of classes when this is class is not loaded by
+            //the system classloader.
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             if(configFile != null) {
                 try {
                     //Try URL configuration
@@ -232,6 +237,8 @@ public class CEPEsperProcessor extends Module
             }
         } catch (EPException e) {
             throw new ModuleException(e, Messages.ERROR_CONFIGURING_ESPER.getMessage());
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentLoader);
         }
     }
 
@@ -319,12 +326,19 @@ public class CEPEsperProcessor extends Module
         @Override
         public void processRequest(String[] inStmts, DataEmitterSupport inSupport) throws RequestDataException {
             ArrayList<EPStatement> statements;
+            ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
             try {
+                //Set the context classloader so that esper can find
+                //the subscriber class when this module is loaded from
+                //a classloader that is not the system classloader.
+                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                 statements = createStatements(inStmts);
+                statements.get(statements.size() - 1).setSubscriber(new Subscriber(inSupport));
             } catch (EPException ex) {
                 throw new RequestDataException(ex);
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentLoader);
             }
-            statements.get(statements.size() - 1).setSubscriber(new Subscriber(inSupport));
             mRequests.put(inSupport.getRequestID(), statements);
         }
 
