@@ -44,18 +44,26 @@ public class ManagerStopTest extends ModuleTestBase {
                 new DataRequest(EmitterModuleFactory.INSTANCE_URN,"some string"),
                 new DataRequest(procURN, String.class.getName())
         });
-        module.setRequests(new DataRequest[]{
+        module.addRequests(new DataRequest[]{
                 new DataRequest(EmitterModuleFactory.INSTANCE_URN,"some what"),
+                new DataRequest(procURN, String.class.getName())
+        });
+        module.addRequests(new DataRequest[]{
+                new DataRequest(EmitterModuleFactory.INSTANCE_URN,"some total"),
                 new DataRequest(procURN, String.class.getName())
         });
         module.setInvokeDefault(true);
         //Start the data flow.
         manager.start(flowURN);
-        DataFlowID flow2 = module.getFlowID();
+        DataFlowID[] flowIDs = module.getFlowIDs();
         //Verify the data flows are running
         assertFlowInfo(manager.getDataFlowInfo(flow1),flow1, 3, true, false,
                 null, null);
-        assertFlowInfo(manager.getDataFlowInfo(flow2),flow2, 3, true, false,
+        assertNotNull(flowIDs);
+        assertEquals(2, flowIDs.length);
+        assertFlowInfo(manager.getDataFlowInfo(flowIDs[0]),flowIDs[0], 3, true, false,
+                flowURN, null);
+        assertFlowInfo(manager.getDataFlowInfo(flowIDs[1]),flowIDs[1], 3, true, false,
                 flowURN, null);
         //Now stop the module manager.
         manager.stop();

@@ -2,6 +2,9 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import java.util.List;
+import java.util.LinkedList;
+
 /* $License$ */
 /**
  * A processor module that is capable of creating / canceling data flows.
@@ -33,6 +36,16 @@ public class FlowRequesterModule extends ProcessorModule
                 setFlowID(mSupport.createDataFlow(mRequests, mAppendSink));
             }
         }
+        if(mDataRequests != null) {
+            mFlowIDs.clear();
+            for(DataRequest[] request: mDataRequests) {
+                if(mInvokeDefault) {
+                    mFlowIDs.add(mSupport.createDataFlow(request));
+                } else {
+                    mFlowIDs.add(mSupport.createDataFlow(request, mAppendSink));
+                }
+            }
+        }
     }
 
     @Override
@@ -47,6 +60,12 @@ public class FlowRequesterModule extends ProcessorModule
         if(mFlowID != null) {
             mSupport.cancel(mFlowID);
             setFlowID(null);
+        }
+        if(!mFlowIDs.isEmpty()) {
+            for(DataFlowID id: mFlowIDs) {
+                mSupport.cancel(id);
+            }
+            mFlowIDs.clear();
         }
     }
 
@@ -87,6 +106,17 @@ public class FlowRequesterModule extends ProcessorModule
     }
 
     /**
+     * The data request that should be used by this module when
+     * creating data flows.
+     *
+     * @param inRequests the set of request used to use when creating
+     * data flow.
+     */
+    public void addRequests(DataRequest[] inRequests) {
+        mDataRequests.add(inRequests);
+    }
+
+    /**
      * The data flow ID.
      *
      * @param inFlowID the data flowID.
@@ -96,12 +126,23 @@ public class FlowRequesterModule extends ProcessorModule
     }
 
     /**
-     * The data flow ID.
+     * The data flow ID for the request supplied via
+     * {@link #setRequests(DataRequest[])}.
      *
      * @return the data flow ID.
      */
     public DataFlowID getFlowID() {
         return mFlowID;
+    }
+
+    /**
+     * The data flow IDs corresponding to the requests added via
+     * {@link #addRequests(DataRequest[])}.
+     *
+     * @return the flow IDs for the data requests created.
+     */
+    public DataFlowID[] getFlowIDs() {
+        return mFlowIDs.toArray(new DataFlowID[mFlowIDs.size()]);
     }
 
     /**
@@ -135,10 +176,12 @@ public class FlowRequesterModule extends ProcessorModule
     }
 
     private DataFlowID mFlowID;
+    private List<DataFlowID> mFlowIDs = new LinkedList<DataFlowID>();
     private boolean mInvokeDefault;
     private boolean mAppendSink;
     private boolean mSkipCancel = false;
     private boolean mFailPreStart = false;
     private DataRequest[] mRequests;
+    private List<DataRequest[]> mDataRequests = new LinkedList<DataRequest[]>();
     private DataFlowSupport mSupport;
 }
