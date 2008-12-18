@@ -37,10 +37,6 @@
       <artifactId>spring</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.skife.kasparov</groupId>
       <artifactId>csv</artifactId>
     </dependency>

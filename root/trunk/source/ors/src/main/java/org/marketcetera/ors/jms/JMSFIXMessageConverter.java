@@ -1,4 +1,4 @@
-package org.marketcetera.spring;
+package org.marketcetera.ors.jms;
 
 import java.io.Serializable;
 

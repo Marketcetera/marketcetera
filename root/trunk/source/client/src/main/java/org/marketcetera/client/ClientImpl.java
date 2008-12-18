@@ -303,7 +303,13 @@ class ClientImpl implements Client {
             throw new ConnectionException(new I18NBoundMessage1P(
                     Messages.CONNECT_ERROR_INVALID_PORT, mParameters.getPort()));
         }
+        ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
         try {
+            //Set the thread context classloader so that spring classes,
+            //that are loaded by the system classloader can find
+            //jms.xml file, when the client module is loaded by a classloader
+            //that is not the system classloader.
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             StaticApplicationContext parentCtx = new StaticApplicationContext();
             SpringUtils.addStringBean(parentCtx, "brokerURL",  //$NON-NLS-1$
                     mParameters.getURL());
@@ -341,6 +347,8 @@ class ClientImpl implements Client {
                     Messages.ERROR_CONNECT_TO_SERVER, mParameters.getURL(),
                     mParameters.getUsername(), mParameters.getHostname(),
                     mParameters.getPort()));
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentLoader);
         }
         mLastConnectTime = new Date();
     }

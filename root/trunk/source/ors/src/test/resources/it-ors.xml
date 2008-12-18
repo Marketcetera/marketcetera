@@ -31,7 +31,7 @@
       <property name="defaultListenerMethod" value="onMessage"/>
       <property name="delegate" ref="incomingTopicHandler"/>
       <property name="messageConverter">
-          <bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+          <bean class="org.marketcetera.ors.jms.JMSFIXMessageConverter"/>
       </property>
     </bean>
 
@@ -49,7 +49,7 @@
       <ref bean="pooledConnectionFactory"/>
     </property>
 	<property name="messageConverter">
-		<bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+		<bean class="org.marketcetera.ors.jms.JMSFIXMessageConverter"/>
 	</property>
     <property name="defaultDestination" ref="requestQueue"/>
   </bean>

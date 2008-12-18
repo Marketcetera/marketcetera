@@ -1,4 +1,4 @@
-package org.marketcetera.spring;
+package org.marketcetera.ors.jms;
 
 import org.junit.Test;
 import org.marketcetera.util.l10n.MessageComparator;
