@@ -249,15 +249,15 @@ public class StrategyAgent extends ApplicationBase {
                             mManagerBean, c.getParameter());
                     Messages.LOG_COMMAND_RUN_RESULT.info(this,
                             c.getRunner().getName(), result);
-                } catch (Exception e) {
+                } catch (Throwable t) {
                     Messages.LOG_ERROR_EXEC_CMD.warn(this,
                             c.getRunner().getName(),
                             c.getParameter(), c.getLineNum(),
-                            getMessage(e));
-                    Messages.LOG_ERROR_EXEC_CMD.debug(this, e,
+                            getMessage(t));
+                    Messages.LOG_ERROR_EXEC_CMD.debug(this, t,
                             c.getRunner().getName(),
                             c.getParameter(), c.getLineNum(),
-                            getMessage(e));
+                            getMessage(t));
                 }
             }
         }
