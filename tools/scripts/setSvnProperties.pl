@@ -59,7 +59,7 @@ my(%patternsCustom)=(
 	'public/source/photon/plugins/com.swtworkbench.community.xswt'
 	  => ['bin'],
 	'public/source/photon/plugins/org.marketcetera.core.tests'
-	  => ['core-1.0.0-tests.jar'],
+	  => ['core-1.1.0-tests.jar'],
 	'public/source/strategyagent/src/test/sample_data/modules/jars'
 	  => ['first.jar','second.jar','third.jar','fourth.jar'],
 );
