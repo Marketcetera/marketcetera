@@ -5,6 +5,7 @@ import org.marketcetera.util.auth.StandardAuthentication;
 import org.marketcetera.util.auth.OptionsProvider;
 import static org.marketcetera.util.auth.StandardAuthentication.*;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.cli.*;
 import static org.marketcetera.core.ApplicationBase.*;
@@ -38,7 +39,7 @@ public class Main {
     public static void main(String []inArgs) {
         PropertyConfigurator.configureAndWatch
             (CONF_DIR + LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
-        Messages.LOG_APP_COPYRIGHT.info(Main.class);
+        LOG_APP_COPYRIGHT.info(Main.class);
         Main main = new Main();
         run(inArgs, main);
     }
@@ -204,6 +205,7 @@ public class Main {
      */
     protected void printError(Exception inException) {
         printMessage(getExceptionMsg(inException));
+        SLF4JLoggerProxy.debug(this,inException);
     }
 
     /**
@@ -228,6 +230,7 @@ public class Main {
      * @param inMain the instance that needs to be run.
      */
     static void run(String[] inArgs, Main inMain){
+        inMain.printMessage(LOG_APP_COPYRIGHT.getText());
         if (inMain.processArguments(inArgs)) {
             try {
                 inMain.doProcessing();
