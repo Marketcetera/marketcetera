@@ -4,10 +4,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.file.CopyCharsUtils;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.core.LoggerConfiguration;
-import static org.marketcetera.orderloader.Messages.ERROR_MISSING_FILE;
-import static org.marketcetera.orderloader.Messages.ERROR_TOO_MANY_ARGUMENTS;
-import static org.marketcetera.orderloader.Messages.LINE_SUMMARY;
-import static org.marketcetera.orderloader.Messages.ORDER_SUMMARY;
+import static org.marketcetera.orderloader.Messages.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -64,6 +61,8 @@ public class MainTest {
         assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
         assertTrue(output, output.contains("option:u"));
+        //verify that the copyright message is printed even when there's failure.
+        assertTrue(output, output.contains(LOG_APP_COPYRIGHT.getText()));
     }
     @Test
     public void incorrectPasswordSyntax() {
@@ -95,6 +94,8 @@ public class MainTest {
         String output = mOutput.toString();
         assertTrue(output, output.contains(LINE_SUMMARY.getText(22, 5, 5)));
         assertTrue(output, output.contains(ORDER_SUMMARY.getText(4, 7)));
+        //Verify copyright message was printed
+        assertTrue(output, output.contains(LOG_APP_COPYRIGHT.getText()));
         tmpFile.delete();
     }
     @Test
