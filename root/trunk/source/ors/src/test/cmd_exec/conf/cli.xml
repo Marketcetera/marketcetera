@@ -9,6 +9,10 @@
   - $License$
   -->
 
+<!--
+  - See 'README.html' for detailed documentation.
+  -->
+
 <beans
  xmlns="http://www.springframework.org/schema/beans"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

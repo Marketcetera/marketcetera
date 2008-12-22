@@ -9,6 +9,10 @@
   - $License$
   -->
 
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
 <beans
  xmlns="http://www.springframework.org/schema/beans"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -18,18 +22,37 @@
 
   <import
    resource="qdescriptor.xml"/>
+  <import
+   resource="modifiers.xml"/>
+  <import
+   resource="routes.xml"/>
 
   <bean
    id="metc_broker"
    class="org.marketcetera.ors.brokers.SpringBroker">
+    <!-- The broker name (an arbitrary string). -->
     <property
      name="name"
-     value="Marketcetera Exchange"/>
+     value="${metc.broker.name}"/>
+    <!-- The broker ID (an arbitrary string, but a short one is best). -->
     <property
      name="id"
-     value="metc"/>
+     value="${metc.broker.id}"/>
+    <!-- The QuickFIX/J session descriptor. -->
     <property
      name="descriptor"
      ref="metc_qdescriptor"/>
+    <!-- The message modifiers. -->
+    <!--
+    <property
+     name="modifiers"
+     ref="metc_modifiers"/>
+    -->
+    <!-- The routing filter. -->
+    <!--
+    <property
+     name="routes"
+     ref="metc_routes"/>
+    -->
   </bean>
 </beans>

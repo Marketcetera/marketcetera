@@ -9,6 +9,10 @@
   - $License$
   -->
 
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
 <beans
  xmlns="http://www.springframework.org/schema/beans"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -28,9 +32,11 @@
   <bean
    id="metc_brokers"
    class="org.marketcetera.ors.brokers.SpringBrokers">
+    <!-- The QuickFIX/J session settings. -->
     <property
      name="settings"
      ref="metc_qsettings"/>
+    <!-- The brokers (order is not significant). -->
     <property
      name="brokers">
       <list>

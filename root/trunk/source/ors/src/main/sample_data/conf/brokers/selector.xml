@@ -9,6 +9,10 @@
   - $License$
   -->
 
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
 <beans
  xmlns="http://www.springframework.org/schema/beans"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -19,6 +23,30 @@
   <bean
    id="metc_selector"
    class="org.marketcetera.ors.brokers.SpringSelector">
+    <!-- Selector entries. -->
+    <!--
+    <property
+     name="entries">
+      <list>
+        <bean
+         class="org.marketcetera.ors.brokers.SpringSelectorEntry">
+          Desired security type: CS for common stock, OPT for options.
+          <property
+           name="targetType"
+           value="CS"/>
+          Broker selected if security type matches.
+          <property
+           name="broker"
+           ref="metc_broker"/>
+          True to continue search if type matches but broker is unavailable.
+          <property
+           name="skipIfUnavailable"
+           value="true"/>
+        </bean>
+      </list>
+    </property>
+    -->
+    <!-- Default broker. -->
     <property
      name="defaultBroker"
      ref="metc_broker"/>

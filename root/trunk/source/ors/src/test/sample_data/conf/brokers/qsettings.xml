@@ -9,6 +9,10 @@
   - $License$
   -->
 
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
 <beans
  xmlns="http://www.springframework.org/schema/beans"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,15 +20,23 @@
  "http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+  <!--
+    - See
+    - http://www.quickfixj.org/quickfixj/usermanual/usage/configuration.html
+    - for a complete list of standard options.
+    -->
+
   <bean
    id="metc_qsettings"
    class="org.marketcetera.util.quickfix.SpringSessionSettings">
     <property
      name="defaults">
       <map>
+        <!-- A non-standard option, setting the logging method. -->
         <entry
          key="metc.LogFactoryClass"
          value="quickfix.SLF4JLogFactory"/>
+        <!-- A non-standard option, setting the message store method. -->
         <entry
          key="metc.MessageStoreFactoryClass"
          value="quickfix.FileStoreFactory"/>
