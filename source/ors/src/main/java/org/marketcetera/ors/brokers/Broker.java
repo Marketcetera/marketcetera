@@ -270,6 +270,6 @@ public class Broker
     public String toString()
     {
         return Messages.BROKER_STRING.getText
-            (getBrokerID().getValue(),getSessionID(),getName());
+            (getBrokerID().getValue(),getName(),getSessionID());
     }
 }
