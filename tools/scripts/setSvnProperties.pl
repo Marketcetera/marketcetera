@@ -58,10 +58,12 @@ my(%patternsCustom)=(
 	  => ['profiles.xml'],
 	'public/source/photon/plugins/com.swtworkbench.community.xswt'
 	  => ['bin'],
+	'public/source/photon/features/org.marketcetera.photon.feature'
+	  => ['plugin_customization.ini'],
 	'public/source/photon/plugins/org.marketcetera.core.tests'
 	  => ['core-1.1.0-tests.jar'],
 	'public/source/strategyagent/src/test/sample_data/modules/jars'
-	  => ['first.jar','second.jar','third.jar','fourth.jar'],
+	  => ['first.jar','third.jar','fourth.jar'],
 );
 
 # Run command.
