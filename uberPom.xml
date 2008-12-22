@@ -28,6 +28,7 @@
     <mvn.javase.version>6</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
     <mvn.spring.version>2.5.2</mvn.spring.version>
+    <mvn.cxf.version>2.1.2</mvn.cxf.version>
     <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
     <mvn.xjc.version>2.1.7</mvn.xjc.version>
     <mvn.eclipse.version>3.4.1</mvn.eclipse.version>
@@ -89,7 +90,7 @@
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        <version>[2.1.2]</version>
+        <version>[${mvn.cxf.version}]</version>
         <exclusions>
           <!-- Exclude jaxb-xjc: nonessential and confuses photon bundle. -->
           <exclusion>
@@ -209,14 +210,8 @@
       <!-- Runtime. -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-core</artifactId>
-        <version>[5.1.0]</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activeio-core</artifactId>
-          </exclusion>
-        </exclusions>
+        <artifactId>activemq-pool</artifactId>
+        <version>[5.2.0]</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -275,8 +270,14 @@
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http</artifactId>
+        <version>[${mvn.cxf.version}]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http-jetty</artifactId>
-        <version>[2.1.2]</version>
+        <version>[${mvn.cxf.version}]</version>
         <scope>runtime</scope>
         <exclusions>
           <!-- Exclude slf4j-jdk14, let application choose slf4j binding. -->
