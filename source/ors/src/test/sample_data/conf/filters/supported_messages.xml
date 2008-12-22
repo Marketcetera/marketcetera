@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Filter configuration: supported messages.
+  - Global filter configuration: supported messages.
   -
   - Author: tlerios@marketcetera.com
   - Since: 1.0.0
   - Version: $Id$
   - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
   -->
 
 <beans
@@ -19,9 +23,17 @@
   <bean
    id="metc_supported_messages"
    class="org.marketcetera.ors.filters.MessageTypeFilter">
+    <!--
+      - If true, messages of unknown type are accepted.  If omitted, false
+      - is assumed.
+      -->
     <property
      name="acceptUnknown"
      value="false"/>
+    <!--
+      - The set of acceptable message types. A non-null set is required
+      - (an empty set is acceptable).
+      -->
     <property
      name="acceptedMessages">
       <set>
@@ -48,11 +60,8 @@
         <value>L</value>  <!-- LIST_EXECUTE -->
         <value>M</value>  <!-- LIST_STATUS_REQUEST -->
         <value>N</value>  <!-- LIST_STATUS -->
-
-        <!-- 
-          - Not supported: P (ALLOCATION_INSTRUCTION_ACK)
-          -->
-
+        <!-- 'O' is not a valid FIX message type, hence omitted. -->
+        <!-- Not supported: P (ALLOCATION_INSTRUCTION_ACK). -->
         <value>Q</value>  <!-- DONT_KNOW_TRADE -->
         <value>R</value>  <!-- QUOTE_REQUEST -->
         <value>S</value>  <!-- QUOTE -->

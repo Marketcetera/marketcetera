@@ -9,6 +9,10 @@
   - $License$
   -->
 
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
 <beans
  xmlns="http://www.springframework.org/schema/beans"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -26,18 +30,23 @@
   <bean
    id="metc_broker2_broker"
    class="org.marketcetera.ors.brokers.SpringBroker">
+    <!-- The broker name (an arbitrary string). -->
     <property
      name="name"
-     value="Marketcetera Exchange 2"/>
+     value="${metc.broker2.name}"/>
+    <!-- The broker ID (an arbitrary string, but a short one is best). -->
     <property
      name="id"
-     value="metc2"/>
+     value="${metc.broker2.id}"/>
+    <!-- The QuickFIX/J session descriptor. -->
     <property
      name="descriptor"
      ref="metc_broker2_qdescriptor"/>
+    <!-- The message modifiers. -->
     <property
      name="modifiers"
      ref="metc_broker2_modifiers"/>
+    <!-- The routing filter. -->
     <property
      name="routes"
      ref="metc_broker2_routes"/>

@@ -9,6 +9,10 @@
   - $License$
   -->
 
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
 <beans
  xmlns="http://www.springframework.org/schema/beans"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,12 +20,20 @@
  "http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+  <!--
+    - Sets Java system properties.
+    -->
+
   <bean
    id="metc_system_properties_setter"
    class="org.marketcetera.util.spring.SystemPropertiesSetter">
     <property
      name="map">
       <map>
+        <!--
+          - The name of the JAAS configuration file containing the JAAS
+          - 'ors-amq-domain'.
+          -->
         <entry
          key="java.security.auth.login.config"
          value="${java.security.auth.login.config}"/>
@@ -29,7 +41,13 @@
     </property>
   </bean>
 
+  <!--
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/broker/BrokerService.html' for a complete list of options.
+    -->
+
   <bean
+   id="metc_jms_broker"
    class="org.apache.activemq.broker.BrokerService"
    init-method="start"
    depends-on="metc_system_properties_setter,metc_ers">
@@ -48,8 +66,8 @@
     <property
      name="transportConnectorURIs">
       <list>
-        <value>${metc.amq.broker.url}</value>
-        <value>stomp://localhost:61613</value>
+        <value>${metc.jms.broker.url}</value>
+        <value>stomp://${metc.ws.host}:61613</value>
       </list>
     </property>
     <property

@@ -9,12 +9,22 @@
   - $License$
   -->
 
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
 <beans
  xmlns="http://www.springframework.org/schema/beans"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation=
  "http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!--
+    - See
+    - http://www.quickfixj.org/quickfixj/usermanual/usage/configuration.html
+    - for a complete list of standard options.
+    -->
 
   <bean
    id="metc_broker1_qdescriptor"
@@ -24,25 +34,31 @@
       <map>
         <entry
          key="BeginString"
-         value="${metc.qf.broker1.begin.string}"/>
+         value="${metc.broker1.qf.begin.string}"/>
+        <!--
+          - An acceptable value for this option is
+          - 'metc.DefaultDataDictionary', which will choose the standard
+          - QuickFIX/J dictionary for the FIX version deduced from the
+          - 'BeginString' option.
+          -->
         <entry
          key="DataDictionary"
-         value="${metc.qf.broker1.data.dictionary}"/>
+         value="${metc.broker1.qf.data.dictionary}"/>
         <entry
          key="SenderCompID"
-         value="${metc.qf.broker1.sender.comp.id}"/>
+         value="${metc.broker1.qf.sender.comp.id}"/>
         <entry
          key="TargetCompID"
-         value="${metc.qf.broker1.target.comp.id}"/>
+         value="${metc.broker1.qf.target.comp.id}"/>
         <entry
          key="FileStorePath"
-         value="${metc.qf.broker1.store}"/>
+         value="${metc.broker1.qf.store}"/>
         <entry
          key="SocketConnectHost"
-         value="${metc.qf.broker1.host}"/>
+         value="${metc.broker1.qf.host}"/>
         <entry
          key="SocketConnectPort"
-         value="${metc.qf.broker1.port}"/>
+         value="${metc.broker1.qf.port}"/>
       </map>
     </property>
   </bean>

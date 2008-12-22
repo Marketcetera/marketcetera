@@ -38,11 +38,11 @@ public class ServiceTest
             s.getBrokersStatus(getORSClientContext()).getBrokers();
         assertEquals(2,bs.size());
         BrokerStatus b=bs.get(0);
-        assertEquals("Marketcetera Exchange 1",b.getName());
-        assertEquals("metc1",b.getId().getValue());
+        assertEquals("Broker 1",b.getName());
+        assertEquals("broker1",b.getId().getValue());
         b=bs.get(1);
-        assertEquals("Marketcetera Exchange 2",b.getName());
-        assertEquals("metc2",b.getId().getValue());
+        assertEquals("Broker 2",b.getName());
+        assertEquals("broker2",b.getId().getValue());
 
         ReportBaseImpl[] rs=s.getReportsSince
             (getORSClientContext(),new Date());
