@@ -31,8 +31,9 @@
     <module>modules</module>
     <module>orderloader</module>
     <module>ors</module>
-    <module>photon</module>
+    <!-- build strategy agent before photon -->
     <module>strategyagent</module>
+    <module>photon</module>
     <module>util</module>
     <module>util-test</module>
   </modules>
