@@ -46,13 +46,6 @@
       <artifactId>slf4j-log4j12</artifactId>
     </dependency>
 
-    <!-- Runtime: workaround for JIRA EG-396. -->
-    <dependency>
-      <groupId>${mvn.public.package}</groupId>
-      <artifactId>client</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
     <!-- Testing. -->
     <dependency>
       <groupId>${mvn.public.package}</groupId>
