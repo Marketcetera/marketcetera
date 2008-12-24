@@ -70,7 +70,7 @@ public class MarketDataReceiverModule extends Module implements DataReceiver,
 							.getSymbol()));
 		}
 		org.marketcetera.marketdata.DataRequest request = MarketDataRequest
-				.newFullBookRequest(mSubscriber.getSymbol());
+				.newTopOfBookRequest(mSubscriber.getSymbol());
 		mDataFlowSupport.createDataFlow(new DataRequest[] {
 				new DataRequest(source, request),
 				new DataRequest(getURN()) }, false);

@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata.marketcetera;
 
+import static org.marketcetera.marketdata.Messages.NULL_URL;
 import static org.marketcetera.marketdata.marketcetera.Messages.TARGET_COMP_ID_REQUIRED;
-import static org.marketcetera.marketdata.marketcetera.Messages.URL_REQUIRED;
 
 import org.junit.Test;
 import org.marketcetera.marketdata.FeedException;
@@ -42,7 +42,7 @@ public class MarketceteraFeedCredentialsTest
                                                         "");
             }
         };
-        new ExpectedFailure<FeedException>(URL_REQUIRED) {
+        new ExpectedFailure<FeedException>(NULL_URL) {
             @Override
             protected void run()
                     throws Exception
@@ -52,7 +52,7 @@ public class MarketceteraFeedCredentialsTest
                                                         "targetCompID");
             }
         };
-        new ExpectedFailure<FeedException>(URL_REQUIRED) {
+        new ExpectedFailure<FeedException>(NULL_URL) {
             @Override
             protected void run()
                     throws Exception

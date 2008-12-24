@@ -5,10 +5,10 @@ package org.marketcetera.marketdata;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
 public class MockMarketDataFeedCredentials
-    extends AbstractMarketDataFeedCredentials
+    extends AbstractMarketDataFeedURLCredentials
 {
     public static boolean sValidateThrowsThrowable = false;
 
@@ -17,7 +17,6 @@ public class MockMarketDataFeedCredentials
     {
         this("http://url-" + System.nanoTime()); //$NON-NLS-1$
     }
-    
     /**
      * Create a new <code>TestMarketDataFeedCredentials</code> instance.
      *
@@ -29,7 +28,6 @@ public class MockMarketDataFeedCredentials
     {
         super(inURL);
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeedCredentials#validateURL(java.lang.String)
      */

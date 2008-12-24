@@ -370,7 +370,7 @@ public final class MarketDataRequest
         DataRequest.validateAndSetRequestDefaultsIfNecessary(inProperties);
         if(!inProperties.containsKey(DEPTH_KEY)) {
             inProperties.setProperty(DEPTH_KEY,
-                                     Integer.toString(FULL_BOOK));
+                                     Integer.toString(TOP_OF_BOOK));
         }
         if(!inProperties.containsKey(REQUEST_TYPE_KEY)) {
             inProperties.setProperty(REQUEST_TYPE_KEY,

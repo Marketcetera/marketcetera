@@ -4,7 +4,8 @@ import static org.marketcetera.marketdata.marketcetera.Messages.TARGET_COMP_ID_R
 import static org.marketcetera.marketdata.marketcetera.Messages.URL_REQUIRED;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.marketdata.AbstractMarketDataFeedCredentials;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.AbstractMarketDataFeedURLCredentials;
 import org.marketcetera.marketdata.FeedException;
 
 /* $License$ */
@@ -18,7 +19,7 @@ import org.marketcetera.marketdata.FeedException;
 */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedCredentials
-    extends AbstractMarketDataFeedCredentials
+    extends AbstractMarketDataFeedURLCredentials
 {
 	/**
 	 * the sender comp id
@@ -64,7 +65,8 @@ public class MarketceteraFeedCredentials
         mSenderCompID = inSenderCompID;
         mTargetCompID = inTargetCompID;
         if(mTargetCompID == null ||
-           mTargetCompID.isEmpty()) {
+           mTargetCompID.trim().isEmpty()) {
+            TARGET_COMP_ID_REQUIRED.error(AbstractMarketDataFeed.DATAFEED_STATUS_MESSAGES);
             throw new FeedException(TARGET_COMP_ID_REQUIRED);
         }
     }
@@ -106,6 +108,7 @@ public class MarketceteraFeedCredentials
         super.validateURL(inURL);
         if(inURL == null ||
            inURL.isEmpty()) {
+            URL_REQUIRED.error(AbstractMarketDataFeed.DATAFEED_STATUS_MESSAGES);
             throw new FeedException(URL_REQUIRED);
         }
     }

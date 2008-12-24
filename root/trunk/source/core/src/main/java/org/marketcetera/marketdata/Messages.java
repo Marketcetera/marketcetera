@@ -95,4 +95,6 @@ public interface Messages
                                                                           "bean_attribute_changed"); //$NON-NLS-1$
     static final I18NMessage0P FEED_STATUS_CHANGED = new I18NMessage0P(LOGGER,
                                                                        "feed_status_changed"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_URL = new I18NMessage0P(LOGGER,
+                                                           "null_url"); //$NON-NLS-1$
 }

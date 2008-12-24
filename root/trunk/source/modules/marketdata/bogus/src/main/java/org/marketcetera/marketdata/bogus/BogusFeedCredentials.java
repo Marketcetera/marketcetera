@@ -35,6 +35,6 @@ public class BogusFeedCredentials
 	protected BogusFeedCredentials()
 		throws FeedException 
 	{
-		super("http://bogusurl"); //$NON-NLS-1$
+		super();
 	}
 }

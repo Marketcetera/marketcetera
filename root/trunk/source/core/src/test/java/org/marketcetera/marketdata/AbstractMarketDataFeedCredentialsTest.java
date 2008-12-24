@@ -3,10 +3,11 @@ package org.marketcetera.marketdata;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.marketcetera.marketdata.Messages.NULL_URL;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.module.ExpectedFailure;
 
 /**
  * Tests {@link AbstractMarketDataFeedCredentials}.
@@ -25,29 +26,47 @@ public class AbstractMarketDataFeedCredentialsTest
         MockMarketDataFeedCredentials.sValidateThrowsThrowable = false;
     }
     @Test
-    public void testConstructor()
-        throws Exception
-    {
-        // we can't say for sure that nulls are not allowed - that depends on the subclass implementation
-        MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials(null);
-        assertEquals(null,
-                     credentials.getURL());
-        String url = "http://url-" + System.nanoTime(); //$NON-NLS-1$
-        credentials = new MockMarketDataFeedCredentials(url);
-        assertEquals(url,
-                     credentials.getURL());
-    }
-    @Test
     public void testValidate()
         throws Exception
     {
         MockMarketDataFeedCredentials.sValidateThrowsThrowable = true;
-        new ExpectedTestFailure(NullPointerException.class) {
-            protected void execute()
-                    throws Throwable
+        new ExpectedFailure<FeedException>(NULL_URL) {
+            @Override
+            protected void run()
+                    throws Exception
             {
-                new MockMarketDataFeedCredentials(null);            }
-        }.run();     
+                new MockMarketDataFeedCredentials(null);            
+            }
+        };
+        new ExpectedFailure<FeedException>(NULL_URL) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                new MockMarketDataFeedCredentials("");            
+            }
+        };
+        new ExpectedFailure<FeedException>(NULL_URL) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                new MockMarketDataFeedCredentials("           ");            
+            }
+        };
+        new ExpectedFailure<NullPointerException>(null) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                new MockMarketDataFeedCredentials("someURL");            
+            }
+        };
+        MockMarketDataFeedCredentials.sValidateThrowsThrowable = false;
+        String url = "http://url-" + System.nanoTime(); //$NON-NLS-1$
+        MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials(url);
+        assertEquals(url,
+                     credentials.getURL());
     }
     @Test
     public void testEquals()
@@ -57,12 +76,9 @@ public class AbstractMarketDataFeedCredentialsTest
         MockMarketDataFeedCredentials c2 = new MockMarketDataFeedCredentials("url2"); //$NON-NLS-1$
         MockMarketDataFeedCredentials c3 = new MockMarketDataFeedCredentials("url1"); //$NON-NLS-1$
         MockMarketDataFeedCredentials c4 = new MockMarketDataFeedCredentials("url1"); //$NON-NLS-1$
-        MockMarketDataFeedCredentials c5 = new MockMarketDataFeedCredentials(null);
         
         assertFalse(c1.equals(null));
         assertFalse(c1.equals(this));
-        assertFalse(c1.equals(c5));
-        assertFalse(c5.equals(c1));
         
         // symmetry
         assertTrue(c1.equals(c4));
@@ -88,7 +104,5 @@ public class AbstractMarketDataFeedCredentialsTest
         assertTrue(c1.hashCode() != c2.hashCode());
         assertTrue(c2.hashCode() != c3.hashCode());
         assertTrue(c2.hashCode() != c4.hashCode());
-        assertTrue(c1.hashCode() != c5.hashCode());
-        assertTrue(c5.hashCode() != c1.hashCode());
     }
 }
