@@ -290,7 +290,7 @@ public class MarketDataRequestTest
             }
         }.run();
         // construct absolutely minimal representation (symbols only)
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.SUBSCRIBE,
                       NO_EXCHANGE,
                       new String[] { "METC" },
@@ -301,7 +301,7 @@ public class MarketDataRequestTest
                                                                                                         "METC",
                                                                                                         null,
                                                                                                         null)));
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.SUBSCRIBE,
                       NO_EXCHANGE,
                       new String[] { "METC", "AAPL" },
@@ -313,7 +313,7 @@ public class MarketDataRequestTest
                                                                                                               null,
                                                                                                               null)));
         // add the id
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.SUBSCRIBE,
                       NO_EXCHANGE,
                       new String[] { "METC", "AAPL" },
@@ -329,7 +329,7 @@ public class MarketDataRequestTest
         final String exchange = "Exchange";
         final String extraStuff = "extra stuff";
         // test the key/value delimiter
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.SUBSCRIBE,
                       exchange,
                       new String[] { "METC" },
@@ -356,7 +356,7 @@ public class MarketDataRequestTest
                                                                                                         null));
             }
         }.run();
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.SUBSCRIBE,
                       exchange,
                       new String[] { "METC" },
@@ -453,7 +453,7 @@ public class MarketDataRequestTest
             }
         }.run();
         // valid update types
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.SUBSCRIBE,
                       NO_EXCHANGE,
                       new String[] { "METC" },
@@ -464,7 +464,7 @@ public class MarketDataRequestTest
                                                                                                               "METC",
                                                                                                               "Full_RefreSH",
                                                                                                               null)));
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.SUBSCRIBE,
                       NO_EXCHANGE,
                       new String[] { "METC" },
@@ -490,7 +490,7 @@ public class MarketDataRequestTest
             }
         }.run();
         // valid request types
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.SNAPSHOT,
                       NO_EXCHANGE,
                       new String[] { "METC" },
@@ -501,7 +501,7 @@ public class MarketDataRequestTest
                                                                                                               "METC",
                                                                                                               null,
                                                                                                               "SnApShOt")));
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.SUBSCRIBE,
                       NO_EXCHANGE,
                       new String[] { "METC" },
@@ -512,7 +512,7 @@ public class MarketDataRequestTest
                                                                                                               "METC",
                                                                                                               null,
                                                                                                               "sUbScRiBe")));
-        verifyRequest(FULL_BOOK,
+        verifyRequest(TOP_OF_BOOK,
                       RequestType.CANCEL,
                       NO_EXCHANGE,
                       new String[] { "METC" },
@@ -673,7 +673,7 @@ public class MarketDataRequestTest
         Properties properties = new Properties();
         MarketDataRequest.validateAndSetRequestDefaultsIfNecessary(properties);
         assertTrue(Long.parseLong(properties.getProperty(DataRequest.ID_KEY)) > 0);
-        assertEquals(FULL_BOOK,
+        assertEquals(TOP_OF_BOOK,
                      Integer.parseInt(properties.getProperty(MarketDataRequest.DEPTH_KEY)));
         assertEquals(RequestType.SUBSCRIBE,
                      RequestType.valueOf(properties.getProperty(MarketDataRequest.REQUEST_TYPE_KEY)));

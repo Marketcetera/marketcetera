@@ -70,7 +70,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         try {
             feed.logout();
             feed.login(getCredentials());
-        } catch (CoreException e) {
+        } catch (Exception e) {
             SLF4JLoggerProxy.error(this,
                                    e);
             throw new IllegalArgumentException(e);
@@ -227,7 +227,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         feed.start();
         try {
             feed.login(getCredentials());
-        } catch (CoreException e) {
+        } catch (Exception e) {
             throw new ModuleException(e);
         }
     }

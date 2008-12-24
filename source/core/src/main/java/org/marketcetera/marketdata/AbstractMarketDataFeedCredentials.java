@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * Encapsulates the credentials necessary to authenticate a connection with an 
  * {@link MarketDataFeed} instance.
@@ -9,74 +11,10 @@ package org.marketcetera.marketdata;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
+@ClassVersion("$Id$")
 public abstract class AbstractMarketDataFeedCredentials
     implements MarketDataFeedCredentials
 {
-    /**
-     * the URL describing the server resource or resources to which to connect
-     */
-    private final String mURL;
-    /**
-     * Create a new <code>AbstractMarketDataFeedCredentials</code> instance.
-     *
-     * @param inURL a <code>String</code> value
-     * @throws FeedException if the credentials object could not be constructed
-     */
-    protected AbstractMarketDataFeedCredentials(String inURL) 
-        throws FeedException
-    {
-        mURL = inURL;
-        validateURL(inURL);
-    }  
-    /**
-     * Perform necessary validation on the given URL.
-     * 
-     * <p>This implementation does nothing.
-     *
-     * @param inURL a <code>String</code> value
-     * @throws FeedException if the URL is not valid for the Market Data Feed
-     */
-    protected void validateURL(String inURL)
-        throws FeedException
-    {
-        // do nothing
-    }
-    /**
-     * @return the uRL
-     */
-    public final String getURL()
-    {
-        return mURL;
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    public int hashCode()
-    {
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + ((mURL == null) ? 0 : mURL.hashCode());
-        return result;
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final AbstractMarketDataFeedCredentials other = (AbstractMarketDataFeedCredentials) obj;
-        if (mURL == null) {
-            if (other.mURL != null)
-                return false;
-        } else if (!mURL.equals(other.mURL))
-            return false;
-        return true;
-    }
 }

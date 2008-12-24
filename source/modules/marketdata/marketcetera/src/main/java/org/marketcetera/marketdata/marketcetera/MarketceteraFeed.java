@@ -215,17 +215,19 @@ public class MarketceteraFeed
         URI feedURI = new URI(url);
         int serverPort = feedURI.getPort();
         if ((serverPort) < 0){
+            URI_MISSING_PORT.error(AbstractMarketDataFeed.DATAFEED_STATUS_MESSAGES);
             throw new FeedException(URI_MISSING_PORT);
         }
         String server = feedURI.getHost();
         String senderCompID = credentials.getSenderCompID();
         if (senderCompID == null || 
-                senderCompID.length() == 0) {
-                senderCompID = idFactory.getNext();
-            }
+            senderCompID.trim().isEmpty()) {
+            senderCompID = idFactory.getNext();
+        }
         String targetCompID = credentials.getTargetCompID();
         String scheme;
         if (!FIXDataDictionary.FIX_4_4_BEGIN_STRING.equals(scheme = feedURI.getScheme()) ) {
+            UNSUPPORTED_FIX_VERSION.error(AbstractMarketDataFeed.DATAFEED_STATUS_MESSAGES);
             throw new CoreException(UNSUPPORTED_FIX_VERSION);
         } else {
             sessionID = new SessionID(scheme, 
@@ -265,10 +267,10 @@ public class MarketceteraFeed
                 setIsRunning(true);
                 SLF4JLoggerProxy.debug(this,
                                        "Connection confirmed, ready to proceed"); //$NON-NLS-1$
-            } catch (FeedException e) {
+            } catch (Exception e) {
                 SLF4JLoggerProxy.debug(this,
                                        "Connection attempt failed!"); //$NON-NLS-1$
-                CANNOT_START_FEED.error(this,
+                CANNOT_START_FEED.error(AbstractMarketDataFeed.DATAFEED_STATUS_MESSAGES,
                                         e);
                 setFeedStatus(FeedStatus.ERROR);
                 throw e;
