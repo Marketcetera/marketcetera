@@ -1,6 +1,7 @@
 package org.marketcetera.photon.notification.tests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.marketcetera.photon.notification.DesktopNotificationPopupTest;
 import org.marketcetera.photon.notification.NotificationConsoleControllerTest;
 
 /* $License$ */
@@ -17,7 +18,8 @@ import org.marketcetera.photon.notification.NotificationConsoleControllerTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	HeadlessSuite.class,
-	NotificationConsoleControllerTest.class
+	NotificationConsoleControllerTest.class,
+	DesktopNotificationPopupTest.class
 })
 public class UISuite {
 
