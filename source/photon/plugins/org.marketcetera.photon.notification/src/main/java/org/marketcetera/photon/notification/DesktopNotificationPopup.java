@@ -126,6 +126,8 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 			public void paintControl(PaintEvent e) {
 				subject.setText(fitLineToWidth(e.gc,
 						mNotification.getSubject(), e.width));
+				// The text only needs to be calculated once.
+				subject.removePaintListener(this);
 			}
 		});
 
