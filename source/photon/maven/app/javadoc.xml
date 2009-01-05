@@ -3,7 +3,9 @@
 <project default="javadoc">
 
     <path id="photon.classpath">
+        <pathelement location="${plugins.dir}/client/target/client-${javadoc.version}.jar"/>
         <pathelement location="${plugins.dir}/core/target/core-${javadoc.version}.jar"/>
+        <pathelement location="${plugins.dir}/strategy/target/strategy-${javadoc.version}.jar"/>
         <pathelement location="${plugins.dir}/util/target/util-${javadoc.version}.jar"/>
         <fileset dir="${photon.target}">
             <include name="**/*.jar"/>
@@ -15,10 +17,10 @@
     </path>
 
     <path id="photon.srcpath">
-        <pathelement location="${plugins.dir}/org.marketcetera.bogusfeed/src/main/java"/>
-        <pathelement location="${plugins.dir}/org.marketcetera.marketdata/src/main/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.module/src/main/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.notification/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy/src/main/java"/>
     </path>
 
     <target name="javadoc">
