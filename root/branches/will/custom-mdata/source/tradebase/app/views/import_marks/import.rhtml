@@ -1,0 +1,43 @@
+<%= render :partial => 'shared/breadcrumbs',
+           :locals=> { :top_level => "P &amp; L", :top_level_controller => 'pnl', :action_name=>''} %>
+<h1>Import Marks</h1>
+<%= if(!@report.nil?)
+       error_messages_for_report :report
+    end %>
+<p>You can either upload marks from a file on disk or paste them into a text area below.</p>
+    <% form_tag({ :controller =>'import_marks', :action => 'upload'}, :method => :post, :multipart => true) do -%>
+        <fieldset>
+            <h2>Upload a Marks file</h2>
+            <p>Please select a file in this CSV format: <em>Symbol,Value,Date,E/F</em>.<br>
+                Use E for Equity and F for Forex marks.
+            </p>
+            <label for="csv_file">CSV file</label>
+            <% if(!@report.nil? && !@report.errors[:file].nil?) %>
+                <div class="fieldWithErrors">
+            <% end -%>
+            <%= file_field("import", "file", :size => 50) %>
+            <% if(!@report.nil? && !@report.errors[:file].nil?)%>
+                </div>
+            <% end -%>
+        </fieldset>
+        <div>
+            <%= submit_tag 'Upload Marks File', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
+    <% end -%>
+
+    <% form_tag({ :controller =>'import_marks', :action => 'paste'}) do -%>
+        <fieldset>
+            <h2>Import Marks</h2>
+            <p>Please paste text in this CSV format: <em>Symbol,Value,Date,E/F</em>.<br>
+                Use E for Equity and F for Forex marks.
+            </p>
+            <label for="csv_file">Marks</label>
+            <%= text_area("import", "text", "cols" => 60, "rows" => 15) %>
+        </fieldset>
+        <div>
+            <%= submit_tag 'Import Marks', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
+    <% end -%>
+

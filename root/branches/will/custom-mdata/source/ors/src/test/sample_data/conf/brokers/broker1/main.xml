@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main broker 1 configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <import
+   resource="qdescriptor.xml"/>
+  <import
+   resource="modifiers.xml"/>
+  <import
+   resource="routes.xml"/>
+
+  <bean
+   id="metc_broker1_broker"
+   class="org.marketcetera.ors.brokers.SpringBroker">
+    <!-- The broker name (an arbitrary string). -->
+    <property
+     name="name"
+     value="${metc.broker1.name}"/>
+    <!-- The broker ID (an arbitrary string, but a short one is best). -->
+    <property
+     name="id"
+     value="${metc.broker1.id}"/>
+    <!-- The QuickFIX/J session descriptor. -->
+    <property
+     name="descriptor"
+     ref="metc_broker1_qdescriptor"/>
+    <!-- The message modifiers. -->
+    <property
+     name="modifiers"
+     ref="metc_broker1_modifiers"/>
+    <!-- The routing filter. -->
+    <property
+     name="routes"
+     ref="metc_broker1_routes"/>
+  </bean>
+</beans>
