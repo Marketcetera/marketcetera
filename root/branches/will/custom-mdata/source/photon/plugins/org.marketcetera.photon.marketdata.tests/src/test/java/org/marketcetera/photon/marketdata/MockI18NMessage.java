@@ -14,7 +14,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
  * Wraps a string for testing.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: MockI18NMessage.java 10229 2008-12-09 21:48:48Z klim $
  * @since 1.0.0
  */
 @SuppressWarnings("serial")

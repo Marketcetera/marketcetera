@@ -1,22 +1,21 @@
-package org.marketcetera.photon.module.tests;
+package org.marketcetera.photon.marketdata.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.marketcetera.photon.internal.module.MessagesTest;
 
 /* $License$ */
 
 /**
- * Test suite that can run as a regular JUnit suite.
+ * Test suite that must be run in an OSGi environment.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since 1.0.0
+ * @since $Release$
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	MessagesTest.class
+	HeadlessSuite.class
 })
-public class HeadlessSuite {
+public class PluginSuite {
 
 }

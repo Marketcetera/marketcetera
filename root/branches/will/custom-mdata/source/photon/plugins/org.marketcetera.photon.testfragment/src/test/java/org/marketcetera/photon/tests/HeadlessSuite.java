@@ -3,8 +3,6 @@ package org.marketcetera.photon.tests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.marketcetera.photon.TimeOfDayTest;
-import org.marketcetera.photon.marketdata.MarketDataReceiverModuleTest;
-import org.marketcetera.photon.marketdata.MessagesTest;
 
 /* $License$ */
 
@@ -16,7 +14,7 @@ import org.marketcetera.photon.marketdata.MessagesTest;
  * @since 1.0.0
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { MarketDataReceiverModuleTest.class, MessagesTest.class,
+@Suite.SuiteClasses( {
 		TimeOfDayTest.class })
 public class HeadlessSuite {
 

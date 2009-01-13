@@ -2,25 +2,22 @@ package org.marketcetera.photon.module.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.marketcetera.photon.module.SinkConsoleControllerTest;
+import org.marketcetera.photon.internal.module.PreferenceAttributeDefaultsTest;
 
 /* $License$ */
 
 /**
- * Test suite that must be run as a Plug-in JUnit suite. 
- * 
- * Note: {@link HeadlessSuite Headless tests} are also run.
+ * Test suite that must be run in an OSGi environment.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since 1.0.0
+ * @since $Release$
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	HeadlessSuite.class,
-	SinkConsoleControllerTest.class
+	PreferenceAttributeDefaultsTest.class
 })
-public class UISuite {
+public class PluginSuite {
 
 }
-

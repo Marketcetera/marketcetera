@@ -1,6 +1,7 @@
 package org.marketcetera.photon.marketdata;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.marketcetera.marketdata.FeedStatus;
@@ -18,8 +19,9 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ProviderNotFoundException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.photon.internal.marketdata.Messages;
 import org.marketcetera.photon.marketdata.MarketDataFeed.FeedStatusEvent;
-import org.marketcetera.photon.module.ModulePlugin;
+import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.except.I18NException;
 
 public class MarketDataFeedTest {
@@ -108,7 +110,7 @@ public class MarketDataFeedTest {
 		MarketDataFeed fixture = new MarketDataFeed(providerURN);
 		assertEquals(instanceURN, fixture.getURN());
 		assertEquals(providerURN.toString(), fixture.getId());
-		assertEquals(ModulePlugin.getDefault().getModuleManager()
+		assertEquals(ModuleSupport.getModuleManager()
 				.getProviderInfo(providerURN).getDescription(), fixture
 				.getName());
 	}

@@ -1,7 +1,6 @@
 package org.marketcetera.photon.test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -22,13 +21,11 @@ import org.junit.runners.Suite;
 @SuppressWarnings("restriction")
 public class DynamicSuite extends Suite {
 
-	private static Class<?>[] sTests;
-
 	public DynamicSuite(Class<?> klass) throws InitializationError {
-		super(klass, sTests);
+		super(klass, getTests());
 	}
 
-	static {
+	static Class<?>[] getTests() {
 		List<Class<?>> tests = new ArrayList<Class<?>>();
 		IConfigurationElement[] elements = Platform.getExtensionRegistry()
 				.getConfigurationElementsFor("org.marketcetera.photon.test",
@@ -36,13 +33,11 @@ public class DynamicSuite extends Suite {
 		for (IConfigurationElement element : elements) {
 			try {
 				Object test = element.createExecutableExtension("class");
-				SuiteClasses classes = test.getClass().getAnnotation(
-						SuiteClasses.class);
-				tests.addAll(Arrays.asList(classes.value()));
+				tests.add(test.getClass());
 			} catch (CoreException e) {
-				e.printStackTrace();
+				throw new IllegalArgumentException(e);
 			}
 		}
-		sTests = tests.toArray(new Class<?>[tests.size()]);
+		return tests.toArray(new Class<?>[tests.size()]);
 	}
 }
