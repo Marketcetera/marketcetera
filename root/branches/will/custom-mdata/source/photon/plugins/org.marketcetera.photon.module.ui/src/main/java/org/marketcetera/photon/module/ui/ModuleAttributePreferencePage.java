@@ -129,6 +129,14 @@ public abstract class ModuleAttributePreferencePage extends PreferencePage {
 		return true;
 	}
 
+	/**
+	 * Internal class representing a single field in the preference page.
+	 * 
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
+	 */
+	@ClassVersion("$Id$")
 	private static class Field {
 		final String mAttributeName;
 		final IObservableValue mObservable;

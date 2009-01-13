@@ -3,7 +3,7 @@ package org.marketcetera.photon.internal.module;
 import org.marketcetera.module.ModuleConfigurationProvider;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.module.IModuleAttributeSupport;
+import org.marketcetera.photon.module.IModuleAttributeDefaults;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A {@link ModuleConfigurationProvider} that adapts
- * {@link IModuleAttributeSupport}.
+ * {@link IModuleAttributeDefaults}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -21,16 +21,16 @@ import org.marketcetera.util.misc.ClassVersion;
 public final class EclipseModuleConfigurationProvider implements
 		ModuleConfigurationProvider {
 
-	private IModuleAttributeSupport mSupport;
+	private IModuleAttributeDefaults mSupport;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param support
-	 *            IModuleAttributeSupport providing the module attribute
+	 *            IModuleAttributeDefaults providing the module attribute
 	 *            defaults
 	 */
-	public EclipseModuleConfigurationProvider(IModuleAttributeSupport support) {
+	public EclipseModuleConfigurationProvider(IModuleAttributeDefaults support) {
 		mSupport = support;
 	}
 

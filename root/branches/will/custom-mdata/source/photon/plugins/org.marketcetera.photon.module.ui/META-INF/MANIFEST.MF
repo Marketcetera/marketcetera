@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.marketcetera.photon.module.ui;singleton:=true
 Bundle-Version: 1.1.0
-Bundle-Activator: org.marketcetera.photon.internal.module.ui.Activator
 Bundle-Vendor: %bundleVendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

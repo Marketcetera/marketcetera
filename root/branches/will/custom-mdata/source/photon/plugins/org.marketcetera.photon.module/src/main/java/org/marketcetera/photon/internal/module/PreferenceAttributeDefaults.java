@@ -13,7 +13,7 @@ import org.osgi.service.prefs.Preferences;
 /* $License$ */
 
 /**
- * 
+ * Supports module attribute defaults using Eclipse preferences.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
