@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.internal.marketdata;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -6,8 +6,7 @@ import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.marketdata.MarketDataReceiverModule.IConfigurationProvider;
-import org.marketcetera.photon.marketdata.MarketDataReceiverModule.MarketDataSubscriber;
+import org.marketcetera.photon.marketdata.MarketDataSubscriber;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -16,10 +15,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Factory for {@link MarketDataReceiverModule}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: MarketDataReceiverFactory.java 10239 2008-12-11 01:44:12Z anshul $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id: MarketDataReceiverFactory.java 10239 2008-12-11 01:44:12Z anshul $")//$NON-NLS-1$
 public class MarketDataReceiverFactory extends
 		ModuleFactory {
 
@@ -44,6 +43,24 @@ public class MarketDataReceiverFactory extends
 		IConfigurationProvider config = (IConfigurationProvider) inParameters[0];
 		MarketDataSubscriber subscriber = (MarketDataSubscriber) inParameters[1];
 		return new MarketDataReceiverModule(urn, config, subscriber);
+	}
+
+	/**
+	 * Interface for objects providing configuration to {@link MarketDataReceiverModule}.
+	 *
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id: MarketDataReceiverModule.java 10267 2008-12-24 16:25:11Z colin $
+	 * @since 1.0.0
+	 */
+	@ClassVersion("$Id$")
+	public interface IConfigurationProvider {
+
+		/**
+		 * Returns the {@link ModuleURN} of the market data source module.
+		 * 
+		 * @return market data source module URN
+		 */
+		ModuleURN getMarketDataSourceModule();
 	}
 
 }

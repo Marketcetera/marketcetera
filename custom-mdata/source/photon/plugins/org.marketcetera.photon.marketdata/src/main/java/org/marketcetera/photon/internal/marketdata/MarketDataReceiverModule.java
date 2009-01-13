@@ -1,9 +1,6 @@
-package org.marketcetera.photon.marketdata;
-
-import java.util.EventListener;
+package org.marketcetera.photon.internal.marketdata;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.Assert;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowRequester;
@@ -16,6 +13,8 @@ import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
+import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory.IConfigurationProvider;
+import org.marketcetera.photon.marketdata.MarketDataSubscriber;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -23,11 +22,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Endpoint for market data flows.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: MarketDataReceiverModule.java 10267 2008-12-24 16:25:11Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
-public class MarketDataReceiverModule extends Module implements DataReceiver,
+@ClassVersion("$Id: MarketDataReceiverModule.java 10267 2008-12-24 16:25:11Z colin $")
+class MarketDataReceiverModule extends Module implements DataReceiver,
 		DataFlowRequester {
 
 	private final IConfigurationProvider mConfigurationProvider;
@@ -90,63 +89,6 @@ public class MarketDataReceiverModule extends Module implements DataReceiver,
 	@Override
 	public void setFlowSupport(DataFlowSupport inSupport) {
 		mDataFlowSupport = inSupport;
-	}
-
-	/**
-	 * Interface for objects providing configuration to {@link MarketDataReceiverModule}.
-	 *
-	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
-	 * @since 1.0.0
-	 */
-	@ClassVersion("$Id$")//$NON-NLS-1$
-	public interface IConfigurationProvider {
-
-		/**
-		 * Returns the {@link ModuleURN} of the market data source module.
-		 * 
-		 * @return market data source module URN
-		 */
-		ModuleURN getMarketDataSourceModule();
-	}
-
-	/**
-	 * Abstract base class of market data receiver module subscribers. 
-	 *
-	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
-	 * @since 1.0.0
-	 */
-	@ClassVersion("$Id$")//$NON-NLS-1$
-	public abstract static class MarketDataSubscriber implements EventListener {
-
-		private final String mSymbol;
-
-		/**
-		 * Constructor.
-		 * 
-		 * @param symbol symbol for market data request
-		 */
-		public MarketDataSubscriber(String symbol) {
-			Assert.isLegal(StringUtils.isNotBlank(symbol));
-			mSymbol = symbol;
-		}
-
-		/**
-		 * Returns the symbol for the market data request.
-		 * 
-		 * @return the symbol for the market data request
-		 */
-		public final String getSymbol() {
-			return mSymbol;
-		}
-
-		/**
-		 * Callback to provide market data to be processed.
-		 * 
-		 * @param inData data from the market data flow
-		 */
-		public abstract void receiveData(Object inData);
 	}
 
 }

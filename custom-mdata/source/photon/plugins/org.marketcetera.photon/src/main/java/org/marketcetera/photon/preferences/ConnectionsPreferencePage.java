@@ -1,14 +1,7 @@
 package org.marketcetera.photon.preferences;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
@@ -21,8 +14,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonPreferences;
-import org.marketcetera.photon.marketdata.MarketDataFeed;
-import org.marketcetera.photon.marketdata.MarketDataManager;
 
 /**
  * Connection Preferences.
@@ -37,12 +28,7 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage
 
 	public static final String ID = "org.marketcetera.photon.preferences.connections"; //$NON-NLS-1$
 
-	private final MarketDataManager mdataManager = PhotonPlugin.getDefault()
-			.getMarketDataManager();
-
 	private UrlFieldEditor jmsUrlEditor;
-
-	private ComboFieldEditor quoteFeedNameEditor;
 
 	private StringFieldEditor orderIDPrefixEditor;
 
@@ -82,32 +68,6 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage
 				CONNECTION_PREFERENCES_WEB_SERVICE_PORT_LABEL.getText(),
 				composite);
 		addField(webServicePortEditor);
-
-		Collection<MarketDataFeed> providers = mdataManager.getProviders();
-		List<String[]> namesValues = new ArrayList<String[]>();
-		// blank one to represent no selection
-		namesValues.add(new String[] { "", "" }); //$NON-NLS-1$ //$NON-NLS-2$
-		for (MarketDataFeed provider : providers) {
-			String name = provider.getName();
-			if (name == null) {
-				name = provider.getId();
-			}
-			namesValues.add(new String[] { name, provider.getId() });
-		}
-		Collections.sort(namesValues, new Comparator<String[]>() {
-
-			@Override
-			public int compare(String[] o1, String[] o2) {
-				return o1[0].compareTo(o2[0]);
-			}
-
-		});
-		quoteFeedNameEditor = new ComboFieldEditor(
-				PhotonPreferences.DEFAULT_MARKETDATA_PROVIDER,
-				MARKET_DATA_FEED_LABEL.getText(), namesValues
-						.toArray(new String[namesValues.size()][]),
-				getFieldEditorParent());
-		addField(quoteFeedNameEditor);
 
 		orderIDPrefixEditor = new StringFieldEditor(
 				PhotonPreferences.ORDER_ID_PREFIX, ORDER_ID_PREFIX_LABEL

@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.internal.marketdata;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * The internationalization constants used by this package.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: Messages.java 10229 2008-12-09 21:48:48Z klim $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id: Messages.java 10229 2008-12-09 21:48:48Z klim $")//$NON-NLS-1$
 public interface Messages {
 	/**
 	 * The message provider.
@@ -43,7 +43,7 @@ public interface Messages {
 	/*
 	 * Log Messages
 	 */
-	static final I18NMessage0P MARKET_DATA_FEED_INVALID_PROVIDER_TYPE = new I18NMessage0P(
+    static final I18NMessage0P MARKET_DATA_FEED_INVALID_PROVIDER_TYPE = new I18NMessage0P(
 			LOGGER, "market_data_feed.invalid_provider_type"); //$NON-NLS-1$
 	static final I18NMessage0P MARKET_DATA_FEED_NOT_SINGLETON = new I18NMessage0P(
 			LOGGER, "market_data_feed.not_singleton"); //$NON-NLS-1$

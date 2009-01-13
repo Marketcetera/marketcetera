@@ -31,7 +31,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.internal.strategy.Strategy.Destination;
 import org.marketcetera.photon.internal.strategy.Strategy.State;
-import org.marketcetera.photon.module.ModulePlugin;
+import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.strategy.Language;
 import org.marketcetera.strategy.StrategyMXBean;
 import org.marketcetera.strategy.StrategyModuleFactory;
@@ -115,11 +115,9 @@ public final class StrategyManager {
 	 */
 	private static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
 
-	private final MBeanServerConnection mMBeanServer = ModulePlugin
-			.getDefault().getMBeanServerConnection();
+	private final MBeanServerConnection mMBeanServer = ModuleSupport.getMBeanServerConnection();
 
-	private final ModuleManager mModuleManager = ModulePlugin.getDefault()
-			.getModuleManager();
+	private final ModuleManager mModuleManager = ModuleSupport.getModuleManager();
 
 	private final WritableList mStrategies = WritableList
 			.withElementType(Strategy.class);

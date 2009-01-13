@@ -16,8 +16,6 @@ public interface PhotonPreferences {
 
 	public static final String TRADING_HISTORY_START_TIME = "TRADING_HISTORY_START_TIME"; //$NON-NLS-1$
 
-	public static final String DEFAULT_MARKETDATA_PROVIDER = "DEFAULT_MARKETDATA_PROVIDER"; //$NON-NLS-1$
-	
 	public static final String CONSOLE_LOG_LEVEL = "CONSOLE_LOG_LEVEL"; //$NON-NLS-1$
 
 	public static final String JMS_URL = "JMS_URL"; //$NON-NLS-1$
