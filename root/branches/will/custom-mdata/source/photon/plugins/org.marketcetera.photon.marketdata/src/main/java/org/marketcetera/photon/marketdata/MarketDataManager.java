@@ -9,18 +9,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.core.runtime.Platform;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.PhotonPreferences;
+import org.marketcetera.photon.internal.marketdata.Activator;
+import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory;
+import org.marketcetera.photon.internal.marketdata.Messages;
+import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory.IConfigurationProvider;
 import org.marketcetera.photon.marketdata.MarketDataFeed.FeedStatusEvent;
 import org.marketcetera.photon.marketdata.MarketDataFeed.IFeedStatusChangedListener;
-import org.marketcetera.photon.marketdata.MarketDataReceiverModule.IConfigurationProvider;
-import org.marketcetera.photon.marketdata.MarketDataReceiverModule.MarketDataSubscriber;
-import org.marketcetera.photon.module.ModulePlugin;
+import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -30,13 +30,22 @@ import org.marketcetera.util.misc.ClassVersion;
  * methods must be called from the UI thread.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: MarketDataManager.java 10229 2008-12-09 21:48:48Z klim $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id: MarketDataManager.java 10229 2008-12-09 21:48:48Z klim $")//$NON-NLS-1$
 public final class MarketDataManager {
 
-	private final ModuleManager mModuleManager = ModulePlugin.getDefault()
+	/**
+	 * Returns the singleton instance for the currently running plug-in.
+	 * 
+	 * @return the singleton instance
+	 */
+	public static MarketDataManager getCurrent() {
+		return Activator.getDefault().getMarketDataManager();
+	}
+
+	private final ModuleManager mModuleManager = ModuleSupport
 			.getModuleManager();
 	private final Map<String, MarketDataFeed> mFeeds = new HashMap<String, MarketDataFeed>();
 	private final Map<MarketDataSubscriber, ModuleURN> mSubscribers = new HashMap<MarketDataSubscriber, ModuleURN>();
@@ -55,14 +64,9 @@ public final class MarketDataManager {
 	private final IFeedStatusChangedListener mFeedStatusChangesListener = new IFeedStatusChangedListener() {
 		@Override
 		public void feedStatusChanged(final FeedStatusEvent event) {
-			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					if (event.getSource() == mActiveFeed) {
-						notifyListeners(event);
-					}
-				}
-			});
+			if (event.getSource() == mActiveFeed) {
+				notifyListeners(event);
+			}
 		}
 	};
 
@@ -96,17 +100,12 @@ public final class MarketDataManager {
 		return Collections.unmodifiableCollection(mFeeds.values());
 	}
 
-	private String getPreferencesProviderId() {
-		return PhotonPlugin.getDefault().getPreferenceStore().getString(
-				PhotonPreferences.DEFAULT_MARKETDATA_PROVIDER);
-	}
-
 	/**
 	 * Attempts to reconnect the active market data feed.
 	 */
-	public void reconnectFeed() {
+	public void reconnectFeed(String providerId) {
 		final MarketDataFeed oldFeed = mActiveFeed;
-		mActiveFeed = mFeeds.get(getPreferencesProviderId());
+		mActiveFeed = mFeeds.get(providerId);
 		if (mActiveFeed == null && oldFeed == null) {
 			return;
 		}
@@ -126,16 +125,16 @@ public final class MarketDataManager {
 				}
 			} catch (ModuleException e) {
 				// TODO: May be better to propagate message to UI
-				PhotonPlugin.getMainConsoleLogger().error(
-						Messages.MARKET_DATA_MANAGER_FEED_START_FAILED
-								.getText(mActiveFeed.getName()));
+				// PhotonPlugin.getMainConsoleLogger().error(
+				// Messages.MARKET_DATA_MANAGER_FEED_START_FAILED
+				// .getText(mActiveFeed.getName()));
 				Messages.MARKET_DATA_MANAGER_FEED_START_FAILED.error(this,
 						mActiveFeed.getName());
 			} catch (UnsupportedOperationException e) {
 				// TODO: May be better to propagate message to UI
-				PhotonPlugin.getMainConsoleLogger().error(
-						Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED
-								.getText(mActiveFeed.getName()));
+				// PhotonPlugin.getMainConsoleLogger().error(
+				// Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED
+				// .getText(mActiveFeed.getName()));
 				Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED.error(this,
 						e, mActiveFeed.getName());
 			}
@@ -149,12 +148,7 @@ public final class MarketDataManager {
 			event = mActiveFeed.createFeedStatusEvent(FeedStatus.OFFLINE,
 					mActiveFeed.getStatus());
 		}
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				notifyListeners(event);
-			}
-		});
+		notifyListeners(event);
 	}
 
 	private void startDataFlows() {
@@ -215,15 +209,16 @@ public final class MarketDataManager {
 			ModuleURN subscriberURN = mModuleManager.createModule(
 					MarketDataReceiverFactory.PROVIDER_URN,
 					mModuleConfigProvider, subscriber);
-			if (mActiveFeed != null && mActiveFeed.getStatus().equals(FeedStatus.AVAILABLE)) {
+			if (mActiveFeed != null
+					&& mActiveFeed.getStatus().equals(FeedStatus.AVAILABLE)) {
 				mModuleManager.start(subscriberURN);
 			}
 			mSubscribers.put(subscriber, subscriberURN);
 		} catch (ModuleException e) {
 			// TODO: May be better to propagate message to UI
-			PhotonPlugin.getMainConsoleLogger().error(
-					Messages.MARKET_DATA_MANAGER_SUBSCRIBE_FAILED
-							.getText(subscriber.getSymbol()));
+			// PhotonPlugin.getMainConsoleLogger().error(
+			// Messages.MARKET_DATA_MANAGER_SUBSCRIBE_FAILED
+			// .getText(subscriber.getSymbol()));
 			Messages.MARKET_DATA_MANAGER_SUBSCRIBE_FAILED.error(this, e,
 					subscriber.getSymbol());
 		}
@@ -276,6 +271,17 @@ public final class MarketDataManager {
 		for (Object object : listeners) {
 			((IFeedStatusChangedListener) object).feedStatusChanged(event);
 		}
+	}
+
+	/**
+	 * Returns the default active feed to use (saved in plug-in preferences).
+	 * 
+	 * @return returns the default active feed
+	 */
+	public String getDefaultActiveFeed() {
+		return Platform.getPreferencesService().getString(Activator.PLUGIN_ID,
+				MarketDataPreferences.DEFAULT_ACTIVE_MARKETDATA_PROVIDER, "", //$NON-NLS-1$
+				null);
 	}
 
 	/**

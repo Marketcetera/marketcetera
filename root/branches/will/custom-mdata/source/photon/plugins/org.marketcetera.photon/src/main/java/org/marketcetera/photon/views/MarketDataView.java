@@ -54,7 +54,7 @@ import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataManager;
-import org.marketcetera.photon.marketdata.MarketDataReceiverModule.MarketDataSubscriber;
+import org.marketcetera.photon.marketdata.MarketDataSubscriber;
 import org.marketcetera.photon.ui.TextContributionItem;
 import org.marketcetera.photon.ui.ChooseColumnsMenu.ITableProvider;
 import org.marketcetera.util.misc.ClassVersion;

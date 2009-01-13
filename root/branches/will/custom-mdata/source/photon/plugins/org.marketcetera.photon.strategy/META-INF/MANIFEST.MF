@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.ui,
  org.marketcetera.photon.module,
  org.marketcetera.modules.strategy,
  org.rubypeople.rdt.core,
- org.marketcetera.client
+ org.marketcetera.client,
+ org.marketcetera.photon.module.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin

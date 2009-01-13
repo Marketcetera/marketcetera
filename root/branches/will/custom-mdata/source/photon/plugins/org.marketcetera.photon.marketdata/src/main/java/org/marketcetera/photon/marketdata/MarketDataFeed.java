@@ -24,7 +24,8 @@ import org.marketcetera.module.MXBeanOperationException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.URNUtils;
-import org.marketcetera.photon.module.ModulePlugin;
+import org.marketcetera.photon.internal.marketdata.Messages;
+import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -34,10 +35,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Market Data Feed abstraction for Photon.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $")
 public final class MarketDataFeed {
 
 	static final String MARKET_DATA_PROVIDER_TYPE = "mdata"; //$NON-NLS-1$
@@ -45,9 +46,8 @@ public final class MarketDataFeed {
 
 	private static final FeedStatusFilter sFeedStatusFilter = new FeedStatusFilter();
 
-	private final ModuleManager mModuleManager = ModulePlugin.getDefault()
-			.getModuleManager();
-	private final MBeanServerConnection mMBeanServer = ModulePlugin.getDefault().getMBeanServerConnection();
+	private final ModuleManager mModuleManager = ModuleSupport.getModuleManager();
+	private final MBeanServerConnection mMBeanServer = ModuleSupport.getMBeanServerConnection();
 	private final FeedStatusNotificationListener mFeedStatusNotificationListener = new FeedStatusNotificationListener();
 	private final ListenerList mStatusListeners = new ListenerList();
 
@@ -107,7 +107,7 @@ public final class MarketDataFeed {
 	 * 
 	 * @return the singleton instance URN
 	 */
-	ModuleURN getURN() {
+	public ModuleURN getURN() {
 		return mInstanceURN;
 	}
 
@@ -233,10 +233,10 @@ public final class MarketDataFeed {
 	 * Event object for feed status changes.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
+	 * @version $Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $
 	 * @since 1.0.0
 	 */
-	@ClassVersion("$Id$")//$NON-NLS-1$
+	@ClassVersion("$Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $")//$NON-NLS-1$
 	public final class FeedStatusEvent extends EventObject {
 		private static final long serialVersionUID = 1L;
 		private final FeedStatus mOldStatus;
@@ -271,10 +271,10 @@ public final class MarketDataFeed {
 	 * Interface that feed status listeners must implement.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
+	 * @version $Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $
 	 * @since 1.0.0
 	 */
-	@ClassVersion("$Id$")//$NON-NLS-1$
+	@ClassVersion("$Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $")
 	public static interface IFeedStatusChangedListener extends EventListener {
 
 		/**
