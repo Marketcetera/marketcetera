@@ -24,9 +24,15 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 
 	private IModuleAttributeDefaults mModuleAttributeDefaults;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param moduleAttributeDefaults
+	 *            default support provider to extend
+	 */
 	public ModuleAttributeSupport(
-			IModuleAttributeDefaults mModuleAttributeDefaults) {
-		this.mModuleAttributeDefaults = mModuleAttributeDefaults;
+			IModuleAttributeDefaults moduleAttributeDefaults) {
+		mModuleAttributeDefaults = moduleAttributeDefaults;
 	}
 
 	@Override
@@ -62,7 +68,8 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 			return ModuleSupport.getMBeanServerConnection().getAttribute(
 					objectName, attribute);
 		} catch (Exception e) {
-			Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_GET_ATTRIBUTE.error(this, attribute, urn);
+			Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_GET_ATTRIBUTE.error(this,
+					attribute, urn);
 			return null;
 		}
 	}
@@ -74,7 +81,8 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 			ModuleSupport.getMBeanServerConnection().setAttribute(objectName,
 					new Attribute(attribute, value));
 		} catch (Exception e) {
-			Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_SET_ATTRIBUTE.error(this, attribute, urn, value);
+			Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_SET_ATTRIBUTE.error(this,
+					attribute, urn, value);
 		}
 	}
 }
