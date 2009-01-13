@@ -1,0 +1,19 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+   version="1.0">
+   <persistence-unit name="unit-testing" transaction-type="RESOURCE_LOCAL">
+      <provider>org.hibernate.ejb.HibernatePersistence</provider>
+       <!--
+       Properties to configure hibernate. See
+       http://www.hibernate.org/hib_docs/reference/en/html/session-configuration.html
+       for complete list of what properties can be specified here. Do not specify any
+       jdbc connection / data source properties here as they are configured via the
+        spring configuration.
+       -->
+      <properties>
+         <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+         <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      </properties>
+   </persistence-unit>
+</persistence>
