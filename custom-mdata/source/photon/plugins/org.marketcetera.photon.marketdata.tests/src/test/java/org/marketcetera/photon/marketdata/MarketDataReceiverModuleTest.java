@@ -1,6 +1,6 @@
 package org.marketcetera.photon.marketdata;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
@@ -8,9 +8,10 @@ import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.marketdata.MarketDataReceiverModule.IConfigurationProvider;
-import org.marketcetera.photon.marketdata.MarketDataReceiverModule.MarketDataSubscriber;
-import org.marketcetera.photon.module.ModulePlugin;
+import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory;
+import org.marketcetera.photon.internal.marketdata.Messages;
+import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory.IConfigurationProvider;
+import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.except.I18NException;
 
 /* $License$ */
@@ -19,7 +20,7 @@ import org.marketcetera.util.except.I18NException;
  * Test for {@link MarketDataReceiverModule}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: MarketDataReceiverModuleTest.java 10229 2008-12-09 21:48:48Z klim $
  * @since 1.0.0
  */
 public class MarketDataReceiverModuleTest {
@@ -28,21 +29,13 @@ public class MarketDataReceiverModuleTest {
 
 	@Before
 	public void setUp() throws Exception {
-		ModulePlugin plugin = ModulePlugin.getDefault();
-		if (plugin != null) {
-			mModuleManager = plugin.getModuleManager();
-		}
-		if (mModuleManager == null) {
-			mModuleManager = new ModuleManager();
-			mModuleManager.init();
-		}
+		mModuleManager = ModuleSupport.getModuleManager();
 		mModuleManager.start(MockMarketDataModuleFactory.INSTANCE_URN);
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		mModuleManager.stop();
-		mModuleManager = null;
+		mModuleManager.stop(MockMarketDataModuleFactory.INSTANCE_URN);
 	}
 
 	@Test
@@ -125,6 +118,7 @@ public class MarketDataReceiverModuleTest {
 		Object data = new Object();
 		MockMarketDataModuleFactory.sInstance.emitData(data);
 		assertEquals("Data not received", data, received[0]);
+		mModuleManager.deleteModule(receiver);
 	}
 
 }

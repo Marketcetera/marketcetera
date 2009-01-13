@@ -10,7 +10,7 @@ import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ProviderInfo;
 import org.marketcetera.module.UnsupportedDataTypeException;
-import org.marketcetera.photon.module.ModulePlugin;
+import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.trade.Factory;
 
 public class TradeSuggestionReceiverTest {
@@ -19,14 +19,7 @@ public class TradeSuggestionReceiverTest {
 
 	@Test
 	public void setUp() throws Exception {
-		ModulePlugin plugin = ModulePlugin.getDefault();
-		if (plugin != null) {
-			mManager = plugin.getModuleManager();
-		}
-		if (mManager == null) {
-			mManager = new ModuleManager();
-			mManager.init();
-		}
+		mManager = ModuleSupport.getModuleManager();
 		ProviderInfo info = mManager
 				.getProviderInfo(TradeSuggestionReceiverFactory.PROVIDER_URN);
 		assertEquals(Messages.TRADE_SUGGESTION_RECEIVER_DESCRIPTION.getText(),
