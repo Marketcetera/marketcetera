@@ -7,6 +7,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * The factory for Sink Module. The Sink Module is a singleton.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public final class SinkModuleFactory extends ModuleFactory {

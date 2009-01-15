@@ -11,6 +11,8 @@ import java.io.Serializable;
  * from its subclasses.  
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class DataRequestBase implements Serializable {

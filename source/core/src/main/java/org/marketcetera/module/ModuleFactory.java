@@ -1,7 +1,11 @@
 package org.marketcetera.module;
 
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.misc.ClassVersion;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /* $License$ */
 /**
@@ -44,11 +48,18 @@ import org.marketcetera.util.misc.ClassVersion;
  * doesn't support multiple instances. 
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public abstract class ModuleFactory {
     /**
      * Creates an instance of the factory, given the parameters.
+     * <p>
+     * This operation is never invoked concurrently. The module framework
+     * ensures that only a single instance of this operation is active in
+     * a thread at any point in time. If this operation is slow, it may delay
+     * creation of other modules from the same provider. 
      *
      * @param inParameters the parameters for creating the module, the types
      * of these parameters match those returned by
@@ -156,6 +167,34 @@ public abstract class ModuleFactory {
                         : inParameterTypes.clone();
     }
 
+    /**
+     * Returns the provider info describing the factory.
+     *
+     * @return the provider info for the factory.
+     */
+    final ProviderInfo getProviderInfo() {
+        return new ProviderInfo(
+                getProviderURN(),
+                getParameterTypes(),
+                isMultipleInstances(),
+                isAutoInstantiate(),
+                getProviderDescription().getText(ActiveLocale.getLocale()),
+                mLock.isLocked(),
+                mLock.getQueueLength());
+
+    }
+
+    /**
+     * Returns the lock that should be used for serializing
+     * factory operations.
+     *
+     * @return the factory lock.
+     */
+    final Lock getLock() {
+        return mLock;
+    }
+
+    private final ReentrantLock mLock = new ReentrantLock();
     private final ModuleURN mURN;
     private final I18NBoundMessage mDescription;
     private final boolean mMultipleInstances;

@@ -9,6 +9,8 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * a module provider or a module instance.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class InvalidURNException extends ModuleException {

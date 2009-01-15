@@ -28,44 +28,11 @@ public class FlowRequesterModule extends ProcessorModule
         }
     }
 
-    void createFlow() throws ModuleException {
-        if(mRequests != null) {
-            if(mInvokeDefault) {
-                setFlowID(mSupport.createDataFlow(mRequests));
-            } else {
-                setFlowID(mSupport.createDataFlow(mRequests, mAppendSink));
-            }
-        }
-        if(mDataRequests != null) {
-            mFlowIDs.clear();
-            for(DataRequest[] request: mDataRequests) {
-                if(mInvokeDefault) {
-                    mFlowIDs.add(mSupport.createDataFlow(request));
-                } else {
-                    mFlowIDs.add(mSupport.createDataFlow(request, mAppendSink));
-                }
-            }
-        }
-    }
-
     @Override
     public void preStop() throws ModuleException {
         super.preStop();
         if (!mSkipCancel) {
             cancelFlow();
-        }
-    }
-
-    void cancelFlow() throws ModuleException {
-        if(mFlowID != null) {
-            mSupport.cancel(mFlowID);
-            setFlowID(null);
-        }
-        if(!mFlowIDs.isEmpty()) {
-            for(DataFlowID id: mFlowIDs) {
-                mSupport.cancel(id);
-            }
-            mFlowIDs.clear();
         }
     }
 
@@ -75,10 +42,44 @@ public class FlowRequesterModule extends ProcessorModule
     }
 
     /**
+     * Overridden to test failures when invoking {@link DataFlowSupport}
+     * APIs from within this method.
+     */
+    @Override
+    public void requestData(DataRequest inRequest,
+                            DataEmitterSupport inSupport)
+            throws RequestDataException {
+        try {
+            if (mNestDataFlowInRequest) {
+                doNestedRequestOrCancel();
+            }
+        } catch (ModuleException e) {
+            throw new RequestDataException(e);
+        }
+        super.requestData(inRequest, inSupport);
+    }
+
+    /**
+     * Overridden to test failures when invoking {@link DataFlowSupport}
+     * APIs from within this method.
+     */
+    @Override
+    public void cancel(DataFlowID inFlowID, RequestID inRequestID) {
+        super.cancel(inFlowID, inRequestID);
+        if(mNestDataFlowInCancel) {
+            try {
+                doNestedRequestOrCancel();
+            } catch (ModuleException e) {
+                mNestedCancelFailure = e;
+            }
+        }
+    }
+
+    /**
      * If the API to create that appends sink by default should be invoked.
      *
      * @param inInvokeDefault if the createDataFlow() API that appends
-     * the sink module by default should be invoked 
+     * the sink module by default should be invoked
      */
     public void setInvokeDefault(boolean inInvokeDefault) {
         mInvokeDefault = inInvokeDefault;
@@ -175,6 +176,114 @@ public class FlowRequesterModule extends ProcessorModule
         mFailPreStart = inFailPreStart;
     }
 
+    /**
+     * If the module should attempt to create a data flow from within
+     * the requestData() or cancel() method.
+     *
+     * @param inNestedCreateDataFlow if the module should attempt to
+     * create a nested data flow.
+     */
+    public void setNestedCreateDataFlow(boolean inNestedCreateDataFlow) {
+        mNestedCreateDataFlow = inNestedCreateDataFlow;
+    }
+
+    /**
+     * If the module should attempt to cancel a data flow from within
+     * the requestData() or cancel() method.
+     *
+     * @param inNestedCancelDataFlow if the module should attempt to
+     * cancel a data flow when canceling another data flow.
+     */
+    public void setNestedCancelDataFlow(boolean inNestedCancelDataFlow) {
+        mNestedCancelDataFlow = inNestedCancelDataFlow;
+    }
+
+    /**
+     * if the module should invoke nested flow requests from within
+     * requestData().
+     *
+     * @param inNestDataFlowInRequest if the module should invoke nested
+     * flow requests from within requestData().
+     */
+    public void setNestDataFlowInRequest(boolean inNestDataFlowInRequest) {
+        mNestDataFlowInRequest = inNestDataFlowInRequest;
+    }
+
+    /**
+     * if the module should invoke nested flow requests from within cancel().
+     *
+     * @param inNestDataFlowInCancel if the module should invoke nested
+     * flow requests from within cancel().
+     */
+    public void setNestDataFlowInCancel(boolean inNestDataFlowInCancel) {
+        mNestDataFlowInCancel = inNestDataFlowInCancel;
+    }
+
+    /**
+     * Gets the failure observed when invoking data flow APIs from within
+     * cancel().
+     *
+     * @return the failure observed when invoking data flow APIs from within
+     * cancel().
+     */
+    public ModuleException getNestedCancelFailure() {
+        return mNestedCancelFailure;
+    }
+
+    /**
+     * Clears the failure observed when invoking data flow APIs from within.
+     * cancel().
+     */
+    public void resetNestedCancelFailure() {
+        mNestedCancelFailure = null;
+    }
+
+    void createFlow() throws ModuleException {
+        if(mRequests != null) {
+            if(mInvokeDefault) {
+                setFlowID(mSupport.createDataFlow(mRequests));
+            } else {
+                setFlowID(mSupport.createDataFlow(mRequests, mAppendSink));
+            }
+        }
+        if(mDataRequests != null) {
+            mFlowIDs.clear();
+            for(DataRequest[] request: mDataRequests) {
+                if(mInvokeDefault) {
+                    mFlowIDs.add(mSupport.createDataFlow(request));
+                } else {
+                    mFlowIDs.add(mSupport.createDataFlow(request, mAppendSink));
+                }
+            }
+        }
+    }
+
+    void cancelFlow() throws ModuleException {
+        if(mFlowID != null) {
+            mSupport.cancel(mFlowID);
+            setFlowID(null);
+        }
+        if(!mFlowIDs.isEmpty()) {
+            for(DataFlowID id: mFlowIDs) {
+                mSupport.cancel(id);
+            }
+            mFlowIDs.clear();
+        }
+    }
+
+    private void doNestedRequestOrCancel() throws ModuleException {
+        if (mNestedCreateDataFlow) {
+            if (mInvokeDefault) {
+                mSupport.createDataFlow(null);
+            } else {
+                mSupport.createDataFlow(null, true);
+            }
+        }
+        if (mNestedCancelDataFlow) {
+            mSupport.cancel(null);
+        }
+    }
+
     private DataFlowID mFlowID;
     private List<DataFlowID> mFlowIDs = new LinkedList<DataFlowID>();
     private boolean mInvokeDefault;
@@ -184,4 +293,9 @@ public class FlowRequesterModule extends ProcessorModule
     private DataRequest[] mRequests;
     private List<DataRequest[]> mDataRequests = new LinkedList<DataRequest[]>();
     private DataFlowSupport mSupport;
+    private boolean mNestedCreateDataFlow;
+    private boolean mNestedCancelDataFlow;
+    private boolean mNestDataFlowInRequest;
+    private boolean mNestDataFlowInCancel;
+    private ModuleException mNestedCancelFailure;
 }

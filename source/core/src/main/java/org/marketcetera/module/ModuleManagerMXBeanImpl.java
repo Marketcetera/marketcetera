@@ -16,6 +16,8 @@ import java.util.ArrayList;
  * the Module Manager.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {

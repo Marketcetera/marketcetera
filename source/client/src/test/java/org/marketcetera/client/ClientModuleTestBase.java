@@ -174,6 +174,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
         assert(order instanceof FIXOrder);
         assertOrderFIXEquals((FIXOrder)orders[3], (FIXOrder) order);
         mManager.removeSinkListener(sink);
+        mManager.stop(senderURN);
         mManager.deleteModule(senderURN);
     }
 
@@ -217,6 +218,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 false, 0, 0, null, true, 1, 0, null,
                 SinkModuleFactory.INSTANCE_URN, null);
         mManager.removeSinkListener(sink);
+        mManager.stop(senderURN);
         mManager.deleteModule(senderURN);
     }
 
@@ -251,6 +253,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
         assertFlowStep(info.getFlowSteps()[2], SinkModuleFactory.INSTANCE_URN,
                 false, 0, 0, null, true, 0, 0, null,
                 SinkModuleFactory.INSTANCE_URN, null);
+        mManager.stop(senderURN);
         mManager.deleteModule(senderURN);
 
     }

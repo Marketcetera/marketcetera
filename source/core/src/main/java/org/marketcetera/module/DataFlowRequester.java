@@ -9,6 +9,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * of requesting data flows.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public interface DataFlowRequester {

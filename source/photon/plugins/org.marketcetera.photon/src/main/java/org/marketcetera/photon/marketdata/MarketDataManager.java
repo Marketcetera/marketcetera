@@ -242,6 +242,10 @@ public final class MarketDataManager {
 			return;
 		mSubscribers.remove(subscriber);
 		try {
+			if (mModuleManager.getModuleInfo(subscriberURN).getState()
+					.isStarted()) {
+				mModuleManager.stop(subscriberURN);
+			}
 			mModuleManager.deleteModule(subscriberURN);
 		} catch (ModuleException e) {
 			Messages.MARKET_DATA_MANAGER_DELETE_FAILED.error(this, e,

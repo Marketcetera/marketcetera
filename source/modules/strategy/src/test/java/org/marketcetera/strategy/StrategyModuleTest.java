@@ -6,14 +6,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.module.Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_NUM;
 import static org.marketcetera.module.Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_TYPE;
-import static org.marketcetera.module.Messages.DATAFLOW_REQ_MODULE_STOPPED;
+import static org.marketcetera.module.Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.DUPLICATE_MODULE_URN;
 import static org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE;
 import static org.marketcetera.module.Messages.INVALID_URN_SCHEME;
-import static org.marketcetera.module.Messages.MODULE_ALREADY_STARTED;
+import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.MODULE_NOT_FOUND;
 import static org.marketcetera.module.Messages.MODULE_NOT_RECEIVER;
-import static org.marketcetera.module.Messages.STOP_FAILED_MODULE_NOT_STARTED;
+import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE;
 import static org.marketcetera.strategy.Language.RUBY;
 import static org.marketcetera.strategy.Messages.EMPTY_INSTANCE_ERROR;
@@ -616,8 +616,8 @@ public class StrategyModuleTest
             }
         };
         // next, valid, unstarted URN
-        new ExpectedFailure<ModuleStateException>(DATAFLOW_REQ_MODULE_STOPPED,
-                                                  validUnstartedURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT,
+                                                  validUnstartedURN.toString(), ExpectedFailure.IGNORE, ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -665,8 +665,10 @@ public class StrategyModuleTest
             }
         };
         // next, valid, unstarted URN
-        new ExpectedFailure<ModuleStateException>(DATAFLOW_REQ_MODULE_STOPPED,
-                                                  validUnstartedURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT,
+                                                  validUnstartedURN.toString(),
+                                                  ExpectedFailure.IGNORE,
+                                                  ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -769,7 +771,7 @@ public class StrategyModuleTest
                                     continue;
                                 }
                                 if(a == 2) { // stopped URN
-                                    new ExpectedFailure<ModuleStateException>(DATAFLOW_REQ_MODULE_STOPPED) {
+                                    new ExpectedFailure<ModuleStateException>(DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT) {
                                         @Override
                                         protected void run()
                                         throws Exception
@@ -801,7 +803,7 @@ public class StrategyModuleTest
                                     continue;
                                 }
                                 if(b == 2) { // stopped URN
-                                    new ExpectedFailure<ModuleStateException>(DATAFLOW_REQ_MODULE_STOPPED) {
+                                    new ExpectedFailure<ModuleStateException>(DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT) {
                                         @Override
                                         protected void run()
                                         throws Exception
@@ -946,8 +948,10 @@ public class StrategyModuleTest
         AbstractRunningStrategy.setProperty("onStartBegins",
                                             null);
         // test to see what happens if the strategy is started again by the moduleManager
-        new ExpectedFailure<ModuleStateException>(MODULE_ALREADY_STARTED,
-                                                  strategyURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STARTED_STATE_INCORRECT,
+                                                  strategyURN.toString(),
+                                                  ExpectedFailure.IGNORE,
+                                                  ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -964,8 +968,10 @@ public class StrategyModuleTest
         verifyStrategyStatus(strategyURN,
                              RUNNING);
         // try to start again
-        new ExpectedFailure<ModuleStateException>(MODULE_ALREADY_STARTED,
-                                                  strategyURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STARTED_STATE_INCORRECT,
+                                                  strategyURN.toString(),
+                                                  ExpectedFailure.IGNORE,
+                                                  ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -995,8 +1001,10 @@ public class StrategyModuleTest
         // module is listed as stopped
         assertFalse(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
         // test stopping
-        new ExpectedFailure<ModuleStateException>(STOP_FAILED_MODULE_NOT_STARTED,
-                                                  strategyURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STOPPED_STATE_INCORRECT,
+                                                  strategyURN.toString(),
+                                                  ExpectedFailure.IGNORE,
+                                                  ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception

@@ -32,6 +32,8 @@ import java.io.IOException;
  * <code>attribute-name=attribute-value</code>
  * 
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class PropertiesConfigurationProvider

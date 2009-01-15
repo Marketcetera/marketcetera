@@ -10,6 +10,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * data into it. 
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class StopDataFlowException extends ReceiveDataException {

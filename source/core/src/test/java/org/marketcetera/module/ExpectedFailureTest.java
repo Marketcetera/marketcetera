@@ -34,35 +34,22 @@ public class ExpectedFailureTest {
         assertSame(expected, check(expected, TestMessages.EXCEPTION_TEST));
         //Test a failure matching only the parameters
         assertSame(expected, check(expected, null, true, 1));
+        assertSame(expected, check(expected, null, ExpectedFailure.IGNORE, 1));
+        //Test a failure matching some of the parameters
+        assertSame(expected, check(expected, TestMessages.EXCEPTION_TEST,
+                ExpectedFailure.IGNORE, 1));
+        assertSame(expected, check(expected, TestMessages.EXCEPTION_TEST,
+                ExpectedFailure.IGNORE, ExpectedFailure.IGNORE));
         //Test a failure where message key match fails
-        try {
-            check(expected, TestMessages.BAD_DATA);
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(expected, TestMessages.BAD_DATA);
         //Test a failure where message parameter match fails
-        try {
-            check(expected, TestMessages.EXCEPTION_TEST, false, 1);
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
-        try {
-            check(expected, TestMessages.EXCEPTION_TEST, true, 2);
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(expected, TestMessages.EXCEPTION_TEST, false, 1);
+        checkFailure(expected, TestMessages.EXCEPTION_TEST, true, 2);
         //Test a failure where exception class matching fails
-        try {
-            check(new Exception("why"), TestMessages.EXCEPTION_TEST, true, 1);
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(new Exception("why"), TestMessages.EXCEPTION_TEST,
+                true, 1);
         //Test a failure where no exception gets thrown
-        try {
-            check(null, TestMessages.EXCEPTION_TEST, true, 1);
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(null, TestMessages.EXCEPTION_TEST, true, 1);
         //verify subclasses match.
         I18NException another = new I18NInterruptedException(message);
         assertSame(another, check(another, TestMessages.EXCEPTION_TEST,
@@ -77,7 +64,8 @@ public class ExpectedFailureTest {
     @Test
     public void regularExceptionsExactMatch() throws Exception {
         //Test a regular failure.
-        final IllegalArgumentException expected = new IllegalArgumentException("why");
+        final IllegalArgumentException expected =
+                new IllegalArgumentException("why");
         assertSame(expected, check(expected, "why",true));
         //Test a failure without message matching
         assertSame(expected, check(expected, null, true));
@@ -86,29 +74,13 @@ public class ExpectedFailureTest {
         assertSame(expected, check(expected, "wh",false));
         assertSame(expected, check(expected, "why",false));
         //Test a failure where string match fails
-        try {
-            check(expected, "blah", true);
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(expected, "blah", true);
         //Test inexact matching failure
-        try {
-            check(expected, "why?", false);
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(expected, "why?", false);
         //Test a failure where exception class matching fails
-        try {
-            check(new Exception("why"), "why", true);
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(new Exception("why"), "why", true);
         //test condition when exception is not thrown.
-        try {
-            check(null, "why", false);
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(null, "why", false);
     }
 
     /**
@@ -119,33 +91,24 @@ public class ExpectedFailureTest {
     @Test
     public void regularExceptionsDefault() throws Exception {
         //Test a regular failure.
-        final IllegalArgumentException expected = new IllegalArgumentException("why");
+        final IllegalArgumentException expected =
+                new IllegalArgumentException("why");
         assertSame(expected, check(expected, "why"));
         //Test a failure without message matching
         assertSame(expected, check(expected, null));
         //Test a failure where string match fails
-        try {
-            check(expected, "blah");
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(expected, "blah");
         //Test a failure where exception class matching fails
-        try {
-            check(new Exception("why"), "why");
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(new Exception("why"), "why");
         //test condition when exception is not thrown.
-        try {
-            check(null, "why");
-            fail("should fail");
-        } catch(AssertionError e) {
-        }
+        checkFailure(null, "why");
     }
     private static I18NException check(final Exception e,
                                        I18NMessage inMessage,
                                        Object... inParameters)
             throws Exception {
+        assertSame(e, ExpectedFailure.assertI18NException(e,
+                inMessage, inParameters));
         return new ExpectedFailure<I18NException>(inMessage, inParameters){
             protected void run() throws Exception {
                 if(e != null) {
@@ -154,9 +117,33 @@ public class ExpectedFailureTest {
             }
         }.getException();
     }
+    private static void checkFailure(final Exception inException,
+                                     I18NMessage inMessage,
+                                     Object... inParameters) throws Exception {
+        try {
+            ExpectedFailure.assertI18NException(inException,
+                    inMessage, inParameters);
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
+        try {
+            new ExpectedFailure<I18NException>(inMessage, inParameters){
+                protected void run() throws Exception {
+                    if(inException != null) {
+                        throw inException;
+                    }
+                }
+            };
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
+    }
     private static IllegalArgumentException check(final Exception e,
                                                   String message)
             throws Exception {
+        if (message != null) {
+            assertSame(e, ExpectedFailure.assertException(e, message, true));
+        }
         return new ExpectedFailure<IllegalArgumentException>(message){
             protected void run() throws Exception {
                 if(e != null) {
@@ -165,10 +152,33 @@ public class ExpectedFailureTest {
             }
         }.getException();
     }
+    private static void checkFailure(final Exception inException,
+                                     String inMessage) throws Exception {
+        try {
+            ExpectedFailure.assertException(inException, inMessage, true);
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
+        try {
+            new ExpectedFailure<IllegalArgumentException>(inMessage){
+                protected void run() throws Exception {
+                    if(inException != null) {
+                        throw inException;
+                    }
+                }
+            };
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
+    }
     private static IllegalArgumentException check(final Exception e,
                                                   String message,
                                                   boolean inExactMatch)
             throws Exception {
+        if (message != null) {
+            assertSame(e, ExpectedFailure.assertException(e, message,
+                    inExactMatch));
+        }
         return new ExpectedFailure<IllegalArgumentException>(message,
                 inExactMatch){
             protected void run() throws Exception {
@@ -177,5 +187,27 @@ public class ExpectedFailureTest {
                 }
             }
         }.getException();
+    }
+    private static void checkFailure(final Exception inException,
+                                     String inMessage,
+                                     boolean inExactMatch) throws Exception {
+        try {
+            ExpectedFailure.assertException(inException,
+                    inMessage, inExactMatch);
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
+        try {
+            new ExpectedFailure<IllegalArgumentException>(
+                    inMessage, inExactMatch){
+                protected void run() throws Exception {
+                    if(inException != null) {
+                        throw inException;
+                    }
+                }
+            };
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
     }
 }

@@ -223,7 +223,8 @@ public class DataFlowTest extends ModuleTestBase {
                 new DataRequest(module.getURN(), String.class.getName())
         });
         new ExpectedFailure<ModuleStateException>(
-                Messages.DATAFLOW_REQ_MODULE_STOPPED, procURN.toString()){
+                Messages.DATAFLOW_FAILED_REQ_MODULE_STATE_INCORRECT, procURN.toString(),
+                ModuleState.STOPPED, ModuleState.REQUEST_FLOW_STATES.toString()){
             protected void run() throws Exception {
                 module.createFlow();
             }
@@ -233,12 +234,111 @@ public class DataFlowTest extends ModuleTestBase {
         final DataFlowID flowID = new DataFlowID("doesntmatter");
         module.setFlowID(flowID);
         new ExpectedFailure<ModuleStateException>(
-                Messages.CANCEL_FAILED_MODULE_NOT_STARTED, flowID.getValue(),
-                module.getURN().toString()){
+                Messages.CANCEL_FAILED_MODULE_STATE_INCORRECT, flowID.getValue(),
+                module.getURN().toString(), ModuleState.STOPPED,
+                ModuleState.CANCEL_FLOW_STATES.toString()){
             protected void run() throws Exception {
                 module.cancelFlow();
             }
         };
+    }
+
+    /**
+     * Verifies that attempts to invoke data flow setup/cancel APIs, in
+     * {@link DataFlowSupport}, from within
+     * {@link DataEmitter#requestData(DataRequest, DataEmitterSupport)} &
+     * {@link DataEmitter#cancel(DataFlowID, RequestID)} fails.
+     *
+     * @throws Exception if there were errors.
+     */
+    @Test
+    public void checkNestedFlowRequestFailures() throws Exception {
+        //create the flow requester module.
+        //Have the instance name similar to that of emitter so that we can
+        //test expansion of 'this' in the URN
+        final ModuleURN procURN = new ModuleURN(FlowRequesterModuleFactory.PROVIDER_URN,
+                "flow");
+        sManager.createModule(FlowRequesterModuleFactory.PROVIDER_URN, procURN);
+        ModuleTestBase.assertModuleInfo(sManager.getModuleInfo(procURN),
+                procURN, ModuleState.CREATED, null, null, false, false,
+                true, true, true);
+        final FlowRequesterModule module = (FlowRequesterModule) ModuleBase.getInstance(procURN);
+        assertNotNull(module);
+        //Start the module
+        sManager.start(procURN);
+        //Carry out nested flow requests from request data
+        module.setNestDataFlowInRequest(true);
+        module.setNestedCreateDataFlow(true);
+        module.setInvokeDefault(true);
+        //invoking default createDataflow
+        runNestedFlowRequestFailureInRequestData(procURN);
+        module.setInvokeDefault(false);
+        //invoking createDataFlow with explicit sink module append
+        runNestedFlowRequestFailureInRequestData(procURN);
+        module.setNestedCreateDataFlow(false);
+        module.setNestedCancelDataFlow(true);
+        //invoking cancel flow
+        runNestedFlowRequestFailureInRequestData(procURN);
+        //Carry out nested flow requests from cancel request
+        DataFlowID flowID = createFlowForNestedFlowTesting(module);
+        module.setNestDataFlowInCancel(true);
+        module.setNestedCancelDataFlow(false);
+        module.setNestedCreateDataFlow(true);
+        module.setInvokeDefault(true);
+        //invoking default create data flow
+        runNestedFlowRequestFailureInCancel(module, flowID);
+        //invoking create data flow with explicit sink module append
+        flowID = createFlowForNestedFlowTesting(module);
+        module.setNestDataFlowInCancel(true);
+        module.setInvokeDefault(false);
+        runNestedFlowRequestFailureInCancel(module, flowID);
+        //invoking cancel flow
+        flowID = createFlowForNestedFlowTesting(module);
+        module.setNestDataFlowInCancel(true);
+        module.setNestedCreateDataFlow(false);
+        module.setNestedCancelDataFlow(true);
+        runNestedFlowRequestFailureInCancel(module, flowID);
+    }
+
+    private void runNestedFlowRequestFailureInCancel(
+            FlowRequesterModule inModule,
+            DataFlowID inFlowID) throws ModuleException {
+        //make sure there's no failure
+        inModule.resetNestedCancelFailure();
+        assertNull(inModule.getNestedCancelFailure());
+        sManager.cancel(inFlowID);
+        //verify we get a failure
+        assertNotNull(inModule.getNestedCancelFailure());
+        assertEquals(ModuleException.class,
+                ExpectedFailure.assertI18NException(
+                        inModule.getNestedCancelFailure(),
+                        Messages.INCORRECT_NESTED_FLOW_REQUEST).getClass());
+    }
+
+    private DataFlowID createFlowForNestedFlowTesting(
+            FlowRequesterModule inModule) throws ModuleException {
+        inModule.setNestDataFlowInRequest(false);
+        inModule.setNestDataFlowInCancel(false);
+        //Create a data flow so that we can cancel it
+        DataFlowID flowID = sManager.createDataFlow(new DataRequest[]{
+                new DataRequest(inModule.getURN(),String.class.getName())
+        });
+        //verify flow is active
+        sManager.getDataFlowInfo(flowID);
+        return flowID;
+    }
+
+    private void runNestedFlowRequestFailureInRequestData(
+            final ModuleURN inProcURN) throws Exception {
+        assertEquals(ModuleException.class, ExpectedFailure.assertI18NException(
+                new ExpectedFailure<RequestDataException>(null){
+                    protected void run() throws Exception {
+                        sManager.createDataFlow(new DataRequest[]{
+                                new DataRequest(inProcURN)
+                        });
+                    }
+                }.getException().getCause(),
+                Messages.INCORRECT_NESTED_FLOW_REQUEST).getClass());
     }
 
     /**
@@ -292,7 +392,7 @@ public class DataFlowTest extends ModuleTestBase {
                 });
             }
         };
-        // A module urn with a provider that doesn't exist
+        // A provider urn with a provider that doesn't exist
         final ModuleURN urn2 = new ModuleURN("metc:not:exist");
         //non-existent first module
         new ExpectedFailure<ModuleNotFoundException>(Messages.MODULE_NOT_FOUND,
@@ -314,7 +414,7 @@ public class DataFlowTest extends ModuleTestBase {
                 });
             }
         };
-        // A module urn with a provider that does exist
+        // An instance urn for a module that does exist
         final ModuleURN urn3 = new ModuleURN(
                 ComplexModuleFactory.PROVIDER_URN,"notexist");
         //non-existent first module
@@ -334,6 +434,29 @@ public class DataFlowTest extends ModuleTestBase {
                 sManager.createDataFlow(new DataRequest[]{
                         new DataRequest(SingleModuleFactory.INSTANCE_URN),
                         new DataRequest(urn3)
+                });
+            }
+        };
+
+        //An instance urn for a module whose provider does not exist
+        final ModuleURN urn4 = new ModuleURN("metc:not:exist:no");
+        //non-existent first module
+        new ExpectedFailure<ModuleNotFoundException>(Messages.MODULE_NOT_FOUND,
+                urn4.toString()){
+            protected void run() throws Exception {
+                sManager.createDataFlow(new DataRequest[]{
+                        new DataRequest(urn4),
+                        new DataRequest(SingleModuleFactory.INSTANCE_URN)
+                });
+            }
+        }.getException().printStackTrace();
+        //non-existent second module
+        new ExpectedFailure<ModuleNotFoundException>(Messages.MODULE_NOT_FOUND,
+                urn4.toString()){
+            protected void run() throws Exception {
+                sManager.createDataFlow(new DataRequest[]{
+                        new DataRequest(SingleModuleFactory.INSTANCE_URN),
+                        new DataRequest(urn4)
                 });
             }
         };
@@ -430,8 +553,9 @@ public class DataFlowTest extends ModuleTestBase {
         //verify module stopped related failures 
         //last module stopped
         new ExpectedFailure<ModuleStateException>(
-                Messages.DATAFLOW_REQ_MODULE_STOPPED,
-                receiverURN.toString()) {
+                Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT,
+                receiverURN.toString(), ModuleState.STOPPED,
+                ModuleState.PARTICIPATE_FLOW_STATES.toString()) {
             protected void run() throws Exception {
                 sManager.createDataFlow(new DataRequest[]{
                         new DataRequest(EmitterModuleFactory.INSTANCE_URN),
@@ -441,8 +565,9 @@ public class DataFlowTest extends ModuleTestBase {
         };
         //second module stopped
         new ExpectedFailure<ModuleStateException>(
-                Messages.DATAFLOW_REQ_MODULE_STOPPED,
-                receiverURN.toString()) {
+                Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT,
+                receiverURN.toString(), ModuleState.STOPPED,
+                ModuleState.PARTICIPATE_FLOW_STATES.toString()) {
             protected void run() throws Exception {
                 sManager.createDataFlow(new DataRequest[]{
                         new DataRequest(EmitterModuleFactory.INSTANCE_URN),
@@ -452,8 +577,10 @@ public class DataFlowTest extends ModuleTestBase {
         //first module stopped
         sManager.stop(EmitterModuleFactory.INSTANCE_URN);
         new ExpectedFailure<ModuleStateException>(
-                Messages.DATAFLOW_REQ_MODULE_STOPPED,
-                EmitterModuleFactory.INSTANCE_URN.toString()) {
+                Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT,
+                EmitterModuleFactory.INSTANCE_URN.toString(),
+                ModuleState.STOPPED,
+                ModuleState.PARTICIPATE_FLOW_STATES.toString()) {
             protected void run() throws Exception {
                 sManager.createDataFlow(new DataRequest[]{
                         new DataRequest(EmitterModuleFactory.INSTANCE_URN),
@@ -475,7 +602,7 @@ public class DataFlowTest extends ModuleTestBase {
 
         //Start emitter module, if not already started
         startEmitter();
-        ModuleURN procURN = new ModuleURN(
+        final ModuleURN procURN = new ModuleURN(
                 ProcessorModuleFactory.PROVIDER_URN, "autod");
         //verify that this module does not exist, so that we can verify
         //it gets auto-instantiated.
@@ -514,6 +641,22 @@ public class DataFlowTest extends ModuleTestBase {
         //Stop the second flow
         sManager.cancel(flowID2);
         //verify that the module has been deleted.
+        urns = sManager.getModuleInstances(
+                ProcessorModuleFactory.PROVIDER_URN);
+        assertFalse(urns.toString(), urns.contains(procURN));
+
+        //verify that the auto-created module is not orphaned
+        //if the attempt to create a data flow fails
+        //Create a data flow that fails to setup
+        new ExpectedFailure<IllegalRequestParameterValue>(null){
+            protected void run() throws Exception {
+                sManager.createDataFlow(new DataRequest[]{
+                        new DataRequest(EmitterModuleFactory.INSTANCE_URN, null),
+                        new DataRequest(procURN, String.class.getName())
+                });
+            }
+        };
+        //verify that the module does not exist
         urns = sManager.getModuleInstances(
                 ProcessorModuleFactory.PROVIDER_URN);
         assertFalse(urns.toString(), urns.contains(procURN));

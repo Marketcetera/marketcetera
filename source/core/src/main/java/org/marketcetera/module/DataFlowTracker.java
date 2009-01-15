@@ -9,11 +9,14 @@ import java.util.*;
  * This class is used to track data flows, the modules
  * that initiate them and the modules that participate
  * in them.
- *
- * This class is not threadsafe. Clients of this class should
- * ensure thread-safety when invoking its methods.
+ * <p>
+ * This class is thread-safe. All of its methods employ locking
+ * to ensure that the concurrent modifications to the instance's state
+ * do not corrupt it. 
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 class DataFlowTracker {
@@ -22,7 +25,7 @@ class DataFlowTracker {
      *
      * @param inFlow the data flow to be added.
      */
-    void addFlow(DataFlow inFlow) {
+    synchronized void addFlow(DataFlow inFlow) {
         ModuleURN requester = inFlow.getRequesterURN();
         mFlows.put(inFlow.getFlowID(), inFlow);
         if(requester != null) {
@@ -40,7 +43,7 @@ class DataFlowTracker {
      *
      * @return the data flow for the specified flow ID, null if not found.
      */
-    DataFlow get(DataFlowID inFlowID) {
+    synchronized DataFlow get(DataFlowID inFlowID) {
         return mFlows.get(inFlowID);
     }
 
@@ -51,7 +54,7 @@ class DataFlowTracker {
      *
      * @return the data flow for the specified flowID, null if not found.
      */
-    DataFlow remove(DataFlowID inFlowID) {
+    synchronized DataFlow remove(DataFlowID inFlowID) {
         DataFlow dataFlow = mFlows.remove(inFlowID);
         if (dataFlow != null) {
             ModuleURN requester = dataFlow.getRequesterURN();
@@ -74,7 +77,7 @@ class DataFlowTracker {
      * if this module has not initiated any data flows or any of its
      * initiated flows are not active.
      */
-    Set<DataFlowID> getInitiatedFlows(ModuleURN inModuleURN) {
+    synchronized Set<DataFlowID> getInitiatedFlows(ModuleURN inModuleURN) {
         Set<DataFlowID> idSet = mInitiated.get(inModuleURN);
         return idSet == null
                 ? null
@@ -90,12 +93,35 @@ class DataFlowTracker {
      * participating in. null, if this module is currently not
      * participating in data flows.
      */
-    Set<DataFlowID> getFlowsParticipating(ModuleURN inModuleURN) {
+    synchronized Set<DataFlowID> getFlowsParticipating(ModuleURN inModuleURN) {
         Set<DataFlowID> idSet = mParticipating.get(
                 inModuleURN);
         return idSet == null
                 ? null
                 : new HashSet<DataFlowID>(idSet);
+    }
+
+    /**
+     * Returns the data flows that the specified module is participating in
+     * that it did not initiate.
+     *
+     * @param inModuleURN the module URN
+     * 
+     * @return the set of data flowIDs that the module is participating in that
+     * it did not initiate.
+     */
+    synchronized Set<DataFlowID> getFlowsParticipatingNotInitiated(
+            ModuleURN inModuleURN) {
+        Set<DataFlowID> idSet = mParticipating.get(
+                inModuleURN);
+        Set<DataFlowID> initSet = mInitiated.get(inModuleURN);
+        if(idSet != null) {
+            idSet = new HashSet<DataFlowID>(idSet);
+            if(initSet != null) {
+                idSet.removeAll(initSet);
+            }
+        }
+        return idSet;
     }
 
     /**
@@ -106,7 +132,7 @@ class DataFlowTracker {
      *
      * @return the IDs of all the active data flows.
      */
-    List<DataFlowID> getDataFlows(boolean inIncludeModuleCreated) {
+    synchronized List<DataFlowID> getDataFlows(boolean inIncludeModuleCreated) {
         List<DataFlowID> ids;
         if(inIncludeModuleCreated) {
             ids = new ArrayList<DataFlowID>(mFlows.keySet());

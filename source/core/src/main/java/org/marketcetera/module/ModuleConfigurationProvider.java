@@ -30,6 +30,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * right after they are created but before they are started.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public interface ModuleConfigurationProvider {

@@ -1077,7 +1077,17 @@ public class StrategyTestBase
                 // ignore failures, just press ahead
             }
         }
+        try {
+            moduleManager.stop(ordersURN);
+        } catch (ModuleException ignore) {
+                // ignore failures, just press ahead
+        }
         moduleManager.deleteModule(ordersURN);
+        try {
+            moduleManager.stop(suggestionsURN);
+        } catch (ModuleException ignore) {
+            // ignore failures, just press ahead
+        }
         moduleManager.deleteModule(suggestionsURN);
         moduleManager.stop();
     }

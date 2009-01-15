@@ -12,6 +12,8 @@ import java.beans.ConstructorProperties;
  * This class provides detailed information on a module provider.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public final class ProviderInfo implements Serializable {
@@ -87,6 +89,25 @@ public final class ProviderInfo implements Serializable {
     }
 
     /**
+     * Returns true if the factory is locked. This field is
+     * exposed only for diagnostics.
+     *
+     * @return true if the factory is locked.
+     */
+    public boolean isLocked() {
+        return mLocked;
+    }
+
+    /**
+     * The number of threads waiting to acquire the factory lock.
+     *
+     * @return number of threads waiting to acquire the factory lock.
+     */
+    public int getLockQueueLength() {
+        return mLockQueueLength;
+    }
+
+    /**
      * Creates an instance. This constructor is meant to be used by
      * JMX to reconstruct this bean. Use the other constructor to
      * create instances from code.
@@ -99,24 +120,33 @@ public final class ProviderInfo implements Serializable {
      * multiple instances of modules
      * @param inAutoInstantiate if this provider supports
      * auto-instantiable modules
+     * @param inLocked if the factory is locked.
+     * @param inLockQueueLength the number of threads waiting to acquire
+     * the factory lock.
      */
     @ConstructorProperties({
             "URN",                    //$NON-NLS-1$
             "description",            //$NON-NLS-1$
             "parameterTypeNames",     //$NON-NLS-1$
             "multipleInstances",      //$NON-NLS-1$
-            "autoInstantiate"         //$NON-NLS-1$
+            "autoInstantiate",        //$NON-NLS-1$
+            "locked",                 //$NON-NLS-1$
+            "lockQueueLength"         //$NON-NLS-1$
             })
     public ProviderInfo(ModuleURN inURN,
                         String inDescription,
                         List<String> inParameterTypeNames,
                         boolean inMultipleInstances,
-                        boolean inAutoInstantiate) {
+                        boolean inAutoInstantiate,
+                        boolean inLocked,
+                        int inLockQueueLength) {
         mURN = inURN;
         mParameterTypeNames = inParameterTypeNames;
         mMultipleInstances = inMultipleInstances;
         mAutoInstantiate = inAutoInstantiate;
         mDescription = inDescription;
+        mLocked = inLocked;
+        mLockQueueLength = inLockQueueLength;
     }
 
     /**
@@ -130,17 +160,24 @@ public final class ProviderInfo implements Serializable {
      * @param inAutoInstantiate if this provider supports
      * auto-instantiable modules.
      * @param inDescription the user-friendly module description.
+     * @param inLocked if the factory is locked.
+     * @param inLockQueueLength the number of threads waiting to acquire
+     * the factory lock.
      */
     public ProviderInfo(ModuleURN inURN,
                         Class[] inParameterTypes,
                         boolean inMultipleInstances,
                         boolean inAutoInstantiate,
-                        String inDescription) {
+                        String inDescription,
+                        boolean inLocked,
+                        int inLockQueueLength) {
         mURN = inURN;
         mParameterTypes = inParameterTypes;
         mMultipleInstances = inMultipleInstances;
         mAutoInstantiate = inAutoInstantiate;
         mDescription = inDescription;
+        mLocked = inLocked;
+        mLockQueueLength = inLockQueueLength;
         mParameterTypeNames = new ArrayList<String>(mParameterTypes.length);
         for(Class c: mParameterTypes) {
             mParameterTypeNames.add(c.getName());
@@ -153,5 +190,7 @@ public final class ProviderInfo implements Serializable {
     private final boolean mMultipleInstances;
     private final boolean mAutoInstantiate;
     private final String mDescription;
+    private final boolean mLocked;
+    private final int mLockQueueLength;
     private static final long serialVersionUID = -3130986112217202526L;
 }

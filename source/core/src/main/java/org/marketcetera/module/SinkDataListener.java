@@ -8,6 +8,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * all the data received by the sink module.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public interface SinkDataListener {

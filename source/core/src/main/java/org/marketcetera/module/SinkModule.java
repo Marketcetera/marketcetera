@@ -37,6 +37,8 @@ import java.util.Map;
  * that emit lots of data into it. 
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class SinkModule extends Module

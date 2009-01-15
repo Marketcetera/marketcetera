@@ -385,9 +385,21 @@ public class LifecycleTest extends ModuleTestBase {
         sManager.createModule(MultipleModuleFactory.PROVIDER_URN, moduleURN);
         assertModuleInfo(moduleURN, ModuleState.STARTED,
                 null, null, false, true, false, false, false);
-        sManager.deleteModule(moduleURN);
-        //verify that the module was stopped before delete
+        //verify that delete fails if the module was started
+        new ExpectedFailure<ModuleException>(
+                Messages.DELETE_FAILED_MODULE_STATE_INCORRECT,
+                moduleURN.toString(),
+                ModuleState.STARTED,
+                ModuleState.DELETABLE_STATES.toString()){
+            protected void run() throws Exception {
+                sManager.deleteModule(moduleURN);
+            }
+        };
+        //Stop the module and verify that it can be deleted
+        sManager.stop(moduleURN);
+        //verify stop invocation.
         assertModuleBase(moduleURN,true, true, true, false);
+        sManager.deleteModule(moduleURN);
 
         //verify that the module is deleted
         for(ModuleURN urn: sManager.getModuleInstances(moduleURN.parent())) {
@@ -456,7 +468,8 @@ public class LifecycleTest extends ModuleTestBase {
 
         //attempt starting a module that is already started
         new ExpectedFailure<ModuleStateException>(
-                Messages.MODULE_ALREADY_STARTED,urn3.toString()){
+                Messages.MODULE_NOT_STARTED_STATE_INCORRECT, urn3.toString(),
+                ModuleState.STARTED, ModuleState.STARTABLE_STATES.toString()){
             protected void run() throws Exception {
                 sManager.start(urn3);
             }
@@ -547,7 +560,8 @@ public class LifecycleTest extends ModuleTestBase {
 
         //try stopping a module that is not started
         new ExpectedFailure<ModuleStateException>(
-                Messages.STOP_FAILED_MODULE_NOT_STARTED,urn3.toString()){
+                Messages.MODULE_NOT_STOPPED_STATE_INCORRECT, urn3.toString(),
+                ModuleState.CREATED, ModuleState.STOPPABLE_STATES.toString()){
             protected void run() throws Exception {
                 sManager.stop(urn3);
             }
@@ -564,7 +578,8 @@ public class LifecycleTest extends ModuleTestBase {
         assertModuleBase(urn3, true, true, false, false);
         //try stopping this module again and observe the failure
         new ExpectedFailure<ModuleStateException>(
-                Messages.STOP_FAILED_MODULE_NOT_STARTED,urn3.toString()){
+                Messages.MODULE_NOT_STOPPED_STATE_INCORRECT, urn3.toString(),
+                ModuleState.STOPPED, ModuleState.STOPPABLE_STATES.toString()){
             protected void run() throws Exception {
                 sManager.stop(urn3);
             }

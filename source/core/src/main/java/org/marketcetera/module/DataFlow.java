@@ -2,9 +2,11 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.concurrent.locks.Lock;
 
 /* $License$ */
 /**
@@ -13,6 +15,8 @@ import java.util.HashSet;
  * all the data flows.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 class DataFlow {
@@ -116,11 +120,24 @@ class DataFlow {
      *
      * @param inStopRequester the module requesting that the data flow
      * be stopped. null, if this request is not being made by a module.
+     * 
+     * @throws DataFlowException if the data flow is in the process of
+     * being canceled by another operation.
      */
-    void cancel(ModuleURN inStopRequester) {
+    void cancel(ModuleURN inStopRequester) throws DataFlowException {
         SLF4JLoggerProxy.debug(this,
                 "Stopping flow {} requested by {}",  //$NON-NLS-1$
                 getFlowID(), inStopRequester );
+        //Only allow one thread to carry out cancellation at a time.
+        synchronized (this) {
+            if(mCancelling) {
+                throw new DataFlowException(new I18NBoundMessage1P(
+                        Messages.DATA_FLOW_ALREADY_CANCELING,
+                        getFlowID().toString()));
+            } else {
+                mCancelling = true;
+            }
+        }
         // Go through each of the requests and cancel the requests
         // from first to last
         for(AbstractDataCoupler coupler: mCouplers) {
@@ -161,4 +178,5 @@ class DataFlow {
     private final DataRequest[] mRequests;
     private final AbstractDataCoupler[] mCouplers;
     private final Date mCreated = new Date();
+    private boolean mCancelling = false;
 }

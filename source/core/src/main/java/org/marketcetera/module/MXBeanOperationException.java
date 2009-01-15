@@ -8,6 +8,8 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * Indicates errors when executing a module related JMX Operations.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class MXBeanOperationException extends ModuleException {

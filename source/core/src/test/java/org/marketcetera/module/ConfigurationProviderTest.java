@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.management.JMX;
 
@@ -154,12 +156,13 @@ public class ConfigurationProviderTest extends ConfigurationProviderTestBase {
 
     /**
      * Verifies the behavior when errors are encountered converting the
-     * default values from string to the bean attribute's data type.
+     * default values from string to the factory bean attribute's data type
+     * when doing a {@link ModuleManager#init()}.
      *
      * @throws Exception if there unexpected errors.
      */
     @Test
-    public void valueConversionFailure() throws Exception {
+    public void valueConversionFailureFactoryInit() throws Exception {
         mManager = new ModuleManager();
         MockConfigurationProvider provider = new MockConfigurationProvider();
         String maxLimit = "ksdfikjor9390ue93";
@@ -174,6 +177,102 @@ public class ConfigurationProviderTest extends ConfigurationProviderTestBase {
                 mManager.init();
             }
         };
+    }
+    /**
+     * Verifies the behavior when errors are encountered converting the
+     * default values from string to the factory bean attribute's data type
+     * when doing a {@link ModuleManager#refresh()}. Also, verifies that
+     * the class can be loaded after the error is fixed.
+     *
+     * @throws Exception if there unexpected errors.
+     */
+    @Test
+    public void valueConversionFailureFactoryRefresh() throws Exception {
+        //Use the test loader to not load the factory during init, but load
+        //it during refresh.
+        ModuleTestClassLoader loader = new ModuleTestClassLoader(
+                LifecycleTest.class.getClassLoader());
+        mManager = new ModuleManager(loader);
+        MockConfigurationProvider provider = new MockConfigurationProvider();
+        String maxLimit = "ksdfikjor9390ue93";
+        provider.addValue(ConfigurationProviderTestFactory.PROVIDER_URN,
+                "MaxLimit", maxLimit);
+        mManager.setConfigurationProvider(provider);
+        loader.setFilterResources(Pattern.compile(".*test.*"));
+        loader.setFailClasses(Pattern.compile(".*ConfigurationProviderTestFactory.*"));
+        mManager.init();
+        //verify that the provider is not loaded
+        List<ModuleURN> providers = mManager.getProviders();
+        assertFalse(providers.toString(), providers.contains(
+                ConfigurationProviderTestFactory.PROVIDER_URN));
+        //now set the provider class to get loaded.
+        loader.setFailClasses(null);
+        loader.setFilterResources(null);
+        new ExpectedFailure<BeanAttributeSetException>(
+                Messages.UNABLE_SET_ATTRIBUTE,
+                "MaxLimit", maxLimit,
+                ConfigurationProviderTestFactory.PROVIDER_URN.toObjectName()){
+            protected void run() throws Exception {
+                mManager.refresh();
+            }
+        };
+        //verify that the provider is not loaded
+        providers = mManager.getProviders();
+        assertFalse(providers.toString(), providers.contains(
+                ConfigurationProviderTestFactory.PROVIDER_URN));
+        //now fix the error and retry refresh, it should pass
+        maxLimit = "3437930";
+        provider.addValue(ConfigurationProviderTestFactory.PROVIDER_URN,
+                "MaxLimit", maxLimit);
+        mManager.refresh();
+        providers = mManager.getProviders();
+        assertTrue(providers.toString(), providers.contains(
+                ConfigurationProviderTestFactory.PROVIDER_URN));
+        //verify that the attribute has the expected value
+        ConfigurationProviderFactoryMXBean factory = JMX.newMXBeanProxy(
+                getMBeanServer(),
+                ConfigurationProviderTestFactory.PROVIDER_URN.toObjectName(),
+                ConfigurationProviderFactoryMXBean.class);
+        assertEquals(new BigDecimal("3437930"),factory.getMaxLimit());
+    }
+
+    /**
+     * Verifies the behavior when errors are encountered converting the
+     * default values from string to the instance bean attribute's data type.
+     * And that the instance can be successfully instantiated after the error
+     * is fixed.
+     *
+     * @throws Exception if there were errors
+     */
+    @Test
+    public void valueConversionFailureInstance() throws Exception {
+        mManager = new ModuleManager();
+        MockConfigurationProvider provider = new MockConfigurationProvider();
+        mManager.setConfigurationProvider(provider);
+        mManager.init();
+        //Setup one of the instance properties to fail on conversion.
+        final ModuleURN instanceURN = new ModuleURN(
+                ConfigurationProviderTestFactory.PROVIDER_URN, "values");
+        String value = "234afjklj45r34";
+        provider.addValue(instanceURN,"Int",value);
+        new ExpectedFailure<BeanAttributeSetException>(
+                Messages.UNABLE_SET_ATTRIBUTE,
+                "Int", value,
+                instanceURN.toObjectName()){
+            protected void run() throws Exception {
+                mManager.createModule(instanceURN.parent(), instanceURN);
+            }
+        };
+        //fix the error
+        value = "2343";
+        provider.addValue(instanceURN,"Int",value);
+        //verify that the instance can be created
+        assertEquals(instanceURN, mManager.createModule(instanceURN.parent(),
+                instanceURN));
+        //verify the attribute has the expected value
+        JMXTestModuleMXBean module = JMX.newMXBeanProxy(getMBeanServer(),
+                instanceURN.toObjectName(), JMXTestModuleMXBean.class);
+        assertEquals(new Integer(2343), module.getInt());
     }
 
     /**
