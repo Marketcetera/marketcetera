@@ -44,6 +44,8 @@ import java.beans.ConstructorProperties;
  *
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public final class ModuleURN implements Serializable {

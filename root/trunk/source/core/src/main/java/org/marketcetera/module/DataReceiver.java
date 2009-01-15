@@ -8,6 +8,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * receiving data from other modules within a data flow.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")   //$NON-NLS-1$
 public interface DataReceiver {

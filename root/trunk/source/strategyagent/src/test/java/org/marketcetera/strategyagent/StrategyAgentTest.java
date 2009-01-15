@@ -26,10 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Properties;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -225,8 +222,10 @@ public class StrategyAgentTest extends TestCaseBase {
                 TestAgent.class.getName(),
                 Messages.LOG_ERROR_EXEC_CMD, "createDataFlow",
                 parameter, 1,
-                org.marketcetera.module.Messages.DATAFLOW_REQ_MODULE_STOPPED.
-                        getText(EmitterModuleFactory.INSTANCE_URN));
+                org.marketcetera.module.Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT.
+                        getText(EmitterModuleFactory.INSTANCE_URN,
+                        ModuleState.CREATED, EnumSet.of(ModuleState.STARTED,
+                        ModuleState.STOP_FAILED).toString()));
     }
     @Test
     public void createDataFlow() throws Exception {

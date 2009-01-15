@@ -8,6 +8,8 @@ import org.marketcetera.util.log.*;
  * The message constants for messages used within the module framework.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public interface Messages {
@@ -46,22 +48,24 @@ public interface Messages {
             new I18NMessage2P(LOGGER,"instance_provider_urn_mismatch");  //$NON-NLS-1$
     static final I18NMessage1P DUPLICATE_MODULE_URN =
             new I18NMessage1P(LOGGER, "duplicate_module_urn");  //$NON-NLS-1$
-    static final I18NMessage1P MODULE_ALREADY_STARTED =
-            new I18NMessage1P(LOGGER, "module_already_started");  //$NON-NLS-1$
+    static final I18NMessage3P MODULE_NOT_STARTED_STATE_INCORRECT =
+            new I18NMessage3P(LOGGER, "module_not_started_state_incorrect");  //$NON-NLS-1$
     static final I18NMessage1P MODULE_NOT_FOUND = 
             new I18NMessage1P(LOGGER, "module_not_found");  //$NON-NLS-1$
     static final I18NMessage1P BEAN_OBJECT_NAME_ERROR = 
             new I18NMessage1P(LOGGER, "bean_object_name_error");  //$NON-NLS-1$
-    static final I18NMessage1P STOP_FAILED_MODULE_NOT_STARTED =
-            new I18NMessage1P(LOGGER, "stop_failed_module_not_started");  //$NON-NLS-1$
-    static final I18NMessage2P CANCEL_FAILED_MODULE_NOT_STARTED =
-            new I18NMessage2P(LOGGER, "cancel_failed_module_not_started");  //$NON-NLS-1$
+    static final I18NMessage3P MODULE_NOT_STOPPED_STATE_INCORRECT =
+            new I18NMessage3P(LOGGER, "module_not_stopped_state_incorrect");  //$NON-NLS-1$
+    static final I18NMessage4P CANCEL_FAILED_MODULE_STATE_INCORRECT =
+            new I18NMessage4P(LOGGER, "cancel_failed_module_state_incorrect");  //$NON-NLS-1$
     static final I18NMessage1P EMPTY_URN =
             new I18NMessage1P(LOGGER, "empty_urn");  //$NON-NLS-1$
     static final I18NMessage1P PROVIDER_NOT_FOUND =
             new I18NMessage1P(LOGGER, "provider_not_found");  //$NON-NLS-1$
-    static final I18NMessage1P DATAFLOW_REQ_MODULE_STOPPED =
-            new I18NMessage1P(LOGGER,"dataflow_req_module_stopped");  //$NON-NLS-1$
+    static final I18NMessage3P DATAFLOW_FAILED_REQ_MODULE_STATE_INCORRECT =
+            new I18NMessage3P(LOGGER,"dataflow_failed_req_module_state_incorrect");  //$NON-NLS-1$
+    static final I18NMessage3P DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT =
+            new I18NMessage3P(LOGGER,"dataflow_failed_pcpt_module_state_incorrect");  //$NON-NLS-1$
     static final I18NMessage1P DATA_REQUEST_TOO_SHORT =
             new I18NMessage1P(LOGGER, "data_request_too_short");  //$NON-NLS-1$
     static final I18NMessage1P MODULE_NOT_EMITTER =
@@ -162,4 +166,13 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "refresh_listener_already_setup");  //$NON-NLS-1$
     static final I18NMessage0P LOG_STOPPING_MODULE_MANAGER =
             new I18NMessage0P(LOGGER, "log_stopping_module_manager");  //$NON-NLS-1$
+    static final I18NMessage3P DELETE_FAILED_MODULE_STATE_INCORRECT =
+            new I18NMessage3P(LOGGER, "delete_failed_module_state_incorrect");   //$NON-NLS-1$
+    static final I18NMessage1P LOG_DELETE_AUTO_CREATED_MODULE_FAIL =
+            new I18NMessage1P(LOGGER, "log_delete_auto_created_module_fail");   //$NON-NLS-1$
+    static final I18NMessage1P DATA_FLOW_ALREADY_CANCELING =
+            new I18NMessage1P(LOGGER, "data_flow_already_canceling");   //$NON-NLS-1$
+    static final I18NMessage0P INCORRECT_NESTED_FLOW_REQUEST =
+            new I18NMessage0P(LOGGER, "incorrect_nested_flow_request");   //$NON-NLS-1$
+
 }

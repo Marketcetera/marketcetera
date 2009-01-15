@@ -147,7 +147,9 @@ public class JMXIntegrationTest extends ModuleTestBase {
         //stop module
         mm.stop(urn);
         new ExpectedFailure<RuntimeException>(
-                Messages.STOP_FAILED_MODULE_NOT_STARTED.getText(urn)) {
+                Messages.MODULE_NOT_STOPPED_STATE_INCORRECT.getText(urn,
+                        ModuleState.STOPPED,
+                        ModuleState.STOPPABLE_STATES.toString())) {
             protected void run() throws Exception {
                 mm.stop(urn);
             }
@@ -155,11 +157,15 @@ public class JMXIntegrationTest extends ModuleTestBase {
         //start module
         mm.start(urn);
         new ExpectedFailure<RuntimeException>(
-                Messages.MODULE_ALREADY_STARTED.getText(urn)) {
+                Messages.MODULE_NOT_STARTED_STATE_INCORRECT.getText(urn,
+                        ModuleState.STARTED,
+                        ModuleState.STARTABLE_STATES.toString())) {
             protected void run() throws Exception {
                 mm.start(urn);
             }
         };
+        //stop module to be able to delete it
+        mm.stop(urn);
         //delete module
         mm.deleteModule(urn);
         new ExpectedFailure<RuntimeException>(

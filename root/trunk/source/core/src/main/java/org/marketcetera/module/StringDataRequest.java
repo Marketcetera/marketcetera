@@ -17,6 +17,8 @@ import java.beans.ConstructorProperties;
  * instances can be used to issue create data flow requests.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class StringDataRequest extends DataRequestBase {

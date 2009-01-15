@@ -5,6 +5,8 @@ import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.except.I18NException;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /* $License$ */
 /**
  * Base class for couplers. A coupler receives data from an emitter
@@ -26,27 +28,31 @@ import org.marketcetera.util.except.I18NException;
  * the emitted data to the receiver module. 
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")   //$NON-NLS-1$
 abstract class AbstractDataCoupler implements DataEmitterSupport {
 
+    @Override
     public final void send(Object inData) {
         //ignore data if the request has been canceled
         if(mRequestCanceled) {
             return;
         }
-        mEmitted++;
+        mEmitted.incrementAndGet();
         SLF4JLoggerProxy.debug(this,"Module {} emitted \"{}\"",  //$NON-NLS-1$
                 mEmitter.getURN(), inData);
         process(inData);
     }
 
+    @Override
     public final void dataEmitError(I18NBoundMessage inMessage,
                               boolean inStopDataFlow) {
         if(mRequestCanceled) {
             return;
         }
-        mEmitErrors++;
+        mEmitErrors.incrementAndGet();
         mLastEmitError = inMessage.getText();
         Messages.LOG_MODULE_EMIT_ERROR.warn(this, mEmitter.getURN(),
                 inMessage.getText());
@@ -60,6 +66,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      *
      * @return the request ID.
      */
+    @Override
     public final RequestID getRequestID() {
         return mRequestID;
     }
@@ -69,6 +76,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      *
      * @return the flowID uniquely identifying this data flow.
      */
+    @Override
     public final DataFlowID getFlowID() {
         return mFlowID;
     }
@@ -79,7 +87,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      * @return number of data instances received.
      */
     public final long getReceived() {
-        return mReceived;
+        return mReceived.longValue();
     }
 
     /**
@@ -88,7 +96,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      * @return number of data instances emitted.
      */
     public final long getEmitted() {
-        return mEmitted;
+        return mEmitted.longValue();
     }
 
     /**
@@ -97,7 +105,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      * @return number of data receive errors encountered.
      */
     public final long getReceiveErrors() {
-        return mReceiveErrors;
+        return mReceiveErrors.longValue();
     }
 
     /**
@@ -106,7 +114,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      * @return number of data receive errors encountered.
      */
     public final long getEmitErrors() {
-        return mEmitErrors;
+        return mEmitErrors.longValue();
     }
 
     /**
@@ -147,7 +155,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      */
     protected final void receive(Object inData) {
         try {
-            mReceived++;
+            mReceived.incrementAndGet();
             boolean failed = true;
             try {
                 ((DataReceiver)mReceiver).receiveData(mFlowID,inData);
@@ -159,7 +167,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
                 if(failed) {
                     //This counter needs to be incremented before
                     //data flow is cancelled.
-                    mReceiveErrors++;
+                    mReceiveErrors.incrementAndGet();
                 }
             }
         } catch (Throwable t) {
@@ -209,7 +217,12 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
     final void initiateRequest(RequestID inRequestID, DataRequest inRequest)
             throws RequestDataException {
         mRequestID = inRequestID;
-        ((DataEmitter)mEmitter).requestData(inRequest, this);
+        sNestedFlowCall.set(Boolean.TRUE);
+        try {
+            ((DataEmitter)mEmitter).requestData(inRequest, this);
+        } finally {
+            sNestedFlowCall.set(Boolean.FALSE);
+        }
     }
 
     /**
@@ -218,7 +231,12 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      */
     final void cancelRequest() {
         try {
-            ((DataEmitter)mEmitter).cancel(mFlowID, mRequestID);
+            sNestedFlowCall.set(Boolean.TRUE);
+            try {
+                ((DataEmitter)mEmitter).cancel(mFlowID, mRequestID);
+            } finally {
+                sNestedFlowCall.set(Boolean.FALSE);
+            }
         } catch(Throwable t) {
             Messages.LOG_UNEXPECTED_ERROR_CANCELING_REQ.warn(
                     this,t, mRequestID);
@@ -246,6 +264,18 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
     }
 
     /**
+     * Returns true, if this method is being invoked from within a
+     * {@link DataEmitter#requestData(DataRequest, DataEmitterSupport)} or
+     * a {@link DataEmitter#cancel(DataFlowID, RequestID)}.
+     *
+     * @return true if this method has <code>DataEmitter.requestData()</code>
+     * or <code>DataEmitter.cancel()</code> on its calling stack.
+     */
+    static boolean isNestedFlowCall() {
+        return sNestedFlowCall.get();
+    }
+
+    /**
      * Cancels the data flow as requested by either the emitter
      * or receiver module.
      *
@@ -264,9 +294,10 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
     private final ModuleManager mManager;
     private final Module mEmitter;
     private final Module mReceiver;
-
-    private RequestID mRequestID;
-
+    private final AtomicLong mReceived = new AtomicLong(0);
+    private final AtomicLong mEmitted = new AtomicLong(0);
+    private final AtomicLong mReceiveErrors = new AtomicLong(0);
+    private final AtomicLong mEmitErrors = new AtomicLong(0);
     private final DataFlowID mFlowID;
 
     /*
@@ -277,11 +308,15 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      * issues.
      */
 
-    private volatile long mReceived = 0;
-    private volatile long mEmitted = 0;
-    private volatile long mReceiveErrors = 0;
-    private volatile long mEmitErrors = 0;
     private volatile String mLastReceiveError = null;
     private volatile String mLastEmitError = null;
     private volatile boolean mRequestCanceled = false;
+    private volatile RequestID mRequestID;
+    private final static ThreadLocal<Boolean> sNestedFlowCall =
+            new ThreadLocal<Boolean>(){
+        @Override
+        protected Boolean initialValue() {
+            return Boolean.FALSE;
+        }
+    };
 }

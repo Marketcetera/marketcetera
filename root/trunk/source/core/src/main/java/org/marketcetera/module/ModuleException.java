@@ -10,6 +10,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * framework and its components.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class ModuleException extends I18NException {

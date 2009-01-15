@@ -8,6 +8,7 @@ import org.marketcetera.core.NoMoreIDsException;
 
 import javax.management.*;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
 import java.lang.management.ManagementFactory;
 import java.io.IOException;
 
@@ -22,8 +23,41 @@ import java.io.IOException;
  * before the <code>init()</code> method is invoked, it will be used
  * to provide default property values to various module providers and
  * instances as they are created.
+ * <p>
+ * <b>Implementation Notes on Fine grained locking</b> 
+ * This class uses fine grained locks for certain operations. 
+ * Following is a summary of various fine grained locking carried out in
+ * this class.
+ * <ol>
+ *  <li>All data structures are synchronized on themselves to ensure
+ *      consistent behavior when used concurrently. Examples include
+ *      {@link #mModuleFactories}, {@link #mDataFlows} and {@link #mModules} </li>
+ *  <li>Module creation operations are serialized via the factory instance.
+ *      {@link ModuleFactory#getLock() lock}.</li>
+ *  <li>Module deletion operations are serialized on Module
+ *      {@link Module#getLock() write lock}
+ *      to ensure that no other operations can be performed on the module
+ *      while it's being deleted.</li>
+ * <li>Garbage collection of auto-created modules acquires a write lock on
+ *     the module when stopping and removing it.</li>
+ *  <li>Module lifecycle operations like start and stop, acquire Module
+ *      {@link Module#getLock() write lock} when changing
+ *      the module state during the operation. The {@link Module#preStart()} &
+ *      {@link Module#preStop()} methods are invoked without acquiring any
+ *      locks on the module.</li>
+ *  <li>Data flow creation operations acquire Module
+ *      {@link Module#getLock() read lock} on the requesting and participating
+ *      modules to prevent module state changes while data flow operations
+ *      are being carried out.</li>
+ *  <li>Data flow cancellation operations acquire Module
+ *      {@link Module#getLock() read lock} on only the requesting
+ *      module to prevent module state changes while data flow operations 
+ *      are being carried out.</li>
+ * </ol>
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public final class ModuleManager {
@@ -55,7 +89,7 @@ public final class ModuleManager {
      */
     public List<ModuleURN> getProviders() {
         ArrayList<ModuleURN> list = new ArrayList<ModuleURN>();
-        synchronized (mOperationsLock) {
+        synchronized (mModuleFactories) {
             for(ModuleURN u: mModuleFactories.keySet()) {
                 list.add(u);
             }
@@ -78,14 +112,7 @@ public final class ModuleManager {
     public ProviderInfo getProviderInfo(ModuleURN inProviderURN)
             throws ProviderNotFoundException, InvalidURNException {
         URNUtils.validateProviderURN(inProviderURN);
-        ModuleFactory factory = getModuleFactory(inProviderURN);
-        return new ProviderInfo(
-                factory.getProviderURN(),
-                factory.getParameterTypes(),
-                factory.isMultipleInstances(),
-                factory.isAutoInstantiate(),
-                factory.getProviderDescription().
-                        getText(ActiveLocale.getLocale()));
+        return getModuleFactory(inProviderURN).getProviderInfo();
     }
 
     /**
@@ -112,11 +139,9 @@ public final class ModuleManager {
             URNUtils.validateProviderURN(inProviderURN);
         }
         ArrayList<ModuleURN> urns = new ArrayList<ModuleURN>();
-        synchronized (mOperationsLock) {
-            for(ModuleURN moduleURI: mModules.getAllURNs()) {
-                if(inProviderURN == null || inProviderURN.parentOf(moduleURI)) {
-                    urns.add(moduleURI);
-                }
+        for(ModuleURN moduleURI: mModules.getAllURNs()) {
+            if(inProviderURN == null || inProviderURN.parentOf(moduleURI)) {
+                urns.add(moduleURI);
             }
         }
         return urns;
@@ -149,8 +174,9 @@ public final class ModuleManager {
 
     /**
      * Deletes the module identified by the supplied module URN.
-     * The module is stopped if its already running.
-     * Singleton instances of a module cannot be deleted.
+     * Singleton instances of a module cannot be deleted. The module
+     * should not be running when this method is invoked, otherwise
+     * the operation fails with an exception.
      *
      * @param inModuleURN the module URN, that uniquely identifies
      * the module being deleted.
@@ -164,18 +190,29 @@ public final class ModuleManager {
      */
     public void deleteModule(ModuleURN inModuleURN)
             throws ModuleException {
-        synchronized (mOperationsLock) {
-            // URN validation already done in getModule()
-            Module module = getModule(inModuleURN);
-            ModuleURN providerURN = module.getURN().parent();
-            assert providerURN != null;
-            if(!getModuleFactory(providerURN).isMultipleInstances()) {
-                throw new ModuleException(new I18NBoundMessage1P(
-                        Messages.CANNOT_DELETE_SINGLETON,
-                        inModuleURN.toString()));
-            }
-            if(module.getState().isStarted()) {
-                stopModule(module);
+        // URN validation already done in getModule()
+        Module module = getModule(inModuleURN);
+        ModuleURN providerURN = module.getURN().parent();
+        assert providerURN != null;
+        if(!getModuleFactory(providerURN).isMultipleInstances()) {
+            throw new ModuleException(new I18NBoundMessage1P(
+                    Messages.CANNOT_DELETE_SINGLETON,
+                    inModuleURN.toString()));
+        }
+        Lock moduleLock = module.getLock().writeLock();
+        //Acquire lock for module lifecycle changes and ensure
+        //that no other operations are active on the module
+        moduleLock.lock();
+        try {
+            //Verify that the module can still be found, ie. it didn't
+            //get deleted by another thread before we acquired the lock.
+            getModule(inModuleURN);
+            //And is in the right state.
+            if(!module.getState().canBeDeleted()) {
+                throw new ModuleException(new I18NBoundMessage3P(
+                        Messages.DELETE_FAILED_MODULE_STATE_INCORRECT,
+                        inModuleURN.toString(),  module.getState(),
+                        ModuleState.DELETABLE_STATES.toString()));
             }
             ObjectName objectName = inModuleURN.toObjectName();
             try {
@@ -189,6 +226,8 @@ public final class ModuleManager {
             }
             mModules.remove(module.getURN());
             Messages.LOG_MODULE_DELETED.info(this, inModuleURN);
+        } finally {
+            moduleLock.unlock();
         }
     }
 
@@ -206,36 +245,19 @@ public final class ModuleManager {
     public ModuleInfo getModuleInfo(ModuleURN inModuleURN)
             throws ModuleNotFoundException,
             InvalidURNException {
-        synchronized (mOperationsLock) {
-            Module module = getModule(inModuleURN);
+        Module module = getModule(inModuleURN);
 
-            Set<DataFlowID> initiatedFlows =
-                    mDataFlows.getInitiatedFlows(inModuleURN);
-            Set<DataFlowID> participatingFlows =
-                    mDataFlows.getFlowsParticipating(inModuleURN);
-
-            return new ModuleInfo(
-                    inModuleURN,
-                    module.getState(),
-                    initiatedFlows == null
-                            ? null
-                            : initiatedFlows.toArray(
-                            new DataFlowID[initiatedFlows.size()]),
-                    participatingFlows == null
-                            ? null
-                            : participatingFlows.toArray(
-                            new DataFlowID[participatingFlows.size()]),
-                    module.getCreated(),
-                    module.getStarted(),
-                    module.getStopped(),
-                    module.isAutoStart(),
-                    module.isAutoCreated(),
-                    module instanceof DataReceiver,
-                    module instanceof DataEmitter,
-                    module instanceof DataFlowRequester,
-                    module.getLastStartFailure(),
-                    module.getLastStopFailure());
-        }
+        Set<DataFlowID> initiatedFlows =
+                mDataFlows.getInitiatedFlows(inModuleURN);
+        Set<DataFlowID> participatingFlows =
+                mDataFlows.getFlowsParticipating(inModuleURN);
+        return module.getModuleInfo(
+                initiatedFlows == null
+                        ? null
+                        : initiatedFlows.toArray(new DataFlowID[initiatedFlows.size()]),
+                participatingFlows == null
+                        ? null
+                        : participatingFlows.toArray(new DataFlowID[participatingFlows.size()]));
     }
 
     /**
@@ -247,10 +269,7 @@ public final class ModuleManager {
      * @throws ModuleException if there were errors starting the module.
      */
     public void start(ModuleURN inModuleURN) throws ModuleException {
-        synchronized (mOperationsLock) {
-            Module m = getModule(inModuleURN);
-            startModule(m);
-        }
+        startModule(getModule(inModuleURN));
     }
 
     /**
@@ -270,10 +289,7 @@ public final class ModuleManager {
      * @throws InvalidURNException if the supplied module URN is invalid.
      */
     public void stop(ModuleURN inModuleURN) throws ModuleException {
-        synchronized (mOperationsLock) {
-            Module m = getModule(inModuleURN);
-            stopModule(m);
-        }
+        stopModule(getModule(inModuleURN));
     }
 
     /**
@@ -376,9 +392,7 @@ public final class ModuleManager {
      * @return the list of IDs of all data flows in the system.
      */
     public List<DataFlowID> getDataFlows(boolean inIncludeModuleCreated) {
-        synchronized (mOperationsLock) {
-            return mDataFlows.getDataFlows(inIncludeModuleCreated);
-        }
+        return mDataFlows.getDataFlows(inIncludeModuleCreated);
     }
 
     /**
@@ -394,10 +408,7 @@ public final class ModuleManager {
      */
     public DataFlowInfo getDataFlowInfo(DataFlowID inFlowID)
             throws DataFlowNotFoundException {
-        DataFlow flow;
-        synchronized (mOperationsLock) {
-            flow = mDataFlows.get(inFlowID);
-        }
+        DataFlow flow = mDataFlows.get(inFlowID);
         if (flow != null) {
             return flow.toDataFlowInfo();
         } else {
@@ -415,7 +426,7 @@ public final class ModuleManager {
      * anymore.
      */
     public List<DataFlowInfo> getDataFlowHistory() {
-        synchronized (mOperationsLock) {
+        synchronized (mFlowHistory) {
             return new ArrayList<DataFlowInfo>(mFlowHistory);
         }
     }
@@ -434,6 +445,9 @@ public final class ModuleManager {
     /**
      * Discovers all the module implementations and instantiates
      * all the singleton instances.
+     * <p>
+     * This method should only be invoked once for an instance. Multiple
+     * invocations of the method after the first one have undefined behavior.
      *
      * @throws ModuleException If there were errors initializing
      * the module framework.
@@ -555,15 +569,17 @@ public final class ModuleManager {
 
     /**
      * Initializes the module configuration provider for the module framework.
+     * <p>
+     * This method should be invoked before {@link #init()} is invoked.
+     * Invocation of this method after  {@link #init()} has been invoked
+     * has undefined behavior.
      *
      * @param inConfigurationProvider the module configuration provider instance
      * to use for this framework
      */
     public void setConfigurationProvider(
             ModuleConfigurationProvider inConfigurationProvider) {
-        synchronized (mOperationsLock) {
-            mConfigurationProvider = inConfigurationProvider;
-        }
+        mConfigurationProvider = inConfigurationProvider;
     }
 
     /**
@@ -764,18 +780,28 @@ public final class ModuleManager {
                             ? 0
                             : inRequests.length));
         }
-        synchronized (mOperationsLock) {
+        Lock requesterLock = null;
+        boolean failed = true;
+        Module[] modules = null;
+        try {
             // verify that the requester is in the right state to
             // be requesting data flows.
-            if(inRequester != null && !(inRequester.getState().
-                    canParticipateFlows())) {
-                throw new ModuleStateException(new I18NBoundMessage1P(
-                        Messages.DATAFLOW_REQ_MODULE_STOPPED,
-                        inRequester.getURN().toString()));
+            if(inRequester != null) {
+                //acquire the requester lock to prevent state changes to
+                //it while the data flow is being setup.
+                requesterLock = inRequester.getLock().readLock();
+                requesterLock.lock();
+                ModuleState state = inRequester.getState();
+                if (!(state.canRequestFlows())) {
+                    throw new ModuleStateException(new I18NBoundMessage3P(
+                            Messages.DATAFLOW_FAILED_REQ_MODULE_STATE_INCORRECT,
+                            inRequester.getURN().toString(), state,
+                            ModuleState.REQUEST_FLOW_STATES.toString()));
+                }
             }
 
-            //Find modules corresponding to each data request
-            Module[] modules = findModules(inRequests, inRequester);
+            //Find and lock modules corresponding to each data request
+            modules = findAndLockModules(inRequests, inRequester);
 
             //Append the sink module if requested and possible
             if(inAppendSink &&
@@ -789,6 +815,8 @@ public final class ModuleManager {
                 modules = Arrays.copyOf(modules, modules.length + 1);
                 modules[modules.length - 1] = getModule(
                         SinkModuleFactory.INSTANCE_URN);
+                //Acquire the lock on the sink module, like all other modules
+                modules[modules.length - 1].getLock().readLock().lock();
 
                 //Also add a data request to append the sink module
                 inRequests = Arrays.copyOf(inRequests, inRequests.length + 1);
@@ -803,22 +831,29 @@ public final class ModuleManager {
             // Iterate through the list of module verifying that they can
             // handle data flows and are started.
             for(int i = 0; i < modules.length; i++) {
+                Module module = modules[i];
                 //verify that all modules except the last one can emit data
-                if((i < (modules.length - 1)) && !(modules[i] instanceof DataEmitter)) {
+                if((i < (modules.length - 1)) && !(module instanceof DataEmitter)) {
                     throw new DataFlowException(new I18NBoundMessage1P(
                             Messages.MODULE_NOT_EMITTER,
-                            modules[i].getURN().toString()));
+                            module.getURN().toString()));
                 }
                 //verify that all modules except the first one can receive data
-                if(i > 0 && !(modules[i] instanceof DataReceiver)) {
+                if(i > 0 && !(module instanceof DataReceiver)) {
                     throw new DataFlowException(new I18NBoundMessage1P(
                             Messages.MODULE_NOT_RECEIVER,
-                            modules[i].getURN().toString()));
+                            module.getURN().toString()));
                 }
-                if(!modules[i].getState().canParticipateFlows()) {
-                    throw new ModuleStateException(new I18NBoundMessage1P(
-                            Messages.DATAFLOW_REQ_MODULE_STOPPED,
-                            modules[i].getURN().toString()));
+                //Check if the modules are in the state wherein they can
+                //participate in data flows. Skip the check for the requester
+                //as it's already been checked before.
+                if(inRequester != module &&
+                        (!module.getState().canParticipateFlows())) {
+                    throw new ModuleStateException(new I18NBoundMessage3P(
+                            Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT,
+                            module.getURN().toString(),
+                            module.getState(),
+                            ModuleState.PARTICIPATE_FLOW_STATES.toString()));
                 }
             }
             // Start going backwards through the modules array plumbing them
@@ -828,7 +863,6 @@ public final class ModuleManager {
             AbstractDataCoupler[] couplers = new AbstractDataCoupler[modules.length - 1];
             DataFlowID id = generateFlowID();
             int i = couplers.length - 1;
-            boolean failed = true;
             try {
                 for(; i >= 0; i--) {
                     couplers[i] = inRequests[i].getCoupling().createCoupler(
@@ -851,6 +885,22 @@ public final class ModuleManager {
                     inRequests, couplers);
             mDataFlows.addFlow(flow);
             return id;
+        } finally {
+            if(requesterLock != null) {
+                requesterLock.unlock();
+            }
+            if(modules != null) {
+                for(Module module: modules) {
+                    module.getLock().readLock().unlock();
+                }
+            }
+            //garbage collect any auto-created modules, if data flow creation
+            //failed.
+            if(failed && modules != null) {
+                for(Module m: modules) {
+                    removeIfOrphaned(m, null);
+                }
+            }
         }
     }
 
@@ -872,21 +922,51 @@ public final class ModuleManager {
     void cancel(DataFlowID inFlowID, Module inRequester)
             throws ModuleException {
         DataFlow flow;
-        synchronized (mOperationsLock) {
-            if(inRequester != null && !inRequester.getState().canStopFlows()) {
-                throw new ModuleStateException(new I18NBoundMessage2P(
-                        Messages.CANCEL_FAILED_MODULE_NOT_STARTED,
-                        inFlowID.getValue(), inRequester.getURN().toString()));
+        Lock requesterLock = null;
+        DataFlowInfo dataFlowInfo = null;
+        try {
+            if(inRequester != null) {
+                requesterLock = inRequester.getLock().readLock();
+                //acquire requester lock to prevent requester state changes
+                //while this operation is running.
+                requesterLock.lock();
+                ModuleState state = inRequester.getState();
+                if (!state.canCancelFlows()) {
+                    throw new ModuleStateException(new I18NBoundMessage4P(
+                            Messages.CANCEL_FAILED_MODULE_STATE_INCORRECT,
+                            inFlowID.getValue(),
+                            inRequester.getURN().toString(), state,
+                            ModuleState.CANCEL_FLOW_STATES.toString()));
+                }
             }
-            flow = mDataFlows.remove(inFlowID);
+            flow = mDataFlows.get(inFlowID);
             if(flow == null) {
                 throw new DataFlowNotFoundException(new I18NBoundMessage1P(
                         Messages.DATA_FLOW_NOT_FOUND, inFlowID.getValue()));
             }
+            //No need to acquire locks when cancelling flows as module
+            //state changes are blocked until the module is participating
+            //in the flow
             flow.cancel(inRequester == null
                     ? null
                     : inRequester.getURN());
-            addToFlowHistory(flow.toDataFlowInfo());
+            dataFlowInfo = flow.toDataFlowInfo();
+            //Remove the data flow after the flow is canceled, so that
+            //the participating modules cannot be stopped until flow
+            //cancellation is complete
+            mDataFlows.remove(inFlowID);
+            addToFlowHistory(dataFlowInfo);
+        } finally {
+            if(requesterLock != null) {
+                requesterLock.unlock();
+            }
+        }
+        //figure out if there are any auto-created modules
+        //and if they are not participating in any data flows
+        //delete them
+        for(DataFlowStep step: dataFlowInfo.getFlowSteps()) {
+            removeIfOrphaned(step.getModuleURN(),
+                    dataFlowInfo.getFlowID());
         }
     }
 
@@ -927,16 +1007,9 @@ public final class ModuleManager {
      * records to retain.
      */
     void setMaxFlowHistory(int inMaxFlowHistory) {
-        synchronized (mOperationsLock) {
-            mMaxFlowHistory = inMaxFlowHistory;
-            //re-size the history records.
-            try {
-                addToFlowHistory(null);
-            } catch (ModuleException e) {
-                //Cannot get an exception if null data flow info is passed in.
-                SLF4JLoggerProxy.debug(this,"Unexpected exception",e);  //$NON-NLS-1$
-            }
-        }
+        mMaxFlowHistory = inMaxFlowHistory;
+        //re-size the history records.
+        addToFlowHistory(null);
     }
 
     /**
@@ -967,56 +1040,56 @@ public final class ModuleManager {
         //validate the URN
         URNUtils.validateProviderURN(inProviderURN);
         Module module;
-        synchronized (mOperationsLock) {
-            //find the provider factory
-            ModuleFactory factory = getModuleFactory(inProviderURN);
+        //find the provider factory
+        ModuleFactory factory = getModuleFactory(inProviderURN);
 
-            //check if this module supports multiple instances
-            //and if it doesn't verify that no other instances exist
-            if(!factory.isMultipleInstances()) {
-                List<ModuleURN> urns = getModuleInstances(inProviderURN);
-                if(!urns.isEmpty()) {
-                    throw new ModuleCreationException(new I18NBoundMessage2P(
-                            Messages.CANNOT_CREATE_SINGLETON, inProviderURN.toString(),
-                            urns.get(0).toString()));
-                }
+        //check if this module supports multiple instances
+        //and if it doesn't verify that no other instances exist
+        //This is a check to fail early. Another thread-safe check is
+        //performed later
+        if(!factory.isMultipleInstances()) {
+            List<ModuleURN> urns = getModuleInstances(inProviderURN);
+            if(!urns.isEmpty()) {
+                throw new ModuleCreationException(new I18NBoundMessage2P(
+                        Messages.CANNOT_CREATE_SINGLETON, inProviderURN.toString(),
+                        urns.get(0).toString()));
             }
-
-            //Verify if the parameter types match the advertised types
-            Class[] paramTypes = factory.getParameterTypes();
-            //deal with nulls an empty arrays.
-            if(
-                    // No parameters are needed but some are provided
-                    (paramTypes.length == 0 && inParameters != null &&
-                            inParameters.length != 0) ||
-                    // OR parameters are needed but the right number are not
-                    // provided
-                    (paramTypes.length != 0 &&
-                            (inParameters == null ||
-                                    paramTypes.length != inParameters.length))) {
-
-                throw new ModuleCreationException(new I18NBoundMessage3P(
-                        Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_NUM,
-                        inProviderURN.toString(), paramTypes.length,
-                        inParameters == null
-                                ? 0
-                                : inParameters.length));
-            }
-            //Verify if the correct parameter types have been supplied
-            int i = 0;
-            for(Class c: paramTypes) {
-                if(inParameters[i] != null && !c.isInstance(inParameters[i])
-                        && !isPrimitiveMatch(c, inParameters[i])) {
-                    throw new ModuleCreationException(new I18NBoundMessage4P(
-                            Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_TYPE,
-                            inProviderURN.toString(), i,c.getName(),
-                            inParameters[i].getClass().getName()));
-                }
-                i++;
-            }
-            //create the module
-            module = createModule(factory, inParameters);
         }
+
+        //Verify if the parameter types match the advertised types
+        Class[] paramTypes = factory.getParameterTypes();
+        //deal with nulls an empty arrays.
+        if(
+                // No parameters are needed but some are provided
+                (paramTypes.length == 0 && inParameters != null &&
+                        inParameters.length != 0) ||
+                // OR parameters are needed but the right number are not
+                // provided
+                (paramTypes.length != 0 &&
+                        (inParameters == null ||
+                                paramTypes.length != inParameters.length))) {
+
+            throw new ModuleCreationException(new I18NBoundMessage3P(
+                    Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_NUM,
+                    inProviderURN.toString(), paramTypes.length,
+                    inParameters == null
+                            ? 0
+                            : inParameters.length));
+        }
+        //Verify if the correct parameter types have been supplied
+        int i = 0;
+        for(Class c: paramTypes) {
+            if(inParameters[i] != null && !c.isInstance(inParameters[i])
+                    && !isPrimitiveMatch(c, inParameters[i])) {
+                throw new ModuleCreationException(new I18NBoundMessage4P(
+                        Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_TYPE,
+                        inProviderURN.toString(), i,c.getName(),
+                        inParameters[i].getClass().getName()));
+            }
+            i++;
+        }
+        //create the module
+        module = createModule(factory, inParameters);
         return module;
     }
 
@@ -1062,37 +1135,76 @@ public final class ModuleManager {
      * auto-created, if they are no longer participating in any data flow, they
      * are deleted.
      *
-     * Invokers of this method should acquire the operations lock while
-     * invoking it.
-     *
      * @param inDataFlowInfo data flow info to add to the history.
      * null, if there are no records to add.
-     * @throws ModuleException if there were issues deleting auto-created
-     * modules that are not participating in any data flows.
      */
-    private void addToFlowHistory(DataFlowInfo inDataFlowInfo) throws ModuleException {
-        while (mFlowHistory.size() > mMaxFlowHistory) {
-            mFlowHistory.removeLast();
+    private void addToFlowHistory(DataFlowInfo inDataFlowInfo) {
+        synchronized (mFlowHistory) {
+            while (mFlowHistory.size() > mMaxFlowHistory) {
+                mFlowHistory.removeLast();
+            }
+            if (inDataFlowInfo != null) {
+                mFlowHistory.addFirst(inDataFlowInfo);
+            }
         }
-        if (inDataFlowInfo != null) {
-            mFlowHistory.addFirst(inDataFlowInfo);
-            //figure out if there are any auto-created modules
-            //and if they are not participating in any data flows
-            //delete them
-            for(DataFlowStep step: inDataFlowInfo.getFlowSteps()) {
-                Module m = mModules.get(step.getModuleURN());
-                if(m != null && m.isAutoCreated()) {
-                    //delete the module if its not participating
-                    //in any data flows
-                    final Set<DataFlowID> flows =
-                            mDataFlows.getFlowsParticipating(m.getURN());
-                    if(flows == null || flows.isEmpty()) {
-                        Messages.LOG_DELETE_AUTO_CREATED_MODULE.info(
-                                this, m.getURN(),
-                                inDataFlowInfo.getFlowID());
-                        deleteModule(m.getURN());
+    }
+
+    /**
+     * This method is invoked when canceling a data flow.
+     * This method will check if the module with the supplied URN is
+     * auto-created. If it is and is not participating in any data flows,
+     * it will delete the module.
+     *
+     * @param inModuleURN the module URN, cannot be null.
+     * @param inFlowID the data flowID, can be null.
+     *
+     */
+    private void removeIfOrphaned(ModuleURN inModuleURN, DataFlowID inFlowID) {
+        Module m = mModules.get(inModuleURN);
+        removeIfOrphaned(m, inFlowID);
+    }
+
+    /**
+     * This method is invoked when canceling a data flow.
+     * This method will check if the module with the supplied module is
+     * auto-created. If it is and is not participating in any data flows,
+     * it will delete the supplied module.
+     *
+     * @param inModule the module, if null, this method does nothing.
+     * @param inFlowID the data flowID, can be null.
+     *
+     */
+    private void removeIfOrphaned(Module inModule, DataFlowID inFlowID) {
+        if(inModule != null && inModule.isAutoCreated()) {
+            //delete the module if its not participating
+            //in any data flows
+            Lock moduleLock = inModule.getLock().writeLock();
+            //Acquire write lock on the module to ensure that its state
+            //flow participation doesn't change as we figure out if
+            //we need to delete it and stop & delete it.
+            moduleLock.lock();
+            try {
+                //verify that the module still exists, it case it got removed
+                //before we acquired the lock
+                if(!mModules.has(inModule.getURN())) {
+                    return;
+                }
+                final Set<DataFlowID> flows =
+                        mDataFlows.getFlowsParticipatingNotInitiated(inModule.getURN());
+                if(flows == null || flows.isEmpty()) {
+                    Messages.LOG_DELETE_AUTO_CREATED_MODULE.info(
+                            this, inModule.getURN(),
+                            inFlowID);
+                    try {
+                        stopModule(inModule);
+                        deleteModule(inModule.getURN());
+                    } catch (Exception e) {
+                        Messages.LOG_DELETE_AUTO_CREATED_MODULE_FAIL.warn(this,
+                                e, inModule.getURN());
                     }
                 }
+            } finally {
+                moduleLock.unlock();
             }
         }
     }
@@ -1140,14 +1252,29 @@ public final class ModuleManager {
     private ModuleFactory getModuleFactory(ModuleURN inUrn)
             throws ProviderNotFoundException {
         ModuleFactory factory;
-        synchronized (mOperationsLock) {
-            factory = mModuleFactories.get(inUrn);
-        }
+        factory = findFactoryWithURN(inUrn);
         if(factory == null) {
             throw new ProviderNotFoundException(new I18NBoundMessage1P(
                     Messages.PROVIDER_NOT_FOUND, inUrn.toString()));
         }
         return factory;
+    }
+
+    /**
+     * Finds the factory with the supplied provider URN. Returns null
+     * if a factory with the supplied provider URN is not found.
+     *
+     * @param inUrn the provider URN. The URN should be validated. This method
+     * doesn't validate the URN and its behavior is unspecified if the supplied
+     * URN is not validated.
+     *
+     * @return the module factory instance, if one having the supplied
+     * provider URN was found, null otherwise.
+     */
+    private ModuleFactory findFactoryWithURN(ModuleURN inUrn) {
+        synchronized (mModuleFactories) {
+            return mModuleFactories.get(inUrn);
+        }
     }
 
     /**
@@ -1164,10 +1291,7 @@ public final class ModuleManager {
     private Module getModule(ModuleURN inModuleURN)
             throws InvalidURNException, ModuleNotFoundException {
         URNUtils.validateInstanceURN(inModuleURN);
-        Module module;
-        synchronized (mOperationsLock) {
-            module = mModules.get(inModuleURN);
-        }
+        Module module = mModules.get(inModuleURN);
         if(module == null) {
             throw new ModuleNotFoundException(new I18NBoundMessage1P(
                     Messages.MODULE_NOT_FOUND, inModuleURN.toString()));
@@ -1183,36 +1307,39 @@ public final class ModuleManager {
      * @throws ModuleException if there were errors when stopping the module
      */
     private void stopModule(Module inModule) throws ModuleException {
-        //verify that the module is running
-        if(!inModule.getState().isStarted()) {
-            throw new ModuleStateException(new I18NBoundMessage1P(
-                    Messages.STOP_FAILED_MODULE_NOT_STARTED,
-                    inModule.getURN().toString()));
-        }
-        //cannot stop the sink module
-        if(inModule.getURN().equals(SinkModuleFactory.INSTANCE_URN)) {
-            throw new ModuleException(Messages.CANNOT_STOP_SINK_MODULE);
-        }
-        //verify that the module is not participating in flows that it didn't
-        //initiate
-        Set<DataFlowID> initiated = mDataFlows.getInitiatedFlows(
-                inModule.getURN());
-        Set<DataFlowID> participating = mDataFlows.getFlowsParticipating(
-                inModule.getURN());
-        if(participating != null) {
-            if(initiated != null) {
-                participating.removeAll(initiated);
+        Set<DataFlowID> initiated;
+        Lock moduleLock = inModule.getLock().writeLock();
+        //acquire the lock for state changes.
+        moduleLock.lock();
+        try {
+            //verify that the module is running
+            ModuleState state = inModule.getState();
+            if(!state.canBeStopped()) {
+                throw new ModuleStateException(new I18NBoundMessage3P(
+                        Messages.MODULE_NOT_STOPPED_STATE_INCORRECT,
+                        inModule.getURN().toString(), state,
+                        ModuleState.STOPPABLE_STATES.toString()));
             }
-            if(!participating.isEmpty()) {
+            //cannot stop the sink module
+            if(inModule.getURN().equals(SinkModuleFactory.INSTANCE_URN)) {
+                throw new ModuleException(Messages.CANNOT_STOP_SINK_MODULE);
+            }
+            //verify that the module is not participating in flows that it
+            // didn't initiate
+            Set<DataFlowID> participating = mDataFlows.
+                    getFlowsParticipatingNotInitiated(inModule.getURN());
+            if(participating != null && (!participating.isEmpty())) {
                 throw new DataFlowException(new I18NBoundMessage2P(
                         Messages.CANNOT_STOP_MODULE_DATAFLOWS,
                         inModule.getURN().toString(),
                         participating.toString()));
             }
+            inModule.setState(ModuleState.STOPPING);
+        } finally {
+            moduleLock.unlock();
         }
         boolean stopSucceeded = false;
         try {
-            inModule.setState(ModuleState.STOPPING);
             inModule.preStop();
             //cancel initiated flows
             initiated = mDataFlows.getInitiatedFlows(inModule.getURN());
@@ -1228,17 +1355,25 @@ public final class ModuleManager {
             Messages.LOG_STOP_MODULE_FAILED.warn(this, e, inModule.getURN());
             throw e;
         } finally {
-            if(stopSucceeded) {
-                inModule.setState(ModuleState.STOPPED);
-                inModule.setLastStopFailure(null);
-            } else {
-                inModule.setState(ModuleState.STOP_FAILED);
+            //Acquire the lock for all state changes.
+            moduleLock.lock();
+            try {
+                if(stopSucceeded) {
+                    inModule.setState(ModuleState.STOPPED);
+                    inModule.setLastStopFailure(null);
+                } else {
+                    inModule.setState(ModuleState.STOP_FAILED);
+                }
+            } finally {
+                moduleLock.unlock();
             }
         }
     }
 
     /**
-     * Find module instances matching the specified requests.
+     * Find module instances matching the specified requests and acquire their
+     * read locks before they are returned. No read locks are acquired if this
+     * method fails.
      *
      * @param inRequests the requests
      * @param inRequester the module instance requesting the data flow.
@@ -1253,7 +1388,7 @@ public final class ModuleManager {
      * @throws ModuleNotFoundException if module corresponding to URNs,
      * specified in the requests, were not found.
      */
-    private Module[] findModules(DataRequest[] inRequests,
+    private Module[] findAndLockModules(DataRequest[] inRequests,
                                  Module inRequester)
             throws ModuleException {
         Module[] modules = new Module[inRequests.length];
@@ -1264,6 +1399,10 @@ public final class ModuleManager {
                             ? null
                             : inRequester.getURN(),
                     request.getRequestURN()));
+        }
+        //lock all the modules before returning.
+        for(Module m: modules) {
+            m.getLock().readLock().lock();
         }
         return modules;
     }
@@ -1289,9 +1428,10 @@ public final class ModuleManager {
             throws ModuleException {
         Module m = mModules.search(inModuleURN);
         if(m == null) {
+            //Check if the module can be auto-instantiated.
             if(inModuleURN.instanceURN()) {
                 ModuleURN parent = inModuleURN.parent();
-                ModuleFactory factory = mModuleFactories.get(parent);
+                ModuleFactory factory = findFactoryWithURN(parent);
                 if(factory != null && factory.isAutoInstantiate()) {
                     URNUtils.validateInstanceURN(inModuleURN);
                     Module module = createModuleImpl(parent, inModuleURN);
@@ -1333,21 +1473,48 @@ public final class ModuleManager {
             }
         }
         //Add the factory to the table, if not already there
-        if(!mModuleFactories.containsKey(urn)) {
-            mModuleFactories.put(urn, inFactory);
-        } else {
-            //Ignore the factory if its already there.
-            //This may happen during a refresh.
-            Messages.LOG_INIT_FACTORY_IGNORE.info(this,
-                    inFactory.getClass().getName());
-            return;
+        synchronized (mModuleFactories) {
+            if(!mModuleFactories.containsKey(urn)) {
+                mModuleFactories.put(urn, inFactory);
+            } else {
+                //Ignore the factory if its already there.
+                //This may happen during a refresh.
+                Messages.LOG_INIT_FACTORY_IGNORE.info(this,
+                        inFactory.getClass().getName());
+                return;
+            }
         }
         //Figure out if it has a MXBean interface
         if(isMXBean(inFactory)) {
-            ObjectName objectName = registerMXBean(urn, inFactory);
-            Messages.LOG_REGISTERED_FACTORY_BEAN.info(this, urn, objectName);
-            //Configure the default values, if available
-            initializeDefaultValues(urn, objectName);
+            boolean mBeanOpsFailed = true;
+            try {
+                ObjectName objectName = registerMXBean(urn, inFactory);
+                Messages.LOG_REGISTERED_FACTORY_BEAN.info(this, urn, objectName);
+                //Configure the default values, if available
+                boolean initDefaultValueFailed = true;
+                try {
+                    initializeDefaultValues(urn, objectName);
+                    initDefaultValueFailed = false;
+                } finally {
+                    if(initDefaultValueFailed) {
+                        try {
+                            unregister(objectName);
+                        } catch (JMException e) {
+                            SLF4JLoggerProxy.debug(this, e,
+                                    "Error unregistering MBean {} on init default value failure",  //$NON-NLS-1$
+                                    objectName);
+                        }
+                    }
+                }
+                mBeanOpsFailed = false;
+            } finally {
+                if(mBeanOpsFailed) {
+                    //remove the factory from the list initialized factories
+                    synchronized (mModuleFactories) {
+                        mModuleFactories.remove(urn);
+                    }
+                }
+            }
 
         }
         //Figure out if its a singleton, instantiate the singleton instance
@@ -1431,6 +1598,12 @@ public final class ModuleManager {
                     }
                 }
             }
+        } catch (RuntimeException e) {
+            //bean setters may throw runtime exception
+            throw new MXBeanOperationException(e,
+                    new I18NBoundMessage1P(
+                            Messages.BEAN_ATTRIB_DISCOVERY_ERROR,
+                            inObjectName));
         } catch (JMException e) {
             throw new MXBeanOperationException(e,
                     new I18NBoundMessage1P(
@@ -1454,23 +1627,71 @@ public final class ModuleManager {
     private Module createModule(ModuleFactory inFactory,
                                 Object... inParameters)
             throws ModuleException {
-        Module module = inFactory.create(inParameters);
-        ModuleURN urn = module.getURN();
-        //validate module's URN, verify that its of provider's type
-        URNUtils.validateInstanceURN(urn, inFactory.getProviderURN());
-        //add the module to appropriate lookup tables
-        if(mModules.has(urn)) {
-            throw new ModuleCreationException(new I18NBoundMessage1P(
-                    Messages.DUPLICATE_MODULE_URN,urn.toString()));
+        Module module;
+        Lock factoryLock = null;
+        ModuleURN urn;
+        try {
+            //Singleton factory create operations are synchronized on the factory
+            //to ensure that a singleton factory is not asked to create more
+            //than one instance.
+            //Multiple factory create operations are synchronized on the factory
+            //to ensure that it doesn't create modules with duplicate URNs.
+            factoryLock = inFactory.getLock();
+            factoryLock.lock();
+            if(inFactory.isMultipleInstances()) {
+                module = inFactory.create(inParameters);
+            } else {
+                List<ModuleURN> urns = getModuleInstances(inFactory.getProviderURN());
+                if(!urns.isEmpty()) {
+                    throw new ModuleCreationException(new I18NBoundMessage2P(
+                            Messages.CANNOT_CREATE_SINGLETON,
+                            inFactory.getProviderURN().toString(),
+                            urns.get(0).toString()));
+                }
+                module = inFactory.create(inParameters);
+            }
+
+            urn = module.getURN();
+            //validate module's URN, verify that it's of provider's type
+            URNUtils.validateInstanceURN(urn, inFactory.getProviderURN());
+            //Verify that a duplicate module is not being created.
+            //We already have a factory lock and only the same factory
+            //has the capability to create a module having a duplicate URN.
+            //This scheme prevents concurrent instantiation of module instances
+            //from the same provider, but is easier to implement than
+            //implementing unique, module URN based locks.
+            if(mModules.has(urn)) {
+                throw new ModuleCreationException(new I18NBoundMessage1P(
+                        Messages.DUPLICATE_MODULE_URN,urn.toString()));
+            }
+            //if its an mbean, register it and initialize its default values
+            if(isMXBean(module)) {
+                ObjectName objectName = registerMXBean(urn, module);
+                Messages.LOG_REGISTERED_MODULE_BEAN.info(this, urn, objectName);
+                //Configure default values if available
+                boolean initDefaultValuesFailed = true;
+                try {
+                    initializeDefaultValues(urn,objectName);
+                    initDefaultValuesFailed = false;
+                } finally {
+                    if(initDefaultValuesFailed) {
+                        //unregister the MBean.
+                        try {
+                            unregister(objectName);
+                        } catch (JMException e) {
+                            SLF4JLoggerProxy.debug(this, e,
+                                    "Error unregistering MBean {} on init default value failure", objectName);  //$NON-NLS-1$
+                        }
+                    }
+                }
+            }
+            //add the module to appropriate lookup tables
+            mModules.add(module);
+        } finally {
+            if(factoryLock != null) {
+                factoryLock.unlock();
+            }
         }
-        //if its an mbean register it and initialize its default values
-        if(isMXBean(module)) {
-            ObjectName objectName = registerMXBean(urn, module);
-            Messages.LOG_REGISTERED_MODULE_BEAN.info(this, urn, objectName);
-            //Configure default values if available
-            initializeDefaultValues(urn,objectName);
-        }
-        mModules.add(module);
         Messages.LOG_CREATED_MODULE_INSTANCE.info(this, urn);
         //if its auto-start, try starting it
         if(module.isAutoStart()) {
@@ -1487,11 +1708,25 @@ public final class ModuleManager {
      * @throws ModuleException if there was an error starting the module
      */
     private void startModule(Module inModule) throws ModuleException {
-        //Verify module state
-        if(inModule.getState().isStarted()) {
-            throw new ModuleStateException(new I18NBoundMessage1P(
-                    Messages.MODULE_ALREADY_STARTED,
-                    inModule.getURN().toString()));
+        Lock moduleLock = inModule.getLock().writeLock();
+        //Acquire the lock for module state changes
+        moduleLock.lock();
+        try {
+            //Verify module still exists, in case it got deleted after we
+            //found it but before we acquired the lock
+            getModule(inModule.getURN());
+            //Verify module state
+            ModuleState state = inModule.getState();
+            if(!state.canBeStarted()) {
+                throw new ModuleStateException(new I18NBoundMessage3P(
+                        Messages.MODULE_NOT_STARTED_STATE_INCORRECT,
+                        inModule.getURN().toString(), state,
+                        ModuleState.STARTABLE_STATES.toString()));
+            }
+            //Tell the module that its about to be started
+            inModule.setState(ModuleState.STARTING);
+        } finally {
+            moduleLock.unlock();
         }
         boolean startSucceeded = false;
         try {
@@ -1501,8 +1736,6 @@ public final class ModuleManager {
                 ((DataFlowRequester)inModule).setFlowSupport(
                         new DataFlowSupportImpl(inModule,this));
             }
-            //Tell the module that its about to be started
-            inModule.setState(ModuleState.STARTING);
             inModule.preStart();
             startSucceeded = true;
             Messages.LOG_MODULE_STARTED.info(this, inModule.getURN());
@@ -1511,13 +1744,21 @@ public final class ModuleManager {
             Messages.LOG_START_MODULE_FAILED.warn(this,e,inModule.getURN());
             throw e;
         } finally {
-            if(startSucceeded) {
-                inModule.setState(ModuleState.STARTED);
-                inModule.setLastStartFailure(null);
-            } else {
-                inModule.setState(ModuleState.START_FAILED);
+            //Acquire the lock for module state changes.
+            moduleLock.lock();
+            try {
+                if(startSucceeded) {
+                    inModule.setState(ModuleState.STARTED);
+                    inModule.setLastStartFailure(null);
+                } else {
+                    inModule.setState(ModuleState.START_FAILED);
+                }
+            } finally {
+                moduleLock.unlock();
+            }
+            if (!startSucceeded) {
                 //check if the module created any data flows and if it
-                //did make sure they are canceled.
+                //did, make sure they are canceled.
                 final Set<DataFlowID> flows = mDataFlows.getInitiatedFlows(
                         inModule.getURN());
                 if(flows != null && !flows.isEmpty()) {
@@ -1583,6 +1824,7 @@ public final class ModuleManager {
         }
         return false;
     }
+
     /**
      * The JMX domain name for all the module framework beans
      */
@@ -1639,7 +1881,7 @@ public final class ModuleManager {
      * The module configuration provider that provides default configuration
      * properties for module factories and instances.
      */
-    private ModuleConfigurationProvider mConfigurationProvider;
+    private volatile ModuleConfigurationProvider mConfigurationProvider;
     /**
      * The table of currently active data flows.
      */
@@ -1653,7 +1895,7 @@ public final class ModuleManager {
     /**
      * History of flows that are not active any more
      */
-    private Deque<DataFlowInfo> mFlowHistory =
+    private final Deque<DataFlowInfo> mFlowHistory =
             new LinkedList<DataFlowInfo>();
     /**
      * Maximum number flow histories to keep a record of.

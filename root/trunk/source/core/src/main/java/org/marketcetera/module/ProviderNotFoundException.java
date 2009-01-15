@@ -9,6 +9,8 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * module provider as identified by its URN, does not exist.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class ProviderNotFoundException extends ModuleException {

@@ -11,6 +11,8 @@ import java.io.Serializable;
  * Provided detailed information on a module instance.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public final class ModuleInfo implements Serializable {
@@ -153,6 +155,34 @@ public final class ModuleInfo implements Serializable {
     }
 
     /**
+     * The number of read locks acquired on the module.
+     *
+     * @return the number of read locks.
+     */
+    public int getReadLockCount() {
+        return mReadLockCount;
+    }
+
+    /**
+     * Returns true, if the module is write locked.
+     *
+     * @return true if the module is write locked.
+     */
+    public boolean isWriteLocked() {
+        return mWriteLocked;
+    }
+
+    /**
+     * Returns the number of threads waiting to acquire either
+     * the read or the write lock.
+     *
+     * @return the lock queue length.
+     */
+    public int getLockQueueLength() {
+        return mLockQueueLength;
+    }
+
+    /**
      * Creates an instance
      *
      * @param inURN the module instance URN.
@@ -172,6 +202,9 @@ public final class ModuleInfo implements Serializable {
      * @param inLastStartFailure the failure message, if the last attempt
      *  to start the module failed.
      * @param inLastStopFailure the failure message, if the last attempt
+     * @param inReadLockCount the number of read locks acquired on the module.
+     * @param inWriteLocked if the module is write locked.
+     * @param inLockQueueLength the lock queue length.
      */
     @ConstructorProperties({
             "URN",                        //$NON-NLS-1$
@@ -187,7 +220,10 @@ public final class ModuleInfo implements Serializable {
             "emitter",                    //$NON-NLS-1$
             "flowRequester",              //$NON-NLS-1$
             "lastStartFailure",           //$NON-NLS-1$
-            "lastStopFailure"             //$NON-NLS-1$
+            "lastStopFailure",            //$NON-NLS-1$
+            "readLockCount",              //$NON-NLS-1$
+            "writeLocked",                //$NON-NLS-1$
+            "lockQueueLength"             //$NON-NLS-1$
             })
     public ModuleInfo(ModuleURN inURN,
                       ModuleState inState,
@@ -202,7 +238,10 @@ public final class ModuleInfo implements Serializable {
                       boolean inEmitter,
                       boolean inFlowRequester,
                       String inLastStartFailure,
-                      String inLastStopFailure) {
+                      String inLastStopFailure,
+                      int inReadLockCount,
+                      boolean inWriteLocked,
+                      int inLockQueueLength) {
         mURN = inURN;
         mState = inState;
         mInitiatedDataFlows = inInitiatedDataFlows;
@@ -217,6 +256,9 @@ public final class ModuleInfo implements Serializable {
         mFlowRequester = inFlowRequester;
         mLastStartFailure = inLastStartFailure;
         mLastStopFailure = inLastStopFailure;
+        mReadLockCount = inReadLockCount;
+        mWriteLocked = inWriteLocked;
+        mLockQueueLength = inLockQueueLength;
     }
 
     private final ModuleURN mURN;
@@ -233,5 +275,8 @@ public final class ModuleInfo implements Serializable {
     private final boolean mFlowRequester;
     private final String mLastStartFailure;
     private final String mLastStopFailure;
+    private final int mReadLockCount;
+    private final boolean mWriteLocked;
+    private final int mLockQueueLength;
     private static final long serialVersionUID = 296591521121503992L;
 }

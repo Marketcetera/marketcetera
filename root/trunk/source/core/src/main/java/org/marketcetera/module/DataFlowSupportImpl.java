@@ -10,6 +10,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * adding the URN of the module requesting data flow creation / cancelation. 
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 class DataFlowSupportImpl implements DataFlowSupport {
@@ -30,6 +32,7 @@ class DataFlowSupportImpl implements DataFlowSupport {
     @Override
     public DataFlowID createDataFlow(DataRequest[] inRequests)
             throws ModuleException {
+        verifyIncorrectInvocation();
         return createDataFlow(inRequests, true);
     }
 
@@ -37,6 +40,7 @@ class DataFlowSupportImpl implements DataFlowSupport {
     public DataFlowID createDataFlow(DataRequest[] inRequests,
                                      boolean inAppendSink)
             throws ModuleException {
+        verifyIncorrectInvocation();
         return mManager.createDataFlow(inRequests,
                 inAppendSink, mRequester);
     }
@@ -44,7 +48,21 @@ class DataFlowSupportImpl implements DataFlowSupport {
     @Override
     public void cancel(DataFlowID inFlowID)
             throws ModuleException {
+        verifyIncorrectInvocation();
         mManager.cancel(inFlowID, mRequester);
+    }
+
+    /**
+     * Fails if invoked from within
+     * {@link DataEmitter#requestData(DataRequest, DataEmitterSupport)} or
+     * {@link DataEmitter#cancel(DataFlowID, RequestID)}.
+     *
+     * @throws ModuleException if its an incorrect nested flow request.
+     */
+    private static void verifyIncorrectInvocation() throws ModuleException {
+        if(AbstractDataCoupler.isNestedFlowCall()) {
+            throw new ModuleException(Messages.INCORRECT_NESTED_FLOW_REQUEST);
+        }
     }
     private final Module mRequester;
     private final ModuleManager mManager;

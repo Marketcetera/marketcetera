@@ -10,16 +10,20 @@ import java.util.Map;
 /**
  * Tracks module instances and searches through them.
  *
- * This class is not threadsafe. Clients of this class should
- * ensure thread-safety when invoking its methods.
+ * <p>
+ * This class is thread-safe. All of its methods employ locking
+ * to ensure that the concurrent modifications to the instance's state
+ * do not corrupt it.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 class ModuleInstanceTracker {
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return mModules.toString();
     }
     /**
@@ -27,7 +31,7 @@ class ModuleInstanceTracker {
      *
      * @param inModule the module instance to track.
      */
-    void add(Module inModule) {
+    synchronized void add(Module inModule) {
         mModules.put(inModule.getURN(), inModule);
     }
 
@@ -36,7 +40,7 @@ class ModuleInstanceTracker {
      *
      * @return the module URNs tracked by this class.
      */
-    ModuleURN[] getAllURNs() {
+    synchronized ModuleURN[] getAllURNs() {
         return mModules.keySet().toArray(
                 new ModuleURN[mModules.size()]);
     }
@@ -49,7 +53,7 @@ class ModuleInstanceTracker {
      * @return the module instance corresponding to the supplied URN, null
      * if no module with the supplied URN was found.
      */
-    Module get(ModuleURN inURN) {
+    synchronized Module get(ModuleURN inURN) {
         return mModules.get(inURN);
     }
 
@@ -60,7 +64,7 @@ class ModuleInstanceTracker {
      *
      * @return if a module with the specified URN exists.
      */
-    boolean has(ModuleURN inURN) {
+    synchronized boolean has(ModuleURN inURN) {
         return mModules.containsKey(inURN);
     }
 
@@ -72,7 +76,7 @@ class ModuleInstanceTracker {
      * @return the removed module instance. null, if no module instance
      * corresponding to the supplied module URN was found.
      */
-    Module remove(ModuleURN inURN) {
+    synchronized Module remove(ModuleURN inURN) {
         return mModules.remove(inURN);
     }
 
@@ -103,7 +107,7 @@ class ModuleInstanceTracker {
      * @throws ModuleNotFoundException if multiple modules matching
      * the supplied URN were found.
      */
-    Module search(ModuleURN inURN) throws ModuleNotFoundException {
+    synchronized Module search(ModuleURN inURN) throws ModuleNotFoundException {
         Module m;
         //Look for an exact match
         m = get(inURN);

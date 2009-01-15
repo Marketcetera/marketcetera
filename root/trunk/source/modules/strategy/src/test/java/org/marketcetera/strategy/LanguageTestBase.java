@@ -7,8 +7,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
-import static org.marketcetera.module.Messages.MODULE_ALREADY_STARTED;
-import static org.marketcetera.module.Messages.STOP_FAILED_MODULE_NOT_STARTED;
+import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
+import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
 import static org.marketcetera.strategy.Language.JAVA;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
@@ -2539,8 +2539,10 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("onStartBegins",
                                             null);
         // test to see what happens if the strategy is started again by the moduleManager (STARTING->UNSTARTED)
-        new ExpectedFailure<ModuleStateException>(MODULE_ALREADY_STARTED,
-                                                  strategyURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STARTED_STATE_INCORRECT,
+                                                  strategyURN.toString(),
+                                                  ExpectedFailure.IGNORE,
+                                                  ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -2576,8 +2578,10 @@ public abstract class LanguageTestBase
         verifyStrategyStatus(strategyURN,
                              RUNNING);
         // try to start again (RUNNING->UNSTARTED)
-        new ExpectedFailure<ModuleStateException>(MODULE_ALREADY_STARTED,
-                                                  strategyURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STARTED_STATE_INCORRECT,
+                                                  strategyURN.toString(),
+                                                  ExpectedFailure.IGNORE,
+                                                  ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -2607,8 +2611,10 @@ public abstract class LanguageTestBase
         // module is listed as stopped
         assertFalse(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
         // test stopping (STOPPING->STOPPING)
-        new ExpectedFailure<ModuleStateException>(STOP_FAILED_MODULE_NOT_STARTED,
-                                                  strategyURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STOPPED_STATE_INCORRECT,
+                                                  strategyURN.toString(),
+                                                  ExpectedFailure.IGNORE,
+                                                  ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -2637,8 +2643,9 @@ public abstract class LanguageTestBase
         // module is listed as stopped
         assertFalse(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
         // cannot stop again (STOPPED->STOPPING)
-        new ExpectedFailure<ModuleStateException>(STOP_FAILED_MODULE_NOT_STARTED,
-                strategyURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STOPPED_STATE_INCORRECT,
+                strategyURN.toString(), ExpectedFailure.IGNORE,
+                ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -2662,8 +2669,9 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("shouldFailOnStop",
                                             null);
         // try to stop (FAILED->STOPPING)
-        new ExpectedFailure<ModuleStateException>(STOP_FAILED_MODULE_NOT_STARTED,
-                strategyURN.toString()) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STOPPED_STATE_INCORRECT,
+                strategyURN.toString(), ExpectedFailure.IGNORE,
+                ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -3243,7 +3251,7 @@ public abstract class LanguageTestBase
      * given expected results.
      * @param inStrategy a <code>ModuleURN</code> value
      * @param inExpectedOrders an <code>OrderSingle[]</code> value
-     * @param inCumulativeOrders a <code>List&lt;OrderSingle&gt;</code> value
+     * @param inExpectedCumulativeOrders a <code>List&lt;OrderSingle&gt;</code> value
      * @throws Exception if an error occurs
      */
     private void doOrderTest(ModuleURN inStrategy,

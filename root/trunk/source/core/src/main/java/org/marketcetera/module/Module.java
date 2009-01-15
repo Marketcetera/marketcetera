@@ -4,6 +4,8 @@ package org.marketcetera.module;
 import org.marketcetera.util.misc.ClassVersion;
 
 import java.util.Date;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /* $License$ */
 /**
@@ -26,6 +28,8 @@ import java.util.Date;
  * it has been initialized.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public abstract class Module {
@@ -245,12 +249,45 @@ public abstract class Module {
         mLastStopFailure = inLastStopFailure;
     }
 
-    private boolean mAutoCreated = false;
-    private ModuleState mState = ModuleState.CREATED;
-    private String mLastStartFailure;
-    private String mLastStopFailure;
-    private Date mStarted = null;
-    private Date mStopped = null;
+    /**
+     * Returns the lock that should be used for serializing module
+     * operations.
+     *
+     * @return the lock to be used for serializing module operations.
+     */
+    final ReadWriteLock getLock() {
+        return mLock;
+    }
+
+    /**
+     * Returns module info describing the current state of the module.
+     *
+     * @param inInitiatedFlows the set of IDs for the data flows that this
+     * module has initiated
+     * @param inParticipatingFlows the set of IDs for the data flows that this
+     * module is participating in.
+     *
+     * @return the module info.
+     */
+    final ModuleInfo getModuleInfo(DataFlowID[] inInitiatedFlows,
+                                   DataFlowID[] inParticipatingFlows) {
+        return new ModuleInfo(getURN(), getState(), inInitiatedFlows,
+                inParticipatingFlows, getCreated(), getStarted(),
+                getStopped(), isAutoStart(), isAutoCreated(),
+                this instanceof DataReceiver, this instanceof DataEmitter,
+                this instanceof DataFlowRequester, getLastStartFailure(),
+                getLastStopFailure(), mLock.getReadLockCount(),
+                mLock.isWriteLocked(), mLock.getQueueLength());
+    }
+
+
+    private final ReentrantReadWriteLock mLock = new ReentrantReadWriteLock();
+    private volatile boolean mAutoCreated = false;
+    private volatile ModuleState mState = ModuleState.CREATED;
+    private volatile String mLastStartFailure;
+    private volatile String mLastStopFailure;
+    private volatile Date mStarted = null;
+    private volatile Date mStopped = null;
     private final Date mCreated = new Date();
     private final ModuleURN mURN;
     private final boolean mAutoStart;

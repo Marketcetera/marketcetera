@@ -9,6 +9,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * emitting data. 
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public interface DataEmitter {
@@ -34,8 +36,16 @@ public interface DataEmitter {
      * to stop the data flow from within this method. Data flow creation
      * is not complete unless this method returns. <code>dataEmitError</code>
      * can only be invoked after the data flow has been created. 
-     *
+     * <p>
      * To prevent the data flow from getting created, throw an exception.
+     * <p>
+     * The emitter is not expected to emit data from within this method. If
+     * this emitter is only a data emitter, then the data must be emitted
+     * from a separate thread. It's expected that the data for the
+     * same data flow is always emitted from the same thread sequentially. If
+     * this emitter is a data receiver and an emitter, it may emit data from
+     * within the {@link DataReceiver#receiveData(DataFlowID, Object)} method
+     * or it may spawn a new thread to emit data like any other emitter. 
      *
      * @param inRequest the data request supplied when requesting the
      * data flow.

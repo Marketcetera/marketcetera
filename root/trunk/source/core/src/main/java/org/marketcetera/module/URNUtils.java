@@ -12,6 +12,8 @@ import org.marketcetera.util.log.I18NMessage1P;
  *
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public final class URNUtils {

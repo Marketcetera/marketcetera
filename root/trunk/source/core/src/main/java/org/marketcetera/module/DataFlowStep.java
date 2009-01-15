@@ -10,6 +10,8 @@ import java.beans.ConstructorProperties;
  * Instances of this class describe the state of a module in a data flow.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public final class DataFlowStep implements Serializable {

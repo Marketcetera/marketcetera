@@ -60,8 +60,7 @@ public class ProcessorModule extends ModuleBase
     public void requestData(
             DataRequest inRequest,
             DataEmitterSupport inSupport)
-            throws UnsupportedRequestParameterType,
-            IllegalRequestParameterValue {
+            throws RequestDataException {
         Object obj = inRequest.getData();
         if(obj == null) {
             throw new IllegalRequestParameterValue(getURN(), obj);

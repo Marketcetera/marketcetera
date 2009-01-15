@@ -9,6 +9,8 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * cannot be found.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class ModuleNotFoundException extends ModuleException {

@@ -55,5 +55,7 @@ public interface TestMessages {
             new I18NMessage0P(LOGGER, "flow_requester_provider");  //$NON-NLS-1$
     static final I18NMessage2P EXCEPTION_TEST =
             new I18NMessage2P(LOGGER, "exception_test");   //$NON-NLS-1$
+    static final I18NMessage0P FAILURE =
+            new I18NMessage0P(LOGGER, "failure");   //$NON-NLS-1$
 
 }

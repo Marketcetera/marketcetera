@@ -8,9 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
+import java.io.Serializable;
 
 /* $License$ */
 /**
@@ -62,6 +64,62 @@ public abstract class ExpectedFailure<T extends Exception> {
      */
     public T getException() {
         return mException;
+    }
+
+    /**
+     * Verifies if the supplied exception is an I18NException having
+     * the supplied message and expected parameters.
+     *
+     * @param inThrowable the exception to verify.
+     * @param inExpectedMessage the expected message, ignored if null.
+     * @param inExpectedParams the expected parameters, ignored if null.
+     *
+     * @return the supplied inThrowable value.
+     */
+    public static I18NException assertI18NException(Throwable inThrowable,
+                                           I18NMessage inExpectedMessage,
+                                           Object... inExpectedParams) {
+        assertNotNull(inThrowable);
+        assertTrue(inThrowable.getClass().toString(),
+                inThrowable instanceof I18NException);
+        I18NException e = (I18NException) inThrowable;
+        if(inExpectedMessage != null) {
+            assertEquals(inThrowable.toString(), inExpectedMessage,
+                    e.getI18NBoundMessage().getMessage());
+        }
+        if(inExpectedParams != null && inExpectedParams.length > 0) {
+            String msg = inThrowable.toString();
+            Serializable[] params = e.getI18NBoundMessage().getParams();
+            assertEquals(msg, inExpectedParams.length, params.length);
+            for(int i = 0; i < inExpectedParams.length; i++) {
+                if (inExpectedParams[i] != IGNORE) {
+                    assertEquals(msg, inExpectedParams[i], params[i]);
+                }
+            }
+        }
+        return e;
+    }
+
+    /**
+     * Verifies if the supplied exception has the specified message.
+     *
+     * @param inThrowable the exception to be verified.
+     * @param inExpectedMessage the expected exception message.
+     * @param inExactMatch true, if the specified message should match
+     *
+     * @return the supplied inThrowable value.
+     */
+    public static Throwable assertException(Throwable inThrowable,
+                                            String inExpectedMessage,
+                                            boolean inExactMatch) {
+        assertNotNull(inThrowable);
+        if (inExactMatch) {
+            assertEquals(inExpectedMessage, inThrowable.getMessage());
+        } else {
+            assertTrue(inThrowable.getMessage(),
+                    inThrowable.getMessage().contains(inExpectedMessage));
+        }
+        return inThrowable;
     }
     /**
      * Creates an instance that will test for failures with I18NExceptions
@@ -133,22 +191,12 @@ public abstract class ExpectedFailure<T extends Exception> {
                     expected.isInstance(t));
             mException = (T) t;
             if(t instanceof I18NException) {
-                I18NException e = (I18NException) t;
-                if(mExpectedMessage != null) {
-                    assertEquals(t.toString(), mExpectedMessage, e.getI18NBoundMessage().getMessage());
-                }
-                if(mExpectedParams != null && mExpectedParams.length > 0) {
-                    assertArrayEquals(t.toString(),  mExpectedParams, e.getI18NBoundMessage().getParams());
-                }
+                assertI18NException(t, mExpectedMessage, mExpectedParams);
             } else {
                 assertNull(t.getClass() + " is not an I18NException", mExpectedMessage);
             }
             if(mMessage != null) {
-                if (mExactMatch) {
-                    assertEquals(mMessage, t.getMessage());
-                } else {
-                    assertTrue(t.getMessage(), t.getMessage().contains(mMessage));
-                }
+                assertException(t, mMessage, mExactMatch);
             }
         }
     }
@@ -170,4 +218,11 @@ public abstract class ExpectedFailure<T extends Exception> {
     private T mException;
     private String mMessage;
     private boolean mExactMatch;
+    /**
+     * A parameter value that can be used to indicate that a parameter
+     * may be ignored when testing for failure in
+     * {@link #assertI18NException(Throwable, I18NMessage, Object[])} or
+     * {@link #ExpectedFailure(I18NMessage, Object[])}  
+     */
+    public static final Object IGNORE = new Object();
 }

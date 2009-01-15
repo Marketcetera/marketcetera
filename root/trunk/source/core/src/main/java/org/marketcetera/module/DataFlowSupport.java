@@ -8,11 +8,20 @@ import org.marketcetera.util.misc.ClassVersion;
  * This interface is implemented by modules that need the capability
  * to create and cancel data flows.
  * <p>
+ * Note that the methods defined in this interface can be invoked
+ * from {@link Module#preStart()} and {@link Module#preStop()} methods or
+ * any other context. The methods in this interface <b>should not</b> be
+ * invoked from {@link DataEmitter#requestData(DataRequest, DataEmitterSupport)}
+ * or {@link DataEmitter#cancel(DataFlowID, RequestID)} methods. 
+ *
+ * <p>
  * Do note that the <code>ModuleURN</code> specified when requesting
  * data flows can contain the keyword '<code>this</code>' in place of
  * providerType, providerName or instanceName and the system will replace
  * '<code>this</code>' with value of the same URN element from the requesting
- * module's URN. For example, if the requesting module's URN is
+ * module's URN.
+ * <p>
+ * For example, if the requesting module's URN is
  * <code>metc:strategy:java:hedgeme</code> and the data request contains the
  * URN, <code>metc:cep:vendor:this</code>, the keyword <code>this</code> in
  * the URN will be substitued with the appropriate value from the
@@ -21,6 +30,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * be <code>metc:cep:vendor:hedgme</code>.
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
  */
 @ClassVersion("$Id$")   //$NON-NLS-1$
 public interface DataFlowSupport {

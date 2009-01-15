@@ -12,6 +12,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * to enable emitters to emit data for a data flow. 
  *
  * @author anshul@marketcetera.com
+ * @version $Id$
+ * @since 1.0.0
+ * 
  * @see DataEmitter
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
