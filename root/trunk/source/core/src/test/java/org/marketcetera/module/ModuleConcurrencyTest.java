@@ -15,6 +15,7 @@ import java.util.concurrent.*;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
 
 /* $License$ */
 /**
@@ -483,7 +484,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
                 ConcurrentTestFactory.PROVIDER_URN, "requester");
         Callable<Object> concurrentTestOperation = new Callable<Object>() {
             public Object call() throws Exception {
-                createStartFailure(reqUrn, ExpectedFailure.IGNORE);
+                createStartFailure(reqUrn, ModuleState.STARTING);
                 return null;
             }
         };
@@ -494,7 +495,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         final ModuleURN reqUrn = new ModuleURN(ConcurrentTestFactory.PROVIDER_URN, "requester");
         Callable<Object> concurrentTestOperation = new Callable<Object>() {
             public Object call() throws Exception {
-                createStopFailure(reqUrn, ExpectedFailure.IGNORE);
+                createStopFailure(reqUrn, ModuleState.STARTING);
                 return null;
             }
         };
@@ -506,7 +507,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
                 ConcurrentTestFactory.PROVIDER_URN, "requester");
         Callable<Object> concurrentTestOperation = new Callable<Object>() {
             public Object call() throws Exception {
-                createDeleteFailure(reqUrn, ExpectedFailure.IGNORE);
+                createDeleteFailure(reqUrn, ModuleState.STARTING);
                 return null;
             }
         };
@@ -779,28 +780,28 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
     private void runRequestingModuleBlockedTests(
             final ModuleURN inReqUrn,
             Callable<Object> inConcurrentTestOperation) throws Exception {
-        ModuleURN urn = new ModuleURN(ConcurrentTestFactory.PROVIDER_URN,
+        ModuleURN pcptURN = new ModuleURN(ConcurrentTestFactory.PROVIDER_URN,
                 "participant");
         //Setup the factory
         ConcurrentTestFactory.setSingleton(false);
         //init manager
         initManager();
         //create the modules
-        assertEquals(urn, getManager().createModule(urn.parent(), urn));
+        assertEquals(pcptURN, getManager().createModule(pcptURN.parent(), pcptURN));
         assertEquals(inReqUrn, getManager().createModule(inReqUrn.parent(),
                 inReqUrn));
         //start the participant
-        getManager().start(urn);
+        getManager().start(pcptURN);
         //the only data flows running are the ones initiated by the module
         DataFlowID[] pFlows = getManager().getDataFlows(true).toArray(new DataFlowID[0]);
         assertEquals(1, pFlows.length);
         //configure the participant to block when it's requested data
-        ReentrantLock lock = new ReentrantLock();
-        ConcurrentTestModule.helper(urn).setRequestDataLock(lock);
-        lock.lock();
+        ReentrantLock pcptLock = new ReentrantLock();
+        ConcurrentTestModule.helper(pcptURN).setRequestDataLock(pcptLock);
+        pcptLock.lock();
         //configure the flow requester to create a data flow with the participant
         ConcurrentTestModule.helper(inReqUrn).setFlowRequests(new DataRequest[]{
-                new DataRequest(urn)
+                new DataRequest(pcptURN)
         });
         //start the requester. it will get blocked in prestart when creating
         //the data flow for the participant
@@ -811,7 +812,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
             }
         });
         //wait until this task gets blocked on the thread
-        while(lock.getQueueLength() < 1) {
+        while(pcptLock.getQueueLength() < 1) {
             Thread.sleep(500);
         }
         //Verify module state
@@ -841,8 +842,22 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
             Thread.sleep(500);
             info = getManager().getModuleInfo(inReqUrn);
         }
+        //Ensure that requesters preStart locks so that we can let the other
+        //task acquire the lock without the possibility of start completing
+        //and completely starting the module.
+        ReentrantLock reqLock = new ReentrantLock();
+        ConcurrentTestModule.helper(inReqUrn).setPreStartLock(reqLock);
+        reqLock.lock();
         //Now unblock the requestData() call
-        lock.unlock();
+        pcptLock.unlock();
+        //Wait until it gets blocked in the reqLock.
+        while(reqLock.getQueueLength() < 1) {
+            Thread.sleep(500);
+        }
+        //wait for the second task to complete
+        future2.get();
+        //unblock the requesters preStart()
+        reqLock.unlock();
         //wait for the first task to complete
         future1.get();
         //cancel the other flow that we had created
@@ -857,16 +872,16 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         flowSet.remove(info.getParticipatingDataFlows()[0]);
         flowSet.addAll(Arrays.asList(pFlows));
         //verify the participating module state
-        assertModuleInfo(getManager(), urn, ModuleState.STARTED, pFlows,
+        assertModuleInfo(getManager(), pcptURN, ModuleState.STARTED, pFlows,
                 flowSet.toArray(new DataFlowID[flowSet.size()]), false, false,
                 true, true, true);
         //wait for second task to complete, it should not fail.
         future2.get();
         //stop and delete the modules
         getManager().stop(inReqUrn);
-        getManager().stop(urn);
+        getManager().stop(pcptURN);
         getManager().deleteModule(inReqUrn);
-        getManager().deleteModule(urn);
+        getManager().deleteModule(pcptURN);
     }
     /**
      * Runs a series of tests where call to cancel() blocks. While that
@@ -1076,7 +1091,10 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         }
         //verify module state
         info = getManager().getModuleInfo(inUrn);
-        assertModuleInfo(info, inUrn, ModuleState.STARTING, null, null,
+        //the only flows running right now
+        List<DataFlowID> flowList = getManager().getDataFlows(true);
+        DataFlowID[] flows = flowList.isEmpty()? null: flowList.toArray(new DataFlowID[flowList.size()]);
+        assertModuleInfo(info, inUrn, ModuleState.STARTING, flows, flows,
                 false, false, true, true, true);
         assertFalse(info.isWriteLocked());
         assertEquals(0, info.getReadLockCount());

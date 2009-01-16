@@ -26,7 +26,6 @@ public class ConcurrentTestModule extends Module
 
     @Override
     protected void preStart() throws ModuleException {
-        lockIfNotNull(getPreStartLock());
         //Create a data flow
         mFlowID = mSupport.createDataFlow(new DataRequest[]{
                 new DataRequest(getURN())
@@ -35,6 +34,8 @@ public class ConcurrentTestModule extends Module
         if(requests != null) {
             mOtherFlowID = mSupport.createDataFlow(requests);
         }
+        //lock after create data flows.
+        lockIfNotNull(getPreStartLock());
         if(isPreStartFail()) {
             throw new ModuleException(TestMessages.FAILURE);
         }
