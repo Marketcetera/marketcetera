@@ -21,6 +21,7 @@ import org.eclipse.ui.internal.layout.IWindowTrim;
 import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.actions.ReconnectClientJob;
+import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.photon.ui.PhotonConsole;
 import org.osgi.framework.BundleContext;
@@ -170,7 +171,8 @@ public class ApplicationWorkbenchWindowAdvisor
 	
 
 	private void startMarketDataFeed() {
-		PhotonPlugin.getDefault().getMarketDataManager().reconnectFeed();
+		MarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+		marketDataManager.reconnectFeed();
 	}
 	
 	@Override

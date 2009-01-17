@@ -48,7 +48,7 @@ import org.marketcetera.photon.internal.strategy.StrategyManager;
 import org.marketcetera.photon.internal.strategy.StrategyValidation;
 import org.marketcetera.photon.internal.strategy.Strategy.Destination;
 import org.marketcetera.photon.internal.strategy.Strategy.State;
-import org.marketcetera.photon.module.preferences.NewPropertyInputDialog;
+import org.marketcetera.photon.module.ui.NewPropertyInputDialog;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.misc.ClassVersion;
 

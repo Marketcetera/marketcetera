@@ -496,4 +496,12 @@ public interface Messages
 			LOGGER, "broker_notification.broker_unavailable_details");//$NON-NLS-1$
 	public static final I18NMessage1P BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED = new I18NMessage1P(
 			LOGGER, "broker_notification.error_occurred");//$NON-NLS-1$
+	public static I18NMessage0P MARKET_DATA_STATUS_NO_FEED_TOOLTIP = new I18NMessage0P(
+			LOGGER, "market_data_status.no_feed.tooltip"); //$NON-NLS-1$
+    public static I18NMessage1P MARKET_DATA_STATUS_ON_TOOLTIP = new I18NMessage1P(
+			LOGGER, "market_data_status.on.tooltip"); //$NON-NLS-1$
+    public static I18NMessage1P MARKET_DATA_STATUS_OFF_TOOLTIP = new I18NMessage1P(
+			LOGGER, "market_data_status.off.tooltip"); //$NON-NLS-1$
+    public static I18NMessage1P MARKET_DATA_STATUS_ERROR_TOOLTIP = new I18NMessage1P(
+			LOGGER, "market_data_status.error.tooltip"); //$NON-NLS-1$
 }

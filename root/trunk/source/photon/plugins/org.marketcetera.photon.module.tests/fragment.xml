@@ -4,7 +4,7 @@
    <extension
          point="org.marketcetera.photon.test.testSuites">
       <suite
-            class="org.marketcetera.photon.module.tests.UISuite" />
+            class="org.marketcetera.photon.module.tests.PluginSuite"/>
    </extension>
 
 </fragment>

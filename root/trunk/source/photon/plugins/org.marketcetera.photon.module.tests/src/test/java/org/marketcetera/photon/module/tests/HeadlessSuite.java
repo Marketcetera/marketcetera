@@ -2,8 +2,7 @@ package org.marketcetera.photon.module.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.marketcetera.photon.module.PropertiesTreeTest;
-import org.marketcetera.photon.module.preferences.NewPropertyInputDialogTest;
+import org.marketcetera.photon.internal.module.MessagesTest;
 
 /* $License$ */
 
@@ -16,8 +15,7 @@ import org.marketcetera.photon.module.preferences.NewPropertyInputDialogTest;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	PropertiesTreeTest.class,
-	NewPropertyInputDialogTest.class
+	MessagesTest.class
 })
 public class HeadlessSuite {
 
