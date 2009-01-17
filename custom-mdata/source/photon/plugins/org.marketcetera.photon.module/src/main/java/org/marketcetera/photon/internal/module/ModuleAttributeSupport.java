@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class ModuleAttributeSupport implements IModuleAttributeSupport {
 
-	private IModuleAttributeDefaults mModuleAttributeDefaults;
+	private final IModuleAttributeDefaults mModuleAttributeDefaults;
 
 	/**
 	 * Constructor.
@@ -60,6 +60,11 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 	public void removeInstanceDefaultFor(ModuleURN urn, String attribute) {
 		mModuleAttributeDefaults.removeInstanceDefaultFor(urn, attribute);
 	}
+	
+	@Override
+	public void flush() {
+		mModuleAttributeDefaults.flush();
+	}
 
 	@Override
 	public Object getModuleAttribute(ModuleURN urn, String attribute) {
@@ -82,7 +87,7 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 					new Attribute(attribute, value));
 		} catch (Exception e) {
 			Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_SET_ATTRIBUTE.error(this,
-					attribute, urn, value);
+					attribute, urn);
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package org.marketcetera.photon.internal.module.ui;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.management.JMX;
 import javax.management.ObjectName;
 
@@ -7,6 +9,7 @@ import org.junit.Test;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleManagerMXBean;
 import org.marketcetera.photon.module.ModuleSupport;
+import org.marketcetera.photon.test.SWTTestUtil;
 
 /* $License$ */
 
@@ -33,6 +36,7 @@ public class SinkConsoleControllerTest {
 				ModuleManager.MODULE_MBEAN_NAME), ModuleManagerMXBean.class);
 		final String request = "metc:csv:system:single;src/test/resources/table.csv";
 		mm.createDataFlow(request);
+		SWTTestUtil.delay(2, TimeUnit.SECONDS);
 	}
 
 }

@@ -11,6 +11,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * defaults. These are the values set on a module or a module factory
  * immediately after creation.
  * 
+ * TODO: add interface for flushing/persisting the values
+ * 
  * @see ModuleConfigurationProvider
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
@@ -61,10 +63,10 @@ public interface IModuleAttributeDefaults {
 	void setDefaultFor(ModuleURN urn, String attribute, String value);
 
 	/**
-	 * Sets the instance default value a module attribute. This is a provider
-	 * level attribute that is used when there is no specific default for a
-	 * particular module. This default takes effect the next time a module is
-	 * created.
+	 * Sets the instance default value for a module attribute. This is a
+	 * provider level attribute that is used when there is no specific default
+	 * for a particular module. This default takes effect the next time a module
+	 * is created.
 	 * 
 	 * The value should not be <code>null</code>. Use
 	 * {@link #removeInstanceDefaultFor(ModuleURN, String)} to remove an
@@ -103,5 +105,15 @@ public interface IModuleAttributeDefaults {
 	 *             if the urn is not a valid provider URN
 	 */
 	void removeInstanceDefaultFor(ModuleURN urn, String attribute);
+
+	/**
+	 * Flushes/persists the default values. Note that this operation will be
+	 * performed automatically when the plug-in shuts down, but clients can call
+	 * this manually to force a flush attempt at any time.
+	 * 
+	 * It is not guaranteed that the operation will succeed (the backing store
+	 * may be unaccessible, etc.).
+	 */
+	void flush();
 
 }

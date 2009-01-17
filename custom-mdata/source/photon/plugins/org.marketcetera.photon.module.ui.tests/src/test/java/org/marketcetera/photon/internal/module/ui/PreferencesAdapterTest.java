@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -26,6 +27,7 @@ import org.osgi.service.prefs.Preferences;
  */
 public class PreferencesAdapterTest {
 
+	private static final String PLUGIN_ID = "org.marketcetera.photon.module";
 	PreferencesAdapter mFixture;
 	IModuleAttributeSupport mAttributeSupport;
 	Preferences mPreferences;
@@ -34,8 +36,8 @@ public class PreferencesAdapterTest {
 	@Before
 	public void setUp() throws Exception {
 		clearPreferences();
-		mPreferences = new InstanceScope().getNode("org.marketcetera.photon.module").node("ModuleAttributeDefaults");
-		mDefaultPreferences = new DefaultScope().getNode("org.marketcetera.photon.module").node("ModuleAttributeDefaults");
+		mPreferences = new InstanceScope().getNode(PLUGIN_ID).node("ModuleAttributeDefaults");
+		mDefaultPreferences = new DefaultScope().getNode(PLUGIN_ID).node("ModuleAttributeDefaults");
 		mAttributeSupport = mock(IModuleAttributeSupport.class);
 		mFixture = new PreferencesAdapter(mAttributeSupport);
 	}
@@ -46,8 +48,8 @@ public class PreferencesAdapterTest {
 	}
 	
 	private void clearPreferences() throws Exception {
-		new InstanceScope().getNode("org.marketcetera.photon.module").removeNode();
-		new DefaultScope().getNode("org.marketcetera.photon.module").removeNode();
+		new InstanceScope().getNode(PLUGIN_ID).removeNode();
+		new DefaultScope().getNode(PLUGIN_ID).removeNode();
 	}
 	
 	@Test
@@ -96,6 +98,7 @@ public class PreferencesAdapterTest {
 		verify(mAttributeSupport).setDefaultFor(new ModuleURN("metc:test:test2"), "p2A", "A");
 		verify(mAttributeSupport).setInstanceDefaultFor(new ModuleURN("metc:test:test"), "dC", "C");
 		verify(mAttributeSupport).setDefaultFor(new ModuleURN("metc:test:test:abc"), "iB", "B");
+		verifyNoMoreInteractions(mAttributeSupport);
 	}
 	
 	@Test
@@ -117,6 +120,7 @@ public class PreferencesAdapterTest {
 		verify(mAttributeSupport).setDefaultFor(new ModuleURN("metc:test:test"), "pB", "B");
 		verify(mAttributeSupport).setInstanceDefaultFor(new ModuleURN("metc:test:test"), "dD", "D");
 		verify(mAttributeSupport).setDefaultFor(new ModuleURN("metc:test:test:abc"), "iB", "new");
+		verifyNoMoreInteractions(mAttributeSupport);
 		// removal is done directly on the Preference object (other attributes are unchanged)
 		assertEquals("A", mPreferences.node("test").node("test").get("pA", null));
 		assertNull(mPreferences.node("test").node("test").get("pX", null));

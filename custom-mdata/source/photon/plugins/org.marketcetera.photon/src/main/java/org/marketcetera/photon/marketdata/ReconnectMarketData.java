@@ -22,7 +22,7 @@ public class ReconnectMarketData extends AbstractHandler implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		MarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
-		marketDataManager.reconnectFeed(marketDataManager.getDefaultActiveFeed());
+		marketDataManager.reconnectFeed();
 		return null;
 	}
 

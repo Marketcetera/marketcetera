@@ -7,8 +7,10 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.module.IModuleAttributeDefaults;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 /* $License$ */
@@ -26,15 +28,20 @@ public class PreferenceAttributeDefaultsTest {
 
 	@Before
 	public void setUp() throws Exception {
-		new InstanceScope().getNode(Activator.PLUGIN_ID).node("ModuleAttributeDefaults")
-				.removeNode();
+		clearPreferences();
 		mFixture = new PreferenceAttributeDefaults();
+	}
+
+	private void clearPreferences() throws BackingStoreException {
+		new InstanceScope().getNode(Activator.PLUGIN_ID).node(
+				"ModuleAttributeDefaults").removeNode();
+		new DefaultScope().getNode(Activator.PLUGIN_ID).node(
+				"ModuleAttributeDefaults").removeNode();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		new InstanceScope().getNode(Activator.PLUGIN_ID).node("ModuleAttributeDefaults")
-				.removeNode();
+		clearPreferences();
 	}
 
 	@Test
@@ -43,6 +50,8 @@ public class PreferenceAttributeDefaultsTest {
 		mFixture.setDefaultFor(instance, "testA", "A");
 		assertEquals("A", mFixture.getDefaultFor(instance, "testA"));
 		assertEquals(null, mFixture.getDefaultFor(instance, "testB"));
+		mFixture.removeDefaultFor(instance, "testA");
+		assertEquals(null, mFixture.getDefaultFor(instance, "testA"));
 	}
 
 	@Test
@@ -51,6 +60,8 @@ public class PreferenceAttributeDefaultsTest {
 		mFixture.setDefaultFor(provider, "testA", "A");
 		assertEquals("A", mFixture.getDefaultFor(provider, "testA"));
 		assertEquals(null, mFixture.getDefaultFor(provider, "testB"));
+		mFixture.removeDefaultFor(provider, "testA");
+		assertEquals(null, mFixture.getDefaultFor(provider, "testA"));
 	}
 
 	@Test
@@ -62,6 +73,8 @@ public class PreferenceAttributeDefaultsTest {
 		mFixture.setInstanceDefaultFor(provider, "testA", "B");
 		assertEquals("A", mFixture.getDefaultFor(instance1, "testA"));
 		assertEquals("B", mFixture.getDefaultFor(instance2, "testA"));
+		mFixture.removeInstanceDefaultFor(provider, "testA");
+		assertEquals(null, mFixture.getDefaultFor(instance2, "testA"));
 	}
 
 	@Test
@@ -100,16 +113,18 @@ public class PreferenceAttributeDefaultsTest {
 	public void defaultScope() {
 		final ModuleURN provider = new ModuleURN("metc:test:test");
 		final ModuleURN instance = new ModuleURN(provider, "test");
-		Preferences rootNode = new DefaultScope().getNode(Activator.PLUGIN_ID).node(
-				"ModuleAttributeDefaults").node("test").node("test");
+		Preferences rootNode = new DefaultScope().getNode(Activator.PLUGIN_ID)
+				.node("ModuleAttributeDefaults").node("test").node("test");
 		rootNode.put("testA", "dpA");
 		rootNode.put("testB", "dpB");
 		mFixture.setDefaultFor(provider, "testB", "pB");
 		rootNode.node("test").put("testA", "dA");
 		rootNode.node("test").put("testB", "dB");
 		mFixture.setDefaultFor(instance, "testB", "B");
-		rootNode.node(IModuleAttributeDefaults.INSTANCE_DEFAULTS_IDENTIFIER).put("itestA", "diA");
-		rootNode.node(IModuleAttributeDefaults.INSTANCE_DEFAULTS_IDENTIFIER).put("itestB", "diB");
+		rootNode.node(IModuleAttributeDefaults.INSTANCE_DEFAULTS_IDENTIFIER)
+				.put("itestA", "diA");
+		rootNode.node(IModuleAttributeDefaults.INSTANCE_DEFAULTS_IDENTIFIER)
+				.put("itestB", "diB");
 		mFixture.setInstanceDefaultFor(provider, "itestB", "iB");
 		assertEquals("dpA", mFixture.getDefaultFor(provider, "testA"));
 		assertEquals("pB", mFixture.getDefaultFor(provider, "testB"));
@@ -117,5 +132,21 @@ public class PreferenceAttributeDefaultsTest {
 		assertEquals("B", mFixture.getDefaultFor(instance, "testB"));
 		assertEquals("diA", mFixture.getDefaultFor(instance, "itestA"));
 		assertEquals("iB", mFixture.getDefaultFor(instance, "itestB"));
+	}
+	
+	@Test
+	public void invalidURN() throws Exception {
+		new ExpectedFailure<IllegalArgumentException>("invalid") {
+			@Override
+			protected void run() throws Exception {
+				mFixture.setInstanceDefaultFor(new ModuleURN("invalid"), "abc", "xyz");
+			}	
+		};
+		new ExpectedFailure<IllegalArgumentException>("metc:test:test:test") {
+			@Override
+			protected void run() throws Exception {
+				mFixture.removeInstanceDefaultFor(new ModuleURN("metc:test:test:test"), "abc");
+			}	
+		};
 	}
 }
