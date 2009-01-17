@@ -172,7 +172,7 @@ public class ApplicationWorkbenchWindowAdvisor
 
 	private void startMarketDataFeed() {
 		MarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
-		marketDataManager.reconnectFeed(marketDataManager.getDefaultActiveFeed());
+		marketDataManager.reconnectFeed();
 	}
 	
 	@Override

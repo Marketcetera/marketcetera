@@ -59,7 +59,7 @@ public class Activator extends Plugin {
 	 * 
 	 * @return the MarketDataManager singleton for this plug-in
 	 */
-	public MarketDataManager getMarketDataManager() {
+	public synchronized MarketDataManager getMarketDataManager() {
 		if (mMarketDataManager == null) {
 			mMarketDataManager = new MarketDataManager();
 		}

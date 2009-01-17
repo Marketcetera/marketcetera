@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -44,7 +43,6 @@ import org.marketcetera.photon.module.IModuleAttributeSupport;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.photon.module.ui.NewPropertyInputDialog;
 import org.marketcetera.util.misc.ClassVersion;
-import org.osgi.service.prefs.BackingStoreException;
 
 /* $License$ */
 
@@ -279,12 +277,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	@Override
 	public boolean performOk() {
 		mPreferencesAdapter.fromTree(mProperties);
-		try {
-			new InstanceScope().getNode("org.marketcetera.photon.module").flush(); //$NON-NLS-1$
-		} catch (BackingStoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ModuleSupport.getModuleAttributeSupport().flush();
 		return true;
 	}
 

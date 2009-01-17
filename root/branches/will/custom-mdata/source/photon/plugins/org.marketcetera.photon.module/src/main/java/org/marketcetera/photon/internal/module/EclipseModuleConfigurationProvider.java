@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
 public final class EclipseModuleConfigurationProvider implements
 		ModuleConfigurationProvider {
 
-	private IModuleAttributeDefaults mSupport;
+	private final IModuleAttributeDefaults mSupport;
 
 	/**
 	 * Constructor.

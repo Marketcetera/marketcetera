@@ -93,7 +93,7 @@ public class PreferencesAdapter {
 		try {
 			for (String providerType : rootNode.childrenNames()) {
 				// cheat for now - exclude mdata since there is custom UI
-				if (providerType.equals("mdata")) {
+				if (providerType.equals("mdata")) { //$NON-NLS-1$
 					continue;
 				}
 				Preferences providerTypeNode = rootNode.node(providerType);

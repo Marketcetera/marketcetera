@@ -8,6 +8,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.URNUtils;
 import org.marketcetera.photon.module.IModuleAttributeDefaults;
 import org.marketcetera.util.misc.ClassVersion;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 /* $License$ */
@@ -28,9 +29,12 @@ public class PreferenceAttributeDefaults implements IModuleAttributeDefaults {
 	public synchronized String getDefaultFor(ModuleURN urn, String attribute) {
 		Preferences[] nodes;
 		if (urn.instanceURN()) {
-			nodes = new Preferences[] { getNode(urn), getDefaultScopeNode(urn),
+			nodes = new Preferences[] {
+					getNode(urn),
+					getDefaultScopeNode(urn),
 					getNode(urn).parent().node(INSTANCE_DEFAULTS_IDENTIFIER),
-					getDefaultScopeNode(urn).parent().node(INSTANCE_DEFAULTS_IDENTIFIER) };
+					getDefaultScopeNode(urn).parent().node(
+							INSTANCE_DEFAULTS_IDENTIFIER) };
 		} else {
 			nodes = new Preferences[] { getNode(urn), getDefaultScopeNode(urn) };
 		}
@@ -73,13 +77,16 @@ public class PreferenceAttributeDefaults implements IModuleAttributeDefaults {
 	}
 
 	private Preferences getNode(ModuleURN urn) {
-		return getNode(urn, new InstanceScope().getNode(Activator.PLUGIN_ID).node(
-				ROOT_NODE));
+		return getNode(urn, getRootNode());
+	}
+
+	private Preferences getRootNode() {
+		return new InstanceScope().getNode(Activator.PLUGIN_ID).node(ROOT_NODE);
 	}
 
 	private Preferences getDefaultScopeNode(ModuleURN urn) {
-		return getNode(urn, new DefaultScope().getNode(Activator.PLUGIN_ID).node(
-				ROOT_NODE));
+		return getNode(urn, new DefaultScope().getNode(Activator.PLUGIN_ID)
+				.node(ROOT_NODE));
 	}
 
 	private Preferences getNode(ModuleURN urn, Preferences baseNode) {
@@ -89,5 +96,15 @@ public class PreferenceAttributeDefaults implements IModuleAttributeDefaults {
 			node = node.node(urn.instanceName());
 		}
 		return node;
+	}
+
+	@Override
+	public void flush() {
+		try {
+			getRootNode().flush();
+		} catch (BackingStoreException e) {
+			Messages.PREFERENCE_ATTRIBUTE_DEFAULTS_FAILED_TO_SAVE_PREFERENCES
+					.error(this, e);
+		}
 	}
 }

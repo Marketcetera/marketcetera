@@ -35,14 +35,6 @@ public interface Messages {
 			LOGGER, "market_data_feeds_preferences_page.description"); //$NON-NLS-1$
 	public static I18NMessage0P ACTIVE_MARKET_DATA_FEED_LABEL = new I18NMessage0P(
 			LOGGER, "active_market_data_feed.label"); //$NON-NLS-1$
-	public static I18NMessage0P MARKETCETERA_FEED_PREFERENCE_PAGE_DESCRIPTION = new I18NMessage0P(
-			LOGGER, "marketcetera_feed_preference_page.description"); //$NON-NLS-1$
-	public static I18NMessage0P MARKETCETERA_FEED_URL_LABEL = new I18NMessage0P(
-			LOGGER, "marketcetera_feed_url.label"); //$NON-NLS-1$
-	public static I18NMessage0P MARKETCETERA_FEED_TARGETCOMPID_LABEL = new I18NMessage0P(
-			LOGGER, "marketcetera_feed_targetcompid.label"); //$NON-NLS-1$
-	public static I18NMessage0P MARKETCETERA_FEED_SENDERCOMPID_LABEL = new I18NMessage0P(
-			LOGGER, "marketcetera_feed_sendercompid.label"); //$NON-NLS-1$
 
 	/*
 	 * Log Messages

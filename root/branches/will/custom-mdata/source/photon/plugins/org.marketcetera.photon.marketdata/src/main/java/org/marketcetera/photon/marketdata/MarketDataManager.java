@@ -99,11 +99,15 @@ public final class MarketDataManager {
 	public Collection<MarketDataFeed> getProviders() {
 		return Collections.unmodifiableCollection(mFeeds.values());
 	}
-
+	
 	/**
-	 * Attempts to reconnect the active market data feed.
+	 * Attempts to reconnect to the default active market data feed.
 	 */
-	public void reconnectFeed(String providerId) {
+	public void reconnectFeed() {
+		reconnectFeed(getDefaultActiveFeed());
+	}
+
+	private void reconnectFeed(String providerId) {
 		final MarketDataFeed oldFeed = mActiveFeed;
 		mActiveFeed = mFeeds.get(providerId);
 		if (mActiveFeed == null && oldFeed == null) {
@@ -278,7 +282,7 @@ public final class MarketDataManager {
 	 * 
 	 * @return returns the default active feed
 	 */
-	public String getDefaultActiveFeed() {
+	private String getDefaultActiveFeed() {
 		return Platform.getPreferencesService().getString(Activator.PLUGIN_ID,
 				MarketDataPreferences.DEFAULT_ACTIVE_MARKETDATA_PROVIDER, "", //$NON-NLS-1$
 				null);

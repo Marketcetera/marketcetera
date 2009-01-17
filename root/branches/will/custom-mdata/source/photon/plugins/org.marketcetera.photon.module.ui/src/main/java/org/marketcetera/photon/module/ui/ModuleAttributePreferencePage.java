@@ -116,7 +116,10 @@ public abstract class ModuleAttributePreferencePage extends PreferencePage {
 			IObservableValue observable = field.getObservable();
 			moduleAttributeSupport.setModuleAttribute(mURN, field
 					.getAttributeName(), observable.getValue());
-			if (observable.getValue() != null) {
+			if (observable.getValue() == null) {
+				moduleAttributeSupport.removeDefaultFor(mURN, field
+						.getAttributeName());
+			} else {
 				moduleAttributeSupport.setDefaultFor(mURN, field
 						.getAttributeName(), observable.getValue().toString());
 			}
@@ -126,6 +129,7 @@ public abstract class ModuleAttributePreferencePage extends PreferencePage {
 						mURN, field.getAttributeName()));
 			}
 		}
+		moduleAttributeSupport.flush();
 		return true;
 	}
 

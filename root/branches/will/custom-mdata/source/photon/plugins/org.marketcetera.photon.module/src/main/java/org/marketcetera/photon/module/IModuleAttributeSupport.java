@@ -23,6 +23,12 @@ public interface IModuleAttributeSupport extends IModuleAttributeDefaults {
 	 * the module/module factory will do with the new value. See the respective
 	 * documentation for further details.
 	 * 
+	 * Note that no feedback is currently provided if the operation fails
+	 * (except an error log). It is recommended to check if the value was
+	 * accepted by calling {@link #getModuleAttribute(ModuleURN, String)}.
+	 * 
+	 * TODO: provide better feedback in case of errors
+	 * 
 	 * @param urn
 	 *            the module's instance URN or the factory's provider URN
 	 * @param attribute
