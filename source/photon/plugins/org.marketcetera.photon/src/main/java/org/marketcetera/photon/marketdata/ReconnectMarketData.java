@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Reconnects the market data feed.
- *
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.0.0
@@ -21,7 +21,8 @@ public class ReconnectMarketData extends AbstractHandler implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		PhotonPlugin.getDefault().getMarketDataManager().reconnectFeed();
+		MarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+		marketDataManager.reconnectFeed();
 		return null;
 	}
 

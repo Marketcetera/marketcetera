@@ -4,10 +4,11 @@ Bundle-Name: Photon Test Fragment Fragment
 Bundle-SymbolicName: org.marketcetera.photon.testfragment; singleton:=true
 Bundle-Version: 1.1.0
 Bundle-Vendor: Marketcetera, Inc.
-Fragment-Host: org.marketcetera.photon;bundle-version="1.1.0"
+Fragment-Host: org.marketcetera.photon
 Require-Bundle: org.marketcetera.core.tests,
  org.marketcetera.photon.test
 Import-Package: junit.framework,
  org.junit,
  org.junit.runner,
  org.junit.runners
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

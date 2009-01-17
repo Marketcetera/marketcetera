@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeed.FeedStatusEvent;
 import org.marketcetera.photon.marketdata.MarketDataFeed.IFeedStatusChangedListener;
@@ -43,7 +44,12 @@ public class MarketDataStatusIndicator extends StatusIndicatorContributionItem {
 
 			@Override
 			public void feedStatusChanged(FeedStatusEvent event) {
-				updateLabel();
+				imageLabel.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						updateLabel();
+					}
+				});
 			}
 		};
 		mMarketDataManager.addActiveFeedStatusChangedListener(mListener);

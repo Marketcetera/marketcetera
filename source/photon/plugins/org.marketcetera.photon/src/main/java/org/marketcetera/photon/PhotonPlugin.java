@@ -113,8 +113,6 @@ public class PhotonPlugin
 
 	private OptionOrderTicketController optionOrderTicketController;
 	
-	private MarketDataManager marketDataManager;
-
 	private BrokerManager mBrokerManager;
 
 	/**
@@ -403,10 +401,7 @@ public class PhotonPlugin
 	}
 
 	public MarketDataManager getMarketDataManager() {
-		if (marketDataManager == null) {
-			marketDataManager = new MarketDataManager();
-		}
-		return marketDataManager;
+		return MarketDataManager.getCurrent();
 	}
 	
 	@Override
