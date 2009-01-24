@@ -76,8 +76,6 @@ public class ExecutionReportTest extends TypesTestBase {
         assertNull(report.getReportID());
         //Verify toString, doesn't fail.
         report.toString();
-        //Verify toString, doesn't fail.
-        report.toString();
         //report with all fields filled in
         BrokerID cID = new BrokerID("bro1");
         OrderID orderID = new OrderID("or2");
