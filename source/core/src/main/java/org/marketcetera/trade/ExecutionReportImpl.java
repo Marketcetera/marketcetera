@@ -22,87 +22,87 @@ import quickfix.Message;
 public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
 
     @Override
-    public Date getTransactTime() {
+    public synchronized Date getTransactTime() {
         return FIXUtil.getTransactTime(getMessage());
     }
 
     @Override
-    public ExecutionType getExecutionType() {
+    public synchronized ExecutionType getExecutionType() {
         return FIXUtil.getExecOrExecTransType(getMessage());
     }
 
     @Override
-    public String getExecutionID() {
+    public synchronized String getExecutionID() {
         return FIXUtil.getExecutionID(getMessage());
     }
 
     @Override
-    public Side getSide() {
+    public synchronized Side getSide() {
         return FIXUtil.getSide(getMessage());
     }
 
     @Override
-    public MSymbol getSymbol() {
+    public synchronized MSymbol getSymbol() {
         return FIXUtil.getSymbol(getMessage());
     }
 
     @Override
-    public BigDecimal getLastQuantity() {
+    public synchronized BigDecimal getLastQuantity() {
         return FIXUtil.getLastQuantity(getMessage());
     }
 
     @Override
-    public BigDecimal getLastPrice() {
+    public synchronized BigDecimal getLastPrice() {
         return FIXUtil.getLastPrice(getMessage());
     }
 
     @Override
-    public String getLastMarket() {
+    public synchronized String getLastMarket() {
         return FIXUtil.getLastMarket(getMessage());
     }
 
     @Override
-    public BigDecimal getOrderQuantity() {
+    public synchronized BigDecimal getOrderQuantity() {
         return FIXUtil.getOrderQuantity(getMessage());
     }
 
     @Override
-    public BigDecimal getLeavesQuantity() {
+    public synchronized BigDecimal getLeavesQuantity() {
         return FIXUtil.getLeavesQuantity(getMessage());
     }
 
     @Override
-    public BigDecimal getCumulativeQuantity() {
+    public synchronized BigDecimal getCumulativeQuantity() {
         return FIXUtil.getCumulativeQuantity(getMessage());
     }
 
     @Override
-    public BigDecimal getAveragePrice() {
+    public synchronized BigDecimal getAveragePrice() {
         return FIXUtil.getAveragePrice(getMessage());
     }
 
     @Override
-    public String getAccount() {
+    public synchronized String getAccount() {
         return FIXUtil.getAccount(getMessage());
     }
 
     @Override
-    public OrderType getOrderType() {
+    public synchronized OrderType getOrderType() {
         return FIXUtil.getOrderType(getMessage());
     }
 
     @Override
-    public OrderCapacity getOrderCapacity() {
+    public synchronized OrderCapacity getOrderCapacity() {
         return FIXUtil.getOrderCapacity(getMessage());
     }
 
     @Override
-    public PositionEffect getPositionEffect() {
+    public synchronized PositionEffect getPositionEffect() {
         return FIXUtil.getPositionEffect(getMessage());
     }
 
     @Override
-    public TimeInForce getTimeInForce() {
+    public synchronized TimeInForce getTimeInForce() {
         return FIXUtil.getTimeInForce(getMessage());
     }
 
@@ -112,12 +112,12 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
     }
     
     @Override
-    public boolean isCancelable() {
+    public synchronized boolean isCancelable() {
         return FIXMessageUtil.isCancellable(getMessage());
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return Messages.EXECUTION_REPORT_TO_STRING.getText(
                 String.valueOf(getAccount()),
                 String.valueOf(getAveragePrice()),

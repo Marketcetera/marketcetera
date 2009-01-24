@@ -35,7 +35,7 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
     protected OrderCancelRejectImpl() {}
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return Messages.ORDER_CANCEL_REJECT_TO_STRING.getText(
                 String.valueOf(getBrokerID()),
                 String.valueOf(getOrderID()),

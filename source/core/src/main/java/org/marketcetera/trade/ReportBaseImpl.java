@@ -23,22 +23,22 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
 
     @Override
-    public OrderID getOrderID() {
+    public synchronized OrderID getOrderID() {
         return FIXUtil.getOrderID(getMessage());
     }
 
     @Override
-    public OrderID getOriginalOrderID() {
+    public synchronized OrderID getOriginalOrderID() {
         return FIXUtil.getOriginalOrderID(getMessage());
     }
 
     @Override
-    public OrderStatus getOrderStatus() {
+    public synchronized OrderStatus getOrderStatus() {
         return FIXUtil.getOrderStatus(getMessage());
     }
 
     @Override
-    public String getText() {
+    public synchronized String getText() {
         return FIXUtil.getText(getMessage());
     }
 
@@ -48,12 +48,12 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
     }
 
     @Override
-    public Date getSendingTime() {
+    public synchronized Date getSendingTime() {
         return FIXUtil.getSendingTime(getMessage());
     }
 
     @Override
-    public String getBrokerOrderID() {
+    public synchronized String getBrokerOrderID() {
         return FIXUtil.getBrokerOrderID(getMessage());
     }
 
