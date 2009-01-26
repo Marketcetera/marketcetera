@@ -16,13 +16,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ReconnectMarketData extends AbstractHandler implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		MarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
-		marketDataManager.reconnectFeed();
+		PhotonPlugin.getDefault().reconnectMarketDataFeed();
 		return null;
 	}
 

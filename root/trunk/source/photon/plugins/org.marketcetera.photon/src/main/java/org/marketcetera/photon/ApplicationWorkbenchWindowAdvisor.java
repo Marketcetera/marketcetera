@@ -21,7 +21,6 @@ import org.eclipse.ui.internal.layout.IWindowTrim;
 import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.actions.ReconnectClientJob;
-import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.photon.ui.PhotonConsole;
 import org.osgi.framework.BundleContext;
@@ -136,7 +135,7 @@ public class ApplicationWorkbenchWindowAdvisor
 		if (PlatformUI.getTestableObject().getTestHarness() == null) {
 			startClient();
 		}
-		startMarketDataFeed();
+		PhotonPlugin.getDefault().reconnectMarketDataFeed();
 		initStatusLine();
 	}
 
@@ -167,12 +166,6 @@ public class ApplicationWorkbenchWindowAdvisor
 			PhotonPlugin.getMainConsoleLogger().error(CANNOT_DISCONNECT_FROM_MESSAGE_QUEUE.getText(),
 			                                          t);
 		}
-	}
-	
-
-	private void startMarketDataFeed() {
-		MarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
-		marketDataManager.reconnectFeed();
 	}
 	
 	@Override

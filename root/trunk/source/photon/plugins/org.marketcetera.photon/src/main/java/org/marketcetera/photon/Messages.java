@@ -504,4 +504,6 @@ public interface Messages
 			LOGGER, "market_data_status.off.tooltip"); //$NON-NLS-1$
     public static I18NMessage1P MARKET_DATA_STATUS_ERROR_TOOLTIP = new I18NMessage1P(
 			LOGGER, "market_data_status.error.tooltip"); //$NON-NLS-1$
+    public static I18NMessage0P CONNECTING_TO_MARKET_DATA_JOB_NAME = new I18NMessage0P(
+			LOGGER, "connecting_to_market_data_job.name"); //$NON-NLS-1$
 }

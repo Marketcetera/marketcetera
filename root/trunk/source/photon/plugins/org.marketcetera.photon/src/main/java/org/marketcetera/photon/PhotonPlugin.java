@@ -18,7 +18,10 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -535,5 +538,20 @@ public class PhotonPlugin
 			mBrokerManager = new BrokerManager();
 		}
 		return mBrokerManager;
+	}
+	
+	/**
+	 * Starts a background job to reconnect to the market data feed.
+	 */
+	public void reconnectMarketDataFeed() {
+		new Job(Messages.CONNECTING_TO_MARKET_DATA_JOB_NAME.getText()) {
+		
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				MarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+				marketDataManager.reconnectFeed();
+				return Status.OK_STATUS;
+			}
+		}.schedule();
 	}
 }
