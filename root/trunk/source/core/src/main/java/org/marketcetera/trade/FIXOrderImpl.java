@@ -47,7 +47,7 @@ class FIXOrderImpl extends FIXMessageWrapper implements FIXOrder {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return Messages.FIX_ORDER_TO_STRING.getText(
                 getBrokerID().getValue(),
                 String.valueOf(getMessage()));
