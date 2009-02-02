@@ -1,0 +1,9 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "P &amp; L", :action_name => "Edit Mark", :top_level_controller => 'pnl' } %>
+<h1>Edit Mark</h1>
+
+<% form_tag :action => 'update', :id => @mark do -%>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Update', :class => "submit floatright" %>
+<% end -%>
+<%= button_to 'Cancel', {:action => 'show', :id => @mark}, {:class => "reset floatright"} %>
