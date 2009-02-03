@@ -8,7 +8,6 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.*;
 
 import static org.marketcetera.trade.TypesTestBase.*;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;

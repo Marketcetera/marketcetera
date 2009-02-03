@@ -1,6 +1,6 @@
 require 'java'
 include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.core.MSymbol"
+include_class "org.marketcetera.trade.MSymbol"
 include_class "java.lang.Long"
 include_class "java.lang.System"
 include_class "java.util.Arrays"

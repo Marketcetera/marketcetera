@@ -3,8 +3,8 @@ package org.marketcetera.quickfix;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 

@@ -2,7 +2,6 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.event.HasFIXMessage;

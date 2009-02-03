@@ -5,7 +5,7 @@ import java.util.Date;
 import javax.jws.WebService;
 
 import org.marketcetera.client.brokers.BrokersStatus;
-import org.marketcetera.core.MSymbol;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;

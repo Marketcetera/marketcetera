@@ -3,8 +3,8 @@ package org.marketcetera.photon.marketdata;
 import java.math.BigDecimal;
 import java.text.ParseException;
 
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;

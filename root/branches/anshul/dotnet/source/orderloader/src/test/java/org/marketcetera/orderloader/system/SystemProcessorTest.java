@@ -4,7 +4,6 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.orderloader.*;
 import org.marketcetera.orderloader.Messages;
 import static org.marketcetera.orderloader.system.SystemProcessor.*;

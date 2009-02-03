@@ -5,10 +5,10 @@ import java.text.ParseException;
 import java.util.EnumMap;
 import java.util.regex.Matcher;
 
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -397,7 +397,7 @@ public class OptionMessageHolder
 		public static OptionPairKey fromFieldMap(MSymbol optionSymbol, FieldMap info) throws ParseException, FieldNotFound{
 			Pair<Integer, Integer> maturityMonthYear = OptionMarketDataUtils.getMaturityMonthYear(info);
 			OptionPairKey optionKey = new OptionPairKey(
-					getRootSymbol(optionSymbol.getBaseSymbol()),
+					getRootSymbol(optionSymbol.getFullSymbol()),
 					maturityMonthYear.getSecondMember(), //year
 					maturityMonthYear.getFirstMember(), //month
 					0,

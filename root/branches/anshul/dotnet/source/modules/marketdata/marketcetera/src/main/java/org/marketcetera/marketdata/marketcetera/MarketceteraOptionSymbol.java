@@ -4,8 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.symbology.IEquityOptionSymbol;
+import org.marketcetera.trade.MSymbol;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraOptionSymbol 

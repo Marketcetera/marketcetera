@@ -7,7 +7,6 @@ import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.trade.*;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.event.HasFIXMessage;
 import org.junit.BeforeClass;

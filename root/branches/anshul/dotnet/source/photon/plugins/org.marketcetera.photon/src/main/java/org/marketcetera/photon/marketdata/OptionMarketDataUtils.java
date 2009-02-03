@@ -9,13 +9,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.ThreadLocalSimpleDateFormat;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -72,7 +72,7 @@ public class OptionMarketDataUtils
 		requestMessage.setField(new SecurityListRequestType(SecurityListRequestType.SECURITYTYPE_AND_OR_CFICODE));
 //		requestMessage.setField(new SecurityType(SecurityType.OPTION));
 		requestMessage.setField(new UnderlyingSymbol(underlyingSymbol
-				.getBaseSymbol()));
+				.getFullSymbol()));
 		return requestMessage;
 	}
 
