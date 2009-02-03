@@ -21,7 +21,6 @@ import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -32,6 +31,7 @@ import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.MarketDataFeed;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.marketdata.OrderBook;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Group;
@@ -848,7 +848,7 @@ public class BogusFeed
                 // take the modified value and add a bid and an ask based on it
                 AskEvent ask = new AskEvent(System.nanoTime(),
                                             System.currentTimeMillis(),
-                                            getBook().getSymbol().getBaseSymbol(),
+                                            getBook().getSymbol().getFullSymbol(),
                                             BGUS_MARKET,
                                             getValue().add(PENNY),
                                             new BigDecimal(sRandom.nextInt(50000) + 1));
@@ -856,7 +856,7 @@ public class BogusFeed
                 mPendingEvents.add(ask);
                 BidEvent bid = new BidEvent(System.nanoTime(),
                                             System.currentTimeMillis(),
-                                            getBook().getSymbol().getBaseSymbol(),
+                                            getBook().getSymbol().getFullSymbol(),
                                             BGUS_MARKET,
                                             getValue().subtract(PENNY),
                                             new BigDecimal(sRandom.nextInt(50000) + 1));

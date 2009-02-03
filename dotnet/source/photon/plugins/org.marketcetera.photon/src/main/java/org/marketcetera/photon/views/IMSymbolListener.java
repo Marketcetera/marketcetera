@@ -1,6 +1,6 @@
 package org.marketcetera.photon.views;
 
-import org.marketcetera.core.MSymbol;
+import org.marketcetera.trade.MSymbol;
 
 public interface IMSymbolListener {
 	void onAssertSymbol(MSymbol symbol);

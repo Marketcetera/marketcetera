@@ -2,7 +2,6 @@ package org.marketcetera.trade;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;

@@ -17,13 +17,13 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidAskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.BidAskEvent.Action;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Group;
@@ -359,7 +359,7 @@ public class OrderBook
         // construct an empty message of the correct type
         Message snapshot = new MarketDataSnapshotFullRefresh();
         // set the symbol
-        snapshot.setField(new Symbol(getSymbol().getBaseSymbol()));
+        snapshot.setField(new Symbol(getSymbol().getFullSymbol()));
         // set the creation time in GMT
         snapshot.setField(new SendingTime(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime())); //$NON-NLS-1$
         // count the number of groups - there is a group for each ask/buy
@@ -532,9 +532,9 @@ public class OrderBook
      */
     private void checkEvent(SymbolExchangeEvent inEvent)
     {
-        if(!inEvent.getSymbol().equals(getSymbol().getBaseSymbol())) {
+        if(!inEvent.getSymbol().equals(getSymbol().getFullSymbol())) {
             throw new IllegalArgumentException(SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL.getText(inEvent.getSymbol(),
-                                                                                               getSymbol().getBaseSymbol()));
+                                                                                               getSymbol().getFullSymbol()));
         }
     }
     /**

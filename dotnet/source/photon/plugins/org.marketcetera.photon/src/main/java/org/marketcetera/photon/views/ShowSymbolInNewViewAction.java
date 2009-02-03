@@ -9,11 +9,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.TextContributionItem;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.I18NBoundMessage4P;
 
 /* $License$ */

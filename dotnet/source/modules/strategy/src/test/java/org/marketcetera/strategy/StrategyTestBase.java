@@ -48,7 +48,6 @@ import org.marketcetera.client.ReportListener;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.BigDecimalUtils;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
@@ -76,6 +75,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderReplace;
@@ -620,7 +620,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getPositionAsOf(java.util.Date, org.marketcetera.core.MSymbol)
+         * @see org.marketcetera.client.Client#getPositionAsOf(java.util.Date, org.marketcetera.trade.MSymbol)
          */
         @Override
         public BigDecimal getPositionAsOf(Date inDate,

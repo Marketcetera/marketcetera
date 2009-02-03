@@ -1,9 +1,9 @@
 package org.marketcetera.orderloader.system;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.orderloader.OrderParsingException;
-import org.marketcetera.core.MSymbol;
 
 /**
  * A processor that parses a symbol value from an order row and sets it

@@ -13,6 +13,7 @@ import java.util.List;
 import junit.framework.Test;
 
 import org.marketcetera.core.*;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;

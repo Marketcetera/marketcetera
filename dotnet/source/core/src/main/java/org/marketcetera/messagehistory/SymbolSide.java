@@ -1,8 +1,8 @@
 package org.marketcetera.messagehistory;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MemoizedHashCombinator;
+import org.marketcetera.trade.MSymbol;
 
 
 /**

@@ -8,7 +8,6 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -16,6 +15,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
