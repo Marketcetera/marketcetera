@@ -2,16 +2,20 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /* $License$ */
 /**
- * Order Cancel message implementation.
+ * Order Cancel message implementation. This class is public for the sake
+ * of JAXB and is not intended for general use.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-class OrderCancelImpl extends OrderBaseImpl implements OrderCancel {
+@ClassVersion("$Id$")
+@XmlRootElement
+public class OrderCancelImpl extends OrderBaseImpl implements OrderCancel {
     @Override
     public OrderID getOriginalOrderID() {
         return mOriginalOrderID;
@@ -46,6 +50,13 @@ class OrderCancelImpl extends OrderBaseImpl implements OrderCancel {
                 String.valueOf(getSymbol()),
                 String.valueOf(getBrokerOrderID())
         );
+    }
+
+    /**
+     * Creates an uninitialized instance. This constructor is meant to be
+     * used by JAXB.
+     */
+    OrderCancelImpl() {
     }
 
     private OrderID mOriginalOrderID;

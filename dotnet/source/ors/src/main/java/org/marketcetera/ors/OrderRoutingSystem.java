@@ -167,11 +167,11 @@ public class OrderRoutingSystem
         RequestHandler handler=new RequestHandler
             (brokers,selector,cfg.getAllowedOrders(),
              persister,sender,localIdFactory);
-        jmsMgr.getIncomingJmsFactory().registerHandlerTM
+        jmsMgr.getIncomingJmsFactory().registerHandlerXM
             (handler,REQUEST_QUEUE,false,REPLY_TOPIC,true);
         QuickFIXApplication app=new QuickFIXApplication
             (brokers,cfg.getSupportedMessages(),persister,sender,
-             jmsMgr.getOutgoingJmsFactory().createJmsTemplateTM
+             jmsMgr.getOutgoingJmsFactory().createJmsTemplateXM
              (REPLY_TOPIC,true),
              jmsMgr.getOutgoingJmsFactory().createJmsTemplate
              (BROKER_STATUS_TOPIC,true),

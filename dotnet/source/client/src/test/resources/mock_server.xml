@@ -40,7 +40,7 @@
     <property name="delegate" ref="messageHandler"/>
     <property name="defaultResponseDestination" ref="replyTopic"/>
     <property name="messageConverter">
-      <bean class="org.marketcetera.client.JMSMessageConverter"/>
+      <bean class="org.marketcetera.client.JMSXMLMessageConverter"/>
     </property>
   </bean>
 

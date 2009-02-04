@@ -1,8 +1,10 @@
 package org.marketcetera.ors.jms;
 
 import javax.jms.ConnectionFactory;
+import javax.xml.bind.JAXBException;
+
 import org.marketcetera.client.JMSMessageConverter;
-import org.marketcetera.ors.jms.JMSFIXMessageConverter;
+import org.marketcetera.client.JMSXMLMessageConverter;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConverter;
@@ -115,5 +117,26 @@ public class OutgoingJmsFactory
     {
         return createJmsTemplate
             (dstName,isDstTopic,new JMSMessageConverter());
+    }
+
+    /**
+     * Creates a new Spring JMS connection template for the given
+     * destination (and of the given type), and for a producer which
+     * emits FIX Agnostic trade messages in XML.
+     *
+     * @param dstName The destination name.
+     * @param isDstTopic True if the destination is a topic.
+     *
+     * @return the spring JMS Connection template.
+     *
+     * @throws javax.xml.bind.JAXBException If there was an error.
+     */
+
+    public JmsTemplate createJmsTemplateXM
+        (String dstName,
+         boolean isDstTopic) throws JAXBException
+    {
+        return createJmsTemplate
+            (dstName,isDstTopic,new JMSXMLMessageConverter());
     }
 }

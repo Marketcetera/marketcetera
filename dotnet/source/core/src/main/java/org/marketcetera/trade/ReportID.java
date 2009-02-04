@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlValue;
 
 /* $License$ */
 /**
@@ -74,6 +75,7 @@ public class ReportID implements Serializable, Comparable<ReportID> {
         mValue = -1;
     }
 
+    @XmlValue
     private final long mValue;
     private static final long serialVersionUID = 1L;
 }

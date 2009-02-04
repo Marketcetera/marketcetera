@@ -3,6 +3,8 @@ package org.marketcetera.trade;
 import org.marketcetera.util.misc.ClassVersion;
 import quickfix.Message;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /* $License$ */
 /**
  * OrderCancelReject instances that wrap a FIX Message instance. This
@@ -14,6 +16,7 @@ import quickfix.Message;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
+@XmlRootElement
 public class OrderCancelRejectImpl extends ReportBaseImpl
         implements OrderCancelReject {
     /**

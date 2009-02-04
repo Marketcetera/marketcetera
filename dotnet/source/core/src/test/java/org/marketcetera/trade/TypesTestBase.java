@@ -57,7 +57,7 @@ public class TypesTestBase {
         FIXVersion v = FIXVersion.getFIXVersion(msg);
         FIXDataDictionary dict = FIXDataDictionaryManager.getFIXDataDictionary(v);
         String fields = FIXMessageUtil.toPrettyString(msg, dict);
-        SLF4JLoggerProxy.error(TypesTestBase.class,  fields);
+        SLF4JLoggerProxy.debug(TypesTestBase.class,  fields);
     }
 
     public static void assertOrderFIXEquals(FIXOrder inOrder1,
