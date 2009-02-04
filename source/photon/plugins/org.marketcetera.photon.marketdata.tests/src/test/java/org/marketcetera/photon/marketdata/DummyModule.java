@@ -11,7 +11,7 @@ import org.marketcetera.module.ModuleURN;
  * Module that claims to be a market data provider, but is not.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: DummyModule.java 10229 2008-12-09 21:48:48Z klim $
+ * @version $Id$
  * @since 1.0.0
  */
 public class DummyModule extends Module {

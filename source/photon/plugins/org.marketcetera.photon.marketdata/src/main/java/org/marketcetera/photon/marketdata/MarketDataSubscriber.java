@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Abstract base class of market data receiver module subscribers. 
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MarketDataReceiverModule.java 10267 2008-12-24 16:25:11Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @ClassVersion("$Id$")

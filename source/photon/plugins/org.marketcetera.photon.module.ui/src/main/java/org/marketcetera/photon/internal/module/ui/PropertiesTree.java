@@ -13,7 +13,7 @@ import java.util.TreeSet;
  * can be navigated using {@link #getChildKeys(String)}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PropertiesTree.java 10229 2008-12-09 21:48:48Z klim $
+ * @version $Id$
  * @since 1.0.0
  */
 public class PropertiesTree extends TreeMap<String, String> implements Serializable {

@@ -15,10 +15,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Factory for {@link MarketDataReceiverModule}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MarketDataReceiverFactory.java 10239 2008-12-11 01:44:12Z anshul $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: MarketDataReceiverFactory.java 10239 2008-12-11 01:44:12Z anshul $")//$NON-NLS-1$
+@ClassVersion("$Id$")//$NON-NLS-1$
 public class MarketDataReceiverFactory extends
 		ModuleFactory {
 
@@ -49,7 +49,7 @@ public class MarketDataReceiverFactory extends
 	 * Interface for objects providing configuration to {@link MarketDataReceiverModule}.
 	 *
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id: MarketDataReceiverModule.java 10267 2008-12-24 16:25:11Z colin $
+	 * @version $Id$
 	 * @since 1.0.0
 	 */
 	@ClassVersion("$Id$")
