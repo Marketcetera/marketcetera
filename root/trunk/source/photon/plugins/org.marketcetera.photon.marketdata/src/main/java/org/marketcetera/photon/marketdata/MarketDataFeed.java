@@ -35,10 +35,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Market Data Feed abstraction for Photon.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $")
+@ClassVersion("$Id$")
 public final class MarketDataFeed {
 
 	static final String MARKET_DATA_PROVIDER_TYPE = "mdata"; //$NON-NLS-1$
@@ -233,10 +233,10 @@ public final class MarketDataFeed {
 	 * Event object for feed status changes.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $
+	 * @version $Id$
 	 * @since 1.0.0
 	 */
-	@ClassVersion("$Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $")//$NON-NLS-1$
+	@ClassVersion("$Id$")//$NON-NLS-1$
 	public final class FeedStatusEvent extends EventObject {
 		private static final long serialVersionUID = 1L;
 		private final FeedStatus mOldStatus;
@@ -271,10 +271,10 @@ public final class MarketDataFeed {
 	 * Interface that feed status listeners must implement.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $
+	 * @version $Id$
 	 * @since 1.0.0
 	 */
-	@ClassVersion("$Id: MarketDataFeed.java 10229 2008-12-09 21:48:48Z klim $")
+	@ClassVersion("$Id$")
 	public static interface IFeedStatusChangedListener extends EventListener {
 
 		/**

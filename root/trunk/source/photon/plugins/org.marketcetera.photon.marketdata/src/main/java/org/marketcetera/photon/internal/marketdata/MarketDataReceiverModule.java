@@ -22,10 +22,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Endpoint for market data flows.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MarketDataReceiverModule.java 10267 2008-12-24 16:25:11Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: MarketDataReceiverModule.java 10267 2008-12-24 16:25:11Z colin $")
+@ClassVersion("$Id$")
 class MarketDataReceiverModule extends Module implements DataReceiver,
 		DataFlowRequester {
 

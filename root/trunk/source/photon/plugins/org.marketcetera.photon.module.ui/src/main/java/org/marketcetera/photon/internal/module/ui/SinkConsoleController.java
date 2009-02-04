@@ -24,10 +24,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * </ul>
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: SinkConsoleController.java 10229 2008-12-09 21:48:48Z klim $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: SinkConsoleController.java 10229 2008-12-09 21:48:48Z klim $")//$NON-NLS-1$
+@ClassVersion("$Id$")//$NON-NLS-1$
 public class SinkConsoleController implements IConsoleFactory, IConsoleListener {
 
 	/**
@@ -123,10 +123,10 @@ public class SinkConsoleController implements IConsoleFactory, IConsoleListener 
 	 * synchronization.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id: SinkConsoleController.java 10229 2008-12-09 21:48:48Z klim $
+	 * @version $Id$
 	 * @since 1.0.0
 	 */
-	@ClassVersion("$Id: SinkConsoleController.java 10229 2008-12-09 21:48:48Z klim $")//$NON-NLS-1$
+	@ClassVersion("$Id$")//$NON-NLS-1$
 	private final class InternalSubscriber implements SinkDataListener {
 
 		/**
