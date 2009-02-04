@@ -90,6 +90,11 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "validation_suggest_order");   //$NON-NLS-1$
     static final I18NMessage0P UNABLE_FETCH_ID_SERVER =
             new I18NMessage0P(LOGGER, "unable_fetch_id_server");   //$NON-NLS-1$
+    static final I18NMessage1P ERROR_CONVERTING_MESSAGE_TO_OBJECT =
+            new I18NMessage1P(LOGGER, "error_converting_message_to_object");   //$NON-NLS-1$
+    static final I18NMessage1P ERROR_CONVERTING_OBJECT_TO_MESSAGE =
+            new I18NMessage1P(LOGGER, "error_converting_object_to_message");   //$NON-NLS-1$
+
 
     static final I18NMessage1P LOG_ERROR_RECEIVE_EXEC_REPORT =
             new I18NMessage1P(LOGGER, "log_error_receive_exec_report");   //$NON-NLS-1$

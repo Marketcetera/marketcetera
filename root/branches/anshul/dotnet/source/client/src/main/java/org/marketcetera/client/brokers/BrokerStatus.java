@@ -4,6 +4,8 @@ import java.io.Serializable;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * The web service representation of a single broker's status.
  *
@@ -15,6 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 @ClassVersion("$Id$")
+@XmlRootElement
 public class BrokerStatus
     implements Serializable
 {

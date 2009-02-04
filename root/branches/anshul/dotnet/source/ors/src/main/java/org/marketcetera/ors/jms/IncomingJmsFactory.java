@@ -1,8 +1,10 @@
 package org.marketcetera.ors.jms;
 
 import javax.jms.ConnectionFactory;
+import javax.xml.bind.JAXBException;
+
 import org.marketcetera.client.JMSMessageConverter;
-import org.marketcetera.ors.jms.JMSFIXMessageConverter;
+import org.marketcetera.client.JMSXMLMessageConverter;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
@@ -255,5 +257,55 @@ public class IncomingJmsFactory
     {
         registerHandler
             (handler,inDstName,isInDstTopic,new JMSMessageConverter());
+    }
+
+    /**
+     * Registers the given message handler for messages that are
+     * received by the given incoming destination (and of the given
+     * type). Replies to those messages are sent to the given reply
+     * destination (and of the given type). The handler is expected to
+     * operate on FIX Agnostic trade messages in XML.
+     *
+     * @param handler The message handler.
+     * @param inDstName The incoming destination name.
+     * @param isInDstTopic True if the incoming destination is a topic.
+     * @param replyDstName The reply destination name.
+     * @param isReplyDstTopic True if the reply destination is a topic.
+     * 
+     * @throws javax.xml.bind.JAXBException if there were errors
+     */
+
+    public void registerHandlerXM
+        (ReplyHandler<TradeMessage> handler,
+         String inDstName,
+         boolean isInDstTopic,
+         String replyDstName,
+         boolean isReplyDstTopic) throws JAXBException
+    {
+        registerHandler
+            (handler,inDstName,isInDstTopic,replyDstName,isReplyDstTopic,
+             new JMSXMLMessageConverter());
+    }
+
+    /**
+     * Registers the given message handler for messages that are
+     * received by the given incoming destination (and of the given
+     * type). The handler is expected to operate on FIX Agnostic trade
+     * messages in XML.
+     *
+     * @param handler The message handler.
+     * @param inDstName The incoming destination name.
+     * @param isInDstTopic True if the incoming destination is a topic.
+     *
+     * @throws javax.xml.bind.JAXBException if there were errors
+     */
+
+    public void registerHandlerXM
+        (ReceiveOnlyHandler<TradeMessage> handler,
+         String inDstName,
+         boolean isInDstTopic) throws JAXBException
+    {
+        registerHandler
+            (handler,inDstName,isInDstTopic,new JMSXMLMessageConverter());
     }
 }

@@ -3,6 +3,9 @@ package org.marketcetera.trade;
 import org.marketcetera.util.misc.ClassVersion;
 
 import javax.persistence.Embeddable;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlValue;
 import java.io.Serializable;
 
 /* $License$ */
@@ -17,6 +20,7 @@ import java.io.Serializable;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 @Embeddable
+@XmlAccessorType(XmlAccessType.FIELD)
 public class OrderID implements Serializable {
     /**
      * Creates an instance, given the text value of the OrderID.
@@ -75,6 +79,7 @@ public class OrderID implements Serializable {
     OrderID() {
     }
 
+    @XmlValue
     private String mValue;
     private static final long serialVersionUID = 1L;
 }
