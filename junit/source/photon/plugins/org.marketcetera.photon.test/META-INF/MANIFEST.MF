@@ -13,4 +13,5 @@ Export-Package: org.marketcetera.photon.test
 Import-Package: org.junit,
  org.junit.internal.runners,
  org.junit.runner,
- org.junit.runners
+ org.junit.runners,
+ org.junit.runners.model
