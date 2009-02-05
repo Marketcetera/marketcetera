@@ -1,0 +1,29 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "P &amp; L", :action_name => "View Mark", :top_level_controller => @controller.controller_name } %>
+<h1>Mark for <%= @mark.tradeable_m_symbol_root %></h1>
+
+<form action="">
+    <fieldset>
+        <div class="form_left">
+            <label for="symbol" class="view_background">Symbol</label>
+            <div id="symbol" class="data view_data"><%=df @mark.tradeable_m_symbol_root %></div>
+                
+            <label for="mark_value" class="view_background">Value</label>
+            <div id="mark_value" class="data view_data"><%=df @mark.mark_value %></div>
+
+            <label for="asset_type" class="view_background">Asset Type</label>
+            <div id="asset_type" class="data view_data"><%=df @mark.tradeable.class %></div>
+        </div>
+        <div class="form_right">
+
+            <label for="mark_type" class="view_background">Type</label>
+            <div id="mark_type" class="data view_data"><%=df @mark.mark_type %></div>
+            
+            <label for="mark_date" class="view_background">Date</label>
+            <div id="mark_date" class="data view_data"><%=df @mark.mark_date %></div>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
+<%= button_to "Edit", {:action => 'edit', :id => @mark}, {:class => "submit floatright"} %>
+        

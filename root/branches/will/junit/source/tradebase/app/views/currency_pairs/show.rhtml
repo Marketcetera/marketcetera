@@ -1,0 +1,18 @@
+<%= render :partial => 'shared/breadcrumbs',
+    :locals=> { :top_level => "Currency Pairs", :action_name => "View Currency Pair",
+            :top_level_controller => @controller.controller_name } %>
+<h1>View Currency Pair</h1>
+<form action="">
+    <fieldset>
+        <div class="form_left">
+            <label for="currency_pair" class="view_background">Currency Pair</label>
+            <div id="currency_pair" class="data view_data"><%=df @currency_pair.to_s %></div>
+
+            <label for="description" class="view_background">Description</label>
+            <div id="description" class="data view_data"><%=df @currency_pair.description %></div>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
+
+<%= button_to "Edit", {:action => 'edit', :id => @currency_pair}, {:class => "submit floatright"} %>

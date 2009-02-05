@@ -1,0 +1,3 @@
+class UnknownCurrencyPairException < Exception
+
+end
