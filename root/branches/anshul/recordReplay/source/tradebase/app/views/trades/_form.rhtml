@@ -1,0 +1,105 @@
+<%= error_messages_for 'trade' %>
+
+<script type="text/javascript">
+//<![CDATA[
+	var sell_short_exempt = null
+	var sell_short = null
+
+	function change_to_forex()
+	{
+		if (sell_short == null) {
+		$('price_label').textContent = "Rate"
+		$('m_symbol_root_label').textContent = "Currency Pair"
+        $('trade_trade_type_t').checked = true
+        $('trade_trade_type_e').hide()
+        $('trade_trade_type_c').hide()
+        $('trade_trade_type_e_label').hide()
+        $('trade_trade_type_c_label').hide()
+		
+			descendants = $("trade_side").descendants()
+			sell_short = descendants[2].remove()
+		}
+	}
+	function change_to_equity()
+	{
+		if (sell_short != null) {
+		$('price_label').textContent = "Price"
+		$('m_symbol_root_label').textContent = "Symbol"
+        $('trade_trade_type_e').show()
+        $('trade_trade_type_c').show()
+        $('trade_trade_type_e_label').show()
+        $('trade_trade_type_c_label').show()
+
+			$("trade_side").insert(sell_short)
+			$("trade_side").insert(sell_short_exempt)
+			
+			sell_short = null
+			sell_short_exempt = null			
+		}
+	}
+//]]>
+</script>
+
+<!--[form:trade]-->
+<fieldset>
+    <div class="form_left">
+        <label for="trade_date">Trade Date</label>
+        <div class="date"><%= date_select :trade, :journal_post_date %></div>
+
+        <% if(@controller.action_name == "edit") %>
+          <label for="asset_type">Asset Type</label>
+          <div id="asset_type" class="data view_data"><%=df @trade.tradeable.class %></div>
+        <% else %>
+          <%=  render :partial => 'shared/security_type',
+                      :locals=> { :equity_onclick_fn => "change_to_equity()", :forex_onclick_fn => "change_to_forex()",
+                                  :equity_on => true, :forex_on => false} %>
+        <% end %>
+
+        <label for="side">Side</label>
+        <%= select(:trade, :side, Side.SIDES_HI_COLLECTION, { :selected => @trade.side.to_s }) %>
+
+        <label for="trade_quantity">Quantity</label>
+        <%= text_field :trade, :quantity %>
+
+        <%= render :partial => '/shared/symbol_auto_complete',
+            :locals => { :errors => @trade.errors, :init_value => @trade.tradeable_m_symbol_root, :error_key => :symbol} %>
+
+        <label for="price_per_share" id="price_label">Price</label>
+        <%= text_field :trade, :price_per_share %>
+
+        <label for="account_nickname">Account</label>
+        <%= text_field_with_auto_complete :account, :nickname, :value=> @trade.account_nickname %>
+        <div class="clear"></div>
+        <%= link_to "Create new account", {:controller => 'accounts', :action => 'new'} %>
+    </div>
+    
+    <div class="form_right">
+        <label for="trade_trade_type">Trade type</label>
+        <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeTrade, {:checked => true, :class => "radio"})%>
+        <label class="radio_label" for="trade_trade_type_t">Trade</label>
+        <div class="clear"></div>
+        <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeExerciseOrExpire, { :class => "radio", })%>
+        <label class="radio_label" for="trade_trade_type_e" id="trade_trade_type_e_label">Exercise or expire</label>
+        <div class="clear"></div>
+        <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeReconciliation, { :class => "radio"})%>
+        <label class="radio_label" for="trade_trade_type_r">Reconciliation</label>
+        <div class="clear"></div>
+        <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeCorporateAction, { :class => "radio"})%>
+        <label class="radio_label" for="trade_trade_type_c" id="trade_trade_type_c_label">Corporate Action</label>
+        <div class="clear"></div>
+ 
+        <label for="total_commission">Total Commission</label>
+        <%= text_field :trade, :total_commission %>
+
+        <%= render :partial => '/shared/currency_auto_complete', :locals => { :alpha_code => @trade.currency_alpha_code } %>
+
+		<label for="trade_strategy">Strategy</label>
+		<%= text_field_with_auto_complete :trade, :strategy, :value=> @trade.strategy %>
+
+        <label for="trade_comment">Comment</label>
+        <%= text_field 'trade', 'comment'  %>
+    </div>
+    <div class="clear"></div>
+</fieldset>
+<!--[eoform:trade]-->
+
