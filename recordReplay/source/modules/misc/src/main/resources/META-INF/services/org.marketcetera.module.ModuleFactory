@@ -1,2 +1,4 @@
 #Names of module factory implementations
 org.marketcetera.modules.csv.CSVEmitterFactory
+org.marketcetera.modules.object.ObjectRecorderFactory
+org.marketcetera.modules.object.ObjectEmitterFactory
