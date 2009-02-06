@@ -119,9 +119,7 @@
                     eclipse/plugins/org.eclipse.ui.navigator.resources_*,
                     eclipse/plugins/org.eclipse.ui.navigator.resources.source_*,
                     eclipse/plugins/org.eclipse.ui.views.properties.tabbed_*,
-                    eclipse/plugins/org.eclipse.ui.views.properties.tabbed.source_*,
-                    eclipse/plugins/org.eclipse.jdt.junit.runtime_*,
-                    eclipse/plugins/org.eclipse.jdt.junit.runtime.source_*
+                    eclipse/plugins/org.eclipse.ui.views.properties.tabbed.source_*
                   </includes>
                 </artifactItem>
                 <artifactItem>
@@ -181,6 +179,13 @@
                   <version>${project.version}</version>
                   <type>jar</type>
                   <outputDirectory>${mvn.photon.target}/eclipse/plugins/org.marketcetera.thirdparty_${project.version}</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.marketcetera</groupId>
+                  <artifactId>photon-test-bundle</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                  <outputDirectory>${mvn.photon.target}/eclipse/plugins/org.marketcetera.thirdparty.test_${project.version}</outputDirectory>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${mvn.photon.target}</outputDirectory>
