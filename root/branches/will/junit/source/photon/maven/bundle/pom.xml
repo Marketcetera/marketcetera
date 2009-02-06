@@ -105,8 +105,6 @@
             <_nouses>true</_nouses>
             <!-- Import (require) nothing.  Trust Maven's dependency resolution over the default code analysis method. -->
             <Import-Package>!*</Import-Package>
-            <!-- We do not use an OSGi Bundle Repository. -->
-            <obrRepository>NONE</obrRepository>
           </instructions>
         </configuration>
       </plugin>
