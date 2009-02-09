@@ -2,7 +2,6 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.event.HasFIXMessage;
@@ -58,7 +57,7 @@ public class TypesTestBase {
         FIXVersion v = FIXVersion.getFIXVersion(msg);
         FIXDataDictionary dict = FIXDataDictionaryManager.getFIXDataDictionary(v);
         String fields = FIXMessageUtil.toPrettyString(msg, dict);
-        SLF4JLoggerProxy.error(TypesTestBase.class,  fields);
+        SLF4JLoggerProxy.debug(TypesTestBase.class,  fields);
     }
 
     public static void assertOrderFIXEquals(FIXOrder inOrder1,

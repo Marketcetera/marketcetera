@@ -1,8 +1,8 @@
 package org.marketcetera.photon.marketdata;
 
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.Group;
 import quickfix.Message;

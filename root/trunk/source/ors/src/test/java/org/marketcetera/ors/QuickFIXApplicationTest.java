@@ -7,6 +7,7 @@ import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.QuickFIXApplication;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.spring.MockJmsTemplate;
+import org.marketcetera.trade.MSymbol;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.UncategorizedJmsException;

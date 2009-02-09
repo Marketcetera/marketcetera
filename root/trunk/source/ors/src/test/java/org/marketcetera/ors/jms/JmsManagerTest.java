@@ -36,6 +36,8 @@ public class JmsManagerTest
         "-q";
     private static final String TEST_TM_EXT=
         "-tm";
+    private static final String TEST_XM_EXT=
+        "-xm";
     static final int TEST_COUNT=
         10;
 
@@ -132,7 +134,7 @@ public class JmsManagerTest
         single(mgr.getOutgoingJmsFactory().createJmsTemplateQ
                (senderName,true),replyQ,receiveOnlyQ);
 
-        // FIX AGNOSTIC CONVERTER.
+        // FIX AGNOSTIC JAVA CONVERTER.
 
         senderName=TEST_SEND_DEST+TEST_TM_EXT;
         replyName=TEST_REPLY_DEST+TEST_TM_EXT;
@@ -158,5 +160,32 @@ public class JmsManagerTest
             (receiveOnlyTM,replyName,true);
         single(mgr.getOutgoingJmsFactory().createJmsTemplateTM
                (senderName,true),replyTM,receiveOnlyTM);
+
+        // FIX AGNOSTIC XML CONVERTER.
+
+        senderName=TEST_SEND_DEST+TEST_XM_EXT;
+        replyName=TEST_REPLY_DEST+TEST_XM_EXT;
+
+        // Queues.
+        SampleOrderReplyHandler replyXM=
+            new SampleOrderReplyHandler();
+        SampleReceiveOnlyHandler<TradeMessage> receiveOnlyXM=
+            new SampleReceiveOnlyHandler<TradeMessage>();
+        mgr.getIncomingJmsFactory().registerHandlerXM
+            (replyXM,senderName,false,replyName,false);
+        mgr.getIncomingJmsFactory().registerHandlerXM
+            (receiveOnlyXM,replyName,false);
+        single(mgr.getOutgoingJmsFactory().createJmsTemplateXM
+               (senderName,false),replyXM,receiveOnlyXM);
+
+        // Topics.
+        replyXM=new SampleOrderReplyHandler();
+        receiveOnlyXM=new SampleReceiveOnlyHandler<TradeMessage>();
+        mgr.getIncomingJmsFactory().registerHandlerXM
+            (replyXM,senderName,true,replyName,true);
+        mgr.getIncomingJmsFactory().registerHandlerXM
+            (receiveOnlyXM,replyName,true);
+        single(mgr.getOutgoingJmsFactory().createJmsTemplateXM
+               (senderName,true),replyXM,receiveOnlyXM);
     }
 }

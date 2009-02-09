@@ -4,7 +4,7 @@ include_class "org.marketcetera.trade.Factory"
 include_class "org.marketcetera.trade.OrderType"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
-include_class "org.marketcetera.core.MSymbol"
+include_class "org.marketcetera.trade.MSymbol"
 
 class SuggestTrades < Strategy
     def on_start

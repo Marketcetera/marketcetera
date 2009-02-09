@@ -6,10 +6,10 @@ import java.util.Vector;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;

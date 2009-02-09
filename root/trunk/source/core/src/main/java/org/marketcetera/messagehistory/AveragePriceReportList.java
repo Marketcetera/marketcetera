@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.math.BigDecimal;
 
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

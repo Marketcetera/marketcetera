@@ -3,11 +3,11 @@ package org.marketcetera.ors.history;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.core.MSymbol;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

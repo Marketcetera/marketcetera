@@ -3,11 +3,11 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.TextContributionItem;
+import org.marketcetera.trade.MSymbol;
 
 public class AddSymbolAction
     extends Action

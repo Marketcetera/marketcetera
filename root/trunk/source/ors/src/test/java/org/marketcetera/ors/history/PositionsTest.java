@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 /* $License$ */
 /**
- * Verifies {@link ReportHistoryServices#getPositionAsOf(java.util.Date , org.marketcetera.core.MSymbol)} 
+ * Verifies {@link ReportHistoryServices#getPositionAsOf(java.util.Date , org.marketcetera.trade.MSymbol)} 
  *
  * @author anshul@marketcetera.com
  * @version $Id$

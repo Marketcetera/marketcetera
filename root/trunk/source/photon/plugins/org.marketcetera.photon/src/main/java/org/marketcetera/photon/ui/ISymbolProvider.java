@@ -1,6 +1,6 @@
 package org.marketcetera.photon.ui;
 
-import org.marketcetera.core.MSymbol;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

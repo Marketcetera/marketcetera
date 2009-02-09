@@ -1,7 +1,6 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import quickfix.field.*;
 import quickfix.FieldNotFound;
 import quickfix.Message;

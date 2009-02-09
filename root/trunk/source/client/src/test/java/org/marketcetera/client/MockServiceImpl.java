@@ -6,8 +6,8 @@ import java.util.LinkedList;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;

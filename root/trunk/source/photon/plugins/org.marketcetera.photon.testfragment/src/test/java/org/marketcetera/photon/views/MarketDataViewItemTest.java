@@ -13,11 +13,11 @@ import java.math.BigDecimal;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.photon.test.IsExpectedPropertyChangeEvent;
+import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
 

@@ -46,7 +46,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
@@ -57,6 +56,7 @@ import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.marketdata.MarketDataSubscriber;
 import org.marketcetera.photon.ui.TextContributionItem;
 import org.marketcetera.photon.ui.ChooseColumnsMenu.ITableProvider;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.field.BidPx;

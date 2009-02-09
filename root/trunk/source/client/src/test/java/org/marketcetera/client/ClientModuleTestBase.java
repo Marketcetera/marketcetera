@@ -3,9 +3,9 @@ package org.marketcetera.client;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.module.*;
 import org.marketcetera.trade.*;
+
 import static org.marketcetera.trade.TypesTestBase.*;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.core.MSymbol;
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
