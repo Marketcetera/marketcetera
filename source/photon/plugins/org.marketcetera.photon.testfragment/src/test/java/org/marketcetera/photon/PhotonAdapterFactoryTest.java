@@ -6,10 +6,10 @@ import junit.framework.TestCase;
 
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;

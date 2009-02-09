@@ -5,7 +5,6 @@ import org.marketcetera.persist.PersistTestBase;
 import org.marketcetera.trade.*;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.core.MSymbol;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;

@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;

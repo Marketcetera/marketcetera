@@ -8,14 +8,10 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.*;
 
 import static org.marketcetera.trade.TypesTestBase.*;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.junit.After;
+import org.junit.*;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -49,6 +45,14 @@ import quickfix.field.OrigClOrdID;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ClientTest {
+    /*
+     * This value can be set to a much higher value to assess
+     * performance of jms roundtrip communications.
+     * Keep the value greater than one to ensure that changes to
+     * the unit test do not negatively impact the ability to
+     * repeatedly carry out the round trips.
+     */
+    private static final int NUM_REPEAT = 5;
     @BeforeClass
     public static void setup() throws Exception {
         LoggerConfiguration.logSetup();
@@ -251,7 +255,7 @@ public class ClientTest {
         assertEquals(dID,crreport.getBrokerID());
         assertEquals("43",crreport.getOriginalOrderID().getValue());
         assertEquals(rejectID, crreport.getReportID());
-        
+
         MockServiceImpl.sReports = new ReportBaseImpl[0];
         rs = getClient().getReportsSince(new Date());
         assertEquals(0,rs.length);
@@ -268,135 +272,143 @@ public class ClientTest {
         //Initialize a client
         initClient();
 
-        //Create order
-        OrderSingle order = Factory.getInstance().createOrderSingle();
-        order.setAccount("my account");
-        Map<String,String> map = new HashMap<String,String>();
-        map.put("101","value1");
-        map.put("201","value2");
-        order.setCustomFields(map);
-        order.setBrokerID(new BrokerID("brokerA"));
-        order.setOrderID(new OrderID("ord1"));
-        order.setOrderType(OrderType.Limit);
-        order.setPrice(new BigDecimal("83.43"));
-        order.setQuantity(new BigDecimal("823.443"));
-        order.setSide(Side.Buy);
-        order.setSymbol(new MSymbol("IBM", SecurityType.CommonStock));
-        order.setTimeInForce(TimeInForce.AtTheClose);
+        for (int i = 0; i < NUM_REPEAT; i++) {
+            //Create order
+            OrderSingle order = Factory.getInstance().createOrderSingle();
+            order.setAccount("my account");
+            Map<String,String> map = new HashMap<String,String>();
+            map.put("101","value1");
+            map.put("201","value2");
+            order.setCustomFields(map);
+            order.setBrokerID(new BrokerID("brokerA"));
+            order.setOrderID(new OrderID("ord1"));
+            order.setOrderType(OrderType.Limit);
+            order.setPrice(new BigDecimal("83.43"));
+            order.setQuantity(new BigDecimal("823.443"));
+            order.setSide(Side.Buy);
+            order.setSymbol(new MSymbol("IBM", SecurityType.CommonStock));
+            order.setTimeInForce(TimeInForce.AtTheClose);
 
-        //Create an execution report for the mock server to send back
-        ExecutionReport report = createExecutionReport();
-        sServer.getHandler().addToSend(report);
+            //Create an execution report for the mock server to send back
+            ExecutionReport report = createExecutionReport();
+            sServer.getHandler().addToSend(report);
 
-        //Send an order
-        getClient().sendOrder(order);
-        if(mListener.getException() != null) {
-            SLF4JLoggerProxy.error(this, "Unexpected exception",
-                    mListener.getException());
+            //Send an order
+            getClient().sendOrder(order);
+            if(mListener.getException() != null) {
+                SLF4JLoggerProxy.error(this, "Unexpected exception",
+                        mListener.getException());
+            }
+            //Verify we got no exception when sending the order
+            assertNull(mListener.getException());
+            //Verify transmitted order
+            Object received = sServer.getHandler().removeReceived();
+            assertNotNull(received);
+            assertTrue(received instanceof OrderSingle);
+            assertOrderSingleEquals(order, (OrderSingle)received);
+            //Verify received report
+            ReportBase receivedReport = mReplies.getReport();
+            assertTrue(receivedReport instanceof ExecutionReport);
+            assertExecReportEquals(report, (ExecutionReport) receivedReport);
         }
-        //Verify we got no exception when sending the order
-        assertNull(mListener.getException());
-        //Verify transmitted order
-        Object received = sServer.getHandler().removeReceived();
-        assertNotNull(received);
-        assertTrue(received instanceof OrderSingle);
-        assertOrderSingleEquals(order, (OrderSingle)received);
-        //Verify received report
-        ReportBase receivedReport = mReplies.getReport();
-        assertTrue(receivedReport instanceof ExecutionReport);
-        assertExecReportEquals(report, (ExecutionReport) receivedReport);
     }
     @Test
     public void sendOrderReplace() throws Exception {
         initClient();
 
-        //Create order
-        OrderReplace order = createOrderReplace();
+        for (int i = 0; i < NUM_REPEAT; i++) {
+            //Create order
+            OrderReplace order = createOrderReplace();
 
-        //Create an execution report for the mock server to send back
-        ExecutionReport report = createExecutionReport();
-        sServer.getHandler().addToSend(report);
+            //Create an execution report for the mock server to send back
+            ExecutionReport report = createExecutionReport();
+            sServer.getHandler().addToSend(report);
 
-        //Send an order
-        getClient().sendOrder(order);
-        //Verify we got no exception when sending the order
-        if(mListener.getException() != null) {
-            SLF4JLoggerProxy.error(this, "Unexpected exception",
-                    mListener.getException());
+            //Send an order
+            getClient().sendOrder(order);
+            //Verify we got no exception when sending the order
+            if(mListener.getException() != null) {
+                SLF4JLoggerProxy.error(this, "Unexpected exception",
+                        mListener.getException());
+            }
+            //Verify no errors
+            assertNull(mListener.getException());
+            //Verify transmitted order
+            Object received = sServer.getHandler().removeReceived();
+            assertNotNull(received);
+            assertTrue(received instanceof OrderReplace);
+            assertOrderReplaceEquals(order, (OrderReplace)received);
+            //Verify received report
+            ReportBase receivedReport = mReplies.getReport();
+            assertTrue(receivedReport instanceof ExecutionReport);
+            assertExecReportEquals(report, (ExecutionReport) receivedReport);
         }
-        //Verify no errors
-        assertNull(mListener.getException());
-        //Verify transmitted order
-        Object received = sServer.getHandler().removeReceived();
-        assertNotNull(received);
-        assertTrue(received instanceof OrderReplace);
-        assertOrderReplaceEquals(order, (OrderReplace)received);
-        //Verify received report
-        ReportBase receivedReport = mReplies.getReport();
-        assertTrue(receivedReport instanceof ExecutionReport);
-        assertExecReportEquals(report, (ExecutionReport) receivedReport);
     }
 
     @Test
     public void sendOrderCancel() throws Exception {
         initClient();
 
-        //Create cancel order
-        OrderCancel order = createOrderCancel();
+        for (int i = 0; i < NUM_REPEAT; i++) {
+            //Create cancel order
+            OrderCancel order = createOrderCancel();
 
-        //Create a reject for the mock server to send back
-        OrderCancelReject report = createCancelReject();
-        sServer.getHandler().addToSend(report);
+            //Create a reject for the mock server to send back
+            OrderCancelReject report = createCancelReject();
+            sServer.getHandler().addToSend(report);
 
-        //Send an order
-        getClient().sendOrder(order);
-        //Verify we got no exception when sending the order
-        if(mListener.getException() != null) {
-            SLF4JLoggerProxy.error(this, "Unexpected exception",
-                    mListener.getException());
+            //Send an order
+            getClient().sendOrder(order);
+            //Verify we got no exception when sending the order
+            if(mListener.getException() != null) {
+                SLF4JLoggerProxy.error(this, "Unexpected exception",
+                        mListener.getException());
+            }
+            //Verify no errors
+            assertNull(mListener.getException());
+            //Verify transmitted order
+            Object received = sServer.getHandler().removeReceived();
+            assertNotNull(received);
+            assertTrue(received instanceof OrderCancel);
+            assertOrderCancelEquals(order, (OrderCancel)received);
+            //Verify received report
+            ReportBase receivedReport = mReplies.getReport();
+            assertTrue(receivedReport instanceof OrderCancelReject);
+            assertCancelRejectEquals(report, (OrderCancelReject) receivedReport);
         }
-        //Verify no errors
-        assertNull(mListener.getException());
-        //Verify transmitted order
-        Object received = sServer.getHandler().removeReceived();
-        assertNotNull(received);
-        assertTrue(received instanceof OrderCancel);
-        assertOrderCancelEquals(order, (OrderCancel)received);
-        //Verify received report
-        ReportBase receivedReport = mReplies.getReport();
-        assertTrue(receivedReport instanceof OrderCancelReject);
-        assertCancelRejectEquals(report, (OrderCancelReject) receivedReport);
     }
 
     @Test
     public void sendOrderFIX() throws Exception {
         initClient();
 
-        //Create FIX order
-        FIXOrder order = createOrderFIX();
+        for (int i = 0; i < NUM_REPEAT; i++) {
+            //Create FIX order
+            FIXOrder order = createOrderFIX();
 
-        //Create a report for the mock server to send back
-        ExecutionReport report = createExecutionReport();
-        sServer.getHandler().addToSend(report);
+            //Create a report for the mock server to send back
+            ExecutionReport report = createExecutionReport();
+            sServer.getHandler().addToSend(report);
 
-        //Send an order
-        getClient().sendOrderRaw(order);
-        //Verify we got no exception when sending the order
-        if(mListener.getException() != null) {
-            SLF4JLoggerProxy.error(this, "Unexpected exception",
-                    mListener.getException());
+            //Send an order
+            getClient().sendOrderRaw(order);
+            //Verify we got no exception when sending the order
+            if(mListener.getException() != null) {
+                SLF4JLoggerProxy.error(this, "Unexpected exception",
+                        mListener.getException());
+            }
+            //Verify no errors
+            assertNull(mListener.getException());
+            //Verify transmitted order
+            Object received = sServer.getHandler().removeReceived();
+            assertNotNull(received);
+            assertTrue(received instanceof FIXOrder);
+            assertOrderFIXEquals(order, (FIXOrder)received);
+            //Verify received report
+            ReportBase receivedReport = mReplies.getReport();
+            assertTrue(receivedReport instanceof ExecutionReport);
+            assertExecReportEquals(report, (ExecutionReport) receivedReport);
         }
-        //Verify no errors
-        assertNull(mListener.getException());
-        //Verify transmitted order
-        Object received = sServer.getHandler().removeReceived();
-        assertNotNull(received);
-        assertTrue(received instanceof FIXOrder);
-        assertOrderFIXEquals(order, (FIXOrder)received);
-        //Verify received report
-        ReportBase receivedReport = mReplies.getReport();
-        assertTrue(receivedReport instanceof ExecutionReport);
-        assertExecReportEquals(report, (ExecutionReport) receivedReport);
     }
 
     @Test

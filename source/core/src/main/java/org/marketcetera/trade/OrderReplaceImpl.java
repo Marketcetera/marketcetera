@@ -2,16 +2,20 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /* $License$ */
 /**
- * ReplaceOrder Implementation.
+ * ReplaceOrder Implementation. This class is public for the sake of JAXB
+ * and is not intended for general use.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderReplace {
+@ClassVersion("$Id$")
+@XmlRootElement
+public class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderReplace {
 
     @Override
     public OrderID getOriginalOrderID() {
@@ -52,6 +56,13 @@ class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderReplace {
                 String.valueOf(getTimeInForce()),
                 String.valueOf(getBrokerOrderID())
         );
+    }
+
+    /**
+     * Creates an uninitialized instance. This constructor is meant to be
+     * used by JAXB.
+     */
+    OrderReplaceImpl() {
     }
 
     private OrderID mOriginalOrderID;

@@ -8,7 +8,6 @@ import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.trade.*;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.springframework.context.support.AbstractApplicationContext;

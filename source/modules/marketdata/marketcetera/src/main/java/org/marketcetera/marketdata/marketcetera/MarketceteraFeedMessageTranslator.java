@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.RequestType;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.Message;
 import quickfix.field.MarketDepth;

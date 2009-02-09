@@ -3,10 +3,11 @@ package org.marketcetera.quickfix.customfields;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.MSymbol;
+
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.SubscriptionRequestType;

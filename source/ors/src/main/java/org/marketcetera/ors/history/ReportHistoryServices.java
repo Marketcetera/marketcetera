@@ -2,9 +2,9 @@ package org.marketcetera.ors.history;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.persist.PersistenceException;
 
 import java.util.Date;

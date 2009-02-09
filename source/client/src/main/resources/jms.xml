@@ -35,7 +35,7 @@
     </property>
     <property name="defaultDestination" ref="orsCommandsQueue"/>
     <property name="messageConverter">
-      <bean class="org.marketcetera.client.JMSMessageConverter"/>
+      <bean class="org.marketcetera.client.JMSXMLMessageConverter"/>
     </property>
   </bean>
 
@@ -46,7 +46,7 @@
   <bean id="listener"
         class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
     <property name="messageConverter">
-      <bean class="org.marketcetera.client.JMSMessageConverter"/>
+      <bean class="org.marketcetera.client.JMSXMLMessageConverter"/>
     </property>
     <property name="delegate" ref="delegate"/>
   </bean>

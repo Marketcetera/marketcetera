@@ -6,6 +6,7 @@ import org.marketcetera.quickfix.*;
 import org.marketcetera.ors.filters.*;
 import org.marketcetera.ors.filters.DefaultMessageModifier.MessageFieldType;
 import org.marketcetera.spring.MockJmsTemplate;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import quickfix.*;

@@ -6,6 +6,8 @@ import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor;
+import org.marketcetera.trade.MSymbol;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;

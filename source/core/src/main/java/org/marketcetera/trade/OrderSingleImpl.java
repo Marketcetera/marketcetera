@@ -2,16 +2,20 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /* $License$ */
 /**
- * Backing object for an order to trade a security.
+ * Backing object for an order to trade a security. This class is public
+ * for the sake of JAXB and is not intended for general use.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-class OrderSingleImpl extends NewOrReplaceOrderImpl implements OrderSingle {
+@ClassVersion("$Id$")
+@XmlRootElement
+public class OrderSingleImpl extends NewOrReplaceOrderImpl implements OrderSingle {
 
     @Override
     public OrderSingle clone() {
@@ -41,6 +45,13 @@ class OrderSingleImpl extends NewOrReplaceOrderImpl implements OrderSingle {
                 String.valueOf(getSymbol()),
                 String.valueOf(getTimeInForce())
         );
+    }
+
+    /**
+     * Creates an uninitialized instance. This constructor is meant to be
+     * used by JAXB.
+     */
+    OrderSingleImpl() {
     }
 
     private static final long serialVersionUID = 1L;

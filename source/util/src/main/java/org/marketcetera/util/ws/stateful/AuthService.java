@@ -1,6 +1,8 @@
 package org.marketcetera.util.ws.stateful;
 
 import javax.jws.WebService;
+import javax.jws.WebParam;
+
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -16,7 +18,7 @@ import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 
-@WebService
+@WebService(targetNamespace = "http://marketcetera.org/services")
 @ClassVersion("$Id$") //$NON-NLS-1$
 public interface AuthService
     extends ServiceBase
@@ -39,9 +41,9 @@ public interface AuthService
      */
 
     SessionId login
-        (StatelessClientContext context,
-         String user,
-         char[] password)
+        (@WebParam(name= "context")StatelessClientContext context,
+         @WebParam(name= "user")String user,
+         @WebParam(name= "password")char[] password)
         throws RemoteException;
 
     /**
@@ -55,6 +57,6 @@ public interface AuthService
      */
 
     void logout
-        (ClientContext context)
+        (@WebParam(name= "context")ClientContext context)
         throws RemoteException;
 }

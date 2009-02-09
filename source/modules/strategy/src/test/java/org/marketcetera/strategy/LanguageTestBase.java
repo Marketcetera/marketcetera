@@ -30,7 +30,6 @@ import java.util.concurrent.Callable;
 
 import org.junit.Test;
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.AskEvent;
@@ -53,6 +52,7 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
@@ -2908,7 +2908,7 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assertEquals(inSymbol,
-                     inSuggestion.getOrder().getSymbol().getBaseSymbol());
+                     inSuggestion.getOrder().getSymbol().getFullSymbol());
         assertEquals(inPrice,
                      inSuggestion.getOrder().getPrice());
         assertEquals(inQuantity,

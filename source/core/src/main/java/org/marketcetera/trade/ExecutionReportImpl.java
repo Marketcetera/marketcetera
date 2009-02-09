@@ -2,12 +2,13 @@ package org.marketcetera.trade;
 
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.MSymbol;
 
 import java.util.Date;
 import java.math.BigDecimal;
 
 import quickfix.Message;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 /* $License$ */
 /**
@@ -19,6 +20,7 @@ import quickfix.Message;
  * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
+@XmlRootElement
 public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
 
     @Override

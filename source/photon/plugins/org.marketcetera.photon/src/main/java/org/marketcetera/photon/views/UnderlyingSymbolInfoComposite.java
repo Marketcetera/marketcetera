@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
@@ -24,6 +23,7 @@ import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXValueExtractor;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
@@ -277,7 +277,7 @@ public class UnderlyingSymbolInfoComposite
 	}
 
 	protected boolean hasSymbol(final MSymbol symbol) {
-		return (underlyingSymbolInfoMap.get(symbol.getBaseSymbol()) != null);
+		return (underlyingSymbolInfoMap.get(symbol.getFullSymbol()) != null);
 	}
 
 	protected boolean hasUnderlyingSymbolInfo() {

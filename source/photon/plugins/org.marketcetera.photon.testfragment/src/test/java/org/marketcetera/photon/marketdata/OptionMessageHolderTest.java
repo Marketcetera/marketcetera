@@ -7,8 +7,8 @@ import java.text.ParseException;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.AccessViolator;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.marketdata.OptionMessageHolder.OptionPairKey;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;

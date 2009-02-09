@@ -23,7 +23,6 @@ import jfun.parsec.pattern.Patterns;
 import jfun.parsec.tokens.Tokenizers;
 import jfun.parsec.tokens.TypedToken;
 
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IBrokerIdValidator;
 import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.Messages;
@@ -33,6 +32,7 @@ import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
 import org.marketcetera.photon.views.OptionDateHelper;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.trade.MSymbol;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;

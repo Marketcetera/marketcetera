@@ -7,13 +7,13 @@ import java.text.MessageFormat;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.ui.ISymbolProvider;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

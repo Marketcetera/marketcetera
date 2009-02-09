@@ -57,7 +57,6 @@ import org.marketcetera.client.ClientModuleFactory;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
@@ -83,6 +82,7 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
@@ -557,7 +557,7 @@ final class StrategyModule
         return orsClient.getBrokersStatus().getBrokers();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.InboundServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.core.MSymbol)
+     * @see org.marketcetera.strategy.InboundServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.trade.MSymbol)
      */
     @Override
     public BigDecimal getPositionAsOf(Date inDate,

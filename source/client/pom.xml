@@ -118,5 +118,21 @@
         </plugins>
       </build>
     </profile>
+    <!-- Generate XML Schema -->
+    <profile>
+      <id>schemaGen</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.client.SchemaGen</mainClass>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>

@@ -1,8 +1,9 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.MSymbol;
 
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.HashMap;
@@ -16,6 +17,13 @@ import java.util.HashMap;
  * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
+/*
+ * Use field accessors otherwise custom fields do not get unmarshalled. This
+ * happens because JAXB expects to be able to modify the Map after supplying it
+ * to setCustomFields()!  See JAXB Bug # 596
+ * https://jaxb.dev.java.net/issues/show_bug.cgi?id=596
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
 class OrderBaseImpl implements OrderBase {
     @Override
     public OrderID getOrderID() {

@@ -37,13 +37,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
