@@ -20,7 +20,7 @@ import org.marketcetera.util.except.I18NException;
  * Test for {@link MarketDataReceiverModule}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MarketDataReceiverModuleTest.java 10229 2008-12-09 21:48:48Z klim $
+ * @version $Id$
  * @since 1.0.0
  */
 public class MarketDataReceiverModuleTest {

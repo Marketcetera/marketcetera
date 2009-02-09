@@ -12,7 +12,7 @@ import org.marketcetera.util.l10n.MessageComparator;
  * Tests the message file of Photon market data.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MessagesTest.java 10229 2008-12-09 21:48:48Z klim $
+ * @version $Id$
  * @since 1.0.0
  */
 public class MessagesTest
