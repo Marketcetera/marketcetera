@@ -11,7 +11,7 @@ import org.junit.Test;
  * Test {@link PropertiesTree}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PropertiesTreeTest.java 10229 2008-12-09 21:48:48Z klim $
+ * @version $Id$
  * @since 1.0.0
  */
 public class PropertiesTreeTest {

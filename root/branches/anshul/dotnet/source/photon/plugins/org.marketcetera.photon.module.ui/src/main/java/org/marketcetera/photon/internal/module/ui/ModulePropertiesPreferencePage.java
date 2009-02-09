@@ -55,7 +55,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *          will $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModulePropertiesPreferencePage.java 10229 2008-12-09 21:48:48Z klim $")
+@ClassVersion("$Id$")
 public final class ModulePropertiesPreferencePage extends PreferencePage
 		implements IWorkbenchPreferencePage {
 
@@ -292,7 +292,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	 *          22:49:55Z will $
 	 * @since 1.0.0
 	 */
-	@ClassVersion("$Id: ModulePropertiesPreferencePage.java 10229 2008-12-09 21:48:48Z klim $")
+	@ClassVersion("$Id$")
 	private final class ModulePropertyNode implements IPropertySource {
 		String mKey;
 

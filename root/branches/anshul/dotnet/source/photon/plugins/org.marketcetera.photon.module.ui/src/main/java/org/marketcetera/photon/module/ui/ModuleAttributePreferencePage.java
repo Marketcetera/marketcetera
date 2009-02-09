@@ -91,9 +91,8 @@ public abstract class ModuleAttributePreferencePage extends PreferencePage {
 		mDataBindingContext.bindValue(SWTObservables.observeText(text,
 				SWT.Modify), model, null, null);
 		if (isPassword) {
-			// bogus text as a place holder since the actual value cannot be
-			// displayed
-			text.setText("password"); //$NON-NLS-1$
+			model.setValue(ModuleSupport.getModuleAttributeSupport()
+					.getDefaultFor(mURN, attributeName));
 			text.addFocusListener(new FocusAdapter() {
 				@Override
 				public void focusGained(FocusEvent e) {

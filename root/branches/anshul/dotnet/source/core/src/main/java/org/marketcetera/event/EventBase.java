@@ -2,6 +2,7 @@ package org.marketcetera.event;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.io.Serializable;
 
 import org.marketcetera.core.ClassVersion;
 
@@ -16,7 +17,7 @@ import org.marketcetera.core.ClassVersion;
  * @since 0.5.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public abstract class EventBase implements TimestampCarrier
+public abstract class EventBase implements TimestampCarrier, Serializable
 {
     /**
      * unique identifier for this market event

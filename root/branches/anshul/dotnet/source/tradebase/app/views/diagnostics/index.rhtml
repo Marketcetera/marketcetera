@@ -4,7 +4,9 @@
 <p>If you are running on the appliance or have the ORS on the same machine, you can try the following:</p>
 <p/>
 <ol>
-    <li><%= link_to "Server Diagnostics", {:action => 'server_info', :controller => 'diagnostics'}, :title => "Server Diagnostics" %></li>
+    <% if(RUN_ON_APPLIANCE) %>
+     <li><%= link_to "Server Diagnostics", {:action => 'server_info', :controller => 'diagnostics'}, :title => "Server Diagnostics" %></li>
+    <% end %>
     <li><%= link_to "ORS Log", {:action => 'ors_log_display', :controller => 'diagnostics'}, :title => "ORS Log" %></li>
     <li><%= link_to "Tradebase Log", {:action => 'tradebase_log_display', :controller => 'diagnostics'}, :title => "Tradebase Log" %></li>
 </ol>

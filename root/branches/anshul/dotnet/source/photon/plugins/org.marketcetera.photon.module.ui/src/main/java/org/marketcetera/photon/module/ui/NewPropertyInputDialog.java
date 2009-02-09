@@ -20,10 +20,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * {@link ModulePropertiesPreferencePage}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: NewPropertyInputDialog.java 10229 2008-12-09 21:48:48Z klim $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: NewPropertyInputDialog.java 10229 2008-12-09 21:48:48Z klim $")
+@ClassVersion("$Id$")
 public final class NewPropertyInputDialog extends InputDialog implements Messages {
 
 	/**

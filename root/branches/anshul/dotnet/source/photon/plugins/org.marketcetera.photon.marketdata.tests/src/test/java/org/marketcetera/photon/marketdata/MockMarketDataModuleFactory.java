@@ -32,7 +32,7 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
  * Factory for {@link MockMarketDataModule}, for testing.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MockMarketDataModuleFactory.java 10239 2008-12-11 01:44:12Z anshul $
+ * @version $Id$
  * @since 1.0.0
  */
 public class MockMarketDataModuleFactory extends ModuleFactory {
@@ -55,7 +55,7 @@ public class MockMarketDataModuleFactory extends ModuleFactory {
 	 * Mock market data module for testing.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id: MockMarketDataModuleFactory.java 10239 2008-12-11 01:44:12Z anshul $
+	 * @version $Id$
 	 * @since 1.0.0
 	 */
 	public static class MockMarketDataModule extends Module implements
