@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.trade.ExecutionReport;
@@ -66,10 +67,11 @@ class StrategyImpl
         //  internally dictated so, for example, the user could not direct a change from 
         //  COMPILING to STARTING except through start
         if(!getStatus().canChangeStatusTo(COMPILING)) {
-            CANNOT_CHANGE_STATE.warn(Strategy.STRATEGY_MESSAGES,
-                                     this,
-                                     getStatus(),
-                                     COMPILING);
+            StrategyModule.log(LogEvent.warn(CANNOT_CHANGE_STATE,
+                                             String.valueOf(this),
+                                             getStatus(),
+                                             COMPILING),
+                               this);
             return;
         }
         try {
@@ -100,10 +102,11 @@ class StrategyImpl
         //  internally dictated so, for example, the user could not direct a change from 
         //  COMPILING to STARTING except through start
         if(!getStatus().canChangeStatusTo(STOPPING)) {
-            CANNOT_CHANGE_STATE.warn(Strategy.STRATEGY_MESSAGES,
-                                     this,
-                                     getStatus(),
-                                     STOPPING);
+            StrategyModule.log(LogEvent.warn(CANNOT_CHANGE_STATE,
+                                             String.valueOf(this),
+                                             getStatus(),
+                                             STOPPING),
+                               this);
             throw new ModuleStateException(new I18NBoundMessage2P(STRATEGY_STILL_RUNNING,
                                                                   this.toString(),
                                                                   getStatus()));
@@ -137,10 +140,11 @@ class StrategyImpl
     {
         // make sure that the strategy is in a state to receive incoming data
         if(!getStatus().canReceiveData()) {
-            INVALID_STATUS_TO_RECEIVE_DATA.warn(Strategy.STRATEGY_MESSAGES,
-                                                this,
-                                                inData,
-                                                getStatus());
+            StrategyModule.log(LogEvent.warn(INVALID_STATUS_TO_RECEIVE_DATA,
+                                             String.valueOf(this),
+                                             String.valueOf(inData),
+                                             getStatus()),
+                               this);
             return;
         }
         String method = "onOther"; //$NON-NLS-1$
@@ -185,10 +189,11 @@ class StrategyImpl
                 methodName = getExecutor().translateMethodName(method);
                 exceptionTranslation = getExecutor().interpretRuntimeException(e);
             }
-            RUNTIME_ERROR.warn(Strategy.STRATEGY_MESSAGES,
-                               this,
-                               methodName,
-                               exceptionTranslation);
+            StrategyModule.log(LogEvent.warn(RUNTIME_ERROR,
+                                             String.valueOf(this),
+                                             methodName,
+                                             exceptionTranslation),
+                               this);
         }
     }
     /* (non-Javadoc)
@@ -251,14 +256,6 @@ class StrategyImpl
         return inboundServicesProvider;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.Strategy#getClasspath()
-     */
-    @Override
-    public final String[] getClasspath()
-    {
-        return classpath;
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.strategy.Strategy#getDefaultNamespace()
      */
     @Override
@@ -272,10 +269,13 @@ class StrategyImpl
     @Override
     public final String toString()
     {
-        return String.format("%s Strategy %s(%s)", //$NON-NLS-1$
-                             getLanguage().toString(),
-                             getName(),
-                             getUniqueIdentifier());
+        if(description == null) {
+            description = String.format("%s Strategy %s(%s)", //$NON-NLS-1$
+                                        getLanguage().toString(),
+                                        getName(),
+                                        getUniqueIdentifier());
+        }
+        return description;
     }
     /**
      * Create a new StrategyImpl instance.
@@ -285,7 +285,6 @@ class StrategyImpl
      * @param inType a <code>Language</code> value
      * @param inSource a <code>File</code> value
      * @param inParameters a <code>Properties</code> value
-     * @param inClasspath a <code>String[]</code> value
      * @param inNamespace a <code>String</code> value 
      * @param inOutboundServicesProvider an <code>OutboundServices</code> value
      * @param inInboundServicesProvider an <code>InboundServices</code> value
@@ -296,7 +295,6 @@ class StrategyImpl
                  Language inType,
                  File inSource,
                  Properties inParameters,
-                 String[] inClasspath,
                  String inNamespace,
                  OutboundServicesProvider inOutboundServicesProvider,
                  InboundServicesProvider inInboundServicesProvider)
@@ -311,17 +309,6 @@ class StrategyImpl
             parameters = new Properties();
         } else {
             parameters = new Properties(inParameters);
-        }
-        if(inClasspath != null &&
-           inClasspath.length != 0) {
-            classpath = new String[inClasspath.length];
-            System.arraycopy(inClasspath,
-                             0,
-                             classpath,
-                             0,
-                             inClasspath.length);
-        } else {
-            classpath = null;
         }
         outboundServicesProvider = inOutboundServicesProvider;
         inboundServicesProvider = inInboundServicesProvider;
@@ -454,10 +441,6 @@ class StrategyImpl
      */
     private final Properties parameters;
     /**
-     * the classpath to pass to the strategy.  this may be null or empty.  if non-null, then the strategy executor will use the contents in a language-dependent way.
-     */
-    private final String[] classpath;
-    /**
      * the provider of services for outgoing data via the strategy agent framework
      */
     private final OutboundServicesProvider outboundServicesProvider;
@@ -485,4 +468,8 @@ class StrategyImpl
      * the strategy status
      */
     private Status status;
+    /**
+     * description of this object initialized when needed
+     */
+    private String description;
 }

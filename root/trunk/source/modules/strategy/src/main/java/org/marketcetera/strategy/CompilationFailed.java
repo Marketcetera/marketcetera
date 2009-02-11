@@ -5,7 +5,7 @@ import static org.marketcetera.strategy.Messages.COMPILATION_FAILED;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -33,8 +33,9 @@ public class CompilationFailed
      */
     public CompilationFailed(Strategy inStrategy)
     {
-        super(new I18NBoundMessage1P(COMPILATION_FAILED,
-                                     inStrategy.toString()));
+        super(new I18NBoundMessage2P(COMPILATION_FAILED,
+                                     inStrategy.toString(),
+                                     "")); //$NON-NLS-1$
     }
     /**
      * Create a new CompilationFailed instance.
@@ -46,8 +47,9 @@ public class CompilationFailed
                              Strategy inStrategy)
     {
         super(inNested,
-              new I18NBoundMessage1P(COMPILATION_FAILED,
-                                     inStrategy.toString()));
+              new I18NBoundMessage2P(COMPILATION_FAILED,
+                                     inStrategy.toString(),
+                                     "")); //$NON-NLS-1$
     }
     /* (non-Javadoc)
      * @see java.lang.Throwable#toString()

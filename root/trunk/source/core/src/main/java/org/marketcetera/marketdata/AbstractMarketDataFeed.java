@@ -658,7 +658,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     {
         SLF4JLoggerProxy.debug(this,
                                "Reconnecting to feed({}), resubmitting queries", //$NON-NLS-1$
-                               isLoggedIn() ? "logged in" : "not logged in");
+                               isLoggedIn() ? "logged in" : "not logged in"); //$NON-NLS-1$ //$NON-NLS-2$
         // retrieve all the tokens for active queries
         Collection<T> tokens = mHandleHolder.getTokens();
         // these tokens need to be resubmitted to the feed

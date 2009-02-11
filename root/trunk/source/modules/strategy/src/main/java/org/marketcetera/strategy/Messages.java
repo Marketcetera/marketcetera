@@ -5,6 +5,7 @@ import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessage3P;
+import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessage5P;
 import org.marketcetera.util.log.I18NMessage6P;
 import org.marketcetera.util.log.I18NMessageProvider;
@@ -64,11 +65,15 @@ public interface Messages
                                                                                "invalid_market_data_request"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_TRADE_SUGGESTION = new I18NMessage1P(LOGGER,
                                                                             "invalid_trade_suggestion"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_NOTIFICATION = new I18NMessage1P(LOGGER,
+                                                                        "invalid_notification"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_LOG = new I18NMessage1P(LOGGER,
+                                                               "invalid_log"); //$NON-NLS-1$
     static final I18NMessage1P CALLBACK_ERROR = new I18NMessage1P(LOGGER,
                                                                   "callback_error"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_MESSAGE = new I18NMessage1P(LOGGER,
                                                                    "invalid_message"); //$NON-NLS-1$
-    static final I18NMessage1P COMPILATION_FAILED = new I18NMessage1P(LOGGER,
+    static final I18NMessage2P COMPILATION_FAILED = new I18NMessage2P(LOGGER,
                                                                       "compilation_failed"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_STRATEGY_NAME = new I18NMessage1P(LOGGER,
                                                                          "invalid_strategy_name"); //$NON-NLS-1$
@@ -92,7 +97,7 @@ public interface Messages
                                                                             "cannot_initialize_client"); //$NON-NLS-1$
     static final I18NMessage2P EXECUTION_REPORT_REQUEST_FAILED = new I18NMessage2P(LOGGER,
                                                                                    "execution_report_request_failed"); //$NON-NLS-1$
-    static final I18NMessage3P INVALID_CEP_REQUEST = new I18NMessage3P(LOGGER,
+    static final I18NMessage4P INVALID_CEP_REQUEST = new I18NMessage4P(LOGGER,
                                                                        "invalid_cep_request"); //$NON-NLS-1$
     static final I18NMessage2P UNABLE_TO_CANCEL_DATA_REQUEST = new I18NMessage2P(LOGGER,
                                                                                  "unable_to_cancel_data_request"); //$NON-NLS-1$
@@ -140,4 +145,52 @@ public interface Messages
                                                                         "bean_attribute_changed"); //$NON-NLS-1$
     static final I18NMessage0P STATUS_CHANGED = new I18NMessage0P(LOGGER,
                                                                   "status_changed"); //$NON-NLS-1$
+    static final I18NMessage1P CANCELING_START_JOB = new I18NMessage1P(LOGGER,
+                                                                       "canceling_start_job"); //$NON-NLS-1$
+    static final I18NMessage1P CANCELING_STOP_JOB = new I18NMessage1P(LOGGER,
+                                                                      "canceling_stop_job"); //$NON-NLS-1$
+    static final I18NMessage4P INTERRUPT_COMPLETE = new I18NMessage4P(LOGGER,
+                                                                      "interrupt_complete"); //$NON-NLS-1$
+    static final I18NMessage2P EXECUTING_CALLBACK = new I18NMessage2P(LOGGER,
+                                                                      "executing_callback"); //$NON-NLS-1$
+    static final I18NMessage1P CANCELING_ALL_DATA_REQUESTS = new I18NMessage1P(LOGGER,
+                                                                               "canceling_all_data_requests"); //$NON-NLS-1$
+    static final I18NMessage1P SUBMITTING_CANCEL_ALL_ORDERS_REQUEST = new I18NMessage1P(LOGGER,
+                                                                                        "submitting_cancel_all_orders_request"); //$NON-NLS-1$
+    static final I18NMessage2P SUBMITTING_CANCEL_ORDER_REQUEST = new I18NMessage2P(LOGGER,
+                                                                                   "submitting_cancel_order_request"); //$NON-NLS-1$
+    static final I18NMessage2P SUBMITTING_CANCEL_REPLACE_REQUEST = new I18NMessage2P(LOGGER,
+                                                                                     "submitting_cancel_replace_request"); //$NON-NLS-1$
+    static final I18NMessage2P CANCEL_REQUEST_SUBMITTED = new I18NMessage2P(LOGGER,
+                                                                            "cancel_request_submitted"); //$NON-NLS-1$
+    static final I18NMessage2P CANCELING_DATA_REQUEST = new I18NMessage2P(LOGGER,
+                                                                          "canceling_data_request"); //$NON-NLS-1$
+    static final I18NMessage2P RECEIVED_BROKERS = new I18NMessage2P(LOGGER,
+                                                                    "received_brokers"); //$NON-NLS-1$
+    static final I18NMessage4P RECEIVED_POSITION = new I18NMessage4P(LOGGER,
+                                                                     "received_position"); //$NON-NLS-1$
+    static final I18NMessage4P SUBMITTING_CEP_REQUEST = new I18NMessage4P(LOGGER,
+                                                                          "submitting_cep_request"); //$NON-NLS-1$
+    static final I18NMessage3P SUBMITTING_MARKET_DATA_REQUEST = new I18NMessage3P(LOGGER,
+                                                                                  "submitting_market_data_request"); //$NON-NLS-1$
+    static final I18NMessage6P SUBMITTING_PROCESSED_MARKET_DATA_REQUEST = new I18NMessage6P(LOGGER,
+                                                                                            "submitting_processed_market_data_request"); //$NON-NLS-1$
+    static final I18NMessage3P EXECUTION_REPORTS_FOUND = new I18NMessage3P(LOGGER,
+                                                                           "execution_reports_found"); //$NON-NLS-1$
+    static final I18NMessage2P USING_EXECUTION_REPORT = new I18NMessage2P(LOGGER,
+                                                                          "using_execution_report"); //$NON-NLS-1$
+    static final I18NMessage1P NO_EXECUTION_REPORT = new I18NMessage1P(LOGGER,
+                                                                       "no_execution_report"); //$NON-NLS-1$
+    static final I18NMessage4P SUBMITTING_EVENT_TO_CEP = new I18NMessage4P(LOGGER,
+                                                                           "submitting_event_to_cep"); //$NON-NLS-1$
+    static final I18NMessage3P SUBMITTING_FIX_MESSAGE = new I18NMessage3P(LOGGER,
+                                                                          "submitting_fix_message"); //$NON-NLS-1$
+    static final I18NMessage3P SUBMITTING_ORDER = new I18NMessage3P(LOGGER,
+                                                                    "submitting_order"); //$NON-NLS-1$
+    static final I18NMessage2P SUBMITTING_TRADE_SUGGESTION = new I18NMessage2P(LOGGER,
+                                                                               "submitting_trade_suggestion"); //$NON-NLS-1$
+    static final I18NMessage1P MESSAGE_1P = new I18NMessage1P(LOGGER,
+                                                              "message_1p"); //$NON-NLS-1$
+    static final I18NMessage2P COMPILATION_FAILED_DIAGNOSTIC = new I18NMessage2P(LOGGER,
+                                                                                 "compilation_failed_diagnostic"); //$NON-NLS-1$
 }

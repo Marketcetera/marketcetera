@@ -1,6 +1,7 @@
 package org.marketcetera.strategy;
 
 import static org.marketcetera.strategy.Messages.COMPILATION_FAILED;
+import static org.marketcetera.strategy.Messages.COMPILATION_FAILED_DIAGNOSTIC;
 import static org.marketcetera.strategy.Messages.INVALID_STRATEGY_NAME;
 
 import java.io.ByteArrayOutputStream;
@@ -33,6 +34,7 @@ import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject.Kind;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.event.LogEvent;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -115,13 +117,7 @@ public class JavaCompilerExecutionEngine
         }
         // prepare the options to pass to the compiler
         List<String> options = new ArrayList<String>();
-        // first, add the classpath needed, if any
         StringBuffer classpathString = new StringBuffer();
-        if(strategy.getClasspath() != null) {
-            for(String pathElement : strategy.getClasspath()) {
-                classpathString.append(pathElement.trim()).append(File.pathSeparator);
-            }
-        }
         // add jars we are given by the parent class loaders, if any
         ClassLoader currentLoader = getClass().getClassLoader();
         do {
@@ -156,18 +152,19 @@ public class JavaCompilerExecutionEngine
                     failed.addDiagnostic(CompilationFailed.Diagnostic.warning(diagnostic.toString()));
                 }
             }
-            COMPILATION_FAILED.error(Strategy.STRATEGY_MESSAGES,
-                                     strategy);
-            SLF4JLoggerProxy.error(Strategy.STRATEGY_MESSAGES,
-                                   failed.toString());
+            StrategyModule.log(LogEvent.error(COMPILATION_FAILED,
+                                              failed,
+                                              String.valueOf(strategy),
+                                              failed.toString()),
+                               strategy);
             throw failed;
         } else {
             // compilation succeeded with or without warnings
             for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                SLF4JLoggerProxy.warn(Strategy.STRATEGY_MESSAGES,
-                                      String.format("%s: %s", //$NON-NLS-1$
-                                                    diagnostic.getKind(),
-                                                    diagnostic));
+                StrategyModule.log(LogEvent.warn(COMPILATION_FAILED_DIAGNOSTIC,
+                                                 String.valueOf(diagnostic.getKind()),
+                                                 String.valueOf(diagnostic)),
+                                   strategy);
             }
         }
         // strategy has compiled successfully and is now held in our specializedFileManager
@@ -193,9 +190,10 @@ public class JavaCompilerExecutionEngine
             //  thing: the black magic of the compiler, in-memory objects, and the classloader somehow malfunctioned.
             //  this would be a warranty repair: nothing the user can do.  might as well call it a compilation problem
             //  as well as call it anything else.
-            COMPILATION_FAILED.error(Strategy.STRATEGY_MESSAGES,
-                                     e,
-                                     strategy);
+            StrategyModule.log(LogEvent.error(COMPILATION_FAILED,
+                                              e,
+                                              String.valueOf(strategy)),
+                               strategy);
             throw new CompilationFailed(e,
                                         strategy);
         }

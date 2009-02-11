@@ -1,7 +1,10 @@
 package org.marketcetera.strategy;
 
+import static org.marketcetera.strategy.Messages.CANCELING_START_JOB;
+import static org.marketcetera.strategy.Messages.CANCELING_STOP_JOB;
 import static org.marketcetera.strategy.Messages.CANNOT_STOP;
 import static org.marketcetera.strategy.Messages.ERROR_WAITING_FOR_STOP;
+import static org.marketcetera.strategy.Messages.INTERRUPT_COMPLETE;
 import static org.marketcetera.strategy.Messages.INTERRUPT_START_ERROR;
 import static org.marketcetera.strategy.Messages.INTERRUPT_STOP_ERROR;
 import static org.marketcetera.strategy.Messages.NO_STRATEGY_CLASS;
@@ -19,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.event.LogEvent;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -49,8 +53,9 @@ abstract class AbstractExecutor
                        processedScript);
         Object objectReturned = engine.start();
         if(objectReturned == null) {
-            STRATEGY_COMPILATION_NULL_RESULT.error(Strategy.STRATEGY_MESSAGES,
-                                                   getStrategy());
+            StrategyModule.log(LogEvent.error(STRATEGY_COMPILATION_NULL_RESULT,
+                                              String.valueOf(getStrategy())),                               
+                               getStrategy());                               
             throw new StrategyException(new I18NBoundMessage1P(STRATEGY_COMPILATION_NULL_RESULT,
                                                                getStrategy().toString()));
         }
@@ -94,11 +99,12 @@ abstract class AbstractExecutor
                             // this means that a runtime error occurred during "onStart"
                             // this does not cause a module creation error, but the strategy is broken-by-fiat
                             enclosingStrategy.setStatus(FAILED);
-                            RUNTIME_ERROR.error(Strategy.STRATEGY_MESSAGES,
-                                                e,
-                                                getStrategy(),
-                                                translateMethodName("onStart"), //$NON-NLS-1$
-                                                interpretRuntimeException(e));
+                            StrategyModule.log(LogEvent.error(RUNTIME_ERROR,
+                                                              e,
+                                                              String.valueOf(getStrategy()),
+                                                              translateMethodName("onStart"), //$NON-NLS-1$
+                                                              interpretRuntimeException(e)),
+                                               getStrategy());
                         } finally {
                             SLF4JLoggerProxy.debug(AbstractExecutor.class,
                                                    "{} start job completed, now at {}", //$NON-NLS-1$
@@ -111,16 +117,18 @@ abstract class AbstractExecutor
             } catch (Exception e) {
                 // this means that the "onStart" method was never executed and the strategy never started
                 // this will cause a moduleCreationError in StrategyModule, which is what we want
-                RUNTIME_ERROR.error(Strategy.STRATEGY_MESSAGES,
-                                    e,
-                                    getStrategy(),
-                                    translateMethodName("onStart"), //$NON-NLS-1$
-                                    interpretRuntimeException(e));
+                StrategyModule.log(LogEvent.error(RUNTIME_ERROR,
+                                                  e,
+                                                  getStrategy().toString(),
+                                                  translateMethodName("onStart"), //$NON-NLS-1$
+                                                  interpretRuntimeException(e)),
+                                   getStrategy());
                 throw e;
             }
             return runningStrategy;
         } else {
-            NO_STRATEGY_CLASS.error(Strategy.STRATEGY_MESSAGES);
+            StrategyModule.log(LogEvent.error(NO_STRATEGY_CLASS),
+                               getStrategy());
             throw new StrategyException(NO_STRATEGY_CLASS);
         }
     }
@@ -155,11 +163,12 @@ abstract class AbstractExecutor
                         enclosingStrategy.setStatus(STOPPED);
                     } catch (Exception e) {
                         enclosingStrategy.setStatus(FAILED);
-                        RUNTIME_ERROR.error(Strategy.STRATEGY_MESSAGES,
-                                            e,
-                                            getStrategy(),
-                                            translateMethodName("onStop"), //$NON-NLS-1$
-                                            interpretRuntimeException(e));
+                        StrategyModule.log(LogEvent.error(RUNTIME_ERROR,
+                                                          e,
+                                                          String.valueOf(getStrategy()),
+                                                          translateMethodName("onStop"), //$NON-NLS-1$
+                                                          interpretRuntimeException(e)),
+                                           getStrategy());
                     } finally {
                         SLF4JLoggerProxy.debug(AbstractExecutor.class,
                                                "{} stop job completed, now at {}", //$NON-NLS-1$
@@ -170,11 +179,12 @@ abstract class AbstractExecutor
                 }
             });
         } catch (Exception e) {
-            RUNTIME_ERROR.error(Strategy.STRATEGY_MESSAGES,
-                                e,
-                                getStrategy(),
-                                translateMethodName("onStop"), //$NON-NLS-1$
-                                interpretRuntimeException(e));
+            StrategyModule.log(LogEvent.error(RUNTIME_ERROR,
+                                              e,
+                                              String.valueOf(getStrategy()),
+                                              translateMethodName("onStop"), //$NON-NLS-1$
+                                              interpretRuntimeException(e)),
+                               getStrategy());
             throw e;
         }
         engine.stop();
@@ -193,9 +203,10 @@ abstract class AbstractExecutor
         // the next step is to try to stop the strategy normally
         // make sure the strategy is in a state where the strategy can be stopped
         if(!getStrategy().getStatus().canChangeStatusTo(STOPPING)) {
-            CANNOT_STOP.error(Strategy.STRATEGY_MESSAGES,
-                              getStrategy(),
-                              getStrategy().getStatus());
+            StrategyModule.log(LogEvent.error(CANNOT_STOP,
+                                              String.valueOf(getStrategy()),
+                                              getStrategy().getStatus()),
+                               getStrategy());
             return;
         }
         // now stop the strategy
@@ -204,12 +215,12 @@ abstract class AbstractExecutor
         // interrupt the stop job, if necessary
         interruptStopJob();
         // best effort to interrupt the strategy is done
-        SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                               "{} interrupt is complete, start job is {}, stop job is {}, status is {}", //$NON-NLS-1$
-                               getStrategy(),
-                               (startJob == null ? "done" : (startJob.isDone() ? "done" : "not done")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                               (stopJob == null ? "done" : (stopJob.isDone() ? "done" : "not done")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                               getStrategy().getStatus());
+        StrategyModule.log(LogEvent.debug(INTERRUPT_COMPLETE,
+                                          getStrategy().toString(),
+                                          (startJob == null ? 1 : (startJob.isDone() ? 1 : 0)),
+                                          (stopJob == null ? 1 : (stopJob.isDone() ? 1 : 0)),
+                                          getStrategy().getStatus()),
+                           getStrategy());
     }
     /**
      * Get the strategy value.
@@ -264,14 +275,15 @@ abstract class AbstractExecutor
             // indicates that there is an outstanding start job, try to interrupt the start job and
             //  move the strategy to RUNNING status
             try {
-                SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                                       "{} canceling outstanding start job", //$NON-NLS-1$
-                                       getStrategy());
+                StrategyModule.log(LogEvent.debug(CANCELING_START_JOB,
+                                                  String.valueOf(getStrategy())),
+                                   getStrategy());
                 startJob.cancel(true);
             } catch (Exception e) {
-                INTERRUPT_START_ERROR.warn(Strategy.STRATEGY_MESSAGES,
-                                           e,
-                                           getStrategy());
+                StrategyModule.log(LogEvent.warn(INTERRUPT_START_ERROR,
+                                                 e,
+                                                 String.valueOf(getStrategy())),
+                                   getStrategy());
                 // continue interrupt process
             }
             // job has been interrupted to the best of our ability
@@ -285,9 +297,10 @@ abstract class AbstractExecutor
                     Thread.sleep(250);
                 }
             } catch (Exception e) {
-                INTERRUPT_START_ERROR.warn(Strategy.STRATEGY_MESSAGES,
-                                           e,
-                                           getStrategy());
+                StrategyModule.log(LogEvent.warn(INTERRUPT_START_ERROR,
+                                                 e,
+                                                 String.valueOf(getStrategy())),
+                                   getStrategy());
                 // might not have been able to stop the start loop, plug ahead and see if we
                 //  can still get out of this
             }
@@ -307,15 +320,15 @@ abstract class AbstractExecutor
            !stopJob.isDone()) {
             // strategy should be in STOPPING mode
             try {
-                SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                                       "{} canceling outstanding stop job", //$NON-NLS-1$
-                                       getStrategy());
+                StrategyModule.log(LogEvent.debug(CANCELING_STOP_JOB,
+                                                  String.valueOf(getStrategy())),
+                                   getStrategy());
                 // try to kill the stop job
                 stopJob.cancel(true);
             } catch (Exception e) {
-                INTERRUPT_STOP_ERROR.warn(Strategy.STRATEGY_MESSAGES,
-                                          e,
-                                          getStrategy());
+                StrategyModule.log(LogEvent.warn(INTERRUPT_STOP_ERROR,
+                                                 e),
+                                   getStrategy());
                 // do not necessarily quit just yet, wait and see if the strategy stops
             }
         }
@@ -328,9 +341,10 @@ abstract class AbstractExecutor
                 Thread.sleep(250);
             }
         } catch (Exception e) {
-            INTERRUPT_STOP_ERROR.warn(Strategy.STRATEGY_MESSAGES,
-                                      e,
-                                      getStrategy());
+            StrategyModule.log(LogEvent.warn(INTERRUPT_STOP_ERROR,
+                                             e,
+                                             String.valueOf(getStrategy())),
+                               getStrategy());
         }
     }
     /**
@@ -356,9 +370,10 @@ abstract class AbstractExecutor
             }
             // strategy is at STOPPED or FAILED, or at STOPPING and 30s have elapsed
         } catch (Exception e) {
-            ERROR_WAITING_FOR_STOP.warn(Strategy.STRATEGY_MESSAGES,
-                                        e,
-                                        getStrategy());
+            StrategyModule.log(LogEvent.warn(ERROR_WAITING_FOR_STOP,
+                                             e,
+                                             String.valueOf(getStrategy())),
+                               getStrategy());
             // may not have been able to stop, keep going
         }
     }

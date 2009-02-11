@@ -224,7 +224,7 @@ public final class StrategyManager {
 			ObjectName objectName = strategy.getURN().toObjectName();
 			StrategyMXBean proxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
 					StrategyMXBean.class);
-			proxy.setOrdersDestination(destination.getURN().toString());
+			proxy.setOutputDestination(destination.getURN().toString());
 			strategy.setDestination(destination);
 			saveState();
 		} catch (Exception e) {

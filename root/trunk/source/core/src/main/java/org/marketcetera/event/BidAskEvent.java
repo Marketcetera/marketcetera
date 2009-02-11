@@ -19,6 +19,7 @@ import org.marketcetera.core.ClassVersion;
 public abstract class BidAskEvent
         extends SymbolExchangeEvent
 {
+    private static final long serialVersionUID = 1L;
     /**
      * the price of the ask on the quote 
      */

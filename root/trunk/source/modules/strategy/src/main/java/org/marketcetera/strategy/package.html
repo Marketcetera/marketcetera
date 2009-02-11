@@ -424,8 +424,8 @@
                 void notifyLow(java.lang.String,java.lang.String)
                 notify_low(subject,body)
             </pre>
-            Transmits a low priority notification with the given subject and body.  The notifications are processed
-			by the notification manager.
+            Transmits a low priority notification with the given subject and body.    The notifications are emitted
+            to the strategy output stream.
         </p>
         <p>
             <em id="strategy_structure_api_actions_notifymedium">notifyMedium</em>
@@ -434,8 +434,8 @@
                 void notifyMedium(java.lang.String,java.lang.String)
                 notify_medium(subject,body)
             </pre>
-            Transmits a medium priority notification with the given subject and body.  The notifications are processed
-            by the notification manager.
+            Transmits a medium priority notification with the given subject and body.    The notifications are emitted
+            to the strategy output stream.
         </p>
         <p>
             <em id="strategy_structure_api_actions_notifyhigh">notifyHigh</em>
@@ -444,8 +444,48 @@
                 void notifyHigh(java.lang.String,java.lang.String)
                 notify_high(subject,body)
             </pre>
-            Transmits a high priority notification with the given subject and body.  The notifications are processed
-            by the notification manager.
+            Transmits a high priority notification with the given subject and body.  The notifications are emitted
+			to the strategy output stream.
+        </p>
+        <p>
+            <em id="strategy_structure_api_actions_debug">debug</em>
+            <br>
+            <pre>
+                void debug(java.lang.String)
+                debug(message)
+            </pre>
+			Emits the given message to the strategy log stream.  This message will be emitted only if the appropriate
+			logger category is activated for the strategy module.
+        </p>
+        <p>
+            <em id="strategy_structure_api_actions_info">info</em>
+            <br>
+            <pre>
+                void info(java.lang.String)
+                info(message)
+            </pre>
+            Emits the given message to the strategy log stream.  This message will be emitted only if the appropriate
+            logger category is activated for the strategy module.
+        </p>
+        <p>
+            <em id="strategy_structure_api_actions_info">warn</em>
+            <br>
+            <pre>
+                void warn(java.lang.String)
+                warn(message)
+            </pre>
+            Emits the given message to the strategy log stream.  This message will be emitted only if the appropriate
+            logger category is activated for the strategy module.
+        </p>
+        <p>
+            <em id="strategy_structure_api_actions_info">error</em>
+            <br>
+            <pre>
+                void error(java.lang.String)
+                error(message)
+            </pre>
+            Emits the given message to the strategy log stream.  This message will be emitted only if the appropriate
+            logger category is activated for the strategy module.
         </p>
 		
 		<h2 id="operation">Strategy Operation</h3>
@@ -472,7 +512,7 @@
 		<h3 id="operation_moduleframework">Module Framework Interface</h3>
 		Strategies can be run from within the module framework.  To run a strategy, create it then start it:
 		<pre>
-                createModule;metc:strategy:system;metc:strategy:system:&lt;instancename&gt;,&lt;classname&gt;,&lt;languagename&gt;,,,metc:sink:system,metc:sink:system
+                createModule;metc:strategy:system;metc:strategy:system:&lt;instancename&gt;,&lt;classname&gt;,&lt;languagename&gt;,,metc:sink:system,metc:sink:system
                 startModule;metc:strategy:system:&lt;instancename&gt;
 		</pre>
 		where:

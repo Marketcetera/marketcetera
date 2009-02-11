@@ -10,9 +10,9 @@ import static org.marketcetera.module.Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE
 import static org.marketcetera.module.Messages.DUPLICATE_MODULE_URN;
 import static org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE;
 import static org.marketcetera.module.Messages.INVALID_URN_SCHEME;
-import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.MODULE_NOT_FOUND;
 import static org.marketcetera.module.Messages.MODULE_NOT_RECEIVER;
+import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE;
 import static org.marketcetera.strategy.Language.RUBY;
@@ -106,9 +106,8 @@ public class StrategyModuleTest
                                                         RUBY,
                                                         RubyLanguageTest.STRATEGY,
                                                         new Properties(),
-                                                        new String[0],
-                                                        ordersURN,
-                                                        suggestionsURN);
+                                                        false,
+                                                        outputURN);
         assertEquals(1,
                      moduleManager.getModuleInstances(StrategyModuleFactory.PROVIDER_URN).size());
         assertEquals(strategy,
@@ -149,7 +148,7 @@ public class StrategyModuleTest
                                   RUBY,
                                   RubyLanguageTest.STRATEGY,
                                   new Properties(),
-                                  ordersURN);
+                                  "false");
         // muddle types
         doWrongTypeParameterTest(0,
                                  this,
@@ -157,45 +156,40 @@ public class StrategyModuleTest
                                  RUBY,
                                  RubyLanguageTest.STRATEGY,
                                  new Properties(),
-                                 new String[0],
-                                 ordersURN,
-                                 suggestionsURN);
+                                 false,
+                                 outputURN);
         doWrongTypeParameterTest(1,
                                  "MyStrategyURN",
                                  this,
                                  RUBY,
                                  RubyLanguageTest.STRATEGY,
                                  new Properties(),
-                                 new String[0],
-                                 ordersURN,
-                                 suggestionsURN);
+                                 false,
+                                 outputURN);
         doWrongTypeParameterTest(2,
                                  "MyStrategyURN",
                                  RubyLanguageTest.STRATEGY_NAME,
                                  this,
                                  RubyLanguageTest.STRATEGY,
                                  new Properties(),
-                                 new String[0],
-                                 ordersURN,
-                                 suggestionsURN);
+                                 false,
+                                 outputURN);
         doWrongTypeParameterTest(3,
                                  "MyStrategyURN",
                                  RubyLanguageTest.STRATEGY_NAME,
                                  RUBY,
                                  this,
                                  new Properties(),
-                                 new String[0],
-                                 ordersURN,
-                                 suggestionsURN);
+                                 false,
+                                 outputURN);
         doWrongTypeParameterTest(4,
                                  "MyStrategyURN",
                                  RubyLanguageTest.STRATEGY_NAME,
                                  RUBY,
                                  RubyLanguageTest.STRATEGY,
                                  this,
-                                 new String[0],
-                                 ordersURN,
-                                 suggestionsURN);
+                                 false,
+                                 outputURN);
         doWrongTypeParameterTest(5,
                                  "MyStrategyURN",
                                  RubyLanguageTest.STRATEGY_NAME,
@@ -203,34 +197,22 @@ public class StrategyModuleTest
                                  RubyLanguageTest.STRATEGY,
                                  new Properties(),
                                  this,
-                                 ordersURN,
-                                 suggestionsURN);
+                                 outputURN);
         doWrongTypeParameterTest(6,
                                  "MyStrategyURN",
                                  RubyLanguageTest.STRATEGY_NAME,
                                  RUBY,
                                  RubyLanguageTest.STRATEGY,
                                  new Properties(),
-                                 new String[0],
-                                 this,
-                                 suggestionsURN);
-        doWrongTypeParameterTest(7,
-                                 "MyStrategyURN",
-                                 RubyLanguageTest.STRATEGY_NAME,
-                                 RUBY,
-                                 RubyLanguageTest.STRATEGY,
-                                 new Properties(),
-                                 new String[0],
-                                 ordersURN,
+                                 false,
                                  this);
         // create a good 'un just to prove we can
         ModuleURN strategy = createStrategy(RubyLanguageTest.STRATEGY_NAME,
                                             RUBY,
                                             RubyLanguageTest.STRATEGY,
                                             new Properties(),
-                                            new String[0],
-                                            ordersURN,
-                                            suggestionsURN);
+                                            false,
+                                            outputURN);
         assertEquals(1,
                      moduleManager.getModuleInstances(StrategyModuleFactory.PROVIDER_URN).size());
         assertEquals(strategy,
@@ -249,9 +231,8 @@ public class StrategyModuleTest
                                             RUBY,
                                             RubyLanguageTest.STRATEGY,
                                             new Properties(),
-                                            new String[0],
-                                            ordersURN,
-                                            suggestionsURN);
+                                            false,
+                                            outputURN);
         assertTrue(moduleManager.getModuleInfo(strategy).getState().isStarted());
         // try some badly formed requests
         // null payload
@@ -299,15 +280,23 @@ public class StrategyModuleTest
         DataFlowID flowID3 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
                                                                                               "eVeNtS") });
         DataFlowID flowID4 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                              "NoTiFiCaTiOnS") });
+        DataFlowID flowID5 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                              "LoG") });
+        DataFlowID flowID6 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
                                                                                               "AlL") });
         // correct RequestType payload
-        DataFlowID flowID5 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
-                                                                                              OutputType.ORDERS) });
-        DataFlowID flowID6 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
-                                                                                              OutputType.SUGGESTIONS) });
         DataFlowID flowID7 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
-                                                                                              OutputType.EVENTS) });
+                                                                                              OutputType.ORDERS) });
         DataFlowID flowID8 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                              OutputType.SUGGESTIONS) });
+        DataFlowID flowID9 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                              OutputType.EVENTS) });
+        DataFlowID flowID10 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                              OutputType.NOTIFICATIONS) });
+        DataFlowID flowID11 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
+                                                                                               OutputType.LOG) });
+        DataFlowID flowID12 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(StrategyModuleFactory.PROVIDER_URN,
                                                                                               OutputType.ALL) });
         // TODO insert some code here to:
         //  1) have a test module make the above data requests
@@ -320,6 +309,10 @@ public class StrategyModuleTest
         moduleManager.cancel(flowID6);
         moduleManager.cancel(flowID7);
         moduleManager.cancel(flowID8);
+        moduleManager.cancel(flowID9);
+        moduleManager.cancel(flowID10);
+        moduleManager.cancel(flowID11);
+        moduleManager.cancel(flowID12);
     }
     @Test 
     public void receiveData()
@@ -330,9 +323,8 @@ public class StrategyModuleTest
                                             RUBY,
                                             RubyLanguageTest.STRATEGY,
                                             new Properties(),
-                                            new String[0],
-                                            ordersURN,
-                                            suggestionsURN);
+                                            false,
+                                            outputURN);
         // plumb the market data provider externally to the strategy module - normally, this would be done internally, but, for this test,
         //  it is sufficient that the data is flowing, it doesn't matter how it gets there
         DataFlowID dataFlowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.PROVIDER_URN,
@@ -354,21 +346,19 @@ public class StrategyModuleTest
         throws Exception
     {
         final int[] index = new int[1];
-        for(index[0]=0;index[0]<7;index[0]++) {
-            // parameters 1, 5, 6, 7, and 8 are optional, so nulls are allowed
+        for(index[0]=0;index[0]<6;index[0]++) {
+            // parameters 1, 5, 6, and 7 are optional, so nulls are allowed
             if(index[0] == 0 ||
                index[0] == 4 ||
                index[0] == 5 ||
-               index[0] == 6 ||
-               index[0] == 7) {
+               index[0] == 6) {
                 verifyStrategyStartsAndStops((index[0]==0 ? null : "MyStrategy"),
                                              (index[0]==1 ? null : RubyLanguageTest.STRATEGY_NAME),
                                              (index[0]==2 ? null : RUBY),
                                              (index[0]==3 ? null : RubyLanguageTest.STRATEGY),
                                              (index[0]==4 ? null : new Properties()),
-                                             (index[0]==5 ? null : new String[0]),
-                                             (index[0]==6 ? null : ordersURN),
-                                             (index[0]==7 ? null : suggestionsURN));
+                                             (index[0]==5 ? null : false),
+                                             (index[0]==6 ? null : outputURN));
             } else {
                 new ExpectedFailure<ModuleCreationException>(NULL_PARAMETER_ERROR,
                                                              index[0] + 1,
@@ -382,9 +372,8 @@ public class StrategyModuleTest
                                                      (index[0]==2 ? null : RUBY),
                                                      (index[0]==3 ? null : RubyLanguageTest.STRATEGY),
                                                      (index[0]==4 ? null : new Properties()),
-                                                     (index[0]==5 ? null : new String[0]),
-                                                     (index[0]==6 ? null : ordersURN),
-                                                     (index[0]==7 ? null : suggestionsURN));
+                                                     (index[0]==5 ? null : false),
+                                                     (index[0]==6 ? null : outputURN));
                     }
                 };
             }
@@ -411,7 +400,6 @@ public class StrategyModuleTest
                                              RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
-                                             null,
                                              null);
             }
         };
@@ -419,7 +407,6 @@ public class StrategyModuleTest
                                      RubyLanguageTest.STRATEGY_NAME,
                                      RUBY,
                                      RubyLanguageTest.STRATEGY,
-                                     null,
                                      null,
                                      null,
                                      null);
@@ -444,14 +431,12 @@ public class StrategyModuleTest
                                              RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
-                                             null,
                                              null);
             }
         };
         verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
                                      RUBY,
                                      RubyLanguageTest.STRATEGY,
-                                     null,
                                      null,
                                      null,
                                      null);
@@ -479,7 +464,6 @@ public class StrategyModuleTest
                                              RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
-                                             null,
                                              null);
             }
         };
@@ -488,13 +472,11 @@ public class StrategyModuleTest
                                      RubyLanguageTest.STRATEGY,
                                      null,
                                      null,
-                                     null,
                                      null);
         // test again with a mixed case string
         verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
                                      validMixedCaseLanguage,
                                      RubyLanguageTest.STRATEGY,
-                                     null,
                                      null,
                                      null,
                                      null);
@@ -522,7 +504,6 @@ public class StrategyModuleTest
                                              badFile,
                                              null,
                                              null,
-                                             null,
                                              null);
             }
         };
@@ -543,7 +524,6 @@ public class StrategyModuleTest
                                      RubyLanguageTest.STRATEGY,
                                      properties,
                                      null,
-                                     null,
                                      null);
         // non-empty properties
         properties.setProperty("some-key",
@@ -552,33 +532,6 @@ public class StrategyModuleTest
                                      RUBY,
                                      RubyLanguageTest.STRATEGY,
                                      properties,
-                                     null,
-                                     null,
-                                     null);
-    }
-    /**
-     * Tests permutations of classpath parameter.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void classpathParameterTest()
-        throws Exception
-    {
-        // empty classpath
-        verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
-                                     RUBY,
-                                     RubyLanguageTest.STRATEGY,
-                                     null,
-                                     new String[0],
-                                     null,
-                                     null);
-        // non-empty classpath
-        verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
-                                     RUBY,
-                                     RubyLanguageTest.STRATEGY,
-                                     null,
-                                     new String[] { "/some/path/here", "/some/other/path with spaces/here" },
                                      null,
                                      null);
     }
@@ -611,8 +564,7 @@ public class StrategyModuleTest
                                              RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
-                                             invalidURN,
-                                             null);
+                                             invalidURN);
             }
         };
         // next, valid, unstarted URN
@@ -625,58 +577,6 @@ public class StrategyModuleTest
                 verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
                                              RUBY,
                                              RubyLanguageTest.STRATEGY,
-                                             null,
-                                             null,
-                                             validUnstartedURN,
-                                             null);
-            }
-        };
-        // last, valid, started URN, but not a data-receiver
-        new ExpectedFailure<DataFlowException>(MODULE_NOT_RECEIVER,
-                                               validURNNotReceiver.toString()) {
-            @Override
-            protected void run()
-                throws Exception
-            {
-                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
-                                             RUBY,
-                                             RubyLanguageTest.STRATEGY,
-                                             null,
-                                             null,
-                                             validURNNotReceiver,
-                                             null);
-            }
-        };
-        // repeat tests with suggestions
-        // first, invalid URN
-        new ExpectedFailure<ModuleNotFoundException>(MODULE_NOT_FOUND,
-                                                     invalidURN.toString()) {
-            @Override
-            protected void run()
-                throws Exception
-            {
-                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
-                                             RUBY,
-                                             RubyLanguageTest.STRATEGY,
-                                             null,
-                                             null,
-                                             null,
-                                             invalidURN);
-            }
-        };
-        // next, valid, unstarted URN
-        new ExpectedFailure<ModuleStateException>(DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT,
-                                                  validUnstartedURN.toString(),
-                                                  ExpectedFailure.IGNORE,
-                                                  ExpectedFailure.IGNORE) {
-            @Override
-            protected void run()
-                throws Exception
-            {
-                verifyStrategyStartsAndStops(RubyLanguageTest.STRATEGY_NAME,
-                                             RUBY,
-                                             RubyLanguageTest.STRATEGY,
-                                             null,
                                              null,
                                              null,
                                              validUnstartedURN);
@@ -694,7 +594,6 @@ public class StrategyModuleTest
                                              RubyLanguageTest.STRATEGY,
                                              null,
                                              null,
-                                             null,
                                              validURNNotReceiver);
             }
         };
@@ -708,15 +607,16 @@ public class StrategyModuleTest
     public void mxBean()
         throws Exception
     {
-        // stop the suggestions module to create a valid, stopped URN
-        moduleManager.stop(suggestionsURN);
+        // create a valid, stopped URN
+        ModuleURN stoppedURN = moduleManager.createModule(MockRecorderModule.Factory.PROVIDER_URN);
+        assertFalse(moduleManager.getModuleInfo(stoppedURN).getState().isStarted());
         // create our test data for the values to pass to the setDestination MXBean setters (suggestion and order)
         //  the values are null, invalid, stopped, empty, and started
-        final String[] urnStrings = new String[] { null, "this is not a URN", suggestionsURN.getValue(), "", ordersURN.getValue() };
+        final String[] urnStrings = new String[] { null, "this is not a URN", stoppedURN.getValue(), "", outputURN.getValue() };
         // create the test data for the starting point for the strategy module
         //  the values are null and started (no stopped because then the strategy module itself would be un-startable before we even got around to
         //  testing the setters - no point in that
-        final ModuleURN[] urns = new ModuleURN[] { null, ordersURN };
+        final ModuleURN[] urns = new ModuleURN[] { null, outputURN };
         // create parameters test data
         // empty
         Properties emptyProperties = new Properties();
@@ -732,98 +632,63 @@ public class StrategyModuleTest
         final String[] parameterStrings = new String[] { null, "ab:c=d::ef:", Util.propertiesToString(emptyProperties),
                                                          Util.propertiesToString(nonEmptyProperties),Util.propertiesToString(nonASCIIProperties) };
         final Properties[] parameters = new Properties[] { null, emptyProperties, nonEmptyProperties, nonASCIIProperties };
-        // cycle through all the permutations for the starting point for suggestions and orders (2 values each) and the value to set the destinations to
-        //  (5 values each) and new parameters (4 values each) and parameters starting point (3 values each), for a total of 1200 test cases (2*2*5*5*4*3)
-        // while this bit of code may not be the most legible, it's easy to see that 1200 test conditions would be a fair bit more verbose
-        for(int a=0;a<=4;a++) {
-            for(int b=0;b<=4;b++) {
-                for(int c=0;c<=1;c++) {
-                    for(int d=0;d<=1;d++) {
-                        for(int e=0;e<=4;e++) {
-                            for(int f=0;f<=3;f++) {
-                                final int aCounter = a;
-                                final int bCounter = b;
-                                final int cCounter = c;
-                                final int dCounter = d;
-                                final int eCounter = e;
-                                final int fCounter = f;
+        // cycle through all the permutations for the starting point for outputs (2 values) and the value to set the destinations to
+        //  (5 values) and new parameters (4 values) and parameters starting point (3 values), and route or not route (2 values) and change to route or not route (2 values),
+        // for a total of 480 test cases (2*5*4*3*2*2) while this bit of code may not be the most legible, it's easy to see that 480 test 
+        //  conditions would be a fair bit more verbose
+        for(int urnStringIndex=0;urnStringIndex<urnStrings.length;urnStringIndex++) {
+            for(int urnIndex=0;urnIndex<urns.length;urnIndex++) {
+                for(int parameterStringIndex=0;parameterStringIndex<parameterStrings.length;parameterStringIndex++) {
+                    for(int parameterIndex=0;parameterIndex<parameters.length;parameterIndex++) {
+                        for(int startRoutingIndex=0;startRoutingIndex<=1;startRoutingIndex++) {
+                            for(int changeRoutingIndex=0;changeRoutingIndex<=1;changeRoutingIndex++) {
+                                final int urnStringCounter = urnStringIndex;
+                                final int urnCounter = urnIndex;
+                                final int parmaterStringCounter = parameterStringIndex;
+                                final int parameterCounter = parameterIndex;
+                                final int startRoutingCounter = startRoutingIndex;
+                                final int changeRoutingCounter = changeRoutingIndex;
                                 SLF4JLoggerProxy.debug(this,
                                                        "Testing permutation: {} {} {} {} {} {}",
-                                                       a,b,c,d,e,f);
-                                // the a values need to be tested first (1 & 2) followed by the same tests for the b values - can't combine the boolean
-                                //  expressions (like a==1 || b==1) because a==2 && b==1 would fail in the first check because the a==2 part would fail
-                                //  before the b==1 and throw the "wrong" exception.  that may not be horribly clear, but suffice it to say that there's
-                                //  a reason why the conditions are split apart
-                                if(a == 1) { // invalid URN
+                                                       urnStringIndex,urnIndex,parameterStringIndex,parameterIndex,startRoutingIndex,changeRoutingIndex);
+                                if(urnStringIndex == 1) { // invalid URN
                                     new ExpectedFailure<InvalidURNException>(INVALID_URN_SCHEME) {
                                         @Override
                                         protected void run()
-                                        throws Exception
+                                            throws Exception
                                         {
-                                            doOneMXInterfaceTest(urnStrings[aCounter],
-                                                                 urnStrings[bCounter],
-                                                                 urns[cCounter],
-                                                                 urns[dCounter],
-                                                                 parameterStrings[eCounter],
-                                                                 parameters[fCounter]);
+                                            doOneMXInterfaceTest(urnStrings[urnStringCounter],
+                                                                 urns[urnCounter],
+                                                                 parameterStrings[parmaterStringCounter],
+                                                                 parameters[parameterCounter],
+                                                                 (startRoutingCounter == 0 ? false : true),
+                                                                 (changeRoutingCounter == 0 ? false : true));
                                         }
                                     };
                                     continue;
                                 }
-                                if(a == 2) { // stopped URN
+                                if(urnStringIndex == 2) { // stopped URN
                                     new ExpectedFailure<ModuleStateException>(DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT) {
                                         @Override
                                         protected void run()
-                                        throws Exception
+                                            throws Exception
                                         {
-                                            doOneMXInterfaceTest(urnStrings[aCounter],
-                                                                 urnStrings[bCounter],
-                                                                 urns[cCounter],
-                                                                 urns[dCounter],
-                                                                 parameterStrings[eCounter],
-                                                                 parameters[fCounter]);
+                                            doOneMXInterfaceTest(urnStrings[urnStringCounter],
+                                                                 urns[urnCounter],
+                                                                 parameterStrings[parmaterStringCounter],
+                                                                 parameters[parameterCounter],
+                                                                 (startRoutingCounter == 0 ? false : true),
+                                                                 (changeRoutingCounter == 0 ? false : true));
                                         }
                                     };
                                     continue;
                                 }
-                                if(b == 1) { // invalid URN
-                                    new ExpectedFailure<InvalidURNException>(INVALID_URN_SCHEME) {
-                                        @Override
-                                        protected void run()
-                                        throws Exception
-                                        {
-                                            doOneMXInterfaceTest(urnStrings[aCounter],
-                                                                 urnStrings[bCounter],
-                                                                 urns[cCounter],
-                                                                 urns[dCounter],
-                                                                 parameterStrings[eCounter],
-                                                                 parameters[fCounter]);
-                                        }
-                                    };
-                                    continue;
-                                }
-                                if(b == 2) { // stopped URN
-                                    new ExpectedFailure<ModuleStateException>(DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT) {
-                                        @Override
-                                        protected void run()
-                                        throws Exception
-                                        {
-                                            doOneMXInterfaceTest(urnStrings[aCounter],
-                                                                 urnStrings[bCounter],
-                                                                 urns[cCounter],
-                                                                 urns[dCounter],
-                                                                 parameterStrings[eCounter],
-                                                                 parameters[fCounter]);
-                                        }
-                                    };
-                                    continue;
-                                }
-                                doOneMXInterfaceTest(urnStrings[a],
-                                                     urnStrings[b],
-                                                     urns[c],
-                                                     urns[dCounter],
-                                                     parameterStrings[eCounter],
-                                                     parameters[fCounter]);
+                                doOneMXInterfaceTest(urnStrings[urnStringIndex],
+                                                     urns[urnIndex],
+                                                     parameterStrings[parmaterStringCounter],
+                                                     parameters[parameterCounter],
+                                                     (startRoutingCounter == 0 ? false : true),
+                                                     (changeRoutingCounter == 0 ? false : true));
                             }
                         }
                     }
@@ -850,8 +715,7 @@ public class StrategyModuleTest
                                                         RubyLanguageTest.STRATEGY,
                                                         null,
                                                         null,
-                                                        dataSink,
-                                                        null);
+                                                        dataSink);
         startStrategy(strategy);
         assertTrue(moduleManager.getModuleInfo(strategy).getState().isStarted());
         stopStrategy(strategy);
@@ -873,7 +737,6 @@ public class StrategyModuleTest
                                                          RubyLanguageTest.STRATEGY,
                                                          null,
                                                          null,
-                                                         null,
                                                          null);
         // try to create a strategy with the same specified instance name
         new ExpectedFailure<ModuleCreationException>(DUPLICATE_MODULE_URN,
@@ -889,7 +752,6 @@ public class StrategyModuleTest
                                            RubyLanguageTest.STRATEGY,
                                            null,
                                            null,
-                                           null,
                                            null);
             }
         };
@@ -901,7 +763,6 @@ public class StrategyModuleTest
                                                RubyLanguageTest.STRATEGY_NAME,
                                                RUBY,
                                                RubyLanguageTest.STRATEGY,
-                                               null,
                                                null,
                                                null,
                                                null);
@@ -930,7 +791,6 @@ public class StrategyModuleTest
                                                    RUBY,
                                                    RubyLanguageTest.STRATEGY,
                                                    parameters,
-                                                   null,
                                                    null,
                                                    null);
         // wait until the strategy enters "STARTING"
@@ -1051,7 +911,6 @@ public class StrategyModuleTest
                                                            RubyLanguageTest.STRATEGY,
                                                            null,
                                                            null,
-                                                           null,
                                                            null);
         // not started yet
         assertFalse(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
@@ -1096,44 +955,37 @@ public class StrategyModuleTest
     /**
      * Executes a single permutation of a strategy attribute get/set test.
      * 
-     * @param inOrdersDestination a <code>String</code> value or null
-     * @param inSuggestionsDestination a <code>String</code> value or null
-     * @param inOrdersStart a <code>ModuleURN</code> value or null
-     * @param inSuggestionsStart a <code>ModuleURN</code> value or null
+     * @param inOutputDestination a <code>String</code> value or null
+     * @param inOutputStart a <code>ModuleURN</code> value or null
      * @param inNewParameters a <code>String</code> value containing a properly formatted properties string or null
      * @param inStartingParameters a <code>Properties</code> value containing the starting parameters value or null
+     * @param inStartingRouteToORS a <code>boolean</code> value indicating whether the strategy should initially route to the ORS or not
+     * @param inNewRouting a <code>boolean</code> value indicating whether the strategy should be changed to route to the ORS or not
      * @return a <code>ModuleURN</code> value containing the strategy module guaranteed to be started
      * @throws Exception if the strategy module could not be started or another error occurs
      */
-    private ModuleURN doOneMXInterfaceTest(String inOrdersDestination,
-                                           String inSuggestionsDestination,
-                                           ModuleURN inOrdersStart,
-                                           ModuleURN inSuggestionsStart,
+    private ModuleURN doOneMXInterfaceTest(String inOutputDestination,
+                                           ModuleURN inOutputStart,
                                            String inNewParameters,
-                                           Properties inStartingParameters)
+                                           Properties inStartingParameters,
+                                           boolean inStartingRouteToORS,
+                                           boolean inNewRouting)
         throws Exception
     {
         ModuleURN strategy = createStrategy(RubyLanguageTest.STRATEGY_NAME,
                                             RUBY,
                                             RubyLanguageTest.STRATEGY,
                                             inStartingParameters,
-                                            null,
-                                            inOrdersStart,
-                                            inSuggestionsStart);
+                                            inStartingRouteToORS,
+                                            inOutputStart);
         StrategyMXBean mxBeanInterface = getMXProxy(strategy);
         verifyStrategyStatus(strategy,
                              RUNNING);
-        if(inOrdersStart == null) {
-            assertNull(mxBeanInterface.getOrdersDestination());
+        if(inOutputStart == null) {
+            assertNull(mxBeanInterface.getOutputDestination());
         } else {
-            assertEquals(inOrdersStart.getValue(),
-                         mxBeanInterface.getOrdersDestination());
-        }
-        if(inSuggestionsStart == null) {
-            assertNull(mxBeanInterface.getSuggestionsDestination());
-        } else {
-            assertEquals(inSuggestionsStart.getValue(),
-                         mxBeanInterface.getSuggestionsDestination());
+            assertEquals(inOutputStart.getValue(),
+                         mxBeanInterface.getOutputDestination());
         }
         if(inStartingParameters == null ||
            inStartingParameters.isEmpty()) {
@@ -1144,24 +996,19 @@ public class StrategyModuleTest
             assertEquals(actualProperties,
                          inStartingParameters);
         }
+        assertEquals(inStartingRouteToORS,
+                     mxBeanInterface.isRoutingOrdersToORS());
         // make the change
-        mxBeanInterface.setOrdersDestination(inOrdersDestination);
-        mxBeanInterface.setSuggestionsDestination(inSuggestionsDestination);
+        mxBeanInterface.setOutputDestination(inOutputDestination);
         mxBeanInterface.setParameters(inNewParameters);
+        mxBeanInterface.setIsRountingOrdersToORS(inNewRouting);
         // test the change
-        if(inOrdersDestination == null ||
-           inOrdersDestination.isEmpty()) {
-            assertNull(mxBeanInterface.getOrdersDestination());
+        if(inOutputDestination == null ||
+           inOutputDestination.isEmpty()) {
+            assertNull(mxBeanInterface.getOutputDestination());
         } else {
-            assertEquals(inOrdersDestination,
-                         mxBeanInterface.getOrdersDestination());
-        }
-        if(inSuggestionsDestination == null ||
-           inSuggestionsDestination.isEmpty()) {
-            assertNull(mxBeanInterface.getSuggestionsDestination());
-        } else {
-            assertEquals(inSuggestionsDestination,
-                         mxBeanInterface.getSuggestionsDestination());
+            assertEquals(inOutputDestination,
+                         mxBeanInterface.getOutputDestination());
         }
         if(inNewParameters == null ||
            inNewParameters.isEmpty()) {
@@ -1173,6 +1020,8 @@ public class StrategyModuleTest
             assertEquals(actualProperties,
                          expectedProperties);
         }
+        assertEquals(inNewRouting,
+                     mxBeanInterface.isRoutingOrdersToORS());
         // cycle the module
         stopStrategy(strategy);
         verifyStrategyStatus(strategy,
@@ -1233,11 +1082,11 @@ public class StrategyModuleTest
     {
         if(inParameters != null) {
             assertFalse("This test is supposed to test an incorrect number of parameters",
-                        inParameters.length == 8);
+                        inParameters.length == 7);
         }
         new ExpectedFailure<ModuleCreationException>(CANNOT_CREATE_MODULE_WRONG_PARAM_NUM,
                                                      StrategyModuleFactory.PROVIDER_URN.toString(),
-                                                     8,
+                                                     7,
                                                      (inParameters == null) ? 0 : inParameters.length) {
             @Override
             protected void run()
@@ -1257,7 +1106,7 @@ public class StrategyModuleTest
         };
     }
     /**
-     * should match the signature of {@link StrategyModule#StrategyModule(ModuleURN, String, Language, File, Properties, ModuleURN, ModuleURN)}. 
+     * should match the signature of {@link StrategyModule#StrategyModule(ModuleURN, String, Language, File, Properties, Boolean, ModuleURN)}. 
      */
-    private static final Class<?>[] expectedTypes = new Class<?>[] { String.class, String.class, Language.class, File.class, Properties.class, String[].class, ModuleURN.class, ModuleURN.class };
+    private static final Class<?>[] expectedTypes = new Class<?>[] { String.class, String.class, Language.class, File.class, Properties.class, Boolean.class, ModuleURN.class };
 }

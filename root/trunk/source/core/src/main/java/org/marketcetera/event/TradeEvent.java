@@ -18,7 +18,8 @@ import org.marketcetera.core.ClassVersion;
 public class TradeEvent 
     extends SymbolExchangeEvent
 {
-	/**
+    private static final long serialVersionUID = 1L;
+    /**
      * the price of the trade 
 	 */
     private final BigDecimal price;

@@ -2,6 +2,7 @@ include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.marketdata.DataRequest"
 include_class "org.marketcetera.trade.Factory"
 include_class "org.marketcetera.trade.MSymbol"
+include_class 'org.marketcetera.util.test.UnicodeData'
 include_class "java.math.BigDecimal"
 include_class "java.lang.System"
 include_class "java.lang.Long"
@@ -44,6 +45,22 @@ class RubyStrategy < Strategy
           notify_low("low subject", Long.toString(System.nanoTime()))
           notify_medium("medium subject", Long.toString(System.nanoTime()))
           notify_high("high subject", Long.toString(System.nanoTime()))
+          debug nil
+          debug ""
+          debug "Some statement"
+          debug UnicodeData::HOUSE_AR
+          info nil
+          info ""
+          info "Some statement"
+          info UnicodeData::HOUSE_AR
+          warn nil
+          warn ""
+          warn "Some statement"
+          warn UnicodeData::HOUSE_AR
+          error nil
+          error ""
+          error "Some statement"
+          error UnicodeData::HOUSE_AR
      end
      if(get_property("askForPosition") != nil)
          symbol = get_property "symbol"

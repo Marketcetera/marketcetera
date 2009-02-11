@@ -25,6 +25,14 @@ public enum OutputType
      */
     EVENTS,
     /**
+     * notifications created by this strategy
+     */
+    NOTIFICATIONS,
+    /**
+     * log output created by this strategy
+     */
+    LOG,
+    /**
      * all objects, regardless of type (includes all the above)
      */
     ALL
