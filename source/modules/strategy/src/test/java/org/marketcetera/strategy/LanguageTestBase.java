@@ -7,10 +7,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.marketcetera.event.LogEvent.Level.DEBUG;
+import static org.marketcetera.event.LogEvent.Level.ERROR;
+import static org.marketcetera.event.LogEvent.Level.INFO;
+import static org.marketcetera.event.LogEvent.Level.WARN;
+import static org.marketcetera.event.TestMessages.MESSAGE_1P;
 import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
 import static org.marketcetera.strategy.Language.JAVA;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
+import static org.marketcetera.strategy.Messages.INVALID_LOG;
 import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
 import static org.marketcetera.strategy.Status.FAILED;
 import static org.marketcetera.strategy.Status.RUNNING;
@@ -28,13 +34,16 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.core.notifications.NotificationManager;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.LogEventTest;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
@@ -61,6 +70,7 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TypesTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.test.UnicodeData;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;
@@ -97,7 +107,6 @@ public abstract class LanguageTestBase
                                                   strategy.getFile(),
                                                   null,
                                                   null,
-                                                  null,
                                                   null);
         verifyPropertyNonNull("onStart");
         doSuccessfulStartTest(strategyModule);
@@ -124,7 +133,6 @@ public abstract class LanguageTestBase
                 verifyStrategyStartsAndStops(strategy.getName(),
                                              getLanguage(),
                                              strategy.getFile(),
-                                             null,
                                              null,
                                              null,
                                              null);
@@ -154,7 +162,6 @@ public abstract class LanguageTestBase
                                              strategy.getFile(),
                                              null,
                                              null,
-                                             null,
                                              null);
             }
         };
@@ -180,7 +187,6 @@ public abstract class LanguageTestBase
                                              strategy.getFile(),
                                              null,
                                              null,
-                                             null,
                                              null);
             }
         };
@@ -199,7 +205,6 @@ public abstract class LanguageTestBase
         doSuccessfulStartTest(createStrategy(strategy.getName(),
                                              getLanguage(),
                                              strategy.getFile(),
-                                             null,
                                              null,
                                              null,
                                              null));
@@ -226,7 +231,6 @@ public abstract class LanguageTestBase
                                              strategy2.getFile(),
                                              null,
                                              null,
-                                             null,
                                              null);
             }
         };
@@ -249,7 +253,6 @@ public abstract class LanguageTestBase
         ModuleURN strategyURN = createStrategy(strategy.getName(),
                                                getLanguage(),
                                                strategy.getFile(),
-                                               null,
                                                null,
                                                null,
                                                null);
@@ -292,7 +295,6 @@ public abstract class LanguageTestBase
                                                strategy.getFile(),
                                                parameters,
                                                null,
-                                               null,
                                                null);
         verifyNullProperties();
         // create an emitter module that will emit the types of data that the strategy must be able to process
@@ -331,7 +333,6 @@ public abstract class LanguageTestBase
                                                strategy.getFile(),
                                                parameters,
                                                null,
-                                               null,
                                                null);
         // "onStart" has completed, but verify that the last statement in the strategy was never executed
         verifyPropertyNull("onStart");
@@ -347,7 +348,6 @@ public abstract class LanguageTestBase
                                      getLanguage(),
                                      strategy.getFile(),
                                      parameters,
-                                     null,
                                      null,
                                      null);
         doSuccessfulStartTest(strategyURN);
@@ -388,7 +388,6 @@ public abstract class LanguageTestBase
                                                    getLanguage(),
                                                    strategy.getFile(),
                                                    parameters,
-                                                   null,
                                                    null,
                                                    null);
         // wait until the strategy enters "STARTING"
@@ -439,7 +438,6 @@ public abstract class LanguageTestBase
                                                      getLanguage(),
                                                      strategy.getFile(),
                                                      parameters,
-                                                     null,
                                                      null,
                                                      null);
         // being stop process
@@ -498,7 +496,6 @@ public abstract class LanguageTestBase
                                                      getLanguage(),
                                                      strategy.getFile(),
                                                      parameters,
-                                                     null,
                                                      null,
                                                      null);
         // strategy is in running state
@@ -656,7 +653,6 @@ public abstract class LanguageTestBase
                                                strategy.getFile(),
                                                null,
                                                null,
-                                               null,
                                                null);
         verifyNullProperties();
         // set the indicators to tell the script what to cancel
@@ -694,7 +690,6 @@ public abstract class LanguageTestBase
                                              strategy.getFile(),
                                              parameters,
                                              null,
-                                             null,
                                              null));
         // make sure to wait until at least 1000ms after start
         Thread.sleep(2000);
@@ -722,7 +717,6 @@ public abstract class LanguageTestBase
                                              strategy.getFile(),
                                              parameters,
                                              null,
-                                             null,
                                              null));
         // make sure to wait until at least 2000ms after start
         Thread.sleep(2000);
@@ -748,7 +742,6 @@ public abstract class LanguageTestBase
                                              getLanguage(),
                                              strategy.getFile(),
                                              parameters,
-                                             null,
                                              null,
                                              null));
         // make sure to wait until at least 1000ms after start
@@ -778,7 +771,6 @@ public abstract class LanguageTestBase
                                              strategy.getFile(),
                                              parameters,
                                              null,
-                                             null,
                                              null));
         // callback should happen immediately, but wait a second or so
         Thread.sleep(1000);
@@ -805,7 +797,6 @@ public abstract class LanguageTestBase
                                              getLanguage(),
                                              strategy.getFile(),
                                              parameters,
-                                             null,
                                              null,
                                              null));
         // make sure to wait until at least 1000ms after start
@@ -835,7 +826,6 @@ public abstract class LanguageTestBase
                                              strategy.getFile(),
                                              parameters,
                                              null,
-                                             null,
                                              null));
         // callback should happen immediately, but wait a second or so
         Thread.sleep(1000);
@@ -864,7 +854,6 @@ public abstract class LanguageTestBase
                                                getLanguage(),
                                                strategy.getFile(),
                                                parameters,
-                                               null,
                                                null,
                                                null); 
         doSuccessfulStartTest(strategyURN);
@@ -900,7 +889,6 @@ public abstract class LanguageTestBase
                                              strategy.getFile(),
                                              parameters,
                                              null,
-                                             null,
                                              null));
         // callback should happen immediately, but wait a second or so
         Thread.sleep(1000);
@@ -931,7 +919,6 @@ public abstract class LanguageTestBase
                                              strategy.getFile(),
                                              parameters,
                                              null,
-                                             null,
                                              null));
         // make sure to wait until at least 2000ms after start
         Thread.sleep(2000);
@@ -959,7 +946,6 @@ public abstract class LanguageTestBase
                                                getLanguage(),
                                                strategy.getFile(),
                                                parameters,
-                                               null,
                                                null,
                                                null); 
         doSuccessfulStartTest(strategyURN);
@@ -996,7 +982,6 @@ public abstract class LanguageTestBase
                                              getLanguage(),
                                              strategy.getFile(),
                                              parameters,
-                                             null,
                                              null,
                                              null));
         // make sure to wait until at least 2000ms after start
@@ -1143,7 +1128,6 @@ public abstract class LanguageTestBase
                                                               strategy.getFile(),
                                                               null,
                                                               null,
-                                                              null,
                                                               null);
         int index = 0;
         while (index++ < 500) {
@@ -1169,7 +1153,6 @@ public abstract class LanguageTestBase
                                                                   strategy.getName(),
                                                                   getLanguage(),
                                                                   strategy.getFile(),
-                                                                  null,
                                                                   null,
                                                                   null,
                                                                   null);
@@ -1198,7 +1181,6 @@ public abstract class LanguageTestBase
                                                                   strategy.getFile(),
                                                                   null,
                                                                   null,
-                                                                  null,
                                                                   null);
             moduleManager.start(strategyModule);
         }
@@ -1220,50 +1202,41 @@ public abstract class LanguageTestBase
                                                strategy.getFile(),
                                                null,
                                                null,
-                                               null,
                                                null);
         // make sure the starting state is what we think it is
         verifyNullProperties();
-        final MockRecorderModule suggestionRecorder = MockRecorderModule.Factory.recorders.get(suggestionsURN);
+        final MockRecorderModule outputRecorder = MockRecorderModule.Factory.recorders.get(outputURN);
         assertNotNull("Must be able to find the recorder created",
-                      suggestionRecorder);
-        final MockRecorderModule orderRecorder = MockRecorderModule.Factory.recorders.get(ordersURN);
-        assertNotNull("Must be able to find the recorder created",
-                      orderRecorder);
-        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
-        assertTrue(orderRecorder.getDataReceived().isEmpty());
+                      outputRecorder);
+        assertTrue(outputRecorder.getDataReceived().isEmpty());
         // fire events at the strategy
         doSuccessfulStartTestNoVerification(strategyURN);
         // nothing got through because the triggering parameters are not there
         verifyNullProperties();
-        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
-        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        assertTrue(outputRecorder.getDataReceived().isEmpty());
         // set new parameters that will cause onAsk to be received
         StrategyMXBean strategyProxy = getMXProxy(strategyURN);
         strategyProxy.setParameters("onAsk=true:emitSuggestion=true:emitMessage=true");
         doSuccessfulStartTestNoVerification(strategyURN);
         // nothing got through because the module was not restarted
         verifyNullProperties();
-        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
-        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        assertTrue(outputRecorder.getDataReceived().isEmpty());
         // now cycle the strategy
         stopStrategy(strategyURN);
         startStrategy(strategyURN);
         doSuccessfulStartTestNoVerification(strategyURN);
         // onAsk got through, but there are still no destinations for the orders and suggestions
         verifyPropertyNonNull("onAsk");
-        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
-        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        assertTrue(outputRecorder.getDataReceived().isEmpty());
         // reset
         setPropertiesToNull();
-        // now set the suggestions destination
-        strategyProxy.setSuggestionsDestination(suggestionsURN.getValue());
+        // now set the output destination
+        strategyProxy.setOutputDestination(outputURN.getValue());
         // fire the events
         doSuccessfulStartTestNoVerification(strategyURN);
         // onAsk still goes through, but the others won't until the strategy is cycled
         verifyPropertyNonNull("onAsk");
-        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
-        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        assertTrue(outputRecorder.getDataReceived().isEmpty());
         // reset
         setPropertiesToNull();
         // cycle the strategy again
@@ -1273,46 +1246,15 @@ public abstract class LanguageTestBase
         doSuccessfulStartTestNoVerification(strategyURN);
         // onAsk set again
         verifyPropertyNonNull("onAsk");
-        // still no order
-        assertTrue(orderRecorder.getDataReceived().isEmpty());
-        // suggestion now gets through
-        assertEquals(1,
-                     suggestionRecorder.getDataReceived().size());
-        // reset
-        setPropertiesToNull();
-        suggestionRecorder.resetDataReceived();
-        // now set the orders destination
-        strategyProxy.setOrdersDestination(ordersURN.getValue());
-        // fire the events
-        doSuccessfulStartTestNoVerification(strategyURN);
-        // onAsk still goes through, and the suggestions goes through, but orders won't until the strategy is cycled
-        verifyPropertyNonNull("onAsk");
-        assertEquals(1,
-                     suggestionRecorder.getDataReceived().size());
-        assertTrue(orderRecorder.getDataReceived().isEmpty());
-        // reset
-        setPropertiesToNull();
-        suggestionRecorder.resetDataReceived();
-        // cycle the strategy again
-        stopStrategy(strategyURN);
-        startStrategy(strategyURN);
-        // fire the events again
-        doSuccessfulStartTestNoVerification(strategyURN);
-        // onAsk set again
-        verifyPropertyNonNull("onAsk");
-        // order and suggestion got through
-        assertEquals(1,
-                     suggestionRecorder.getDataReceived().size());
-        assertEquals(1,
-                     orderRecorder.getDataReceived().size());
+        // suggestion and order now gets through
+        assertEquals(2,
+                     outputRecorder.getDataReceived().size());
         // now make them all go away
         strategyProxy.setParameters(null);
-        strategyProxy.setOrdersDestination(null);
-        strategyProxy.setSuggestionsDestination(null);
+        strategyProxy.setOutputDestination(null);
         // reset
         setPropertiesToNull();
-        suggestionRecorder.resetDataReceived();
-        orderRecorder.resetDataReceived();
+        outputRecorder.resetDataReceived();
         // cycle
         stopStrategy(strategyURN);
         startStrategy(strategyURN);
@@ -1320,8 +1262,7 @@ public abstract class LanguageTestBase
         doSuccessfulStartTestNoVerification(strategyURN);
         // verify
         verifyNullProperties();
-        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
-        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        assertTrue(outputRecorder.getDataReceived().isEmpty());
     }
     /**
      * Makes sure that subscribers to output from one strategy are independent of subscribers to another strategy.
@@ -1333,6 +1274,7 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
+        ModuleURN alternateURN = createModule(MockRecorderModule.Factory.PROVIDER_URN);
         StrategyCoordinates strategy = getSuggestionStrategy();
         Properties parameters = new Properties();
         parameters.setProperty("score",
@@ -1346,18 +1288,16 @@ public abstract class LanguageTestBase
                        strategy.getFile(),
                        parameters,
                        null,
-                       null,
-                       suggestionsURN);
+                       outputURN);
         createStrategy(strategy.getName(),
                        getLanguage(),
                        strategy.getFile(),
                        parameters,
                        null,
-                       null,
-                       ordersURN);
+                       alternateURN);
         // strategies have now emitted their suggestions, measure the results
-        final MockRecorderModule strategy1Recorder = MockRecorderModule.Factory.recorders.get(suggestionsURN);
-        final MockRecorderModule strategy2Recorder = MockRecorderModule.Factory.recorders.get(ordersURN);
+        final MockRecorderModule strategy1Recorder = MockRecorderModule.Factory.recorders.get(outputURN);
+        final MockRecorderModule strategy2Recorder = MockRecorderModule.Factory.recorders.get(alternateURN);
         // each strategy should have received one and only one suggestion
         assertEquals(1,
                      strategy1Recorder.getDataReceived().size());
@@ -1380,13 +1320,11 @@ public abstract class LanguageTestBase
                                                            strategy1.getFile(),
                                                            null,
                                                            null,
-                                                           null,
                                                            null));
         StrategyCoordinates strategy2 = getPart2Strategy();
         doSuccessfulStartTestNoVerification(createStrategy(strategy2.getName(),
                                                            getLanguage(),
                                                            strategy2.getFile(),
-                                                           null,
                                                            null,
                                                            null,
                                                            null));
@@ -1401,40 +1339,123 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
-        // subscribe to notifications
-        final List<Object> publications = new ArrayList<Object>();
-        NotificationManager.getNotificationManager().subscribe(new ISubscriber() {
-            @Override
-            public boolean isInteresting(Object inData)
-            {
-                return true;
-            }
-            @Override
-            public void publishTo(Object inData)
-            {
-                publications.add(inData);
-            }
-        });
-        // create a strategy that can emit notifications
-        StrategyCoordinates strategy = getStrategyCompiles();
-        Properties parameters = new Properties();
-        parameters.setProperty("shouldNotify",
-                               "true");
-        doSuccessfulStartTest(createStrategy(strategy.getName(),
-                                             getLanguage(),
-                                             strategy.getFile(),
-                                             parameters,
-                                             null,
-                                             null,
-                                             null));
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return publications.size() == 3;
-            }
-        });
+        Level startingLevel = Logger.getLogger(Strategy.STRATEGY_MESSAGES).getLevel();
+        try {
+            Logger.getLogger(Strategy.STRATEGY_MESSAGES).setLevel(Level.ALL);
+            MockRecorderModule.shouldIgnoreLogMessages = false;
+            // set up module to receive notifications
+            final MockRecorderModule notificationSubscriber = MockRecorderModule.Factory.recorders.get(outputURN);
+            assertTrue(notificationSubscriber.getDataReceived().isEmpty());
+            // create a strategy that can emit notifications
+            StrategyCoordinates strategy = getStrategyCompiles();
+            Properties parameters = new Properties();
+            parameters.setProperty("shouldNotify",
+                                   "true");
+            doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                                 getLanguage(),
+                                                 strategy.getFile(),
+                                                 parameters,
+                                                 null,
+                                                 outputURN));
+            StrategyImpl runningStrategy = getRunningStrategy(theStrategy);
+            MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    return notificationSubscriber.getDataReceived().size() == 19;
+                }
+            });
+            assertEquals("low subject",
+                         ((Notification)(notificationSubscriber.getDataReceived().get(0).getData())).getSubject());
+            assertEquals("medium subject",
+                         ((Notification)(notificationSubscriber.getDataReceived().get(1).getData())).getSubject());
+            assertEquals("high subject",
+                         ((Notification)(notificationSubscriber.getDataReceived().get(2).getData())).getSubject());
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(3).getData(),
+                                     WARN,
+                                     null,
+                                     INVALID_LOG,
+                                     String.valueOf(runningStrategy));
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(4).getData(),
+                                     DEBUG,
+                                     null,
+                                     MESSAGE_1P,
+                                     "");
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(5).getData(),
+                                     DEBUG,
+                                     null,
+                                     MESSAGE_1P,
+                                     "Some statement");
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(6).getData(),
+                                     DEBUG,
+                                     null,
+                                     MESSAGE_1P,
+                                     UnicodeData.HOUSE_AR);
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(7).getData(),
+                                     WARN,
+                                     null,
+                                     INVALID_LOG,
+                                     String.valueOf(runningStrategy));
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(8).getData(),
+                                     INFO,
+                                     null,
+                                     MESSAGE_1P,
+                                     "");
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(9).getData(),
+                                     INFO,
+                                     null,
+                                     MESSAGE_1P,
+                                     "Some statement");
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(10).getData(),
+                                     INFO,
+                                     null,
+                                     MESSAGE_1P,
+                                     UnicodeData.HOUSE_AR);
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(11).getData(),
+                                     WARN,
+                                     null,
+                                     INVALID_LOG,
+                                     String.valueOf(runningStrategy));
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(12).getData(),
+                                     WARN,
+                                     null,
+                                     MESSAGE_1P,
+                                     "");
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(13).getData(),
+                                     WARN,
+                                     null,
+                                     MESSAGE_1P,
+                                     "Some statement");
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(14).getData(),
+                                     WARN,
+                                     null,
+                                     MESSAGE_1P,
+                                     UnicodeData.HOUSE_AR);
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(15).getData(),
+                                     WARN,
+                                     null,
+                                     INVALID_LOG,
+                                     String.valueOf(runningStrategy));
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(16).getData(),
+                                     ERROR,
+                                     null,
+                                     MESSAGE_1P,
+                                     "");
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(17).getData(),
+                                     ERROR,
+                                     null,
+                                     MESSAGE_1P,
+                                     "Some statement");
+            LogEventTest.verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(18).getData(),
+                                     ERROR,
+                                     null,
+                                     MESSAGE_1P,
+                                     UnicodeData.HOUSE_AR);
+        } finally {
+            Logger.getLogger(Strategy.STRATEGY_MESSAGES).setLevel(startingLevel);
+            MockRecorderModule.shouldIgnoreLogMessages = true;
+        }
     }
     /**
      * Tests a strategy's ability to retrieve available brokers.
@@ -1468,7 +1489,7 @@ public abstract class LanguageTestBase
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
         List<OrderSingle> cumulativeOrders = new ArrayList<OrderSingle>();
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
-                                            ordersURN);
+                                            outputURN);
         // null order
         AbstractRunningStrategy.setProperty("orderShouldBeNull",
                                             "true");
@@ -1569,7 +1590,7 @@ public abstract class LanguageTestBase
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
         // create a strategy that sends its orders to a known module that can also emit execution reports
         generateOrders(getOrdersStrategy(),
-                       ordersURN);
+                       outputURN);
         doExecutionReportTest(0,
                               false);
        // create an order and have the strategy submit it
@@ -1596,7 +1617,7 @@ public abstract class LanguageTestBase
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
         // cancel 0 orders
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
-                                            ordersURN);
+                                            outputURN);
         AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         AbstractRunningStrategy.setProperty("cancelAll",
                                             "true");
@@ -1655,7 +1676,7 @@ public abstract class LanguageTestBase
                                             "METC");
         // try to cancel an order with a null orderID
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
-                                            ordersURN);
+                                            outputURN);
         AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         assertNull(AbstractRunningStrategy.getProperty("orderCanceled"));
         runningStrategy.onOther(this);
@@ -1746,7 +1767,7 @@ public abstract class LanguageTestBase
                                             TimeInForce.Day.toString());
         // create a strategy to use as our test vehicle
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
-                                            ordersURN);
+                                            outputURN);
         AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         // submit an order
         assertNull(AbstractRunningStrategy.getProperty("orderID"));
@@ -1910,12 +1931,10 @@ public abstract class LanguageTestBase
                                                 strategy1.getFile(),
                                                 null,
                                                 null,
-                                                null,
                                                 null);
         ModuleURN strategy2URN = createStrategy(strategy1.getName(),
                                                 getLanguage(),
                                                 strategy1.getFile(),
-                                                null,
                                                 null,
                                                 null,
                                                 null);
@@ -1954,12 +1973,10 @@ public abstract class LanguageTestBase
                                                 strategy1.getFile(),
                                                 null,
                                                 null,
-                                                null,
                                                 null);
         ModuleURN strategy2URN = createStrategy(strategy2.getName(),
                                                 getLanguage(),
                                                 strategy2.getFile(),
-                                                null,
                                                 null,
                                                 null,
                                                 null);
@@ -2191,16 +2208,16 @@ public abstract class LanguageTestBase
         ModuleURN cepModuleURN = new ModuleURN("metc:cep:esper:" + strategy.getDefaultNamespace());
         // verify that the cancel did not affect the existing query by triggering another set of suggestions via the CEP query
         assertEquals(0,
-                     getReceivedSuggestions(suggestionsURN).size());
+                     getReceivedSuggestions(outputURN).size());
         feedEventsToCEP(events,
                         cepModuleURN);
         assertEquals(2,
-                     getReceivedSuggestions(suggestionsURN).size());
+                     getReceivedSuggestions(outputURN).size());
         // cancel the actual query and verify no events are received from CEP
         AbstractRunningStrategy.setProperty("requestID",
                                             requestIDString);
         assertEquals(0,
-                     getReceivedSuggestions(suggestionsURN).size());
+                     getReceivedSuggestions(outputURN).size());
         // triggers the cancel
         strategy.getRunningStrategy().onOther(this);
         // triggers the events to CEP
@@ -2208,7 +2225,7 @@ public abstract class LanguageTestBase
                         cepModuleURN);
         // measure the result
         assertEquals(0,
-                     getReceivedSuggestions(suggestionsURN).size());
+                     getReceivedSuggestions(outputURN).size());
     }
     /**
      * Cancels all active cep requests.
@@ -2237,13 +2254,13 @@ public abstract class LanguageTestBase
         feedEventsToCEP(events,
                         cepModuleURN);
         assertEquals(0,
-                     getReceivedSuggestions(suggestionsURN).size());
+                     getReceivedSuggestions(outputURN).size());
         // cancel again to make sure nothing breaks
         strategy.getRunningStrategy().onCallback(this);
         feedEventsToCEP(events,
                         cepModuleURN);
         assertEquals(0,
-                     getReceivedSuggestions(suggestionsURN).size());
+                     getReceivedSuggestions(outputURN).size());
     }
     /**
      * Tests a strategy's ability to send events to a targeted CEP module
@@ -2260,7 +2277,6 @@ public abstract class LanguageTestBase
         theStrategy = createStrategy(strategyFile.getName(),
                                      getLanguage(),
                                      strategyFile.getFile(),
-                                     null,
                                      null,
                                      null,
                                      null);
@@ -2343,14 +2359,14 @@ public abstract class LanguageTestBase
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
         // these will be the subscribers to events
-        MockRecorderModule eventSubscriber = MockRecorderModule.Factory.recorders.get(ordersURN);
-        MockRecorderModule allSubscriber = MockRecorderModule.Factory.recorders.get(suggestionsURN);
+        ModuleURN alternateURN = createModule(MockRecorderModule.Factory.PROVIDER_URN);
+        MockRecorderModule eventSubscriber = MockRecorderModule.Factory.recorders.get(outputURN);
+        MockRecorderModule allSubscriber = MockRecorderModule.Factory.recorders.get(alternateURN);
         // start the event strategy
         StrategyCoordinates strategyFile = getEventStrategy();
         theStrategy = createStrategy(strategyFile.getName(),
                                      getLanguage(),
                                      strategyFile.getFile(),
-                                     null,
                                      null,
                                      null,
                                      null);
@@ -2380,11 +2396,11 @@ public abstract class LanguageTestBase
         // set up a subscriber for the events channel and the all channel
         DataFlowID eventSubscription = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(theStrategy,
                                                                                                         OutputType.EVENTS),
-                                                                                        new DataRequest(ordersURN) },
+                                                                                        new DataRequest(outputURN) },
                                                                     false);
         DataFlowID allSubscription = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(theStrategy,
                                                                                                       OutputType.ALL),
-                                                                                      new DataRequest(suggestionsURN) },
+                                                                                      new DataRequest(alternateURN) },
                                                                   false);
         // start again
         strategy.getRunningStrategy().onOther(askEvent);
@@ -2415,7 +2431,6 @@ public abstract class LanguageTestBase
         theStrategy = createStrategy(strategy.getName(),
                                      getLanguage(),
                                      strategy.getFile(),
-                                     null,
                                      null,
                                      null,
                                      null);
@@ -2518,7 +2533,6 @@ public abstract class LanguageTestBase
                                                    getLanguage(),
                                                    strategy.getFile(),
                                                    parameters,
-                                                   null,
                                                    null,
                                                    null);
         // strategy is now somewhere in the journey from UNSTARTED->COMPILING->STARTING.  this change is atomic with respect
@@ -2801,7 +2815,6 @@ public abstract class LanguageTestBase
                                                    strategy.getFile(),
                                                    parameters,
                                                    null,
-                                                   null,
                                                    null);
         // wait for the appropriate condition before continuing
         if(inLoopOnStart) {
@@ -2989,7 +3002,7 @@ public abstract class LanguageTestBase
         throws Exception
     {
         setPropertiesToNull();
-        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(suggestionsURN);
+        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(outputURN);
         recorder.resetDataReceived();
         Properties parameters = new Properties();
         parameters.setProperty("shouldRequestCEPData",
@@ -3008,8 +3021,7 @@ public abstract class LanguageTestBase
                                      strategyFile.getFile(),
                                      parameters,
                                      null,
-                                     null,
-                                     suggestionsURN);
+                                     outputURN);
         StrategyImpl strategy = getRunningStrategy(theStrategy);
         ModuleURN cepModuleURN = new ModuleURN("metc:cep:" + inProvider + ":" + strategy.getDefaultNamespace());
         long requestID = 0;
@@ -3022,7 +3034,7 @@ public abstract class LanguageTestBase
                             cepModuleURN);
         }
         // collect the suggestions created
-        List<OrderSingleSuggestion> suggestions = getReceivedSuggestions(suggestionsURN);
+        List<OrderSingleSuggestion> suggestions = getReceivedSuggestions(outputURN);
         if(inCleanup) {
             stopStrategy(theStrategy);
         }
@@ -3044,7 +3056,6 @@ public abstract class LanguageTestBase
         verifyStrategyStartsAndStops(strategy.getName(),
                                      getLanguage(),
                                      strategy.getFile(),
-                                     null,
                                      null,
                                      null,
                                      null);
@@ -3098,7 +3109,6 @@ public abstract class LanguageTestBase
                                      strategy.getFile(),
                                      null,
                                      null,
-                                     null,
                                      null);
         assertEquals((inExpectedPosition == null ? null : inExpectedPosition.toString()),
                      AbstractRunningStrategy.getProperty("position"));
@@ -3145,14 +3155,14 @@ public abstract class LanguageTestBase
         throws Exception
     {
         // start the strategy pointing at the suggestion receiver for its suggestions
-        createStrategy(inStrategy.getName(),
+        createStrategy(null,
+                       inStrategy.getName(),
                        getLanguage(),
                        inStrategy.getFile(),
                        inParameters,
-                       null,
-                       ordersURN,
-                       null);
-        return ordersURN;
+                       false,
+                       outputURN);
+        return outputURN;
     }
     /**
      * Starts a strategy module which generates suggestions and measures them against the
@@ -3168,7 +3178,7 @@ public abstract class LanguageTestBase
     {
         ModuleURN suggestionReceiver = generateSuggestions(getSuggestionStrategy(),
                                                            inParameters,
-                                                           suggestionsURN);
+                                                           outputURN);
         final MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(suggestionReceiver);
         assertNotNull("Must be able to find the recorder created",
                       recorder);
@@ -3259,7 +3269,7 @@ public abstract class LanguageTestBase
                              List<OrderSingle> inExpectedCumulativeOrders)
         throws Exception
     {
-        final MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(ordersURN);
+        final MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(outputURN);
         assertNotNull("Must be able to find the recorder created",
                       recorder);
         // this will execute onAsk on the strategies, which will generate the desired order
@@ -3292,13 +3302,13 @@ public abstract class LanguageTestBase
      *
      * @param inStrategy a <code>StrategyCoordinates</code> value
      * @param inParameters a <code>Properties</code> value
-     * @param inSuggestionsURN a <code>ModuleURN</code> value containing the destination to which to emit suggestions
+     * @param inOutputURN a <code>ModuleURN</code> value containing the destination to which to emit suggestions
      * @return a <code>ModuleURN</code> value
      * @throws Exception if an error occurs
      */
     private ModuleURN generateSuggestions(StrategyCoordinates inStrategy,
                                           Properties inParameters,
-                                          ModuleURN inSuggestionsURN)
+                                          ModuleURN inOutputURN)
         throws Exception
     {
         // start the strategy pointing at the suggestion receiver for its suggestions
@@ -3307,9 +3317,8 @@ public abstract class LanguageTestBase
                        inStrategy.getFile(),
                        inParameters,
                        null,
-                       null,
-                       inSuggestionsURN);
-        return inSuggestionsURN;
+                       inOutputURN);
+        return inOutputURN;
     }
     /**
      * Creates a strategy module from the given script with the given parameters and returns the
@@ -3330,8 +3339,7 @@ public abstract class LanguageTestBase
                                      inStrategy.getFile(),
                                      null,
                                      null,
-                                     inOrdersURN,
-                                     null);
+                                     inOrdersURN);
         setupMockORSConnection(theStrategy);
         return theStrategy;
     }
@@ -3358,7 +3366,6 @@ public abstract class LanguageTestBase
                               getLanguage(),
                               strategy.getFile(),
                               parameters,
-                              null,
                               null,
                               null);
     }
@@ -3419,7 +3426,6 @@ public abstract class LanguageTestBase
                                                            getLanguage(),
                                                            strategy.getFile(),
                                                            parameters,
-                                                           null,
                                                            null,
                                                            null));
         Set<String> allCallbacks = new HashSet<String>(Arrays.asList(new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther" }));

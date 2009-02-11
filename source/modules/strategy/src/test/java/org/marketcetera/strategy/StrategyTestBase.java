@@ -39,10 +39,10 @@ import javax.management.ObjectName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -50,6 +50,7 @@ import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
@@ -159,6 +160,7 @@ public class StrategyTestBase
          * indicates if the module should emit execution reports when it receives OrderSingle objects
          */
         public static boolean shouldSendExecutionReports = true;
+        public static boolean shouldIgnoreLogMessages = true;
         public static int ordersReceived = 0;
         /**
          * Create a new MockRecorderModule instance.
@@ -194,6 +196,11 @@ public class StrategyTestBase
                                 Object inData)
                 throws UnsupportedDataTypeException, StopDataFlowException
         {
+            if(inData instanceof LogEvent) {
+                if(shouldIgnoreLogMessages) {
+                    return;
+                }
+            }
             synchronized(data) {
                 data.add(new DataReceived(inFlowID,
                                           inData));
@@ -1032,19 +1039,17 @@ public class StrategyTestBase
         MockClient.getPositionFails = false;
         executionReportMultiplicity = 1;
         MockRecorderModule.shouldSendExecutionReports = true;
+        MockRecorderModule.shouldIgnoreLogMessages = true;
         MockRecorderModule.ordersReceived = 0;
         StrategyModule.orsClient = new MockClient();
         moduleManager = new ModuleManager();
         moduleManager.init();
-        ordersURN = moduleManager.createModule(MockRecorderModule.Factory.PROVIDER_URN);
-        moduleManager.start(ordersURN);
-        suggestionsURN = moduleManager.createModule(MockRecorderModule.Factory.PROVIDER_URN);
-        moduleManager.start(suggestionsURN);
+        outputURN = moduleManager.createModule(MockRecorderModule.Factory.PROVIDER_URN);
+        moduleManager.start(outputURN);
         moduleManager.start(bogusDataFeedURN);
         factory = new StrategyModuleFactory();
         runningModules.clear();
-        runningModules.add(suggestionsURN);
-        runningModules.add(ordersURN);
+        runningModules.add(outputURN);
         runningModules.add(bogusDataFeedURN);
         setPropertiesToNull();
         tradeEvent = new TradeEvent(System.nanoTime(),
@@ -1078,17 +1083,11 @@ public class StrategyTestBase
             }
         }
         try {
-            moduleManager.stop(ordersURN);
+            moduleManager.stop(outputURN);
         } catch (ModuleException ignore) {
                 // ignore failures, just press ahead
         }
-        moduleManager.deleteModule(ordersURN);
-        try {
-            moduleManager.stop(suggestionsURN);
-        } catch (ModuleException ignore) {
-            // ignore failures, just press ahead
-        }
-        moduleManager.deleteModule(suggestionsURN);
+        moduleManager.deleteModule(outputURN);
         moduleManager.stop();
     }
     /**
@@ -1161,7 +1160,7 @@ public class StrategyTestBase
     protected final DataFlowID setupMockORSConnection(ModuleURN inStrategyURN)
         throws Exception
     {
-        DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(ordersURN),
+        DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(outputURN),
                                                                              new DataRequest(inStrategyURN) },
                                                          false);
         synchronized(dataFlowsByStrategy) {
@@ -1405,11 +1404,12 @@ public class StrategyTestBase
     {
         verifyNullProperties();
         LinkedList<Object> actualParameters = new LinkedList<Object>(Arrays.asList(inParameters));
-        if(inParameters.length <= 7) {
+        if(inParameters.length <= 6) {
             actualParameters.addFirst(null);
         }
         ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
                                              actualParameters.toArray());
+        theStrategy = strategyURN;
         verifyStrategyReady(strategyURN);
         return strategyURN;
     }
@@ -1486,13 +1486,9 @@ public class StrategyTestBase
      */
     protected ModuleFactory factory;
     /**
-     * test destination of orders
+     * test destination of output
      */
-    protected ModuleURN ordersURN;
-    /**
-     * test destination of suggestions
-     */
-    protected ModuleURN suggestionsURN;
+    protected ModuleURN outputURN;
     /**
      * list of strategies started during test
      */

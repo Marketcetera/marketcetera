@@ -1,6 +1,8 @@
 package org.marketcetera.strategy;
 
+import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.EventBase;
+import org.marketcetera.event.LogEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.trade.BrokerID;
@@ -62,6 +64,18 @@ interface OutboundServicesProvider
     void sendEvent(EventBase inEvent,
                    String inProvider,
                    String inNamespace);
+    /**
+     * Sends a notification to the subscriber or subscribers established in the strategy module.
+     *
+     * @param inNotification a <code>Notification</code> value containing the notification to send
+     */
+    void sendNotification(Notification inNotification);
+    /**
+     * Emits the given message to the strategy log output.
+     *
+     * @param inMessage a <code>LogEvent</code> value
+     */
+    void log(LogEvent inMessage);
     /**
      * Creates a market data request.
      * 

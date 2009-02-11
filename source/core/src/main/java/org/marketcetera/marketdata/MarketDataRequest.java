@@ -5,6 +5,7 @@ import static org.marketcetera.marketdata.Messages.INVALID_STRING_VALUE;
 import static org.marketcetera.marketdata.Messages.INVALID_SYMBOLS;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -22,6 +23,7 @@ import org.marketcetera.core.ClassVersion;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public final class MarketDataRequest
     extends DataRequest
+    implements Serializable
 {
     /**
      * the delimiter used to distinguish between symbols in the string representation of the symbol collection
@@ -498,4 +500,5 @@ public final class MarketDataRequest
      * the symbols for which to request market data
      */
     private final String[] symbols;
+    private static final long serialVersionUID = -1249152850732867051L;
 }

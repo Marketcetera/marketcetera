@@ -6,7 +6,6 @@ import java.util.Date;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
@@ -464,9 +463,9 @@ public class Strategy
     public final void notify_low(String inSubject,
                                  String inBody)
     {
-        NotificationManager.getNotificationManager().publish(Notification.low(inSubject,
-                                                                              inBody,
-                                                                              Strategy.class));
+        sendNotification(Notification.low(inSubject,
+                                          inBody,
+                                          Strategy.class));
     }
     /**
      * Creates and issues a {@link Notification} at medium priority.
@@ -477,9 +476,9 @@ public class Strategy
     public final void notify_medium(String inSubject,
                                     String inBody)
     {
-        NotificationManager.getNotificationManager().publish(Notification.medium(inSubject,
-                                                                                 inBody,
-                                                                                 Strategy.class));
+        sendNotification(Notification.medium(inSubject,
+                                             inBody,
+                                             Strategy.class));
     }
     /**
      * Creates and issues a {@link Notification} at high priority.
@@ -490,9 +489,49 @@ public class Strategy
     public final void notify_high(String inSubject,
                                   String inBody)
     {
-        NotificationManager.getNotificationManager().publish(Notification.high(inSubject,
-                                                                               inBody,
-                                                                               Strategy.class));
+        sendNotification(Notification.high(inSubject,
+                                           inBody,
+                                           Strategy.class));
+    }
+    /**
+     * Emits the given debug message to the strategy log output.
+     *
+     * @param inMessage a <code>String</code> value
+     */
+    @Override
+    public final void debug(String inMessage)
+    {
+        super.debug(inMessage);
+    }
+    /**
+     * Emits the given info message to the strategy log output.
+     *
+     * @param inMessage a <code>String</code> value
+     */
+    @Override
+    public final void info(String inMessage)
+    {
+        super.info(inMessage);
+    }
+    /**
+     * Emits the given warn message to the strategy log output.
+     *
+     * @param inMessage a <code>String</code> value
+     */
+    @Override
+    public final void warn(String inMessage)
+    {
+        super.warn(inMessage);
+    }
+    /**
+     * Emits the given error message to the strategy log output.
+     *
+     * @param inMessage a <code>String</code> value
+     */
+    @Override
+    public final void error(String inMessage)
+    {
+        super.error(inMessage);
     }
     /**
      * Returns the list of brokers known to the system.

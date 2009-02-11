@@ -12,6 +12,7 @@ import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.util.test.UnicodeData;
 
 public class JavaStrategy
         extends org.marketcetera.strategy.java.Strategy
@@ -76,6 +77,22 @@ public class JavaStrategy
                          Long.toString(System.nanoTime()));
             notifyHigh("high subject",
                        Long.toString(System.nanoTime()));
+            debug(null);
+            debug("");
+            debug("Some statement");
+            debug(UnicodeData.HOUSE_AR);
+            info(null);
+            info("");
+            info("Some statement");
+            info(UnicodeData.HOUSE_AR);
+            warn(null);
+            warn("");
+            warn("Some statement");
+            warn(UnicodeData.HOUSE_AR);
+            error(null);
+            error("");
+            error("Some statement");
+            error(UnicodeData.HOUSE_AR);
         }
         if(getProperty("askForPosition") != null) {
             String symbol = getProperty("symbol");
