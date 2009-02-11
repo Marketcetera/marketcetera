@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+    <import xmlns="http://sweet_swt.sf.net/xswt">
+        <package name="java.lang"/>
+        <package name="org.eclipse.swt.widgets"/>
+        <package name="org.eclipse.swt.graphics"/>
+    </import>
+
+	<composite x:style="BORDER">
+		<bounds x:class="Rectangle" x:p0="111" x:p1="11" x:p2="50" x:p3="90"/>
+	</composite>
+</xswt>

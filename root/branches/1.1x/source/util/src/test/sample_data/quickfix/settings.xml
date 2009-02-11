@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="goodSettings"
+   class="org.marketcetera.util.quickfix.SpringSessionSettings">
+    <property
+     name="defaults">
+      <map>
+        <entry
+         key="SenderCompID"
+         value="SenderCompIDValue"/>
+        <entry
+         key="testKey"
+         value="testKeyValue"/>
+        <entry
+         key="metc.LogFactoryClass">
+          <null/>
+        </entry>
+      </map>
+    </property>
+    <property
+     name="descriptors">
+      <list>
+        <bean
+         class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
+          <property
+           name="dictionary">
+            <map>
+              <entry
+               key="BeginString"
+               value="BeginStringValue1"/>
+              <entry
+               key="SenderCompID"
+               value="SenderCompIDValue1"/>
+              <entry
+               key="TargetCompID"
+               value="TargetCompIDValue1"/>
+            </map>
+          </property>	
+        </bean>
+        <bean
+         class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
+          <property
+           name="dictionary">
+            <map>
+              <entry
+               key="BeginString"
+               value="BeginStringValue2"/>
+              <entry
+               key="TargetCompID"
+               value="TargetCompIDValue2"/>
+            </map>
+          </property>	
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean
+   id="emptySettings"
+   class="org.marketcetera.util.quickfix.SpringSessionSettings"/>
+
+  <bean
+   id="goodCustomFactories"
+   class="org.marketcetera.util.quickfix.SpringSessionSettings">
+    <property
+     name="defaults">
+      <map>
+        <entry
+         key="metc.LogFactoryClass"
+         value="quickfix.JdbcLogFactory"/>
+        <entry
+         key="metc.MessageStoreFactoryClass"
+         value="quickfix.JdbcStoreFactory"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean
+   id="badCustomLogFactory"
+   class="org.marketcetera.util.quickfix.SpringSessionSettings">
+    <property
+     name="defaults">
+      <map>
+        <entry
+         key="metc.LogFactoryClass"
+         value="BadLogFactory"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean
+   id="badCustomStoreFactory"
+   class="org.marketcetera.util.quickfix.SpringSessionSettings">
+    <property
+     name="defaults">
+      <map>
+        <entry
+         key="metc.MessageStoreFactoryClass"
+         value="BadStoreFactory"/>
+      </map>
+    </property>
+  </bean>
+</beans>
