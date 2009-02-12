@@ -32,7 +32,7 @@ public class VersionId
      */
 
     public static final VersionId SELF=
-        new VersionId("1.1.0"); //$NON-NLS-1$
+        new VersionId("1.2.0"); //$NON-NLS-1$
 
 
     // CONSTRUCTORS.
