@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Market Data Tests
 Bundle-SymbolicName: org.marketcetera.photon.marketdata.tests;singleton:=true
-Bundle-Version: 1.1.0
+Bundle-Version: 1.2.0
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon.marketdata
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

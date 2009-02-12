@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests Fragment
 Bundle-SymbolicName: org.marketcetera.photon.strategy.tests;singleton:=true
-Bundle-Version: 1.1.0
+Bundle-Version: 1.2.0
 Fragment-Host: org.marketcetera.photon.strategy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.photon.test,
