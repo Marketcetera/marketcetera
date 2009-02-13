@@ -129,7 +129,7 @@ public class CancelReplaceOrderActionDelegate
 				try {
 					TradeReportsHistory fixMessageHistory = PhotonPlugin.getDefault().getTradeReportsHistory();
 					ReportBase latestMessage = fixMessageHistory.getLatestExecutionReport(new org.marketcetera.trade.OrderID(clOrdId.getValue()));
-					orderID = latestMessage.getOrderID().getValue();
+					orderID = latestMessage.getBrokerOrderID(); // FIX OrderID is our BrokerOrderID
 				} catch (Exception ex){
 					// use null
 				}
