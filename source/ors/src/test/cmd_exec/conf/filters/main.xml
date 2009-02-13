@@ -4,7 +4,7 @@
   - Main configuration for global filters, which apply to all brokers.
   -
   - Author: tlerios@marketcetera.com
-  - Since: $Release$
+  - Since: 1.1.0
   - Version: $Id$
   - $License$
   -->

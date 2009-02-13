@@ -12,7 +12,7 @@ import org.marketcetera.photon.internal.module.ui.SinkConsoleControllerTest;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.1.0
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({

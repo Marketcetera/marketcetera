@@ -20,7 +20,7 @@ import org.osgi.service.prefs.Preferences;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.1.0
  */
 @ClassVersion("$Id$")
 public class PreferencesAdapter {
@@ -124,7 +124,7 @@ public class PreferencesAdapter {
 	 *
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.1.0
 	 */
 	@ClassVersion("$Id$")
 	private static interface IVisitor {

@@ -29,7 +29,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.1.0
  */
 @ClassVersion("$Id$")
 public abstract class ModuleAttributePreferencePage extends PreferencePage {
@@ -137,7 +137,7 @@ public abstract class ModuleAttributePreferencePage extends PreferencePage {
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.1.0
 	 */
 	@ClassVersion("$Id$")
 	private static class Field {

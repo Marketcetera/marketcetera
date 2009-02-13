@@ -11,7 +11,7 @@ import org.marketcetera.util.l10n.MessageComparator;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.1.0
  */
 public class MessagesTest
 {

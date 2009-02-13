@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.1.0
  */
 @ClassVersion("$Id$")
 public class ModuleConcurrencyTest extends ModuleTestBase {
