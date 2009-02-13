@@ -28,7 +28,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.1.0
  */
 @ClassVersion("$Id$")
 public class FeedPreferencePageInitializer implements IStartup {
@@ -88,7 +88,7 @@ public class FeedPreferencePageInitializer implements IStartup {
 	 *
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 1.1.0
 	 */
 	@ClassVersion("$Id$")
 	private class GenericAttributePreferencePage extends
