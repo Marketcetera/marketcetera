@@ -380,8 +380,8 @@
       </dependency>
       <dependency>
         <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>[4.4]</version>
+        <artifactId>junit-dep</artifactId>
+        <version>[4.5]</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -394,6 +394,12 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
         <version>[1.5]</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>[1.1]</version>
         <scope>test</scope>
       </dependency> 
     </dependencies>

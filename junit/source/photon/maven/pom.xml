@@ -29,6 +29,7 @@
     <module>app</module>
     <module>bundle</module>
     <module>rcptarget</module>
+    <module>test-bundle</module>
   </modules>
 
   <dependencyManagement>
