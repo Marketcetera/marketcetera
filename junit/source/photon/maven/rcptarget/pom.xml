@@ -30,6 +30,10 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>photon-bundle</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>photon-test-bundle</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
