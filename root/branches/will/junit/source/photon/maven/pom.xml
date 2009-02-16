@@ -45,6 +45,11 @@
         <version>[${project.version}]</version>
         <type>pom</type>
       </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>photon-test-bundle</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>
