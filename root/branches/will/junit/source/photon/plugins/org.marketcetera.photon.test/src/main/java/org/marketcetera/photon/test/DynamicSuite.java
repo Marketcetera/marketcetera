@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
-import org.junit.internal.runners.InitializationError;
+import org.junit.runners.model.InitializationError;
 import org.junit.runners.Suite;
 
 /* $License$ */
@@ -18,7 +18,6 @@ import org.junit.runners.Suite;
  * @version $Id$
  * @since 1.0.0
  */
-@SuppressWarnings("restriction")
 public class DynamicSuite extends Suite {
 
 	public DynamicSuite(Class<?> klass) throws InitializationError {

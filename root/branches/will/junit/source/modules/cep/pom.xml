@@ -56,7 +56,7 @@
     </dependency>
     <dependency>
       <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <artifactId>junit-dep</artifactId>
     </dependency>
   </dependencies>
 </project>
