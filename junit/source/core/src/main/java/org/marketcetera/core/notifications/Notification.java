@@ -19,17 +19,18 @@ import org.marketcetera.core.ClassVersion;
 public class Notification
         implements INotification
 {
+    private static final long serialVersionUID = 1L;
     /**
      * Returns a <em>low</em> priority <code>Notification</code>.
      *
      * @param inSubject a <code>String</code> value
      * @param inBody a <code>String</code> value
-     * @param inOriginator a <code>Class&lt;?&gt;</code> value
+     * @param inOriginator a <code>String</code> value
      * @return a <code>Notification</code> value
      */
     public static Notification low(String inSubject,
                                    String inBody,
-                                   Class<?> inOriginator)
+                                   String inOriginator)
     {
         return new Notification(inSubject,
                                 inBody,
@@ -42,12 +43,12 @@ public class Notification
      *
      * @param inSubject a <code>String</code> value
      * @param inBody a <code>String</code> value
-     * @param inOriginator a <code>Class&lt;?&gt;</code> value
+     * @param inOriginator a <code>String</code> value
      * @return a <code>Notification</code> value
      */
     public static Notification medium(String inSubject,
                                       String inBody,
-                                      Class<?> inOriginator)
+                                      String inOriginator)
     {
         return new Notification(inSubject,
                                 inBody,
@@ -60,12 +61,12 @@ public class Notification
      *
      * @param inSubject a <code>String</code> value
      * @param inBody a <code>String</code> value
-     * @param inOriginator a <code>Class&lt;?&gt;</code> value
+     * @param inOriginator a <code>String</code> value
      * @return a <code>Notification</code> value
      */
     public static Notification high(String inSubject,
                                     String inBody,
-                                    Class<?> inOriginator)
+                                    String inOriginator)
     {
         return new Notification(inSubject,
                                 inBody,
@@ -90,9 +91,9 @@ public class Notification
      */
     private final Severity mSeverity;
     /**
-     * the originating class of the notification
+     * the originator of the notification
      */
-    private final Class<?> mOriginator;
+    private final String mOriginator;
     /**
      * Create a new Notification instance.
      */
@@ -100,7 +101,7 @@ public class Notification
                            String inBody,
                            Date inDate,
                            Severity inSeverity,
-                           Class<?> inOriginator)
+                           String inOriginator)
     {
         mSubject = inSubject;
         mBody = inBody;
@@ -128,7 +129,7 @@ public class Notification
      * @see org.marketcetera.core.notifications.INotification#getOriginator()
      */
     @Override
-    public final Class<?> getOriginator()
+    public final String getOriginator()
     {
         return mOriginator;
     }

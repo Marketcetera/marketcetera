@@ -8,9 +8,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
@@ -637,6 +640,22 @@ public class AbstractMarketDataFeedTest
                      feed.getCanceledHandles());
         assertTrue(Arrays.equals(feed.getCreatedHandles().toArray(),
                                  feed.getCanceledHandles().toArray()));
+    }
+    /**
+     * Tests feed's ability to return capabilities. 
+     */
+    @Test
+    public void testCapabilities()
+        throws Exception
+    {
+        MockMarketDataFeed feed = new MockMarketDataFeed();
+        assertTrue(Arrays.equals(new Capability[0],
+                                 feed.getCapabilities().toArray()));
+        Set<Capability> capabilities = EnumSet.of(Capability.OHLC,
+                                                  Capability.TOP_OF_BOOK);
+        feed.setCapabilities(capabilities);
+        Assert.assertArrayEquals(capabilities.toArray(),
+                                 feed.getCapabilities().toArray());
     }
     @Test
     public void testExecuteFailures()

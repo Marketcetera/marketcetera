@@ -7,9 +7,12 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +23,7 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.FeedStatus;
@@ -90,7 +94,18 @@ public class MarketceteraFeed
 	private MessageFactory messageFactory;
 	private final Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
     private MarketceteraFeedCredentials credentials;
-
+    /**
+     * static capabilities for this data feed
+     */
+    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(Capability.TOP_OF_BOOK));
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataFeed#getCapabilities()
+     */
+    @Override
+    public Set<Capability> getCapabilities()
+    {
+        return capabilities;
+    }
 	private FIXCorrelationFieldSubscription doQuery(Message query) {
 		try {
 			Integer marketDepth = null;

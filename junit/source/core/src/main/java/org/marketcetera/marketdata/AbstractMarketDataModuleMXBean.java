@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata;
 
+import java.util.Set;
+
 import javax.management.MXBean;
 
 import org.marketcetera.core.ClassVersion;
@@ -38,4 +40,11 @@ public interface AbstractMarketDataModuleMXBean
      */
     @DisplayName("Causes the feed to resubmit existing queries")
     public void reconnect();
+    /**
+     * Gets the set of capabilities for this market data feed.
+     *
+     * @return a <code>Set&lt;Capability&gt;</code> value
+     */
+    @DisplayName("The set of capabilities for this feed")
+    public Set<Capability> getCapabilities();
 }

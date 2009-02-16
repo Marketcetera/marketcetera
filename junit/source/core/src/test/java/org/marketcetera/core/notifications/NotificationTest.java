@@ -27,7 +27,7 @@ public class NotificationTest
         // test low
         String subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
         String body = "body_" + System.nanoTime(); //$NON-NLS-1$
-        Class<?> originator = this.getClass();
+        String originator = this.getClass().toString();
         Notification low = Notification.low(subject,
                                             body,
                                             originator);
@@ -46,7 +46,7 @@ public class NotificationTest
         Thread.sleep(100);
         subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
         body = "body_" + System.nanoTime(); //$NON-NLS-1$
-        originator = Notification.class;
+        originator = Notification.class.toString();
         Notification medium = Notification.medium(subject,
                                                   body,
                                                   originator);
@@ -65,7 +65,7 @@ public class NotificationTest
         Thread.sleep(100);
         subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
         body = "body_" + System.nanoTime(); //$NON-NLS-1$
-        originator = Notification.class;
+        originator = Notification.class.toString();
         Notification high = Notification.high(subject,
                                               body,
                                               originator);

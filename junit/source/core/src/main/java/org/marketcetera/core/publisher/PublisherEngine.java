@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
@@ -19,6 +20,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * @version $Id$
  * @since 0.5.0
  */
+@ClassVersion("$Id$")
 public final class PublisherEngine
     implements IPublisher
 {
@@ -30,6 +32,9 @@ public final class PublisherEngine
      * the pool of notifiers common to all <code>PublisherEngine</code> objects
      */
     private static final ExecutorService sNotifierPool = Executors.newCachedThreadPool();
+    /**
+     * indicates whether this publisher should do all publications synchronously or not
+     */
     private final boolean doSynchronousNotification;
     /**
      * Create a new <code>PublisherEngine</code> object.

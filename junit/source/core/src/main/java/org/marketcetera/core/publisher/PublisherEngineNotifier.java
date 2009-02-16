@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
@@ -12,8 +13,9 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
+@ClassVersion("$Id$")
 final class PublisherEngineNotifier
         implements Callable<Object>
 {

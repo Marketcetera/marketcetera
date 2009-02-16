@@ -1,5 +1,6 @@
 package org.marketcetera.core.notifications;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.marketcetera.core.ClassVersion;
@@ -15,6 +16,7 @@ import org.marketcetera.core.ClassVersion;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public interface INotification
+    extends Serializable
 {
     /**
      * Indicates the severity of an <code>INotification</code>.
@@ -57,7 +59,7 @@ public interface INotification
     /**
      * Gets a description of the originator of the <code>INotification</code>.
      *
-     * @return a <code>Class&lt;?&gt;</code> value
+     * @return a <code>String</code> value
      */
-    public Class<?> getOriginator();
+    public String getOriginator();
 }
