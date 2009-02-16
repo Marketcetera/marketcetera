@@ -27,7 +27,8 @@ public class NotificationUtil {
 	 */
 	public static INotification createNotification(final Severity severity) {
 		return new Notification("Subject", "Body", new Date(), severity,
-				NotificationUtil.class) {
+				NotificationUtil.class.toString()) {
+                    private static final long serialVersionUID = 1L;
 		};
 	}
 
@@ -44,7 +45,8 @@ public class NotificationUtil {
 	public static INotification createSummaryExpectation(final int count,
 			final Severity severity) {
 		return new SummaryNotification(count, severity) {
-			@Override
+            private static final long serialVersionUID = 1L;
+            @Override
 			public boolean equals(final Object obj) {
 				if (this == obj)
 					return true;

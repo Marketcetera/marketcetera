@@ -2,6 +2,7 @@ package org.marketcetera.marketdata;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
@@ -33,7 +34,7 @@ public class MockMarketDataFeed
 {
     private static final String SOME_DSL_IDENTIFIER = "some dsl identifier"; //$NON-NLS-1$
     private final int mDelay;
-    
+    private Set<Capability> capabilities = EnumSet.noneOf(Capability.class);
     private int mCounter = 0;
     
     private enum State { 
@@ -99,7 +100,23 @@ public class MockMarketDataFeed
         mDelay = inDelay;
         setState(State.logged_out);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataFeed#getCapabilities()
+     */
+    @Override
+    public Set<Capability> getCapabilities()
+    {
+        return capabilities;
+    }
+    /**
+     * Sets the capabilities to use for this feed. 
+     *
+     * @param inCapabilities a <code>Set&lt;Capability&gt;</code> value
+     */
+    public void setCapabilities(Set<Capability> inCapabilities)
+    {
+        capabilities = inCapabilities;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(quickfix.Message)
      */
