@@ -3,8 +3,10 @@ package org.marketcetera.marketdata;
 import static org.marketcetera.marketdata.Messages.BEAN_ATTRIBUTE_CHANGED;
 import static org.marketcetera.marketdata.Messages.FEED_STATUS_CHANGED;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.AttributeChangeNotification;
@@ -187,6 +189,23 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
             throws ListenerNotFoundException
     {
         mNotificationDelegate.removeNotificationListener(inListener);
+    }
+    /**
+     * used to indicate unknown capabilities of a provider
+     */
+    private static final Set<Capability> unknownCapabilities = EnumSet.of(Capability.UNKNOWN);
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCapabilities()
+     */
+    @Override
+    public Set<Capability> getCapabilities()
+    {
+        Set<Capability> capabilities;
+        if(feed == null ||
+           (capabilities = feed.getCapabilities()) == null) {
+            return unknownCapabilities;
+        }
+        return capabilities;
     }
     /**
      * Create a new AbstractMarketDataModule instance.

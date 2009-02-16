@@ -2,11 +2,14 @@ package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.management.JMX;
@@ -14,6 +17,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -95,6 +99,69 @@ public abstract class MarketDataModuleTestBase
      */
     protected void populateConfigurationProvider(MockConfigurationProvider inProvider)
     {
+    }
+    /**
+     * Indicates the expected capabilities for this feed.
+     * 
+     * <p>Subclasses may override this method to indicate their expected capabilties.  The
+     * default implementation returns an empty array.
+     *
+     * @return a <code>Capability[]</code> value
+     */
+    protected Capability[] getExpectedCapabilities()
+    {
+        return new Capability[0];
+    }
+    /**
+     * Indicates a {@link Capability} that the feed does not support.
+     * 
+     * <p>If possible, subclasses should override this method to indicate any unsupported
+     * capability.  If not possible, retain this implementation which returns null.
+     *
+     * @return a <code>Capability</code> that is not supported or null if they are all supported
+     */
+    protected Capability getUnexpectedCapability()
+    {
+        return null;
+    }
+    /**
+     * Returns an <code>MXBean</code> Proxy for the market data module being tested.
+     *
+     * @return an <code>AbstractMarketDataModuleMXBean</code> value
+     * @throws Exception if an error occurs
+     */
+    protected final AbstractMarketDataModuleMXBean getMXBeanProxy()
+        throws Exception
+    {
+        ObjectName objectName = getInstanceURN().toObjectName();
+        MBeanServerConnection mMBeanServer = ModuleTestBase.getMBeanServer(); 
+        return JMX.newMXBeanProxy(mMBeanServer,
+                                  objectName,
+                                  AbstractMarketDataModuleMXBean.class,
+                                  true);
+    }
+    /**
+     * Tests that the feed's capabilities match the expected values.
+     */
+    @Test
+    public void capabilities()
+        throws Exception
+    {
+        AbstractMarketDataModuleMXBean mBeanProxy = getMXBeanProxy();
+        Set<Capability> actualCapabilities = mBeanProxy.getCapabilities();
+        Assert.assertArrayEquals("Expected: " + Arrays.toString(getExpectedCapabilities()) + "\nActual: " + Arrays.toString(mBeanProxy.getCapabilities().toArray()),
+                                 getExpectedCapabilities(),
+                                 actualCapabilities.toArray());
+        Capability unsupportedCapability = getUnexpectedCapability();
+        if(unsupportedCapability != null) {
+            assertFalse("The feed is not supposed to support " + unsupportedCapability,
+                        actualCapabilities.contains(unsupportedCapability));
+            actualCapabilities.add(unsupportedCapability);
+            actualCapabilities = mBeanProxy.getCapabilities();
+            Assert.assertArrayEquals("Expected: " + Arrays.toString(getExpectedCapabilities()) + "\nActual: " + Arrays.toString(mBeanProxy.getCapabilities().toArray()),
+                                     getExpectedCapabilities(),
+                                     actualCapabilities.toArray());
+        }
     }
     @Test
     public void badDataRequests()

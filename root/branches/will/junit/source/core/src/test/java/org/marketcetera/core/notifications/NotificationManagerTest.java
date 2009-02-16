@@ -51,7 +51,7 @@ public class NotificationManagerTest
         MockNotification notification = new MockNotification("subject", //$NON-NLS-1$
                                                              "body", //$NON-NLS-1$
                                                              INotification.Severity.MEDIUM,
-                                                             this.getClass());
+                                                             this.toString());
         // make sure the subscriber starts in an empty state
         assertEquals(0,
                      subscriber.getPublishCount());
@@ -99,6 +99,7 @@ public class NotificationManagerTest
     public static class MockNotification
         implements INotification
     {
+        private static final long serialVersionUID = 1L;
         /**
          * the subject of the notification
          */
@@ -118,19 +119,19 @@ public class NotificationManagerTest
         /**
          * the originator of the notification
          */
-        private final Class<?> mOriginator;
+        private final String mOriginator;
         /**
          * Create a new MockNotification instance.
          *
          * @param inSubject a <code>String</code> value
          * @param inBody a <code>String</code> value
          * @param inSeverity a <code>Severity</code> value
-         * @param inOriginator a <code>Class&lt;?&gt;</code> value
+         * @param inOriginator a <code>String</code> value
          */
         private MockNotification(String inSubject,
                                  String inBody,
                                  Severity inSeverity,
-                                 Class<?> inOriginator)
+                                 String inOriginator)
         {
             mSubject = inSubject;
             mBody = inBody;
@@ -149,7 +150,7 @@ public class NotificationManagerTest
             return mDate;
         }
         @Override
-        public Class<?> getOriginator()
+        public String getOriginator()
         {
             return mOriginator;
         }

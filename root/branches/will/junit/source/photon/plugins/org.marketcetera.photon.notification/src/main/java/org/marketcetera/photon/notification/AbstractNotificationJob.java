@@ -177,7 +177,9 @@ public abstract class AbstractNotificationJob extends Job {
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	public static class SummaryNotification extends Notification {
 
-		/**
+	    private static final long serialVersionUID = 1L;
+
+	    /**
 		 * Constructor.
 		 * 
 		 * @param count
@@ -188,7 +190,7 @@ public abstract class AbstractNotificationJob extends Job {
 		public SummaryNotification(int count, Severity severity) {
 			super(Messages.SUMMARY_NOTIFICATION_SUBJECT.getText(),
 					Messages.SUMMARY_NOTIFICATION_BODY.getText(count),
-					new Date(), severity, AbstractNotificationJob.class);
+					new Date(), severity, AbstractNotificationJob.class.getName());
 		}
 	}
 
@@ -202,13 +204,15 @@ public abstract class AbstractNotificationJob extends Job {
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	public static class ThresholdReachedNotification extends Notification {
 
-		/**
+        private static final long serialVersionUID = 1L;
+
+        /**
 		 * Constructor.
 		 */
 		public ThresholdReachedNotification() {
 			super(Messages.THRESHOLD_NOTIFICATION_SUBJECT.getText(),
 					Messages.THRESHOLD_NOTIFICATION_BODY.getText(), new Date(),
-					Severity.HIGH, AbstractNotificationJob.class);
+					Severity.HIGH, AbstractNotificationJob.class.toString());
 		}
 	}
 

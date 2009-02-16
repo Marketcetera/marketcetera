@@ -1,7 +1,9 @@
 package org.marketcetera.photon.marketdata;
 
-import static org.marketcetera.marketdata.Messages.*;
+import static org.marketcetera.marketdata.Messages.FEED_STATUS_CHANGED;
 
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.AttributeChangeNotification;
@@ -13,6 +15,7 @@ import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -150,10 +153,16 @@ public class MockMarketDataModuleFactory extends ModuleFactory {
 				IllegalRequestParameterValue {
 			mEmitSupport = inSupport;			
 		}
-
 		@Override
 		public void reconnect() {
 		}
-
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCapabilities()
+         */
+        @Override
+        public Set<Capability> getCapabilities()
+        {
+            return EnumSet.of(Capability.TOP_OF_BOOK);
+        }
 	}
 }

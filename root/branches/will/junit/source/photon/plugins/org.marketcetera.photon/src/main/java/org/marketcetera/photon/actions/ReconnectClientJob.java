@@ -316,7 +316,7 @@ public class ReconnectClientJob extends UIJob implements Messages {
 						Notification.high(subject.getText(), details
 								.getText(Messages.BROKER_LABEL_PATTERN.getText(
 										status.getName(), status.getId())),
-								getClass()));
+								getClass().getName()));
 				final BrokersStatus brokersStatus = mService
 						.getClient().getBrokersStatus();
 				PlatformUI.getWorkbench().getDisplay().asyncExec(
