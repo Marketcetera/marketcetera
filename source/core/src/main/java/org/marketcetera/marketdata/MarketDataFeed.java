@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata;
 
+import java.util.Set;
+
 import org.springframework.context.Lifecycle;
 
 import quickfix.field.SubscriptionRequestType;
@@ -49,4 +51,10 @@ public interface MarketDataFeed<T extends MarketDataFeedToken,
      * <p>If the feed is not currently logged in, this method does nothing.
      */
     public void logout();
+    /**
+     * Gets the set of capabilities for this market data feed.
+     *
+     * @return a <code>Set&lt;Capability&gt;</code> value
+     */
+    public Set<Capability> getCapabilities();
 }

@@ -840,7 +840,7 @@ public abstract class AbstractRunningStrategy
             List<BrokerStatus> brokers = strategy.getInboundServicesProvider().getBrokers();
             StrategyModule.log(LogEvent.debug(RECEIVED_BROKERS,
                                               String.valueOf(strategy),
-                                              (brokers == null ? "[]" : Arrays.toString(brokers.toArray()))), //$NON-NLS-1$
+                                              String.valueOf(brokers)),
                                strategy);
             return brokers.toArray(new BrokerStatus[brokers.size()]);
         } catch (Exception e) {
@@ -1241,7 +1241,7 @@ public abstract class AbstractRunningStrategy
         {
             return String.format("Order %s with execution reports: %s", //$NON-NLS-1$
                                  underlyingOrder,
-                                 Arrays.toString(executionReports.toArray()));
+                                 executionReports);
         }
     }
 }

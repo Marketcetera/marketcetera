@@ -1,6 +1,7 @@
 package org.marketcetera.marketdata.marketcetera;
 
 import org.junit.Test;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.SimulatedMarketDataModuleTestBase;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
@@ -50,6 +51,14 @@ public class MarketceteraFeedModuleTest
     protected ModuleURN getInstanceURN()
     {
         return MarketceteraFeedModuleFactory.INSTANCE_URN;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataModuleTestBase#getExpectedCapabilities()
+     */
+    @Override
+    protected Capability[] getExpectedCapabilities()
+    {
+        return new Capability[] { Capability.TOP_OF_BOOK };
     }
     // TODO these tests are shimmed in until I can figure out how to simulate data in data feeds
     @Test

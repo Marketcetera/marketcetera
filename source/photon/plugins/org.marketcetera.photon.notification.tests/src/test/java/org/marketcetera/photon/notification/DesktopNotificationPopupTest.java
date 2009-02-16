@@ -24,7 +24,7 @@ public class DesktopNotificationPopupTest {
 	@Test
 	public void autoClose() {
 		Display display = PlatformUI.getWorkbench().getDisplay();
-		DesktopNotificationPopup popup = new DesktopNotificationPopup(display, Notification.high("Test", "Test", getClass()));
+		DesktopNotificationPopup popup = new DesktopNotificationPopup(display, Notification.high("Test", "Test", getClass().toString()));
 		popup.open();
 		Shell s = popup.getShell();
 		while(!s.isDisposed())

@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -27,6 +28,7 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.MarketDataFeed;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
@@ -68,6 +70,10 @@ public class BogusFeed
                                    BogusMessage,
                                    BogusFeed> 
 {
+    /**
+     * capabilities for BogusFeed - note that these are not dynamic as Bogus requires no provisioning
+     */
+    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(Capability.TOP_OF_BOOK));
     /**
      * indicates if the feed has been logged in to
      */
@@ -163,6 +169,14 @@ public class BogusFeed
         }
         mExecutor.shutdownNow();
         super.stop();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataFeed#getCapabilities()
+     */
+    @Override
+    public Set<Capability> getCapabilities()
+    {
+        return capabilities;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doCancel(java.lang.String)

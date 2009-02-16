@@ -110,7 +110,7 @@ public class Strategy
     {
         sendNotification(Notification.low(inSubject,
                                           inBody,
-                                          Strategy.class));
+                                          this.toString()));
     }
     /**
      * Creates and issues a {@link Notification} at medium priority.
@@ -123,7 +123,7 @@ public class Strategy
     {
         sendNotification(Notification.medium(inSubject,
                                              inBody,
-                                             Strategy.class));
+                                             this.toString()));
     }
     /**
      * Creates and issues a {@link Notification} at high priority.
@@ -136,7 +136,7 @@ public class Strategy
     {
         sendNotification(Notification.high(inSubject,
                                            inBody,
-                                           Strategy.class));
+                                           this.toString()));
     }
     /**
      * Emits the given debug message to the strategy log output.
