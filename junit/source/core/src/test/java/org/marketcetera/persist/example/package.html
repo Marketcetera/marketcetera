@@ -1,0 +1,55 @@
+<body>
+The contents of this package serve as an example on how to create entities
+that can be persisted using the persistence infrastructure.
+Classes that have suffix Test are unit testing classes written to test the
+persistence aspects of various persistent entities.
+<h2>Entities</h2>
+This example has the following entities
+<ul>
+    <li>{@link org.marketcetera.persist.example.User}: Represents Users, each user can belong to 0 or more groups</li>
+    <ul>
+        <li>Each user has multiple settings. A one to many relationship is used to save
+            these settings, however this relationship is not exposed as a relationship. Instead
+        the settings appear as an embedded attribute of the User Entity.</li>
+    </ul>
+    <li>{@link org.marketcetera.persist.example.Group}: Represents Groups, each group has 0 or more users as as its members
+        and 0 or more authorizations assigned to it.</li>
+    <li>{@link org.marketcetera.persist.example.Authorization}: Represents Authorizations</li>
+</ul>
+<h2>Query</h2>
+This example has the following sets of queries for each entity
+<ul>
+    <li>User</li>
+    <ul>
+        <li>{@link org.marketcetera.persist.example.SingleUserQuery}: Query that retrieves a single instance of user</li>
+        <li>{@link org.marketcetera.persist.example.MultiUserQuery}: Query that retrieves multiple instances of users</li>
+    </ul>
+    <li>Group</li>
+    <ul>
+        <li>{@link org.marketcetera.persist.example.SingleGroupQuery}: Query that retrieves a single instance of group</li>
+        <li>{@link org.marketcetera.persist.example.MultiGroupQuery}: Query that retrieves multiple instances of groups</li>
+    </ul>
+    <li>Authorization</li>
+    <ul>
+        <li>{@link org.marketcetera.persist.example.SingleAuthorizationQuery}: Query that retrieves a single instance of authorization</li>
+        <li>{@link org.marketcetera.persist.example.MultiAuthorizationQuery}: Query that retrieves multiple instances of authorizations</li>
+    </ul>
+</ul>
+<h2>Tests</h2>
+Two kinds of units tests are used to verify the functionality
+<ul>
+    <li>Entity Tests</li>
+    <ul>
+        <li>{@link org.marketcetera.persist.example.UserTest}, {@link org.marketcetera.persist.example.GroupTest} &
+            {@link org.marketcetera.persist.example.AuthorizationTest} fall in this category.
+            These classes extend the base unit testing class and implement the necessary methods and
+        override the appropriate methods to completely test the new functionality.</li>
+    </ul>
+    <li>Relationship Tests</li>
+    <ul>
+        <li>{@link org.marketcetera.persist.example.AuthorizationGroupTest} &
+            {@link org.marketcetera.persist.example.UserGroupTest}: These tests extend the base unit
+        testing classes to test the many to many relationship between the two entities.</li>
+    </ul>
+</ul>
+</body>
