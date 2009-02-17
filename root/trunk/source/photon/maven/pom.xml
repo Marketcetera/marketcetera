@@ -29,6 +29,7 @@
     <module>app</module>
     <module>bundle</module>
     <module>rcptarget</module>
+    <module>test-bundle</module>
   </modules>
 
   <dependencyManagement>
@@ -43,6 +44,11 @@
         <artifactId>photon-rcptarget</artifactId>
         <version>[${project.version}]</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>photon-test-bundle</artifactId>
+        <version>[${project.version}]</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
