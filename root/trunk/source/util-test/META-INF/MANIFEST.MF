@@ -6,5 +6,6 @@ Bundle-Name: Marketcetera Test Utilities
 Bundle-Version: 1.2.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.thirdparty,
- org.junit4;resolution:=optional
+ org.junit4;visibility:=reexport,
+ org.marketcetera.test.thirdparty;visibility:=reexport
 Export-Package: org.marketcetera.util.test
