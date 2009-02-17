@@ -30,6 +30,10 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>photon-bundle</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>photon-test-bundle</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -141,12 +145,9 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.eclipse</groupId>
-                  <artifactId>junit44-feature-patch-3.4.1</artifactId>
-                  <version>20080903</version>
+                  <artifactId>junit45-feature-patch-3.4.1</artifactId>
+                  <version>20090204</version>
                   <type>zip</type>
-                  <includes>
-                    plugins/*
-                  </includes>
                   <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -183,6 +184,13 @@
                   <type>jar</type>
                   <outputDirectory>${mvn.photon.target}/eclipse/plugins/org.marketcetera.thirdparty_${project.version}</outputDirectory>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.marketcetera</groupId>
+                  <artifactId>photon-test-bundle</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                  <outputDirectory>${mvn.photon.target}/eclipse/plugins/org.marketcetera.thirdparty.test_${project.version}</outputDirectory>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${mvn.photon.target}</outputDirectory>
             </configuration>
@@ -192,30 +200,6 @@
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
-          <!-- 
-            - Some plugins must be unpacked to allow the Eclipse IDE to compile against their embedded jars.
-            -->
-          <execution>
-            <id>unpack-plugins</id>
-            <phase>install</phase>
-            <configuration>
-              <tasks>
-                <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.compile.classpath"/>
-                <if>
-                  <available file="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar"/>
-                  <then>
-                    <unzip
-                     src="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar" 
-                     dest="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903"/>
-                    <delete file="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar"/>
-                  </then>
-                </if>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
           <!-- 
             - Delete the target during a clean build.  Ideally, the maven-clean-plugin
             - could be used instead, but there is a bug that causes it to improperly 
