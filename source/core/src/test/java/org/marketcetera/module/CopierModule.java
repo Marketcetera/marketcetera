@@ -44,7 +44,8 @@ public class CopierModule extends Module implements DataEmitter {
                     SynchronousRequest synchronousRequest = (SynchronousRequest)req;
                     requester = synchronousRequest.semaphore;
                     if(requester.availablePermits() != 0) {
-                        throw new IllegalStateException("The caller must acquire the available semaphore permit before submitting the data request.");
+                        inSupport.dataEmitError(TestMessages.INCORRECT_SEMAPHORE_STATE, true);
+                        return null;
                     }
                     req = synchronousRequest.getPayload();
                 }

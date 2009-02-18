@@ -330,9 +330,10 @@ public class ModuleTestBase {
         assertEquals(inNumReceiveErrors,inStep.getNumReceiveErrors());
         if (inLastReceiveError != null) {
             assertNotNull(inStep.getLastReceiveError());
-            assertTrue(inStep.getLastReceiveError().startsWith(inLastReceiveError));
+            assertTrue(inStep.getLastReceiveError(),
+                    inStep.getLastReceiveError().startsWith(inLastReceiveError));
         } else {
-            assertNull(inStep.getLastReceiveError());
+            assertNull(inStep.getLastReceiveError(),inStep.getLastReceiveError());
         }
         if (inRequestURN != null) {
             assertEquals(inRequestURN,inStep.getRequest().getRequestURN());

@@ -78,6 +78,16 @@
         <artifactId>cep-esper</artifactId>
         <version>[${project.version}]</version>
       </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>remote-receiver</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>remote-emitter</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
 
       <!-- Compile: QuickFIX/J. -->
       <dependency>
@@ -366,6 +376,13 @@
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>cep-system</artifactId>
+        <version>[${project.version}]</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>client</artifactId>
         <version>[${project.version}]</version>
         <type>test-jar</type>
         <scope>test</scope>

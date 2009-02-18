@@ -142,6 +142,7 @@ public class ClientParameters {
         this(inUsername, inPassword, inURL, inHostname, inPort,null);
     }
 
+    @Override
     public String toString() {
         return "ClientParameters{" +  //$NON-NLS-1$
                 "Username='" + mUsername + '\'' +  //$NON-NLS-1$ $NON-NLS-2$

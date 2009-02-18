@@ -729,6 +729,14 @@ public class StrategyTestBase
                 throws ConnectionException, OrderValidationException
         {
         }
+
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#isCredentialsMatch(String, char[])
+         */
+        @Override
+        public boolean isCredentialsMatch(String inUsername, char[] inPassword) {
+            return false;
+        }
     }
     /**
      * Generates a random set of broker status objects.

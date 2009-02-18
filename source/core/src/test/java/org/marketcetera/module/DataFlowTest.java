@@ -801,7 +801,7 @@ public class DataFlowTest extends ModuleTestBase {
      *
      * @throws Exception if there are unexpected errors
      */
-    @Test
+    @Test(timeout = 60000)
     public void dataFlowStopEmitter() throws Exception {
         assertTrue(sManager.getDataFlowHistory().isEmpty());
         Map<String,Object> param = new HashMap<String, Object>();
@@ -847,7 +847,7 @@ public class DataFlowTest extends ModuleTestBase {
      *
      * @throws Exception if there were unexpected errors.
      */
-    @Test
+    @Test(timeout = 60000)
     public void dataFlowStopReceiver() throws Exception {
         assertTrue(sManager.getDataFlowHistory().isEmpty());
         Map<String,Object> param = new HashMap<String, Object>();

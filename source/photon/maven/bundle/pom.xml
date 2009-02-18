@@ -55,6 +55,10 @@
       <artifactId>cep-esper</artifactId>
     </dependency>
     <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>remote-emitter</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
     </dependency>

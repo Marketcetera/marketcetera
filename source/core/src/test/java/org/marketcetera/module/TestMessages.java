@@ -57,5 +57,7 @@ public interface TestMessages {
             new I18NMessage2P(LOGGER, "exception_test");   //$NON-NLS-1$
     static final I18NMessage0P FAILURE =
             new I18NMessage0P(LOGGER, "failure");   //$NON-NLS-1$
+    static final I18NMessage0P INCORRECT_SEMAPHORE_STATE =
+            new I18NMessage0P(LOGGER, "incorrect_semaphore_state");   //$NON-NLS-1$
 
 }
