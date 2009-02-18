@@ -455,6 +455,7 @@ public final class ModuleManager {
     public void init() throws ModuleException {
         //Register itself with the platform MBean server
         synchronized (mOperationsLock) {
+            boolean failed = true;
             try {
                 for(ModuleFactory factory: mLoader) {
                     initialize(factory);
@@ -464,11 +465,20 @@ public final class ModuleManager {
                 ((SinkModule)getModule(SinkModuleFactory.INSTANCE_URN)).setManager(this);
                 getMBeanServer().registerMBean(new ModuleManagerMXBeanImpl(this),
                         new ObjectName(MODULE_MBEAN_NAME));
+                failed = false;
             } catch (ServiceConfigurationError e) {
                 throw new ModuleException(e, Messages.MODULE_CONFIGURATION_ERROR);
             } catch (JMException e) {
                 throw new BeanRegistrationException(e,new I18NBoundMessage1P(
                         Messages.BEAN_REGISTRATION_ERROR,MODULE_MBEAN_NAME));
+            } finally {
+                if(failed) {
+                    try {
+                        stop();
+                    } catch(Exception e) {
+                        Messages.ERROR_CLEANING_UP_INIT_FAILURE.error(this, e);
+                    }
+                }
             }
         }
     }

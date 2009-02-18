@@ -123,8 +123,8 @@ public class ClientTest {
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_HOSTNAME){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters("name",
-                        "name".toCharArray(), MockServer.URL,
+                ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+                        DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                         null, Node.DEFAULT_PORT));
             }
         };
@@ -132,8 +132,8 @@ public class ClientTest {
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_HOSTNAME){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters("name",
-                        "name".toCharArray(), MockServer.URL,
+                ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+                        DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                         "  ", Node.DEFAULT_PORT));
             }
         };
@@ -141,8 +141,8 @@ public class ClientTest {
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_INVALID_PORT, -1){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters("name",
-                        "name".toCharArray(), MockServer.URL,
+                ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+                        DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                         Node.DEFAULT_HOST, -1));
             }
         };
@@ -150,14 +150,14 @@ public class ClientTest {
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_INVALID_PORT, 65536){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters("name",
-                        "name".toCharArray(), MockServer.URL,
+                ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+                        DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                         Node.DEFAULT_HOST, 65536));
             }
         };
         //no server at port
-        final ClientParameters noServerAtPort = new ClientParameters("name",
-                "name".toCharArray(), MockServer.URL,
+        final ClientParameters noServerAtPort = new ClientParameters(DEFAULT_CREDENTIAL,
+                DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT + 1);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, noServerAtPort.getURL(),
@@ -168,7 +168,7 @@ public class ClientTest {
             }
         };
         //auth failure
-        final ClientParameters parameters = new ClientParameters("name",
+        final ClientParameters parameters = new ClientParameters(DEFAULT_CREDENTIAL,
                 "game".toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
@@ -180,7 +180,7 @@ public class ClientTest {
         };
         //Use the correct password but incorrect port number
         final ClientParameters wrongPort = new ClientParameters(
-                parameters.getUsername(), "name".toCharArray(),
+                parameters.getUsername(), DEFAULT_CREDENTIAL.toCharArray(),
                 "tcp://localhost:61617", Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, wrongPort.getURL(),
@@ -210,6 +210,39 @@ public class ClientTest {
                 ClientManager.init(emptyPass);
             }
         };
+    }
+    @Test
+    public void credentialsMatch() throws Exception {
+        initClient();
+        assertFalse(ClientManager.getInstance().isCredentialsMatch(null, null));
+        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+                DEFAULT_CREDENTIAL, null));
+        assertFalse(ClientManager.getInstance().isCredentialsMatch(null,
+                DEFAULT_CREDENTIAL.toCharArray()));
+        assertFalse(ClientManager.getInstance().isCredentialsMatch("",
+                DEFAULT_CREDENTIAL.toCharArray()));
+        String otherUser = "you";
+        assertFalse(ClientManager.getInstance().isCredentialsMatch(otherUser,
+                DEFAULT_CREDENTIAL.toCharArray()));
+        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+                DEFAULT_CREDENTIAL, "".toCharArray()));
+        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+                DEFAULT_CREDENTIAL, otherUser.toCharArray()));
+        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+                otherUser, otherUser.toCharArray()));
+        assertTrue(ClientManager.getInstance().isCredentialsMatch(
+                DEFAULT_CREDENTIAL, DEFAULT_CREDENTIAL.toCharArray()));
+        //reconnect with different credentials
+        ClientParameters parms = new ClientParameters(otherUser,
+                otherUser.toCharArray(), MockServer.URL,
+                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+        ClientManager.getInstance().reconnect(parms);
+        //verify that old credentials don't work
+        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+                DEFAULT_CREDENTIAL, DEFAULT_CREDENTIAL.toCharArray()));
+        //and the new ones do.
+        assertTrue(ClientManager.getInstance().isCredentialsMatch(
+                otherUser, otherUser.toCharArray()));
     }
     @Test
     public void webServices() throws Exception {
@@ -813,8 +846,8 @@ public class ClientTest {
                 "you".toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         getClient().reconnect(parms);
-        assertEquals(parms, getClient().getParameters());
-        assertFalse(oldParms.equals(parms));
+        assertCPEquals(parms, getClient().getParameters());
+        assertFalse(oldParms.getUsername().equals(parms.getUsername()));
         assertTrue(getClient().getLastConnectTime().compareTo(connectTime) > 0);
         //Test a round trip
         sendVanillaOrder();
@@ -827,7 +860,7 @@ public class ClientTest {
      *
      * @throws Exception if there were errors creating the execution report.
      */
-    static ExecutionReport createExecutionReport() throws Exception {
+    public static ExecutionReport createExecutionReport() throws Exception {
         return Factory.getInstance().createExecutionReport(FIXVersion.FIX42.
                 getMessageFactory().newExecutionReport("ord1", "clord" +
                 sCounter.getAndIncrement(),
@@ -846,7 +879,7 @@ public class ClientTest {
      *
      * @throws Exception if there were errors creating the report.
      */
-    static OrderCancelReject createCancelReject() throws Exception {
+    public static OrderCancelReject createCancelReject() throws Exception {
         return Factory.getInstance().createOrderCancelReject(
                 FIXVersion.FIX42.getMessageFactory().newOrderCancelReject(
                         new quickfix.field.OrderID("brok3"),
@@ -856,7 +889,7 @@ public class ClientTest {
                 new BrokerID("bro"));
     }
 
-    static OrderSingle createOrderSingle() {
+    public static OrderSingle createOrderSingle() {
         OrderSingle order = Factory.getInstance().createOrderSingle();
         order.setOrderType(OrderType.Limit);
         order.setPrice(new BigDecimal("834.34"));
@@ -866,19 +899,19 @@ public class ClientTest {
         return order;
     }
 
-    static OrderReplace createOrderReplace() throws Exception {
+    public static OrderReplace createOrderReplace() throws Exception {
         OrderReplace order = Factory.getInstance().createOrderReplace(
                 createExecutionReport());
         order.setOrderType(OrderType.Limit);
         return order;
     }
 
-    static OrderCancel createOrderCancel() throws Exception {
+    public static OrderCancel createOrderCancel() throws Exception {
         return Factory.getInstance().createOrderCancel(
                 createExecutionReport());
     }
 
-    static FIXOrder createOrderFIX() throws MessageCreationException {
+    public static FIXOrder createOrderFIX() throws MessageCreationException {
         return Factory.getInstance().createOrder(
                 FIXVersion.FIX42.getMessageFactory().newLimitOrder("clOrd1",
                         quickfix.field.Side.BUY, new BigDecimal("8934.234"),
@@ -886,6 +919,21 @@ public class ClientTest {
                         new BigDecimal("9834.23"),
                         quickfix.field.TimeInForce.DAY, "no"),
                 new BrokerID("bro"));
+    }
+
+    /**
+     * Compares the client parameters instances ignoring the password value.
+     *
+     * @param inParms1 the first parameter.
+     * @param inParms2 the second parameter.
+     */
+    static void assertCPEquals(ClientParameters inParms1,
+                               ClientParameters inParms2) {
+        assertEquals(inParms1.getHostname(), inParms2.getHostname());
+        assertEquals(inParms1.getIDPrefix(), inParms2.getIDPrefix());
+        assertEquals(inParms1.getPort(), inParms2.getPort());
+        assertEquals(inParms1.getURL(), inParms2.getURL());
+        assertEquals(inParms1.getUsername(), inParms2.getUsername());
     }
 
     private void clearAll() {
@@ -906,15 +954,15 @@ public class ClientTest {
     private void initClient()
             throws ConnectionException, ClientInitException {
         Date currentTime = new Date();
-        ClientParameters parameters = new ClientParameters("name",
-                "name".toCharArray(), MockServer.URL,
+        ClientParameters parameters = new ClientParameters(DEFAULT_CREDENTIAL,
+                DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT);
         ClientManager.init(parameters);
         mClient = ClientManager.getInstance();
         mClient.addExceptionListener(mListener);
         mClient.addReportListener(mReplies);
         mClient.addBrokerStatusListener(mStatusReplies);
-        assertEquals(parameters, mClient.getParameters());
+        assertCPEquals(parameters, mClient.getParameters());
         assertNotNull(mClient.getLastConnectTime());
         assertTrue(mClient.getLastConnectTime().compareTo(currentTime) >= 0);
     }
@@ -1019,4 +1067,6 @@ public class ClientTest {
         private BlockingQueue<BrokerStatus> mStatus =
                 new LinkedBlockingQueue<BrokerStatus>();
     }
+
+    private static final String DEFAULT_CREDENTIAL = "name";
 }

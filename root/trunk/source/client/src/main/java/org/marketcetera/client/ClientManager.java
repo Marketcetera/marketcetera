@@ -19,7 +19,7 @@ public final class ClientManager {
      * Initializes the connection to the server. The handle to communicate
      * with the server can be obtained via {@link #getInstance()}.
      *
-     * @param inParameter The parameters to connect the client.
+     * @param inParameter The parameters to connect the client. Cannot be null.
      *
      * @throws ConnectionException if there were errors connecting
      * to the server.

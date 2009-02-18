@@ -174,5 +174,7 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "data_flow_already_canceling");   //$NON-NLS-1$
     static final I18NMessage0P INCORRECT_NESTED_FLOW_REQUEST =
             new I18NMessage0P(LOGGER, "incorrect_nested_flow_request");   //$NON-NLS-1$
+    static final I18NMessage0P ERROR_CLEANING_UP_INIT_FAILURE =
+            new I18NMessage0P(LOGGER, "error_cleaning_up_init_failure");   //$NON-NLS-1$
 
 }

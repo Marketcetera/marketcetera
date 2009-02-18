@@ -266,4 +266,19 @@ public interface Client {
 
     BrokersStatus getBrokersStatus() throws ConnectionException;
 
+    /**
+     * Returns true if the supplied user name, password match the
+     * credentials used to connect to the server.
+     * <p>
+     * This method returns false if the client is not connected to
+     * the server.
+     *
+     * @param inUsername the username
+     * @param inPassword the password
+     *
+     * @return true, if the supplied credentials match the ones used to
+     * authenticate to the server and the client is connected to the server,
+     * false otherwise.
+     */
+    boolean isCredentialsMatch(String inUsername, char[] inPassword);
 }

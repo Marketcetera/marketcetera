@@ -32,6 +32,12 @@ public interface Messages
 
     static final I18NLoggerProxy LOGGER = 
         new I18NLoggerProxy(PROVIDER);
+    /**
+     * The logger category used to log messages that are more visible to the
+     * user than others. Messages logged to this category may appear more
+     * prominently to the user especially when using a GUI application.
+     */
+    public static final String USER_MSG_CATEGORY = "user.messages";  //$NON-NLS-1$
 
     /*
      * The messages.

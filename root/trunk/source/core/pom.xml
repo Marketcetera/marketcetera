@@ -56,14 +56,12 @@
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
     </dependency>
-
-    <!-- Runtime. -->
-    <!-- Spring framework classes depend on JMS classes -->
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jms_1.1_spec</artifactId>
-      <scope>runtime</scope>
     </dependency>
+
+    <!-- Runtime. -->
 
     <!-- Testing. -->
     <dependency>

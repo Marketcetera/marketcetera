@@ -62,7 +62,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
         final Date lastTime = ClientManager.getInstance().getLastConnectTime();
         assertEquals(lastTime,
                 instance.getLastConnectTime());
-        assertEquals(ClientManager.getInstance().getParameters(),
+        ClientTest.assertCPEquals(ClientManager.getInstance().getParameters(),
                 instance.getParameters());
         //Sleep so that we definitely get a different connect time.
         Thread.sleep(100);
@@ -222,7 +222,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
         mManager.deleteModule(senderURN);
     }
 
-    @Test
+    @Test(timeout = 60000)
     public void dataFlowNotInitializedError() throws Exception {
         OrderSingle order = ClientTest.createOrderSingle();
         ModuleURN senderURN = mManager.createModule(

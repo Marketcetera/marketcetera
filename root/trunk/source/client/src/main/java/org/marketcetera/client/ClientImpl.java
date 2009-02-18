@@ -18,6 +18,7 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Deque;
+import java.util.Arrays;
 import java.math.BigDecimal;
 import java.beans.ExceptionListener;
 
@@ -160,7 +161,7 @@ class ClientImpl implements Client {
             internalClose();
         }
         if(inParameters != null) {
-            mParameters = inParameters;
+            setParameters(inParameters);
         }
         connect();
     }
@@ -184,7 +185,12 @@ class ClientImpl implements Client {
     @Override
     public ClientParameters getParameters() {
         failIfClosed();
-        return mParameters;
+        return new ClientParameters(
+                mParameters.getUsername(),
+                //hide the password value.
+                "*****".toCharArray(),   //$NON-NLS-1$
+                mParameters.getURL(), mParameters.getHostname(),
+                mParameters.getPort(), mParameters.getIDPrefix());
     }
 
     @Override
@@ -193,8 +199,24 @@ class ClientImpl implements Client {
         return mLastConnectTime;
     }
 
+    @Override
+    public boolean isCredentialsMatch(String inUsername, char[] inPassword) {
+        return (!mClosed) &&
+                ObjectUtils.equals(mParameters.getUsername(), inUsername) &&
+                Arrays.equals(mParameters.getPassword(), inPassword);
+    }
+
+    /**
+     * Creates an instance given the parameters and connects to the server.
+     *
+     * @param inParameters the parameters to connect to the server, cannot
+     * be null.
+     *
+     * @throws ConnectionException if there were errors connecting
+     * to the server.
+     */
     ClientImpl(ClientParameters inParameters) throws ConnectionException {
-        mParameters = inParameters;
+        setParameters(inParameters);
         connect();
     }
 
@@ -403,6 +425,18 @@ class ClientImpl implements Client {
     private ClientContext getServiceContext()
     {
         return mServiceClient.getContext();
+    }
+
+    /**
+     * Sets the client parameters value.
+     *
+     * @param inParameters the client parameters, cannot be null.
+     */
+    private void setParameters(ClientParameters inParameters) {
+        if(inParameters == null) {
+            throw new NullPointerException();
+        }
+        mParameters = inParameters;
     }
 
     private volatile AbstractApplicationContext mContext;

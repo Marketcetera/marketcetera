@@ -94,7 +94,7 @@ public class PhotonPlugin
 
 	public static final String MARKETDATA_CONSOLE_LOGGER_NAME = "marketdata.console.logger"; //$NON-NLS-1$
 	
-	public static final String STRATEGY_LOGGER_NAME = "strategy.messages"; //$NON-NLS-1$
+	public static final String STRATEGY_LOGGER_NAME = org.marketcetera.core.Messages.USER_MSG_CATEGORY;
 
     public static final String MARKETDATA_LOGGER_NAME = "datafeed.status"; //$NON-NLS-1$
 

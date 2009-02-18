@@ -19,7 +19,7 @@ interface Strategy
     /**
      * logger category which collects strategy messages
      */
-    public static final String STRATEGY_MESSAGES = "strategy.messages"; //$NON-NLS-1$
+    public static final String STRATEGY_MESSAGES = org.marketcetera.core.Messages.USER_MSG_CATEGORY;
     /**
      * Sends data received from an external source to a strategy.
      *

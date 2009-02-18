@@ -57,7 +57,7 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @throws Exception if there were unexpected errors.
      */
-    @Test
+    @Test(timeout = 60000)
     public void invalidFile() throws Exception {
         assertTrue(mManager.getDataFlows(true).isEmpty());
         File csv = new File("does/not/exist");
@@ -99,7 +99,7 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @throws Exception if there were unexpected errors
      */
-    @Test
+    @Test(timeout = 60000)
     public void insufficientInput() throws Exception {
         assertTrue(INVALID_CSV_FILE.getAbsolutePath(),  INVALID_CSV_FILE.exists());
         DataFlowID id = mManager.createDataFlow(new DataRequest[]{
@@ -128,7 +128,7 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @throws Exception if there unexpected errors.
      */
-    @Test
+    @Test(timeout = 60000)
     public void emitCSVStringFile() throws Exception {
         assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
         //verify that creating a URL out of file path fails
@@ -145,7 +145,7 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @throws Exception if there unexpected errors.
      */
-    @Test
+    @Test(timeout = 60000)
     public void emitCSVStringURL() throws Exception {
         assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
         //Try the URL
@@ -157,7 +157,7 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @throws Exception if there are unexpected errors.
      */
-    @Test
+    @Test(timeout = 60000)
     public void emitCSVFile() throws Exception {
         assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
         checkEmitCSV(VALID_CSV_FILE);
@@ -167,7 +167,7 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @throws Exception if there are unexpected errors.
      */
-    @Test
+    @Test(timeout = 60000)
     public void emitCSVURL() throws Exception {
         assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
         checkEmitCSV(VALID_CSV_FILE.toURI().toURL());

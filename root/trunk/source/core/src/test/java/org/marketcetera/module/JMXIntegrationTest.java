@@ -78,7 +78,7 @@ public class JMXIntegrationTest extends ModuleTestBase {
      *
      * @throws Exception if there were errors
      */
-    @Test
+    @Test(timeout = 60000)
     public void managerOperations() throws Exception {
         final ModuleManagerMXBean mm = JMX.newMXBeanProxy(getMBeanServer(),
                 getMMName(), ModuleManagerMXBean.class);
