@@ -3,6 +3,7 @@ package org.marketcetera.core.position.impl;
 import java.math.BigDecimal;
 
 import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -13,6 +14,7 @@ import org.marketcetera.core.position.PositionRow;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public class PositionRowImpl extends PositionRowBaseImpl implements PositionRow {
 
     private final String account;

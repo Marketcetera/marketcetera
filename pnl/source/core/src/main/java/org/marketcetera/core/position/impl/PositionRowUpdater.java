@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -22,6 +23,7 @@ import ca.odell.glazedlists.event.ListEventListener;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public final class PositionRowUpdater {
 
     private final ListEventListener<Trade> listChangeListener;
