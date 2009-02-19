@@ -1,0 +1,36 @@
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Trade Reports", :top_level_controller => 'queries', :action_name=>''} %>
+<h1>Trade Reports</h1>
+<%= if(!@report.nil?)
+       error_messages_for_report :report
+ end %>
+    <div id="trade_query">
+        <% form_tag({ :controller => 'queries', :action => 'trade_search'}, :method => :get) do -%>
+            <fieldset>
+                <h2>Query Trades</h2>
+                <p>List all trades for the specified criteria (can be blank)</p>
+                <div class="form_left">
+                    <label for="m_symbol_root">Symbol</label>
+                    <%= text_field_with_auto_complete :m_symbol, :root  %>
+                </div>
+                <div class="form_right">
+                    <label for="account_nickname">Account</label>
+                    <%= text_field_with_auto_complete :account, :nickname %>
+                </div>
+                <div class="clear"></div>
+                <%= check_box_tag :all_dates, "yes", false,
+                        { :onclick => "$('dateSelector').descendants().each(function(a) {a.disabled = !a.disabled});"} %>
+                Select All Dates<br>
+
+                <div id="dateSelector">
+                    <%= render :partial => 'shared/from_to_date_fields',
+                               :locals => { :suffix => "date", :errors => (@report.nil?) ? nil : @report.errors,
+                                        :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => true }  %>
+                </div>
+                <input type="hidden" name='suffix' value="date"/>
+            </fieldset>
+            <div>
+                <%= submit_tag 'Search for Trades', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <% end -%>
+    </div>
