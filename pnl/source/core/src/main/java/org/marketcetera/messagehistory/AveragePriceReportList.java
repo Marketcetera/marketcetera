@@ -54,7 +54,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
 
     public void listChanged(ListEvent<ReportHolder> listChanges) {
         // all of these changes to this list happen "atomically"
-        updates.beginEvent();
+        updates.beginEvent(true);
 
         // handle reordering events
         if(!listChanges.isReordering()) {
@@ -66,8 +66,13 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
 
                 EventList<ReportHolder> sourceList = listChanges.getSourceList();
                 // handle delete events
-                if(changeType == ListEvent.DELETE || changeType == ListEvent.UPDATE) {
+                if(changeType == ListEvent.UPDATE) {
                     throw new UnsupportedOperationException();
+                } else if (changeType == ListEvent.DELETE) {
+                	// assume a delete all since this is the only thing supported.
+                	clear();
+                	updates.commitEvent();
+                	return;              	
                 } else if(changeType == ListEvent.INSERT) {
                     ReportHolder deltaReportHolder = sourceList.get(listChanges.getIndex());
 
@@ -170,6 +175,26 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
         return inValue == null
                 ? 0.0
                 : inValue.doubleValue();
+    }
+    
+    @Override
+    public void clear() {
+    	// don't do a clear on an empty set
+        if(isEmpty()) return;
+        // create the change event
+        updates.beginEvent();
+        for(int i = 0, size = size(); i < size; i++) {
+            updates.elementDeleted(0, get(i));
+        }
+        // do the actual clear
+        mAveragePricesList.clear();
+        mAveragePriceIndexes.clear();
+        // fire the event
+        updates.commitEvent();
+    }
+
+    @Override
+    public void dispose() {
     }
 
 }
