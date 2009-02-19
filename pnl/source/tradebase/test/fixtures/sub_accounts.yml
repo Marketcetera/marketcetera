@@ -1,0 +1,28 @@
+unassigned_sti:
+  id: 1
+  account_id: 3
+  sub_account_type_id: 1
+unassigned_cash:
+  id: 2
+  account_id: 3
+  sub_account_type_id: 2
+unassigned_dividendRevenue:
+  id: 3
+  account_id: 3
+  sub_account_type_id: 3
+unassigned_unrealizedGainLoss:
+  id: 4
+  account_id: 3
+  sub_account_type_id: 4
+unassigned_changeOnCloseOfInv:
+  id: 5
+  account_id: 3
+  sub_account_type_id: 5
+unassigned_commissions:
+  id: 6
+  account_id: 3
+  sub_account_type_id: 6
+unassigned_interestRevenue:
+  id: 7
+  account_id: 3
+  sub_account_type_id: 7
