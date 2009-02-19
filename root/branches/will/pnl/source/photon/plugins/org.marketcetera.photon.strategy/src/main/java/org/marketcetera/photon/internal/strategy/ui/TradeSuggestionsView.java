@@ -7,12 +7,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.photon.commons.ui.table.ColumnConfiguration;
+import org.marketcetera.photon.commons.ui.table.TableConfiguration;
+import org.marketcetera.photon.commons.ui.table.TableSupport;
 import org.marketcetera.photon.internal.strategy.Messages;
 import org.marketcetera.photon.internal.strategy.TradeSuggestion;
 import org.marketcetera.photon.internal.strategy.TradeSuggestionManager;
-import org.marketcetera.photon.internal.strategy.table.ColumnConfiguration;
-import org.marketcetera.photon.internal.strategy.table.TableConfiguration;
-import org.marketcetera.photon.internal.strategy.table.TableSupport;
 import org.marketcetera.photon.ui.ChooseColumnsMenu.ITableProvider;
 import org.marketcetera.util.misc.ClassVersion;
 

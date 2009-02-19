@@ -6,6 +6,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.core.ClassVersion;
@@ -95,9 +99,10 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 		} else {
 			secondaryStream = null;
 		}
-    	display.asyncExec(new Runnable() {
-            public void run() {
-            	String loggableMessage = ""; //$NON-NLS-1$
+    	new Job("consoleUpdater") { //$NON-NLS-1$
+            @Override
+			protected IStatus run(IProgressMonitor monitor) {
+				String loggableMessage = ""; //$NON-NLS-1$
             	Layout theLayout = getLayout();
 				if (theLayout != null){
             		loggableMessage = theLayout.format(loggingEvent);
@@ -122,9 +127,9 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 	                	secondaryStream.println(exceptionMessage);
 	                }
                 }
-            }
-        	}
-    	);
+                return Status.OK_STATUS;
+			}
+        }.schedule();
     }
 
     /* (non-Javadoc)
