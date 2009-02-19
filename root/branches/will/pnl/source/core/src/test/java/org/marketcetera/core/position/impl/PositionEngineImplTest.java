@@ -253,7 +253,7 @@ public class PositionEngineImplTest {
 			
 			@Override
 			protected int[] getExpectedPositionListChanges() {
-				return new int[] { ListEvent.DELETE, 0, ListEvent.INSERT, 0};
+				return new int[] { ListEvent.UPDATE, 0, ListEvent.DELETE, 0, ListEvent.INSERT, 0, ListEvent.UPDATE, 0};
 			}
 
 			@Override
