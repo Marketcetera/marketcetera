@@ -22,8 +22,7 @@ import java.math.BigDecimal;
 @ClassVersion("$Id$")
 public final class ReportFillMatcher implements Matcher<ReportHolder> {
     public boolean matches(ReportHolder holder) {
-        ReportHolder incomingHolder = (ReportHolder) holder;
-        ReportBase report = incomingHolder.getReport();
+        ReportBase report = holder.getReport();
         OrderStatus orderStatus = report.getOrderStatus();
         if (report instanceof ExecutionReport) {
             ExecutionReport exec = (ExecutionReport) report;

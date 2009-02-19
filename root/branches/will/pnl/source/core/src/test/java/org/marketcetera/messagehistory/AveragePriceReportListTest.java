@@ -126,18 +126,18 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
         Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
                         10), new BigDecimal(11), new MSymbol("IBM"), "account");
+        Message message2 = msgFactory.newExecutionReport("clordid1", "clordid1",
+                "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
+                        10), new BigDecimal(11), new MSymbol("MSFT"), "account");
         message.setField(new LeavesQty(90.0));
         source.add(new ReportHolder(createReport(message)));
+        source.add(new ReportHolder(createReport(message2)));
 
-        assertEquals(1, averagePriceList.size());
+        assertEquals(2, averagePriceList.size());
 
-        // not implemented
-        new ExpectedTestFailure(UnsupportedOperationException.class) {
-            @Override
-            protected void execute() throws Throwable {
-                source.remove(0);
-            }
-        }.run();
+        // any remove empties the list (since TradeReportsHistory only supports clear())
+        source.remove(0);
+        assertEquals(0, averagePriceList.size());
     }
 
     public void testUpdate() throws Exception {

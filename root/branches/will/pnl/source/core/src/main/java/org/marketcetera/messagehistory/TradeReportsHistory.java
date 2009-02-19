@@ -36,13 +36,11 @@ import quickfix.field.OrdStatus;
 import quickfix.field.SendingTime;
 import quickfix.field.Text;
 import quickfix.field.TransactTime;
-import ca.odell.glazedlists.AbstractEventList;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.GroupingList;
-import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
 
 /* $License$ */
 /**
@@ -57,8 +55,6 @@ import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
 public class TradeReportsHistory {
 
     private final EventList<ReportHolder> mAllMessages;
-
-    private final FilterList<ReportHolder> mAllFilteredMessages;
 
     private final FilterList<ReportHolder> mFillMessages;
 
@@ -84,8 +80,7 @@ public class TradeReportsHistory {
         this.mMessageFactory = messageFactory;
 
         mAllMessages = new BasicEventList<ReportHolder>();
-        mAllFilteredMessages = new FilterList<ReportHolder>(mAllMessages);
-        mFillMessages = new FilterList<ReportHolder>(mAllFilteredMessages,
+        mFillMessages = new FilterList<ReportHolder>(mAllMessages,
                 new ReportFillMatcher());
         GroupingList<ReportHolder> orderIDList = new GroupingList<ReportHolder>(
                 mAllMessages, new ReportGroupIDComparator());
@@ -116,6 +111,21 @@ public class TradeReportsHistory {
 
         mOriginalOrderACKs = new HashMap<OrderID, ReportHolder>();
         mOrderIDToGroupMap = new HashMap<OrderID, OrderID>();
+    }
+
+    public void resetMessages(ReportBase[] newMessages) {
+        synchronized (mUniqueReportIds) {
+            mAllMessages.getReadWriteLock().readLock().lock();
+            try {
+                mAllMessages.clear();
+            } finally {
+                mAllMessages.getReadWriteLock().readLock().unlock();
+            }
+            mUniqueReportIds.clear();
+        }
+        for (ReportBase report : newMessages) {
+            addIncomingMessage(report);
+        }
     }
 
     public void addIncomingMessage(ReportBase inReport) {
@@ -308,14 +318,6 @@ public class TradeReportsHistory {
         } finally {
             mLatestMessageList.getReadWriteLock().readLock().unlock();
         }
-    }
-
-    public void setMatcherEditor(ThreadedMatcherEditor<ReportHolder> matcherEditor) {
-        mAllFilteredMessages.setMatcherEditor(matcherEditor);
-    }
-
-    public EventList<ReportHolder> getFilteredMessages() {
-        return mAllFilteredMessages;
     }
 
     public FilterList<ReportHolder> getOpenOrdersList() {
