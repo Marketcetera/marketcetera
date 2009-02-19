@@ -113,7 +113,13 @@ public class TradeReportsHistory {
         mOrderIDToGroupMap = new HashMap<OrderID, OrderID>();
     }
 
-    public void resetMessages(ReportBase[] newMessages) {
+    /**
+     * Resets the history to a new set of reports.  This method effectively clears the lists and adds the 
+     * given reports as if they were added using {@link #addIncomingMessage(ReportBase)}.
+     * 
+     * @param newReports the reports that should replace existing history 
+     */
+    public void resetMessages(ReportBase[] newReports) {
         synchronized (mUniqueReportIds) {
             mAllMessages.getReadWriteLock().readLock().lock();
             try {
@@ -123,7 +129,7 @@ public class TradeReportsHistory {
             }
             mUniqueReportIds.clear();
         }
-        for (ReportBase report : newMessages) {
+        for (ReportBase report : newReports) {
             addIncomingMessage(report);
         }
     }

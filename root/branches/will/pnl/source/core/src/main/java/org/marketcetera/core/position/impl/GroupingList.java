@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 import ca.odell.glazedlists.AbstractEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
@@ -17,6 +19,18 @@ import ca.odell.glazedlists.impl.adt.barcode2.SimpleTree;
 import ca.odell.glazedlists.impl.adt.barcode2.SimpleTreeIterator;
 import ca.odell.glazedlists.matchers.Matcher;
 
+/* $License$ */
+
+/**
+ * Replacement for {@link ca.odell.glazedlists.GroupingList} that provides event notifications for the groups.
+ *
+ * @see http://www.nabble.com/GroupList-notification-td21879305.html
+ * 
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$")
 public class GroupingList<E> extends TransformedList<E, EventList<E>> {
 
     /**
@@ -28,6 +42,12 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
 
     private GroupMatcherFactory<E, GroupMatcher<E>> factory;
 
+    /**
+     * Constructor.
+     * 
+     * @param source the source list
+     * @param factory factory to create group matchers
+     */
     public GroupingList(EventList<E> source, GroupMatcherFactory<E, GroupMatcher<E>> factory) {
         super(source);
         this.factory = factory;
@@ -43,7 +63,7 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
         }
     }
 
-    /** {@inheritDoc} */
+    @Override
     @SuppressWarnings("deprecation")
     public void listChanged(ListEvent<E> listChanges) {
         beginEvent();
@@ -190,71 +210,79 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
         updates.commitEvent();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public EventList<E> get(int index) {
         return groupLists.get(index).get();
     }
 
-    /** {@inheritDoc} */
+    @Override
     protected boolean isWritable() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    @Override
     protected int getSourceIndex(int index) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean add(EventList<E> value) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void add(int index, EventList<E> value) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean addAll(Collection<? extends EventList<E>> values) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean addAll(int index, Collection<? extends EventList<E>> values) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public EventList<E> remove(int index) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean remove(Object toRemove) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean removeAll(Collection<?> collection) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean retainAll(Collection<?> values) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public EventList<E> set(int index, EventList<E> value) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public int size() {
         return groupLists.size();
     }
 
+    /**
+     * EventList implementation used for groups.
+     *
+     * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
     private class GroupList extends AbstractEventList<E> implements Comparable<GroupList> {
 
         private GroupMatcher<E> matcher;

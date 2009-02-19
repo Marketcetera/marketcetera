@@ -46,19 +46,6 @@ public class PositionMetricsImpl implements PositionMetrics {
         this.totalPL = totalPL;
     }
 
-    /**
-     * Constructor for use when
-     * 
-     * @param position
-     * @param unrealizedPL
-     * @param realizedPL
-     * @throws IllegalArgumentException
-     *             if any parameters are null
-     */
-    public PositionMetricsImpl(BigDecimal position, BigDecimal realizedPL) {
-        this(position, null, null, realizedPL, null, null);
-    }
-
     @Override
     public BigDecimal getPosition() {
         return position;
