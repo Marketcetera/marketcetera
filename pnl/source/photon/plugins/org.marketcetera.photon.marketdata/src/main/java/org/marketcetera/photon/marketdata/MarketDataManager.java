@@ -172,13 +172,13 @@ public final class MarketDataManager {
 				mModuleManager.start(entry.getValue());
 			} catch (ModuleException e) {
 				Messages.MARKET_DATA_MANAGER_RECEIVER_START_FAILED.error(this,
-						e, entry.getKey().getSymbol());
+						e, entry.getKey().getSymbols());
 				iterator.remove();
 				try {
 					mModuleManager.deleteModule(entry.getValue());
 				} catch (ModuleException ex) {
 					Messages.MARKET_DATA_MANAGER_DELETE_FAILED.error(this, ex,
-							entry.getKey().getSymbol());
+							entry.getKey().getSymbols());
 				}
 			}
 		}
@@ -196,12 +196,12 @@ public final class MarketDataManager {
 				}
 			} catch (ModuleException e) {
 				Messages.MARKET_DATA_MANAGER_RECEIVER_STOP_FAILED.error(this,
-						e, entry.getKey().getSymbol());
+						e, entry.getKey().getSymbols());
 				try {
 					mModuleManager.deleteModule(entry.getValue());
 				} catch (ModuleException ex) {
 					Messages.MARKET_DATA_MANAGER_DELETE_FAILED.error(this, ex,
-							entry.getKey().getSymbol());
+							entry.getKey().getSymbols());
 				}
 				iterator.remove();
 			}
@@ -232,7 +232,7 @@ public final class MarketDataManager {
 				// Messages.MARKET_DATA_MANAGER_SUBSCRIBE_FAILED
 				// .getText(subscriber.getSymbol()));
 				Messages.MARKET_DATA_MANAGER_SUBSCRIBE_FAILED.error(this, e,
-						subscriber.getSymbol());
+						subscriber.getSymbols());
 			}
 		}
 	}
@@ -258,7 +258,7 @@ public final class MarketDataManager {
 				mModuleManager.deleteModule(subscriberURN);
 			} catch (ModuleException e) {
 				Messages.MARKET_DATA_MANAGER_DELETE_FAILED.error(this, e,
-						subscriber.getSymbol());
+						subscriber.getSymbols());
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import org.apache.commons.lang.StringUtils;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowRequester;
@@ -59,17 +58,17 @@ class MarketDataReceiverModule extends Module implements DataReceiver,
 
 	@Override
 	protected void preStart() throws ModuleException {
-		if (StringUtils.isBlank(mSubscriber.getSymbol())) {
+		if (mSubscriber.getSymbols().length == 0) {
 			throw new ModuleException(Messages.MARKET_DATA_RECEIVER_NO_SYMBOL);
 		}
 		ModuleURN source = mConfigurationProvider.getMarketDataSourceModule();
 		if (source == null) {
 			throw new ModuleException(new I18NBoundMessage1P(
 					Messages.MARKET_DATA_RECEIVER_NO_SOURCE, mSubscriber
-							.getSymbol()));
+							.getSymbols()));
 		}
 		org.marketcetera.marketdata.DataRequest request = MarketDataRequest
-				.newTopOfBookRequest(mSubscriber.getSymbol());
+				.newTopOfBookRequest(mSubscriber.getSymbols());
 		mDataFlowSupport.createDataFlow(new DataRequest[] {
 				new DataRequest(source, request),
 				new DataRequest(getURN()) }, false);

@@ -132,14 +132,16 @@ public interface Messages
                                                                           "client_connection_failed"); //$NON-NLS-1$
     public static I18NMessage1P MESSAGE_QUEUE_CONNECTED = new I18NMessage1P(LOGGER,
                                                                             "message_queue_connected"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_CONNECT_TO_MESSAGE_QUEUE = new I18NMessage0P(LOGGER,
-                                                                                    "cannot_connect_to_message_queue"); //$NON-NLS-1$
-    public static I18NMessage0P RECONNECT_CLIENT_ACTION = new I18NMessage0P(LOGGER,
-                                                                         "reconnect_client_action"); //$NON-NLS-1$
-    public static I18NMessage0P RECONNECT_CLIENT_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
-                                                                                     "reconnect_client_action_description"); //$NON-NLS-1$
-    public static I18NMessage0P RECONNECT_CLIENT_JOB_ACTION = new I18NMessage0P(LOGGER,
-                                                                             "reconnect_client_job_action"); //$NON-NLS-1$
+    public static I18NMessage0P RECONNECT_SERVER_JOB_NAME = new I18NMessage0P(
+			LOGGER, "reconnect_server_job.name"); //$NON-NLS-1$
+    public static I18NMessage0P RECONNECT_SERVER_JOB_CONNECTION_FAILED = new I18NMessage0P(
+			LOGGER, "reconnect_server_job.connection_failed"); //$NON-NLS-1$
+    public static I18NMessage0P RECONNECT_SERVER_JOB_ERROR_DIALOG_TITLE = new I18NMessage0P(
+			LOGGER, "reconnect_server_job.error_dialog.title"); //$NON-NLS-1$
+    public static I18NMessage0P RETRIEVE_TRADING_HISTORY_JOB_NAME = new I18NMessage0P(
+			LOGGER, "retrieve_trading_history_job.name"); //$NON-NLS-1$
+    public static I18NMessage0P RETRIEVE_TRADING_HISTORY_JOB_ERROR = new I18NMessage0P(
+			LOGGER, "retrieve_trading_history_job.error"); //$NON-NLS-1$
     public static I18NMessage0P CHECK_FOR_UPDATES_ACTION = new I18NMessage0P(LOGGER,
                                                                              "check_for_updates_action"); //$NON-NLS-1$
     public static I18NMessage0P CHECK_FOR_UPDATES_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
@@ -256,6 +258,7 @@ public interface Messages
 			LOGGER, "connection_preferences.web_service_host.label"); //$NON-NLS-1$
 	public static I18NMessage0P CONNECTION_PREFERENCES_WEB_SERVICE_PORT_LABEL = new I18NMessage0P(
 			LOGGER, "connection_preferences.web_service_port.label"); //$NON-NLS-1$
+	
     public static I18NMessage0P MARKET_DATA_FEED_LABEL = new I18NMessage0P(LOGGER,
                                                                            "market_data_feed_label"); //$NON-NLS-1$
     public static I18NMessage0P ORDER_ID_PREFIX_LABEL = new I18NMessage0P(LOGGER,

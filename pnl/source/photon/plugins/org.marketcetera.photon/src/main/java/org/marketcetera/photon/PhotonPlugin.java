@@ -34,6 +34,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.position.PositionEngine;
+import org.marketcetera.core.position.impl.PositionEngineImpl;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
@@ -118,6 +120,8 @@ public class PhotonPlugin
 	
 	private BrokerManager mBrokerManager;
 
+    private PositionEngineImpl mPositionEngine;
+
 	/**
 	 * The constructor.
 	 */
@@ -151,6 +155,8 @@ public class PhotonPlugin
 
         initMessageFactory();
 		initTradeReportsHistory();
+		mPositionEngine = new PositionEngineImpl(mTradeReportsHistory.getAllMessagesList());
+		context.registerService(PositionEngine.class.getName(), mPositionEngine, null);
 		initPhotonController();
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 	}

@@ -19,12 +19,11 @@ import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.internal.layout.ITrimManager;
 import org.eclipse.ui.internal.layout.IWindowTrim;
 import org.eclipse.ui.internal.progress.ProgressManager;
+import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.actions.ReconnectClientJob;
-import org.marketcetera.photon.messaging.ClientFeedService;
+import org.marketcetera.photon.actions.ReconnectServerJob;
 import org.marketcetera.photon.ui.PhotonConsole;
-import org.osgi.framework.BundleContext;
-import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Required by the RCP platform this class is responsible for setting up the
@@ -149,22 +148,15 @@ public class ApplicationWorkbenchWindowAdvisor
 	}
 
 	private void startClient() {
-		ReconnectClientJob job = new ReconnectClientJob(RECONNECT_MESSAGE_SERVER.getText());
-		job.schedule();
+		new ReconnectServerJob().schedule();
 	}
 
 
 	private void stopClient() {
 		try {
-			BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-			ServiceTracker clientFeedTracker = new ServiceTracker(bundleContext, 
-					ClientFeedService.class.getName(), null);
-			clientFeedTracker.open();
-
-			ReconnectClientJob.disconnect(clientFeedTracker);
-		} catch (Throwable t){
-			PhotonPlugin.getMainConsoleLogger().error(CANNOT_DISCONNECT_FROM_MESSAGE_QUEUE.getText(),
-			                                          t);
+			ClientManager.getInstance().close();
+		} catch (ClientInitException e) {
+			// already closed
 		}
 	}
 	

@@ -23,8 +23,8 @@ import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
 import org.marketcetera.photon.messagehistory.FIXStringMatcher;
-import org.marketcetera.photon.ui.ContextMenuFactory;
 import org.marketcetera.photon.ui.BrokerSupportTableFormat;
+import org.marketcetera.photon.ui.ContextMenuFactory;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.FIXMessageTableFormat;
 import org.marketcetera.photon.ui.FIXMessageTableRefresher;
@@ -34,8 +34,8 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Field;
 import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.impl.matchers.TrueMatcher;
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
+import ca.odell.glazedlists.matchers.Matchers;
 
 /* $License$ */
 
@@ -61,7 +61,7 @@ public abstract class AbstractFIXMessagesView
     /**
      * default matcher matches all rows
      */
-    private static final ca.odell.glazedlists.matchers.Matcher<ReportHolder> DEFAULT_MATCHER = new TrueMatcher<ReportHolder>();
+    private static final ca.odell.glazedlists.matchers.Matcher<ReportHolder> DEFAULT_MATCHER = Matchers.trueMatcher();
     /**
      * regex determining the search pattern for the view filter
      */

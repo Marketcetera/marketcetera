@@ -25,7 +25,8 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.MessageCreationException;
 
 import quickfix.Message;
-import ca.odell.glazedlists.impl.matchers.TrueMatcher;
+import ca.odell.glazedlists.matchers.Matcher;
+import ca.odell.glazedlists.matchers.Matchers;
 
 public abstract class ViewTestBase extends TestCase {
 
@@ -185,7 +186,8 @@ public abstract class ViewTestBase extends TestCase {
                 }
             }
             // reset the filter and make sure they all show up again
-            filter.setMatcher(new TrueMatcher<ReportHolder>());
+            Matcher<ReportHolder> trueMatcher = Matchers.trueMatcher();
+            filter.setMatcher(trueMatcher);
             assertEquals("Test condition " + testConditionCounter + " failed",
                          messages.size(),
                          view.getMessageList(hist).size());
