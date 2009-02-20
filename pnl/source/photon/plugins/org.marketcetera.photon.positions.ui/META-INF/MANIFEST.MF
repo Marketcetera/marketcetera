@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Realtime Positions and P&L UI
+Bundle-Name: %bundleName
 Bundle-SymbolicName: org.marketcetera.photon.positions.ui;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.marketcetera.photon.internal.positions.ui.Activator
-Bundle-Vendor: Marketcetera, Inc.
+Bundle-Vendor: %bundleVendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.marketcetera.util,
@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.ui,
  org.marketcetera.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Bundle-Localization: plugin

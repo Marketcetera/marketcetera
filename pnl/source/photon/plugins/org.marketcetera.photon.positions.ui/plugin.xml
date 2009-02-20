@@ -5,14 +5,14 @@
          point="org.eclipse.ui.views">
       <category
             id="org.marketcetera.photon.positions.ui"
-            name="Positions">
+            name="%positionsCategory.name">
       </category>
       <view
             category="org.marketcetera.photon.positions.ui"
             class="org.marketcetera.photon.internal.positions.ui.PositionsView"
             icon="icons/sum.png"
             id="org.marketcetera.photon.positions.ui.PositionsView"
-            name="Positions"
+            name="%positionsView.name"
             restorable="true">
       </view>
    </extension>

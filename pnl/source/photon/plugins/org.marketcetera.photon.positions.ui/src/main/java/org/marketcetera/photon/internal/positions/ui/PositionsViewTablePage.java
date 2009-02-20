@@ -69,7 +69,6 @@ public class PositionsViewTablePage extends PositionsViewPage {
 						Label filterLabel = new Label(composite, SWT.NONE);
 						filterLabel.setText(Messages.POSITIONS_VIEW_FILTER_LABEL.getText());
 						FilterBox filter = new FilterBox(composite);
-						filter.setInitialText(""); //$NON-NLS-1$
 						if (filtered != null) {
 							filtered.setMatcherEditor(new PositionsMatcherEditor(filter));
 						}
