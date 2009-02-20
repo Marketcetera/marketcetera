@@ -295,6 +295,8 @@ public class EmitterModuleTest extends ModuleTestBase {
         assertEquals(0, listener.size());
         //Stop the receiver to terminate the connection
         mManager.stop(ReceiverFactory.INSTANCE_URN);
+        //Give it some time to disconnect
+        Thread.sleep(3000);
         assertEquals(false, bean.isConnected());
         assertNotNull(bean.getLastFailure());
         assertEquals(1, listener.size());
