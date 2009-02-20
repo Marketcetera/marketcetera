@@ -493,7 +493,7 @@ public class StrategyTestBase
                                         new BigDecimal("20000")));
             Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
             OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
-                                                                                                            null);
+                                                                                                            null, Originator.Server);
             inSupport.send(cancel);
             Message executionReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport("orderid",
                                                                                               "clOrderID",

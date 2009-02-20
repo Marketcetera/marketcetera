@@ -53,12 +53,11 @@ class PersistentReport extends EntityBase {
         if(inReport instanceof HasFIXMessage) {
             setFixMessage(((HasFIXMessage) inReport).getMessage().toString());
         }
+        setOriginator(inReport.getOriginator());
         if(inReport instanceof ExecutionReport) {
             mReportType = ReportType.ExecutionReport;
-            setOriginator(((ExecutionReport) inReport).getOriginator());
         } else if (inReport instanceof OrderCancelReject) {
             mReportType = ReportType.CancelReject;
-            setOriginator(null);
         } else {
             //You added new report types but forgot to update the code
             //to persist them.
@@ -90,7 +89,7 @@ class PersistentReport extends EntityBase {
                     break;
                 case CancelReject:
                     returnValue =  Factory.getInstance().createOrderCancelReject(
-                            fixMessage, getBrokerID());
+                            fixMessage, getBrokerID(), getOriginator());
                     break;
                 default:
                     //You added new report types but forgot to update the code

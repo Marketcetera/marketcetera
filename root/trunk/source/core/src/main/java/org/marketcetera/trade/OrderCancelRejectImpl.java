@@ -24,10 +24,12 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
      *
      * @param inMessage The FIX Message instance.
      * @param inBrokerID the brokerID from which this report originated.
+     * @param inOriginator the originator of this report.
      */
     OrderCancelRejectImpl(Message inMessage,
-                          BrokerID inBrokerID) {
-        super(inMessage, inBrokerID);
+                          BrokerID inBrokerID,
+                          Originator inOriginator) {
+        super(inMessage, inBrokerID, inOriginator);
     }
 
     /**
@@ -48,6 +50,7 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
                 String.valueOf(getSendingTime()),
                 String.valueOf(getText()),
                 String.valueOf(getBrokerOrderID()),
+                String.valueOf(getOriginator()),
                 String.valueOf(getMessage())
         );
     }

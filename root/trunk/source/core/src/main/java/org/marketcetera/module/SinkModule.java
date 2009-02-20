@@ -54,7 +54,7 @@ public class SinkModule extends Module
             throws UnsupportedDataTypeException, StopDataFlowException {
         synchronized(this) {
             String type = inData == null
-                    ? String.valueOf(null)
+                    ? String.valueOf(inData)
                     : inData.getClass().getName();
             Counter c = mTypeStats.get(type);
             if(c == null) {

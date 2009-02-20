@@ -104,10 +104,10 @@ public abstract class CEPTestBase extends ModuleTestBase {
         // order cancel reject
         Message rej1 = FIXVersion.FIX42.getMessageFactory().newOrderCancelReject();
         rej1.setField(new Text("GOOG"));
-        ocr1 = sFactory.createOrderCancelReject(rej1, new BrokerID("dest"));
+        ocr1 = sFactory.createOrderCancelReject(rej1, new BrokerID("dest"), Originator.Server);
         Message rej2 = FIXVersion.FIX42.getMessageFactory().newOrderCancelReject();
         rej2.setField(new Text("CSCO"));
-        ocr2 = sFactory.createOrderCancelReject(rej2, new BrokerID("dest"));
+        ocr2 = sFactory.createOrderCancelReject(rej2, new BrokerID("dest"), Originator.Server);
         // execution report
         Message er1_fix = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderid", "clOrdID", "execID", 'a', 'b', BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IFLI"), "acct");

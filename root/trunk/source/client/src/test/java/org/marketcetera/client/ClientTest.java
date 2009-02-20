@@ -270,7 +270,7 @@ public class ClientTest {
         ReportID reportID = new ReportID(1234);
         ReportBaseImpl.assignReportID(reportImpl, reportID);
         OrderCancelRejectImpl reject = (OrderCancelRejectImpl)
-                f.createOrderCancelReject(ocr, dID);
+                f.createOrderCancelReject(ocr, dID, Originator.Server);
         ReportID rejectID = new ReportID(2345);
         ReportBaseImpl.assignReportID(reject, rejectID);
         MockServiceImpl.sReports = new ReportBaseImpl[] {
@@ -886,7 +886,7 @@ public class ClientTest {
                         new ClOrdID("clord" + sCounter.getAndIncrement()),
                         new OrigClOrdID("origord1"),
                         "what?", null),
-                new BrokerID("bro"));
+                new BrokerID("bro"), Originator.Broker);
     }
 
     public static OrderSingle createOrderSingle() {

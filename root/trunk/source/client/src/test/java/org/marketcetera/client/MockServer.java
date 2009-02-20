@@ -163,7 +163,7 @@ public class MockServer {
                             Originator.Server));
                 } else if(FIXMessageUtil.isCancelReject(message)) {
                     getHandler().addToSend(Factory.getInstance().createOrderCancelReject(
-                        message, new BrokerID("default")));
+                        message, new BrokerID("default"), Originator.Server));
                 } else {
                     SLF4JLoggerProxy.warn(this, "Ignoring:{}", message);
                 }

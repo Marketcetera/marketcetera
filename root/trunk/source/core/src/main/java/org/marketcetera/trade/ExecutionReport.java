@@ -132,13 +132,6 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
     public TimeInForce getTimeInForce();
 
     /**
-     * The originator of this message.
-     *
-     * @return the originator of this message.
-     */
-    public Originator getOriginator();
-
-    /**
      * Gets the order capacity value for this order.
      *
      * @return the order capacity value.

@@ -35,7 +35,15 @@ public class OrderCancelRejectTest extends TypesTestBase {
         // null message
         new ExpectedFailure<NullPointerException>(null){
              protected void run() throws Exception {
-                 sFactory.createOrderCancelReject(null, cID);
+                 sFactory.createOrderCancelReject(null, cID, Originator.Server);
+             }
+         };
+        //null originator
+        new ExpectedFailure<NullPointerException>(null){
+             protected void run() throws Exception {
+                 sFactory.createOrderCancelReject(
+                         getSystemMessageFactory().newOrderCancelReject(),
+                         cID, null);
              }
          };
         final Message message = getSystemMessageFactory().newBasicOrder();
@@ -43,7 +51,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
                 Messages.NOT_CANCEL_REJECT, message.toString()){
             protected void run() throws Exception {
                 sFactory.createOrderCancelReject(
-                        message, null);
+                        message, null, Originator.Server);
             }
         };
     }
@@ -57,8 +65,10 @@ public class OrderCancelRejectTest extends TypesTestBase {
     public void getters() throws Exception {
         // report with all empty fields
         Message msg = getSystemMessageFactory().newOrderCancelReject();
-        OrderCancelReject report = sFactory.createOrderCancelReject(msg, null);
-        assertReportBaseValues(report, null, null, null, null, null, null, null);
+        OrderCancelReject report = sFactory.createOrderCancelReject(msg, null,
+                Originator.Server);
+        assertReportBaseValues(report, null, null, null, null, null, null,
+                null, Originator.Server);
         assertNull(report.getReportID());
         //Verify toString() doesn't fail.
         report.toString();
@@ -79,9 +89,9 @@ public class OrderCancelRejectTest extends TypesTestBase {
                 text, null);
         msg.getHeader().setField(new SendingTime(sendingTime));
         msg.setField(new TransactTime(transactTime));
-        report = sFactory.createOrderCancelReject(msg, cID);
+        report = sFactory.createOrderCancelReject(msg, cID, Originator.Broker);
         assertReportBaseValues(report, cID, orderID, orderStatus, origOrderID,
-                sendingTime, text, destOrderID);
+                sendingTime, text, destOrderID, Originator.Broker);
         assertNull(report.getReportID());
         report.toString();
         

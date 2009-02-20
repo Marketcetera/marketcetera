@@ -143,7 +143,6 @@ public class TypesTestBase {
         assertEquals(inReport1.getLeavesQuantity(), inReport2.getLeavesQuantity());
         assertEquals(inReport1.getOrderQuantity(), inReport2.getOrderQuantity());
         assertEquals(inReport1.getOrderType(), inReport2.getOrderType());
-        assertEquals(inReport1.getOriginator(), inReport2.getOriginator());
         assertEquals(inReport1.getSide(), inReport2.getSide());
         assertEquals(inReport1.getSymbol(), inReport2.getSymbol());
         assertEquals(inReport1.getTimeInForce(), inReport2.getTimeInForce());
@@ -226,6 +225,7 @@ public class TypesTestBase {
         assertEquals(inReport1.getText(), inReport2.getText());
         assertEquals(inReport1.getBrokerOrderID(),
                 inReport2.getBrokerOrderID());
+        assertEquals(inReport1.getOriginator(), inReport2.getOriginator());
     }
 
     /**
@@ -425,13 +425,14 @@ public class TypesTestBase {
     }
 
     protected static void assertReportBaseValues(ReportBase inReport,
-                                              BrokerID inBrokerID,
-                                              OrderID inOrderID,
-                                              OrderStatus inOrderStatus,
-                                              OrderID inOrigOrderID,
+                                                 BrokerID inBrokerID,
+                                                 OrderID inOrderID,
+                                                 OrderStatus inOrderStatus,
+                                                 OrderID inOrigOrderID,
                                                  Date inSendingTime,
                                                  String inText,
-                                                 String inBrokerOrderID) {
+                                                 String inBrokerOrderID,
+                                                 Originator inOriginator) {
         assertEquals(inBrokerID, inReport.getBrokerID());
         assertEquals(inOrderID, inReport.getOrderID());
         assertEquals(inOrderStatus, inReport.getOrderStatus());
@@ -439,6 +440,7 @@ public class TypesTestBase {
         assertEquals(inSendingTime,  inReport.getSendingTime());
         assertEquals(inText, inReport.getText());
         assertEquals(inBrokerOrderID, inReport.getBrokerOrderID());
+        assertEquals(inOriginator, inReport.getOriginator());
     }
 
     protected static void assertExecReportValues(ExecutionReport inReport,
@@ -457,7 +459,6 @@ public class TypesTestBase {
                                                  MSymbol inSymbol,
                                                  TimeInForce inTimeInForce,
                                                  Date inTransactTime,
-                                                 Object inOriginator,
                                                  OrderCapacity inOrderCapacity,
                                                  PositionEffect inPositionEffect,
                                                  boolean inIsCancelable) {
@@ -478,7 +479,6 @@ public class TypesTestBase {
         assertEquals(inTransactTime, inReport.getTransactTime());
         assertEquals(inOrderCapacity, inReport.getOrderCapacity());
         assertEquals(inPositionEffect, inReport.getPositionEffect());
-        assertEquals(inOriginator, inReport.getOriginator());
         assertEquals(inIsCancelable, inReport.isCancelable());
     }
 

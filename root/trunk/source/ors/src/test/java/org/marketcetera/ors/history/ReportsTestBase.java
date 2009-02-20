@@ -65,7 +65,8 @@ public class ReportsTestBase extends TestCaseBase {
         msg.setField(new ClOrdID("rejord1"));
         msg.setField(new OrigClOrdID("rejorigord1"));
         setSendingTime(msg);
-        return Factory.getInstance().createOrderCancelReject(msg, inBrokerID);
+        return Factory.getInstance().createOrderCancelReject(msg,
+                inBrokerID, Originator.Server);
     }
 
     static ExecutionReport createExecReport(String inOrderID,
