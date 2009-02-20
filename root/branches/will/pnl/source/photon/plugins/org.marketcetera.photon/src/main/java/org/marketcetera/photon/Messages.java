@@ -509,4 +509,10 @@ public interface Messages
 			LOGGER, "market_data_status.error.tooltip"); //$NON-NLS-1$
     public static I18NMessage0P CONNECTING_TO_MARKET_DATA_JOB_NAME = new I18NMessage0P(
 			LOGGER, "connecting_to_market_data_job.name"); //$NON-NLS-1$
+	public static I18NMessage0P SERVER_STATUS_DISCONNECTED_TOOLTIP = new I18NMessage0P(LOGGER,
+			"server_status.disconnected.tooltip"); //$NON-NLS-1$
+	public static I18NMessage0P SERVER_STATUS_CONNECTED_TOOLTIP = new I18NMessage0P(LOGGER,
+			"server_status.connected.tooltip"); //$NON-NLS-1$
+	public static I18NMessage0P SERVER_STATUS_ERROR_TOOLTIP = new I18NMessage0P(LOGGER,
+			"server_status.error.tooltip"); //$NON-NLS-1$
 }

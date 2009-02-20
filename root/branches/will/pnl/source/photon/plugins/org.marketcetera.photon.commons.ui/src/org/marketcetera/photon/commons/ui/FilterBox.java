@@ -140,7 +140,6 @@ public class FilterBox extends Composite {
 		setFont(parent.getFont());
 		setLayout(new MigLayout("ins 0, fill")); //$NON-NLS-1$
 		createFilterControls(this).setLayoutData("dock center"); //$NON-NLS-1$
-		setInitialText("type filter text");
 	}
 
 	protected Composite createFilterControls(Composite parent) {

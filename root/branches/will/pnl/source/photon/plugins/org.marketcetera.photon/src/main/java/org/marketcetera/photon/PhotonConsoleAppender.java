@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.ui.PhotonConsole;
@@ -34,7 +33,6 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 	private static final String LAYOUT_PATTERN = "%d{ABSOLUTE} %5p - %m"; //$NON-NLS-1$
 //	private static final String DEBUG_LAYOUT_PATTERN = "%d{ABSOLUTE} %5p %c{2}:%L - %m";
 	private PhotonConsole console;
-	private Display display;
 	private Level minimumSecondaryLogLevel = Level.DEBUG;
 	private PhotonConsole secondaryConsole;
 
@@ -46,7 +44,6 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 	 */
 	public PhotonConsoleAppender(PhotonConsole pConsole) {
     	console = pConsole;
-    	display = Display.getDefault();
     	PatternLayout patternLayout = new PatternLayout(LAYOUT_PATTERN);
     	setLayout(patternLayout);
     }
@@ -99,37 +96,40 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 		} else {
 			secondaryStream = null;
 		}
-    	new Job("consoleUpdater") { //$NON-NLS-1$
-            @Override
+		// launch a job to ensure UI thread is not blocked
+		Job updateJob = new Job("consoleUpdater") { //$NON-NLS-1$
+			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				String loggableMessage = ""; //$NON-NLS-1$
-            	Layout theLayout = getLayout();
-				if (theLayout != null){
-            		loggableMessage = theLayout.format(loggingEvent);
-            	} else {
-            		loggableMessage = loggingEvent.getRenderedMessage();
-            	}
-                stream.println(loggableMessage);
-                if (secondaryStream != null){
-                	secondaryStream.println(loggableMessage);
-                }
-                ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
-                if (throwableInformation != null){
+				Layout theLayout = getLayout();
+				if (theLayout != null) {
+					loggableMessage = theLayout.format(loggingEvent);
+				} else {
+					loggableMessage = loggingEvent.getRenderedMessage();
+				}
+				stream.println(loggableMessage);
+				if (secondaryStream != null) {
+					secondaryStream.println(loggableMessage);
+				}
+				ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
+				if (throwableInformation != null) {
 					Throwable throwable = throwableInformation.getThrowable();
 					String exceptionMessage;
-					if(throwable instanceof I18NException) {
-						exceptionMessage = ((I18NException)throwable).getLocalizedDetail();
+					if (throwable instanceof I18NException) {
+						exceptionMessage = ((I18NException) throwable).getLocalizedDetail();
 					} else {
 						exceptionMessage = throwable.getLocalizedMessage();
 					}
 					stream.println(exceptionMessage);
-	                if (secondaryStream != null){
-	                	secondaryStream.println(exceptionMessage);
-	                }
-                }
-                return Status.OK_STATUS;
+					if (secondaryStream != null) {
+						secondaryStream.println(exceptionMessage);
+					}
+				}
+				return Status.OK_STATUS;
 			}
-        }.schedule();
+		};
+		updateJob.setSystem(true);
+		updateJob.schedule();
     }
 
     /* (non-Javadoc)
@@ -147,13 +147,5 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
     public void close() {
         // do nothing
     }
-
-	@Override
-	public void setLayout(Layout arg0) {
-		// TODO Auto-generated method stub
-		super.setLayout(arg0);
-	}
-    
-    
 
 }

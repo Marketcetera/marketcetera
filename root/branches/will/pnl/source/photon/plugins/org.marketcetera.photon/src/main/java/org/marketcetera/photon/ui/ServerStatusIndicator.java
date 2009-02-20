@@ -5,9 +5,27 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.marketcetera.photon.Messages;
+import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
+/**
+ * Reflects the status of the server connection.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$")
 public class ServerStatusIndicator extends StatusIndicatorContributionItem {
 
+	/**
+	 * Available states.
+	 *
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 */
+	@ClassVersion("$Id$")
 	public enum State {
 		Connected, Disconnected, Error
 	};
@@ -50,15 +68,15 @@ public class ServerStatusIndicator extends StatusIndicatorContributionItem {
 		switch (lastState) {
 		case Connected:
 			imageLabel.setImage(getOnImage());
-			imageLabel.setToolTipText("Server connected");
+			imageLabel.setToolTipText(Messages.SERVER_STATUS_CONNECTED_TOOLTIP.getText());
 			break;
 		case Disconnected:
 			imageLabel.setImage(getOffImage());
-			imageLabel.setToolTipText("Server disconnected");
+			imageLabel.setToolTipText(Messages.SERVER_STATUS_DISCONNECTED_TOOLTIP.getText());
 			break;
 		case Error:
 			imageLabel.setImage(getErrorImage());
-			imageLabel.setToolTipText("A server connection error has occurred");
+			imageLabel.setToolTipText(Messages.SERVER_STATUS_ERROR_TOOLTIP.getText());
 			break;
 		}
 	}
@@ -77,14 +95,23 @@ public class ServerStatusIndicator extends StatusIndicatorContributionItem {
 		}
 	}
 
+	/**
+	 * Set state to Disconnected.
+	 */
 	public static void setDisconnected() {
 		setState(State.Disconnected);
 	}
 
+	/**
+	 * Set state to Connected.
+	 */
 	public static void setConnected() {
 		setState(State.Connected);
 	}
 
+	/**
+	 * Set state to Error.
+	 */
 	public static void setError() {
 		setState(State.Error);
 	}
