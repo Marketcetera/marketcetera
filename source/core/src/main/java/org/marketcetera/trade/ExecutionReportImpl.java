@@ -109,11 +109,6 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
     }
 
     @Override
-    public Originator getOriginator() {
-        return mOriginator;
-    }
-    
-    @Override
     public synchronized boolean isCancelable() {
         return FIXMessageUtil.isCancellable(getMessage());
     }
@@ -161,8 +156,7 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
     ExecutionReportImpl(Message inMessage,
                         BrokerID inBrokerID,
                         Originator inOriginator) {
-        super(inMessage, inBrokerID);
-        mOriginator = inOriginator;
+        super(inMessage, inBrokerID, inOriginator);
     }
 
     /**
@@ -171,9 +165,8 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
      */
 
     protected ExecutionReportImpl() {
-        mOriginator = null;
+        super();
     }
 
     private static final long serialVersionUID = 1L;
-    private final Originator mOriginator;
 }

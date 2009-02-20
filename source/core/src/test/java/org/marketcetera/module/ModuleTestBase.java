@@ -324,7 +324,12 @@ public class ModuleTestBase {
         assertEquals(inEmitter,inStep.isEmitter());
         assertEquals(inNumEmitted,inStep.getNumEmitted());
         assertEquals(inNumEmitErrors,inStep.getNumEmitErrors());
-        assertEquals(inLastEmitError,inStep.getLastEmitError());
+        if (inLastEmitError != null) {
+            assertNotNull(inStep.getLastEmitError());
+            assertTrue(inStep.getLastEmitError().startsWith(inLastEmitError));
+        } else {
+            assertNull(inStep.getLastEmitError());
+        }
         assertEquals(inReceiver,inStep.isReceiver());
         assertEquals(inNumReceived,inStep.getNumReceived());
         assertEquals(inNumReceiveErrors,inStep.getNumReceiveErrors());

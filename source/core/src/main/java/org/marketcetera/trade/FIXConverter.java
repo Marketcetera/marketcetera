@@ -246,7 +246,7 @@ public final class FIXConverter
      * Adds the given side to the given QuickFIX/J message (of the
      * given FIX version).
      *
-     * @param securityType The side. It may be null or unknown.
+     * @param side The side. It may be null or unknown.
      * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
      * @param required True if the side is required but is not set.
@@ -676,7 +676,7 @@ public final class FIXConverter
         }
         if (FIXMessageUtil.isCancelReject(msg)) {
             return Factory.getInstance().createOrderCancelReject
-                (msg,brokerID);
+                (msg,brokerID, originator);
         }
         return null;
     }

@@ -5,6 +5,7 @@ import org.marketcetera.util.file.Deleter;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.core.Pair;
+import org.marketcetera.core.LoggerConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -35,6 +36,7 @@ public class JarClassLoaderTest {
      */
     @BeforeClass
     public static void cleanup() throws Exception {
+        LoggerConfiguration.logSetup();
         cleanDir(JAR_DIR);
         cleanDir(CONF_DIR);
     }
@@ -135,9 +137,8 @@ public class JarClassLoaderTest {
     public void loadJarResources() throws Exception {
         //Create a jar containing some random properties.
         final String firstRes = "first.properties";
-        final Properties firstProp = createProperties("first", "value");
         File jar1 = createJar("first.jar", firstRes,
-                firstProp);
+                createProperties("first", "value"));
         //Create another jar but with the wrong suffix.
         final String secondRes = "second.properties";
         File jar2 = createJar("second.mar", secondRes,
@@ -147,23 +148,27 @@ public class JarClassLoaderTest {
         final Properties thirdProp = createProperties("third", "value");
         File jar3 = createJar("third.jar", thirdRes,
                 thirdProp);
+        //To test sorting, create more jar files with same property files
+        final Properties firstFoundProp = createProperties("first", "actualValue");
+        File jar1a = createJar("FIRST1.jar", firstRes, firstFoundProp);
+        File jar3a = createJar("zhird.jar", thirdRes,
+                createProperties("third", "notfound"));
         //Create the loader and verify that we can load the properties files
         JarClassLoader loader = createLoader();
-        //The first property file can be loaded
-        assertEquals(firstProp,loadProperty(firstRes, loader));
+        //The 2nd version of the first property file can be loaded
+        assertEquals(firstFoundProp,loadProperty(firstRes, loader));
         //The second one cannot be as the jar was not included.
         assertNull(loader.getResourceAsStream(secondRes));
         //The third property file can be loaded.
         assertEquals(thirdProp,loadProperty(thirdRes, loader));
-        assertJars(new File[]{jar1,jar3},loader);
+        assertJars(loader, jar1,jar3, jar1a, jar3a);
         //Prep a fourth properties file to add to the mix
         final String fourthRes = "fourth.properties";
-        final Properties fourthProp = createProperties("fourth", "value");
         final String fifthRes = "fifth.properties";
         final Properties fifthProp = createProperties("fifth", "value");
         //Invoke refresh and verify nothing changes
         loader.refresh();
-        assertEquals(firstProp,loadProperty(firstRes, loader));
+        assertEquals(firstFoundProp,loadProperty(firstRes, loader));
         assertNull(loader.getResourceAsStream(secondRes));
         assertEquals(thirdProp,loadProperty(thirdRes, loader));
         //verify that the new files cannot be loaded
@@ -171,20 +176,29 @@ public class JarClassLoaderTest {
         assertNull(loader.getResourceAsStream(fifthRes));
         //Now create jar files for the new properties.
         File jar4 = createJar("fourth.jar", fourthRes,
-                fourthProp);
+                createProperties("fourth", "value"));
         //Chose a wrong suffix
         File jar5 = createJar("fifth.mar", fifthRes,
                 fifthProp);
+        //Create jars to test ordering behavior
+        //Cannot override the jars already there before refresh
+        File jar1b = createJar("A.jar", firstRes,
+                createProperties("first","notfound"));
+        //Can override a jar in the same refresh as this one
+        final Properties fourthFoundProp = createProperties("fourth", "value");
+        File jar4a = createJar("4ourth.jar", fourthRes,
+                fourthFoundProp);
         //now refresh
         loader.refresh();
         //verify that the new property can be loaded
-        assertEquals(fourthProp,loadProperty(fourthRes, loader));
+        assertEquals(fourthFoundProp,loadProperty(fourthRes, loader));
         //verify the one with wrong suffix cannot be loaded
         assertNull(loader.getResourceAsStream(fifthRes));
         //verify the old ones maintain status-quo
-        assertEquals(firstProp,loadProperty(firstRes, loader));
+        assertEquals(firstFoundProp,loadProperty(firstRes, loader));
         assertNull(loader.getResourceAsStream(secondRes));
         assertEquals(thirdProp,loadProperty(thirdRes, loader));
+        assertJars(loader, jar1,jar3, jar1a, jar1b, jar3a, jar4, jar4a);
     }
 
     /**
@@ -216,12 +230,12 @@ public class JarClassLoaderTest {
      * Verifies that the supplied class loader has the expected set of files
      * in it.
      *
-     * @param inFiles the expected set of files.
      * @param inLoader the classloader instance to test.
      *
+     * @param inFiles the expected set of files.
      * @throws Exception if there were unexpected errors.
      */
-    private static void assertJars(File[] inFiles, JarClassLoader inLoader) 
+    private static void assertJars(JarClassLoader inLoader, File... inFiles)
             throws Exception {
         HashSet<URL> loaderURLs = new HashSet<URL>(Arrays.asList(
                 inLoader.getURLs()));

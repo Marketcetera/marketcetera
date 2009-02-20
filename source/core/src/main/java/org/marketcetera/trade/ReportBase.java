@@ -73,4 +73,11 @@ public interface ReportBase extends Serializable {
      * @return the unique ID for this report
      */
     ReportID getReportID();
+
+    /**
+     * The originator of this message.
+     *
+     * @return the originator of this message.
+     */
+    Originator getOriginator();
 }

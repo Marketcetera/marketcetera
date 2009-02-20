@@ -9,10 +9,7 @@ import java.net.MalformedURLException;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Arrays;
+import java.util.*;
 
 /* $License$ */
 /**
@@ -31,7 +28,16 @@ import java.util.Arrays;
  * and the <code>conf</code> sub-directory to its search path. Whenever
  * {@link #refresh()} is invoked, the classloader lists the jars files
  * contained within the <code>jars</code> sub-directory and adds any new ones
- * to its search path. 
+ * to its search path.
+ * <p>
+ * The classloader sorts the files found in the <code>jars</code> sub-directory
+ * by their {@link java.io.File#getName() base names} using
+ * {@link String#compareTo(String)} before adding them.
+ * The files are sorted before adding both during initialization and
+ * refresh. Do note that files that are added during refresh are always
+ * after the files added during initialization and previous refreshes, even
+ * though their base names may be lexicographically before the files that
+ * are already there. 
  *
  * @author anshul@marketcetera.com
  */
@@ -95,8 +101,9 @@ class JarClassLoader extends URLClassLoader implements RefreshListener {
         Messages.LOG_REFRESH_JAR_LOADER.info(this);
         List<URL> urlList = getJarURLs();
         if (urlList != null && !urlList.isEmpty()) {
-            HashSet<URL> found = new HashSet<URL>(urlList);
-            HashSet<URL> loaded = new HashSet<URL>(Arrays.asList(getURLs()));
+            //Use linked hash set to preserve URL orderings.
+            Set<URL> found = new LinkedHashSet<URL>(urlList);
+            Set<URL> loaded = new HashSet<URL>(Arrays.asList(getURLs()));
             //Find out all the jars that are not loaded.
             found.removeAll(loaded);
             if(!found.isEmpty()) {
@@ -130,6 +137,12 @@ class JarClassLoader extends URLClassLoader implements RefreshListener {
         File[] jars = mJarDir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.endsWith(JAR_SUFFIX);  //$NON-NLS-1$
+            }
+        });
+        //Sort the Files by their base names
+        Arrays.sort(jars, new Comparator<File>() {
+            public int compare(File inFile1, File inFile2) {
+                return inFile1.getName().compareTo(inFile2.getName());
             }
         });
         List<URL> urls = null;

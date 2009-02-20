@@ -103,14 +103,17 @@ class FactoryImpl extends Factory {
     @Override
     public OrderCancelReject createOrderCancelReject(
             Message inMessage,
-            BrokerID inBrokerID)
+            BrokerID inBrokerID, Originator inOriginator)
             throws MessageCreationException {
         if(inMessage == null) {
             throw new NullPointerException();
         }
+        if(inOriginator == null) {
+            throw new NullPointerException();
+        }
         if(FIXMessageUtil.isCancelReject(inMessage)) {
             return new OrderCancelRejectImpl(
-                    inMessage, inBrokerID);
+                    inMessage, inBrokerID, inOriginator);
         } else {
             throw new MessageCreationException(new I18NBoundMessage1P(
                     Messages.NOT_CANCEL_REJECT, inMessage.toString()));

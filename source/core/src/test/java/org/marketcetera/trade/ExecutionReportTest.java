@@ -68,10 +68,11 @@ public class ExecutionReportTest extends TypesTestBase {
         Message msg = createEmptyExecReport();
         ExecutionReport report = sFactory.createExecutionReport(msg, null,
                 Originator.Server);
-        assertReportBaseValues(report, null, null, null, null, null, null, null);
+        assertReportBaseValues(report, null, null, null, null, null, null,
+                null, Originator.Server);
         assertExecReportValues(report, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null,
-                Originator.Server, null, null, false);
+                null, null, false);
         assertNull(report.getReportID());
         //Verify toString, doesn't fail.
         report.toString();
@@ -123,11 +124,11 @@ public class ExecutionReportTest extends TypesTestBase {
         report = sFactory.createExecutionReport(msg, cID,
                 Originator.Broker);
         assertReportBaseValues(report, cID, orderID, orderStatus,
-                origOrderID, sendingTime, text, destOrderID);
+                origOrderID, sendingTime, text, destOrderID, Originator.Broker);
         assertExecReportValues(report, account, avgPrice, cumQty, execID,
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
                 orderQty, orderType, side, symbol, timeInForce,
-                transactTime, Originator.Broker,
+                transactTime,
                 OrderCapacity.Proprietary, PositionEffect.Close, true);
         assertNull(report.getReportID());
         //Verify toString() doesn't fail.

@@ -201,6 +201,8 @@ public abstract class Factory {
      *
      * @param inBrokerID the ID of the broker from which this
      * message was received.
+     *
+     * @param inOriginator the originator of this message. Cannot be null.
      * 
      * @return an order cancel reject message wrapping the supplied
      * FIX Message. The returned type will implement
@@ -210,7 +212,7 @@ public abstract class Factory {
      * supplied FIX Message.
      */
     public abstract OrderCancelReject createOrderCancelReject(
-            Message inMessage, BrokerID inBrokerID)
+            Message inMessage, BrokerID inBrokerID, Originator inOriginator)
             throws MessageCreationException;
 
     /**

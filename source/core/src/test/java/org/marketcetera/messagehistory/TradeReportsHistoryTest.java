@@ -292,7 +292,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                     CxlRejResponseTo.ORDER_CANCEL_REQUEST));
             history.addIncomingMessage(Factory.getInstance()
                     .createOrderCancelReject(cancelReject,
-                            new BrokerID("ABC")));
+                            new BrokerID("ABC"), Originator.Broker));
 
             assertEquals(
                     OrderStatus.Filled,
@@ -326,7 +326,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                     CxlRejResponseTo.ORDER_CANCEL_REQUEST));
             history.addIncomingMessage(Factory.getInstance()
                     .createOrderCancelReject(cancelReject,
-                            new BrokerID("ABC")));
+                            new BrokerID("ABC"), Originator.Broker));
 
             assertEquals(
                     OrderStatus.New,
@@ -366,7 +366,8 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         cancelReject.setField(new CxlRejResponseTo(
                 CxlRejResponseTo.ORDER_CANCEL_REQUEST));
         history.addIncomingMessage(Factory.getInstance()
-                .createOrderCancelReject(cancelReject, new BrokerID("bogus")));
+                .createOrderCancelReject(cancelReject, new BrokerID("bogus"),
+                Originator.Broker));
 
         assertEquals(OrderStatus.New, ((ExecutionReport) history
                 .getLatestExecutionReport(new org.marketcetera.trade.OrderID(
@@ -791,7 +792,8 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         history.addIncomingMessage(Factory.getInstance().createOrderCancelReject(msgFactory
                 .newOrderCancelReject(new OrderID("1001"), new ClOrdID("1"),
                         new OrigClOrdID("1"), "ABC", new CxlRejReason(
-                                CxlRejReason.TOO_LATE_TO_CANCEL)), new BrokerID("1")));
+                                CxlRejReason.TOO_LATE_TO_CANCEL)),
+                new BrokerID("1"), Originator.Broker));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
@@ -838,7 +840,8 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         history.addIncomingMessage(Factory.getInstance().createOrderCancelReject(msgFactory
                 .newOrderCancelReject(new OrderID("1001"), new ClOrdID("1"),
                         new OrigClOrdID("1"), "ABC", new CxlRejReason(
-                                CxlRejReason.TOO_LATE_TO_CANCEL)), new BrokerID("1")));
+                                CxlRejReason.TOO_LATE_TO_CANCEL)),
+                new BrokerID("1"), Originator.Broker));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
