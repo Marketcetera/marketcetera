@@ -1,0 +1,12 @@
+/* $License$ */
+
+/**
+ * This package provides the interface to real-time position and P&L
+ * data. The dynamically updated data is retrieved through
+ * {@link PositionEngine}.
+ * 
+ * @author will@marketcetera.com
+ * @version $Id$
+ * @since $Release$
+ */
+package org.marketcetera.core.position;

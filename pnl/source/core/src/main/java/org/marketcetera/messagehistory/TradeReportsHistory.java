@@ -41,6 +41,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.GroupingList;
+import ca.odell.glazedlists.util.concurrent.Lock;
 
 /* $License$ */
 /**
@@ -117,52 +118,55 @@ public class TradeReportsHistory {
      * Resets the history to a new set of reports.  This method effectively clears the lists and adds the 
      * given reports as if they were added using {@link #addIncomingMessage(ReportBase)}.
      * 
+     * <strong>All reports added before this method call will be lost.</strong>
+     * 
      * @param newReports the reports that should replace existing history 
      */
     public void resetMessages(ReportBase[] newReports) {
-        synchronized (mUniqueReportIds) {
-            mAllMessages.getReadWriteLock().readLock().lock();
-            try {
-                mAllMessages.clear();
-            } finally {
-                mAllMessages.getReadWriteLock().readLock().unlock();
-            }
+        Lock lock = mAllMessages.getReadWriteLock().writeLock();
+        lock.lock();
+        try {
+            mAllMessages.clear();
             mUniqueReportIds.clear();
-        }
-        for (ReportBase report : newReports) {
-            addIncomingMessage(report);
+            mOriginalOrderACKs.clear();
+            mOrderIDToGroupMap.clear();
+            for (ReportBase report : newReports) {
+                addIncomingMessage(report);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
     public void addIncomingMessage(ReportBase inReport) {
-    	// check for duplicates
-    	ReportID uniqueID = inReport.getReportID();
-    	if (uniqueID == null) {
-    		SLF4JLoggerProxy.debug(this, "Recieved report without report id: {}", inReport); //$NON-NLS-1$
-    	} else {
-    		synchronized (mUniqueReportIds) {
-	    		if (mUniqueReportIds.contains(uniqueID)) {
-	    			SLF4JLoggerProxy.debug(this, "Skipping duplicate report: {}", inReport); //$NON-NLS-1$
-	    			return;
-	    		} else {
-	    			mUniqueReportIds.add(uniqueID);
-	    		}
-    		}
-    	}
-        if(SLF4JLoggerProxy.isDebugEnabled(this) &&
-                inReport.getSendingTime() != null) {
-            long sendingTime =0;
-            sendingTime = inReport.getSendingTime().getTime();
-            long systemTime = System.currentTimeMillis();
-            double diff = (sendingTime-systemTime)/1000.0;
-            if(Math.abs(diff) > 1) {
-                            SLF4JLoggerProxy.debug(this,
-                                    "{}: sendingTime v systemTime: {}",  //$NON-NLS-1$
-                                    Thread.currentThread().getName(), diff);
-            }
-        }
+        // TODO: discuss with Anshul if lock is sufficient or if queue is necessary
+        Lock lock = mAllMessages.getReadWriteLock().writeLock();
+        lock.lock();
         try {
-            mAllMessages.getReadWriteLock().writeLock().lock();
+            // check for duplicates
+            ReportID uniqueID = inReport.getReportID();
+            if (uniqueID == null) {
+                SLF4JLoggerProxy.debug(this, "Recieved report without report id: {}", inReport); //$NON-NLS-1$
+            } else {
+                if (mUniqueReportIds.contains(uniqueID)) {
+                    SLF4JLoggerProxy.debug(this, "Skipping duplicate report: {}", inReport); //$NON-NLS-1$
+                    return;
+                } else {
+                    mUniqueReportIds.add(uniqueID);
+                }
+            }
+            if(SLF4JLoggerProxy.isDebugEnabled(this) &&
+                    inReport.getSendingTime() != null) {
+                long sendingTime =0;
+                sendingTime = inReport.getSendingTime().getTime();
+                long systemTime = System.currentTimeMillis();
+                double diff = (sendingTime-systemTime)/1000.0;
+                if(Math.abs(diff) > 1) {
+                                SLF4JLoggerProxy.debug(this,
+                                        "{}: sendingTime v systemTime: {}",  //$NON-NLS-1$
+                                        Thread.currentThread().getName(), diff);
+                }
+            }
             updateOrderIDMappings(inReport);
             OrderID groupID = getGroupID(inReport);
             ReportHolder messageHolder = new ReportHolder(inReport, groupID);
@@ -176,10 +180,8 @@ public class TradeReportsHistory {
                 if (Originator.Server == ((ExecutionReport) inReport)
                         .getOriginator()
                         && (status == OrderStatus.PendingNew || status == OrderStatus.PendingReplace)) {
-                    synchronized (mOriginalOrderACKs) {
-                        if (!mOriginalOrderACKs.containsKey(id)) {
-                            mOriginalOrderACKs.put(id, messageHolder);
-                        }
+                   if (!mOriginalOrderACKs.containsKey(id)) {
+                        mOriginalOrderACKs.put(id, messageHolder);
                     }
                 }
             }
@@ -201,11 +203,6 @@ public class TradeReportsHistory {
                     if (inReport.getText() != null){
                         newExecutionReport.setField(new Text(inReport.getText()));
                     }
-/*                  Skip ExecTransType as ExecType serves the same purpose
-                    if (newExecutionReport.isSetField(ExecTransType.FIELD)){
-                        newExecutionReport.setField(new ExecTransType(ExecTransType.STATUS));
-                    }
-*/
                     if (newExecutionReport.isSetField(ExecType.FIELD)){
                         newExecutionReport.setField(new ExecType(ExecType.ORDER_STATUS));
                     }
@@ -232,8 +229,9 @@ public class TradeReportsHistory {
                     }
                 }
             }
+            
         } finally {
-            mAllMessages.getReadWriteLock().writeLock().unlock();
+            lock.unlock();
         }
     }
 
@@ -286,8 +284,9 @@ public class TradeReportsHistory {
     }
     
     private ReportBase getReport(EventList<ReportHolder> list, OrderID clOrdID) {
+        Lock readLock = list.getReadWriteLock().readLock();
+        readLock.lock();
         try {
-            list.getReadWriteLock().readLock().lock();
             OrderID groupID = getGroupID(clOrdID);
             if (groupID != null){
                 for (ReportHolder holder : list) {
@@ -298,7 +297,7 @@ public class TradeReportsHistory {
             }
             return null;
         } finally {
-            list.getReadWriteLock().readLock().unlock();
+            readLock.unlock();
         }
     }
 
@@ -307,8 +306,9 @@ public class TradeReportsHistory {
     }
 
     public Message getLatestMessage(OrderID inOrderID) {
+        Lock readLock = mLatestMessageList.getReadWriteLock().readLock();
+        readLock.lock();
         try {
-            mLatestMessageList.getReadWriteLock().readLock().lock();
             OrderID groupID = getGroupID(inOrderID);
             if (groupID != null)
             {
@@ -322,7 +322,7 @@ public class TradeReportsHistory {
             }
             return null;
         } finally {
-            mLatestMessageList.getReadWriteLock().readLock().unlock();
+            readLock.unlock();
         }
     }
 
@@ -332,15 +332,16 @@ public class TradeReportsHistory {
 
     public void visitOpenOrdersExecutionReports(MessageVisitor visitor)
     {
+        Lock readLock = mOpenOrderList.getReadWriteLock().readLock();
+        readLock.lock();
         try {
-            mOpenOrderList.getReadWriteLock().readLock().lock();
             ReportHolder[] holders = mOpenOrderList.toArray(new ReportHolder[mOpenOrderList.size()]);
             for(ReportHolder holder : holders)
             {
                 visitor.visitOpenOrderExecutionReports(holder.getMessage());
             }
         } finally {
-            mOpenOrderList.getReadWriteLock().readLock().unlock();
+            readLock.unlock();
         }
     }
 
@@ -353,8 +354,12 @@ public class TradeReportsHistory {
      * @return the ReportHolder holding the first report
      */
     public ReportHolder getFirstReport(OrderID inOrderID){
-        synchronized (mOriginalOrderACKs){
+        Lock readLock = mAllMessages.getReadWriteLock().readLock();
+        readLock.lock();
+        try {
             return mOriginalOrderACKs.get(inOrderID);
+        } finally {
+            readLock.unlock();
         }
     }
 

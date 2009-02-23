@@ -1,5 +1,6 @@
 package org.marketcetera.core.position.impl;
 
+import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.FunctionList.AdvancedFunction;
 import ca.odell.glazedlists.FunctionList.Function;
 import ca.odell.glazedlists.matchers.Matcher;
@@ -35,7 +37,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class PositionEngineImpl implements PositionEngine {
+public final class PositionEngineImpl implements PositionEngine {
 
     /**
      * Supports grouping of trades by trader id, symbol, and account.
@@ -45,11 +47,11 @@ public class PositionEngineImpl implements PositionEngine {
      * @since $Release$
      */
     @ClassVersion("$Id$")
-    private static class TradeGroupMatcher implements GroupMatcher<Trade> {
+    private final static class TradeGroupMatcher implements GroupMatcher<Trade> {
 
-        private String traderId;
-        private String symbol;
-        private String account;
+        private final String traderId;
+        private final String symbol;
+        private final String account;
 
         public TradeGroupMatcher(Trade trade) {
             this.traderId = trade.getTraderId();
@@ -68,7 +70,7 @@ public class PositionEngineImpl implements PositionEngine {
             return internalCompare(other.traderId, other.symbol, defaultString(other.account));
         }
 
-        private String defaultString(String string) {
+        private static String defaultString(String string) {
             return (String) ObjectUtils.defaultIfNull(string, ""); //$NON-NLS-1$
         }
 
@@ -93,7 +95,7 @@ public class PositionEngineImpl implements PositionEngine {
      * @since $Release$
      */
     @ClassVersion("$Id$")
-    private static class TradeGroupMatcherFactory implements
+    private final static class TradeGroupMatcherFactory implements
             GroupMatcherFactory<Trade, GroupMatcher<Trade>> {
 
         @Override
@@ -111,7 +113,7 @@ public class PositionEngineImpl implements PositionEngine {
      * @since $Release$
      */
     @ClassVersion("$Id$")
-    private static class PositionFunction implements
+    private final static class PositionFunction implements
             AdvancedFunction<EventList<Trade>, PositionRow> {
 
         private Map<EventList<Trade>, PositionRowUpdater> map = new IdentityHashMap<EventList<Trade>, PositionRowUpdater>();
@@ -149,7 +151,7 @@ public class PositionEngineImpl implements PositionEngine {
      * @since $Release$
      */
     @ClassVersion("$Id$")
-    private static class FillMatcher implements Matcher<ReportHolder> {
+    private final static class FillMatcher implements Matcher<ReportHolder> {
 
         @Override
         public boolean matches(ReportHolder item) {
@@ -169,7 +171,7 @@ public class PositionEngineImpl implements PositionEngine {
      * @since $Release$
      */
     @ClassVersion("$Id$")
-    private static class TradeFunction implements Function<ReportHolder, Trade> {
+    private final static class TradeFunction implements Function<ReportHolder, Trade> {
 
         @Override
         public Trade evaluate(ReportHolder sourceValue) {
@@ -202,7 +204,16 @@ public class PositionEngineImpl implements PositionEngine {
         FilterList<ReportHolder> fills = new FilterList<ReportHolder>(base, new FillMatcher());
         FunctionList<ReportHolder, Trade> trades = new FunctionList<ReportHolder, Trade>(fills,
                 new TradeFunction());
-        GroupingList<Trade> grouped = new GroupingList<Trade>(trades,
+        SortedList<Trade> sorted = new SortedList<Trade>(trades, new Comparator<Trade>() {
+
+            @Override
+            public int compare(Trade o1, Trade o2) {
+                long val1 = o1.getSequenceNumber();
+                long val2 = o2.getSequenceNumber();
+                return (val1 < val2 ? -1 : (val1 == val2 ? 0 : 1));
+            }
+        });
+        GroupingList<Trade> grouped = new GroupingList<Trade>(sorted,
                 new TradeGroupMatcherFactory());
         flat = new FunctionList<EventList<Trade>, PositionRow>(grouped, new PositionFunction(
                 marketData));

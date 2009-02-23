@@ -112,6 +112,7 @@ public final class PositionRowUpdater {
     }
 
     private PositionMetrics recalculate() {
+        // TODO: provide real incoming position and closing price
         calculator = new PositionMetricsCalculatorImpl();
         PositionMetrics metrics = new PositionMetricsImpl(null, null, null, null, null, null);
         for (Trade trade : trades) {
