@@ -16,7 +16,7 @@ import ca.odell.glazedlists.event.ListEventListener;
  * @version $Id$
  * @since $Release$
  */
-class ExpectedListChanges<E> implements ListEventListener<E> {
+public class ExpectedListChanges<E> implements ListEventListener<E> {
 
 	int current = 0;
 	private final int[] expected;

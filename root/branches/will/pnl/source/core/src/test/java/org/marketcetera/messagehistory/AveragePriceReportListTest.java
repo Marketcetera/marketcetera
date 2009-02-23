@@ -7,6 +7,7 @@ import junit.framework.Test;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.core.position.impl.ExpectedListChanges;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
@@ -27,6 +28,7 @@ import quickfix.field.OrderQty;
 import quickfix.field.Side;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.event.ListEvent;
 
 /* $License$ */
 
@@ -136,6 +138,8 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
         assertEquals(2, averagePriceList.size());
 
         // any remove empties the list (since TradeReportsHistory only supports clear())
+        source.addListEventListener(new ExpectedListChanges<ReportHolder>("avg", new int[] {
+                ListEvent.DELETE, 0, ListEvent.DELETE, 0 }));
         source.remove(0);
         assertEquals(0, averagePriceList.size());
     }

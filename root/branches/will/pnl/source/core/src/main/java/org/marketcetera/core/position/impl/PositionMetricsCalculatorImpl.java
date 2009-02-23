@@ -11,59 +11,26 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * An implementation of {@link PositionMetricsCalculator}.
  * 
+ * TODO: add incoming position support
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class PositionMetricsCalculatorImpl implements PositionMetricsCalculator {
+public final class PositionMetricsCalculatorImpl implements PositionMetricsCalculator {
 
     private BigDecimal position = BigDecimal.ZERO;
-    private BigDecimal positionPL = BigDecimal.ZERO;
-    private BigDecimal tradingPL = BigDecimal.ZERO;
     private BigDecimal realizedPL = BigDecimal.ZERO;
-    private BigDecimal unrealizedPL = BigDecimal.ZERO;
-    private BigDecimal totalPL = BigDecimal.ZERO;
-    private CostElement tradingCost = new CostElement();
-    private CostElement unrealizedCost = new CostElement();
-    private LinkedList<PositionElement> positionElements = new LinkedList<PositionElement>();
+    private final CostElement tradingCost = new CostElement();
+    private final CostElement unrealizedCost = new CostElement();
+    private final LinkedList<PositionElement> positionElements = new LinkedList<PositionElement>();
     private BigDecimal lastTradePrice;
 
-    private PositionMetrics createPositionMetrics() {
-        return new PositionMetricsImpl(position, positionPL, tradingPL, realizedPL, unrealizedPL,
-                totalPL);
-    }
-
-    @Override
+   @Override
     public synchronized PositionMetrics tick(BigDecimal tradePrice) {
         lastTradePrice = tradePrice;
-        updateUnrealized();
         return createPositionMetrics();
-    }
-
-    private void updateUnrealized() {
-        if (lastTradePrice != null) {
-            unrealizedPL = unrealizedCost.getPL(lastTradePrice);
-            tradingPL = tradingCost.getPL(lastTradePrice);
-            totalPL = positionPL.add(tradingPL);
-            // System.out.println("Total discrepancy: " +
-            // totalPL.subtract(unrealizedPL.add(realizedPL)));
-            // System.out.println(unrealizedPL
-            // + " "
-            // + realizedPL
-            // + " "
-            // + tradingPL
-            // + " "
-            // + positionPL);
-            // assert totalPL.compareTo(unrealizedPL.add(realizedPL)) == 0 :
-            // unrealizedPL
-            // + " "
-            // + realizedPL
-            // + " "
-            // + tradingPL
-            // + " "
-            // + positionPL;
-        }
     }
 
     @Override
@@ -72,86 +39,129 @@ public class PositionMetricsCalculatorImpl implements PositionMetricsCalculator 
         BigDecimal price = trade.getPrice();
         switch (trade.getSide()) {
         case BUY:
-            position = position.add(quantity);
-            process(quantity, price);
-            tradingCost.add(quantity, price);
+            processTrade(quantity, price);
             break;
         case SELL:
-            position = position.subtract(quantity);
-            process(quantity.negate(), price);
-            tradingCost.subtract(quantity, price);
+            processTrade(quantity.negate(), price);
             break;
         default:
             assert false;
         }
-        updateUnrealized();
         return createPositionMetrics();
     }
 
-    private void process(BigDecimal quantity, final BigDecimal price) {
+    /**
+     * Processes a trade, closing existing positions and creating new ones as
+     * necessary.
+     * 
+     * @param quantity
+     *            the quantity of the trade, positive for a buy and negative for
+     *            a sell
+     * @param price
+     *            the price of the trade
+     */
+    private void processTrade(final BigDecimal quantity, final BigDecimal price) {
         assert quantity.compareTo(BigDecimal.ZERO) != 0;
         assert price.compareTo(BigDecimal.ZERO) == 1;
-        while (!positionElements.isEmpty()) {
-            PositionElement toClose = positionElements.peek();
-            int side = toClose.quantity.signum();
-            if (quantity.signum() * side != -1) break;
-            BigDecimal remaining = toClose.quantity.add(quantity);
-            int remainingSide = remaining.signum();
-            if (remainingSide == side) {
-                realizedPL = realizedPL.add(close(toClose, quantity, price));
-                toClose.quantity = remaining;
-                quantity = BigDecimal.ZERO;
-                break;
-            } else {
-                realizedPL = realizedPL.add(close(toClose, toClose.quantity.negate(), price));
-                positionElements.remove();
-                if (remainingSide == 0) {
-                    quantity = BigDecimal.ZERO;
-                    break;
+        position = position.add(quantity);
+        tradingCost.add(quantity, price);
+        // determine the sides, +1 for long and -1 for short
+        int holdingSide = unrealizedCost.signum();
+        int tradingSide = quantity.signum();
+        BigDecimal remaining = quantity;
+        // if sides are different
+        if (tradingSide * holdingSide == -1) {
+            // close positions
+            while (!positionElements.isEmpty()) {
+                // get the oldest open position
+                PositionElement toClose = positionElements.peek();
+                // add the remaining trade quantity
+                BigDecimal leftover = toClose.quantity.add(remaining);
+                int leftoverSide = leftover.signum();
+                // if there is leftover on the open position
+                if (leftoverSide == holdingSide) {
+                    // the trade only partially closed this position
+                    processClose(remaining, toClose.price, price);
+                    toClose.quantity = leftover;
+                    // trade has been completely processed
+                    return;
                 } else {
-                    quantity = remaining;
+                    // the trade completely closed this position
+                    processClose(toClose.quantity.negate(), toClose.price, price);
+                    positionElements.remove();
+                    remaining = leftover;
+                    // if leftover is zero
+                    if (leftoverSide == 0) {
+                        // trade has been completely processed
+                        return;
+                    }
                 }
             }
         }
-        // create new position
-        if (quantity.signum() != 0) {
-            addElement(quantity, price);
+        // if non-zero remaining quantity
+        if (remaining.signum() != 0) {
+            // create new position
+            positionElements.add(new PositionElement(remaining, price));
+            unrealizedCost.add(remaining, price);
         }
 
     }
 
-    private void addElement(BigDecimal quantity, BigDecimal price) {
-        positionElements.add(new PositionElement(quantity, price));
-        unrealizedCost.add(quantity, price);
+    /**
+     * Processes a position close, updating realized P&L and the unrealized cost
+     * 
+     * @param quantity
+     *            the quantity being closed, negative when closing a long
+     *            position and positive when closing a short position
+     * @param openPrice
+     *            the price at which the position was opened
+     * @param closePrice
+     *            the price at which the position is closing
+     */
+    private void processClose(final BigDecimal quantity, final BigDecimal openPrice,
+            final BigDecimal closePrice) {
+        // subtract closePrice from openPrice since quantity has opposite sign
+        // more readable may be:
+        // quantity.negate().multiply(closePrice.subtract(openPrice))
+        realizedPL = realizedPL.add(quantity.multiply(openPrice.subtract(closePrice)));
+        unrealizedCost.add(quantity, openPrice);
     }
 
-    private BigDecimal close(PositionElement element, BigDecimal quantity, BigDecimal price) {
-        BigDecimal value = quantity.multiply(price);
-        return unrealizedCost.add(quantity, element.price).subtract(value);
+    private PositionMetrics createPositionMetrics() {
+        BigDecimal unrealizedPL = BigDecimal.ZERO;
+        BigDecimal tradingPL = BigDecimal.ZERO;
+        // since no incoming positions, positionPL is zero for now
+        BigDecimal positionPL = BigDecimal.ZERO;
+        BigDecimal totalPL = BigDecimal.ZERO;
+        if (lastTradePrice != null) {
+            unrealizedPL = unrealizedCost.getPL(lastTradePrice);
+            tradingPL = tradingCost.getPL(lastTradePrice);
+            totalPL = positionPL.add(tradingPL);
+        }
+        return new PositionMetricsImpl(position, positionPL, tradingPL, realizedPL, unrealizedPL,
+                totalPL);
     }
 
     private static class CostElement {
         private BigDecimal quantity = BigDecimal.ZERO;
         private BigDecimal cost = BigDecimal.ZERO;
 
-        public BigDecimal add(BigDecimal quantity, BigDecimal price) {
+        public void add(BigDecimal quantity, BigDecimal price) {
             this.quantity = this.quantity.add(quantity);
-            BigDecimal change = quantity.multiply(price);
-            cost = cost.add(change);
-            return change;
-        }
-
-        public BigDecimal subtract(BigDecimal quantity, BigDecimal cost) {
-            return add(quantity.negate(), cost);
+            cost = cost.add(quantity.multiply(price));
         }
 
         public BigDecimal getPL(BigDecimal lastTradePrice) {
             return quantity.multiply(lastTradePrice).subtract(cost);
         }
 
+        public int signum() {
+            return quantity.signum();
+        }
+
     }
 
-    private static class PositionElement {
+    private class PositionElement {
         BigDecimal quantity;
         BigDecimal price;
 

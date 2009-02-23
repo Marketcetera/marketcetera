@@ -1,5 +1,8 @@
 package org.marketcetera.messagehistory;
 
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Vector;
@@ -10,7 +13,17 @@ import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportImpl;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.ReportID;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -974,22 +987,39 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     }
     
     public void testReplaceReports() throws Exception {
-        ExecutionReport report1 = createServerReport(getTestableExecutionReport());
-        ExecutionReport report2 = createServerReport(getTestableExecutionReport());
-        ExecutionReport report3 = createServerReport(getTestableExecutionReport());
+        ExecutionReport report1 = createServerReport(getTestableExecutionReport("1"));
+        ExecutionReport report2 = createServerReport(getTestableExecutionReport("2"));
+        Message report3Message = getTestableExecutionReport("1");
+        report3Message.setField(new OrdStatus(OrdStatus.PENDING_NEW));
+        ExecutionReport report3 = createServerReport(report3Message);
         TradeReportsHistory history = createMessageHistory();
         history.addIncomingMessage(report1);
         assertEquals(1, history.size());
         history.addIncomingMessage(report2);
         assertEquals(2, history.size());
-        history.resetMessages(new ReportBase[] {report3});
+        history.resetMessages(new ReportBase[] { report3 });
         assertEquals(1, history.size());
         assertSame(report3, history.getAllMessagesList().get(0).getReport());
+        assertNull(history.getLatestMessage(new org.marketcetera.trade.OrderID("2")));
+        assertThat(history.getLatestMessage(new org.marketcetera.trade.OrderID("1")),
+                sameInstance(report3Message));
+        assertNull(history.getLatestExecutionReport(new org.marketcetera.trade.OrderID("2")));
+        assertThat((ExecutionReport) history
+                .getLatestExecutionReport(new org.marketcetera.trade.OrderID("1")),
+                sameInstance(report3));
+        assertNull(history.getFirstReport(new org.marketcetera.trade.OrderID("2")));
+        assertThat((ExecutionReport) history
+                .getFirstReport(new org.marketcetera.trade.OrderID("1")).getReport(),
+                sameInstance(report3));
     }
     
-    private Message getTestableExecutionReport() throws FieldNotFound {
-        return msgFactory.newExecutionReport("456", "clorderid", "987", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
+    private Message getTestableExecutionReport(String orderId) throws FieldNotFound {
+        return msgFactory.newExecutionReport("456", orderId, "987", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
                         new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal("12.3"), new MSymbol("IBM"), null);
+    }
+
+    private Message getTestableExecutionReport() throws FieldNotFound {
+        return getTestableExecutionReport("clordid");
     }
 
     private ExecutionReport createServerReport(Message message)

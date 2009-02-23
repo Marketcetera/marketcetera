@@ -1,13 +1,19 @@
 package org.marketcetera.messagehistory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.math.BigDecimal;
 
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.trade.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -69,10 +75,10 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                 if(changeType == ListEvent.UPDATE) {
                     throw new UnsupportedOperationException();
                 } else if (changeType == ListEvent.DELETE) {
-                	// assume a delete all since this is the only thing supported.
-                	clear();
-                	updates.commitEvent();
-                	return;              	
+                    // assume a delete all since this is the only thing supported.
+                    clear();
+                    updates.commitEvent();
+                    return;
                 } else if(changeType == ListEvent.INSERT) {
                     ReportHolder deltaReportHolder = sourceList.get(listChanges.getIndex());
 
@@ -116,7 +122,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                     averagePriceMessage.setDouble(OrderQty.FIELD, orderQty);
                                 }
                             }
-                            updates.addUpdate(averagePriceIndex);
+                            updates.elementUpdated(averagePriceIndex, averagePriceReportHolder, averagePriceReportHolder);
                         } else {
                             if (deltaReport instanceof ExecutionReport) {
                                 ExecutionReport execReport = (ExecutionReport) deltaReport;
@@ -138,10 +144,11 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                         averagePriceMessage.setField(new Account(execReport.getAccount()));
 
                                     try {
-                                        mAveragePricesList.add(new ReportHolder(Factory.getInstance().createExecutionReport(averagePriceMessage, execReport.getBrokerID(), Originator.Server)));
+                                        ReportHolder newReport = new ReportHolder(Factory.getInstance().createExecutionReport(averagePriceMessage, execReport.getBrokerID(), Originator.Server));
+                                        mAveragePricesList.add(newReport);
                                         averagePriceIndex = mAveragePricesList.size()-1;
                                         mAveragePriceIndexes.put(symbolSide, averagePriceIndex);
-                                        updates.addInsert(averagePriceIndex);
+                                        updates.elementInserted(averagePriceIndex, newReport);
                                     } catch (MessageCreationException e) {
                                         SLF4JLoggerProxy.error(this, "unexpected error", e);  //$NON-NLS-1$
                                     }
