@@ -50,7 +50,6 @@ import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 
@@ -753,7 +752,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
             history.addIncomingMessage(createServerReport(aMessage));
         }
 
-        FilterList<ReportHolder> openOrdersList = history.getOpenOrdersList();
+        EventList<ReportHolder> openOrdersList = history.getOpenOrdersList();
         assertEquals(0, openOrdersList.size());
     }
 
