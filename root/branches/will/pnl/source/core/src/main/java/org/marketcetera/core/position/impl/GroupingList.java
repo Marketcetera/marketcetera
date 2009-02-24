@@ -284,6 +284,11 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
     }
 
     @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public int size() {
         return groupLists.size();
     }
