@@ -8,23 +8,17 @@ import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.position.impl.GroupingList.GroupMatcher;
 import org.marketcetera.core.position.impl.GroupingList.GroupMatcherFactory;
-import org.marketcetera.core.position.impl.Trade.Side;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.FunctionList.AdvancedFunction;
-import ca.odell.glazedlists.FunctionList.Function;
-import ca.odell.glazedlists.matchers.Matcher;
 
 /* $License$ */
 
@@ -61,7 +55,8 @@ public final class PositionEngineImpl implements PositionEngine {
 
         @Override
         public boolean matches(Trade item) {
-            return internalCompare(item.getTraderId(), item.getSymbol(), item.getAccount()) == 0;
+            return internalCompare(item.getTraderId(), item.getSymbol(), defaultString(item
+                    .getAccount())) == 0;
         }
 
         @Override
@@ -143,53 +138,6 @@ public final class PositionEngineImpl implements PositionEngine {
 
     }
 
-    /**
-     * Matcher that matches fills and partial fills.
-     * 
-     * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    @ClassVersion("$Id$")
-    private final static class FillMatcher implements Matcher<ReportHolder> {
-
-        @Override
-        public boolean matches(ReportHolder item) {
-            ReportBase report = item.getReport();
-            OrderStatus orderStatus = report.getOrderStatus();
-            return report instanceof ExecutionReport
-                    && (orderStatus == OrderStatus.PartiallyFilled || orderStatus == OrderStatus.Filled);
-        }
-
-    }
-
-    /**
-     * Function mapping report holders to trades.
-     * 
-     * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    @ClassVersion("$Id$")
-    private final static class TradeFunction implements Function<ReportHolder, Trade> {
-
-        @Override
-        public Trade evaluate(ReportHolder sourceValue) {
-            return fromReport((ExecutionReport) sourceValue.getReport());
-        }
-
-        private Trade fromReport(ExecutionReport report) {
-            return new TradeImpl(
-                    report.getSymbol().toString(),
-                    report.getAccount(),
-                    "Yoram", // TODO: replace with real trader id when available
-                    report.getSide().equals(org.marketcetera.trade.Side.Buy) ? Side.BUY : Side.SELL,
-                    report.getLastPrice(), report.getLastQuantity(), report.getReportID()
-                            .longValue());
-        }
-
-    }
-
     private final FunctionList<EventList<Trade>, PositionRow> flat;
     private final PositionMarketData marketData;
 
@@ -199,11 +147,8 @@ public final class PositionEngineImpl implements PositionEngine {
      * @param base
      *            base list of reports to drive the positions lists
      */
-    public PositionEngineImpl(EventList<ReportHolder> base) {
+    public PositionEngineImpl(EventList<Trade> trades) {
         marketData = new PositionMarketDataImpl();
-        FilterList<ReportHolder> fills = new FilterList<ReportHolder>(base, new FillMatcher());
-        FunctionList<ReportHolder, Trade> trades = new FunctionList<ReportHolder, Trade>(fills,
-                new TradeFunction());
         SortedList<Trade> sorted = new SortedList<Trade>(trades, new Comparator<Trade>() {
 
             @Override

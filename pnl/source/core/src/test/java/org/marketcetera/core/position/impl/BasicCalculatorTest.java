@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 import org.marketcetera.core.position.PositionMetrics;
-import org.marketcetera.core.position.impl.Trade.Side;
+import org.marketcetera.core.position.Trade;
 
 /* $License$ */
 
@@ -26,40 +26,40 @@ public class BasicCalculatorTest {
 	@Test
 	public void test() {
 		BasicCalculator pnl = new BasicCalculator();
-		pnl.trade(createTrade(Side.BUY, "100", "21"));
+		assertPNL(pnl.trade(createTrade("100", "21")), "100", "0", "0", "0", "0");
 		assertPNL(pnl.tick("21"), "100", "0", "0", "0", "0");
-		pnl.trade(createTrade(Side.SELL, "50", "21.08"));
+		assertPNL(pnl.trade(createTrade("-50", "21.08")), "50", "0", "4", "4", "0");
 		assertPNL(pnl.tick("21.08"), "50", "0", "8", "4", "4");
-		pnl.trade(createTrade(Side.BUY, "100", "21.12"));
+		assertPNL(pnl.trade(createTrade("100", "21.12")), "150", "0", "4", "4", "0");
 		assertPNL(pnl.tick("21.12"), "150", "0", "10", "4", "6");
-		pnl.trade(createTrade(Side.SELL, "100", "21.20"));
+		assertPNL(pnl.trade(createTrade("-100", "21.20")), "50", "0", "18", "18", "0");
 		assertPNL(pnl.tick("21.20"), "50", "0", "22", "18", "4");
 	}
 	
 	@Test
 	public void shortTest() {
 		BasicCalculator pnl = new BasicCalculator();
-		pnl.trade(createTrade(Side.SELL, "100", "21"));
+		assertPNL(pnl.trade(createTrade("-100", "21")), "-100", "0", "0", "0", "0");
 		assertPNL(pnl.tick("22"), "-100", "0", "-100", "0", "-100");
 	}
 	
 	@Test
 	public void shortTest2() {
 		BasicCalculator pnl = new BasicCalculator();
-		pnl.tick("22");
-		assertPNL(pnl.trade(createTrade(Side.SELL, "100", "21")), "-100", "0", "-100", "0", "-100");
+		assertPNL(pnl.tick("22"), "0", "0", "0", "0", "0");
+		assertPNL(pnl.trade(createTrade("-100", "21")), "-100", "0", "-100", "0", "-100");
 	}
 	
 	@Test
 	public void shortTest3() {
 		BasicCalculator pnl = new BasicCalculator();
-		pnl.tick("22");
-		assertPNL(pnl.trade(createTrade(Side.SELL, "100", "21")), "-100", "0", "-100", "0", "-100");
-		assertPNL(pnl.trade(createTrade(Side.BUY, "100", "20")), "0", "0", "100", "100", "0");
+		assertPNL(pnl.tick("22"), "0", "0", "0", "0", "0");
+		assertPNL(pnl.trade(createTrade("-100", "21")), "-100", "0", "-100", "0", "-100");
+		assertPNL(pnl.trade(createTrade("100", "20")), "0", "0", "100", "100", "0");
 	}
 
-	private Trade createTrade(Side side, String quantity, String price) {
-		return new TradeImpl("ABC", "asdf", "Yoram", side,
+	private Trade createTrade(String quantity, String price) {
+		return new MockTrade("ABC", "asdf", "Yoram", 
 				new BigDecimal(price), new BigDecimal(quantity), ++counter );
 	}
 

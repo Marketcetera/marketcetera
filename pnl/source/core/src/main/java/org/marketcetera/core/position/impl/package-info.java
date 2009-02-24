@@ -6,7 +6,6 @@
  * {@link PositionEngineImpl}, and the supporting classes. Some internal
  * interfaces are used:
  * <ul>
- * <li>{@link Trade} - the representation of a trade used by this package</li>
  * <li>{@link PositionMetricsCalculator} - interface for algorithms processing
  * trade and market data to compute position and P&L information</li>
  * </ul>
@@ -16,3 +15,4 @@
  * @since $Release$
  */
 package org.marketcetera.core.position.impl;
+

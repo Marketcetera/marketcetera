@@ -1,5 +1,8 @@
 package org.marketcetera.core.position.impl;
 
+import static org.junit.Assert.assertThat;
+import static org.marketcetera.core.position.impl.OrderingComparison.comparesEqualTo;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -7,12 +10,13 @@ import java.util.List;
 import java.util.Queue;
 
 import org.marketcetera.core.position.PositionMetrics;
+import org.marketcetera.core.position.Trade;
 
 /* $License$ */
 
 /**
- * Basic implementation of {@link PositionMetricsCalculator} that recomputes each
- * value from scratch every time.
+ * Basic implementation of {@link PositionMetricsCalculator} that recomputes
+ * each value from scratch every time.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -47,19 +51,13 @@ public class BasicCalculator implements PositionMetricsCalculator {
     private BigDecimal getPosition() {
         BigDecimal position = BigDecimal.ZERO;
         for (Trade trade : trades) {
-            switch (trade.getSide()) {
-            case BUY:
-                position = position.add(trade.getQuantity());
-                break;
-            case SELL:
-                position = position.subtract(trade.getQuantity());
-                break;
-            }
+            position = position.add(trade.getQuantity());
         }
         return position;
     }
 
     private BigDecimal getPositionPL() {
+        // TODO: implement this using incoming position and closing price
         return BigDecimal.ZERO;
     }
 
@@ -70,61 +68,69 @@ public class BasicCalculator implements PositionMetricsCalculator {
         BigDecimal trading = BigDecimal.ZERO;
         for (Trade trade : trades) {
             BigDecimal single = tick.subtract(trade.getPrice()).multiply(trade.getQuantity());
-            switch (trade.getSide()) {
-            case BUY:
-                trading = trading.add(single);
-                break;
-            case SELL:
-                trading = trading.subtract(single);
-                break;
-            }
+            trading = trading.add(single);
         }
         return trading;
     }
 
     private BigDecimal getRealizedPL() {
         BigDecimal total = BigDecimal.ZERO;
-        Queue<BigDecimal[]> longs = new LinkedList<BigDecimal[]>();
-        Queue<BigDecimal[]> shorts = new LinkedList<BigDecimal[]>();
+        Queue<PositionElement> longs = new LinkedList<PositionElement>();
+        Queue<PositionElement> shorts = new LinkedList<PositionElement>();
         for (Trade trade : trades) {
-            switch (trade.getSide()) {
-            case BUY:
-                total = total.add(processTrade(shorts, longs, trade, true));
-                break;
-            case SELL:
-                total = total.add(processTrade(longs, shorts, trade, false));
-                break;
-            }
+            total = total.add(processTrade(longs, shorts, trade));
         }
         return total;
     }
 
-    private BigDecimal processTrade(Queue<BigDecimal[]> source, Queue<BigDecimal[]> dest,
-            Trade trade, boolean buy) {
-        BigDecimal remaining = trade.getQuantity();
-        BigDecimal price = trade.getPrice();
+    /**
+     * Helper method that updates two arrays of long and short position elements
+     * based on a trade.
+     */
+    private BigDecimal processTrade(Queue<PositionElement> longs, Queue<PositionElement> shorts,
+            Trade trade) {
         BigDecimal total = BigDecimal.ZERO;
-        while (remaining.compareTo(BigDecimal.ZERO) > 0 && !source.isEmpty()) {
-            BigDecimal[] single = source.peek();
-            int compare = single[0].compareTo(remaining);
-            BigDecimal diff = price.subtract(single[1]);
-            if (buy) diff = diff.negate();
+        Queue<PositionElement> source, dest;
+        BigDecimal remaining;
+        BigDecimal quantity = trade.getQuantity();
+        BigDecimal price = trade.getPrice();
+        if (quantity.signum() == 1) {
+            // buy
+            remaining = quantity;
+            source = shorts;
+            dest = longs;
+        } else {
+            // sell
+            remaining = quantity.negate();
+            source = longs;
+            dest = shorts;
+        }
+        while (remaining.signum() == 1 && !source.isEmpty()) {
+            PositionElement element = source.peek();
+            int compare = element.quantity.compareTo(remaining);
+            BigDecimal priceDifference = price.subtract(element.price);
+            if (source == shorts) {
+                // negate the price difference for closing short positions
+                // since realized gains happen when price has decreased
+                priceDifference = priceDifference.negate();
+            }
             if (compare == 0) {
-                total = total.add(diff.multiply(remaining));
+                // position element is closed
+                total = total.add(priceDifference.multiply(remaining));
                 source.remove();
-                return total;
+                remaining = BigDecimal.ZERO;
             } else if (compare > 0) {
-                total = total.add(diff.multiply(remaining));
-                single[0] = single[0].subtract(remaining);
-                return total;
+                total = total.add(priceDifference.multiply(remaining));
+                element.quantity = element.quantity.subtract(remaining);
+                remaining = BigDecimal.ZERO;
             } else if (compare < 0) {
-                total = total.add(diff.multiply(single[0]));
-                remaining = remaining.subtract(single[0]);
+                total = total.add(priceDifference.multiply(element.quantity));
                 source.remove();
+                remaining = remaining.subtract(element.quantity);
             }
         }
-        if (remaining.compareTo(BigDecimal.ZERO) > 0) {
-            dest.add(new BigDecimal[] { remaining, price });
+        if (remaining.signum() == 1) {
+            dest.add(new PositionElement(remaining, price));
         }
         return total;
     }
@@ -133,33 +139,35 @@ public class BasicCalculator implements PositionMetricsCalculator {
         if (tick == null) {
             return BigDecimal.ZERO;
         }
-        Queue<BigDecimal[]> longs = new LinkedList<BigDecimal[]>();
-        Queue<BigDecimal[]> shorts = new LinkedList<BigDecimal[]>();
+        Queue<PositionElement> longs = new LinkedList<PositionElement>();
+        Queue<PositionElement> shorts = new LinkedList<PositionElement>();
         for (Trade trade : trades) {
-            switch (trade.getSide()) {
-            case BUY:
-                processTrade(shorts, longs, trade, false);
-                break;
-            case SELL:
-                processTrade(longs, shorts, trade, false);
-                break;
-            }
+            processTrade(longs, shorts, trade);
         }
         BigDecimal total = BigDecimal.ZERO;
-        for (BigDecimal[] single : longs) {
-            total = total.add(tick.subtract(single[1]).multiply(single[0]));
+        for (PositionElement element : longs) {
+            total = total.add(tick.subtract(element.price).multiply(element.quantity));
         }
-        for (BigDecimal[] single : shorts) {
-            total = total.subtract(tick.subtract(single[1]).multiply(single[0]));
+        for (PositionElement element : shorts) {
+            total = total.subtract(tick.subtract(element.price).multiply(element.quantity));
         }
         return total;
     }
 
     private BigDecimal getTotalPL() {
         BigDecimal total = getPositionPL().add(getTradingPL());
-        System.out.println("Basic total discrepancy: "
-                + total.subtract(getUnrealizedPL().add(getRealizedPL())));
-        assert total.compareTo(getUnrealizedPL().add(getRealizedPL())) == 0;
+        // the totals should be the same regardless of how you add it up
+        assertThat(total, comparesEqualTo(getUnrealizedPL().add(getRealizedPL())));
         return total;
+    }
+
+    private class PositionElement {
+        public BigDecimal quantity;
+        public BigDecimal price;
+
+        public PositionElement(BigDecimal quantity, BigDecimal price) {
+            this.quantity = quantity;
+            this.price = price;
+        }
     }
 }

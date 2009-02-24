@@ -22,8 +22,19 @@ import ca.odell.glazedlists.matchers.Matcher;
 /* $License$ */
 
 /**
- * Replacement for {@link ca.odell.glazedlists.GroupingList} that provides event notifications for the groups.
- *
+ * Replacement for {@link ca.odell.glazedlists.GroupingList} that provides event notifications for
+ * the groups.
+ * 
+ * A grouping list is initialized with a {@link GroupMatcherFactory}, which it uses to create a
+ * unique {@link GroupMatcher} to define a group. The groups are ordered by the natural ordering of
+ * the GroupMatchers.
+ * 
+ * Each element in the grouping list is itself an event list. These children group lists preserve
+ * the ordering of their respective elements in the source list.
+ * 
+ * This class depends on internal classes in the glazed lists library so changing/upgrading the
+ * library should be done with care.
+ * 
  * @see http://www.nabble.com/GroupList-notification-td21879305.html
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
@@ -34,8 +45,8 @@ import ca.odell.glazedlists.matchers.Matcher;
 public class GroupingList<E> extends TransformedList<E, EventList<E>> {
 
     /**
-     * The GroupLists that make up this GroupingList in sorted order (sorted by
-     * their GroupMatchers).
+     * The GroupLists that make up this GroupingList in sorted order (sorted by their
+     * GroupMatchers).
      */
     private SimpleTree<GroupList> groupLists = new SimpleTree<GroupList>(GlazedLists
             .comparableComparator());
@@ -45,8 +56,10 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
     /**
      * Constructor.
      * 
-     * @param source the source list
-     * @param factory factory to create group matchers
+     * @param source
+     *            the source list
+     * @param factory
+     *            factory to create group matchers
      */
     public GroupingList(EventList<E> source, GroupMatcherFactory<E, GroupMatcher<E>> factory) {
         super(source);
@@ -277,7 +290,7 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
 
     /**
      * EventList implementation used for groups.
-     *
+     * 
      * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
      * @version $Id$
      * @since $Release$
@@ -319,18 +332,16 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
     }
 
     /**
-     * A matcher that determines if an element should be in a group. One of
-     * these GroupMatchers defines a group in an immutable way. It is comparable
-     * to impose an ordering on the groups.
+     * A matcher that determines if an element should be in a group. One of these GroupMatchers
+     * defines a group in an immutable way. It is comparable to impose an ordering on the groups.
      */
     public interface GroupMatcher<T> extends Matcher<T>, Comparable<GroupMatcher<T>> {
     }
 
     /**
-     * Creates GroupMatchers for elements in the GroupingList. This factory must
-     * create identical matchers for elements that belong in the same group.
-     * Essentially, this factory is responsible for extracting the immutable
-     * grouping criteria from an element.
+     * Creates GroupMatchers for elements in the GroupingList. This factory must create identical
+     * matchers for elements that belong in the same group. Essentially, this factory is responsible
+     * for extracting the immutable grouping criteria from an element.
      */
     public interface GroupMatcherFactory<S, T extends GroupMatcher<S>> {
         T createGroupMatcher(S element);

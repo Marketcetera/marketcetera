@@ -1,9 +1,12 @@
 package org.marketcetera.core.position.impl;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.LinkedList;
 
 import org.marketcetera.core.position.PositionMetrics;
+import org.marketcetera.core.position.Trade;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -27,42 +30,31 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
     private final LinkedList<PositionElement> positionElements = new LinkedList<PositionElement>();
     private BigDecimal lastTradePrice;
 
-   @Override
-    public synchronized PositionMetrics tick(BigDecimal tradePrice) {
+    public PositionMetricsCalculatorImpl(final BigDecimal lastTradePrice) {
+        this.lastTradePrice = lastTradePrice;
+    }
+
+    @Override
+    public synchronized PositionMetrics tick(final BigDecimal tradePrice) {
         lastTradePrice = tradePrice;
         return createPositionMetrics();
     }
 
     @Override
-    public synchronized PositionMetrics trade(Trade trade) {
-        BigDecimal quantity = trade.getQuantity();
-        BigDecimal price = trade.getPrice();
-        switch (trade.getSide()) {
-        case BUY:
-            processTrade(quantity, price);
-            break;
-        case SELL:
-            processTrade(quantity.negate(), price);
-            break;
-        default:
-            assert false;
-        }
+    public synchronized PositionMetrics trade(final Trade trade) {
+        processTrade(trade.getQuantity(), trade.getPrice());
         return createPositionMetrics();
     }
 
     /**
-     * Processes a trade, closing existing positions and creating new ones as
-     * necessary.
+     * Processes a trade, closing existing positions and creating new ones as necessary.
      * 
      * @param quantity
-     *            the quantity of the trade, positive for a buy and negative for
-     *            a sell
+     *            the quantity of the trade, positive for a buy and negative for a sell
      * @param price
      *            the price of the trade
      */
     private void processTrade(final BigDecimal quantity, final BigDecimal price) {
-        assert quantity.compareTo(BigDecimal.ZERO) != 0;
-        assert price.compareTo(BigDecimal.ZERO) == 1;
         position = position.add(quantity);
         tradingCost.add(quantity, price);
         // determine the sides, +1 for long and -1 for short
@@ -111,8 +103,8 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
      * Processes a position close, updating realized P&L and the unrealized cost
      * 
      * @param quantity
-     *            the quantity being closed, negative when closing a long
-     *            position and positive when closing a short position
+     *            the quantity being closed, negative when closing a long position and positive when
+     *            closing a short position
      * @param openPrice
      *            the price at which the position was opened
      * @param closePrice
@@ -138,8 +130,16 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
             tradingPL = tradingCost.getPL(lastTradePrice);
             totalPL = positionPL.add(tradingPL);
         }
-        return new PositionMetricsImpl(position, positionPL, tradingPL, realizedPL, unrealizedPL,
-                totalPL);
+        PositionMetricsImpl positionMetrics = new PositionMetricsImpl(position, positionPL,
+                tradingPL, realizedPL, unrealizedPL, totalPL);
+        if (SLF4JLoggerProxy.isDebugEnabled(this)) {
+            // Theoretically, both ways of calculating total PL should give the same results
+            if (totalPL.compareTo(unrealizedPL.add(realizedPL)) != 0) {
+                SLF4JLoggerProxy.debug(this, MessageFormat.format(
+                        "There is a discrepancy in the total PL.\n{0}", positionMetrics)); //$NON-NLS-1$
+            }
+        }
+        return positionMetrics;
     }
 
     private static class CostElement {
@@ -162,19 +162,13 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
     }
 
     private class PositionElement {
-        BigDecimal quantity;
-        BigDecimal price;
-
-        PositionElement(Trade trade) {
-            quantity = trade.getQuantity();
-            price = trade.getPrice();
-        }
+        public BigDecimal quantity;
+        public BigDecimal price;
 
         public PositionElement(BigDecimal quantity, BigDecimal price) {
             this.quantity = quantity;
             this.price = price;
         }
-
     }
 
 }
