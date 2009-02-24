@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.Callable;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -80,11 +80,15 @@ public class TradeReportsHistory {
     private final FIXMessageFactory mMessageFactory;
 
     /**
-     * Locks this class when performing resets and causes incoming messages to be queued.
+     * Queue of incoming reports than could not be processed immediately due to an in progress reset
+     * operation
      */
-    private final ReadWriteLock mResetLock = new ReentrantReadWriteLock();
+    private final Queue<ReportBase> mQueuedReports = new LinkedList<ReportBase>();
 
-    private final Queue<ReportBase> queuedReports = new LinkedList<ReportBase>();
+    /**
+     * Synchronizes access to mQueuedReports
+     */
+    private final java.util.concurrent.locks.Lock mQueueLock = new ReentrantLock();
 
     private Set<ReportID> mUniqueReportIds = new HashSet<ReportID>();
 
@@ -126,56 +130,65 @@ public class TradeReportsHistory {
     }
 
     /**
-     * Resets the history to a new set of reports.  This method effectively clears the lists and adds the 
-     * given reports as if they were added using {@link #addIncomingMessage(ReportBase)}.
+     * Resets the history to a new set of reports retrieved using the provided Callable. This method
+     * effectively clears the lists and adds the given reports as if they were added using
+     * {@link #addIncomingMessage(ReportBase)}.
      * <p>
      * <strong>All reports added before this method call will be lost.</strong>
      * 
-     * @param newReports the reports that should replace existing history 
+     * @param reportsRetriever
+     *            retrieves the new reports, should <strong>not</strong> throw an exception, as this
+     *            method will ignore it
      */
-    public void resetMessages(ReportBase[] newReports) {
-        // acquire reset lock
-        mResetLock.writeLock().lock();
+    public void resetMessages(Callable<ReportBase[]> reportsRetriever) {
+        Lock listLock = mAllMessages.getReadWriteLock().writeLock();
+        listLock.lock();
         try {
-            Lock listLock = mAllMessages.getReadWriteLock().writeLock();
-            listLock.lock();
+            mAllMessages.clear();
+            mUniqueReportIds.clear();
+            mOriginalOrderACKs.clear();
+            mOrderIDToGroupMap.clear();
+            ReportBase[] reports = new ReportBase[0];
             try {
-                mAllMessages.clear();
-                mUniqueReportIds.clear();
-                mOriginalOrderACKs.clear();
-                mOrderIDToGroupMap.clear();
-                for (ReportBase report : newReports) {
+                reports = reportsRetriever.call();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.debug(this, "Ignoring exception improperly thrown by reportsRetriever", e); //$NON-NLS-1$
+            }
+            for (ReportBase report : reports) {
+                internalAddIncomingMessage(report);
+            }
+            mQueueLock.lock();
+            try {
+                for (ReportBase report : mQueuedReports) {
                     internalAddIncomingMessage(report);
                 }
+                mQueuedReports.clear();
             } finally {
-                listLock.unlock();
+                mQueueLock.unlock();
             }
         } finally {
-            mResetLock.writeLock().unlock();
+            listLock.unlock();
         }
     }
 
     public synchronized void addIncomingMessage(ReportBase inReport) {
-        // acquire reset lock in "read" mode since it is okay for other
-        // threads to add messages as long as a reset is not happening
-        if (mResetLock.readLock().tryLock()) {
+        Lock listLock = mAllMessages.getReadWriteLock().writeLock();
+        if (listLock.tryLock()) {
             try {
-                Lock listLock = mAllMessages.getReadWriteLock().writeLock();
-                listLock.lock();
-                try {
-                    for (ReportBase report : queuedReports) {
-                        internalAddIncomingMessage(report);
-                    }
-                    queuedReports.clear();
-                    internalAddIncomingMessage(inReport);
-                } finally {
-                    listLock.unlock();
-                }
+                internalAddIncomingMessage(inReport);
             } finally {
-                mResetLock.readLock().unlock();
+                listLock.unlock();
             }
         } else {
-            queuedReports.add(inReport);
+            if (mQueueLock.tryLock()) {
+                try {
+                    mQueuedReports.add(inReport);
+                } finally {
+                    mQueueLock.unlock();
+                }
+            } else {
+                internalAddIncomingMessage(inReport);
+            }
         }
     }
 
@@ -316,7 +329,13 @@ public class TradeReportsHistory {
     }
 
     public int size() {
-        return mAllMessages.size();
+        Lock readLock = mAllMessages.getReadWriteLock().readLock();
+        readLock.lock();
+        try {
+            return mAllMessages.size();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public ReportBase getLatestExecutionReport(OrderID clOrdID) {

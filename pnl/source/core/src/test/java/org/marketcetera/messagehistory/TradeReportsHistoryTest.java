@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Vector;
+import java.util.concurrent.Callable;
 
 import junit.framework.Test;
 
@@ -991,13 +992,18 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         ExecutionReport report2 = createServerReport(getTestableExecutionReport("2"));
         Message report3Message = getTestableExecutionReport("1");
         report3Message.setField(new OrdStatus(OrdStatus.PENDING_NEW));
-        ExecutionReport report3 = createServerReport(report3Message);
+        final ExecutionReport report3 = createServerReport(report3Message);
         TradeReportsHistory history = createMessageHistory();
         history.addIncomingMessage(report1);
         assertEquals(1, history.size());
         history.addIncomingMessage(report2);
         assertEquals(2, history.size());
-        history.resetMessages(new ReportBase[] { report3 });
+        history.resetMessages(new Callable<ReportBase[]>() { 
+            @Override
+            public ReportBase[] call() throws Exception {
+                return new ReportBase[] { report3 };
+            }
+        });
         assertEquals(1, history.size());
         assertSame(report3, history.getAllMessagesList().get(0).getReport());
         assertNull(history.getLatestMessage(new org.marketcetera.trade.OrderID("2")));
