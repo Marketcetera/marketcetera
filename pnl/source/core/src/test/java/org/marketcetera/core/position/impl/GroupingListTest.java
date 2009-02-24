@@ -407,7 +407,8 @@ public class GroupingListTest {
 
             @Override
             protected int[] getExpected() {
-                return new int[] { ListEvent.INSERT, 1, ListEvent.UPDATE, 2, ListEvent.UPDATE, 1, ListEvent.INSERT, 3 };
+                return new int[] { ListEvent.INSERT, 1, ListEvent.UPDATE, 2, ListEvent.UPDATE, 1,
+                        ListEvent.INSERT, 3 };
             }
 
             @Override
@@ -550,20 +551,6 @@ public class GroupingListTest {
     }
 
     @Test
-    public void temp() {
-        TransactionList<String> trans = new TransactionList<String>(GlazedLists.eventListOf("A",
-                "B", "C"));
-        trans
-                .addListEventListener(new ExpectedListChanges<String>("temp", new int[] { 1, 1, 1,
-                        2 }));
-        trans.beginEvent();
-        trans.set(1, "B");
-        trans.set(2, "C");
-        trans.set(1, "B");
-        trans.commitEvent();
-    }
-
-    @Test
     public void ABC_AdBiBiCC() {
         new TestTemplate() {
 
@@ -593,6 +580,88 @@ public class GroupingListTest {
                 }
                 if (i == 2) {
                     return new int[] { ListEvent.INSERT, 0 };
+                }
+                return super.getGroupsExpected(i);
+            }
+        }.run();
+
+    }
+
+    @Test
+    public void clear() {
+        new TestTemplate() {
+
+            @Override
+            protected void initList(EventList<String> list) {
+                list.add("A");
+                list.add("B");
+                list.add("C");
+            }
+
+            @Override
+            protected void modifyInTransaction(EventList<String> list) {
+                list.add("D");
+                list.add("E");
+                list.clear();
+            }
+
+            @Override
+            protected int[] getExpected() {
+                return new int[] { ListEvent.DELETE, 0, ListEvent.DELETE, 0, ListEvent.DELETE, 0 };
+            }
+
+            @Override
+            protected int[] getGroupsExpected(int i) {
+                if (i == 0) {
+                    return new int[] { ListEvent.DELETE, 0 };
+                }
+                if (i == 1) {
+                    return new int[] { ListEvent.DELETE, 0 };
+                }
+                if (i == 2) {
+                    return new int[] { ListEvent.DELETE, 0 };
+                }
+                return super.getGroupsExpected(i);
+            }
+        }.run();
+
+    }
+
+    @Test
+    public void clear_no_transaction() {
+        new TestTemplate() {
+
+            @Override
+            protected void initList(EventList<String> list) {
+                list.add("A");
+                list.add("B");
+                list.add("C");
+            }
+
+            @Override
+            protected void modifyBaseList(EventList<String> list) {
+                list.add("D");
+                list.add("E");
+                list.clear();
+            }
+
+            @Override
+            protected int[] getExpected() {
+                return new int[] { ListEvent.INSERT, 3, ListEvent.INSERT, 4, ListEvent.DELETE, 0,
+                        ListEvent.DELETE, 0, ListEvent.DELETE, 0, ListEvent.DELETE, 0,
+                        ListEvent.DELETE, 0 };
+            }
+
+            @Override
+            protected int[] getGroupsExpected(int i) {
+                if (i == 0) {
+                    return new int[] { ListEvent.DELETE, 0 };
+                }
+                if (i == 1) {
+                    return new int[] { ListEvent.DELETE, 0 };
+                }
+                if (i == 2) {
+                    return new int[] { ListEvent.DELETE, 0 };
                 }
                 return super.getGroupsExpected(i);
             }
