@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.core.position.Trade;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -113,8 +114,8 @@ public final class PositionRowUpdater {
 
     private PositionMetrics recalculate() {
         // TODO: provide real incoming position and closing price
-        calculator = new PositionMetricsCalculatorImpl();
         PositionMetrics metrics = new PositionMetricsImpl(null, null, null, null, null, null);
+        calculator = new PositionMetricsCalculatorImpl(marketData.getLastTradePrice(positionRow.getSymbol()));
         for (Trade trade : trades) {
             metrics = calculator.trade(trade);
         }

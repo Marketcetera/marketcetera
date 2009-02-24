@@ -3,9 +3,13 @@ package org.marketcetera.messagehistory;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -74,7 +78,14 @@ public class TradeReportsHistory {
     private final Map<OrderID, OrderID> mOrderIDToGroupMap;
 
     private final FIXMessageFactory mMessageFactory;
-    
+
+    /**
+     * Locks this class when performing resets and causes incoming messages to be queued.
+     */
+    private final ReadWriteLock mResetLock = new ReentrantReadWriteLock();
+
+    private final Queue<ReportBase> queuedReports = new LinkedList<ReportBase>();
+
     private Set<ReportID> mUniqueReportIds = new HashSet<ReportID>();
 
     public TradeReportsHistory(FIXMessageFactory messageFactory) {
@@ -117,29 +128,58 @@ public class TradeReportsHistory {
     /**
      * Resets the history to a new set of reports.  This method effectively clears the lists and adds the 
      * given reports as if they were added using {@link #addIncomingMessage(ReportBase)}.
-     * 
+     * <p>
      * <strong>All reports added before this method call will be lost.</strong>
      * 
      * @param newReports the reports that should replace existing history 
      */
     public void resetMessages(ReportBase[] newReports) {
-        Lock lock = mAllMessages.getReadWriteLock().writeLock();
-        lock.lock();
+        // acquire reset lock
+        mResetLock.writeLock().lock();
         try {
-            mAllMessages.clear();
-            mUniqueReportIds.clear();
-            mOriginalOrderACKs.clear();
-            mOrderIDToGroupMap.clear();
-            for (ReportBase report : newReports) {
-                addIncomingMessage(report);
+            Lock listLock = mAllMessages.getReadWriteLock().writeLock();
+            listLock.lock();
+            try {
+                mAllMessages.clear();
+                mUniqueReportIds.clear();
+                mOriginalOrderACKs.clear();
+                mOrderIDToGroupMap.clear();
+                for (ReportBase report : newReports) {
+                    internalAddIncomingMessage(report);
+                }
+            } finally {
+                listLock.unlock();
             }
         } finally {
-            lock.unlock();
+            mResetLock.writeLock().unlock();
         }
     }
 
-    public void addIncomingMessage(ReportBase inReport) {
-        // TODO: discuss with Anshul if lock is sufficient or if queue is necessary
+    public synchronized void addIncomingMessage(ReportBase inReport) {
+        // acquire reset lock in "read" mode since it is okay for other
+        // threads to add messages as long as a reset is not happening
+        if (mResetLock.readLock().tryLock()) {
+            try {
+                Lock listLock = mAllMessages.getReadWriteLock().writeLock();
+                listLock.lock();
+                try {
+                    for (ReportBase report : queuedReports) {
+                        internalAddIncomingMessage(report);
+                    }
+                    queuedReports.clear();
+                    internalAddIncomingMessage(inReport);
+                } finally {
+                    listLock.unlock();
+                }
+            } finally {
+                mResetLock.readLock().unlock();
+            }
+        } else {
+            queuedReports.add(inReport);
+        }
+    }
+
+    private void internalAddIncomingMessage(ReportBase inReport) {
         Lock lock = mAllMessages.getReadWriteLock().writeLock();
         lock.lock();
         try {

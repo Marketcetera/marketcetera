@@ -8,7 +8,8 @@ import java.text.MessageFormat;
 import java.util.Random;
 
 import org.marketcetera.core.position.PositionMetrics;
-import org.marketcetera.core.position.impl.Trade.Side;
+import org.marketcetera.core.position.Trade;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -36,15 +37,15 @@ public abstract class PositionMetricsCalculatorTestTemplate implements Runnable 
 		for (int i = 0; i < numTests; i++) {
 			if (random.nextBoolean()) {
 				BigDecimal tradePrice = randomBigDecimal(random);
-				System.out.println(MessageFormat.format("Iteration {0}: Tick of ${1}", i,
+				SLF4JLoggerProxy.debug(this, MessageFormat.format("Iteration {0}: Tick of ${1}", i,
 						tradePrice));
 				assertPositionMetrics(basicCalculator.tick(tradePrice),
 						calculator.tick(tradePrice), i);
 			} else {
 				Trade trade = createTrade(random.nextBoolean(), randomBigDecimal(random),
 						randomBigDecimal(random), i);
-				System.out.println(MessageFormat.format(
-						"Iteration {0}: Trade of {1} {2} ${3}", i, trade.getSide(), trade
+				SLF4JLoggerProxy.debug(this, MessageFormat.format(
+						"Iteration {0}: Trade of {1} ${2}", i, trade
 								.getQuantity(), trade.getPrice()));
 				assertPositionMetrics(basicCalculator.trade(trade), calculator.trade(trade), i);
 			}
@@ -61,7 +62,7 @@ public abstract class PositionMetricsCalculatorTestTemplate implements Runnable 
 	}
 
 	private Trade createTrade(boolean buy, BigDecimal quantity, BigDecimal price, int counter) {
-		return new TradeImpl("ABC", "asdf", "Yoram", buy ? Side.BUY : Side.SELL, price, quantity,
+		return new MockTrade("ABC", "asdf", "Yoram", price, buy ? quantity : quantity.negate(),
 				counter);
 	}
 

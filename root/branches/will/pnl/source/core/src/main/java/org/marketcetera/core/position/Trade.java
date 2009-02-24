@@ -1,4 +1,4 @@
-package org.marketcetera.core.position.impl;
+package org.marketcetera.core.position;
 
 import java.math.BigDecimal;
 
@@ -17,17 +17,9 @@ import org.marketcetera.util.misc.ClassVersion;
 public interface Trade {
 
     /**
-     * The possible side of a trade.
-     */
-    @ClassVersion("$Id$")
-    enum Side {
-        BUY, SELL
-    };
-
-    /**
      * Return the symbol that was traded.
      * 
-     * @return the symbol
+     * @return the symbol, cannot be null or empty
      */
     String getSymbol();
 
@@ -41,28 +33,22 @@ public interface Trade {
     /**
      * Return the id of the trader who performed the trade.
      * 
-     * @return the trader id
+     * @return the trader id, cannot be null or empty
      */
     String getTraderId();
 
     /**
-     * Return the side of the trade.
-     * 
-     * @return the side
-     */
-    Side getSide();
-
-    /**
      * Return the price of the trade.
      * 
-     * @return the price
+     * @return the price, must be greater than zero
      */
     BigDecimal getPrice();
 
     /**
-     * Return the quantity of the trade.
+     * Return the quantity of the trade. A positive quantity implies a buy and a
+     * negative quantity implies a sell.
      * 
-     * @return the quantity
+     * @return the quantity, cannot be null or zero
      */
     BigDecimal getQuantity();
 
@@ -70,7 +56,7 @@ public interface Trade {
      * Return the unique sequence number of the trade used for ordering trades.
      * No two trades can have the same sequence number.
      * 
-     * @return the sequence number
+     * @return the sequence number, must be greater than zero
      */
     long getSequenceNumber();
 }
