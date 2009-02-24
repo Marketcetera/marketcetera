@@ -165,19 +165,33 @@ public class TradeReportsHistory {
             for (ReportBase report : reports) {
                 internalAddIncomingMessage(report);
             }
-            mQueueLock.lock();
-            for (ReportBase report : mQueuedReports) {
-                internalAddIncomingMessage(report);
-            }
-            mQueuedReports.clear();
         } finally {
-            mWriteLock.unlock();
-            if (mQueueLock.isHeldByCurrentThread()) {
-                mQueueLock.unlock();
+            mQueueLock.lock();
+            try {
+                for (ReportBase report : mQueuedReports) {
+                    internalAddIncomingMessage(report);
+                }
+            } finally {
+                // unlock list first so additional messages are guaranteed to be added
+                mWriteLock.unlock();
+                try {
+                    // this ensure queue is ready for next attempt
+                    mQueuedReports.clear();
+                } finally {
+                    mQueueLock.unlock();
+                }
             }
         }
     }
 
+	/**
+     * Adds a new report to the base list. Duplicates are ignored.
+     * 
+     * The report may not be added immediately if a reset is in progress. In this case, it will be
+     * queued until the reset has completed.
+     * 
+     * @param inReport
+     */
     public void addIncomingMessage(ReportBase inReport) {
         // wait if queue is being emptied
         mQueueLock.lock();
