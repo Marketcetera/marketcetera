@@ -3,10 +3,12 @@ package org.marketcetera.module;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.InMemoryIDFactory;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.concurrent.locks.Lock;
 
 /* $License$ */
 /**
@@ -95,23 +97,62 @@ class DataFlow {
     /**
      * Creates an instance.
      *
-     * @param inFlowID the flow ID uniquely identifying this flow.
+     * @param inManager the module manager instance.
      * @param inRequesterURN the data flow requester URN.
      * @param inRequests the data requests specified when requesting
      * this data flow.
-     * @param inCouplers the couplers used to plumb the various modules, the
-     * size of this array is expected to be 1 less than the size of the
-     * <code>inRequests</code> array.
+     * @param inModules the modules participating in this data flow.
+     *
+     * @throws ModuleException if there was an error generating a flowID
+     * for this data flow.
      */
-    DataFlow(DataFlowID inFlowID,
-                    ModuleURN inRequesterURN,
-                    DataRequest[] inRequests,
-                    AbstractDataCoupler[] inCouplers) {
-        mFlowID = inFlowID;
+    DataFlow(ModuleManager inManager,
+             ModuleURN inRequesterURN,
+             DataRequest[] inRequests,
+             Module[] inModules) throws ModuleException {
+        mFlowID = generateFlowID();
         mRequesterURN = inRequesterURN;
         mRequests = inRequests;
-        mCouplers = inCouplers;
-        assert inRequests.length == inCouplers.length + 1;
+        mCouplers = new AbstractDataCoupler[inModules.length - 1];
+        assert inModules.length == mRequests.length;
+        for(int i = mCouplers.length - 1; i >= 0; i--) {
+            mCouplers[i] = mRequests[i].getCoupling().createCoupler(
+                    inManager, inModules[i], inModules[i + 1], mFlowID);
+        }
+    }
+
+    /**
+     * Initialize the flow by initiating requests on the emitters and plumbing
+     * them to the respective receivers.
+     *
+     * @throws ModuleException if there was a failure setting up the data flow.
+     */
+    void initFlow() throws ModuleException {
+        boolean failed = true;
+
+        int i = mCouplers.length - 1;
+        //Acquire lock to prevent concurrent cancellation that might happen
+        //if a participating module emits or throws an error within the data
+        //flow requesting that the data flow be stopped. This lock will
+        //cause the cancellation to block until the flow has been
+        //completely setup.
+        synchronized (this) {
+            try {
+                for(; i >= 0; i--) {
+                    mCouplers[i].initiateRequest(generateRequestID(),
+                            mRequests[i]);
+                }
+                failed = false;
+            } finally {
+                if(failed) {
+                    mCancelling = true;
+                    //go through all the initiated requests and cancel them.
+                    while(++i < mCouplers.length) {
+                        mCouplers[i].cancelRequest();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -164,6 +205,36 @@ class DataFlow {
         }
         return participants;
     }
+    /**
+     * Generates a unique ID for a data flow.
+     *
+     * @return a unique ID for identifying a data flow
+     *
+     * @throws ModuleException if there were errors generating the
+     * data flow ID.
+     */
+    private static DataFlowID generateFlowID() throws ModuleException {
+        try {
+            return new DataFlowID(sIDFactory.getNext());
+        } catch (NoMoreIDsException e) {
+            throw new ModuleException(e, Messages.UNABLE_GENERATE_FLOW_ID);
+        }
+    }
+
+    /**
+     * Generates the request ID.
+     *
+     * @return the request ID.
+     *
+     * @throws ModuleException if there were errors generating the request ID.
+     */
+    private static RequestID generateRequestID() throws ModuleException {
+        try {
+            return new RequestID(sIDFactory.getNext());
+        } catch (NoMoreIDsException e) {
+            throw new ModuleException(e, Messages.UNABLE_GENERATE_REQUEST_ID);
+        }
+    }
 
     /*
      * These variables are defined as volatile as they can be read
@@ -179,4 +250,8 @@ class DataFlow {
     private final AbstractDataCoupler[] mCouplers;
     private final Date mCreated = new Date();
     private boolean mCancelling = false;
+    /**
+     * ID factory for generating data flow IDs.
+     */
+    private static final IDFactory sIDFactory = new InMemoryIDFactory(1);
 }

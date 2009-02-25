@@ -135,13 +135,17 @@ public class DataFlowTest extends ModuleTestBase {
      *
      * @throws Exception if there are unexpected errors
      */
-    @Test
+    @Test(timeout = 10000)
     public void emitFailStoppedFlow() throws Exception {
         assertTrue(sManager.getDataFlowHistory().isEmpty());
         startEmitter();
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[]{
                 new DataRequest(EmitterModuleFactory.INSTANCE_URN,"send this data")
         });
+        //Wait until sink receives this data
+        while(sSink.getData().length < 1) {
+            Thread.sleep(500);
+        }
         sManager.cancel(flowID);
         EmitterModule module = (EmitterModule) ModuleBase.getInstance(
                 EmitterModuleFactory.INSTANCE_URN);
