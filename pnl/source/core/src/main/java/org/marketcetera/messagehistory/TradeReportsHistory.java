@@ -64,9 +64,13 @@ public class TradeReportsHistory {
 
     private final EventList<ReportHolder> mAllMessages;
 
-    private final FilterList<ReportHolder> mFillMessages;
+    private final EventList<ReportHolder> mReadOnlyAllMessages;
+
+    private final EventList<ReportHolder> mReadOnlyFillMessages;
 
     private final AveragePriceReportList mAveragePriceList;
+
+    private final EventList<ReportHolder> mReadOnlyAveragePriceList;
 
     private final FilterList<ReportHolder> mLatestExecutionReportsList;
 
@@ -74,7 +78,9 @@ public class TradeReportsHistory {
 
     private final FilterList<ReportHolder> mLatestMessageList;
 
-    private final FilterList<ReportHolder> mOpenOrderList;
+    private final EventList<ReportHolder> mOpenOrderList;
+
+    private final EventList<ReportHolder> mReadOnlyOpenOrderList;
 
     private final Map<OrderID, ReportHolder> mOriginalOrderACKs;
 
@@ -107,22 +113,21 @@ public class TradeReportsHistory {
 
     public TradeReportsHistory(FIXMessageFactory messageFactory) {
         this.mMessageFactory = messageFactory;
-
         mAllMessages = new BasicEventList<ReportHolder>();
-        mFillMessages = new FilterList<ReportHolder>(mAllMessages,
-                new ReportFillMatcher());
-        GroupingList<ReportHolder> orderIDList = new GroupingList<ReportHolder>(
-                mAllMessages, new ReportGroupIDComparator());
+        mReadOnlyAllMessages = GlazedLists.readOnlyList(mAllMessages);
+        mReadOnlyFillMessages = GlazedLists.readOnlyList(new FilterList<ReportHolder>(mAllMessages,
+                new ReportFillMatcher()));
+        GroupingList<ReportHolder> orderIDList = new GroupingList<ReportHolder>(mAllMessages,
+                new ReportGroupIDComparator());
         mLatestExecutionReportsList = new FilterList<ReportHolder>(
-            new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
-                new LatestExecutionReportFunction()),
-                new NotNullReportMatcher());
+                new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
+                        new LatestExecutionReportFunction()), new NotNullReportMatcher());
         mLatestMessageList = new FilterList<ReportHolder>(
                 new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
-                    new LatestReportFunction()), new NotNullReportMatcher());
-        mAveragePriceList = new AveragePriceReportList(messageFactory,
-                mAllMessages); 
-        // In certain cases, we need the latest execution report from the broker, 
+                        new LatestReportFunction()), new NotNullReportMatcher());
+        mAveragePriceList = new AveragePriceReportList(messageFactory, mAllMessages);
+        mReadOnlyAveragePriceList = GlazedLists.readOnlyList(mAveragePriceList);
+        // In certain cases, we need the latest execution report from the broker,
         // i.e. ignoring server ACKS.
         mLatestBrokerExecutionReportsList = new FilterList<ReportHolder>(
                 new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
@@ -131,12 +136,12 @@ public class TradeReportsHistory {
                             protected boolean accept(ReportHolder holder) {
                                 ReportBase report = holder.getReport();
                                 return report instanceof ExecutionReport
-                                        && ((ExecutionReport) report)
-                                                .getOriginator() == Originator.Broker;
+                                        && ((ExecutionReport) report).getOriginator() == Originator.Broker;
                             }
                         }), new NotNullReportMatcher());
         mOpenOrderList = new FilterList<ReportHolder>(mLatestExecutionReportsList,
                 new OpenOrderReportMatcher());
+        mReadOnlyOpenOrderList = GlazedLists.readOnlyList(mOpenOrderList);
 
         mOriginalOrderACKs = new HashMap<OrderID, ReportHolder>();
         mOrderIDToGroupMap = new HashMap<OrderID, OrderID>();
@@ -334,12 +339,12 @@ public class TradeReportsHistory {
 
 
     public EventList<ReportHolder> getFillsList() {
-        return GlazedLists.readOnlyList(mFillMessages);
+        return mReadOnlyFillMessages;
     }
 
     public EventList<ReportHolder> getAveragePricesList()
     {
-        return GlazedLists.readOnlyList(mAveragePriceList);
+        return mReadOnlyAveragePriceList;
     }
 
     public int size() {
@@ -373,7 +378,7 @@ public class TradeReportsHistory {
     }
 
     public EventList<ReportHolder> getAllMessagesList() {
-        return GlazedLists.readOnlyList(mAllMessages);
+        return mReadOnlyAllMessages;
     }
 
     public Message getLatestMessage(OrderID inOrderID) {
@@ -397,7 +402,7 @@ public class TradeReportsHistory {
     }
 
     public EventList<ReportHolder> getOpenOrdersList() {
-        return GlazedLists.readOnlyList(mOpenOrderList);
+        return mReadOnlyOpenOrderList;
     }
 
     public void visitOpenOrdersExecutionReports(MessageVisitor visitor)
