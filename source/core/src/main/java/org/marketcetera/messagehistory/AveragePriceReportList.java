@@ -1,13 +1,19 @@
 package org.marketcetera.messagehistory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.math.BigDecimal;
 
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.trade.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -54,7 +60,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
 
     public void listChanged(ListEvent<ReportHolder> listChanges) {
         // all of these changes to this list happen "atomically"
-        updates.beginEvent();
+        updates.beginEvent(true);
 
         // handle reordering events
         if(!listChanges.isReordering()) {
@@ -66,8 +72,13 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
 
                 EventList<ReportHolder> sourceList = listChanges.getSourceList();
                 // handle delete events
-                if(changeType == ListEvent.DELETE || changeType == ListEvent.UPDATE) {
+                if(changeType == ListEvent.UPDATE) {
                     throw new UnsupportedOperationException();
+                } else if (changeType == ListEvent.DELETE) {
+                    // assume a delete all since this is the only thing supported.
+                    clear();
+                    updates.commitEvent();
+                    return;
                 } else if(changeType == ListEvent.INSERT) {
                     ReportHolder deltaReportHolder = sourceList.get(listChanges.getIndex());
 
@@ -111,7 +122,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                     averagePriceMessage.setDouble(OrderQty.FIELD, orderQty);
                                 }
                             }
-                            updates.addUpdate(averagePriceIndex);
+                            updates.elementUpdated(averagePriceIndex, averagePriceReportHolder, averagePriceReportHolder);
                         } else {
                             if (deltaReport instanceof ExecutionReport) {
                                 ExecutionReport execReport = (ExecutionReport) deltaReport;
@@ -133,10 +144,11 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                         averagePriceMessage.setField(new Account(execReport.getAccount()));
 
                                     try {
-                                        mAveragePricesList.add(new ReportHolder(Factory.getInstance().createExecutionReport(averagePriceMessage, execReport.getBrokerID(), Originator.Server)));
+                                        ReportHolder newReport = new ReportHolder(Factory.getInstance().createExecutionReport(averagePriceMessage, execReport.getBrokerID(), Originator.Server));
+                                        mAveragePricesList.add(newReport);
                                         averagePriceIndex = mAveragePricesList.size()-1;
                                         mAveragePriceIndexes.put(symbolSide, averagePriceIndex);
-                                        updates.addInsert(averagePriceIndex);
+                                        updates.elementInserted(averagePriceIndex, newReport);
                                     } catch (MessageCreationException e) {
                                         SLF4JLoggerProxy.error(this, "unexpected error", e);  //$NON-NLS-1$
                                     }
@@ -170,6 +182,26 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
         return inValue == null
                 ? 0.0
                 : inValue.doubleValue();
+    }
+    
+    @Override
+    public void clear() {
+    	// don't do a clear on an empty set
+        if(isEmpty()) return;
+        // create the change event
+        updates.beginEvent();
+        for(int i = 0, size = size(); i < size; i++) {
+            updates.elementDeleted(0, get(i));
+        }
+        // do the actual clear
+        mAveragePricesList.clear();
+        mAveragePriceIndexes.clear();
+        // fire the event
+        updates.commitEvent();
+    }
+
+    @Override
+    public void dispose() {
     }
 
 }
