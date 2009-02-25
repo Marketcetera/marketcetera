@@ -737,7 +737,9 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         }
         //verify module state
         info = getManager().getModuleInfo(inUrn);
-        assertModuleInfo(info, inUrn, ModuleState.STARTED, flows, flows,
+        //refresh flows as the flow currently in progress gets reported
+        DataFlowID[] pflows = getManager().getDataFlows(true).toArray(new DataFlowID[0]);
+        assertModuleInfo(info, inUrn, ModuleState.STARTED, flows, pflows,
                 false, false, true, true, true);
         assertFalse(info.isWriteLocked());
         assertEquals(1, info.getReadLockCount());
@@ -817,11 +819,16 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         }
         //Verify module state
         ModuleInfo info = getManager().getModuleInfo(inReqUrn);
-        //the only data flows running are the ones initiated by the module
+        //the only data flows running are the ones initiated by modules
         DataFlowID[] flows = getManager().getDataFlows(true).toArray(new DataFlowID[0]);
-        assertEquals(2, flows.length);
+        assertEquals(3, flows.length);
+        //The requester initiated flows is the total set of flows minus
+        //the participant flows
         DataFlowID[] rFlows = subtract(flows, pFlows);
-        assertModuleInfo(info, inReqUrn, ModuleState.STARTING, rFlows, rFlows,
+        //The only flow the requester is participating in is the one it initiated.
+        DataFlowID[] rpFlows = new DataFlowID[]{
+                ConcurrentTestModule.getModule(inReqUrn).getFlowID()};
+        assertModuleInfo(info, inReqUrn, ModuleState.STARTING, rFlows, rpFlows,
                 false, false, true, true, true);
         assertFalse(info.isWriteLocked());
         assertEquals(1, info.getReadLockCount());

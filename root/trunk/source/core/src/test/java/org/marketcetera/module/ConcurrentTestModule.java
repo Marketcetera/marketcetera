@@ -134,6 +134,15 @@ public class ConcurrentTestModule extends Module
     }
 
     /**
+     * The flowID of the flow initiated by this module.
+     * 
+     * @return the flowID of the flow initiated by this module.
+     */
+    DataFlowID getFlowID() {
+        return mFlowID;
+    }
+
+    /**
      * Cancels the data flow using the {@link DataFlowSupport} instance
      * supplied to the module.
      *

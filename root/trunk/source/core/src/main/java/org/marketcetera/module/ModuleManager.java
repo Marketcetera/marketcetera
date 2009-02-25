@@ -2,9 +2,6 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.*;
-import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.core.NoMoreIDsException;
 
 import javax.management.*;
 import java.util.*;
@@ -870,30 +867,26 @@ public final class ModuleManager {
             // plumbing the first module last, ensures that the rest of the data
             // pipeline is ready to receive data once the emitter starts emitting
             // data
-            AbstractDataCoupler[] couplers = new AbstractDataCoupler[modules.length - 1];
-            DataFlowID id = generateFlowID();
-            int i = couplers.length - 1;
-            try {
-                for(; i >= 0; i--) {
-                    couplers[i] = inRequests[i].getCoupling().createCoupler(
-                            this, modules[i], modules[i + 1], id);
-                    couplers[i].initiateRequest(generateRequestID(), inRequests[i]);
-                }
-                failed = false;
-            } finally {
-                if(failed) {
-                    //go through all the initiated requests and cancel them.
-                    while(++i < couplers.length) {
-                        couplers[i].cancelRequest();
-                    }
-                }
-            }
-            DataFlow flow = new DataFlow(id,
+            DataFlow flow = new DataFlow(this,
                     inRequester == null
                             ? null
                             : inRequester.getURN(),
-                    inRequests, couplers);
+                    inRequests, modules);
+            DataFlowID id = flow.getFlowID();
+            //Add the flow right away, to allow any concurrent flow
+            //cancellations, that happen while the data flow is being
+            //initialized, to not fail as they are not able to find the data
+            //flow. 
             mDataFlows.addFlow(flow);
+            try {
+                flow.initFlow();
+                failed = false;
+            } finally {
+                if(failed) {
+                    //Remove the flow if it didn't initialize
+                    mDataFlows.remove(id);
+                }
+            }
             return id;
         } finally {
             if(requesterLock != null) {
@@ -1783,37 +1776,6 @@ public final class ModuleManager {
     }
 
     /**
-     * Generates a unique ID for a data flow.
-     *
-     * @return a unique ID for identifying a data flow
-     *
-     * @throws ModuleException if there were errors generating the
-     * data flow ID.
-     */
-    private DataFlowID generateFlowID() throws ModuleException {
-        try {
-            return new DataFlowID(mIDFactory.getNext());
-        } catch (NoMoreIDsException e) {
-            throw new ModuleException(e, Messages.UNABLE_GENERATE_FLOW_ID);
-        }
-    }
-
-    /**
-     * Generates the request ID.
-     *
-     * @return the request ID.
-     *
-     * @throws ModuleException if there were errors generating the request ID.
-     */
-    private RequestID generateRequestID() throws ModuleException {
-        try {
-            return new RequestID(mIDFactory.getNext());
-        } catch (NoMoreIDsException e) {
-            throw new ModuleException(e, Messages.UNABLE_GENERATE_REQUEST_ID);
-        }
-    }
-
-    /**
      * Returns true if the supplied object implements an
      * interface that is an MXBean interface.
      *
@@ -1898,10 +1860,6 @@ public final class ModuleManager {
     private final DataFlowTracker mDataFlows =
             new DataFlowTracker();
 
-    /**
-     * ID factory for generating data flow IDs.
-     */
-    private final IDFactory mIDFactory = new InMemoryIDFactory(1);
     /**
      * History of flows that are not active any more
      */
