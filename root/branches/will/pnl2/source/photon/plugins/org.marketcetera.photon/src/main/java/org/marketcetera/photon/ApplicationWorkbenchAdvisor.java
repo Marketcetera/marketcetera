@@ -1,6 +1,5 @@
 package org.marketcetera.photon;
 
-import java.io.PrintStream;
 import java.net.URL;
 
 import org.eclipse.core.resources.IWorkspace;
@@ -71,9 +70,6 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		// by default at application startup.
 		ConsolePlugin.getDefault().getConsoleManager().addConsoles(
 				new IConsole[] { dataFeedConsole, photonConsole });
-		
-		System.setOut(new PrintStream(photonConsole.getInfoMessageStream(), true));
-		System.setErr(new PrintStream(photonConsole.getErrorMessageStream(), true));
 	}
 	
 	@Override

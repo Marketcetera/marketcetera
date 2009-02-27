@@ -1,48 +1,36 @@
-/* Glazed Lists                                                 (c) 2003-2006 */
-/* http://publicobject.com/glazedlists/                      publicobject.com,*/
-/*                                                     O'Dell Engineering Ltd.*/
 package org.marketcetera.photon.ui;
 
-// the core Glazed Lists packages
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.marketcetera.photon.Messages;
+import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.gui.AbstractTableComparatorChooser;
 import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.impl.gui.MouseOnlySortingStrategy;
-import ca.odell.glazedlists.impl.gui.SortingStrategy;
-import ca.odell.glazedlists.impl.gui.SortingState.SortingColumn;
+import ca.odell.glazedlists.swt.EventTableViewer;
 
 /**
- * A TableComparatorChooser is a tool that allows the user to sort a ListTable by clicking
- * on the table's headers. It requires that the ListTable has a SortedList as
- * a source as the sorting on that list is used.
+ * Copy of {@link ca.odell.glazedlists.swt.TableComparatorChooser} that does not require a {@link EventTableViewer}.
  *
- * <p><strong>Warning:</strong> This class is a a developer preview and subject to
- * many bugs and API changes.
+ * @see ca.odell.glazedlists.swt.TableComparatorChooser
  *
- * @see <a href="http://dev.eclipse.org/viewcvs/index.cgi/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet2.java?rev=HEAD">Snippet 2</a>
- *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
  */
-public final class TableComparatorChooser<T>
-    extends AbstractTableComparatorChooser<T>
-    implements Messages
-{
+@ClassVersion("$Id$")
+public final class TableComparatorChooser<E> extends AbstractTableComparatorChooser<E> {
 
-    private final SortingStrategy sortingStrategy;
+    private final Object sortingStrategy;
 
     /** the table being sorted */
     private Table table;
@@ -53,39 +41,37 @@ public final class TableComparatorChooser<T>
     /** listeners for column headers */
     private ColumnListener columnListener = new ColumnListener();
 
-    private SortIndicatorHelper sortIndicatorHelper;
-    
-    private TableColumn lastSortColumn;
-    
-    private boolean multipleColumnSortEnabled;
-    
     /**
-     * Creates a new TableComparatorChooser that responds to clicks
-     * on the specified table and uses them to sort the specified list.
-     *
-     * @param sortedList the sorted list to update.
-     * @param multipleColumnSort <code>true</code> to sort by multiple columns
-     *      at a time, or <code>false</code> to sort by a single column. Although
-     *      sorting by multiple columns is more powerful, the user interface is
-     *      not as simple and this strategy should only be used where necessary.
+     * Creates and installs a TableComparatorChooser.
      */
-    public TableComparatorChooser(Table table, TableFormat<T> format, SortedList<T> sortedList, boolean multipleColumnSort) {
+    private TableComparatorChooser(Table table, TableFormat<E> format, SortedList<E> sortedList, boolean multipleColumnSort) {
         super(sortedList, format);
 
         // save the SWT-specific state
         this.table = table;
 
-        this.sortIndicatorHelper = new SortIndicatorHelper(table.getDisplay());
-        
-        this.multipleColumnSortEnabled = multipleColumnSort;
-        
         // listen for events on the specified table
         for(int c = 0; c < table.getColumnCount(); c++) {
             table.getColumn(c).addSelectionListener(columnListener);
         }
 
         // sort using the specified approach
-        sortingStrategy = new MouseOnlySortingStrategy(multipleColumnSort);
+        sortingStrategy = SINGLE_COLUMN;
+    }
+
+    /**
+     * Installs a new TableComparatorChooser that responds to clicks
+     * on the specified table and uses them to sort the specified list.
+     *
+     * @param eventTableViewer the table viewer for the table to be sorted
+     * @param sortedList the sorted list to update.
+     * @param multipleColumnSort <code>true</code> to sort by multiple columns
+     *      at a time, or <code>false</code> to sort by a single column. Although
+     *      sorting by multiple columns is more powerful, the user interface is
+     *      not as simple and this strategy should only be used where necessary.
+     */
+    public static <E> TableComparatorChooser<E> install(Table table, TableFormat<E> format, SortedList<E> sortedList, boolean multipleColumnSort) {
+        return new TableComparatorChooser<E>(table, format, sortedList,  multipleColumnSort);
     }
 
     /**
@@ -105,7 +91,7 @@ public final class TableComparatorChooser<T>
                 return;
             }
         }
-        throw new IllegalArgumentException(CANNOT_REMOVE_NONEXISTANT_LISTENER.getText(sortListener));
+        throw new IllegalArgumentException("Cannot remove nonexistent listener " + sortListener);
     }
 
     /**
@@ -116,61 +102,45 @@ public final class TableComparatorChooser<T>
             TableColumn column = (TableColumn)e.widget;
             Table table = column.getParent();
             int columnIndex = table.indexOf(column);
-            sortingStrategy.columnClicked(sortingState, columnIndex, 1, false, false);
-            
-            updateSortIndicatorIcon(column, columnIndex);
-        }
-        
-        void updateSortIndicatorIcon(TableColumn column, int columnIndex) {
-        	List<SortingColumn> sortingColumns = sortingState.getColumns();
-			SortingColumn sortingColumn = sortingColumns.get(columnIndex);
-			if (sortingColumn.getComparatorIndex() >= 0) {
-				if(lastSortColumn != null && !multipleColumnSortEnabled) {
-					if(!lastSortColumn.isDisposed()) {
-						lastSortColumn.setImage(null);
-						lastSortColumn.pack();
-					}
-				}
-				lastSortColumn = column;
-				int direction = SWT.UP;
-				if (sortingColumn.isReverse()) {
-					direction = SWT.DOWN;
-				}
-				Image sortIndicatorImage = sortIndicatorHelper
-						.getSortImage(direction);
-				column.setImage(sortIndicatorImage);
-				column.pack();
-			} else {
-				column.setImage(null);
-				column.pack();
+            // Using reflection to access internal code
+            try {
+				sortingStrategy.getClass().getMethods()[0].invoke(sortingStrategy, sortingState, columnIndex, 1, false, false);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
 			}
         }
-        
         public void widgetDefaultSelected(SelectionEvent e) {
             // Do Nothing
         }
     }
-    
-    public void updateSortIndicatorIcon(int columnIndex) {
-		TableColumn column = table.getColumn(columnIndex);
-		columnListener.updateSortIndicatorIcon(column, columnIndex);
-	}
-
-	public void removeSortIndicators() {
-		TableColumn[] columns = table.getColumns();
-		if (columns != null) {
-			for (TableColumn column : columns) {
-				column.setImage(null);
-			}
-		}
-	}
 
     /**
-	 * Updates the comparator in use and applies it to the table.
-	 */
+     * Updates the SWT table to indicate sorting icon on the primary sort column.
+     */
+    protected final void updateTableSortColumn() {
+        final List<Integer> sortedColumns = getSortingColumns();
+        if (sortedColumns.isEmpty()) {
+            // no columns sorted
+            table.setSortColumn(null);
+            table.setSortDirection(SWT.NONE);
+        } else {
+            // make GL primary sort column the SWT table sort column
+            final int primaryColumnIndex = sortedColumns.get(0).intValue();
+            final int sortDirection = isColumnReverse(primaryColumnIndex) ? SWT.DOWN : SWT.UP;
+            table.setSortColumn(table.getColumn(primaryColumnIndex));
+            table.setSortDirection(sortDirection);
+        }
+    }
+
+    /**
+     * Updates the comparator in use and applies it to the table.
+     *
+     * <p>This method is called when the sorting state changed.</p>
+     */
     protected final void rebuildComparator() {
         super.rebuildComparator();
-
+        // update sorting icon in SWT table
+        updateTableSortColumn();
         // notify interested listeners that the sorting has changed
         Event sortEvent = new Event();
         sortEvent.widget = table;
@@ -195,14 +165,8 @@ public final class TableComparatorChooser<T>
      */
     public void dispose() {
         // stop listening for events on the specified table
-    	disableSortOnColumnHeader();
-        sortIndicatorHelper.dispose();
-    }
-    
-    public void disableSortOnColumnHeader() {
         for(int c = 0; c < table.getColumnCount(); c++) {
             table.getColumn(c).removeSelectionListener(columnListener);
         }
-    }    
-    
+    }
 }

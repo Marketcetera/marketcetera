@@ -209,6 +209,13 @@
             id="org.marketcetera.photon.reconnectMarketData"
             name="%command.reconnectMarketData.name">
       </command>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            defaultHandler="org.marketcetera.photon.actions.ReconnectServerHandler"
+            description="%command.reconnectServer.description"
+            id="org.marketcetera.photon.reconnectServer"
+            name="%command.reconnectServer.name">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -312,10 +319,8 @@
                    class="org.marketcetera.photon.ui.CommandLineTrimWidget">
              </control>
              <control>
-                <class class="org.marketcetera.photon.ui.StatusImageTrimWidget">
-	               <parameter name="service" value="org.marketcetera.photon.messaging.ClientFeedService"/>
-         	       <parameter name="overlay" value="icons/overlay/s-template.gif"/>
-         	       <parameter name="name" value="Connection to "/>
+                <class class="org.marketcetera.photon.ui.ServerStatusIndicator">
+	               <parameter name="overlay" value="icons/overlay/s-template.gif"/>
 	            </class>
              </control>
              <control>
