@@ -2,16 +2,38 @@ package org.marketcetera.photon.internal.positions.ui;
 
 import java.util.EnumMap;
 
+import net.miginfocom.swt.MigLayout;
+
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.PageBookView;
+import org.marketcetera.core.position.Grouping;
+import org.marketcetera.photon.commons.ui.FilterBox;
+import org.marketcetera.photon.commons.ui.FilterBox.FilterChangeEvent;
 import org.marketcetera.util.misc.ClassVersion;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /* $License$ */
 
@@ -26,8 +48,8 @@ import org.marketcetera.util.misc.ClassVersion;
 public class PositionsView extends PageBookView {
 
 	/**
-	 * Dummy part that allows us to take advantage of {@link PageBookView}
-	 * infrastructure to support switching between table and tree UI.
+	 * Dummy part that allows us to take advantage of {@link PageBookView} infrastructure to support
+	 * switching between table and tree UI.
 	 * 
 	 * This technique was inspired by
 	 * org.eclipse.pde.internal.ui.views.dependencies.DependenciesView.
@@ -42,12 +64,12 @@ public class PositionsView extends PageBookView {
 		/**
 		 * Flat table UI.
 		 */
-		TABLE,
+		FLAT,
 
 		/**
 		 * Grouped tree UI.
 		 */
-		TREE;
+		HIERARCHICAL;
 
 		@Override
 		public void addPropertyListener(IPropertyListener listener) {
@@ -96,14 +118,81 @@ public class PositionsView extends PageBookView {
 		}
 	}
 
+	/**
+	 * Changes the current page.
+	 */
+	@ClassVersion("$Id$")
+	public static final class ChangePageHandler extends AbstractHandler implements IHandler,
+			IExecutableExtension {
+
+		private PositionsPart part;
+
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			PositionsView view = (PositionsView) HandlerUtil.getActivePart(event);
+			if (view != null) {
+				switch (part) {
+				case HIERARCHICAL:
+					view.grouping = view.lastGrouping;
+					break;
+				case FLAT:
+					if (view.grouping != null) view.lastGrouping = view.grouping;
+					view.grouping = null;
+					break;
+				}
+				view.partActivated(part);
+			}
+			return null;
+		}
+
+		@Override
+		public void setInitializationData(IConfigurationElement config, String propertyName,
+				Object data) throws CoreException {
+			part = PositionsPart.valueOf((String) data);
+		}
+	}
+
+	/**
+	 * Toolbar filter box.
+	 */
+	@ClassVersion("$Id$")
+	public static final class ViewFilter extends WorkbenchWindowControlContribution {
+
+		@Override
+		protected Control createControl(Composite parent) {
+			Composite composite = new Composite(parent, SWT.NONE);
+			// insets keeps the box outline inside the toolbar area
+			composite.setLayout(new MigLayout("ins 1")); //$NON-NLS-1$
+			Label filterLabel = new Label(composite, SWT.NONE);
+			filterLabel.setText(Messages.POSITIONS_VIEW_FILTER_LABEL.getText());
+			FilterBox filter = new FilterBox(composite);
+			filter.addListener(new FilterBox.FilterChangeListener() {
+
+				@Override
+				public void filterChanged(FilterChangeEvent event) {
+					PositionsView view = getView();
+					if (view != null) view.setFilterText(event.getFilterText());
+				}
+			});
+			return composite;
+		}
+	}
+
 	private final EnumMap<PositionsPart, IPageBookViewPage> mPartsToPages = new EnumMap<PositionsPart, IPageBookViewPage>(
 			PositionsPart.class);
+	private Grouping[] grouping;
+	private Grouping[] lastGrouping = new Grouping[] { Grouping.Symbol, Grouping.Account };
+	private String filterText = ""; //$NON-NLS-1$
 
 	@Override
 	protected boolean isImportant(IWorkbenchPart part) {
-		// We don't care about the active part, but this could be one of our
-		// dummy parts
+		// We don't care about the active workbench part, just dummy parts "activated" by this view
 		return part instanceof PositionsPart;
+	}
+
+	@Override
+	public PositionsViewPage getCurrentPage() {
+		return (PositionsViewPage) super.getCurrentPage();
 	}
 
 	@Override
@@ -118,7 +207,7 @@ public class PositionsView extends PageBookView {
 
 	private PositionsPart getDefaultPart() {
 		// TODO: use preferences
-		return PositionsPart.TABLE;
+		return PositionsPart.FLAT;
 	}
 
 	@Override
@@ -146,12 +235,11 @@ public class PositionsView extends PageBookView {
 	private IPageBookViewPage createPage(final PositionsPart part) {
 		final IPageBookViewPage page;
 		switch (part) {
-		case TABLE:
+		case FLAT:
 			page = new PositionsViewTablePage(this);
 			break;
-		case TREE:
-			// TODO: implement tree
-			page = new PositionsViewTablePage(this);
+		case HIERARCHICAL:
+			page = new PositionsViewTreePage(this);
 			break;
 		default:
 			throw new AssertionError("Invalid part"); //$NON-NLS-1$
@@ -161,6 +249,48 @@ public class PositionsView extends PageBookView {
 		page.createControl(getPageBook());
 		mPartsToPages.put(part, page);
 		return page;
+	}
+
+	@Override
+	protected void showPageRec(PageRec pageRec) {
+		super.showPageRec(pageRec);
+		getCurrentPage().setFilterText(getFilterText());
+	}
+
+	private void setFilterText(String filterText) {
+		this.filterText = filterText;
+		getCurrentPage().setFilterText(filterText);
+	}
+	
+	String getFilterText() {
+		return filterText;
+	}
+
+	Grouping[] getGrouping() {
+		return grouping;
+	}
+
+	void setGrouping(Grouping[] grouping) {
+		if (!Arrays.equals(this.grouping, grouping)) {
+			this.grouping = grouping;
+			partActivated(PositionsPart.HIERARCHICAL);
+		}
+	}
+
+	/**
+	 * Convenience method to get the active positions view instance.
+	 * 
+	 * @return the active PositionsView instance, or null if there is either no active part or the
+	 *         active part is not a PositionsView
+	 */
+	static PositionsView getView() {
+		IWorkbenchWindow active = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		if (active == null) return null;
+		IWorkbenchPage page = active.getActivePage();
+		if (page == null) return null;
+		IWorkbenchPart part = page.getActivePart();
+		if (!(part instanceof PositionsView)) return null;
+		return (PositionsView) part;
 	}
 
 }
