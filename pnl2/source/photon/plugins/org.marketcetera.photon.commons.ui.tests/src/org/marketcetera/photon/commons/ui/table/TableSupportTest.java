@@ -1,4 +1,4 @@
-package org.marketcetera.photon.internal.strategy.table;
+package org.marketcetera.photon.commons.ui.table;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +10,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.junit.Test;
+import org.marketcetera.photon.commons.ui.table.TableConfiguration;
+import org.marketcetera.photon.commons.ui.table.TableSupport;
 
 
 /* $License$ */
@@ -18,7 +20,7 @@ import org.junit.Test;
  * Test {@link TableSupport}.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: TableSupportTest.java 10229 2008-12-09 21:48:48Z klim $
  * @since 1.0.0
  */
 public class TableSupportTest {
