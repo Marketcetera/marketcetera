@@ -1,0 +1,71 @@
+<%require 'bigdecimal'%>
+
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Trades", :action_name => "View Trade", :top_level_controller => 'trades' } %>
+<h1>View Trade: <span><%= @trade.summary %></span></h1>
+
+<form action="">
+    <fieldset>
+        <div class="form_left">
+            <label for="m_symbol_root" class="view_background">Symbol</label>
+            <div id="m_symbol_root" class="data view_data"><%=df @trade.tradeable_m_symbol_root %></div>
+
+            <label for="trade_quantity" class="view_background">Quantity</label>
+            <div id="trade_quantity" class="data view_data"><%=df @trade.send('quantity') %></div>
+            
+            <label for="price_per_share" class="view_background">Price Per Share</label>
+            <div id="price_per_share" class="data view_data"><%=df @trade.price_per_share.to_s %></div>
+
+            <label for="trade_trade_type" class="view_background">Trade type</label>
+            <div id="trade_trade_type" class="data view_data"><%=df get_human_trade_type(@trade.trade_type) %></div>
+
+            <label for="strategy" class="view_background">Strategy</label>
+            <div id="strategy" class="data view_data"><%=df @trade.strategy %></div>
+        </div>
+        
+        <div class="form_right">
+            <label for="side" class="view_background">Side</label>
+            <div id="side" class="data view_data"><%=df Side.get_human_side(@trade.side.to_s) %></div>
+            
+            <label for="trade_date" class="view_background">Trade Date</label>
+            <div id="trade_date" class="data view_data"><%=df @trade.journal_post_date_local_TZ %></div>
+            
+            <label for="total_commission" class="view_background">Total Commission</label>
+            <div id="total_commission" class="data view_data"><%=df @trade.send('total_commission') %></div>
+            
+            <label for="asset_type" class="view_background">Asset Type</label>
+            <div id="asset_type" class="data view_data"><%=df @trade.tradeable.class %></div>
+        </div>
+        <div class="clear"></div>
+        <label for="view_trade_comment" class="view_background">Comment</label>
+        <div id="view_trade_comment" class="data view_data"><%=df @trade.send('comment') %></div>
+        <% if(!@trade.imported_fix_msg.nil?) %>
+            <div class="clear"></div>
+            <label for="view_imported_fix_message" class="view_background">Original Imported FIX Message</label>
+            <div id="view_imported_fix_message" class="data view_data"><%=h @trade.send('imported_fix_msg').gsub("\001", " ") %></div>
+        <% end %>
+    </fieldset>
+</form>
+
+<h2>Accounting</h2>
+<table>
+    <tr>
+    <th>Sub-account</th><th>Debits</th><th>Credits</th>
+    <th/>
+    </tr>
+<% for posting in @trade.journal.postings 
+     posting_quantity = posting.quantity
+     accounting_account_type = get_debit_or_credit(posting_quantity, posting.sub_account.sub_account_type.accounting_account_type)
+     %>
+    <tr>
+    <td><%= (accounting_account_type == :credit ? '&nbsp;&nbsp;&nbsp;&nbsp;' : '' ) %>
+    <%=df posting.sub_account.sub_account_type.description %> </td>
+    <%if (accounting_account_type == :credit) %><td/><%end%>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=df fn(display_non_zero_value(BigDecimal(posting_quantity.abs.to_s)), 2) %> </td>
+    <%if (accounting_account_type == :debit) %><td/><%end%>
+    <td><%=df posting.currency.alpha_code%></td>
+    </tr>
+<% end %>
+</table>
+<div class="clear"></div>
+<%= button_to "Edit", {:action => 'edit', :id => @trade}, {:class => "submit floatright"} %>

@@ -1,0 +1,25 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Reports", :action_name => "List Trades", :top_level_controller => 'queries' } %>
+<%  tradeDesc = ""
+    if(!@symbol_str.blank?)
+        tradeDesc += " for #{@symbol_str}"
+    end
+    if(!@nickname.blank?)
+        tradeDesc += " in account [#{@nickname}]"
+    end
+    if(!@from_date.blank? && !@to_date.blank?)
+        tradeDesc += " from #{@from_date} to #{@to_date}"
+    else
+        tradeDesc += " for all dates"
+    end
+ -%>
+<h1>List Trades<%= tradeDesc %></h1>
+
+<%= render :partial => 'trades/trade_list_display' %>
+
+<%= pagination_links(@trade_pages,
+    :params => { "from_date" => @from_date , "to_date" => @to_date, "m_symbol_root" => @symbol_str, "nickname" => @nickname,
+                 "all_dates" => ((@from_date.nil?) ? "yes" : "no") } ) %>
+
+<%= button_to 'Search again', {:action => :index}, {:class => "submit floatright"} %>
+
