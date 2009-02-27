@@ -128,13 +128,13 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         if (lastTradePrice != null) {
             unrealizedPL = unrealizedCost.getPL(lastTradePrice);
             tradingPL = tradingCost.getPL(lastTradePrice);
-            totalPL = positionPL.add(tradingPL);
+            totalPL = realizedPL.add(unrealizedPL);
         }
         PositionMetricsImpl positionMetrics = new PositionMetricsImpl(position, positionPL,
                 tradingPL, realizedPL, unrealizedPL, totalPL);
         if (SLF4JLoggerProxy.isDebugEnabled(this)) {
             // Theoretically, both ways of calculating total PL should give the same results
-            if (totalPL.compareTo(unrealizedPL.add(realizedPL)) != 0) {
+            if (totalPL.compareTo(positionPL.add(tradingPL)) != 0) {
                 SLF4JLoggerProxy.debug(this, MessageFormat.format(
                         "There is a discrepancy in the total PL.\n{0}", positionMetrics)); //$NON-NLS-1$
             }

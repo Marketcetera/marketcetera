@@ -12,55 +12,63 @@ import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.util.concurrent.Lock;
 
 /* $License$ */
 
 /**
- * View which shows filled orders. 
+ * View which shows filled orders.
  * 
  * @author gmiller
  * @author michael.lossos@softwaregoodness.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class FillsView
-    extends AbstractFIXMessagesView
-{
+@ClassVersion("$Id$")//$NON-NLS-1$
+public class FillsView extends AbstractFIXMessagesView {
 	public static final String ID = "org.marketcetera.photon.views.FillsView"; //$NON-NLS-1$
+
 	@Override
 	protected String getViewID() {
 		return ID;
 	}
 
 	@Override
-	protected void initializeToolBar(IToolBarManager inTheToolBarManager)
-	{
-	    super.initializeToolBar(inTheToolBarManager);
+	protected void initializeToolBar(IToolBarManager inTheToolBarManager) {
+		super.initializeToolBar(inTheToolBarManager);
 		inTheToolBarManager.add(new ContributionItem() {
 			@Override
 			public void fill(ToolBar parent, int index) {
 				new Text(parent, SWT.BORDER);
 			}
 		});
-        inTheToolBarManager.add(new OpenAdditionalViewAction(getViewSite().getWorkbenchWindow(),
-                                                             FILLS_VIEW_LABEL.getText(),
-                                                             ID));
+		inTheToolBarManager.add(new OpenAdditionalViewAction(getViewSite().getWorkbenchWindow(),
+				FILLS_VIEW_LABEL.getText(), ID));
 		inTheToolBarManager.update(true);
 	}
+
 	public EventList<ReportHolder> extractList(TradeReportsHistory input) {
 		return input.getFillsList();
 	}
+
 	@Override
-	public void setFocus()
-	{
+	public void setFocus() {
 	}
-    /* (non-Javadoc)
-     * @see org.marketcetera.photon.views.AbstractFIXMessagesView#getMessageList(org.marketcetera.messagehistory.FIXMessageHistory)
-     */
-    @Override
-    protected FilterList<ReportHolder> getMessageList(TradeReportsHistory inHistory)
-    {
-        return new FilterList<ReportHolder>(inHistory.getFillsList(),
-                                             getFilterMatcherEditor());
-    }
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.marketcetera.photon.views.AbstractFIXMessagesView#getMessageList(org.marketcetera.
+	 * messagehistory.FIXMessageHistory)
+	 */
+	@Override
+	protected FilterList<ReportHolder> getMessageList(TradeReportsHistory inHistory) {
+		EventList<ReportHolder> fills = inHistory.getFillsList();
+		Lock readLock = fills.getReadWriteLock().readLock();
+		readLock.lock();
+		try {
+			return new FilterList<ReportHolder>(fills, getFilterMatcherEditor());
+		} finally {
+			readLock.unlock();
+		}
+	}
 }

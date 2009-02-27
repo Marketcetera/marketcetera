@@ -27,7 +27,6 @@ public class EventListContentProvider<T> implements IStructuredContentProvider, 
 		}
 	}
 
-	@SuppressWarnings("unchecked") //SWTThreadProxyEventList is not parameterized //$NON-NLS-1$
 	public void dispose() {
 		if (swtList != null){
 			swtList.removeListEventListener(this);
