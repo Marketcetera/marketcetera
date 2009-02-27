@@ -18,6 +18,7 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.FunctionList.Function;
 import ca.odell.glazedlists.matchers.Matcher;
+import ca.odell.glazedlists.util.concurrent.Lock;
 
 /* $License$ */
 
@@ -39,8 +40,14 @@ public class PositionEngineFactory {
      * @return a position engine
      */
     public static PositionEngine create(EventList<Trade> trades) {
-        FilterList<Trade> validTrades = new FilterList<Trade>(trades, new ValidationMatcher());
-        return new PositionEngineImpl(validTrades);
+        Lock readLock = trades.getReadWriteLock().readLock();
+        readLock.lock();
+        try {
+            FilterList<Trade> validTrades = new FilterList<Trade>(trades, new ValidationMatcher());
+            return new PositionEngineImpl(validTrades);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**
@@ -51,10 +58,16 @@ public class PositionEngineFactory {
      * @return a position engine
      */
     public static PositionEngine createFromReports(EventList<ReportBase> reports) {
-        FilterList<ReportBase> fills = new FilterList<ReportBase>(reports, new FillMatcher());
-        FunctionList<ReportBase, Trade> trades = new FunctionList<ReportBase, Trade>(fills,
-                new TradeFunction());
-        return create(trades);
+        Lock readLock = reports.getReadWriteLock().readLock();
+        readLock.lock();
+        try {
+            FilterList<ReportBase> fills = new FilterList<ReportBase>(reports, new FillMatcher());
+            FunctionList<ReportBase, Trade> trades = new FunctionList<ReportBase, Trade>(fills,
+                    new TradeFunction());
+            return create(trades);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**
@@ -65,9 +78,15 @@ public class PositionEngineFactory {
      * @return a position engine
      */
     public static PositionEngine createFromReportHolders(EventList<ReportHolder> holders) {
-        FunctionList<ReportHolder, ReportBase> reports = new FunctionList<ReportHolder, ReportBase>(
-                holders, new ReportExtractor());
-        return createFromReports(reports);
+        Lock readLock = holders.getReadWriteLock().readLock();
+        readLock.lock();
+        try {
+            FunctionList<ReportHolder, ReportBase> reports = new FunctionList<ReportHolder, ReportBase>(
+                    holders, new ReportExtractor());
+            return createFromReports(reports);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**

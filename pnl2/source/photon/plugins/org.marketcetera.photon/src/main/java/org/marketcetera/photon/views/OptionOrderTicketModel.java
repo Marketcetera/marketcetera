@@ -21,7 +21,6 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
-import quickfix.field.OpenClose;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.PutOrCall;
@@ -34,9 +33,10 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
+import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.UniqueList;
-import ca.odell.glazedlists.impl.ThreadSafeList;
 
 /* $License$ */
 
@@ -69,7 +69,7 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 	private final OptionDateHelper optionDateHelper = new OptionDateHelper();
 
 	private final OptionSpecifierMatcherEditor optionMatcher = new OptionSpecifierMatcherEditor();
-	private final ThreadSafeList<OptionContractData> cachedOptionList = new ThreadSafeList<OptionContractData>(new BasicEventList<OptionContractData>());
+	private final TransformedList<OptionContractData, OptionContractData> cachedOptionList = GlazedLists.threadSafeList(new BasicEventList<OptionContractData>());
 	private final FilterList<OptionContractData> filteredOptionList = new FilterList<OptionContractData>(cachedOptionList, optionMatcher);
 	private boolean updatingOptionInfo = false;
 

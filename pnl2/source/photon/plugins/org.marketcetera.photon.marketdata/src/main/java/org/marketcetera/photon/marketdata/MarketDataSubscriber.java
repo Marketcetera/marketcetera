@@ -17,25 +17,28 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public abstract class MarketDataSubscriber implements EventListener {
 
-	private final String mSymbol;
+	private final String[] mSymbols;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param symbol symbol for market data request
+	 * @param symbols symbols for market data request
 	 */
-	public MarketDataSubscriber(String symbol) {
-		Assert.isLegal(StringUtils.isNotBlank(symbol));
-		mSymbol = symbol;
+	public MarketDataSubscriber(String... symbols) {
+		Assert.isLegal(symbols.length > 0);
+		for (String symbol : symbols) {
+			Assert.isLegal(StringUtils.isNotBlank(symbol));			
+		}
+		mSymbols = symbols;
 	}
 
 	/**
-	 * Returns the symbol for the market data request.
+	 * Returns the symbols for the market data request.
 	 * 
-	 * @return the symbol for the market data request
+	 * @return the symbols for the market data request
 	 */
-	public final String getSymbol() {
-		return mSymbol;
+	public final String[] getSymbols() {
+		return mSymbols;
 	}
 
 	/**

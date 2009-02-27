@@ -2,18 +2,15 @@ package org.marketcetera.photon;
 
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
-import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.marketcetera.photon.actions.BrokerNotificationListenerTest;
 import org.marketcetera.photon.marketdata.OptionContractDataTest;
 import org.marketcetera.photon.marketdata.OptionMessageHolderTest;
 import org.marketcetera.photon.parser.LexerTest;
 import org.marketcetera.photon.parser.OrderFormatterTest;
 import org.marketcetera.photon.parser.ParserTest;
+import org.marketcetera.photon.preferences.PreferenceInitializerTest;
 import org.marketcetera.photon.quickfix.QuickFIXTest;
 import org.marketcetera.photon.ui.ChooseColumnsMenuTest;
 import org.marketcetera.photon.ui.databinding.FormTextObservableValueTest;
@@ -42,18 +39,7 @@ import org.marketcetera.photon.views.StockOrderTicketXSWTTest;
 
 public class TS_Photon {
 	public static Test suite() throws Exception {
-		TestSuite suite = new TestSuite(){
-
-			@Override
-			public void run(TestResult result) {
-				// Running this suite in Photon with logging causes a the process to hang when the Photon
-				// Console fills up.  This is a temporary workaround, see EG-153 for details.
-				BasicConfigurator.resetConfiguration();
-				Logger.getRootLogger().setLevel(Level.OFF);
-				super.run(result);
-			}
-			
-		};
+		TestSuite suite = new TestSuite();
 		
 		// photon
 		suite.addTestSuite(OrderManagerTest.class);
@@ -114,6 +100,7 @@ public class TS_Photon {
 
 		suite.addTest(new JUnit4TestAdapter(MessagesTest.class));
 		suite.addTest(new JUnit4TestAdapter(TimeOfDayTest.class));
+		suite.addTest(new JUnit4TestAdapter(PreferenceInitializerTest.class));
 
         return suite; 
 	}
