@@ -39,7 +39,7 @@ import quickfix.field.OrdStatus;
 import quickfix.field.SendingTime;
 import quickfix.field.Text;
 import quickfix.field.TransactTime;
-import ca.odell.glazedlists.DebugList;
+import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
@@ -103,7 +103,7 @@ public class TradeReportsHistory {
 
     public TradeReportsHistory(FIXMessageFactory messageFactory) {
         this.mMessageFactory = messageFactory;
-        mAllMessages = new DebugList<ReportHolder>();
+        mAllMessages = new BasicEventList<ReportHolder>();
         mReadLock = mAllMessages.getReadWriteLock().readLock();
         mWriteLock = mAllMessages.getReadWriteLock().writeLock();
         mReadOnlyAllMessages = GlazedLists.readOnlyList(mAllMessages);
@@ -137,7 +137,6 @@ public class TradeReportsHistory {
 
         mOriginalOrderACKs = new HashMap<OrderID, ReportHolder>();
         mOrderIDToGroupMap = new HashMap<OrderID, OrderID>();
-        ((DebugList<ReportHolder>) mAllMessages).setLockCheckingEnabled(true);
     }
 
     /**
