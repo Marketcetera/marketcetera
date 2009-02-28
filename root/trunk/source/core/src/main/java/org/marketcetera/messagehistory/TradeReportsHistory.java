@@ -9,10 +9,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -74,7 +70,7 @@ public class TradeReportsHistory {
 
     private final FilterList<ReportHolder> mLatestExecutionReportsList;
 
-    private FilterList<ReportHolder> mLatestBrokerExecutionReportsList;
+    private final FilterList<ReportHolder> mLatestBrokerExecutionReportsList;
 
     private final FilterList<ReportHolder> mLatestMessageList;
 
@@ -86,17 +82,13 @@ public class TradeReportsHistory {
 
     private final Map<OrderID, OrderID> mOrderIDToGroupMap;
 
+    private final Set<ReportID> mUniqueReportIds = new HashSet<ReportID>();
+
     private final FIXMessageFactory mMessageFactory;
 
-    /**
-     * Synchronizes access to the base all messages list and other derived data structures. We are
-     * not using the lock provided by EventList since the lists are publicly accessible.
-     */
-    private final ReadWriteLock mListLock = new ReentrantReadWriteLock();
-    
-    private final Lock mReadLock = mListLock.readLock();
-    
-    private final Lock mWriteLock = mListLock.writeLock();
+    private final ca.odell.glazedlists.util.concurrent.Lock mReadLock;
+
+    private final ca.odell.glazedlists.util.concurrent.Lock mWriteLock;
 
     /**
      * Queue of incoming reports than could not be processed immediately due to an in progress reset
@@ -105,15 +97,15 @@ public class TradeReportsHistory {
     private final Queue<ReportBase> mQueuedReports = new LinkedList<ReportBase>();
 
     /**
-     * Synchronizes access to mQueuedReports
+     * Indicates that the queue should be used instead of waiting to add reports directly
      */
-    private final ReentrantLock mQueueLock = new ReentrantLock();
-
-    private Set<ReportID> mUniqueReportIds = new HashSet<ReportID>();
+    private boolean mQueueMessages = false;
 
     public TradeReportsHistory(FIXMessageFactory messageFactory) {
         this.mMessageFactory = messageFactory;
         mAllMessages = new BasicEventList<ReportHolder>();
+        mReadLock = mAllMessages.getReadWriteLock().readLock();
+        mWriteLock = mAllMessages.getReadWriteLock().writeLock();
         mReadOnlyAllMessages = GlazedLists.readOnlyList(mAllMessages);
         mReadOnlyFillMessages = GlazedLists.readOnlyList(new FilterList<ReportHolder>(mAllMessages,
                 new ReportFillMatcher()));
@@ -159,32 +151,39 @@ public class TradeReportsHistory {
      * @throws Exception if reportsRetriever throws an exception
      */
     public void resetMessages(Callable<ReportBase[]> reportsRetriever) throws Exception {
+        // queue new incoming messages
+        synchronized (mQueuedReports) {
+            mQueueMessages = true;
+        }
+        // acquire write lock to prevent all access to lists in the pipeline
         mWriteLock.lock();
         try {
+            // clear the list and supporting data structures
             mAllMessages.clear();
             mUniqueReportIds.clear();
             mOriginalOrderACKs.clear();
             mOrderIDToGroupMap.clear();
+            // retrieve new reports and add them
             ReportBase[] reports = new ReportBase[0];
             reports = reportsRetriever.call();
             for (ReportBase report : reports) {
                 internalAddIncomingMessage(report);
             }
         } finally {
-            mQueueLock.lock();
             try {
-                for (ReportBase report : mQueuedReports) {
-                    internalAddIncomingMessage(report);
+                // flush the queue
+                synchronized (mQueuedReports) {
+                    try {
+                        for (ReportBase report : mQueuedReports) {
+                            internalAddIncomingMessage(report);
+                        }
+                    } finally {
+                        mQueueMessages = false;
+                        mQueuedReports.clear();
+                    }
                 }
             } finally {
-                // unlock list first so additional messages are guaranteed to be added
                 mWriteLock.unlock();
-                try {
-                    // this ensure queue is ready for next attempt
-                    mQueuedReports.clear();
-                } finally {
-                    mQueueLock.unlock();
-                }
             }
         }
     }
@@ -192,118 +191,113 @@ public class TradeReportsHistory {
 	/**
      * Adds a new report to the base list. Duplicates are ignored.
      * 
-     * The report may not be added immediately if a reset is in progress. In this case, it will be
+     * The report might not be added immediately if a reset is in progress. In this case, it will be
      * queued until the reset has completed.
      * 
      * @param inReport
      */
     public void addIncomingMessage(ReportBase inReport) {
         // wait if queue is being emptied
-        mQueueLock.lock();
-        // after lock is acquired, either the list will be available
-        // for modification, or it will be locked and the queue 
-        // will be ready
-        try {
-            if (mWriteLock.tryLock()) {
-                try {
-                    internalAddIncomingMessage(inReport);
-                } finally {
-                    mWriteLock.unlock();
-                }
-            } else {
+        synchronized (mQueuedReports) {
+            if (mQueueMessages) {
                 mQueuedReports.add(inReport);
+            } else {
+                internalAddIncomingMessage(inReport);
             }
-        } finally {
-            mQueueLock.unlock();
         }
     }
 
     private void internalAddIncomingMessage(ReportBase inReport) {
-        // check for duplicates
-        ReportID uniqueID = inReport.getReportID();
-        if (uniqueID == null) {
-            SLF4JLoggerProxy.debug(this, "Recieved report without report id: {}", inReport); //$NON-NLS-1$
-        } else {
-            if (mUniqueReportIds.contains(uniqueID)) {
-                SLF4JLoggerProxy.debug(this, "Skipping duplicate report: {}", inReport); //$NON-NLS-1$
-                return;
+        mWriteLock.lock();
+        try {
+            // check for duplicates
+            ReportID uniqueID = inReport.getReportID();
+            if (uniqueID == null) {
+                SLF4JLoggerProxy.debug(this, "Recieved report without report id: {}", inReport); //$NON-NLS-1$
             } else {
-                mUniqueReportIds.add(uniqueID);
-            }
-        }
-        if(SLF4JLoggerProxy.isDebugEnabled(this) &&
-                inReport.getSendingTime() != null) {
-            long sendingTime =0;
-            sendingTime = inReport.getSendingTime().getTime();
-            long systemTime = System.currentTimeMillis();
-            double diff = (sendingTime-systemTime)/1000.0;
-            if(Math.abs(diff) > 1) {
-                            SLF4JLoggerProxy.debug(this,
-                                    "{}: sendingTime v systemTime: {}",  //$NON-NLS-1$
-                                    Thread.currentThread().getName(), diff);
-            }
-        }
-        updateOrderIDMappings(inReport);
-        OrderID groupID = getGroupID(inReport);
-        ReportHolder messageHolder = new ReportHolder(inReport, groupID);
-
-        // The first message that comes in with a specific order id gets stored in a map.  This
-        // map is used by #getFirstReport(String) to facilitate CancelReplace
-        if (inReport instanceof ExecutionReport
-                && inReport.getOrderID() != null) {
-            OrderID id = inReport.getOrderID();
-            OrderStatus status = inReport.getOrderStatus();
-            if (Originator.Server == ((ExecutionReport) inReport)
-                    .getOriginator()
-                    && (status == OrderStatus.PendingNew || status == OrderStatus.PendingReplace)) {
-               if (!mOriginalOrderACKs.containsKey(id)) {
-                    mOriginalOrderACKs.put(id, messageHolder);
+                if (mUniqueReportIds.contains(uniqueID)) {
+                    SLF4JLoggerProxy.debug(this, "Skipping duplicate report: {}", inReport); //$NON-NLS-1$
+                    return;
+                } else {
+                    mUniqueReportIds.add(uniqueID);
                 }
             }
-        }
-
-        mAllMessages.add(messageHolder);
-        if (inReport instanceof OrderCancelReject &&
-                inReport.getOrderID() != null &&
-                inReport.getOrderStatus() != null){
-            // Add a new execution report to the stream to update the order status, using the values from the
-            // previous execution report.
-            ReportBase executionReport = getReport(mLatestBrokerExecutionReportsList, inReport.getOrderID());
-            Message newExecutionReport = mMessageFactory.createMessage(MsgType.EXECUTION_REPORT);
-            Message oldExecutionReport = null;
-            if(executionReport instanceof HasFIXMessage) {
-                oldExecutionReport = ((HasFIXMessage)executionReport).getMessage();
-                FIXMessageUtil.fillFieldsFromExistingMessage(newExecutionReport, oldExecutionReport, false);
-                newExecutionReport.setField(new OrdStatus(
-                        inReport.getOrderStatus().getFIXValue()));
-                if (inReport.getText() != null){
-                    newExecutionReport.setField(new Text(inReport.getText()));
-                }
-                if (newExecutionReport.isSetField(ExecType.FIELD)){
-                    newExecutionReport.setField(new ExecType(ExecType.ORDER_STATUS));
-                }
-                if (newExecutionReport.isSetField(TransactTime.FIELD)) {
-                    newExecutionReport.setField(new TransactTime(new Date())); //i18n_datetime
-                }
-                newExecutionReport.getHeader().setField(new SendingTime(new Date())); //i18n_datetime
-
-                newExecutionReport.getHeader().removeField(MsgSeqNum.FIELD);
-                newExecutionReport.removeField(ExecID.FIELD);
-                newExecutionReport.removeField(LastShares.FIELD);
-                newExecutionReport.removeField(LastPx.FIELD);
-                newExecutionReport.removeField(LastSpotRate.FIELD);
-                newExecutionReport.removeField(LastForwardPoints.FIELD);
-                newExecutionReport.removeField(LastMkt.FIELD);
-
-                try {
-                    mAllMessages.add(new ReportHolder(
-                            Factory.getInstance().createExecutionReport(
-                                    newExecutionReport,
-                                    inReport.getBrokerID(), Originator.Server), groupID));
-                } catch (MessageCreationException e) {
-                    throw new RuntimeException(Messages.SHOULD_NEVER_HAPPEN_IN_ADDINCOMINGMESSAGE.getText(), e);
+            if(SLF4JLoggerProxy.isDebugEnabled(this) &&
+                    inReport.getSendingTime() != null) {
+                long sendingTime =0;
+                sendingTime = inReport.getSendingTime().getTime();
+                long systemTime = System.currentTimeMillis();
+                double diff = (sendingTime-systemTime)/1000.0;
+                if(Math.abs(diff) > 1) {
+                                SLF4JLoggerProxy.debug(this,
+                                        "{}: sendingTime v systemTime: {}",  //$NON-NLS-1$
+                                        Thread.currentThread().getName(), diff);
                 }
             }
+            updateOrderIDMappings(inReport);
+            OrderID groupID = getGroupID(inReport);
+            ReportHolder messageHolder = new ReportHolder(inReport, groupID);
+    
+            // The first message that comes in with a specific order id gets stored in a map.  This
+            // map is used by #getFirstReport(String) to facilitate CancelReplace
+            if (inReport instanceof ExecutionReport
+                    && inReport.getOrderID() != null) {
+                OrderID id = inReport.getOrderID();
+                OrderStatus status = inReport.getOrderStatus();
+                if (Originator.Server == ((ExecutionReport) inReport)
+                        .getOriginator()
+                        && (status == OrderStatus.PendingNew || status == OrderStatus.PendingReplace)) {
+                   if (!mOriginalOrderACKs.containsKey(id)) {
+                        mOriginalOrderACKs.put(id, messageHolder);
+                    }
+                }
+            }
+    
+            mAllMessages.add(messageHolder);
+            if (inReport instanceof OrderCancelReject &&
+                    inReport.getOrderID() != null &&
+                    inReport.getOrderStatus() != null){
+                // Add a new execution report to the stream to update the order status, using the values from the
+                // previous execution report.
+                ReportBase executionReport = getReport(mLatestBrokerExecutionReportsList, inReport.getOrderID());
+                Message newExecutionReport = mMessageFactory.createMessage(MsgType.EXECUTION_REPORT);
+                Message oldExecutionReport = null;
+                if(executionReport instanceof HasFIXMessage) {
+                    oldExecutionReport = ((HasFIXMessage)executionReport).getMessage();
+                    FIXMessageUtil.fillFieldsFromExistingMessage(newExecutionReport, oldExecutionReport, false);
+                    newExecutionReport.setField(new OrdStatus(
+                            inReport.getOrderStatus().getFIXValue()));
+                    if (inReport.getText() != null){
+                        newExecutionReport.setField(new Text(inReport.getText()));
+                    }
+                    if (newExecutionReport.isSetField(ExecType.FIELD)){
+                        newExecutionReport.setField(new ExecType(ExecType.ORDER_STATUS));
+                    }
+                    if (newExecutionReport.isSetField(TransactTime.FIELD)) {
+                        newExecutionReport.setField(new TransactTime(new Date())); //i18n_datetime
+                    }
+                    newExecutionReport.getHeader().setField(new SendingTime(new Date())); //i18n_datetime
+    
+                    newExecutionReport.getHeader().removeField(MsgSeqNum.FIELD);
+                    newExecutionReport.removeField(ExecID.FIELD);
+                    newExecutionReport.removeField(LastShares.FIELD);
+                    newExecutionReport.removeField(LastPx.FIELD);
+                    newExecutionReport.removeField(LastSpotRate.FIELD);
+                    newExecutionReport.removeField(LastForwardPoints.FIELD);
+                    newExecutionReport.removeField(LastMkt.FIELD);
+    
+                    try {
+                        mAllMessages.add(new ReportHolder(
+                                Factory.getInstance().createExecutionReport(
+                                        newExecutionReport,
+                                        inReport.getBrokerID(), Originator.Server), groupID));
+                    } catch (MessageCreationException e) {
+                        throw new RuntimeException(Messages.SHOULD_NEVER_HAPPEN_IN_ADDINCOMINGMESSAGE.getText(), e);
+                    }
+                }
+            }
+        } finally {
+            mWriteLock.unlock();
         }
     }
 
