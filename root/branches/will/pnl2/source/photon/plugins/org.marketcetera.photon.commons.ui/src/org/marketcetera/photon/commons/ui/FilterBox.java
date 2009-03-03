@@ -60,7 +60,7 @@ public class FilterBox extends Composite {
 
 	private static void testNativeSearchField(Composite composite) {
 		if (useNativeSearchField == null) {
-			useNativeSearchField = Boolean.FALSE;
+			useNativeSearchField = false;
 			Text testText = null;
 			try {
 				testText = new Text(composite, SWT.SEARCH | SWT.CANCEL);
@@ -221,7 +221,7 @@ public class FilterBox extends Composite {
 		clearButton.setImage(inactiveImage);
 		clearButton.setBackground(composite.getDisplay().getSystemColor(
 				SWT.COLOR_LIST_BACKGROUND));
-		clearButton.setToolTipText("Clear");
+		clearButton.setToolTipText(Messages.FilterBox_clearButton_tooltip);
 		clearButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {

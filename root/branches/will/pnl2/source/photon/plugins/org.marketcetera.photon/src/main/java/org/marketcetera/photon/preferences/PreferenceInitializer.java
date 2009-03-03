@@ -5,11 +5,23 @@ import java.util.TimeZone;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonPreferences;
 import org.marketcetera.photon.TimeOfDay;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
+/**
+ * Initializes Photon preferences.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$")
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
 	@Override
@@ -18,6 +30,10 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		initializeTradingHistoryStartTime(prefs);
 	}
 
+	/**
+	 * Initializes the trading history start time preference.  This method is not intended to be
+	 * called externally except by tests.
+	 */
 	void initializeTradingHistoryStartTime(ScopedPreferenceStore prefs) {
 		TimeOfDay time = TimeOfDay.create(0, 0, 0, TimeZone.getDefault());
 		prefs.setDefault(PhotonPreferences.TRADING_HISTORY_START_TIME, time.toFormattedString());
@@ -32,7 +48,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 			try {
 				prefs.save();
 			} catch (IOException e) {
-				SLF4JLoggerProxy.debug(this, e, "Could not save preferences."); //$NON-NLS-1$
+				Messages.PREFERENCE_INITIALIZER_SAVE_FAILED.warn(this, e);
 			}
 		}
 	}

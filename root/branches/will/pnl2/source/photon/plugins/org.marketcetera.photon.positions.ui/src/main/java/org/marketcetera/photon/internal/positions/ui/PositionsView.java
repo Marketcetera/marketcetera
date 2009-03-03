@@ -1,5 +1,6 @@
 package org.marketcetera.photon.internal.positions.ui;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 
 import net.miginfocom.swt.MigLayout;
@@ -32,8 +33,6 @@ import org.marketcetera.core.position.Grouping;
 import org.marketcetera.photon.commons.ui.FilterBox;
 import org.marketcetera.photon.commons.ui.FilterBox.FilterChangeEvent;
 import org.marketcetera.util.misc.ClassVersion;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /* $License$ */
 
