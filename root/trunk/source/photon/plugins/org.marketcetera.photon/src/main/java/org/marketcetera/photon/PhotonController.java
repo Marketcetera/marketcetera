@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
@@ -14,7 +15,6 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.messagehistory.MessageVisitor;
 import org.marketcetera.messagehistory.TradeReportsHistory;
-import org.marketcetera.photon.messaging.ClientFeedService;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.trade.BrokerID;
@@ -32,7 +32,6 @@ import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
-import org.osgi.util.tracker.ServiceTracker;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -61,18 +60,7 @@ public class PhotonController
 
 	private TradeReportsHistory fixMessageHistory;
 
-	private final ServiceTracker mClientServiceTracker;
-
 	public static final BrokerID DEFAULT_BROKER = null; 
-
-	/** Creates a new instance of OrderManager.  Also gets a reference to
-	 *  the Client service using a {@link ServiceTracker}
-	 */
-	public PhotonController(){
-		mClientServiceTracker = new ServiceTracker(PhotonPlugin.getDefault().getBundleContext(),
-				ClientFeedService.class.getName(), null);
-		mClientServiceTracker.open();
-	}
 
 	public void setMessageHistory(TradeReportsHistory fixMessageHistory) 
 	{
@@ -266,10 +254,9 @@ public class PhotonController
 
 	public void sendOrder(Order inOrder) {
 		internalMainLogger.info(PHOTON_CONTROLLER_SENDING_MESSAGE.getText(inOrder.toString()));
-		ClientFeedService service = (ClientFeedService) mClientServiceTracker.getService();
-		if (service != null){
+		if (ClientManager.isInitialized()){
 			try {
-				Client client = service.getClient();
+				Client client = ClientManager.getInstance();
 				if(inOrder instanceof OrderSingle) {
 					client.sendOrder((OrderSingle) inOrder);
 				} else if(inOrder instanceof OrderReplace) {

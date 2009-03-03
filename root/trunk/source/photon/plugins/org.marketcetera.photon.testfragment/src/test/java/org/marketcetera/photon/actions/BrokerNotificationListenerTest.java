@@ -14,8 +14,7 @@ import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.photon.actions.ReconnectClientJob.BrokerNotificationListener;
-import org.marketcetera.photon.messaging.ClientFeedService;
+import org.marketcetera.photon.actions.ReconnectServerJob.BrokerNotificationListener;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
@@ -35,14 +34,11 @@ public class BrokerNotificationListenerTest {
 		ISubscriber mockSubscriber = mock(ISubscriber.class);
 		stub(mockSubscriber.isInteresting(anyObject())).toReturn(true);
 		Client mockClient = mock(Client.class);
-		ClientFeedService mockService = mock(ClientFeedService.class);
-		stub(mockService.getClient()).toReturn(mockClient);
 		NotificationManager.getNotificationManager().subscribe(mockSubscriber);
 
 		BrokerStatus status = new BrokerStatus("abc",
 				new BrokerID("abc"), true);
-		BrokerNotificationListener fixture = new BrokerNotificationListener();
-		fixture.setService(mockService);
+		BrokerNotificationListener fixture = new BrokerNotificationListener(mockClient);
 		fixture.receiveBrokerStatus(status);
 
 		// have to wait since notifications happen in different thread

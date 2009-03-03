@@ -5,12 +5,13 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.impl.swt.SWTThreadProxyEventList;
+import ca.odell.glazedlists.swt.GlazedListsSWT;
 
 public class EventListContentProvider<T> implements IStructuredContentProvider, ListEventListener<T> {
-	SWTThreadProxyEventList swtList;
+	TransformedList<T, T> swtList;
 	private IndexedTableViewer viewer;
 	
 	public Object[] getElements(Object inputElement) {
@@ -26,7 +27,6 @@ public class EventListContentProvider<T> implements IStructuredContentProvider, 
 		}
 	}
 
-	@SuppressWarnings("unchecked") //SWTThreadProxyEventList is not parameterized //$NON-NLS-1$
 	public void dispose() {
 		if (swtList != null){
 			swtList.removeListEventListener(this);
@@ -45,7 +45,7 @@ public class EventListContentProvider<T> implements IStructuredContentProvider, 
 		if (newInput == null){
 			viewer.refresh();
 		} else {
-			swtList = new SWTThreadProxyEventList((EventList<T>) newInput, Display.getDefault());
+			swtList = GlazedListsSWT.swtThreadProxyList((EventList<T>) newInput, Display.getDefault());
 			swtList.addListEventListener(this);
 		}
 	}

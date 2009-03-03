@@ -24,7 +24,6 @@ import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.marketcetera.photon.actions.CancelAllOpenOrdersAction;
 import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
-import org.marketcetera.photon.actions.ReconnectClientAction;
 import org.marketcetera.photon.actions.SelectOptionMarketDataCommandAction;
 import org.marketcetera.photon.actions.WebHelpAction;
 import org.marketcetera.util.misc.ClassVersion;
@@ -109,8 +108,6 @@ public class ApplicationActionBarAdvisor
 
 	private IWorkbenchAction aboutAction;
 
-	private IAction reconnectClientAction;
-
 	private IWorkbenchAction focusCommandAction;
 
 	private WebHelpAction webHelpAction;
@@ -121,6 +118,8 @@ public class ApplicationActionBarAdvisor
 
 	private IWorkbenchAction selectOptionMarketDataCommandAction;
 
+	private CommandContributionItemParameter reconnectServerParameter;
+	
 	private CommandContributionItemParameter reconnectMarketDataParameter;
 	
 	/**
@@ -129,7 +128,8 @@ public class ApplicationActionBarAdvisor
 	 * using the new API need to reference the command id from plugin.xml. This value must 
 	 * be kept in synch.
 	 */
-	private static final String COMMAND_ID = "org.marketcetera.photon.reconnectMarketData"; //$NON-NLS-1$
+	private static final String RECONNECT_SERVER_COMMAND_ID = "org.marketcetera.photon.reconnectServer"; //$NON-NLS-1$
+	private static final String RECONNECT_MARKET_DATA_COMMAND_ID = "org.marketcetera.photon.reconnectMarketData"; //$NON-NLS-1$
 
 
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
@@ -182,10 +182,12 @@ public class ApplicationActionBarAdvisor
 //		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);  register(dynamicHelpAction);
         checkForUpdatesAction = new CheckForUpdatesAction(window);  register(checkForUpdatesAction);
 		aboutAction = ActionFactory.ABOUT.create(window); register(aboutAction);
-		reconnectClientAction = new ReconnectClientAction(window); register(reconnectClientAction);
-		reconnectMarketDataParameter = new CommandContributionItemParameter(window, null, COMMAND_ID, SWT.PUSH);
+		reconnectServerParameter = new CommandContributionItemParameter(window, null, RECONNECT_SERVER_COMMAND_ID, SWT.PUSH);
+		reconnectServerParameter.icon = PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_SERVER);
+		reconnectServerParameter.mnemonic = Messages.APPLICATION_ACTION_BAR_ADVISOR_RECONNECT_SERVER_MNEMONIC.getText();
+		reconnectMarketDataParameter = new CommandContributionItemParameter(window, null, RECONNECT_MARKET_DATA_COMMAND_ID, SWT.PUSH);
 		reconnectMarketDataParameter.icon = PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_QUOTE_FEED);
-		reconnectMarketDataParameter.mnemonic = "&e"; // entire menu should be externalized //$NON-NLS-1$
+		reconnectMarketDataParameter.mnemonic = Messages.APPLICATION_ACTION_BAR_ADVISOR_RECONNECT_MARKETDATA_MNEMONIC.getText();
 		cancelAllOpenOrdersAction = new CancelAllOpenOrdersAction(); register(cancelAllOpenOrdersAction);
 		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
 		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);
@@ -206,7 +208,7 @@ public class ApplicationActionBarAdvisor
 		// File menu
 		MenuManager menu = new MenuManager(Messages.ApplicationActionBarAdvisor_FileMenuName.getText(),
 				IWorkbenchActionConstants.M_FILE);
-		menu.add(reconnectClientAction);
+		menu.add(new CommandContributionItem(reconnectServerParameter));
 		menu.add(new CommandContributionItem(reconnectMarketDataParameter));
 		menu.add(cancelAllOpenOrdersAction);
 		menu.add(new Separator());
@@ -311,8 +313,7 @@ public class ApplicationActionBarAdvisor
 		//toolBar.add(viewSecurityCI);
 		ActionContributionItem focusCommandCI = new ActionContributionItem(focusCommandAction);
 		toolBar.add(focusCommandCI);
-		ActionContributionItem reconnectClientCI = new ActionContributionItem(reconnectClientAction);
-		toolBar.add(reconnectClientCI);
+		toolBar.add(new CommandContributionItem(reconnectServerParameter));
 		toolBar.add(new CommandContributionItem(reconnectMarketDataParameter));
 		ActionContributionItem cancelAllOpenOrdersCI = new ActionContributionItem(cancelAllOpenOrdersAction);
 		toolBar.add(cancelAllOpenOrdersCI);
