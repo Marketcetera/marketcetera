@@ -10,15 +10,24 @@ import java.util.HashMap;
 /* $License$ */
 /**
  * A Configuration that returns the {@link ClientLoginModule} as a
- * required module for any login configuration name.
+ * required module for the login configuration with the name
+ * {@link #REMOTING_LOGIN_DOMAIN} and delegates to another configuration for
+ * all other login configuration names.
  * <p>
  * This configuration is defined to be able to programmatically set up
  * JAAS authentication configuration for the broker embedded within
  * the remote receiver module.
  * <p>
- * This configuration delegates to the existing configuration if the
- * supplied login configuration domain does not match the one used
- * by the embedded broker. 
+ * If automatic JAAS Configuration is
+ * {@link ReceiverModuleMXBean#isSkipJAASConfiguration()} skipped, the
+ * following login configuration must be specified in the JAAS Configuration
+ * for the receiver module to work.
+ * <pre>
+ * remoting-amq-domain {
+ *    org.marketcetera.modules.remote.receiver.ClientLoginModule required;
+ * };
+ * </pre>
+ *
  *
  * @author anshul@marketcetera.com
  * @version $Id$

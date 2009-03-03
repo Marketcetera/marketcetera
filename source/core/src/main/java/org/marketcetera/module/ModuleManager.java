@@ -7,6 +7,10 @@ import javax.management.*;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
 
 /* $License$ */
@@ -63,18 +67,20 @@ public final class ModuleManager {
      * to load module providers.
      */
     public ModuleManager() {
-        mLoader = ServiceLoader.load(ModuleFactory.class,
-                getClass().getClassLoader());
+        this(ModuleManager.class.getClassLoader());
     }
 
     /**
      * Creates an instance that uses the supplied classloader to
-     * load module providers.
+     * load module providers. The supplied classloader is also set
+     * as the thread context classloader when the MXBean implementations of
+     * the module factories and instances are invoked.
      *
      * @param inClassLoader the classloader to use for loading module
      * providers.
      */
     public ModuleManager(ClassLoader inClassLoader) {
+        mClassLoader = inClassLoader;
         mLoader = ServiceLoader.load(ModuleFactory.class,
                 inClassLoader);
     }
@@ -460,7 +466,7 @@ public final class ModuleManager {
                 SLF4JLoggerProxy.info(this, mModules.toString());
                 // Supply this reference to the Sink module for sink listening to work
                 ((SinkModule)getModule(SinkModuleFactory.INSTANCE_URN)).setManager(this);
-                getMBeanServer().registerMBean(new ModuleManagerMXBeanImpl(this),
+                registerMXBean(new ModuleManagerMXBeanImpl(this),
                         new ObjectName(MODULE_MBEAN_NAME));
                 failed = false;
             } catch (ServiceConfigurationError e) {
@@ -1546,15 +1552,89 @@ public final class ModuleManager {
     private ObjectName registerMXBean(ModuleURN inURN, Object inMXBean)
             throws MXBeanOperationException {
         ObjectName objectName = inURN.toObjectName();
+        return registerMXBean(inMXBean, objectName);
+    }
+
+    /**
+     * Registers the supplied Object instance with the MBean server.
+     *
+     * @param inMXBean the module factory / instance.
+     * @param inObjectName The object name to use when registering the MBean
+     *
+     * @return the objectName of the registered bean
+     *
+     * @throws BeanRegistrationException if there were errors
+     * registering the bean.
+     */
+    private ObjectName registerMXBean(Object inMXBean, ObjectName inObjectName) 
+            throws BeanRegistrationException {
+        Set<Class<?>> intfs = new HashSet<Class<?>>();
+        for (Class<?> clazz = inMXBean.getClass();
+             !Object.class.equals(clazz);
+             clazz = clazz.getSuperclass()) {
+            
+            //We should need to only implement MXBean interfaces
+            //However there are other interfaces that are special for
+            //JMX, like NotificationEmitter, DynamicMBean, etc.
+            //And there might be more of such interfaces in the future
+            //Have the proxy implement all the interfaces, it's harmless
+            //for the interfaces that are not used by the MBeanServer.
+            intfs.addAll(Arrays.asList(clazz.getInterfaces()));
+        }
+        Object proxy = inMXBean;
+        if (!intfs.isEmpty()) {
+            proxy = Proxy.newProxyInstance(inMXBean.getClass().getClassLoader(),
+                    intfs.toArray(new Class<?>[intfs.size()]),
+                    new SetContextClassLoaderWrapper(inMXBean));
+        }
         try {
             //Register the factory with the mbean server
-            getMBeanServer().registerMBean(inMXBean, objectName);
+            getMBeanServer().registerMBean(proxy, inObjectName);
         } catch (JMException e) {
             throw new BeanRegistrationException(e,
                     new I18NBoundMessage1P(
-                            Messages.BEAN_REGISTRATION_ERROR, objectName));
+                            Messages.BEAN_REGISTRATION_ERROR, inObjectName));
         }
-        return objectName;
+        return inObjectName;
+    }
+
+    /**
+     * The invocation handler for each Module / Factory MX Bean. This
+     * invocation handler sets up the thread context classloader to be
+     * the same value as the classloader for the class Module / Factory
+     * delegated to.
+     */
+    private class SetContextClassLoaderWrapper
+            implements InvocationHandler {
+        @Override
+        public Object invoke(Object proxy, Method method,
+                             Object[] args) throws Throwable {
+            Thread thread = Thread.currentThread();
+            ClassLoader loader = thread.getContextClassLoader();
+            try {
+                thread.setContextClassLoader(ModuleManager.this.mClassLoader);
+                return method.invoke(mDelegate, args);
+            } catch(InvocationTargetException e) {
+                throw e.getCause();
+            } finally {
+                thread.setContextClassLoader(loader);
+            }
+        }
+
+        /**
+         * Creates an instance.
+         *
+         * @param inDelegate the MBean instance that needs to wrapped up.
+         * Cannot be null.
+         */
+        private SetContextClassLoaderWrapper(Object inDelegate) {
+            if(inDelegate == null) {
+                throw new NullPointerException();
+            }
+            mDelegate = inDelegate;
+        }
+
+        private final Object mDelegate;
     }
 
     /**
@@ -1849,6 +1929,10 @@ public final class ModuleManager {
      * providers
      */
     private final ServiceLoader<ModuleFactory> mLoader;
+    /**
+     * The classloader to use for loading providers.
+     */
+    private final ClassLoader mClassLoader;
     /**
      * The module configuration provider that provides default configuration
      * properties for module factories and instances.

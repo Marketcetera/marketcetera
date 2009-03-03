@@ -40,8 +40,6 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "user_login_error");   //$NON-NLS-1$
     static final I18NMessage0P ERROR_STARTING_MODULE =
             new I18NMessage0P(LOGGER, "error_starting_module");   //$NON-NLS-1$
-    static final I18NMessage0P ERROR_STOPPING_MODULE =
-            new I18NMessage0P(LOGGER, "error_stopping_module");   //$NON-NLS-1$
     static final I18NMessage0P START_FAIL_NO_URL =
             new I18NMessage0P(LOGGER, "start_fail_no_url");   //$NON-NLS-1$
     static final I18NMessage1P NULL_LEVEL_VALUE =
@@ -58,5 +56,6 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "user_login_log");   //$NON-NLS-1$
     static final I18NMessage1P USER_LOGOUT_LOG =
             new I18NMessage1P(LOGGER, "user_logout_log");   //$NON-NLS-1$
-
+    static final I18NMessage0P ERROR_STOPPING_MODULE_LOG =
+            new I18NMessage0P(LOGGER, "error_stopping_module_log");   //$NON-NLS-1$
 }

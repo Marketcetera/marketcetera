@@ -542,7 +542,7 @@ public class EmitterModuleTest extends ModuleTestBase {
             throws Exception {
         assertEquals(AttributeChangeNotification.ATTRIBUTE_CHANGE,
                 inNotify.getType());
-        assertEquals(TEST_INSTANCE_URN.toObjectName(),
+        assertEquals(TEST_INSTANCE_URN.toString(),
                 inNotify.getSource());
         assertTrue(inNotify.toString(),
                 inNotify instanceof AttributeChangeNotification);

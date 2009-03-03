@@ -145,7 +145,6 @@ class EmitterModule extends Module
             mContext  =
                     new ClassPathXmlApplicationContext(new String[]{
                             "remote-emitter-jms.xml"}, parent);  //$NON-NLS-1$
-            mContext.registerShutdownHook();
             mContext.start();
             MessagingDelegate delegate = (MessagingDelegate) mContext.getBean(
                     "delegate", MessagingDelegate.class);  //$NON-NLS-1$
@@ -170,7 +169,7 @@ class EmitterModule extends Module
             //Swallow the exception as it prevents the module from stopping.
             //If the receiver closed the connection from its end
             //this method always fails.
-            Messages.LOG_ERROR_STOPPING_MODULE.error(this, e, getURN());
+            Messages.LOG_ERROR_STOPPING_MODULE.warn(this, e, getURN());
         }
         if(isConnected) {
             sendConnectedChanged(isConnected, false);
@@ -250,7 +249,7 @@ class EmitterModule extends Module
         SLF4JLoggerProxy.debug(this, "Sending attrib changed from {} to {}",  //$NON-NLS-1$
                 inOldValue, inNewValue);
         mNotifySupport.sendNotification(new AttributeChangeNotification(
-                this,
+                getURN().toString(),
                 mSequence.getAndIncrement(),
                 System.currentTimeMillis(),
                 Messages.ATTRIB_CHANGE_NOTIFICATION.getText(),

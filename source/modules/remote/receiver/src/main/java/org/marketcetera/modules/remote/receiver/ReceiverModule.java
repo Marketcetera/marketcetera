@@ -111,7 +111,6 @@ public class ReceiverModule extends Module
             mContext  =
                     new ClassPathXmlApplicationContext(new String[]{
                             "remoting_server.xml"}, parent);  //$NON-NLS-1$
-            mContext.registerShutdownHook();
             mContext.start();
             mSender = (JmsTemplate) mContext.getBean("sender",  //$NON-NLS-1$
                     JmsTemplate.class);
@@ -128,7 +127,7 @@ public class ReceiverModule extends Module
         try {
             mContext.close();
         } catch (Exception e) {
-            throw new ModuleException(e, Messages.ERROR_STOPPING_MODULE);
+            Messages.ERROR_STOPPING_MODULE_LOG.warn(this, e);
         }
         mSender = null;
     }

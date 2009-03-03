@@ -30,7 +30,9 @@ public class JarClassLoaderTest {
      * Cleans up the jars in the testing directory.
      * This method can only be run before the test as attempts to delete
      * these files after the test fails as the classloader has these
-     * files opened and locked.
+     * files opened and locked. See the
+     * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5041014">
+     * bug report</a> for details on this issue.
      *
      * @throws I18NException if there were errors.
      */
