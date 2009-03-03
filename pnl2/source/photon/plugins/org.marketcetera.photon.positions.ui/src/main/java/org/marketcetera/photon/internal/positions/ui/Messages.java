@@ -51,4 +51,10 @@ public interface Messages {
 			LOGGER, "positions_table.unrealized_pl_column_heading"); //$NON-NLS-1$
 	static final I18NMessage0P POSITIONS_TABLE_TOTAL_PL_COLUMN_HEADING = new I18NMessage0P(
 			LOGGER, "positions_table.total_pl_column_heading"); //$NON-NLS-1$
+	static final I18NMessage0P GROUPING_CONTRIBUTION_ITEM_ACCOUNT_LABEL = new I18NMessage0P(
+			LOGGER, "grouping_contribution_item.account_label"); //$NON-NLS-1$
+	static final I18NMessage0P GROUPING_CONTRIBUTION_ITEM_SYMBOL_LABEL = new I18NMessage0P(
+			LOGGER, "grouping_contribution_item.symbol_label"); //$NON-NLS-1$
+	static final I18NMessage0P GROUPING_CONTRIBUTION_ITEM_TRADER_LABEL = new I18NMessage0P(
+			LOGGER, "grouping_contribution_item.trader_label"); //$NON-NLS-1$
 }

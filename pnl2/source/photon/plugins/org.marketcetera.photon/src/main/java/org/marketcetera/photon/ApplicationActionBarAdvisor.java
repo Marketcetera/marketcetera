@@ -184,10 +184,10 @@ public class ApplicationActionBarAdvisor
 		aboutAction = ActionFactory.ABOUT.create(window); register(aboutAction);
 		reconnectServerParameter = new CommandContributionItemParameter(window, null, RECONNECT_SERVER_COMMAND_ID, SWT.PUSH);
 		reconnectServerParameter.icon = PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_SERVER);
-		reconnectServerParameter.mnemonic = "R"; // entire menu should be externalized //$NON-NLS-1$
+		reconnectServerParameter.mnemonic = Messages.APPLICATION_ACTION_BAR_ADVISOR_RECONNECT_SERVER_MNEMONIC.getText();
 		reconnectMarketDataParameter = new CommandContributionItemParameter(window, null, RECONNECT_MARKET_DATA_COMMAND_ID, SWT.PUSH);
 		reconnectMarketDataParameter.icon = PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_QUOTE_FEED);
-		reconnectMarketDataParameter.mnemonic = "e"; // entire menu should be externalized //$NON-NLS-1$
+		reconnectMarketDataParameter.mnemonic = Messages.APPLICATION_ACTION_BAR_ADVISOR_RECONNECT_MARKETDATA_MNEMONIC.getText();
 		cancelAllOpenOrdersAction = new CancelAllOpenOrdersAction(); register(cancelAllOpenOrdersAction);
 		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
 		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);

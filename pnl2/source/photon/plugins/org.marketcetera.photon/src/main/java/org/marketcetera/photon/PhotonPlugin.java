@@ -151,9 +151,9 @@ public class PhotonPlugin
 		// Needed because the version of JRuby we're using doesn't play well
 		// with mutliple threads
 		// TODO: is this still needed??
-        System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+		System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        initMessageFactory();
+		initMessageFactory();
 		initTradeReportsHistory();
 		mPositionEngine = PositionEngineFactory.createFromReportHolders(mTradeReportsHistory.getAllMessagesList());
 		context.registerService(PositionEngine.class.getName(), mPositionEngine, null);
@@ -186,6 +186,7 @@ public class PhotonPlugin
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
+		mPositionEngine = null;
 	}
 
 	/**

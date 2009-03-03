@@ -37,9 +37,9 @@ public class GroupingContributionItem extends CompoundContributionItem {
 		// labels must be updated if grouping options change
 		assert Grouping.values().length == 3;
 		labels = new EnumMap<Grouping, String>(Grouping.class);
-		labels.put(Grouping.Account, "Account");
-		labels.put(Grouping.Symbol, "Symbol");
-		labels.put(Grouping.Trader, "Trader");
+		labels.put(Grouping.Account, Messages.GROUPING_CONTRIBUTION_ITEM_ACCOUNT_LABEL.getText());
+		labels.put(Grouping.Symbol, Messages.GROUPING_CONTRIBUTION_ITEM_SYMBOL_LABEL.getText());
+		labels.put(Grouping.Trader, Messages.GROUPING_CONTRIBUTION_ITEM_TRADER_LABEL.getText());
 	}
 
 	private final static class GroupingOption {

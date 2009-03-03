@@ -38,6 +38,10 @@ public interface Messages
                                                                                                    "ApplicationActionBarAdvisor_NavigationMenuName"); //$NON-NLS-1$
     public static I18NMessage0P ApplicationActionBarAdvisor_HelpMenuName = new I18NMessage0P(LOGGER,
                                                                                              "ApplicationActionBarAdvisor_HelpMenuName"); //$NON-NLS-1$
+    public static I18NMessage0P APPLICATION_ACTION_BAR_ADVISOR_RECONNECT_SERVER_MNEMONIC = new I18NMessage0P(
+            LOGGER, "application_action_bar_advisor.reconnect_server_mnemonic"); //$NON-NLS-1$
+    public static I18NMessage0P APPLICATION_ACTION_BAR_ADVISOR_RECONNECT_MARKETDATA_MNEMONIC = new I18NMessage0P(
+            LOGGER, "application_action_bar_advisor.reconnect_marketdata_mnemonic"); //$NON-NLS-1$
     public static I18NMessage0P MainConsole_Name = new I18NMessage0P(LOGGER,
                                                                      "MainConsole_Name"); //$NON-NLS-1$
     public static I18NMessage0P MarketDataConsole_Name = new I18NMessage0P(LOGGER,
@@ -515,4 +519,6 @@ public interface Messages
 			"server_status.connected.tooltip"); //$NON-NLS-1$
 	public static I18NMessage0P SERVER_STATUS_ERROR_TOOLTIP = new I18NMessage0P(LOGGER,
 			"server_status.error.tooltip"); //$NON-NLS-1$
+	public static I18NMessage0P PREFERENCE_INITIALIZER_SAVE_FAILED = new I18NMessage0P(LOGGER,
+			"preference_initializer.save_failed"); //$NON-NLS-1$
 }
