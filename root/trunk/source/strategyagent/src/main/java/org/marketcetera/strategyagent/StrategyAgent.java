@@ -205,6 +205,12 @@ public class StrategyAgent extends ApplicationBase {
         ctx.registerShutdownHook();
         mManager = (ModuleManager) ctx.getBean("moduleManager",  //$NON-NLS-1$
                 ModuleManager.class);
+        //Set the context classloader to the jar classloader so that
+        //all modules have the thread context classloader set to the same
+        //value as the classloader that loaded them.
+        ClassLoader loader = (ClassLoader) ctx.getBean("moduleLoader",  //$NON-NLS-1$
+                ClassLoader.class);
+        Thread.currentThread().setContextClassLoader(loader);
     }
 
     /**

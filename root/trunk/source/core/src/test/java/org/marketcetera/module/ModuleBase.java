@@ -19,7 +19,7 @@ public abstract class ModuleBase extends Module {
     }
 
     @Override
-    public void preStop() throws ModuleException {
+    protected void preStop() throws ModuleException {
         mStopInvoked = true;
     }
 

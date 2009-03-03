@@ -343,8 +343,13 @@
 </p>
 <h3>MXBeans</h3>
 <p>
-    The module framework, simply exports the Module Factory / Instance
-    implementations as MXBeans. After that, any JMX client can invoke
+    The module framework, exports the Module Factory / Instance
+    implementations as MXBeans if the instance implements an interface
+    that is a MXBean interface. The Instance is wrapped in a proxy object
+    before it's registered with the MBean server. The proxy object ensures
+    that the thread context classloader is set for every method invocation
+    on the MXBean implementation.
+    After that, any JMX client can invoke
     operations on these MXBeans, register for their notifications or
     read / write their attributes. It's the responsibility of the
     Module factory / instance implementation to ensure if any of these
@@ -363,6 +368,14 @@
     here is to have the MXBean implement {@link javax.management.NotificationEmitter}
     instead and delegate to a private <code>NotificationBroadcasterSupport</code>
     instance instead.
+</p>
+<h4>Thread Context Classloader</h4>
+<p>
+    The module manager sets the thread context classloader when handling
+    MBean method invocations on the module factories and instances to the
+    same classloader as the one supplied to its constructor. This is useful
+    when certain module implementations depend on libraries that need the
+    thread context classloader set.
 </p>
 <h2>Sink Module</h2>
 <p>

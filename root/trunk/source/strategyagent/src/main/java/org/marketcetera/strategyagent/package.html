@@ -117,6 +117,28 @@ Syntax:
     {@link org.marketcetera.module.ModuleManagerMXBean#refresh()} API via
     JMX.
 </p>
+<h3>Classloading</h3>
+<p>
+    The strategy agent uses a {@link java.net.URLClassLoader} instance to
+    load provider classes from the <code>modules/jars</code> sub-directory.
+    Since a custom classloader is used, the system classloader cannot find
+    any of the provider classes.
+</p>
+<p>
+    This is usually not a problem unless the provider code depends on the thread's
+    context classloader to be set to a classloader that is able to load all
+    the provider classes. Many third party libraries do depend on the thread context
+    classloader value to be able to correctly load classes.
+</p>
+<p>
+    The strategy agent sets the thread context classloader to the custom
+    classloader that is used to load the providers before loading any of the
+    provider classes. This ensures that the provider code is invoked with
+    the thread context classloader set to the same classloader that loaded it.
+    Moreover, the module manager ensures that the thread context classloader
+    is set to the custom classloader when any module manager MXBean operations
+    or factory / instance MXBean operations are invoked.
+</p>
 <h3>Module Configuration</h3>
 <p>
     The Strategy Agent uses the

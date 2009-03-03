@@ -4,11 +4,11 @@
  * Remote Emitter Module capable of emitting data received from
  * Remote Receiver Modules.
  * <p>
- * See {@link EmitterFactory} for provider details.
+ * See {@link org.marketcetera.modules.remote.emitter.EmitterFactory} for provider details.
  * <p>
- * See {@link EmitterModule} for details on the module instances.
+ * See {@link org.marketcetera.modules.remote.emitter.EmitterModule} for details on the module instances.
  * <p>
- * See {@link EmitterModuleMXBean} for details on the management interface
+ * See {@link org.marketcetera.modules.remote.emitter.EmitterModuleMXBean} for details on the management interface
  * for the module instances.
  *
  * @author anshul@marketcetera.com
