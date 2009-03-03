@@ -248,7 +248,7 @@ public class ParserTest extends FIXVersionedTestCase {
 		// this will break when the year changes...
 		verifyNewOptionOrder(result, Side.SELL_SHORT, new BigDecimal("1234"),
 				"IBM", new BigDecimal("1.8"), TimeInForce.DAY, null,
-				new BigDecimal("25"), "200901", PutOrCall.CALL);
+				new BigDecimal("25"), "201001", PutOrCall.CALL);
 
 		order = "S 0 IBM 09MAR1.0P 0.0";
 		command = aParser.parseNewOrder(order);

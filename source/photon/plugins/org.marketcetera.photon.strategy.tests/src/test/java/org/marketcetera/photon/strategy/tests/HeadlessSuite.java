@@ -6,7 +6,6 @@ import org.marketcetera.photon.internal.strategy.MessagesTest;
 import org.marketcetera.photon.internal.strategy.StrategyPropertyTesterTest;
 import org.marketcetera.photon.internal.strategy.StrategyTest;
 import org.marketcetera.photon.internal.strategy.StrategyValidationTest;
-import org.marketcetera.photon.internal.strategy.table.TableSupportTest;
 
 /* $License$ */
 
@@ -22,8 +21,7 @@ import org.marketcetera.photon.internal.strategy.table.TableSupportTest;
 	StrategyTest.class,
 	MessagesTest.class,
 	StrategyPropertyTesterTest.class,
-	StrategyValidationTest.class,
-	TableSupportTest.class
+	StrategyValidationTest.class
 })
 public class HeadlessSuite {
 

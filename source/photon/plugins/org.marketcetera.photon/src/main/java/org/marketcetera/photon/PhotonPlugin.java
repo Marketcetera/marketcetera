@@ -34,6 +34,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.position.PositionEngine;
+import org.marketcetera.core.position.PositionEngineFactory;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
@@ -118,6 +120,8 @@ public class PhotonPlugin
 	
 	private BrokerManager mBrokerManager;
 
+    private PositionEngine mPositionEngine;
+
 	/**
 	 * The constructor.
 	 */
@@ -147,10 +151,12 @@ public class PhotonPlugin
 		// Needed because the version of JRuby we're using doesn't play well
 		// with mutliple threads
 		// TODO: is this still needed??
-        System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+		System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        initMessageFactory();
+		initMessageFactory();
 		initTradeReportsHistory();
+		mPositionEngine = PositionEngineFactory.createFromReportHolders(mTradeReportsHistory.getAllMessagesList());
+		context.registerService(PositionEngine.class.getName(), mPositionEngine, null);
 		initPhotonController();
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 	}
@@ -180,6 +186,7 @@ public class PhotonPlugin
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
+		mPositionEngine = null;
 	}
 
 	/**

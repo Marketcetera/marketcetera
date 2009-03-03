@@ -301,12 +301,10 @@ public class FIXMessageDetailView
 				eventList);
 
 		if (comparatorChooser != null) {
-			comparatorChooser.removeSortIndicators();
 			comparatorChooser.dispose();
 			comparatorChooser = null;
 		}
-		comparatorChooser = new TableComparatorChooser<FIXMessageDetailTableRow>(
-				messageTable, labelProvider, sortedList, false);
+		comparatorChooser = TableComparatorChooser.install(messageTable, labelProvider, sortedList, false);
 		// This code sets an initial sort order and is currently disabled.
 		// final int initialSortIndex =
 		// FIXMessageDetailColumnType.Tag.getIndex();

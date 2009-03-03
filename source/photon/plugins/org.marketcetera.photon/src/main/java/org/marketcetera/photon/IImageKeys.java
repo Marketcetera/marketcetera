@@ -25,7 +25,7 @@ public interface IImageKeys {
 	public static final String GROUP = "icons/silk/chart_organization.png"; //$NON-NLS-1$
 	public static final String ACCOUNT = "icons/silk/coins.png"; //$NON-NLS-1$
 	public static final String CANCEL = "icons/silk/cancel.png"; //$NON-NLS-1$
-	public static final String RECONNECT_CLIENT_HISTORY = "icons/silk/plugin_go.png"; //$NON-NLS-1$
+	public static final String RECONNECT_SERVER = "icons/silk/plugin_go.png"; //$NON-NLS-1$
 	public static final String RECONNECT_QUOTE_FEED = "icons/silk/blue_plugin_go.png"; //$NON-NLS-1$
 	public static final String BROWSER_BACK = "icons/silk/arrow_left.png"; //$NON-NLS-1$
 	public static final String BROWSER_FORWARD = "icons/silk/arrow_right.png"; //$NON-NLS-1$

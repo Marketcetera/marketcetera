@@ -1,6 +1,5 @@
 package org.marketcetera.photon.views;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.eclipse.jface.action.Action;
@@ -223,10 +222,6 @@ public abstract class MessagesViewBase<T>
 		if (sortByColumn != null && sortByColumn.length() > 0 && chooser != null)
 		{
 			chooser.fromString(sortByColumn);
-			List<Integer> sortingCols = chooser.getSortingColumns();
-			for (int col : sortingCols) {
-				chooser.updateSortIndicatorIcon(col);
-			}
 		}
 	}
 
@@ -307,10 +302,7 @@ public abstract class MessagesViewBase<T>
 				chooser.dispose();
 				chooser = null;
 			}
-			chooser = new TableComparatorChooser<T>(
-								messageTable, 
-								tableFormat,
-								extractedList, false);
+			chooser = TableComparatorChooser.install(messagesViewer.getTable(), tableFormat, extractedList, false);
 			restoreSortByColumn(viewStateMemento);
 		}
 		messagesViewer.setInput(extractedList);
