@@ -1,22 +1,14 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.util.test.TestCaseBase;
-import org.marketcetera.persist.PersistTestBase;
 import org.marketcetera.trade.*;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import quickfix.Message;
-import quickfix.field.OrigClOrdID;
-import quickfix.field.ClOrdID;
-import quickfix.field.SendingTime;
 
 /* $License$ */
 /**
@@ -64,5 +56,9 @@ public class ReportHistoryTest extends ReportsTestBase {
         //Now select position
         assertBigDecimalEquals(position, getPosition(after, symbol));
         assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, symbol));
+        //Test positions
+        assertThat(getPositions(after), allOf(isOfSize(1),
+                hasEntry(sym(symbol), position.setScale(SCALE))));
+        assertThat(getPositions(before), isOfSize(0));
     }
 }

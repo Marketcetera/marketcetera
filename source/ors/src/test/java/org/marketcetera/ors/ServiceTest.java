@@ -50,6 +50,9 @@ public class ServiceTest
         assertEquals(BigDecimal.ZERO,s.getPositionAsOf
                      (getORSClientContext(),new Date(),TEST_SYMBOL));
 
+        assertTrue(s.getPositionsAsOf
+                     (getORSClientContext(),new Date()).getMap().isEmpty());
+
         String id=s.getNextOrderID(getORSClientContext());
         assertNotNull(id);
         assertFalse(id.equals(s.getNextOrderID(getORSClientContext())));

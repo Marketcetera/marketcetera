@@ -12,6 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.ServiceBase;
 import org.marketcetera.util.ws.wrappers.RemoteException;
+import org.marketcetera.util.ws.wrappers.MapWrapper;
 
 /**
  * The application's web services.
@@ -78,6 +79,23 @@ public interface Service
         (@WebParam(name= "context")ClientContext context,
          @WebParam(name= "date")Date date,
          @WebParam(name= "symbol")MSymbol symbol)
+        throws RemoteException;
+
+    /**
+     * Returns all the open positions based on reports,
+     * generated and received up until the supplied date in UTC.
+     *
+     * @param date The date, in UTC.
+     *
+     * @return The open positions.
+     *
+     * @throws RemoteException Thrown if the operation cannot be
+     * completed.
+     */
+
+    MapWrapper<MSymbol,BigDecimal> getPositionsAsOf
+        (@WebParam(name= "context")ClientContext context,
+         @WebParam(name= "date")Date date)
         throws RemoteException;
 
     /**

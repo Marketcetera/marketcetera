@@ -2,16 +2,19 @@ package org.marketcetera.ors.history;
 
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.MSymbol;
 import org.junit.Test;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
+import org.hamcrest.Matcher;
 
-import java.util.Date;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 import java.math.BigDecimal;
 
 /* $License$ */
 /**
- * Verifies {@link ReportHistoryServices#getPositionAsOf(java.util.Date , org.marketcetera.trade.MSymbol)} 
+ * Verifies {@link ReportHistoryServices#getPositionAsOf(java.util.Date , org.marketcetera.trade.MSymbol)}
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -22,6 +25,7 @@ public class PositionsTest extends ReportsTestBase {
     public void noRecords() throws Exception {
         assertBigDecimalEquals(BigDecimal.ZERO,
                 getPosition(new Date(), "what"));
+        assertThat(getPositions(new Date()), isOfSize(0));
     }
 
     @Test
@@ -29,10 +33,14 @@ public class PositionsTest extends ReportsTestBase {
         createBackgroundNoise();
         BigDecimal value = new BigDecimal("135.79");
         Date before = new Date();
-        createAndSaveER("o1", null, "s1", Side.Buy, value);
+        createAndSaveER("o1", null, TEST_SYMBOL, Side.Buy, value);
         Date after = new Date();
-        assertBigDecimalEquals(value, getPosition(after, "s1"));
-        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, "s1"));
+        assertBigDecimalEquals(value, getPosition(after, TEST_SYMBOL));
+        assertThat(getPositions(after), allOf(isOfSize(3),
+                hasEntry(sym(TEST_SYMBOL), value.setScale(SCALE)),
+                hasAandB()));
+        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, TEST_SYMBOL));
+        assertThat(getPositions(before), allOf(isOfSize(2), hasAandB()));
     }
 
     @Test
@@ -40,10 +48,9 @@ public class PositionsTest extends ReportsTestBase {
         createBackgroundNoise();
         BigDecimal value = new BigDecimal("135.79");
         Date before = new Date();
-        createAndSaveER("o1", null, "s1", Side.Sell, value);
+        createAndSaveER("o1", null, TEST_SYMBOL, Side.Sell, value);
         Date after = new Date();
-        assertBigDecimalEquals(value.negate(), getPosition(after, "s1"));
-        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, "s1"));
+        verifyShortPosition(value, before, after);
     }
 
     @Test
@@ -51,10 +58,9 @@ public class PositionsTest extends ReportsTestBase {
         createBackgroundNoise();
         BigDecimal value = new BigDecimal("135.79");
         Date before = new Date();
-        createAndSaveER("o1", null, "s1", Side.SellShort, value);
+        createAndSaveER("o1", null, TEST_SYMBOL, Side.SellShort, value);
         Date after = new Date();
-        assertBigDecimalEquals(value.negate(), getPosition(after, "s1"));
-        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, "s1"));
+        verifyShortPosition(value, before, after);
     }
 
     @Test
@@ -62,11 +68,35 @@ public class PositionsTest extends ReportsTestBase {
         createBackgroundNoise();
         BigDecimal value = new BigDecimal("135.79");
         Date before = new Date();
-        createAndSaveER("o1", null, "s1", Side.SellShortExempt, value);
+        createAndSaveER("o1", null, TEST_SYMBOL, Side.SellShortExempt, value);
         Date after = new Date();
-        assertBigDecimalEquals(value.negate(), getPosition(after, "s1"));
-        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, "s1"));
+        verifyShortPosition(value, before, after);
     }
+
+    @Test
+    public void positionExcludedWhenZero() throws Exception {
+        createBackgroundNoise();
+        BigDecimal value = new BigDecimal("34895.434");
+        Date before = new Date();
+        //Establish a long position
+        createAndSaveER("o1", null, TEST_SYMBOL, Side.Buy, value);
+        Date after1 = new Date();
+        //Now cancel it out with a short position
+        createAndSaveER("o2", null, TEST_SYMBOL, Side.Sell, value);
+        Date after2 = new Date();
+        //Verify initial position
+        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, TEST_SYMBOL));
+        assertThat(getPositions(before), allOf(isOfSize(2), hasAandB()));
+        //verify the long position 
+        assertBigDecimalEquals(value, getPosition(after1, TEST_SYMBOL));
+        assertThat(getPositions(after1), allOf(isOfSize(3),
+                hasEntry(sym(TEST_SYMBOL), value.setScale(SCALE)),
+                hasAandB()));
+        //verify that the final position zeros out and disappears
+        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(after2, TEST_SYMBOL));
+        assertThat(getPositions(after2), allOf(isOfSize(2), hasAandB()));
+    }
+
     @Test
     public void chainReportsBuyAndSell() throws Exception {
         Date before = new Date();
@@ -79,17 +109,35 @@ public class PositionsTest extends ReportsTestBase {
         createChainReportsForSellShortExemptA();
         Date after4 = new Date();
 
-        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, "A"));
-        assertBigDecimalEquals(POSITION_BUY_A,
+        BigDecimal position = BigDecimal.ZERO;
+        assertBigDecimalEquals(position, getPosition(before, "A"));
+        assertThat(getPositions(before), isOfSize(0));
+
+        position = POSITION_BUY_A;
+        assertBigDecimalEquals(position,
                 getPosition(after1, "A"));
-        assertBigDecimalEquals(POSITION_BUY_A.subtract(POSITION_SELL_A),
+        assertThat(getPositions(after1), allOf(isOfSize(1),
+                hasEntry(sym("A"), position.setScale(SCALE))));
+
+        position = POSITION_BUY_A.subtract(POSITION_SELL_A);
+        assertBigDecimalEquals(position,
                 getPosition(after2, "A"));
-        assertBigDecimalEquals(POSITION_BUY_A.subtract(POSITION_SELL_A).
-                subtract(POSITION_SELL_SHORT_A), getPosition(after3, "A"));
-        assertBigDecimalEquals(POSITION_BUY_A.subtract(POSITION_SELL_A).
-                subtract(POSITION_SELL_SHORT_A).subtract(POSITION_SELL_SHORTE_A),
+        assertThat(getPositions(after2), allOf(isOfSize(1),
+                hasEntry(sym("A"), position.setScale(SCALE))));
+
+        position = POSITION_BUY_A.subtract(POSITION_SELL_A).
+                subtract(POSITION_SELL_SHORT_A);
+        assertBigDecimalEquals(position, getPosition(after3, "A"));
+        assertThat(getPositions(after3), allOf(isOfSize(1),
+                hasEntry(sym("A"), position.setScale(SCALE))));
+
+        position = FINAL_POSITION_A;
+        assertBigDecimalEquals(position,
                 getPosition(after4, "A"));
+        assertThat(getPositions(after4), allOf(isOfSize(1),
+                hasEntry(sym("A"), position.setScale(SCALE))));
     }
+
     @Test
     public void chainReportsInterLeaved() throws Exception {
         Date before = new Date();
@@ -110,37 +158,75 @@ public class PositionsTest extends ReportsTestBase {
 
         assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, "A"));
         assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, "B"));
+        assertThat(getPositions(before), isOfSize(0));
 
-        assertBigDecimalEquals(POSITION_BUY_A, getPosition(after1, "A"));
-        assertBigDecimalEquals(POSITION_SELL_B1.negate(), getPosition(after1, "B"));
+        BigDecimal positionA = POSITION_BUY_A;
+        BigDecimal positionB = POSITION_SELL_B1.negate();
+        assertBigDecimalEquals(positionA, getPosition(after1, "A"));
+        assertBigDecimalEquals(positionB, getPosition(after1, "B"));
+        assertThat(getPositions(after1), allOf(isOfSize(2),
+                hasEntry(sym("A"), positionA.setScale(SCALE)),
+                hasEntry(sym("B"), positionB.setScale(SCALE))));
 
-        assertBigDecimalEquals(POSITION_BUY_A.subtract(POSITION_SELL_A),
+        positionA = POSITION_BUY_A.subtract(POSITION_SELL_A);
+        positionB = POSITION_SELL_B1.negate().
+                subtract(POSITION_SELL_B2);
+        assertBigDecimalEquals(positionA,
                 getPosition(after2, "A"));
-        assertBigDecimalEquals(POSITION_SELL_B1.negate().
-                subtract(POSITION_SELL_B2), getPosition(after2, "B"));
-        
-        assertBigDecimalEquals(POSITION_BUY_A.subtract(POSITION_SELL_A).
-                subtract(POSITION_SELL_SHORT_A), getPosition(after3, "A"));
-        assertBigDecimalEquals(POSITION_SELL_B1.negate().
-                subtract(POSITION_SELL_B2).add(POSITION_BUY_B1),
-                getPosition(after3, "B"));
+        assertBigDecimalEquals(positionB, getPosition(after2, "B"));
+        assertThat(getPositions(after2), allOf(isOfSize(2),
+                hasEntry(sym("A"), positionA.setScale(SCALE)),
+                hasEntry(sym("B"), positionB.setScale(SCALE))));
 
-        assertBigDecimalEquals(POSITION_BUY_A.subtract(POSITION_SELL_A).
-                subtract(POSITION_SELL_SHORT_A).subtract(POSITION_SELL_SHORTE_A),
+        positionA = POSITION_BUY_A.subtract(POSITION_SELL_A).
+                subtract(POSITION_SELL_SHORT_A);
+        positionB = POSITION_SELL_B1.negate().
+                subtract(POSITION_SELL_B2).add(POSITION_BUY_B1);
+        assertBigDecimalEquals(positionA, getPosition(after3, "A"));
+        assertBigDecimalEquals(positionB, getPosition(after3, "B"));
+        assertThat(getPositions(after3), allOf(isOfSize(2),
+                hasEntry(sym("A"), positionA.setScale(SCALE)),
+                hasEntry(sym("B"), positionB.setScale(SCALE))));
+
+        positionA = FINAL_POSITION_A;
+        positionB = POSITION_SELL_B1.negate().
+                subtract(POSITION_SELL_B2).add(POSITION_BUY_B1).
+                subtract(POSITION_SELL_SHORT_B);
+        assertBigDecimalEquals(positionA,
                 getPosition(after4, "A"));
-        assertBigDecimalEquals(POSITION_SELL_B1.negate().
-                subtract(POSITION_SELL_B2).add(POSITION_BUY_B1).
-                subtract(POSITION_SELL_SHORT_B),
+        assertBigDecimalEquals(positionB,
                 getPosition(after4, "B"));
+        assertThat(getPositions(after4), allOf(isOfSize(2),
+                hasEntry(sym("A"), positionA.setScale(SCALE)),
+                hasEntry(sym("B"), positionB.setScale(SCALE))));
 
-        assertBigDecimalEquals(POSITION_BUY_A.subtract(POSITION_SELL_A).
-                subtract(POSITION_SELL_SHORT_A).subtract(POSITION_SELL_SHORTE_A),
-                getPosition(after5, "A"));
-        assertBigDecimalEquals(POSITION_SELL_B1.negate().
-                subtract(POSITION_SELL_B2).add(POSITION_BUY_B1).
-                subtract(POSITION_SELL_SHORT_B).add(POSITION_BUY_B2),
-                getPosition(after5, "B"));
+        positionA = FINAL_POSITION_A;
+        positionB = FINAL_POSITION_B;
+        assertBigDecimalEquals(positionA, getPosition(after5, "A"));
+        assertBigDecimalEquals(positionB, getPosition(after5, "B"));
+        assertThat(getPositions(after5), allOf(isOfSize(2),
+                hasEntry(sym("A"), positionA.setScale(SCALE)),
+                hasEntry(sym("B"), positionB.setScale(SCALE))));
     }
+
+    private void verifyShortPosition(BigDecimal inValue,
+                                     Date inBefore,
+                                     Date inAfter) throws Exception {
+        assertBigDecimalEquals(inValue.negate(),
+                getPosition(inAfter, TEST_SYMBOL));
+        assertThat(getPositions(inAfter), allOf(isOfSize(3),
+                hasEntry(sym(TEST_SYMBOL), inValue.negate().setScale(SCALE)),
+                hasAandB()));
+        assertBigDecimalEquals(BigDecimal.ZERO,
+                getPosition(inBefore, TEST_SYMBOL));
+        assertThat(getPositions(inBefore), allOf(isOfSize(2), hasAandB()));
+    }
+
+    private static Matcher<Map<MSymbol, BigDecimal>> hasAandB() {
+        return allOf(hasEntry(sym("A"), FINAL_POSITION_A.setScale(SCALE)),
+                hasEntry(sym("B"), FINAL_POSITION_B.setScale(SCALE)));
+    }
+
     private List<ExecutionReport> createChainReportsForBuyA() throws Exception {
         //A simple chain of buy orders for A
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
@@ -227,4 +313,10 @@ public class PositionsTest extends ReportsTestBase {
     private static final BigDecimal POSITION_BUY_B1 = new BigDecimal("900");
     private static final BigDecimal POSITION_BUY_B2 = new BigDecimal("743.43");
     private static final BigDecimal POSITION_SELL_SHORT_B = new BigDecimal("280.101");
+    private static final BigDecimal FINAL_POSITION_A = POSITION_BUY_A.subtract(POSITION_SELL_A).
+                subtract(POSITION_SELL_SHORT_A).subtract(POSITION_SELL_SHORTE_A);
+    private static final BigDecimal FINAL_POSITION_B = POSITION_SELL_B1.negate().
+                subtract(POSITION_SELL_B2).add(POSITION_BUY_B1).
+                subtract(POSITION_SELL_SHORT_B).add(POSITION_BUY_B2);
+    private static final String TEST_SYMBOL = "s1";
 }

@@ -13,6 +13,8 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /* $License$ */
 /**
@@ -32,17 +34,34 @@ import java.util.List;
         query = "select e.rootID from ExecutionReportSummary e " +
                 "where e.orderID = :orderID")
 
-@SqlResultSetMapping(name = "positionForSymbol",
-        columns = {@ColumnResult(name = "position")})
+@SqlResultSetMappings({
+    @SqlResultSetMapping(name = "positionForSymbol",
+            columns = {@ColumnResult(name = "position")}),
+    @SqlResultSetMapping(name = "allPositions",
+            columns = {
+                @ColumnResult(name = "symbol"),
+                @ColumnResult(name = "position")
+                    })
+        })
 
-@NamedNativeQuery(name = "positionForSymbol",query = "select " +
-        "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-        "from execreports e " +
-        "where e.symbol = :symbol " +
-        "and e.sendingTime <= :sendingTime " +
-        "and e.id = " +
-        "(select max(s.id) from execreports s where s.rootID = e.rootID)",
-        resultSetMapping = "positionForSymbol")
+@NamedNativeQueries({
+    @NamedNativeQuery(name = "positionForSymbol",query = "select " +
+            "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "from execreports e " +
+            "where e.symbol = :symbol " +
+            "and e.sendingTime <= :sendingTime " +
+            "and e.id = " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID)",
+            resultSetMapping = "positionForSymbol"),
+    @NamedNativeQuery(name = "allPositions",query = "select " +
+            "e.symbol as symbol, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "from execreports e " +
+            "where e.sendingTime <= :sendingTime " +
+            "and e.id = " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
+            "group by e.symbol having position <> 0",
+            resultSetMapping = "allPositions")
+        })
 
 class ExecutionReportSummary extends EntityBase {
 
@@ -68,6 +87,7 @@ class ExecutionReportSummary extends EntityBase {
         BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
             private static final long serialVersionUID = 1L;
 
+            @Override
             public BigDecimal execute(EntityManager em, PersistContext context) {
                 Query query = em.createNamedQuery(
                         "positionForSymbol");  //$NON-NLS-1$
@@ -79,6 +99,51 @@ class ExecutionReportSummary extends EntityBase {
             }
         }, null);
         return position == null? BigDecimal.ZERO: position;
+
+    }
+    /**
+     * Gets the current aggregate positions for all the symbols based on execution
+     * reports received before the supplied time.
+     * <p>
+     * Buy trades result in positive positions. All other kinds of trades
+     * result in negative positions.
+     *
+     * @param inDate the time. execution reports with sending time values less
+     * than this time are included in this calculation.
+     *
+     * @return the aggregate position for the symbol.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position.
+     */
+    static Map<MSymbol, BigDecimal> getPositionsAsOf(final Date inDate)
+            throws PersistenceException {
+        return executeRemote(new Transaction<Map<MSymbol, BigDecimal>>() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Map<MSymbol, BigDecimal> execute(EntityManager em,
+                                                    PersistContext context) {
+                Query query = em.createNamedQuery(
+                        "allPositions");  //$NON-NLS-1$
+                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+                        TemporalType.TIMESTAMP);
+                HashMap<MSymbol, BigDecimal> map =
+                        new HashMap<MSymbol, BigDecimal>();
+                List list = query.getResultList();
+                Object[] columns;
+                for(Object o: list) {
+                    columns = (Object[]) o;
+                    //2 columns
+                    if(columns.length > 1) {
+                        //first one is the symbol, second one is the position
+                        map.put(new MSymbol((String)columns[0]), (BigDecimal) columns[1]);
+                    }
+                }
+                return map;
+            }
+        }, null);
 
     }
 
@@ -205,7 +270,7 @@ class ExecutionReportSummary extends EntityBase {
         mSide = inSide;
     }
 
-    @Column(precision = 15, scale = 5, nullable = false)
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE, nullable = false)
     BigDecimal getCumQuantity() {
         return mCumQuantity;
     }
@@ -214,7 +279,7 @@ class ExecutionReportSummary extends EntityBase {
         mCumQuantity = inCumQuantity;
     }
 
-    @Column(precision = 15, scale = 5, nullable = false)
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE, nullable = false)
     BigDecimal getAvgPrice() {
         return mAvgPrice;
     }
@@ -223,7 +288,7 @@ class ExecutionReportSummary extends EntityBase {
         mAvgPrice = inAvgPrice;
     }
 
-    @Column(precision = 15, scale = 5)
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE)
     BigDecimal getLastQuantity() {
         return mLastQuantity;
     }
@@ -232,7 +297,7 @@ class ExecutionReportSummary extends EntityBase {
         mLastQuantity = inLastQuantity;
     }
 
-    @Column(precision = 15, scale = 5)
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE)
     BigDecimal getLastPrice() {
         return mLastPrice;
     }
@@ -281,5 +346,13 @@ class ExecutionReportSummary extends EntityBase {
      * The entity name as is used in various JPQL Queries
      */
     static final String ENTITY_NAME = ExecutionReportSummary.class.getSimpleName();
+    /**
+     * The scale used for storing all decimal values.
+     */
+    static final int DECIMAL_SCALE = 5;
+    /**
+     * The precision used for storing all decimal values.
+     */
+    static final int DECIMAL_PRECISION = 15;
     private static final long serialVersionUID = 1L;
 }

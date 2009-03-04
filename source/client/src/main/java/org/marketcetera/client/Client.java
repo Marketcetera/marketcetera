@@ -5,6 +5,7 @@ import org.marketcetera.trade.*;
 import org.marketcetera.client.brokers.BrokersStatus;
 
 import java.util.Date;
+import java.util.Map;
 import java.math.BigDecimal;
 import java.beans.ExceptionListener;
 
@@ -30,6 +31,7 @@ import java.beans.ExceptionListener;
  *      <li>{@link #addBrokerStatusListener(BrokerStatusListener) receive broker status updates}</li>
  *      <li>{@link #getReportsSince(Date) fetch past reports} </li>
  *      <li>{@link #getPositionAsOf(Date, MSymbol)}  fetch positions} </li> 
+ *      <li>{@link #getPositionsAsOf(java.util.Date)}  fetch all open positions} </li> 
  * </ul>
  *
  * @author anshul@marketcetera.com
@@ -122,6 +124,20 @@ public interface Client {
      * data from the server.
      */
     public BigDecimal getPositionAsOf(Date inDate, MSymbol inSymbol)
+            throws ConnectionException;
+
+    /**
+     * Returns all open positions based on reports,
+     * generated and received up until the supplied date in UTC.
+     *
+     * @param inDate the date in UTC. Cannot be null.
+     *
+     * @return the open positions. Includes non-zero positions only.
+     *
+     * @throws ConnectionException if there were connection errors fetching
+     * data from the server.
+     */
+    public Map<MSymbol, BigDecimal> getPositionsAsOf(Date inDate)
             throws ConnectionException;
 
     /**
