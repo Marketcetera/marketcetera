@@ -1,6 +1,5 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBase;
@@ -9,7 +8,7 @@ import org.marketcetera.persist.PersistenceException;
 
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 import java.math.BigDecimal;
 
 /* $License$ */
@@ -67,6 +66,23 @@ public class ReportHistoryServices {
     public BigDecimal getPositionAsOf(Date inDate, MSymbol inSymbol)
             throws PersistenceException {
         return ExecutionReportSummary.getPositionForSymbol(inDate, inSymbol);
+    }
+    /**
+     * Returns the positions of all the symbol based on all reports received for
+     * them before the supplied date.
+     *
+     * @param inDate the date to compare with all the reports. Only the reports
+     * that were received prior to this date will be used in this calculation.
+     * Cannot be null.
+     *
+     * @return the symbol positions.
+     *
+     * @throws PersistenceException if there were errors retrieving the symbol
+     * position
+     */
+    public Map<MSymbol, BigDecimal> getPositionsAsOf(final Date inDate)
+            throws PersistenceException {
+        return ExecutionReportSummary.getPositionsAsOf(inDate);
     }
 
     /**

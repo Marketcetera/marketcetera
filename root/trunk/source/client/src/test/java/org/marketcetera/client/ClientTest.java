@@ -299,6 +299,8 @@ public class ClientTest {
 
         assertEquals(BigDecimal.TEN,getClient().getPositionAsOf
                      (new Date(10),null));
+        assertEquals(MockServiceImpl.POSITIONS, getClient().
+                getPositionsAsOf(new Date()));
     }
     @Test
     public void sendOrderSingle() throws Exception {
@@ -558,6 +560,11 @@ public class ClientTest {
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
                 client.getPositionAsOf(null, null);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.getPositionsAsOf(null);
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){

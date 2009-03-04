@@ -1,8 +1,7 @@
 package org.marketcetera.client;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.LinkedList;
+import java.util.*;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
@@ -17,6 +16,7 @@ import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.wrappers.RemoteException;
+import org.marketcetera.util.ws.wrappers.MapWrapper;
 
 /**
  * A test service implementation to aid testing of client via {@link
@@ -71,6 +71,12 @@ public class MockServiceImpl
          MSymbol symbol)
     {
         return new BigDecimal(date.getTime());
+    }
+
+    private MapWrapper<MSymbol,BigDecimal> getPositionsAsOfImpl
+        (Date date)
+    {
+        return new MapWrapper<MSymbol, BigDecimal>(POSITIONS);
     }
 
     private String getNextOrderIDImpl()
@@ -134,6 +140,23 @@ public class MockServiceImpl
     }
 
     @Override
+    public MapWrapper<MSymbol,BigDecimal> getPositionsAsOf
+        (ClientContext context,
+         final Date date)
+        throws RemoteException
+    {
+        return (new RemoteCaller<Object,MapWrapper<MSymbol,BigDecimal>>
+                (getSessionManager()) {
+            @Override
+            protected MapWrapper<MSymbol,BigDecimal> call
+                (ClientContext context,
+                 SessionHolder<Object> sessionHolder)
+            {
+                return getPositionsAsOfImpl(date);
+            }}).execute(context);
+    }
+
+    @Override
     public String getNextOrderID
         (ClientContext context)
         throws RemoteException
@@ -154,4 +177,11 @@ public class MockServiceImpl
     // Mocking interface.
 
     static ReportBaseImpl[] sReports = null;
+    static final Map<MSymbol, BigDecimal> POSITIONS;
+    static {
+        Map<MSymbol, BigDecimal> positions = new HashMap<MSymbol, BigDecimal>();
+        positions.put(new MSymbol("A"), BigDecimal.TEN);
+        positions.put(new MSymbol("B"), BigDecimal.ONE.negate());
+        POSITIONS = Collections.unmodifiableMap(positions);
+    }
 }

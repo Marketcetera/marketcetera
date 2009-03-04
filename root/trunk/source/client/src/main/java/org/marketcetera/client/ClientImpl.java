@@ -15,10 +15,7 @@ import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Deque;
-import java.util.Arrays;
+import java.util.*;
 import java.math.BigDecimal;
 import java.beans.ExceptionListener;
 
@@ -124,6 +121,20 @@ class ClientImpl implements Client {
         try {
             return mService.getPositionAsOf
                 (getServiceContext(),inDate,inSymbol);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+
+    @Override
+    public Map<MSymbol, BigDecimal> getPositionsAsOf
+        (Date inDate)
+        throws ConnectionException
+    {
+        failIfClosed();
+        try {
+            return mService.getPositionsAsOf
+                (getServiceContext(),inDate).getMap();
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
         }

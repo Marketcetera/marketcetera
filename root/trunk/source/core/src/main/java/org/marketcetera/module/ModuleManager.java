@@ -374,15 +374,16 @@ public final class ModuleManager {
      *
      * @param inFlowID the data flow ID.
      *
-     * @throws DataFlowNotFoundException if the data flow, specified by
-     * the ID, could not be found.
+     *
      * @throws ModuleStateException If the requesting module is not in the
      * correct state to be requesting cancellation of data flows.
-     * @throws ModuleException if there were errors deleting auto-created
-     * modules that are no longer participating in any data flows.
+     * @throws DataFlowNotFoundException if the data flow corresponding
+     * to the supplied ID wasn't found.
+     * @throws DataFlowException if the data flow is in the process of
+     * being canceled by another operation.
      */
     public void cancel(DataFlowID inFlowID)
-            throws ModuleException {
+            throws ModuleStateException, DataFlowException {
         cancel(inFlowID, null);
     }
 
@@ -921,15 +922,15 @@ public final class ModuleManager {
      * @param inRequester the module requesting the cancellation, null if
      * the cancellation is not requested by a module.
      *
-     * @throws DataFlowNotFoundException if the data flow corresponding
-     * to the supplied ID wasn't found.
      * @throws ModuleStateException If the requesting module is not in the
      * correct state to be requesting cancellation of data flows.
-     * @throws ModuleException if there were errors deleting auto-created
-     * modules that are no longer participating in any data flows.
+     * @throws DataFlowNotFoundException if the data flow corresponding
+     * to the supplied ID wasn't found.
+     * @throws DataFlowException if the data flow is in the process of
+     * being canceled by another operation.
      */
     void cancel(DataFlowID inFlowID, Module inRequester)
-            throws ModuleException {
+            throws ModuleStateException, DataFlowException {
         DataFlow flow;
         Lock requesterLock = null;
         DataFlowInfo dataFlowInfo = null;

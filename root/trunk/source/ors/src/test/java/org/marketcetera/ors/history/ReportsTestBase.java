@@ -14,6 +14,9 @@ import org.junit.After;
 import org.junit.Before;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.OrigClOrdID;
@@ -21,6 +24,7 @@ import quickfix.field.SendingTime;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.io.File;
 
@@ -189,6 +193,11 @@ public class ReportsTestBase extends TestCaseBase {
         return sServices.getPositionAsOf(inDate, new MSymbol(inSymbol));
     }
 
+    protected static Map<MSymbol,BigDecimal> getPositions(Date inDate)
+            throws Exception {
+        return sServices.getPositionsAsOf(inDate);
+    }
+
     protected static ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
                                             String inSymbol, Side inSide,
@@ -202,7 +211,34 @@ public class ReportsTestBase extends TestCaseBase {
         return report;
     }
 
+    protected static MSymbol sym(String inSymbol) {
+        return new MSymbol(inSymbol);
+    }
+
+    protected static Matcher<Map> isOfSize(int inLength) {
+        return new SizeMatcher(inLength);
+    }
+
+    private static class SizeMatcher extends TypeSafeMatcher<Map> {
+        SizeMatcher(int inExpectedSize) {
+            mExpectedSize = inExpectedSize;
+        }
+
+        private final int mExpectedSize;
+
+        @Override
+        public void describeTo(Description inDescription) {
+            inDescription.appendText("map of length ").appendValue(mExpectedSize);
+        }
+
+        @Override
+        public boolean matchesSafely(Map inMap) {
+            return inMap.size() == mExpectedSize;
+        }
+    }
+
     private static final BrokerID BROKER = new BrokerID("TestBroker");
     private static FIXMessageFactory sMessageFactory;
     protected static ReportHistoryServices sServices;
+    protected static final int SCALE = ExecutionReportSummary.DECIMAL_SCALE;
 }

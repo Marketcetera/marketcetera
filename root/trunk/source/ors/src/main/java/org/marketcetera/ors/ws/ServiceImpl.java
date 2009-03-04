@@ -2,6 +2,7 @@ package org.marketcetera.ors.ws;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
 import org.marketcetera.client.Service;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.CoreException;
@@ -19,6 +20,7 @@ import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.wrappers.RemoteException;
+import org.marketcetera.util.ws.wrappers.MapWrapper;
 
 /**
  * The implementation of the application's web services.
@@ -126,6 +128,14 @@ public class ServiceImpl
         return getHistoryServices().getPositionAsOf(date,symbol);
     }
 
+    private MapWrapper<MSymbol,BigDecimal> getPositionsAsOfImpl
+        (Date date)
+        throws PersistenceException
+    {
+        return new MapWrapper<MSymbol, BigDecimal>(
+                getHistoryServices().getPositionsAsOf(date));
+    }
+
     private String getNextOrderIDImpl()
         throws CoreException
     {
@@ -186,6 +196,24 @@ public class ServiceImpl
                 throws PersistenceException
             {
                 return getPositionAsOfImpl(date,symbol);
+            }}).execute(context);
+    }
+
+    @Override
+    public MapWrapper<MSymbol,BigDecimal> getPositionsAsOf
+        (ClientContext context,
+         final Date date)
+        throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,MapWrapper<MSymbol, BigDecimal>>
+                (getSessionManager()) {
+            @Override
+            protected MapWrapper<MSymbol, BigDecimal> call
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+                throws PersistenceException
+            {
+                return getPositionsAsOfImpl(date);
             }}).execute(context);
     }
 

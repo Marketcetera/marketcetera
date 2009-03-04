@@ -644,6 +644,15 @@ public class StrategyTestBase
             return position.getPositionAt(inDate);
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getPositionsAsOf(java.util.Date)
+         */
+        @Override
+        public Map<MSymbol, BigDecimal> getPositionsAsOf(Date inDate)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException("This API is unsupported");
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.client.Client#getReportsSince(java.util.Date)
          */
         @Override

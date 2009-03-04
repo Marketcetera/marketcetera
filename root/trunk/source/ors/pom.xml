@@ -80,6 +80,10 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>util-test</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+    </dependency> 
   </dependencies>
 
   <build>
