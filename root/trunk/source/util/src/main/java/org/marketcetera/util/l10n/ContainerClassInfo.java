@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ReflectUtils;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ContainerClassInfo
     implements MessageInfoProvider
 {
