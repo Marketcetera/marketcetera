@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A {@link PropertyTester} that supports the "state" attribute of a
- * {@link Strategy}.
+ * {@link AbstractStrategyConnection}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -20,9 +20,9 @@ public class StrategyPropertyTester extends PropertyTester {
 	@Override
 	public boolean test(Object receiver, String property, Object[] args,
 			Object expectedValue) {
-		Strategy strategy = (Strategy) receiver;
+		AbstractStrategyConnection connection = (AbstractStrategyConnection) receiver;
 		Assert.isLegal("state".equals(property), property); //$NON-NLS-1$
-		return strategy.getState().name().equals(expectedValue);
+		return connection.getState().name().equals(expectedValue);
 	}
 
 }

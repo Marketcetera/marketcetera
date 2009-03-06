@@ -6,7 +6,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.ui.PhotonConsole;
@@ -30,7 +29,6 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 	private static final String LAYOUT_PATTERN = "%d{ABSOLUTE} %5p - %m"; //$NON-NLS-1$
 //	private static final String DEBUG_LAYOUT_PATTERN = "%d{ABSOLUTE} %5p %c{2}:%L - %m";
 	private PhotonConsole console;
-	private Display display;
 	private Level minimumSecondaryLogLevel = Level.DEBUG;
 	private PhotonConsole secondaryConsole;
 
@@ -42,7 +40,6 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 	 */
 	public PhotonConsoleAppender(PhotonConsole pConsole) {
     	console = pConsole;
-    	display = Display.getDefault();
     	PatternLayout patternLayout = new PatternLayout(LAYOUT_PATTERN);
     	setLayout(patternLayout);
     }
@@ -95,36 +92,32 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 		} else {
 			secondaryStream = null;
 		}
-    	display.asyncExec(new Runnable() {
-            public void run() {
-            	String loggableMessage = ""; //$NON-NLS-1$
-            	Layout theLayout = getLayout();
-				if (theLayout != null){
-            		loggableMessage = theLayout.format(loggingEvent);
-            	} else {
-            		loggableMessage = loggingEvent.getRenderedMessage();
-            	}
-                stream.println(loggableMessage);
-                if (secondaryStream != null){
-                	secondaryStream.println(loggableMessage);
-                }
-                ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
-                if (throwableInformation != null){
-					Throwable throwable = throwableInformation.getThrowable();
-					String exceptionMessage;
-					if(throwable instanceof I18NException) {
-						exceptionMessage = ((I18NException)throwable).getLocalizedDetail();
-					} else {
-						exceptionMessage = throwable.getLocalizedMessage();
-					}
-					stream.println(exceptionMessage);
-	                if (secondaryStream != null){
-	                	secondaryStream.println(exceptionMessage);
-	                }
-                }
-            }
-        	}
-    	);
+		String loggableMessage = ""; //$NON-NLS-1$
+		Layout theLayout = getLayout();
+		if (theLayout != null) {
+			loggableMessage = theLayout.format(loggingEvent);
+		} else {
+			loggableMessage = loggingEvent.getRenderedMessage();
+		}
+		stream.println(loggableMessage);
+		if (secondaryStream != null) {
+			secondaryStream.println(loggableMessage);
+		}
+		ThrowableInformation throwableInformation = loggingEvent
+				.getThrowableInformation();
+		if (throwableInformation != null) {
+			Throwable throwable = throwableInformation.getThrowable();
+			String exceptionMessage;
+			if (throwable instanceof I18NException) {
+				exceptionMessage = ((I18NException) throwable).getLocalizedDetail();
+			} else {
+				exceptionMessage = throwable.getLocalizedMessage();
+			}
+			stream.println(exceptionMessage);
+			if (secondaryStream != null) {
+				secondaryStream.println(exceptionMessage);
+			}
+		}
     }
 
     /* (non-Javadoc)

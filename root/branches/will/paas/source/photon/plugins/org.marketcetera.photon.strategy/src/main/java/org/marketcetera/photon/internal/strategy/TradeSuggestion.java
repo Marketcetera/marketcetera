@@ -3,6 +3,7 @@ package org.marketcetera.photon.internal.strategy;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang.Validate;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderCapacity;
@@ -14,7 +15,6 @@ import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.misc.ClassVersion;
-import org.rubypeople.rdt.internal.core.Assert;
 
 /**
  * Photon UI abstraction for a trade suggestion.
@@ -39,7 +39,7 @@ public class TradeSuggestion {
 	 *            the time the suggestion was received
 	 */
 	TradeSuggestion(OrderSingleSuggestion suggestion, Date timestamp) {
-		Assert.isNotNull(suggestion.getOrder());
+		Validate.notNull(suggestion);
 		mSuggestion = suggestion;
 		mTimestamp = timestamp;
 	}

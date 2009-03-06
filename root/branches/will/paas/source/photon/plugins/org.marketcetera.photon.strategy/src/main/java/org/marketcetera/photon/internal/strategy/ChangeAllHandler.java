@@ -27,13 +27,15 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class ChangeAllHandler extends ChangeStateHandler {
+public class ChangeAllHandler extends ChangeStrategyHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Collection<Strategy> strategies = new ArrayList<Strategy>();
 		for(Object obj : StrategyManager.getCurrent().getStrategies()) {
-			strategies.add((Strategy) obj);
+			if (obj instanceof Strategy) {
+				strategies.add((Strategy) obj);
+			}
 		}
 		changeState(strategies);
 		return null;

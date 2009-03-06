@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.photon.internal.strategy.Strategy.State;
+import org.marketcetera.photon.internal.strategy.AbstractStrategyConnection.State;
 
 /* $License$ */
 
@@ -39,7 +39,7 @@ public class StrategyPropertyTesterTest {
 	
 	@Test
 	public void testProperty() {
-		Strategy strategy = StrategyTest.createTestStrategy();
+		AbstractStrategyConnection strategy = StrategyTest.createTestStrategy();
 		strategy.setState(State.STOPPED);
 		assertTrue(mFixture.test(strategy, "state", null, "STOPPED"));
 		assertFalse(mFixture.test(strategy, "state", null, "RUNNING"));

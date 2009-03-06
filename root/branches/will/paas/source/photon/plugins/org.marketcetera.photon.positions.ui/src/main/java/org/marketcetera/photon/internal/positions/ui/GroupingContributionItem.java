@@ -57,7 +57,7 @@ public class GroupingContributionItem extends CompoundContributionItem {
 			int last = grouping.length - 1;
 			for (int i = 0; i < last; i++) {
 				buf.append(labels.get(grouping[i]));
-				buf.append(", ");
+				buf.append(", "); //$NON-NLS-1$
 			}
 			buf.append(labels.get(grouping[last]));
 			return buf.toString();
