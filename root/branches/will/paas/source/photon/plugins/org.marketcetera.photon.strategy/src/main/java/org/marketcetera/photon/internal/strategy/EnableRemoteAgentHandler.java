@@ -23,10 +23,11 @@ public class EnableRemoteAgentHandler extends AbstractHandler implements IHandle
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (((MenuItem) ((Event) event.getTrigger()).widget).getSelection())
+		if (((MenuItem) ((Event) event.getTrigger()).widget).getSelection()) {
 			StrategyManager.getCurrent().enableRemoteAgent();
-		else
+		} else {
 			StrategyManager.getCurrent().disableRemoteAgent();
+		}
 		return null;
 	}
 
