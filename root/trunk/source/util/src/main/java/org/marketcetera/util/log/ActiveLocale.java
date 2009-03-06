@@ -42,7 +42,7 @@ import org.marketcetera.util.misc.CollectionUtils;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ActiveLocale
 {
 
