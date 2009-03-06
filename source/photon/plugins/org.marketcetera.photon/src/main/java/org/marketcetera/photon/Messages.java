@@ -521,4 +521,6 @@ public interface Messages
 			"server_status.error.tooltip"); //$NON-NLS-1$
 	public static I18NMessage0P PREFERENCE_INITIALIZER_SAVE_FAILED = new I18NMessage0P(LOGGER,
 			"preference_initializer.save_failed"); //$NON-NLS-1$
+	public static I18NMessage1P TABLE_COMPARATOR_CHOOSER_INVALID_LISTENER =
+			new I18NMessage1P(LOGGER, "table_comparator_chooser_invalid_listener"); //$NON-NLS-1$
 }

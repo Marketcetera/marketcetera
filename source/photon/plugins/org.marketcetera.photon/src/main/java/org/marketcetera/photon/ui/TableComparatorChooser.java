@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -20,6 +21,8 @@ import ca.odell.glazedlists.swt.EventTableViewer;
 
 /**
  * Copy of {@link ca.odell.glazedlists.swt.TableComparatorChooser} that does not require a {@link EventTableViewer}.
+ * 
+ * Upgrade note: {@link Messages#TABLE_COMPARATOR_CHOOSER_INVALID_LISTENER} was used to externalize a string. 
  *
  * @see ca.odell.glazedlists.swt.TableComparatorChooser
  *
@@ -91,7 +94,7 @@ public final class TableComparatorChooser<E> extends AbstractTableComparatorChoo
                 return;
             }
         }
-        throw new IllegalArgumentException("Cannot remove nonexistent listener " + sortListener);
+        throw new IllegalArgumentException(Messages.TABLE_COMPARATOR_CHOOSER_INVALID_LISTENER.getText(sortListener));
     }
 
     /**

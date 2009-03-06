@@ -2,17 +2,14 @@ package org.marketcetera.photon.internal.strategy.ui;
 
 import java.text.MessageFormat;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.photon.internal.strategy.Messages;
 import org.marketcetera.photon.internal.strategy.Strategy;
-import org.marketcetera.photon.internal.strategy.Strategy.Destination;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -98,31 +95,19 @@ public class StrategyUI {
 	}
 
 	/**
-	 * Creates a {@link Label} and {@link ComboViewer} for a strategy's
-	 * destination.
+	 * Creates a check box {@link Button} for a strategy's routing.
 	 * 
 	 * @param parent
 	 *            parent composite in which to create controls
-	 * @return the created ComboViewer
+	 * @return the created Button
 	 */
-	public static ComboViewer createDestinationCombo(Composite parent) {
+	public static Button createRoutingCheckBox(Composite parent) {
 		Font font = parent.getFont();
-		Label label = new Label(parent, SWT.NONE);
-		label.setFont(font);
-		label.setText(formatLabel(Messages.STRATEGYUI_DESTINATION_LABEL));
-		label.setToolTipText(Messages.STRATEGYUI_DESTINATION_TOOLTIP.getText());
-
-		ComboViewer destination = new ComboViewer(parent, SWT.READ_ONLY);
-		destination.getControl().setFont(font);
-		destination.setContentProvider(new ArrayContentProvider());
-		destination.setLabelProvider(new LabelProvider() {
-			@Override
-			public String getText(Object element) {
-				return ((Destination) element).getLabel();
-			}
-		});
-		destination.setInput(Destination.values());
-		return destination;
+		Button routeToServer = new Button(parent, SWT.CHECK);
+		routeToServer.setFont(font);
+		routeToServer.setText(Messages.STRATEGYUI_ROUTE_TO_SERVER_LABEL.getText());
+		routeToServer.setToolTipText(Messages.STRATEGYUI_ROUTE_TO_SERVER_TOOLTIP.getText());
+		return routeToServer;
 	}
 
 	/**

@@ -10,18 +10,18 @@ import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.photon.internal.strategy.Messages;
 import org.marketcetera.photon.internal.strategy.StrategyValidation;
-import org.marketcetera.photon.internal.strategy.Strategy.Destination;
 import org.marketcetera.photon.internal.strategy.ui.StrategyUI;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -45,7 +45,7 @@ final class RegisterRubyStrategyWizardPage extends WizardPage {
 	private final IObservableValue mClassName = WritableValue
 			.withValueType(String.class);
 	
-	private final IObservableValue mDestination = WritableValue.withValueType(Destination.class);
+	private final IObservableValue mRouteToServer = WritableValue.withValueType(Boolean.class);
 
 	/**
 	 * Returns the display name provided by the user.
@@ -70,8 +70,8 @@ final class RegisterRubyStrategyWizardPage extends WizardPage {
 	 * 
 	 * @return the destination provided by the user
 	 */
-	Destination getDestination() {
-		return (Destination) mDestination.getValue();
+	boolean getRouteToServer() {
+		return (Boolean) mRouteToServer.getValue();
 	}
 
 	/**
@@ -103,11 +103,16 @@ final class RegisterRubyStrategyWizardPage extends WizardPage {
 		dbc.bindValue(SWTObservables.observeText(name, SWT.Modify), mName,
 				null, null);
 		
-		final ComboViewer destination = StrategyUI.createDestinationCombo(composite);
-		dbc.bindValue(ViewersObservables.observeSingleSelection(destination), mDestination, null, null);
-		mDestination.setValue(Destination.SINK);
+		final Group configuration = new Group(composite, SWT.NONE);
+		configuration.setFont(composite.getFont());
+		configuration.setText(Messages.REGISTER_RUBY_STRATEGY_CONFIGURATION_GROUP_LABEL.getText());
+		GridDataFactory.defaultsFor(configuration).span(2, 1).applyTo(configuration);
+		final Button routeToServer = StrategyUI.createRoutingCheckBox(configuration);
+		dbc.bindValue(SWTObservables.observeSelection(routeToServer), mRouteToServer, null, null);
+		mRouteToServer.setValue(Boolean.FALSE);
+		GridLayoutFactory.swtDefaults().generateLayout(configuration);
 
-		composite.setTabList(new Control[] { className, name, destination.getControl() });
+		composite.setTabList(new Control[] { className, name, configuration });
 
 		mClassName.addValueChangeListener(new IValueChangeListener() {
 

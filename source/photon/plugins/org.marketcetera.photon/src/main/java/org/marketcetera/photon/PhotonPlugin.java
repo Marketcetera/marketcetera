@@ -86,21 +86,16 @@ public class PhotonPlugin
 	 * Cannot be initialized until after logging infrastructure is set up
 	 */
 	private Logger mainConsoleLogger;
-	private Logger marketDataLogger;
 
 	private PhotonController photonController;
 
 	private BundleContext bundleContext;
 	
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger"; //$NON-NLS-1$
-
-	public static final String MARKETDATA_CONSOLE_LOGGER_NAME = "marketdata.console.logger"; //$NON-NLS-1$
 	
 	public static final String STRATEGY_LOGGER_NAME = org.marketcetera.core.Messages.USER_MSG_CATEGORY;
 
-    public static final String MARKETDATA_LOGGER_NAME = "datafeed.status"; //$NON-NLS-1$
-
-	public static final String DEFAULT_PROJECT_NAME = "ActiveScripts"; //$NON-NLS-1$
+    public static final String DEFAULT_PROJECT_NAME = "ActiveScripts"; //$NON-NLS-1$
 
 	private static final String RUBY_NATURE_ID = ".rubynature"; //$NON-NLS-1$
 
@@ -139,8 +134,6 @@ public class PhotonPlugin
 		configureLogs();
 		
 		mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
-		
-		marketDataLogger = Logger.getLogger(MARKETDATA_CONSOLE_LOGGER_NAME);
 		
 		new DefaultScope().getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -229,10 +222,6 @@ public class PhotonPlugin
 	{
 		return mainConsoleLogger;
 	}
-
-	public Logger getMarketDataLogger() {
-		return marketDataLogger;
-	}
 	
 	public static Logger getMainConsoleLogger()
 	{
@@ -306,23 +295,18 @@ public class PhotonPlugin
 	
 	public void changeLogLevel(String levelValue){
 		Logger strategyLogger = Logger.getLogger(STRATEGY_LOGGER_NAME);
-        Logger marketDataLogger = Logger.getLogger(MARKETDATA_LOGGER_NAME);
 		if (PhotonPage.LOG_LEVEL_VALUE_ERROR.equals(levelValue)){
 			mainConsoleLogger.setLevel(Level.ERROR);
 			strategyLogger.setLevel(Level.ERROR);
-			marketDataLogger.setLevel(Level.ERROR);
 		} else if (PhotonPage.LOG_LEVEL_VALUE_WARN.equals(levelValue)){
 			mainConsoleLogger.setLevel(Level.WARN);
 			strategyLogger.setLevel(Level.WARN);
-            marketDataLogger.setLevel(Level.WARN);
 		} else if (PhotonPage.LOG_LEVEL_VALUE_INFO.equals(levelValue)){
 			mainConsoleLogger.setLevel(Level.INFO);
 			strategyLogger.setLevel(Level.INFO);
-            marketDataLogger.setLevel(Level.INFO);
 		} else if (PhotonPage.LOG_LEVEL_VALUE_DEBUG.equals(levelValue)){
 			mainConsoleLogger.setLevel(Level.DEBUG);
 			strategyLogger.setLevel(Level.DEBUG);
-            marketDataLogger.setLevel(Level.DEBUG);
 		}
 		mainConsoleLogger.info(LOGGER_LEVEL_CHANGED.getText(levelValue));
 	}

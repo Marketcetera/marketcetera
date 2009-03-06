@@ -16,8 +16,6 @@ import org.eclipse.jface.dialogs.ControlEnableState;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -46,8 +44,7 @@ import org.marketcetera.photon.internal.strategy.Messages;
 import org.marketcetera.photon.internal.strategy.Strategy;
 import org.marketcetera.photon.internal.strategy.StrategyManager;
 import org.marketcetera.photon.internal.strategy.StrategyValidation;
-import org.marketcetera.photon.internal.strategy.Strategy.Destination;
-import org.marketcetera.photon.internal.strategy.Strategy.State;
+import org.marketcetera.photon.internal.strategy.AbstractStrategyConnection.State;
 import org.marketcetera.photon.module.ui.NewPropertyInputDialog;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.misc.ClassVersion;
@@ -72,7 +69,7 @@ public class StrategyPropertyPage extends PropertyPage {
 
 	private Properties mProperties;
 
-	private ComboViewer mDestination;
+	private Button mRouteToServer;
 
 	@Override
 	protected Control createContents(Composite parent) {
@@ -104,8 +101,8 @@ public class StrategyPropertyPage extends PropertyPage {
 			}
 		});
 		
-		mDestination = StrategyUI.createDestinationCombo(composite);
-		mDestination.setSelection(new StructuredSelection(mStrategy.getDestination()));
+		mRouteToServer = StrategyUI.createRoutingCheckBox(composite);
+		mRouteToServer.setSelection(mStrategy.getRouteToServer());
 
 		GridLayoutFactory.swtDefaults().numColumns(2).generateLayout(composite);
 	}
@@ -261,7 +258,7 @@ public class StrategyPropertyPage extends PropertyPage {
 		StrategyManager.getCurrent().setDisplayName(mStrategy,
 				mNameText.getText());
 		StrategyManager.getCurrent().setParameters(mStrategy, mProperties);
-		StrategyManager.getCurrent().setDestination(mStrategy, (Destination)((IStructuredSelection) mDestination.getSelection()).getFirstElement());
+		StrategyManager.getCurrent().setRouteToServer(mStrategy, mRouteToServer.getSelection());
 		return true;
 	}
 

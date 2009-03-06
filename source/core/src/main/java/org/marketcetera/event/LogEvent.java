@@ -29,6 +29,7 @@ import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessage5P;
 import org.marketcetera.util.log.I18NMessage6P;
 import org.marketcetera.util.log.I18NMessageNP;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -1813,6 +1814,28 @@ public class LogEvent
                             inMessage,
                             inException,
                             inParameters);
+    }
+    /**
+     * Determines if the given event should be logged or not.
+     * 
+     * @param inEvent a <code>LogEvent</code> value
+     * @param category the log category
+     * @return a <code>boolean</code> value
+     */
+    public static boolean shouldLog(LogEvent inEvent, String category) {
+        if (Level.DEBUG.equals(inEvent.getLevel())) {
+            return SLF4JLoggerProxy.isDebugEnabled(category);
+        }
+        if (Level.INFO.equals(inEvent.getLevel())) {
+            return SLF4JLoggerProxy.isInfoEnabled(category);
+        }
+        if (Level.WARN.equals(inEvent.getLevel())) {
+            return SLF4JLoggerProxy.isWarnEnabled(category);
+        }
+        if (Level.ERROR.equals(inEvent.getLevel())) {
+            return SLF4JLoggerProxy.isErrorEnabled(category);
+        }
+        return false;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

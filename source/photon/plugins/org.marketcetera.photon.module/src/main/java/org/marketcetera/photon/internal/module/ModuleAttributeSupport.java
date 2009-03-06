@@ -3,10 +3,12 @@ package org.marketcetera.photon.internal.module;
 import javax.management.Attribute;
 import javax.management.ObjectName;
 
+import org.marketcetera.module.MXBeanOperationException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.module.IModuleAttributeDefaults;
 import org.marketcetera.photon.module.IModuleAttributeSupport;
 import org.marketcetera.photon.module.ModuleSupport;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -30,8 +32,7 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 	 * @param moduleAttributeDefaults
 	 *            default support provider to extend
 	 */
-	public ModuleAttributeSupport(
-			IModuleAttributeDefaults moduleAttributeDefaults) {
+	public ModuleAttributeSupport(IModuleAttributeDefaults moduleAttributeDefaults) {
 		mModuleAttributeDefaults = moduleAttributeDefaults;
 	}
 
@@ -46,8 +47,7 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 	}
 
 	@Override
-	public void setInstanceDefaultFor(ModuleURN urn, String attribute,
-			String value) {
+	public void setInstanceDefaultFor(ModuleURN urn, String attribute, String value) {
 		mModuleAttributeDefaults.setInstanceDefaultFor(urn, attribute, value);
 	}
 
@@ -60,34 +60,34 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 	public void removeInstanceDefaultFor(ModuleURN urn, String attribute) {
 		mModuleAttributeDefaults.removeInstanceDefaultFor(urn, attribute);
 	}
-	
+
 	@Override
 	public void flush() {
 		mModuleAttributeDefaults.flush();
 	}
 
 	@Override
-	public Object getModuleAttribute(ModuleURN urn, String attribute) {
+	public Object getModuleAttribute(ModuleURN urn, String attribute)
+			throws MXBeanOperationException {
+		ObjectName objectName = urn.toObjectName();
 		try {
-			ObjectName objectName = urn.toObjectName();
-			return ModuleSupport.getMBeanServerConnection().getAttribute(
-					objectName, attribute);
+			return ModuleSupport.getMBeanServerConnection().getAttribute(objectName, attribute);
 		} catch (Exception e) {
-			Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_GET_ATTRIBUTE.error(this,
-					attribute, urn);
-			return null;
+			throw new MXBeanOperationException(e, new I18NBoundMessage2P(
+					Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_GET_ATTRIBUTE, attribute, urn));
 		}
 	}
 
 	@Override
-	public void setModuleAttribute(ModuleURN urn, String attribute, Object value) {
+	public void setModuleAttribute(ModuleURN urn, String attribute, Object value)
+			throws MXBeanOperationException {
+		ObjectName objectName = urn.toObjectName();
 		try {
-			ObjectName objectName = urn.toObjectName();
 			ModuleSupport.getMBeanServerConnection().setAttribute(objectName,
 					new Attribute(attribute, value));
 		} catch (Exception e) {
-			Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_SET_ATTRIBUTE.error(this,
-					attribute, urn);
+			throw new MXBeanOperationException(e, new I18NBoundMessage2P(
+					Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_SET_ATTRIBUTE, attribute, urn));
 		}
 	}
 }

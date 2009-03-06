@@ -41,7 +41,7 @@ public class RegisterRubyStrategyWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		StrategyManager manager = StrategyManager.getCurrent();
-		manager.registerStrategy(mFile, mPage.getClassName().trim(), mPage.getDisplayName().trim(), mPage.getDestination());
+		manager.registerStrategy(mFile, mPage.getClassName().trim(), mPage.getDisplayName().trim(), mPage.getRouteToServer());
 		return true;
 	}
 

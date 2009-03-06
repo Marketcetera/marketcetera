@@ -99,9 +99,30 @@
       </command>
       <command
             categoryId="org.marketcetera.photon.strategy.commands.category"
+            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeRemoteAgentHandler:RUNNING"
+            description="%startAgent.description"
+            id="org.marketcetera.photon.strategy.commands.startAgent"
+            name="%startAgent.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.strategy.commands.category"
+            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeRemoteAgentHandler:STOPPED"
+            description="%stopAgent.description"
+            id="org.marketcetera.photon.strategy.commands.stopAgent"
+            name="%stopAgent.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.strategy.commands.category"
             description="%registerStrategy.name"
             id="org.marketcetera.photon.strategy.commands.registerStrategy"
             name="%registerStrategy.label">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.strategy.commands.category"
+            defaultHandler="org.marketcetera.photon.internal.strategy.EnableRemoteAgentHandler"
+            description="Enables or disables the remote strategy agent"
+            id="org.marketcetera.photon.strategy.commands.enableRemoteAgent"
+            name="Enable Remote Agent">
       </command>
       <category
             id="org.marketcetera.photon.tradeSuggestion.commands"
@@ -136,8 +157,7 @@
                style="push"
                tooltip="%startStrategies.description">
             <visibleWhen>
-               <iterate
-                     operator="or">
+               <iterate>
                   <instanceof
                         value="org.marketcetera.photon.internal.strategy.Strategy">
                   </instanceof>
@@ -154,10 +174,43 @@
                style="push"
                tooltip="%stopStrategies.description">
                <visibleWhen>
-               <iterate
-                     operator="or">
+               <iterate>
                   <instanceof
                         value="org.marketcetera.photon.internal.strategy.Strategy">
+                  </instanceof>
+                  <test
+                        property="org.marketcetera.photon.strategy.state"
+                        value="RUNNING">
+                  </test>
+               </iterate>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="org.marketcetera.photon.strategy.commands.startAgent"
+               icon="icons/greenled.gif"
+               style="push"
+               tooltip="%startAgent.description">
+            <visibleWhen>
+               <iterate>
+                  <instanceof
+                        value="org.marketcetera.photon.internal.strategy.RemoteStrategyAgent">
+                  </instanceof>
+                  <test
+                        property="org.marketcetera.photon.strategy.state"
+                        value="STOPPED">
+                  </test>
+               </iterate>   
+            </visibleWhen>
+         </command>
+         <command
+               commandId="org.marketcetera.photon.strategy.commands.stopAgent"
+               icon="icons/grayled.gif"
+               style="push"
+               tooltip="%stopAgent.description">
+               <visibleWhen>
+               <iterate>
+                  <instanceof
+                        value="org.marketcetera.photon.internal.strategy.RemoteStrategyAgent">
                   </instanceof>
                   <test
                         property="org.marketcetera.photon.strategy.state"
@@ -209,6 +262,13 @@
                icon="icons/grayled.gif"
                style="push"
                tooltip="%stopAllStrategies.description">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:org.marketcetera.photon.strategy.StrategiesView">
+         <command
+               commandId="org.marketcetera.photon.strategy.commands.enableRemoteAgent"
+               style="toggle">
          </command>
       </menuContribution>
       <menuContribution
@@ -274,7 +334,7 @@
             id="org.marketcetera.photon.strategy.StrategyTester"
             namespace="org.marketcetera.photon.strategy"
             properties="state"
-            type="org.marketcetera.photon.internal.strategy.Strategy">
+            type="org.marketcetera.photon.internal.strategy.AbstractStrategyConnection">
       </propertyTester>
    </extension>
    <extension
@@ -287,6 +347,16 @@
          <enabledWhen>
             <adapt
                   type="org.marketcetera.photon.internal.strategy.Strategy">
+            </adapt></enabledWhen>
+      </page>
+      <page
+            class="org.marketcetera.photon.internal.strategy.ui.RemoteAgentPropertyPage"
+            icon="icons/script_gear.png"
+            id="org.marketcetera.photon.RemoteAgentPropertyPage"
+            name="%remoteAgentProperties.name">
+         <enabledWhen>
+            <adapt
+                  type="org.marketcetera.photon.internal.strategy.RemoteStrategyAgent">
             </adapt></enabledWhen>
       </page>
    </extension>
@@ -452,7 +522,7 @@
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
-            adaptableType="org.marketcetera.photon.internal.strategy.Strategy"
+            adaptableType="org.marketcetera.photon.internal.strategy.AbstractStrategyConnection"
             class="org.marketcetera.photon.internal.strategy.StrategyAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">

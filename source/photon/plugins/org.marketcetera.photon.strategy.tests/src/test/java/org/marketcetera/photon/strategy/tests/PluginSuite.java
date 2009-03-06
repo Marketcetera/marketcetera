@@ -2,7 +2,9 @@ package org.marketcetera.photon.strategy.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.marketcetera.photon.internal.strategy.TradeSuggestionReceiverTest;
+import org.marketcetera.photon.internal.strategy.RemoteAgentManagerTest;
+import org.marketcetera.photon.internal.strategy.StrategyManagerTest;
+import org.marketcetera.photon.internal.strategy.TradeSuggestionManagerTest;
 
 /* $License$ */
 
@@ -16,7 +18,9 @@ import org.marketcetera.photon.internal.strategy.TradeSuggestionReceiverTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	HeadlessSuite.class,
-	TradeSuggestionReceiverTest.class
+	StrategyManagerTest.class,
+	TradeSuggestionManagerTest.class,
+	RemoteAgentManagerTest.class
 })
 public class PluginSuite {
 
