@@ -78,6 +78,8 @@ public interface DataFlowSupport {
      * modules were not capable of emitting or receiving data as
      * requested. Or if any of the modules didn't understand the
      * request parameters or were unable to emit data as requested.
+     * 
+     * @see ModuleManager#createDataFlow(DataRequest[], boolean)  
      */
     public DataFlowID createDataFlow(DataRequest[] inRequests,
                                      boolean inAppendSink)
