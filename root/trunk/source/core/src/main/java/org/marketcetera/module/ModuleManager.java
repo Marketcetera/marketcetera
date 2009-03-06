@@ -166,7 +166,18 @@ public final class ModuleManager {
      *
      * @return the instantiated module's URN
      *
-     * @throws ModuleException if there were errors creating the module
+     * @throws ModuleCreationException if an attempt was made to create
+     * multiple instances of a singleton module OR if a module with the same
+     * URN already exists OR if wrong number / type of parameters were
+     * supplied to create the module.
+     * @throws InvalidURNException if the created module's URN failed URN
+     * validation.
+     * @throws MXBeanOperationException if there problems registering
+     * the module's MXBean with the MBean server.
+     * @throws ModuleException if there was an error creating a new
+     * module instance OR if this was an auto-start module, if there were
+     * errors starting it. See {@link #start(ModuleURN)} for details on
+     * possible errors when starting a module.
      *
      * @see #getProviderInfo(ModuleURN)
      */
@@ -269,7 +280,10 @@ public final class ModuleManager {
      * @param inModuleURN the module instance URN uniquely identifying
      * the module that needs to be started.
      *
-     * @throws ModuleException if there were errors starting the module.
+     * @throws ModuleStateException if the module is not in the correct
+     * state to be started.
+     * @throws ModuleException if {@link Module#preStart()} threw an exception
+     * OR if there were other errors starting the module.
      */
     public void start(ModuleURN inModuleURN) throws ModuleException {
         startModule(getModule(inModuleURN));
@@ -290,6 +304,12 @@ public final class ModuleManager {
      * @throws ModuleNotFoundException if a module with the supplied
      * URN was not found
      * @throws InvalidURNException if the supplied module URN is invalid.
+     * @throws ModuleStateException if the module is not in the correct state
+     * to be stopped.
+     * @throws DataFlowException if the module is participating in data flows
+     * that it didn't initiate.
+     * @throws ModuleException if {@link Module#preStop()} threw an exception
+     * or if there were other errors stopping the module.
      */
     public void stop(ModuleURN inModuleURN) throws ModuleException {
         stopModule(getModule(inModuleURN));
@@ -321,7 +341,8 @@ public final class ModuleManager {
      * modules were not capable of emitting or receiving data as
      * requested. Or if any of the modules didn't understand the
      * request parameters or were unable to emit data as requested.
-     *
+     * 
+     * @see #createDataFlow(DataRequest[], boolean) 
      */
     public DataFlowID createDataFlow(DataRequest[] inRequests) throws ModuleException {
         return createDataFlow(inRequests,true);
@@ -348,12 +369,20 @@ public final class ModuleManager {
      *
      * @return the ID identifying the data flow.
      *
-     * @throws ModuleException if any of the requested modules could
-     * not be found, or instantiated or configured. Or if any of the
-     * modules were not capable of emitting or receiving data as
-     * requested. Or if any of the modules didn't understand the
-     * request parameters or were unable to emit data as requested.
-     *
+     * @throws DataFlowException if the data request wasn't specified correctly
+     * OR if a non-emitter module was requested to participate as an emitter OR
+     * if a non-receiver module was requested to participate as a receiver.
+     * @throws ModuleStateException if the participating modules were not in
+     * the correct state to be able to participate in the data flow.
+     * @throws RequestDataException if any of the participating modules failed
+     * when
+     * {@link DataEmitter#requestData(DataRequest, DataEmitterSupport)}  initiating}
+     * the request.
+     * @throws ModuleNotFoundException if a module instance corresponding to
+     * the specified module URN could not be found.
+     * @throws ModuleException if there were other errors setting up
+     * data flow including errors instantiating any auto-instantiated modules
+     * in the data flow.
      */
     public DataFlowID createDataFlow(DataRequest[] inRequests,
                                      boolean inAppendSink)
@@ -602,7 +631,7 @@ public final class ModuleManager {
      * it then stops all the modules that have initiated data flows,
      * finally it stops all the running modules.
      *
-     * @throws ModuleException if there errors stopping the module manager.
+     * @throws ModuleException if there were errors stopping the module manager.
      */
     public void stop() throws ModuleException {
         Messages.LOG_STOPPING_MODULE_MANAGER.info(this);
@@ -779,8 +808,20 @@ public final class ModuleManager {
      *
      * @return unique ID identifying the data flow
      *
-     * @throws ModuleException if there were errors setting up
-     * data flow.
+     * @throws DataFlowException if the data request wasn't specified correctly
+     * OR if a non-emitter module was requested to participate as an emitter OR
+     * if a non-receiver module was requested to participate as a receiver.
+     * @throws ModuleStateException if the participating modules were not in
+     * the correct state to be able to participate in the data flow.
+     * @throws RequestDataException if any of the participating modules failed
+     * when
+     * {@link DataEmitter#requestData(DataRequest, DataEmitterSupport)}  initiating}
+     * the request.
+     * @throws ModuleNotFoundException if a module instance corresponding to
+     * the specified module URN could not be found.
+     * @throws ModuleException if there were other errors setting up
+     * data flow including errors instantiating any auto-instantiated modules
+     * in the data flow.
      */
     DataFlowID createDataFlow(DataRequest[] inRequests,
                               boolean inAppendSink,
@@ -1042,7 +1083,17 @@ public final class ModuleManager {
      *
      * @return the created module instance
      *
-     * @throws ModuleException if there were errors creating the module
+     * @throws ModuleCreationException if an attempt was made to create
+     * multiple instances of a singleton module OR if a module with the same
+     * URN already exists OR if wrong number / type of parameters were
+     * supplied to create the module.
+     * @throws InvalidURNException if the created module's URN failed URN
+     * validation.
+     * @throws MXBeanOperationException if there problems registering
+     * the module's MXBean with the MBean server.
+     * @throws ModuleException if there was an error creating a new
+     * module instance OR if this was an auto-start module, if there were
+     * errors starting it.
      */
     private Module createModuleImpl(ModuleURN inProviderURN,
                                     Object... inParameters)
@@ -1314,7 +1365,12 @@ public final class ModuleManager {
      *
      * @param inModule the module instance that needs to be stopped.
      *
-     * @throws ModuleException if there were errors when stopping the module
+     * @throws ModuleStateException if the module is not in the correct state
+     * to be stopped.
+     * @throws DataFlowException if the module is participating in data flows
+     * that it didn't initiate.
+     * @throws ModuleException if {@link Module#preStop()} threw an exception
+     * OR if there were other errors stopping the module.
      */
     private void stopModule(Module inModule) throws ModuleException {
         Set<DataFlowID> initiated;
@@ -1705,8 +1761,16 @@ public final class ModuleManager {
      *
      * @return the new module instance
      *
+     * @throws ModuleCreationException if an attempt was made to create
+     * multiple instances of a singleton module OR if a module with the same
+     * URN already exists.
+     * @throws InvalidURNException if the created module's URN failed URN
+     * validation.
+     * @throws MXBeanOperationException if there problems registering
+     * the module's MXBean with the MBean server. 
      * @throws ModuleException if there was an error creating a new
-     * module instance
+     * module instance OR if this was an auto-start module, if there were
+     * errors starting it.
      */
     private Module createModule(ModuleFactory inFactory,
                                 Object... inParameters)
@@ -1789,7 +1853,10 @@ public final class ModuleManager {
      *
      * @param inModule the module instance that needs to be started.
      *
-     * @throws ModuleException if there was an error starting the module
+     * @throws ModuleStateException if the module is not in the correct
+     * state to be started.
+     * @throws ModuleException if {@link Module#preStart()} threw an exception
+     * OR if there were other errors starting the module.
      */
     private void startModule(Module inModule) throws ModuleException {
         Lock moduleLock = inModule.getLock().writeLock();
