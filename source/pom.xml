@@ -31,7 +31,7 @@
     <module>modules</module>
     <module>orderloader</module>
     <module>ors</module>
-    <!-- build strategy agent before photon -->
+    <!-- Build strategy agent before photon. -->
     <module>strategyagent</module>
     <module>photon</module>
     <module>util</module>
