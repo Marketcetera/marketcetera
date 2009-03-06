@@ -37,7 +37,7 @@ import quickfix.SessionSettings;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class SpringSessionDescriptor
     extends LazyBean
 {
