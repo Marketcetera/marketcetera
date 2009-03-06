@@ -17,7 +17,7 @@ import org.slf4j.spi.LocationAwareLogger;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public final class SLF4JLoggerProxy
 {
 
