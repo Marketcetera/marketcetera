@@ -25,7 +25,7 @@ import static org.marketcetera.util.file.SpecialNames.*;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class OutputStreamWrapper
     implements Closeable
 {

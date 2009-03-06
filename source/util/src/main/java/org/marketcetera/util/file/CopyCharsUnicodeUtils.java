@@ -25,7 +25,7 @@ import org.marketcetera.util.unicode.UnicodeInputStreamReader;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public final class CopyCharsUnicodeUtils
 {
 
