@@ -12,7 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public final class IterableUtils
 {
 

@@ -10,7 +10,7 @@ package org.marketcetera.util.misc;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public final class StringUtils
 {
 

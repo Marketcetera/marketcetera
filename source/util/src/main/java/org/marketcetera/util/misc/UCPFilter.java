@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class UCPFilter
 {
 
@@ -36,7 +36,7 @@ public abstract class UCPFilter
      * specific charset.
      */
 
-    @ClassVersion("$Id$") //$NON-NLS-1$
+    @ClassVersion("$Id$")
     private static final class UCPCharsetFilter
         extends UCPFilter
     {
