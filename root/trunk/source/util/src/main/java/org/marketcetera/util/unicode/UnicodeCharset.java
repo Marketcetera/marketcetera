@@ -31,7 +31,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public enum UnicodeCharset
 {
     UTF8(CharEncoding.UTF_8),
