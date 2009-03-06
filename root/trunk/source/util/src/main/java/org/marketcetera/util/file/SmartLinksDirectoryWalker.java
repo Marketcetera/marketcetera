@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class SmartLinksDirectoryWalker
     extends DirectoryWalker
 {
@@ -90,7 +90,7 @@ public abstract class SmartLinksDirectoryWalker
      * @see DirectoryWalker#handleDirectory(File,int,Collection)
      */
 
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     @Override
     protected boolean handleDirectory
         (File directory,
@@ -130,7 +130,7 @@ public abstract class SmartLinksDirectoryWalker
      * @throws IOException Thrown if an I/O error occurs.
      */
 
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public void apply
         (File root,
          Collection results)
@@ -178,7 +178,7 @@ public abstract class SmartLinksDirectoryWalker
      * @throws IOException Thrown if an I/O error occurs.
      */
 
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public void apply
         (String name,
          Collection results)

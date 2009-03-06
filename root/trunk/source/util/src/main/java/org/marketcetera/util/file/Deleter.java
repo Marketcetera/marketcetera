@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class Deleter
 {
 
@@ -29,7 +29,7 @@ public class Deleter
      * symbolic links, and deletes all files it traverses.
      */
 
-    @ClassVersion("$Id$") //$NON-NLS-1$
+    @ClassVersion("$Id$")
     private static final class RecursiveDeleter
         extends SmartLinksDirectoryWalker
     {
@@ -54,7 +54,7 @@ public class Deleter
          * @see DirectoryWalker#handleDirectoryEnd(File,int,Collection)
          */
 
-        @SuppressWarnings("unchecked") //$NON-NLS-1$
+        @SuppressWarnings("unchecked")
         @Override
         protected void handleDirectoryEnd
             (File directory,
@@ -71,7 +71,7 @@ public class Deleter
          * @see DirectoryWalker#handleFile(File,int,Collection)
          */
 
-        @SuppressWarnings("unchecked") //$NON-NLS-1$
+        @SuppressWarnings("unchecked")
         @Override
         protected void handleFile
             (File file,
