@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+    <x:import>
+        <package name="java.lang"/>
+        <package name="org.eclipse.swt.widgets"/>
+        <package name="org.eclipse.swt.layout"/>
+    </x:import>
+    
+    <layout x:class="gridLayout"/>
+    
+    <x:children>
+	    <text x:style="MULTI|H_SCROLL|V_SCROLL|WRAP|BORDER">
+	        <layoutData x:class="gridData" x:style="GridData.FILL_BOTH" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+	    </text>
+	</x:children>
+</xswt>
