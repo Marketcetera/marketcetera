@@ -34,7 +34,9 @@ public class ChangeAllHandler extends ChangeStrategyHandler {
 		Collection<Strategy> strategies = new ArrayList<Strategy>();
 		for(Object obj : StrategyManager.getCurrent().getStrategies()) {
 			if (obj instanceof Strategy) {
-				strategies.add((Strategy) obj);
+				Strategy strategy = (Strategy) obj;
+				validateState(strategy);
+				strategies.add(strategy);
 			}
 		}
 		changeState(strategies);
