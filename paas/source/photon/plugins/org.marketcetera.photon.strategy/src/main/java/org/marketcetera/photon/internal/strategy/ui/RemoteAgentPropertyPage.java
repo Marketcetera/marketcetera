@@ -28,7 +28,18 @@ import org.marketcetera.photon.internal.strategy.StrategyManager;
 import org.marketcetera.photon.internal.strategy.StrategyValidation;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
+/**
+ * Property page for configuring a {@link RemoteStrategyAgent}.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$")
 public class RemoteAgentPropertyPage extends PropertyPage implements IWorkbenchPropertyPage {
 
 	private RemoteStrategyAgent mRemoteAgent;

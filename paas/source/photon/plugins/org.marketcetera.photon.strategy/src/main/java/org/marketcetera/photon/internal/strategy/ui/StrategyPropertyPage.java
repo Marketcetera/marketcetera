@@ -102,7 +102,6 @@ public class StrategyPropertyPage extends PropertyPage {
 		});
 		
 		mRouteToServer = StrategyUI.createRoutingCheckBox(composite);
-//		GridDataFactory.defaultsFor(mRouteToServer).span(2, 1).applyTo(mRouteToServer);
 		mRouteToServer.setSelection(mStrategy.getRouteToServer());
 
 		GridLayoutFactory.swtDefaults().numColumns(2).generateLayout(composite);
