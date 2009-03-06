@@ -1,4 +1,3 @@
-
 package org.marketcetera.util.auth;
 
 import java.io.PrintStream;
@@ -24,7 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class StandardAuthentication
 {
 
@@ -213,6 +212,17 @@ public class StandardAuthentication
     }
 
     /**
+     * Returns the receiver's command-line context.
+     *
+     * @return The context.
+     */
+    
+    public CliContext getCliContext()
+    {
+        return mCliContext;
+    }
+
+    /**
      * Prints the receiver's usage instructions onto the given
      * stream.
      *
@@ -283,16 +293,5 @@ public class StandardAuthentication
     public void clearPassword()
     {
         mPasswordHolder.clear();
-    }
-
-    /**
-     * Returns the CLI context.
-     *
-     * @return The CLI Context.
-     */
-    
-    public CliContext getCliContext()
-    {
-        return mCliContext;
     }
 }

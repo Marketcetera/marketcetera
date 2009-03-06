@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class CliContext
     extends Context<CliSetter<?>>
 {
@@ -110,13 +110,13 @@ public class CliContext
         for (CliSetter<?> setter:getSetters()) {
             setter.addOption(options);
         }
-        if(mOptionsProvider != null) {
-            mOptionsProvider.addOptions(options);
+        if (getOptionsProvider()!=null) {
+            getOptionsProvider().addOptions(options);
         }
         try {
             mCommandLine=(new GnuParser()).parse(options,getArgs());
         } catch (ParseException ex) {
-            mParseException = ex;
+            setParseException(ex);
             throw ExceptUtils.wrap(ex,Messages.PARSING_FAILED);
         }
         for (CliSetter<?> setter:getSetters()) {
@@ -127,21 +127,51 @@ public class CliContext
     }
 
     /**
-     * Sets the options provider.
+     * Sets the receiver's options provider, via which additional
+     * options may be added to the command-line.
      *
-     * @param inOptionsProvider the options provider.
+     * @param optionsProvider The provider.
      */
-    public void setOptionsProvider(OptionsProvider inOptionsProvider) {
-        mOptionsProvider = inOptionsProvider;
+
+    public void setOptionsProvider
+        (OptionsProvider optionsProvider)
+    {
+        mOptionsProvider=optionsProvider;
     }
 
     /**
-     * Returns any failure that was encountered when parsing the command line.
-     * May be null if no failure was encountered parsing the command line.
+     * Returns the receiver's options provider.
      *
-     * @return failure encountered when parsing the command line.
+     * @return The provider.
      */
-    public ParseException getParseException() {
+
+    public OptionsProvider getOptionsProvider()
+    {
+        return mOptionsProvider;
+    }
+
+    /**
+     * Sets the failure that the receiver encountered when parsing the
+     * command line.
+     *
+     * @return The failure. It may be null.
+     */
+
+    private void setParseException
+        (ParseException parseException)
+    {
+        mParseException=parseException;
+    }
+
+    /**
+     * Returns any failure that the receiver encountered when parsing
+     * the command line.
+     *
+     * @return The failure. It may be null if no failure took place.
+     */
+
+    public ParseException getParseException()
+    {
         return mParseException;
     }
 }

@@ -1,24 +1,28 @@
 package org.marketcetera.util.auth;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.apache.commons.cli.Options;
+import org.marketcetera.util.misc.ClassVersion;
 
-/* $License$ */
 /**
- * Provides extra command line options to {@link CliContext}.
+ * A provider of extra command line options.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since 1.0.0
  */
+
+/* $License$ */
+
 @ClassVersion("$Id$")
 public interface OptionsProvider
 {
+
     /**
-     * Add options to the set of options used by {@link CliContext}.
+     * Adds the given options to the receiver's set of options.
      *
-     * @param inOptions the options that will be used by {@link CliContext}
-     * to parse the command line.
+     * @param options The options.
      */
-    public void addOptions(Options inOptions);
+
+    void addOptions
+        (Options options);
 }
