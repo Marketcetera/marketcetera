@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public enum SignatureCharset
 {
     NONE_UTF8(Signature.NONE,UnicodeCharset.UTF8),

@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public enum Signature
 {
     NONE(ArrayUtils.EMPTY_BYTE_ARRAY),
