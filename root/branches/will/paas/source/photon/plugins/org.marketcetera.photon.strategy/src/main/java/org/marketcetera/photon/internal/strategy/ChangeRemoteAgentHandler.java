@@ -32,6 +32,7 @@ public class ChangeRemoteAgentHandler extends ChangeStateHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelectionChecked(event);
 		RemoteStrategyAgent agent = (RemoteStrategyAgent) selection.getFirstElement();
+		validateState(agent);
 		switch (getNewState()) {
 		case RUNNING:
 			StrategyManager.getCurrent().connect(agent);

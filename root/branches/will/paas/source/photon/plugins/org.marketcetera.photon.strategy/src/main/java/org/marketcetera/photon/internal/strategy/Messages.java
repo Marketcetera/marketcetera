@@ -182,4 +182,6 @@ public interface Messages {
 			new I18NMessage0P(LOGGER, "remote_agent_manager.cleanup_failed"); //$NON-NLS-1$
 	static final I18NMessage0P REMOTE_AGENT_MANAGER_MISSING_URI =
 			new I18NMessage0P(LOGGER, "remote_agent_manager.missing_uri"); //$NON-NLS-1$
+	static final I18NMessage2P CHANGE_STATE_HANDLER_INVALID_STATE =
+			new I18NMessage2P(LOGGER, "change_state_handler.invalid_state"); //$NON-NLS-1$
 }

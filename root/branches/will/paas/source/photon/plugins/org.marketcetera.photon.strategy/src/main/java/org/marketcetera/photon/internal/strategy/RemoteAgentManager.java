@@ -105,8 +105,11 @@ class RemoteAgentManager {
 	 */
 	synchronized IStatus connect() {
 		// the agent (UI) should be in the stopped state
-		assert mAgent.getState() == State.STOPPED;
-		mAgent.setState(State.STOPPED);
+		if (mAgent.getState() != State.STOPPED) {
+			assert false : mAgent.getState();
+			SLF4JLoggerProxy.debug(this, "Unexpected invocation of connect(), agent state is {0}.", mAgent.getState());
+			mAgent.setState(State.STOPPED);
+		}
 
 		// ensure the module doesn't exist
 		try {
@@ -119,6 +122,7 @@ class RemoteAgentManager {
 					deleteModule();
 				} catch (ModuleException e) {
 					// delete attempt was not successful
+					Messages.REMOTE_AGENT_MANAGER_DISCONNECT_FAILED.error(this);
 					return createError(Messages.REMOTE_AGENT_MANAGER_DISCONNECT_FAILED.getText(), e);
 				}
 			} else {
@@ -135,7 +139,7 @@ class RemoteAgentManager {
 		}
 
 		// at this point the module doesn't exist, so the sink data flow doesn't exist
-		// the id should not be null, but if it is, we can recover
+		// the id should not null, but if it is not, we can recover
 		assert mSinkFlowID == null;
 		mSinkFlowID = null;
 
@@ -166,13 +170,17 @@ class RemoteAgentManager {
 							.instanceName());
 
 			// assert the factory gives the urn we expect
-			assert mAgentURN.equals(urn) : urn;
+			if (!mAgent.equals(urn)) {
+				throw new IllegalStateException(urn.toString());
+			}
 			// assert that the module indeed auto-started, need to use try catch since
-			// we want AssertionError no matter what goes wrong in the validation
+			// we want a runtime exception no matter what goes wrong in the validation
 			try {
-				assert mModuleManager.getModuleInfo(mAgentURN).getState().isStarted();
+				if (mModuleManager.getModuleInfo(mAgentURN).getState().isStarted()) {
+					throw new IllegalStateException();
+				}
 			} catch (Exception e) {
-				assert false : e;
+				throw new IllegalStateException(e);
 			}
 
 			// subscribe to connection status notifications
@@ -182,7 +190,7 @@ class RemoteAgentManager {
 						new DisconnectFilter(), null);
 			} catch (Exception e) {
 				// something is wrong with the emitter module, but we can still continue
-				assert false;
+				assert false : e;
 				Messages.REMOTE_AGENT_MANAGER_COULD_NOT_SUBSCRIBE_TO_STATUS_UPDATES.warn(this, e);
 				mConnectionTracker = null;
 			}
