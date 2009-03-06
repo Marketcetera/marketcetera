@@ -6,7 +6,10 @@ import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.ui.PlatformUI;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.photon.module.ISinkDataHandler;
+import org.marketcetera.photon.module.ISinkDataManager;
+import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -20,8 +23,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public final class TradeSuggestionManager {
+public final class TradeSuggestionManager implements ISinkDataHandler {
 
+	/**
+	 * Sink data manager
+	 */
+	private final ISinkDataManager mSinkDataManager;
+	
 	/**
 	 * Returns the singleton instance for the currently running plug-in.
 	 * 
@@ -38,15 +46,8 @@ public final class TradeSuggestionManager {
 	 * This object should only be constructed by {@link Activator}.
 	 */
 	TradeSuggestionManager() {
-	}
-
-	/**
-	 * Returns the URN of the module that receives trade suggestions.
-	 * 
-	 * @return the URN of the module that receives trade suggestions
-	 */
-	ModuleURN getReceiverURN() {
-		return TradeSuggestionReceiverFactory.INSTANCE_URN;
+		mSinkDataManager = ModuleSupport.getSinkDataManager();
+		mSinkDataManager.register(this, OrderSingleSuggestion.class);
 	}
 
 	/**
@@ -84,6 +85,16 @@ public final class TradeSuggestionManager {
 	 */
 	void removeSuggestion(TradeSuggestion suggestion) {
 		mSuggestions.remove(suggestion);
+	}
+
+	@Override
+	public void receivedData(DataFlowID inFlowID, Object inData) {
+		OrderSingleSuggestion suggestion = (OrderSingleSuggestion) inData;
+		if (suggestion.getOrder() != null) {
+			addSuggestion(suggestion);
+		} else {
+			Messages.TRADE_SUGGESTION_MANAGER_INVALID_DATA_NO_ORDER.error(this);
+		}
 	}
 
 }

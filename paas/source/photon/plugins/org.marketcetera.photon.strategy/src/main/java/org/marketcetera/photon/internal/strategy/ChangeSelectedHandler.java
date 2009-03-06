@@ -29,7 +29,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class ChangeSelectedHandler extends ChangeStateHandler {
+public class ChangeSelectedHandler extends ChangeStrategyHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {

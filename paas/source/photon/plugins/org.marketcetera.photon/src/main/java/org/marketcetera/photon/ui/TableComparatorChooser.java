@@ -91,7 +91,7 @@ public final class TableComparatorChooser<E> extends AbstractTableComparatorChoo
                 return;
             }
         }
-        throw new IllegalArgumentException("Cannot remove nonexistent listener " + sortListener);
+        throw new IllegalArgumentException("Cannot remove nonexistent listener " + sortListener); //$NON-NLS-1$
     }
 
     /**

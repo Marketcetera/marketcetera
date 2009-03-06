@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Provides access to the core module framework.
+ * Provides access to the core module framework, and related services.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -38,7 +38,7 @@ public final class ModuleSupport {
 	public static MBeanServerConnection getMBeanServerConnection() {
 		return ManagementFactory.getPlatformMBeanServer();
 	}
-	
+
 	/**
 	 * {@link IModuleAttributeSupport} which enables interaction with the module attributes.
 	 * 
@@ -47,6 +47,16 @@ public final class ModuleSupport {
 	public static IModuleAttributeSupport getModuleAttributeSupport() {
 		Activator instance = Activator.getDefault();
 		return instance == null ? null : instance.getModuleAttributeSupport();
+	}
+
+	/**
+	 * {@link ISinkDataManager} which enables handling of sink data.
+	 * 
+	 * @return a sink data manager interface, or null if this bundle is not activated
+	 */
+	public static ISinkDataManager getSinkDataManager() {
+		Activator instance = Activator.getDefault();
+		return instance == null ? null : instance.getSinkDataManager();
 	}
 
 }

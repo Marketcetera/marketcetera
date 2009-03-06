@@ -1,8 +1,8 @@
 package org.marketcetera.photon;
 
+import java.io.PrintStream;
 import java.util.Date;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.SWT;
@@ -22,114 +22,81 @@ import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.photon.actions.ReconnectServerJob;
+import org.marketcetera.photon.module.ui.ModuleUI;
+import org.marketcetera.photon.notification.NotificationConsoleController;
 import org.marketcetera.photon.ui.PhotonConsole;
 
-/**
- * Required by the RCP platform this class is responsible for setting up the
- * workbench upon startup.
- * @author gmiller
- *
- */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class ApplicationWorkbenchWindowAdvisor 
-    extends WorkbenchWindowAdvisor
-    implements Messages
-{
+/* $License$ */
 
-    @Override
-	public boolean preWindowShellClose() {
-    	try {
-    		stopClient();
-    	} catch (Throwable t){}
-    	return true;
-    }
+/**
+ * Sets up the workbench UI
+ * 
+ * @author gmiller
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since 1.0.0
+ */
+@ClassVersion("$Id$")
+public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements Messages {
 
 	/**
-     * Simply calls superclass constructor.
-     * @param configurer the configurer to pass to the superclass
-     */
-    public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
-        super(configurer);
-    }
+	 * Constructor.
+	 * 
+	 * @param configurer
+	 *            an object for configuring the workbench window
+	 */
+	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
+		super(configurer);
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.application.WorkbenchWindowAdvisor#createActionBarAdvisor(org.eclipse.ui.application.IActionBarConfigurer)
-     */
-    public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
-        return new ApplicationActionBarAdvisor(configurer);
-    }
-    
-    /**
-     * Sets a number of options on the IWorkbenchWindowConfigurer prior
-     * to opening the window.
-     * 
-     * @see org.eclipse.ui.application.WorkbenchWindowAdvisor#preWindowOpen()
-     */
-    public void preWindowOpen() {
-        IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-        configurer.setInitialSize(new Point(1024, 768));
-        configurer.setShowCoolBar(true);
-        configurer.setShowStatusLine(true);
-        configurer.setShowMenuBar(true);
-//        IProduct product = Platform.getProduct();
-//        String productName = product == null ? "" : product.getName()
-//        configurer.setTitle(productName);
-        configurer.setShowPerspectiveBar(true);
-        configurer.setShowProgressIndicator(true);
+	@Override
+	public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
+		return new ApplicationActionBarAdvisor(configurer);
+	}
+
+	@Override
+	public void preWindowOpen() {
+		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
+		configurer.setInitialSize(new Point(1024, 768));
+		configurer.setShowCoolBar(true);
+		configurer.setShowStatusLine(true);
+		configurer.setShowMenuBar(true);
+		configurer.setShowPerspectiveBar(true);
+		configurer.setShowProgressIndicator(true);
 
 		PhotonPlugin.getDefault().initOrderTickets();
-    }
-    
-	/*
-	 * Called after the window has opened, and all UI elements have been initialized,
-	 * this method takes care of wiring UI components to
-	 * the underlying model and controller elements.  For example it connects the
-	 * Console view to a logger appender to feed it data.
-	 * 
-	 * 
-	 * @see org.eclipse.ui.application.WorkbenchWindowAdvisor#postWindowOpen()
-	 */
+	}
+
 	@Override
 	public void postWindowOpen() {
+		PhotonConsole photonConsole =
+				new PhotonConsole(Messages.MainConsole_Name.getText(),
+						PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME);
+		System.setOut(new PrintStream(photonConsole.getInfoMessageStream(), true));
+		System.setErr(new PrintStream(photonConsole.getErrorMessageStream(), true));
 
+		ConsolePlugin.getDefault().getConsoleManager()
+				.addConsoles(new IConsole[] { photonConsole });
+		ModuleUI.installSinkConsole();
+		new NotificationConsoleController().openConsole();
 
-		IConsole[] consoles = ConsolePlugin.getDefault().getConsoleManager()
-				.getConsoles();
-		PhotonPlugin plugin = PhotonPlugin.getDefault();
-		Logger mainConsoleLogger = plugin.getMainLogger();
-		Logger marketDataLogger = plugin.getMarketDataLogger();
-		PhotonConsole mainConsole = null;
-		// loop through once to find the main console
-		for (IConsole console : consoles) {
-			if (console instanceof PhotonConsole) {
-				PhotonConsole photonConsole = (PhotonConsole) console;
-				if (PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME.equals(photonConsole.getIdentifier())){
-					mainConsole = photonConsole;
-				}
-			}
-		}
-		assert(mainConsole != null);
-		mainConsoleLogger.addAppender(new PhotonConsoleAppender(mainConsole));
-		Logger.getLogger(PhotonPlugin.STRATEGY_LOGGER_NAME).addAppender(new PhotonConsoleAppender(mainConsole));
-        Logger.getLogger(PhotonPlugin.MARKETDATA_LOGGER_NAME).addAppender(new PhotonConsoleAppender(mainConsole));
-		// loop through a second time to find the secondary consoles.
-		for (IConsole console : consoles) {
-			PhotonConsole photonConsole = (PhotonConsole) console;
-			if (PhotonPlugin.MARKETDATA_CONSOLE_LOGGER_NAME
-					.equals(photonConsole.getIdentifier())) {
-				PhotonConsoleAppender photonConsoleAppender = new PhotonConsoleAppender(photonConsole);
-				marketDataLogger.addAppender(photonConsoleAppender);
-				// also output logging to the main console appender if the level is high enough
-				photonConsoleAppender.setSecondaryConsole(mainConsole, Level.WARN);
-			}
-		}
+		// activate the main console
+		photonConsole.activate();
 
+		PhotonPlugin.getMainConsoleLogger().addAppender(new PhotonConsoleAppender(photonConsole));
+		Logger.getLogger(org.marketcetera.core.Messages.USER_MSG_CATEGORY).addAppender(
+				new PhotonConsoleAppender(photonConsole));
+		Logger.getLogger(AbstractMarketDataFeed.DATAFEED_STATUS_MESSAGES).addAppender(
+				new PhotonConsoleAppender(photonConsole));
 
-		mainConsoleLogger.info(ApplicationWorkbenchWindowAdvisor_ApplicationInitializing.getText(new Date()));
+		PhotonPlugin.getMainConsoleLogger().info(
+				ApplicationWorkbenchWindowAdvisor_ApplicationInitializing.getText(new Date()));
 
-		plugin.ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
-		
+		PhotonPlugin.getDefault().ensureDefaultProject(
+				ProgressManager.getInstance().getDefaultMonitor());
+
 		// The login dialog interferes with testing, this check is to ensure tests are not being run
 		if (PlatformUI.getTestableObject().getTestHarness() == null) {
 			startClient();
@@ -138,19 +105,18 @@ public class ApplicationWorkbenchWindowAdvisor
 		initStatusLine();
 	}
 
-	/** 
+	/**
 	 * Initializes the status line.
-	 * 
 	 */
 	private void initStatusLine() {
-		IStatusLineManager statusline = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
-		statusline.setMessage(ApplicationWorkbenchWindowAdvisor_OnlineLabel.getText()); 
+		IStatusLineManager statusline =
+				getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
+		statusline.setMessage(ApplicationWorkbenchWindowAdvisor_OnlineLabel.getText());
 	}
 
 	private void startClient() {
 		new ReconnectServerJob().schedule();
 	}
-
 
 	private void stopClient() {
 		try {
@@ -159,14 +125,22 @@ public class ApplicationWorkbenchWindowAdvisor
 			// already closed
 		}
 	}
-	
+
 	@Override
 	public void createWindowContents(Shell shell) {
 		super.createWindowContents(shell);
-		// Could not do this declaratively due to https://bugs.eclipse.org/bugs/show_bug.cgi?id=253232 
-		ITrimManager trimManager = ((WorkbenchWindow) getWindowConfigurer().getWindow()).getTrimManager();
+		// Could not do this declaratively due to http://bugs.eclipse.org/253232
+		ITrimManager trimManager =
+				((WorkbenchWindow) getWindowConfigurer().getWindow()).getTrimManager();
 		IWindowTrim trim = trimManager.getTrim("org.marketcetera.photon.statusToolbar"); //$NON-NLS-1$
 		IWindowTrim beforeMe = trimManager.getTrim("org.eclipse.jface.action.StatusLineManager"); //$NON-NLS-1$
 		trimManager.addTrim(SWT.BOTTOM, trim, beforeMe);
 	}
+
+	@Override
+	public boolean preWindowShellClose() {
+		stopClient();
+		return true;
+	}
+
 }
