@@ -16,7 +16,7 @@ import org.marketcetera.util.except.ExceptUtils;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public final class ReflectUtils
 {
 

@@ -14,7 +14,7 @@ import org.apache.commons.lang.SystemUtils;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public enum OperatingSystem
 {
     WINDOWS_2000("Windows 2000"), //$NON-NLS-1$

@@ -13,7 +13,7 @@ import java.util.Vector;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class UCPFilterInfo
 {
 
