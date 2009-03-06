@@ -61,16 +61,10 @@
       <artifactId>geronimo-jms_1.1_spec</artifactId>
     </dependency>
 
-    <!-- Runtime. -->
-
     <!-- Testing. -->
     <dependency>
       <groupId>${mvn.public.package}</groupId>
       <artifactId>util-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit-dep</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
@@ -149,7 +143,7 @@
         <executions>
           <execution>
             <!-- In this phase, the persistence.xml file has been copied. -->
-            <phase>process-test-resources</phase>
+            <phase>process-test-classes</phase>
             <goals>
               <goal>hbm2ddl</goal>
             </goals>

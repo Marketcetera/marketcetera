@@ -54,9 +54,5 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>util-test</artifactId>
     </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit-dep</artifactId>
-    </dependency>
   </dependencies>
 </project>
