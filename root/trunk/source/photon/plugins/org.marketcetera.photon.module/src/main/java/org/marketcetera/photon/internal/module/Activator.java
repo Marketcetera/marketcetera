@@ -1,9 +1,11 @@
 package org.marketcetera.photon.internal.module;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.module.IModuleAttributeSupport;
+import org.marketcetera.photon.module.ISinkDataManager;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -41,6 +43,11 @@ public final class Activator implements BundleActivator {
 	 */
 	private IModuleAttributeSupport mModuleAttributeSupport;
 	
+	/**
+	 * Multiplexes sink data
+	 */
+	private SinkDataManager mSinkDataManager;
+
 	@Override
 	public void start(BundleContext context) throws Exception {
 		sInstance = this;
@@ -49,6 +56,9 @@ public final class Activator implements BundleActivator {
 		mModuleManager
 				.setConfigurationProvider(new EclipseModuleConfigurationProvider(
 						mModuleAttributeSupport));
+		mSinkDataManager = new SinkDataManager();
+		mSinkDataManager.register(new NotificationHandler(), INotification.class);
+		mModuleManager.addSinkListener(mSinkDataManager);
 		mModuleManager.init();
 	}
 
@@ -56,6 +66,7 @@ public final class Activator implements BundleActivator {
 	public void stop(BundleContext context) throws Exception {
 		sInstance = null;
 		mModuleAttributeSupport = null;
+		mSinkDataManager = null;
 		try {
 			mModuleManager.stop();
 		} catch (ModuleException e) {
@@ -79,21 +90,30 @@ public final class Activator implements BundleActivator {
 	}
 
 	/**
-	 * The core {@link ModuleManager} instance.
+	 * Returns the core {@link ModuleManager} instance.
 	 * 
-	 * @return the core module manager.
+	 * @return the core module manager
 	 */
 	public ModuleManager getModuleManager() {
 		return mModuleManager;
 	}
 	
 	/**
-	 * The {@link ModuleManager} instance.
+	 * Returns the {@link IModuleAttributeSupport} instance.
 	 * 
-	 * @return the core module manager.
+	 * @return the module attribute support
 	 */
 	public IModuleAttributeSupport getModuleAttributeSupport() {
 		return mModuleAttributeSupport;
+	}
+	
+	/**
+	 * Returns the {@link ISinkDataManager} instance.
+	 * 
+	 * @return the sink data manager
+	 */
+	public ISinkDataManager getSinkDataManager() {
+		return mSinkDataManager;
 	}
 
 }

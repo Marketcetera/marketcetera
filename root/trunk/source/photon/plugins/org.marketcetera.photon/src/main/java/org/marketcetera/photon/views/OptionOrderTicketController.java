@@ -184,7 +184,7 @@ public class OptionOrderTicketController
 				optionRootSet.add(optionData.getOptionRoot());
 				optionExpirations.add(optionData);
 			} catch (ParseException e) {
-				PhotonPlugin.getDefault().getMarketDataLogger().info(e.getLocalizedMessage());
+				PhotonPlugin.getDefault().getMainLogger().info(e.getLocalizedMessage());
 			}
 		}
 	}
@@ -243,12 +243,12 @@ public class OptionOrderTicketController
 					holder.setExtraInfo(putOrCall, info);
 				} catch (ParseException e) {
 					MSymbol underlying =new MSymbol(derivativeSecurityList.getString(Symbol.FIELD));
-					PhotonPlugin.getDefault().getMarketDataLogger().error(CANNOT_PARSE_OPTION_INFO_SPECIFIED.getText(underlying),
+					PhotonPlugin.getDefault().getMainLogger().error(CANNOT_PARSE_OPTION_INFO_SPECIFIED.getText(underlying),
 					                                                      e);
 				}
 			}
 		} catch (FieldNotFound e) {
-			PhotonPlugin.getDefault().getMarketDataLogger().error(CANNOT_PARSE_OPTION_INFO.getText(),
+			PhotonPlugin.getDefault().getMainLogger().error(CANNOT_PARSE_OPTION_INFO.getText(),
 			                                                      e);
 		}
 	}

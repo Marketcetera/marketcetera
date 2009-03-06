@@ -30,7 +30,6 @@ public class SinkConsoleControllerTest {
 	 */
 	@Test
 	public void testCSVDataFlow() throws Exception {
-		new SinkConsoleController().openConsole();
 		ModuleManagerMXBean mm = JMX.newMXBeanProxy(ModuleSupport
 				.getMBeanServerConnection(), new ObjectName(
 				ModuleManager.MODULE_MBEAN_NAME), ModuleManagerMXBean.class);

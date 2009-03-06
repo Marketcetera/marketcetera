@@ -44,14 +44,16 @@ public interface Messages {
 			LOGGER, "strategyui.display_name.label"); //$NON-NLS-1$
 	static final I18NMessage0P STRATEGYUI_DISPLAY_NAME_TOOLTIP = new I18NMessage0P(
 			LOGGER, "strategyui.display_name.tooltip"); //$NON-NLS-1$
-	static final I18NMessage0P STRATEGYUI_DESTINATION_LABEL = new I18NMessage0P(
-			LOGGER, "strategyui.destination.label"); //$NON-NLS-1$
-	static final I18NMessage0P STRATEGYUI_DESTINATION_TOOLTIP = new I18NMessage0P(
-			LOGGER, "strategyui.destination.tooltip"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGYUI_ROUTE_TO_SERVER_LABEL = new I18NMessage0P(
+			LOGGER, "strategyui.route_to_server.label"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGYUI_ROUTE_TO_SERVER_TOOLTIP = new I18NMessage0P(
+			LOGGER, "strategyui.route_to_server.tooltip"); //$NON-NLS-1$
 	static final I18NMessage0P REGISTER_RUBY_STRATEGY_TITLE = new I18NMessage0P(
 			LOGGER, "register_ruby_strategy.title"); //$NON-NLS-1$
 	static final I18NMessage0P REGISTER_RUBY_STRATEGY_DESCRIPTION = new I18NMessage0P(
 			LOGGER, "register_ruby_strategy.description"); //$NON-NLS-1$
+	static final I18NMessage0P REGISTER_RUBY_STRATEGY_CONFIGURATION_GROUP_LABEL = new I18NMessage0P(
+			LOGGER, "register_ruby_strategy.configuration_group_label"); //$NON-NLS-1$
 	static final I18NMessage1P STRATEGY_VALIDATION_NAME_NOT_UNIQUE = new I18NMessage1P(
 			LOGGER, "strategy_validation.name_not_unique"); //$NON-NLS-1$
 	static final I18NMessage1P STRATEGY_VALIDATION_REQUIRED_FIELD_BLANK = new I18NMessage1P(
@@ -90,10 +92,6 @@ public interface Messages {
 			LOGGER, "strategy_properties.delete.label"); //$NON-NLS-1$
 	static final I18NMessage0P STRATEGY_PROPERTIES_PARAMETERS_DESCRIPTION = new I18NMessage0P(
 			LOGGER, "strategy_properties.parameters.description"); //$NON-NLS-1$
-	static final I18NMessage0P STRATEGY_SERVER_DESTINATION_LABEL = new I18NMessage0P(
-			LOGGER, "strategy.server_destination.label"); //$NON-NLS-1$
-	static final I18NMessage0P STRATEGY_SINK_DESTINATION_LABEL = new I18NMessage0P(
-			LOGGER, "strategy.sink_destination.label"); //$NON-NLS-1$
 	static final I18NMessage0P TRADE_SUGGESTION_IDENTIFIER_LABEL = new I18NMessage0P(
 			LOGGER, "trade_suggestion.identifier.label"); //$NON-NLS-1$
 	static final I18NMessage0P TRADE_SUGGESTION_SIDE_LABEL = new I18NMessage0P(
@@ -132,15 +130,27 @@ public interface Messages {
 			LOGGER, "send_orders_handler.send_orders_failure.see_details"); //$NON-NLS-1$
 	static final I18NMessage0P OPEN_SUGGESTION_HANDLER_CONVERSION_FAILURE = new I18NMessage0P(
 			LOGGER, "open_suggestions_handler.conversion_failure"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_PROPERTY_PAGE_URL_LABEL = new I18NMessage0P(
+			LOGGER, "remote_agent_property_page.url_label"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_PROPERTY_PAGE_URL_TOOLTIP = new I18NMessage0P(
+			LOGGER, "remote_agent_property_page.url_tooltip"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_PROPERTY_PAGE_CREDENTIALS_LABEL = new I18NMessage0P(
+			LOGGER, "remote_agent_property_page.credentials_label"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_PROPERTY_PAGE_CREDENTIALS_DESCRIPTION = new I18NMessage0P(
+			LOGGER, "remote_agent_property_page.credentials_description"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_PROPERTY_PAGE_USERNAME_LABEL = new I18NMessage0P(
+			LOGGER, "remote_agent_property_page.username_label"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_PROPERTY_PAGE_PASSWORD_LABEL = new I18NMessage0P(
+			LOGGER, "remote_agent_property_page.password_label"); //$NON-NLS-1$
+	static final I18NMessage1P REMOTE_AGENT_PROPERTY_PAGE_INVALID_URL = new I18NMessage1P(
+			LOGGER, "remote_agent_property_page.invalid_url"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_MANAGER_DELETE_MODULE_QUESTION =
+		new I18NMessage0P(LOGGER, "remote_agent_manager.delete_module_question"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_MANAGER_REMOTE_AGENT_DISPLAY_NAME =
+		new I18NMessage0P(LOGGER, "strategy_manager_remote_agent_display_name"); //$NON-NLS-1$
 
 	/*
-	 * Module information
-	 */
-	static final I18NMessage0P TRADE_SUGGESTION_RECEIVER_DESCRIPTION = new I18NMessage0P(
-			LOGGER, "trade_suggestion_receiver.description"); //$NON-NLS-1$
-
-	/*
-	 * Log Messages
+	 * Error Messages
 	 */
 	static final I18NMessage2P NEW_RUBY_STRATEGY_CREATION_FAILED = new I18NMessage2P(
 			LOGGER, "new_ruby_strategy.creation_failed"); //$NON-NLS-1$
@@ -150,14 +160,28 @@ public interface Messages {
 			LOGGER, "strategy_manager.restore_failed"); //$NON-NLS-1$
 	static final I18NMessage2P STRATEGY_MANAGER_SCRIPT_NOT_FOUND = new I18NMessage2P(
 			LOGGER, "strategy_manager.script_not_found"); //$NON-NLS-1$
-	static final I18NMessage1P STRATEGY_MANAGER_INVALID_DESTINATION = new I18NMessage1P(
-			LOGGER, "strategy_manager.invalid_destination"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_MANAGER_RESTORE_URI_FAILED = new I18NMessage0P(
+			LOGGER, "strategy_manager.restore_uri_failed"); //$NON-NLS-1$
 	static final I18NMessage1P STRATEGY_MANAGER_STRATEGY_START_FAILED = new I18NMessage1P(
 			LOGGER, "strategy_manager.strategy_start_failed"); //$NON-NLS-1$
 	static final I18NMessage1P STRATEGY_MANAGER_STRATEGY_STOP_FAILED = new I18NMessage1P(
 			LOGGER, "strategy_manager.strategy_stop_failed"); //$NON-NLS-1$
-	static final I18NMessage1P TRADE_SUGGESTION_RECEIVER_INVALID_DATA_TYPE = new I18NMessage1P(
-			LOGGER, "trade_suggestion_receiver.invalid_data_type"); //$NON-NLS-1$
-	static final I18NMessage0P TRADE_SUGGESTION_RECEIVER_INVALID_DATA_NO_ORDER = new I18NMessage0P(
-			LOGGER, "trade_suggestion_receiver.invalid_data_no_order"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_MANAGER_INVALID_DATA_NO_ORDER = new I18NMessage0P(
+			LOGGER, "trade_suggestion_manager.invalid_data_no_order"); //$NON-NLS-1$
+	static final I18NMessage1P REMOTE_AGENT_MANAGER_CONNECT_FAILED =
+			new I18NMessage1P(LOGGER, "remote_agent_manager.connect_failed"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_MANAGER_DISCONNECT_FAILED =
+			new I18NMessage0P(LOGGER, "remote_agent_manager.disconnect_failed"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_MANAGER_COULD_NOT_SUBSCRIBE_TO_STATUS_UPDATES =
+			new I18NMessage0P(LOGGER, "remote_agent_manager.could_not_subscribe_to_status_updates"); //$NON-NLS-1$
+	static final I18NMessage1P REMOTE_AGENT_MANAGER_LOST_CONNECTION =
+			new I18NMessage1P(LOGGER, "remote_agent_manager.lost_connection"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_MANAGER_LOST_CONNECTION_UNKNOWN_CAUSE =
+			new I18NMessage0P(LOGGER, "remote_agent_manager.lost_connection_unknown_cause"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_MANAGER_CLEANUP_FAILED =
+			new I18NMessage0P(LOGGER, "remote_agent_manager.cleanup_failed"); //$NON-NLS-1$
+	static final I18NMessage0P REMOTE_AGENT_MANAGER_MISSING_URI =
+			new I18NMessage0P(LOGGER, "remote_agent_manager.missing_uri"); //$NON-NLS-1$
+	static final I18NMessage2P CHANGE_STATE_HANDLER_INVALID_STATE =
+			new I18NMessage2P(LOGGER, "change_state_handler.invalid_state"); //$NON-NLS-1$
 }

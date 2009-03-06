@@ -728,21 +728,8 @@ final class StrategyModule
      * @param inEvent a <code>LogEvent</code> value
      * @return a <code>boolean</code> value
      */
-    private static boolean shouldLog(LogEvent inEvent)
-    {
-        if(Level.DEBUG.equals(inEvent.getLevel())) {
-            return SLF4JLoggerProxy.isDebugEnabled(Strategy.STRATEGY_MESSAGES);
-        }
-        if(Level.INFO.equals(inEvent.getLevel())) {
-            return SLF4JLoggerProxy.isInfoEnabled(Strategy.STRATEGY_MESSAGES);
-        }
-        if(Level.WARN.equals(inEvent.getLevel())) {
-            return SLF4JLoggerProxy.isWarnEnabled(Strategy.STRATEGY_MESSAGES);
-        }
-        if(Level.ERROR.equals(inEvent.getLevel())) {
-            return SLF4JLoggerProxy.isErrorEnabled(Strategy.STRATEGY_MESSAGES);
-        }
-        return false;
+    private static boolean shouldLog(LogEvent inEvent) {
+        return LogEvent.shouldLog(inEvent, Strategy.STRATEGY_MESSAGES);
     }
     /**
      * Logs the given message to the standard log.

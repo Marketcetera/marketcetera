@@ -95,6 +95,10 @@
 	         activityId="org.marketcetera.photon.expose"
 	         pattern="org\.eclipse\.ui\.ide/org\.eclipse\.ui\.wizards\.import\.ZipFile">
 	   </activityPatternBinding>
+	   <activityPatternBinding
+	         activityId="org.marketcetera.photon.expose"
+	         pattern="org\.eclipse\.ui\.editors/org\.eclipse\.ui\.editors\.wizards\.UntitledTextFileWizard">
+	   </activityPatternBinding>
 	   <defaultEnablement
 	         id="org.marketcetera.photon.expose">
       </defaultEnablement>
