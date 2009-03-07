@@ -83,11 +83,9 @@ interface OutboundServicesProvider
      * module.
      * 
      * @param inRequest a <code>MarketDataRequest</code> value indicating what data to request
-     * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
      * @return an <code>int</code> value containing an identifier corresponding to this market data request
      */
-    int requestMarketData(MarketDataRequest inRequest,
-                          String inSource);
+    int requestMarketData(MarketDataRequest inRequest);
     /**
      * Creates a market data request processed by a complex event processor. 
      *
@@ -95,14 +93,12 @@ interface OutboundServicesProvider
      * module.
      * 
      * @param inRequest a <code>MarketDataRequest</code> value containing the request to execute
-     * @param inMarketDataSource a <code>String</code> value containing the source from which to request the market data
      * @param inStatements a <code>String[]</code> value indicating what data to request
-     * @param inSource a <code>String</code> value indicating what complex event processor provider from which to request the data
      * @param inNamespace a <code>String</code> value indicating what complex event processor namespace to use
+     * @param inSource a <code>String</code> value indicating what complex event processor provider from which to request the data
      * @return an <code>int</code> value containing the request handle or 0 if the request failed
      */
     int requestProcessedMarketData(MarketDataRequest inRequest,
-                                   String inMarketDataSource,
                                    String[] inStatements,
                                    String inCEPSource,
                                    String inNamespace);

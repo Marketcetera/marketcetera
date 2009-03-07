@@ -12,7 +12,13 @@ import java.util.List;
 
 import junit.framework.Test;
 
-import org.marketcetera.core.*;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.CoreException;
+import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.FIXVersionTestSuite;
+import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.MSymbol;
 
 import quickfix.DataDictionary;
@@ -21,7 +27,45 @@ import quickfix.Group;
 import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.StringField;
-import quickfix.field.*;
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.CFICode;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.EncodedText;
+import quickfix.field.EncodedTextLen;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.HandlInst;
+import quickfix.field.LastPx;
+import quickfix.field.LastQty;
+import quickfix.field.LeavesQty;
+import quickfix.field.MDEntryPx;
+import quickfix.field.MDEntrySize;
+import quickfix.field.MDEntryType;
+import quickfix.field.MDReqID;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.MsgType;
+import quickfix.field.NoMDEntries;
+import quickfix.field.NoMDEntryTypes;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.Price;
+import quickfix.field.PutOrCall;
+import quickfix.field.SecurityExchange;
+import quickfix.field.SecurityType;
+import quickfix.field.Side;
+import quickfix.field.StrikePrice;
+import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
+import quickfix.field.SymbolSfx;
+import quickfix.field.Text;
+import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
 /* $License$ */
 /**
  * @author Graham Miller
@@ -272,25 +316,75 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         }
     }
 
-    public void testMDR_oneSymbol() throws Exception {
-        List<MSymbol> list = Arrays.asList(new MSymbol("TOLI")); //$NON-NLS-1$
-        Message req = msgFactory.newMarketDataRequest("toliID", list); //$NON-NLS-1$
-        assertEquals("sending 1 numSymbols doesn't work", 1, req.getInt(NoRelatedSym.FIELD)); //$NON-NLS-1$
-        for(int i=0;i<list.size(); i++) {
-            Group symbolGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
-            req.getGroup(i+1, symbolGroup);
-            assertEquals("quote for symbol["+i+"] is wrong", list.get(i).getFullSymbol(), symbolGroup.getString(Symbol.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
-        }
+    public void testMDR_oneSymbol()
+        throws Exception
+    {
+        List<MSymbol> list = Arrays.asList(new MSymbol("TOLI"));
+        verifyMDR(msgFactory.newMarketDataRequest("toliID",
+                                                  list),
+                  list,
+                  null);
+        verifyMDR(msgFactory.newMarketDataRequest("toliID",
+                                                  list,
+                                                  "Q"),
+                  list,
+                  "Q");
     }
 
-    public void testMDR_ManySymbols() throws Exception {
-        List<MSymbol> list = Arrays.asList(new MSymbol("TOLI"), new MSymbol("GRAHAM"), new MSymbol("LENA")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        Message req = msgFactory.newMarketDataRequest("toliID", list); //$NON-NLS-1$
-        assertEquals("sending 1 numSymbols doesn't work", list.size(), req.getInt(NoRelatedSym.FIELD)); //$NON-NLS-1$
-        for(int i=0;i<list.size(); i++) {
-            Group symbolGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
-            req.getGroup(i+1, symbolGroup);
-            assertEquals("quote for symbol["+i+"] is wrong", list.get(i).getFullSymbol(), symbolGroup.getString(Symbol.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
+    public void testMDR_ManySymbols()
+        throws Exception
+    {
+        List<MSymbol> list = Arrays.asList(new MSymbol("TOLI"),
+                                           new MSymbol("GRAHAM"),
+                                           new MSymbol("LENA"),
+                                           new MSymbol("COLIN"));
+        verifyMDR(msgFactory.newMarketDataRequest("toliID",
+                                                  list),
+                  list,
+                  null);
+        verifyMDR(msgFactory.newMarketDataRequest("toliID",
+                                                  list,
+                                                  "Q"),
+                  list,
+                  "Q");
+    }
+
+    /**
+     * Verifies that the given <code>Message</code> represents the given symbols and exchange.
+     *
+     * @param inActualMessage a <code>Message</code> containing the message to test
+     * @param inExpectedSymbols a <code>&lt;MSymbol&gt;</code> value containing the expected symbols
+     * @param inExpectedExchange a <code>String</code> value containing the expected exchange or null for no exchange 
+     * @throws Exception if an error occurs
+     */
+    private void verifyMDR(Message inActualMessage,
+                           List<MSymbol> inExpectedSymbols,
+                           String inExpectedExchange)
+        throws Exception
+    {
+        assertEquals(inExpectedSymbols.size(),
+                     inActualMessage.getInt(NoRelatedSym.FIELD));
+        for(int i=0;i<inExpectedSymbols.size(); i++) {
+            final Group symbolGroup = msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST,
+                                                             NoRelatedSym.FIELD);
+            inActualMessage.getGroup(i+1,
+                                     symbolGroup);
+            assertEquals("quote for symbol["+i+"] is wrong",
+                         inExpectedSymbols.get(i).getFullSymbol(),
+                         symbolGroup.getString(Symbol.FIELD));
+            if(inExpectedExchange == null ||
+               inExpectedExchange.isEmpty()) {
+                new ExpectedFailure<FieldNotFound>(null) {
+                    protected void run()
+                    throws Exception
+                    {
+                        symbolGroup.getString(SecurityExchange.FIELD);
+                    }
+                };
+            } else {
+                assertEquals(inExpectedExchange,
+                             symbolGroup.getString(SecurityExchange.FIELD));
+            }
         }
     }
 

@@ -71,4 +71,13 @@ public class MarketceteraFeedModuleTest
         throws Exception
     {
     }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataModuleTestBase#getProvider()
+     */
+    @Override
+    protected String getProvider()
+    {
+        return MarketceteraFeedModuleFactory.IDENTIFIER;
+    }
 }

@@ -53,7 +53,7 @@ public interface Messages
                                                                      "no_strategy_class"); //$NON-NLS-1$
     static final I18NMessage1P NO_SUPPORT_FOR_LANGUAGE = new I18NMessage1P(LOGGER,
                                                                            "no_support_for_language"); //$NON-NLS-1$
-    static final I18NMessage2P MARKET_DATA_REQUEST_FAILED = new I18NMessage2P(LOGGER,
+    static final I18NMessage1P MARKET_DATA_REQUEST_FAILED = new I18NMessage1P(LOGGER,
                                                                               "market_data_request_failed"); //$NON-NLS-1$
     static final I18NMessage2P CEP_REQUEST_FAILED = new I18NMessage2P(LOGGER,
                                                                       "cep_request_failed"); //$NON-NLS-1$
@@ -61,7 +61,7 @@ public interface Messages
                                                                      "null_property_key"); //$NON-NLS-1$
     static final I18NMessage1P NO_PARAMETERS = new I18NMessage1P(LOGGER,
                                                                  "no_parameters"); //$NON-NLS-1$
-    static final I18NMessage3P INVALID_MARKET_DATA_REQUEST = new I18NMessage3P(LOGGER,
+    static final I18NMessage2P INVALID_MARKET_DATA_REQUEST = new I18NMessage2P(LOGGER,
                                                                                "invalid_market_data_request"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_TRADE_SUGGESTION = new I18NMessage1P(LOGGER,
                                                                             "invalid_trade_suggestion"); //$NON-NLS-1$
@@ -115,9 +115,9 @@ public interface Messages
                                                                             "cannot_create_connection"); //$NON-NLS-1$
     static final I18NMessage3P INVALID_EVENT_TO_CEP = new I18NMessage3P(LOGGER,
                                                                         "invalid_event_to_cep"); //$NON-NLS-1$
-    static final I18NMessage6P INVALID_COMBINED_DATA_REQUEST = new I18NMessage6P(LOGGER,
+    static final I18NMessage5P INVALID_COMBINED_DATA_REQUEST = new I18NMessage5P(LOGGER,
                                                                                  "invalid_combined_data_request"); //$NON-NLS-1$
-    static final I18NMessage5P COMBINED_DATA_REQUEST_FAILED = new I18NMessage5P(LOGGER,
+    static final I18NMessage4P COMBINED_DATA_REQUEST_FAILED = new I18NMessage4P(LOGGER,
                                                                                 "combined_data_request_failed"); //$NON-NLS-1$
     static final I18NMessage1P STRATEGY_COMPILATION_NULL_RESULT = new I18NMessage1P(LOGGER,
                                                                                     "strategy_compilation_null_result"); //$NON-NLS-1$

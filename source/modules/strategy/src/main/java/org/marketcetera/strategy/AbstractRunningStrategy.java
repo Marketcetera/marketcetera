@@ -62,7 +62,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.LogEvent;
-import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
@@ -214,11 +213,11 @@ public abstract class AbstractRunningStrategy
      * Requests market data from the given source.
      *
      * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols
-     * @param inSource a <code>String</code> value containing a string corresponding to a market data provider identifier
+     * @param inProvider a <code>String</code> value containing a string corresponding to a market data provider identifier
      * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
      */
     protected final int requestMarketData(String inSymbols,
-                                          String inSource)
+                                          String inProvider)
     {
         if(!canReceiveData()) {
             StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
@@ -230,28 +229,26 @@ public abstract class AbstractRunningStrategy
         if(inSymbols != null &&
            !inSymbols.isEmpty()) {
             try {
-                MarketDataRequest request = constructMarketDataRequest(inSymbols);
+                MarketDataRequest request = constructMarketDataRequest(inSymbols,
+                                                                       inProvider);
                 StrategyModule.log(LogEvent.debug(SUBMITTING_MARKET_DATA_REQUEST,
                                                   String.valueOf(strategy),
                                                   String.valueOf(request),
-                                                  inSource),
+                                                  inProvider),
                                    strategy);
-                return strategy.getOutboundServicesProvider().requestMarketData(request,
-                                                                                inSource);
+                return strategy.getOutboundServicesProvider().requestMarketData(request);
             } catch (Exception e) {
                 StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
                                                  e,
                                                  String.valueOf(strategy),
-                                                 inSymbols,
-                                                 inSource),
+                                                 inSymbols),
                                    strategy);
                 return 0;
             }
         }
         StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
                                          String.valueOf(strategy),
-                                         inSymbols,
-                                         inSource),
+                                         inSymbols),
                            strategy);
         return 0;
     }
@@ -285,8 +282,7 @@ public abstract class AbstractRunningStrategy
            inMarketDataSource.isEmpty()) {
             StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
                                              String.valueOf(strategy),
-                                             inSymbols,
-                                             inMarketDataSource),
+                                             inSymbols),
                                strategy);
             return 0;
         }
@@ -306,7 +302,8 @@ public abstract class AbstractRunningStrategy
         String namespace = strategy.getDefaultNamespace();
         try {
             // construct market data request
-            marketDataRequest = constructMarketDataRequest(inSymbols);
+            marketDataRequest = constructMarketDataRequest(inSymbols,
+                                                           inMarketDataSource);
             // retrieve CEP default namespace
             StrategyModule.log(LogEvent.debug(SUBMITTING_PROCESSED_MARKET_DATA_REQUEST,
                                               String.valueOf(strategy),
@@ -317,7 +314,6 @@ public abstract class AbstractRunningStrategy
                                               namespace),
                                strategy);
             return strategy.getOutboundServicesProvider().requestProcessedMarketData(marketDataRequest,
-                                                                                   inMarketDataSource,
                                                                                    inStatements,
                                                                                    inCepSource,
                                                                                    namespace);
@@ -325,7 +321,6 @@ public abstract class AbstractRunningStrategy
             StrategyModule.log(LogEvent.warn(COMBINED_DATA_REQUEST_FAILED,
                                              e,
                                              String.valueOf(marketDataRequest),
-                                             inMarketDataSource,
                                              Arrays.toString(inStatements),
                                              inCepSource,
                                              namespace),
@@ -1001,14 +996,15 @@ public abstract class AbstractRunningStrategy
      * Constructs a market data request from the given string of symbols.
      *
      * @param inSymbols a <code>String</code> value containing the list of symbols for which to request market data
+     * @param inProvider a <code>String</code> value containing the provider from which to request the data
      * @return a <code>MarketDataRequest</code> value
      * @throws Exception if an error occurs
      */
-    private MarketDataRequest constructMarketDataRequest(String inSymbols)
+    private MarketDataRequest constructMarketDataRequest(String inSymbols,
+                                                         String inProvider)
         throws Exception
     {
-        return (MarketDataRequest)DataRequest.newRequestFromString(String.format("type=marketdata:symbols=%s", //$NON-NLS-1$
-                                                                                 inSymbols));
+        return MarketDataRequest.newRequest().withSymbols(inSymbols).fromProvider(inProvider);
     }
     /**
      * Indicates if outgoing data can be sent.

@@ -12,11 +12,9 @@ import org.marketcetera.core.MarketceteraTestSuite;
 public abstract class MarketDataFeedTestSuite
     extends MarketceteraTestSuite
 {
-    public static DataRequest generateDataRequest() 
-        throws FeedException
+    public static MarketDataRequest generateDataRequest() 
+        throws Exception
     {
-        return MarketDataRequest.newFullBookRequest("GOOG",
-                                                    "MSFT",
-                                                    "YGZ9");
+        return MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG,MSFT,YGZ9");
     }    
 }

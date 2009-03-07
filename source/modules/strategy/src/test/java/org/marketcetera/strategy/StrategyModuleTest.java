@@ -328,7 +328,7 @@ public class StrategyModuleTest
         // plumb the market data provider externally to the strategy module - normally, this would be done internally, but, for this test,
         //  it is sufficient that the data is flowing, it doesn't matter how it gets there
         DataFlowID dataFlowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.PROVIDER_URN,
-                                                                                                 MarketDataRequest.newFullBookRequest("GOOG")),
+                                                                                                 MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG")),
                                                                                  new DataRequest(strategy) },
                                                              false);
         // TODO when the strategy services come on-line, use them to measure the data coming in, for now, take a little nap and let the data flow

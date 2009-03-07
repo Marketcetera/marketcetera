@@ -42,7 +42,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  *   <li>C - The credentials class for this feed</li>
  *   <li>X - The message translator class for this feed</li>
  *   <li>E - The event translator class for this feed</li>
- *   <li>D - The type returned from {@link DataRequestTranslator#fromDataRequest(DataRequest)}.</li>
+ *   <li>D - The type returned from {@link DataRequestTranslator#fromDataRequest(MarketDataRequest)}.</li>
  *   <li>F - The market data feed type itself</li>
  * </ul>
  *
@@ -339,39 +339,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * @return a <code>List&lt;String&gt;</code> value containing the set of
      *   handles to be associated with this request
      * @throws FeedException if the request cannot be transmitted to the feed
-     * @see DataRequestTranslator#fromDataRequest(DataRequest)
+     * @see DataRequestTranslator#fromDataRequest(MarketDataRequest)
      */
     protected abstract List<String> doMarketDataRequest(D inData)
-        throws FeedException;
-    /**
-     * Executes the derivative security list request represented by the passed value.
-     * 
-     * <p>The values returned in the handle list must be unique with respect
-     * to the current JVM invocation for this data feed.
-     *
-     * @param inData a <code>D</code> value containing the data returned by
-     *   the corresponding {@link DataRequestTranslator}.
-     * @return a <code>List&lt;String&gt;</code> value containing the set of
-     *   handles to be associated with this request
-     * @throws FeedException if the request cannot be transmitted to the feed
-     * @see DataRequestTranslator#fromDataRequest(DataRequest)
-     */
-    protected abstract List<String> doDerivativeSecurityListRequest(D inData)
-        throws FeedException;
-    /**
-     * Executes the security list request represented by the passed value.
-     * 
-     * <p>The values returned in the handle list must be unique with respect
-     * to the current JVM invocation for this data feed.
-     *
-     * @param inData a <code>D</code> value containing the data returned by
-     *   the corresponding {@link DataRequestTranslator}.
-     * @return a <code>List&lt;String&gt;</code> value containing the set of
-     *   handles to be associated with this request
-     * @throws FeedException if the request cannot be transmitted to the feed
-     * @see DataRequestTranslator#fromDataRequest(DataRequest)
-     */
-    protected abstract List<String> doSecurityListRequest(D inData)
         throws FeedException;
     /**
      * Returns an instance of {@link DataRequestTranslator} appropriate for this feed.
@@ -600,21 +570,11 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             // translate fix message to specialized type
             X xlator = getMessageTranslator();
             // the request is represented by a request stored on the token
-            DataRequest request = inToken.getTokenSpec().getDataRequest();
+            MarketDataRequest request = inToken.getTokenSpec().getDataRequest();
             // translate the request to an appropriate proprietary format
             D data = xlator.fromDataRequest(request);
             if(request instanceof MarketDataRequest) {
                 processResponse(doMarketDataRequest(data), 
-                                inToken);
-                return true;
-            }
-            if(request instanceof DerivativeSecurityListRequest) {
-                processResponse(doDerivativeSecurityListRequest(data), 
-                                inToken);
-                return true;
-            }
-            if(request instanceof SecurityListRequest) {
-                processResponse(doSecurityListRequest(data), 
                                 inToken);
                 return true;
             }

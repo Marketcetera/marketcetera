@@ -21,7 +21,7 @@ import org.marketcetera.event.MockEventTranslator;
  */
 public class MarketDataFeedTestBase
 {
-    protected DataRequest dataRequest;
+    protected MarketDataRequest dataRequest;
     protected MockMarketDataFeedCredentials mCredentials;
     
     @BeforeClass

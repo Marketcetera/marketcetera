@@ -32,6 +32,7 @@ import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.MarketDataFeed;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.OrderBook;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -67,7 +68,7 @@ public class BogusFeed
                                    BogusFeedCredentials,
                                    BogusFeedMessageTranslator,
                                    BogusFeedEventTranslator,
-                                   BogusMessage,
+                                   MarketDataRequest,
                                    BogusFeed> 
 {
     /**
@@ -212,7 +213,7 @@ public class BogusFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLevelOneMarketDataRequest(java.lang.Object)
      */
     @Override
-    protected final synchronized List<String> doMarketDataRequest(BogusMessage inData)
+    protected final synchronized List<String> doMarketDataRequest(MarketDataRequest inData)
         throws FeedException
     {
         try {
@@ -221,24 +222,6 @@ public class BogusFeed
         } catch (Throwable t) {
             throw new FeedException(t);
         }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doDerivativeSecurityListRequest(java.lang.Object)
-     */
-    @Override
-    protected final synchronized List<String> doDerivativeSecurityListRequest(BogusMessage inData)
-            throws FeedException
-    {
-        throw new UnsupportedOperationException();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doSecurityListRequest(java.lang.Object)
-     */
-    @Override
-    protected final synchronized List<String> doSecurityListRequest(BogusMessage inData)
-            throws FeedException
-    {
-        throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogin(org.marketcetera.marketdata.AbstractMarketDataFeedCredentials)
@@ -667,15 +650,15 @@ public class BogusFeed
         /**
          * Submits a request to the feed.
          *
-         * @param inData a <code>BogusMessage</code> value
+         * @param inData a <code>MarketDataRequest</code> value
          * @param inFeed a <code>BogusFeed</code> value
          * @return a <code>List&lt;String&gt;</code> value containing the handles created for the request
          */
-        private static List<String> submit(BogusMessage inData,
+        private static List<String> submit(MarketDataRequest inData,
                                            BogusFeed inFeed) 
         {
             List<String> handles = new ArrayList<String>();
-            List<String> symbols = inData.getSymbols();
+            String[] symbols = inData.getSymbols();
             // create a request for each symbol in the passed message
             for(String symbol : symbols) {
                 MSymbol theSymbol = new MSymbol(symbol);

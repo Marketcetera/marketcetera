@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata;
 
+import static org.marketcetera.marketdata.TestMessages.EXPECTED_EXCEPTION;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -12,7 +14,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.MockEventTranslator;
-import static org.marketcetera.marketdata.TestMessages.*;
 
 /* $License$ */
 
@@ -32,7 +33,6 @@ public class MockMarketDataFeed
                                    String,
                                    MockMarketDataFeed>
 {
-    private static final String SOME_DSL_IDENTIFIER = "some dsl identifier"; //$NON-NLS-1$
     private final int mDelay;
     private Set<Capability> capabilities = EnumSet.noneOf(Capability.class);
     private int mCounter = 0;
@@ -347,24 +347,6 @@ public class MockMarketDataFeed
     public void setCancelFails(boolean inCancelFails)
     {
         mCancelFails = inCancelFails;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doDerivativeSecurityListRequest(java.lang.Object)
-     */
-    @Override
-    protected List<String> doDerivativeSecurityListRequest(String inData)
-            throws FeedException
-    {
-        return Arrays.asList(SOME_DSL_IDENTIFIER);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doSecurityListRequest(java.lang.Object)
-     */
-    @Override
-    protected List<String> doSecurityListRequest(String inData)
-            throws FeedException
-    {
-        throw new UnsupportedOperationException();
     }
     @Override
     protected boolean beforeDoExecute(MockMarketDataFeedToken inToken)

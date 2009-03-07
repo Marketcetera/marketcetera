@@ -481,15 +481,6 @@ public class MarketceteraFeed
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doDerivativeSecurityListRequest(java.lang.Object)
-     */
-    @Override
-    protected List<String> doDerivativeSecurityListRequest(Message inData) 
-        throws FeedException
-    {
-        throw new UnsupportedOperationException();
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogin(org.marketcetera.marketdata.IMarketDataFeedCredentials)
      */
     @Override
@@ -562,15 +553,6 @@ public class MarketceteraFeed
             }
             return listToReturn;
         }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doSecurityListRequest(java.lang.Object)
-     */
-    @Override
-    protected List<String> doSecurityListRequest(Message inData) 
-        throws FeedException
-    {
-        throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(org.marketcetera.marketdata.MarketDataFeedTokenSpec)

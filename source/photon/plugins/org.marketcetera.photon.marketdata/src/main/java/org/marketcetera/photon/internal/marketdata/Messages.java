@@ -84,4 +84,6 @@ public interface Messages {
 			LOGGER, "market_data_receiver.no_symbol"); //$NON-NLS-1$
 	static final I18NMessage1P MARKET_DATA_RECEIVER_NO_SOURCE = new I18NMessage1P(
 			LOGGER, "market_data_receiver.no_source"); //$NON-NLS-1$
+	static final I18NMessage1P MARKET_DATA_RECEIVER_REQUEST_FAILED = new I18NMessage1P(
+	        LOGGER, "market_data_receiver.request_failed"); //$NON-NLS-1$
 }

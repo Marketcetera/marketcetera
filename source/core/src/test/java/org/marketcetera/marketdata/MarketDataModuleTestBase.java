@@ -1,8 +1,8 @@
 package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -141,6 +141,12 @@ public abstract class MarketDataModuleTestBase
                                   true);
     }
     /**
+     * Returns a valid provider for this market data provider.
+     *
+     * @return a <code>String</code> value
+     */
+    protected abstract String getProvider();
+    /**
      * Tests that the feed's capabilities match the expected values.
      */
     @Test
@@ -208,7 +214,7 @@ public abstract class MarketDataModuleTestBase
         throws Exception
     {
         assertTrue(moduleManager.getDataFlows(true).isEmpty());
-        org.marketcetera.marketdata.DataRequest request = MarketDataRequest.newFullBookRequest("GOOG");
+        MarketDataRequest request = MarketDataRequest.newRequest().withSymbols("GOOG").fromProvider(getProvider());
         final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                                    request.toString()) });
         // wait until some arbitrary number of ticks have been received
@@ -227,7 +233,7 @@ public abstract class MarketDataModuleTestBase
         throws Exception
     {
         assertTrue(moduleManager.getDataFlows(true).isEmpty());
-        org.marketcetera.marketdata.DataRequest request = MarketDataRequest.newFullBookRequest("GOOG");
+        MarketDataRequest request = MarketDataRequest.newRequest().withSymbols("GOOG");
         final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                                    request) });
         // wait until some arbitrary number of ticks have been received
@@ -241,12 +247,11 @@ public abstract class MarketDataModuleTestBase
         // cancel the flow
         moduleManager.cancel(flowID);
     }
-    @Ignore
-    @Test
+    @Test@Ignore
     public void reconnect()
         throws Exception
     {
-        org.marketcetera.marketdata.DataRequest request = MarketDataRequest.newFullBookRequest("GOOG");
+        MarketDataRequest request = MarketDataRequest.newRequest().withSymbols("GOOG");
         final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                                    request) });
         // wait until some arbitrary number of ticks have been received
@@ -293,7 +298,7 @@ public abstract class MarketDataModuleTestBase
     /**
      * Returns a <code>ModuleFactory</code> instance appropriate for the module to be tested. 
      *
-     * @return a <code>ModuleFactory&lt;? extends Module&gt;</code> value
+     * @return a <code>ModuleFactory</code> value
      */
     protected abstract ModuleFactory getFactory();
     /**

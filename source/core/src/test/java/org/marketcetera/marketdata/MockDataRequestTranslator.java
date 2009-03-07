@@ -29,19 +29,10 @@ public class MockDataRequestTranslator
         sTranslateThrows = inTranslateThrows;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.DataRequestTranslator#asDataRequest(java.lang.Object)
-     */
-    @Override
-    public DataRequest toDataRequest(String inData)
-            throws CoreException
-    {
-        return null;
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.DataRequestTranslator#translate(org.marketcetera.module.DataRequest)
      */
     @Override
-    public String fromDataRequest(DataRequest inMessage)
+    public String fromDataRequest(MarketDataRequest inMessage)
             throws CoreException
     {
         if(getTranslateThrows()) {

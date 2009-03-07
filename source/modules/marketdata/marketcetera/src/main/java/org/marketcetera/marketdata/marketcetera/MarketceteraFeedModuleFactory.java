@@ -44,7 +44,8 @@ public class MarketceteraFeedModuleFactory
             throw new ModuleCreationException(e.getI18NBoundMessage());
         }
     }
-    public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:marketcetera");  //$NON-NLS-1$
+    public static final String IDENTIFIER = "marketcetera";  //$NON-NLS-1$
+    public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:" + IDENTIFIER);  //$NON-NLS-1$
     public static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN,
                                                                "single");  //$NON-NLS-1$
 }
