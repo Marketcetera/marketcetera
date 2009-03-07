@@ -41,7 +41,7 @@ public class MarketDataFeedTokenSpecTest
         }
     }
     
-    private void doValidateTokenSpec(final DataRequest inRequest,
+    private void doValidateTokenSpec(final MarketDataRequest inRequest,
                                      final ISubscriber[] inSubscribers)
         throws Exception
     {

@@ -104,20 +104,21 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
             throws UnsupportedRequestParameterType, IllegalRequestParameterValue
     {
         Object requestPayload = inRequest.getData();
-        org.marketcetera.marketdata.DataRequest request = null;
         if(requestPayload == null) {
             throw new IllegalRequestParameterValue(instanceURN,
                                                    null);
         }
+        MarketDataRequest request = null;
         if(requestPayload instanceof String) {
             try {
-                request = org.marketcetera.marketdata.DataRequest.newRequestFromString((String)requestPayload);
+                request = MarketDataRequest.newRequestFromString((String)requestPayload);
             } catch (Exception e) {
                 throw new IllegalRequestParameterValue(instanceURN,
-                                                       requestPayload);
+                                                       requestPayload,
+                                                       e);
             }
-        } else if (requestPayload instanceof org.marketcetera.marketdata.DataRequest) {
-            request = (org.marketcetera.marketdata.DataRequest)requestPayload;
+        } else if (requestPayload instanceof MarketDataRequest) {
+            request = (MarketDataRequest)requestPayload;
         } else {
             throw new UnsupportedRequestParameterType(instanceURN,
                                                       requestPayload);

@@ -1,28 +1,54 @@
 package org.marketcetera.marketdata;
 
-import static org.marketcetera.marketdata.Messages.INVALID_DEPTH;
-import static org.marketcetera.marketdata.Messages.INVALID_STRING_VALUE;
+import static org.marketcetera.core.Util.KEY_VALUE_DELIMITER;
+import static org.marketcetera.core.Util.KEY_VALUE_SEPARATOR;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.OHLC;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.MarketDataRequest.Type.SUBSCRIPTION;
+import static org.marketcetera.marketdata.Messages.EXTRA_DATE;
+import static org.marketcetera.marketdata.Messages.INVALID_CONTENT;
+import static org.marketcetera.marketdata.Messages.INVALID_DATE;
+import static org.marketcetera.marketdata.Messages.INVALID_REQUEST;
 import static org.marketcetera.marketdata.Messages.INVALID_SYMBOLS;
+import static org.marketcetera.marketdata.Messages.INVALID_TYPE;
+import static org.marketcetera.marketdata.Messages.MISSING_CONTENT;
+import static org.marketcetera.marketdata.Messages.MISSING_PROVIDER;
+import static org.marketcetera.marketdata.Messages.MISSING_SYMBOLS;
+import static org.marketcetera.marketdata.Messages.MISSING_TYPE;
+import static org.marketcetera.marketdata.Messages.OHLC_NO_DATE;
 
-import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.Util;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 /* $License$ */
 
 /**
- * A request for market data from a market data provider.
+ * Represents a market data request.
+ * 
+ * <p>The market data request represented by this object may be constructed incrementally.  As such, the
+ * request may or may not always be in a consistent, valid state.  To make sure that all internal consistency
+ * requirements are met, invoke {@link #validate(MarketDataRequest)}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public final class MarketDataRequest
-    extends DataRequest
+@ClassVersion("$Id$")
+public class MarketDataRequest
     implements Serializable
 {
     /**
@@ -30,475 +56,1004 @@ public final class MarketDataRequest
      */
     public static final String SYMBOL_DELIMITER = ","; //$NON-NLS-1$
     /**
-     * identifies the {@link #depth} field in the <code>Properties</code> and <code>String</code> representations of this object
-     */
-    public static final String DEPTH_KEY = "depth"; //$NON-NLS-1$
-    /**
-     * identifies the {@link #requestType} field in the <code>Properties</code> and <code>String</code> representations of this object
-     */
-    public static final String REQUEST_TYPE_KEY = "requestType"; //$NON-NLS-1$
-    /**
-     * identifies the {@link #updateType} field in the <code>Properties</code> and <code>String</code> representations of this object
-     */
-    public static final String UPDATE_TYPE_KEY = "updateType"; //$NON-NLS-1$
-    /**
-     * identifies the {@link #exchange} field in the <code>Properties</code> and <code>String</code> representations of this object
-     */
-    public static final String EXCHANGE_KEY = "exchange"; //$NON-NLS-1$
-    /**
-     * identifies the {@link #symbols} field in the <code>Properties</code> and <code>String</code> representations of this object
+     * the key used to identify the symbols in the string representation of the market data request
      */
     public static final String SYMBOLS_KEY = "symbols"; //$NON-NLS-1$
     /**
-     * the request type string for <code>MarketDataRequest</code> objects
+     * the key used to identify the provider in the string representation of the market data request
      */
-    public static final String TYPE = "marketdata"; //$NON-NLS-1$
+    public static final String PROVIDER_KEY = "provider"; //$NON-NLS-1$
     /**
-     * the entire book
+     * the key used to identify the content in the string representation of the market data request
      */
-    public static final int FULL_BOOK = 0;
+    public static final String CONTENT_KEY = "content"; //$NON-NLS-1$
     /**
-     * just the top or best-bid-and-offer
+     * the key used to identify the exchange in the string representation of the market data request
      */
-    public static final int TOP_OF_BOOK = 1;
+    public static final String EXCHANGE_KEY = "exchange"; //$NON-NLS-1$
     /**
-     * exchange to use if no exchange is specified as part of the market data request
+     * the key used to identify the date in the string representation of the market data request
      */
-    public static final String NO_EXCHANGE = "NO EXCHANGE SPECIFIED"; //$NON-NLS-1$
+    public static final String DATE_KEY = "date"; //$NON-NLS-1$
     /**
-     * Request types for <code>MarketDataRequest</code> objects.
+     * the key used to identify the type in the string representation of the market data request
+     */
+    public static final String TYPE_KEY = "type"; //$NON-NLS-1$
+    /**
+     * Offers date translation utilities for {@link MarketDataRequest} objects.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since 1.0.0
+     * @since $Release$
      */
-    @ClassVersion("$Id$") //$NON-NLS-1$
-    public static enum RequestType
+    public static class DateUtils
     {
+        private static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,
+                                                                                                       4).toFormatter();
+        private static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
+        private static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
+        private static final DateTimeFormatter T = new DateTimeFormatterBuilder().appendLiteral('T').toFormatter();
+        private static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
+        private static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
+        private static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
+        private static final DateTimeFormatter MILLI = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
+        private static final DateTimeFormatter TZ = new DateTimeFormatterBuilder().appendTimeZoneOffset("Z", //$NON-NLS-1$
+                                                                                                        true,
+                                                                                                        2,
+                                                                                                        4).toFormatter();
         /**
-         * one single view of the current book with no updates
+         * valid date formats
          */
-        SNAPSHOT,
+        private static final DateTimeFormatter[] DATE_FORMATS = new DateTimeFormatter[] {
+          // yyyyMMdd'T'HHmmssSSSZ
+          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(MILLI).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
+          // yyyyMMdd'T'HHmmssSSS
+          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(MILLI).toFormatter().withZone(DateTimeZone.UTC),
+          // yyyyMMdd'T'HHmmssZ
+          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
+          // yyyyMMdd'T'HHmmss
+          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).toFormatter().withZone(DateTimeZone.UTC),
+          // yyyyMMdd'T'HHmmZ
+          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
+          // yyyyMMdd'T'HHmm
+          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).toFormatter().withZone(DateTimeZone.UTC),
+          // yyyyMMddZ
+          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
+          // yyyyMMdd
+          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter().withZone(DateTimeZone.UTC) };
         /**
-         * subscription to an order book with updates as they become available
+         * default date pattern
          */
-        SUBSCRIBE,
+        private static final DateTimeFormatter DEFAULT_FORMAT = DATE_FORMATS[0];
         /**
-         * cancels the market data request of the same <code>id</code>
+         * Converts the given <code>Date</code> value to a <code>String</code> representation usable with
+         * {@link MarketDataRequest} objects.
+         * 
+         * <p>The format of the returned value is ISO 8601 basic format to millisecond precision with
+         * time zone offset.  This format can be expressed as: <code>yyyyMMdd'T'HHmmssSSSZ</code> in terms of the format expected
+         * by {@link http://java.sun.com/javase/6//docs/api/java/text/SimpleDateFormat.html}.  This format
+         * can be used with {@link MarketDataRequest#newRequestFromString(String)} and
+         * {@link MarketDataRequest#asOf(String)}.
+         *
+         * @param inDate a <code>Date</code> value
+         * @return a <code>String</code> value
          */
-        CANCEL
-    };
-    /**
-     * Update types for <code>MarketDataRequest</code> objects.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since 1.0.0
-     */
-    @ClassVersion("$Id$") //$NON-NLS-1$
-    public static enum UpdateType
-    {
+        public static String dateToString(Date inDate)
+        {
+            return DEFAULT_FORMAT.print(new DateTime(inDate));
+        }
         /**
-         * publish the full book each time an update is received
+         * Parses the given <code>String</code> to a <code>Date</code> value.
+         * 
+         * <p>The given <code>String</code> is expected to be formatted in ISO 8601 basic format as described
+         * by {@link DateUtils#dateToString(Date)}.  The following formats are accepted:
+         * <ul>
+         *   <li>yyyyMMdd'T'HHmmssSSSZ (e.g. 20090303T224025444-0800)</li>
+         *   <li>yyyyMMdd'T'HHmmssSSS (e.g. 20090303T224025444)</li>
+         *   <li>yyyyMMdd'T'HHmmssZ (e.g. 20090303T224025-0800)</li>
+         *   <li>yyyyMMdd'T'HHmmss (e.g. 20090303T224025)</li>
+         *   <li>yyyyMMdd'T'HHmmZ (e.g. 20090303T2240-0800)</li>
+         *   <li>yyyyMMdd'T'HHmm (e.g. 20090303T2240)</li>
+         *   <li>yyyyMMddZ (e.g. 20090303-0800)</li>
+         *   <li>yyyyMMdd (e.g. 20090303)</li>
+         * </ul>
+         * 
+         * <p>If the timezone offset is omitted form the given <code>String</code>, the date/time is assumed
+         * to be in UTC.  If omitted, milliseconds, seconds, minutes, and hours are set to zero.  Fields
+         * may not be abbreviated, i.e., minutes must contain two digits even if the value is less than ten,
+         * <code>01</code> instead of <code>1</code>.  Timezone offsets may be expressed as <code>Z</code>
+         * for UTC or as an offset from UTC indicated by <code>+</code> or <code>-</code> and four digits.
+         * With the exception of the timezone offset indicator, no punctuation is allowed in the expression
+         *
+         * @param inDateString a <code>String</code> value a <code>String</code> containing a date value to be
+         *  parsed.
+         * @return a <code>Date</code> value 
+         * @throws MarketDataRequestException if the given <code>String</code> could not be parsed 
          */
-        FULL_REFRESH,
-        /**
-         * publish only the changes each time an update is received
-         */
-        INCREMENTAL_REFRESH
+        public static Date stringToDate(String inDateString)
+            throws MarketDataRequestException
+        {
+            if(inDateString == null ||
+               inDateString.isEmpty()) {
+                throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_DATE,
+                                                                            inDateString));
+            }
+            for(int formatCounter=0;formatCounter<DATE_FORMATS.length;formatCounter++) {
+                try {
+                    return new Date(DATE_FORMATS[formatCounter].parseDateTime(inDateString).getMillis());
+                } catch (IllegalArgumentException e) {
+                    // this format didn't work, try a less specific one
+                }
+            }
+            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_DATE,
+                                                                        inDateString));
+        }
     }
     /**
-     * Creates a market data request for the given symbols.
+     * Creates a <code>MarketDataRequest</code>.
+     * 
+     * <p>The <code>String</code> parameter should be a set of key/value pairs delimited
+     * by {@link Util#KEY_VALUE_DELIMITER}.  The set of keys that this method understands
+     * is as follows:
+     * <ul>
+     *   <li>{@link #SYMBOLS_KEY} - the symbols for which to request market data</li>
+     *   <li>{@link #PROVIDER_KEY} - the provider from which to request market data</li>
+     *   <li>{@link #CONTENT_KEY} - the content of the market data</li>
+     *   <li>{@link #TYPE_KEY} - the type of market data request</li>
+     *   <li>{@link #EXCHANGE_KEY} - the exchange for which to request market data</li>
+     *   <li>{@link #DATE_KEY} - the date for which to request market data, if applicable</li>
+     * </ul>
+     * 
+     * <p>Example:
+     * <pre>
+     * "symbols=GOOG,ORCL,MSFT:provider=marketcetera:content=TOP_OF_BOOK"
+     * </pre>
+     * 
+     * <p>The key/value pairs are validated according to the rules established for each
+     * component.  Extraneous key/value pairs, i.e., key/value pairs with a key that
+     * does not match one of the above list are ignored.  Additional validation is performed
+     * according to the rules defined at {@link Util#propertiesFromString(String)}.  
      *
-     * <p>The request will be for a subscription for full book delivered as incremental
-     * updates.  This is the same as asking for the tick stream from a provider.  No exchange is
-     * specified.
-     *
-     * @param inSymbols a <code>String...</code> value containing the symbols for which to request data
+     * @param inRequest a <code>String</code> value
      * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the request cannot be constructed
      */
-    public static MarketDataRequest newFullBookRequest(String... inSymbols)
+    public static MarketDataRequest newRequestFromString(String inRequest)
+        throws MarketDataRequestException
     {
-        Properties values = new Properties();
-        values.setProperty(TYPE_KEY,
-                           TYPE);
-        values.setProperty(DEPTH_KEY,
-                           Integer.toString(FULL_BOOK));
-        values.setProperty(REQUEST_TYPE_KEY,
-                           RequestType.SUBSCRIBE.toString());
-        values.setProperty(UPDATE_TYPE_KEY,
-                           UpdateType.INCREMENTAL_REFRESH.toString());
-        values.setProperty(EXCHANGE_KEY,
-                           NO_EXCHANGE);
-        return new MarketDataRequest(values,
-                                     inSymbols);
+        try {
+            Properties props = Util.propertiesFromString(inRequest);
+            Map<String,String> sanitizedProps = new HashMap<String,String>();
+            for(Object key : props.keySet()) {
+                sanitizedProps.put(((String)key).toLowerCase(),
+                                   ((String)props.get(key)).trim());
+            }
+            MarketDataRequest request = new MarketDataRequest();
+            if(sanitizedProps.containsKey(SYMBOLS_KEY)) {
+                request.setSymbols(sanitizedProps.get(SYMBOLS_KEY).split(SYMBOL_DELIMITER));
+            }
+            if(sanitizedProps.containsKey(PROVIDER_KEY)) {
+                request.setProvider(sanitizedProps.get(PROVIDER_KEY));
+            }
+            if(sanitizedProps.containsKey(CONTENT_KEY)) {
+                request.setContent(Content.valueOf(sanitizedProps.get(CONTENT_KEY).toUpperCase()));
+            }
+            if(sanitizedProps.containsKey(TYPE_KEY)) {
+                request.setType(Type.valueOf(sanitizedProps.get(TYPE_KEY).toUpperCase()));
+            }
+            if(sanitizedProps.containsKey(DATE_KEY)) {
+                request.setDate(DateUtils.stringToDate(sanitizedProps.get(DATE_KEY)));
+            }
+            if(sanitizedProps.containsKey(EXCHANGE_KEY)) {
+                request.setExchange(sanitizedProps.get(EXCHANGE_KEY));
+            }
+            validate(request);
+            return request;
+        } catch (MarketDataRequestException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new MarketDataRequestException(e,
+                                                 INVALID_REQUEST);
+        }
     }
     /**
-     * Creates a market data request for the given symbols.
+     * Validates a <code>MarketDataRequest</code>.
+     * 
+     * <p>This method is intended to validate a request when it is believed to be complete
+     * and ready to be submitted.  Some validation is performed that is relevant only to
+     * a completed request.
      *
-     * <p>The request will be for a snapshot for full book delivered a full refresh.
-     * This is the same as asking for the tick stream from a provider.  No exchange is
-     * specified.
-     *
-     * @param inSymbols a <code>String...</code> value containing the symbols for which to request data
-     * @return a <code>MarketDataRequest</code> value
+     * @param inRequest a <code>MarketDataRequest</code> value to validate
+     * @throws MarketDataRequestException if the request is invalid
      */
-    public static MarketDataRequest newFullBookSnapshotRequest(String... inSymbols)
+    public static void validate(MarketDataRequest inRequest)
+        throws MarketDataRequestException
     {
-        Properties values = new Properties();
-        values.setProperty(TYPE_KEY,
-                           TYPE);
-        values.setProperty(DEPTH_KEY,
-                           Integer.toString(FULL_BOOK));
-        values.setProperty(REQUEST_TYPE_KEY,
-                           RequestType.SNAPSHOT.toString());
-        values.setProperty(UPDATE_TYPE_KEY,
-                           UpdateType.FULL_REFRESH.toString());
-        values.setProperty(EXCHANGE_KEY,
-                           NO_EXCHANGE);
-        return new MarketDataRequest(values,
-                                     inSymbols);
+        if(inRequest == null) {
+            throw new MarketDataRequestException(INVALID_REQUEST);
+        }
+        validateType(inRequest,
+                     inRequest.type);
+        validateDate(inRequest,
+                     inRequest.date);
+        validateExchange(inRequest,
+                         inRequest.exchange);
+        validateSymbols(inRequest,
+                        inRequest.symbols.toArray(new String[inRequest.symbols.size()]));
+        validateProvider(inRequest,
+                         inRequest.provider);
+        validateContent(inRequest,
+                        inRequest.content);
+        // this condition means that a date was provided but is not needed
+        if(inRequest.content == OHLC &&
+           inRequest.date == null) {
+            // content is OHLC but no date
+            throw new MarketDataRequestException(OHLC_NO_DATE);
+        }
+        if(inRequest.content != OHLC &&
+           inRequest.date != null) {
+            // date specified but request not OHLC
+            EXTRA_DATE.warn(MarketDataRequest.class);
+        }
     }
     /**
-     * Creates a market data request for the given symbols.
+     * Creates a new market data request.
+     * 
+     * <p>Attributes with default values will have those values set in the
+     * returned market data request.
      *
-     * <p>The request will be for a subscription to the top-of-book or best-bid-and-offer delivered as incremental
-     * updates.  No exchange is specified.
-     *
-     * @param inSymbols a <code>String...</code> value containing the symbols for which to request data
      * @return a <code>MarketDataRequest</code> value
      */
-    public static MarketDataRequest newTopOfBookRequest(String... inSymbols)
+    public static MarketDataRequest newRequest()
     {
-        Properties values = new Properties();
-        values.setProperty(TYPE_KEY,
-                           TYPE);
-        values.setProperty(DEPTH_KEY,
-                           Integer.toString(TOP_OF_BOOK));
-        values.setProperty(REQUEST_TYPE_KEY,
-                           RequestType.SUBSCRIBE.toString());
-        values.setProperty(UPDATE_TYPE_KEY,
-                           UpdateType.INCREMENTAL_REFRESH.toString());
-        values.setProperty(EXCHANGE_KEY,
-                           NO_EXCHANGE);
-        return new MarketDataRequest(values,
-                                     inSymbols);
+        return new MarketDataRequest();
     }
     /**
-     * Creates a market data request for the given symbols.
+     * Create a new MarketDataRequest instance.
      *
-     * <p>The request will be for a subscription for the given book depth delivered as incremental
-     * updates.  No exchange is specified.
-     *
-     * @param inDepth an <code>int</code> value containing the depth of the order book to request
-     * @param inSymbols a <code>String...</code> value containing the symbols for which to request data
-     * @return a <code>MarketDataRequest</code> value
-     * @throws IllegalArgumentException if the specified depth is invalid
      */
-    public static MarketDataRequest newSpecifedDepthRequest(int inDepth,
-                                                            String... inSymbols)
+    public MarketDataRequest()
     {
-        Properties values = new Properties();
-        values.setProperty(TYPE_KEY,
-                           TYPE);
-        values.setProperty(DEPTH_KEY,
-                           Integer.toString(inDepth));
-        values.setProperty(REQUEST_TYPE_KEY,
-                           RequestType.SUBSCRIBE.toString());
-        values.setProperty(UPDATE_TYPE_KEY,
-                           UpdateType.INCREMENTAL_REFRESH.toString());
-        values.setProperty(EXCHANGE_KEY,
-                           NO_EXCHANGE);
-        return new MarketDataRequest(values,
-                                     inSymbols);
     }
     /**
-     * Get the depth value.
+     * Adds the given symbols to the market data request. 
      *
+     * <p>The given symbols must be non-null and non-empty.
+     * 
+     * <p>This attribute is required and no default is provided.
+     * 
+     * @param inSymbols a <code>String[]</code> value containing symbols to add to the request
      * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified symbols result in an invalid request 
      */
-    public int getDepth()
+    public MarketDataRequest withSymbols(String... inSymbols)
+        throws MarketDataRequestException
     {
-        return depth;
+        setSymbols(inSymbols);
+        return this;
     }
     /**
-     * Get the requestType value.
+     * Adds the given symbols to the market data request. 
      *
+     * <p>The given symbols must be non-null and non-empty.  The symbols may be a single symbol
+     * or a series of symbols delimited by {@link #SYMBOL_DELIMITER}.
+     * 
+     * <p>This attribute is required and no default is provided.
+     * 
+     * @param inSymbols a <code>String[]</code> value containing symbols to add to the request
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified symbols result in an invalid request 
+     */
+    public MarketDataRequest withSymbols(String inSymbols)
+        throws MarketDataRequestException
+    {
+        if(isEmptySymbolList(inSymbols)) {
+            throw new MarketDataRequestException(MISSING_SYMBOLS);
+        }
+        setSymbols(inSymbols.split(SYMBOL_DELIMITER));
+        return this;
+    }
+    /**
+     * Adds the given provider to the market data request.
+     *
+     * <p>The provider is not validated because the set of valid providers is
+     * resolved at run-time.  The specified provider must be non-null and of non-zero
+     * length.
+     * 
+     * <p>This attribute is required and no default is provided.
+     * 
+     * @param inProvider a <code>String</code> value containing the provider from which to request data
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified provider results in an invalid request 
+     */
+    public MarketDataRequest fromProvider(String inProvider)
+        throws MarketDataRequestException
+    {
+        setProvider(inProvider);
+        return this;
+    }
+    /**
+     * Adds the given exchange to the market data request.
+     *
+     * <p>The exchange is not validated as the set of valid exchanges is dependent on the
+     * provider and the provisioning within the domain of the services provided therein.
+     * 
+     * <p>This attribute is optional and no default is provided. 
+     *
+     * @param inExchange a <code>String</code> value
      * @return a <code>MarketDataRequest</code> value
      */
-    public RequestType getRequestType()
+    public MarketDataRequest fromExchange(String inExchange)
     {
-        return requestType;
+        setExchange(inExchange);
+        return this;
+    }
+    /**
+     * Adds the given content to the market data request.
+     *
+     * <p>The given value must not be null or of zero-length and must correspond to
+     * a valid {@link Content}.  Case is not considered.
+     * 
+     * <p>This attribute is required and no default is provided.
+     *
+     * @param inContent a <code>String</code> value
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified content results in an invalid request 
+     */
+    public MarketDataRequest withContent(String inContent)
+        throws MarketDataRequestException
+    {
+        try {
+            return withContent(Content.valueOf(inContent.toUpperCase()));
+        } catch (Exception e) {
+            throw new MarketDataRequestException(e,
+                                                 new I18NBoundMessage1P(INVALID_CONTENT,
+                                                                        inContent));
+        }
+    }
+    /**
+     * Adds the given content to the market data request.
+     *
+     * <p>The given content value must not be null.  This attribute is required and no
+     * default is provided.
+     *
+     * @param inContent a <code>Content</code> value
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified content results in an invalid request 
+     */
+    public MarketDataRequest withContent(Content inContent)
+        throws MarketDataRequestException
+    {
+        setContent(inContent);
+        return this;
+    }
+    /**
+     * Adds the given type to the market data request. 
+     *
+     * <p>The given value must not be null or of zero-length and must correspond to
+     * a valid {@link Type}.  Case is not considered.
+     * 
+     * <p>This attribute is required and no default is provided.
+     * 
+     * @param inType a <code>Type</code> value
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified type results in an invalid request
+     */
+    public MarketDataRequest ofType(String inType)
+        throws MarketDataRequestException
+    {
+        try {
+            return ofType(Type.valueOf(inType.toUpperCase()));
+        } catch (Exception e) {
+            throw new MarketDataRequestException(e,
+                                                 new I18NBoundMessage1P(INVALID_TYPE,
+                                                                        inType));
+        }
+    }
+    /**
+     * Adds the given type to the market data request. 
+     *
+     * <p>The given value must not be null.  This attribute is required and no default is provided.
+     * 
+     * @param inType a <code>Type</code> value
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified type results in an invalid request
+     */
+    public MarketDataRequest ofType(Type inType)
+        throws MarketDataRequestException
+    {
+        setType(inType);
+        return this;
+    }
+    /**
+     * Adds the given date to the market data request. 
+     *
+     * <p>The given value must be greater than 0 and is interpreted as the number
+     * of milliseconds since EPOCH.  The date is valid (and required) only for
+     * requests with <code>Content</code> of {@link Content#OHLC}, but is
+     * not otherwise forbidden.  If specified for other <code>Content</code>
+     * types, the attribute is ignored.
+     * 
+     * <p>This attribute is required for requests of content {@link Content#OHLC} and
+     * no default is provided.
+     *
+     * @param inDate a <code>long</code> value
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified date results in an invalid request 
+     */ 
+    public MarketDataRequest asOf(long inDate)
+        throws MarketDataRequestException
+    {
+        if(inDate < 0) {
+            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_DATE,
+                                                                        inDate));
+        }
+        return asOf(new Date(inDate));
+    }
+    /**
+     * Adds the given date to the market data request. 
+     *
+     * <p>The given value must be parseable according to the rules described
+     * in {@link DateUtils#stringToDate(String)}.
+     *  
+     * <p>The date is valid (and required) only for
+     * requests with <code>Content</code> of {@link Content#OHLC}, but is
+     * not otherwise forbidden.  If specified for other <code>Content</code>
+     * types, the attribute is ignored.
+     * 
+     * <p>This attribute is required for requests of content {@link Content#OHLC} and
+     * no default is provided.
+     *
+     * @param inDate a <code>String</code> value
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified date results in an invalid request 
+     */ 
+    public MarketDataRequest asOf(String inDate)
+        throws MarketDataRequestException
+    {
+        return asOf(DateUtils.stringToDate(inDate));
+    }
+    /**
+     * Adds the given date to the market data request. 
+     *
+     * <p>The given value must not be null.  The date is valid (and required) only for
+     * requests with <code>Content</code> of {@link Content#OHLC}, but is
+     * not otherwise forbidden.  If specified for other <code>Content</code>
+     * types, the attribute is ignored.
+     * 
+     * <p>This attribute is required for requests of content {@link Content#OHLC} and
+     * no default is provided.
+     *
+     * @param inDate a <code>Date</code> value
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified date results in an invalid request 
+     */
+    public MarketDataRequest asOf(Date inDate)
+        throws MarketDataRequestException
+    {
+        setDate(inDate);
+        return this;
+    }
+    /**
+     * Get the symbols value.
+     * 
+     * @return a <code>String[]</code> value
+     */
+    public String[] getSymbols()
+    {
+        return symbols.toArray(new String[symbols.size()]);
+    }
+    /**
+     * Get the provider value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getProvider()
+    {
+        if(provider == null ||
+           provider.isEmpty()) {
+            return null;
+        }
+        return provider;
     }
     /**
      * Get the exchange value.
      *
-     * @return a <code>MarketDataRequest</code> value
+     * @return a <code>String</code> value
      */
     public String getExchange()
     {
+        if(exchange == null ||
+           exchange.isEmpty()) {
+            return null;
+        }
         return exchange;
     }
     /**
-     * Get the symbols value.
-     *
-     * @return a <code>MarketDataRequest</code> value
-     */
-    public String[] getSymbols()
-    {
-        return Arrays.asList(symbols).toArray(new String[symbols.length]);
-    }
-    /**
-     * Get the updateType value.
-     *
-     * @return a <code>MarketDataRequest</code> value
-     */
-    public UpdateType getUpdateType()
-    {
-        return updateType;
-    }
-    /**
-     * does class-level initialization for <code>MarketDataRequest</code>
-     */
-    static
-    {
-        DataRequest.registerType(TYPE,
-                                 MarketDataRequest.class);
-    }
-    /**
-     * Creates a market data request from the given string.
+     * Get the content value.
      * 
-     * <p>Note that the subcomponents of the request string themselves are allowed to contain neither
-     * the {@link #KEY_VALUE_DELIMITER} nor the {@link MarketDataRequest#SYMBOL_DELIMITER}.  If a subcomponent contains the
-     * <code>KEY_VALUE_DELIMITER</code>, that subcomponent will be <b>truncated</b> at the first occurrence of the delimiter.
-     * If a subcomponent contains the <code>SYMBOL_DELIMITER</code>, an <code>IllegalArgumentException</code> will be thrown.  
-     *
-     * @param inRequestString a <code>String</code> value
-     * @return a <code>MarketDataRequest</code> value
-     * @throws IOException if the <code>String</code> could not be converted to a <code>MarketDataRequest</code>
-     * @throws IllegalArgumentException if <code>inRequestString</code> cannot be parsed properly
+     * @return a <code>Content</code> value
      */
-    protected static MarketDataRequest newRequestFromString(Properties inRequest)
+    public Content getContent()
     {
-        String symbolString = inRequest.getProperty(SYMBOLS_KEY);
-        if(symbolString == null ||
-           symbolString.length() == 0) {
-            throw new IllegalArgumentException(INVALID_SYMBOLS.getText(symbolString));
-        }
-        return new MarketDataRequest(inRequest,
-                                     symbolString.split(SYMBOL_DELIMITER));
+        return content;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.DataRequest#addAttributesToProperties(java.util.Properties)
+    /**
+     * Get the date value.
+     * 
+     * @return a <code>Date</code> value
      */
-    @Override
-    protected void addCurrentAttributesValues(Properties inProperties)
+    public Date getDate()
     {
-        inProperties.setProperty(DEPTH_KEY,
-                                 Integer.toString(depth));
-        inProperties.setProperty(REQUEST_TYPE_KEY,
-                                 requestType.toString());
-        inProperties.setProperty(UPDATE_TYPE_KEY,
-                                 updateType.toString());
-        inProperties.setProperty(EXCHANGE_KEY,
-                                 exchange);
-        StringBuilder symbolList = new StringBuilder();
-        boolean commaNeeded = false;
-        for(String symbol : symbols) {
-            if(commaNeeded) {
-                symbolList.append(MarketDataRequest.SYMBOL_DELIMITER);
-            }
-            symbolList.append(symbol);
-            commaNeeded = true;
+        if(date == null) {
+            return null;
         }
-        inProperties.setProperty(SYMBOLS_KEY,
-                                 symbolList.toString());
+        return date;
+    }
+    /**
+     * Get the type value.
+     * 
+     * @return a <code>Type</code> value
+     */
+    public Type getType()
+    {
+        return type;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
-    protected int doHashCode()
+    public int hashCode()
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + depth;
+        result = prime * result + ((content == null) ? 0 : content.hashCode());
+        result = prime * result + ((date == null) ? 0 : date.hashCode());
         result = prime * result + ((exchange == null) ? 0 : exchange.hashCode());
-        result = prime * result + ((requestType == null) ? 0 : requestType.hashCode());
-        result = prime * result + Arrays.hashCode(symbols);
-        result = prime * result + ((updateType == null) ? 0 : updateType.hashCode());
+        result = prime * result + ((provider == null) ? 0 : provider.hashCode());
+        result = prime * result + ((symbols == null) ? 0 : symbols.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
-    public boolean equivalent(DataRequest other)
+    public boolean equals(Object obj)
     {
-        if (this == other)
+        if (this == obj)
             return true;
-        if (other == null)
+        if (obj == null)
             return false;
-        if(!(other instanceof MarketDataRequest)) {
+        if (getClass() != obj.getClass())
             return false;
-        }
-        MarketDataRequest mdrOther = (MarketDataRequest)other;
-        if (depth != mdrOther.depth)
+        MarketDataRequest other = (MarketDataRequest) obj;
+        if (content == null) {
+            if (other.content != null)
+                return false;
+        } else if (!content.equals(other.content))
+            return false;
+        if (date == null) {
+            if (other.date != null)
+                return false;
+        } else if (!date.equals(other.date))
             return false;
         if (exchange == null) {
-            if (mdrOther.exchange != null)
+            if (other.exchange != null)
                 return false;
-        } else if (!exchange.equals(mdrOther.exchange))
+        } else if (!exchange.equals(other.exchange))
             return false;
-        if (requestType == null) {
-            if (mdrOther.requestType != null)
+        if (provider == null) {
+            if (other.provider != null)
                 return false;
-        } else if (!requestType.equals(mdrOther.requestType))
+        } else if (!provider.equals(other.provider))
             return false;
-        if (!Arrays.equals(symbols,
-                           mdrOther.symbols))
-            return false;
-        if (updateType == null) {
-            if (mdrOther.updateType != null)
+        if (symbols == null) {
+            if (other.symbols != null)
                 return false;
-        } else if (!updateType.equals(mdrOther.updateType))
+        } else if (!symbols.equals(other.symbols))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
             return false;
         return true;
     }
     /**
-     * Takes the given <code>Properties</code> object and inserts missing keys with their default values if appropriate.
-     *
-     * @param inProperties a <code>Properties</code> object
-     */
-    protected static void validateAndSetRequestDefaultsIfNecessary(Properties inProperties)
-    {
-        DataRequest.validateAndSetRequestDefaultsIfNecessary(inProperties);
-        if(!inProperties.containsKey(DEPTH_KEY)) {
-            inProperties.setProperty(DEPTH_KEY,
-                                     Integer.toString(TOP_OF_BOOK));
-        }
-        if(!inProperties.containsKey(REQUEST_TYPE_KEY)) {
-            inProperties.setProperty(REQUEST_TYPE_KEY,
-                                     RequestType.SUBSCRIBE.toString());
-        }
-        if(!inProperties.containsKey(UPDATE_TYPE_KEY)) {
-            inProperties.setProperty(UPDATE_TYPE_KEY,
-                                     UpdateType.INCREMENTAL_REFRESH.toString());
-        }
-        if(!inProperties.containsKey(EXCHANGE_KEY)) {
-            inProperties.setProperty(EXCHANGE_KEY,
-                                     NO_EXCHANGE);
-        }
-    }
-    /**
-     * Validates a <code>String</code> value to make sure it fits within the guidelines for this object.
-     *
-     * @param inValue a <code>String</code> value
-     * @return a <code>String</code> value guaranteed to be valid
-     * @throws IllegalArgumentException if the given <code>String</code> is not valid
-     */
-    protected static String validateStringValue(String inValue)
-    {
-        DataRequest.validateStringValue(inValue);
-        if(inValue.contains(MarketDataRequest.SYMBOL_DELIMITER)) {
-            throw new IllegalArgumentException(INVALID_STRING_VALUE.getText(inValue));
-        }
-        return inValue;
-    }
-    /**
-     * Create a new MarketDataRequest instance.
+     * Verifies that the given symbols are valid.
      * 
-     * @throws IllegalArgumentException if the specified depth is invalid, the symbols cannot be parsed, or the id specified is invalid
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inSymbols a <code>String[]</code> value
+     * @throws MarketDataRequestException if the symbols are not valid
      */
-    private MarketDataRequest(Properties inRequest,
-                              String... inSymbols)
+    private static void validateSymbols(MarketDataRequest inRequest,
+                                        String[] inSymbols)
+        throws MarketDataRequestException
     {
-        super(inRequest);
-        depth = validateDepth(inRequest.getProperty(DEPTH_KEY));
-        requestType = validateRequestType(inRequest.getProperty(REQUEST_TYPE_KEY).toUpperCase());
-        updateType = validateUpdateType(inRequest.getProperty(UPDATE_TYPE_KEY).toUpperCase());
-        exchange = validateStringValue(inRequest.getProperty(EXCHANGE_KEY));
-        symbols = validateSymbols(inSymbols);
-    }
-    /**
-     * Validates the depth argument in the context of specifying depth-of-book. 
-     *
-     * @param inDepthValue an <code>int</code> value containing a book depth
-     * @return an <code>int</code> value containing a valid depth
-     * @throws IllegalArgumentException if the specified depth is invalid
-     */
-    private int validateDepth(String inDepthValue)
-    {
-        int depthValue;
-        try {
-            depthValue = Integer.parseInt(inDepthValue);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(INVALID_DEPTH.getText(inDepthValue));
+        if(isEmptySymbolList(inSymbols)) {
+            throw new MarketDataRequestException(MISSING_SYMBOLS);
         }
-        if(depthValue < 0) {
-            throw new IllegalArgumentException(INVALID_DEPTH.getText(inDepthValue));
+        for(String symbol : inSymbols) {
+            if(symbol == null ||
+               symbol.trim().isEmpty()) {
+                throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_SYMBOLS,
+                                                                            Arrays.toString(inSymbols)));
+            }
         }
-        return depthValue;
     }
     /**
-     * Validates the given <code>String</code> to see if it can be interpreted as a {@link RequestType}.
+     * Verifies that the given <code>Type</code> is valid.
      *
-     * @param inRequestTypeValue a <code>String</code> value
-     * @return a <code>RequestType</code> value
-     * @throws IllegalArgumentException if <code>inRequestTypeValue</code> is not a valid <code>RequestType</code>
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inType a <code>Type</code> value
+     * @throws MarketDataRequestException if the given <code>Type</code> is not valid
      */
-    private RequestType validateRequestType(String inRequestTypeValue)
+    private static void validateType(MarketDataRequest inRequest,
+                                     Type inType)
+        throws MarketDataRequestException
     {
-        return RequestType.valueOf(inRequestTypeValue.toUpperCase());
+        if(inType == null) {
+            throw new MarketDataRequestException(MISSING_TYPE);
+        }
     }
     /**
-     * Validates the given <code>String</code> to see if it can be interpreted as an {@link UpdateType}.
+     * Verifies that the given <code>Date</code> is valid. 
      *
-     * @param inUpdateTypeValue a <code>String</code> value
-     * @return an <code>UpdateType</code> value
-     * @throws IllegalArgumentException if <code>inUpdateTypeValue</code> is not a valid <code>UpdateType</code>
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inDate a <code>Date</code> value
+     * @throws MarketDataRequestException if the given <code>Date</code> is not valid
      */
-    private UpdateType validateUpdateType(String inUpdateTypeValue)
+    private static void validateDate(MarketDataRequest inRequest,
+                                     Date inDate)
+        throws MarketDataRequestException
     {
-        return UpdateType.valueOf(inUpdateTypeValue.toUpperCase());
+        // nothing to do
     }
     /**
-     * Validates the symbols and returns a valid symbol array.
+     * Verifies that the given <code>Exchange</code> is valid.
      *
-     * @param inSymbols a <code>String...</code> value
-     * @return a <code>String[]</code> value
-     * @throws IllegalArgumentException if the symbols cannot be parsed
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inExchange a <code>String</code> value
      */
-    private static String[] validateSymbols(String... inSymbols)
+    private static void validateExchange(MarketDataRequest inRequest,
+                                         String inExchange)
+    {
+        // nothing to do
+    }
+    /**
+     * Verifies that the provider is valid on the given <code>MarketDataRequest</code>.
+     *
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inProvider a <code>String</code> value
+     * @throws MarketDataRequestException if the <code>Provider</code> is not valid
+     */
+    private static void validateProvider(MarketDataRequest inRequest,
+                                         String inProvider)
+        throws MarketDataRequestException
+    {
+        if(inProvider == null ||
+           inProvider.isEmpty()) {
+            throw new MarketDataRequestException(MISSING_PROVIDER);
+        }
+    }
+    /**
+     * Verifies that the <code>Content</code> on the given <code>MarketDataRequest</code> is valid.
+     *
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inContent a <code>Content</code> value
+     * @throws MarketDataRequestException if the <code>Content</code> is not valid
+     */
+    private static void validateContent(MarketDataRequest inRequest,
+                                        Content inContent)
+        throws MarketDataRequestException
+    {
+        if(inContent == null) {
+            throw new MarketDataRequestException(MISSING_CONTENT);
+        }
+    }
+    /**
+     * Checks to see if the given <code>String</code> represents an empty symbol list.
+     * 
+     * <p>The list is considered empty if it is empty or if all symbols in the list are whitespace or empty.
+     *
+     * @param inSymbols a <code>String</code> value allegedly containing a list of symbols delimited by {@link MarketDataRequest#SYMBOL_DELIMITER}
+     * @return a <code>boolean</code>value
+     */
+    private static boolean isEmptySymbolList(String inSymbols)
+    {
+        if(inSymbols == null ||
+           inSymbols.isEmpty()) {
+            return true;
+        }
+        return isEmptySymbolList(inSymbols.split(MarketDataRequest.SYMBOL_DELIMITER));
+    }
+    /**
+     * Checks to see if the given <code>String[]</code> value represents an empty symbol list.
+     * 
+     * <p>The list is considered empty if the array is empty or contains only null or whitespace values.
+     *
+     * @param inSymbols a <code>String[]</code> value
+     * @return a <code>boolean</cod> value
+     */
+    private static boolean isEmptySymbolList(String[] inSymbols)
     {
         if(inSymbols == null ||
            inSymbols.length == 0) {
-            throw new IllegalArgumentException(INVALID_SYMBOLS.getText(Arrays.toString(inSymbols)));
+            return true;
         }
         for(String symbol : inSymbols) {
-            if(symbol.length() == 0) {
-                throw new IllegalArgumentException(INVALID_SYMBOLS.getText(Arrays.toString(inSymbols)));
+            if(symbol != null &&
+               !symbol.trim().isEmpty()) {
+                return false;
             }
-            validateStringValue(symbol);
         }
-        return inSymbols;
+        return true;
     }
     /**
-     * the depth of the order book requested
+     * Sets the type value.
+     *
+     * <p>The given value must not be null.  This attribute is required and no default is provided.
+     * 
+     * @param a <code>Type</code> value
+     * @throws MarketDataRequestException if the specified type results in an invalid request
      */
-    private final int depth;
+    private void setType(Type inType)
+        throws MarketDataRequestException
+    {
+        validateType(this,
+                     inType);
+        type = Type.valueOf(inType.toString());
+    }
     /**
-     * indicates whether to send updates or a single snapshot
+     * Sets the date value.
+     *
+     * <p>The date is valid (and required) only for
+     * requests with <code>Content</code> of {@link Content#OHLC}, but is
+     * not otherwise forbidden.  If specified for other <code>Content</code>
+     * types, the attribute is ignored.
+     * 
+     * @param a <code>Date</code> value
+     * @throws MarketDataRequestException if the specified date results in an invalid request 
      */
-    private final RequestType requestType;
+    private void setDate(Date inDate)
+        throws MarketDataRequestException
+    {
+        validateDate(this,
+                     inDate);
+        if(inDate == null) {
+            date = null;
+        } else {
+            date = new Date(inDate.getTime());
+        }
+    }
     /**
-     * indicates how to send updates
+     * Sets the symbols.
+     *
+     * <p>The given symbols must be non-null and non-empty.
+     * 
+     * <p>This attribute is required and no default is provided.
+     * 
+     * @param inSymbols a <code>String[]</code> value containing symbols to add to the request
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified symbols result in an invalid request 
      */
-    private final UpdateType updateType;
+    private void setSymbols(String[] inSymbols)
+        throws MarketDataRequestException
+    {
+        validateSymbols(this,
+                        inSymbols);
+        // synchronize to make the symbol change atomic
+        synchronized(this) {
+            symbols.clear();
+            for(String symbol:inSymbols) {
+                symbols.add(symbol.trim());
+            }
+        }
+    }
     /**
-     * the exchange from which to request market data
+     * Sets the exchange.
+     *
+     * <p>The exchange is not validated as the set of valid exchanges is dependent on the
+     * provider and the provisioning within the domain of the services provided therein.
+     * 
+     * <p>This attribute is optional and no default is provided. 
+     *
+     * @param inExchange a <code>String</code> value
      */
-    private final String exchange;
+    private void setExchange(String inExchange)
+    {
+        validateExchange(this,
+                         inExchange);
+        if(inExchange == null ||
+           inExchange.isEmpty()) {
+            exchange = null;
+        } else {
+            exchange = new String(inExchange);
+        }
+    }
     /**
-     * the symbols for which to request market data
+     * Sets the provider.
+     *
+     * <p>The provider is not validated because the set of valid providers is
+     * resolved at run-time.  The specified provider must be non-null and of non-zero
+     * length.
+     * 
+     * <p>This attribute is required and no default is provided.
+     * 
+     * @param inProvider a <code>String</code> value containing the provider from which to request data
+     * @throws MarketDataRequestException if the specified provider results in an invalid request 
      */
-    private final String[] symbols;
-    private static final long serialVersionUID = -1249152850732867051L;
+    private void setProvider(String inProvider)
+        throws MarketDataRequestException
+    {
+        validateProvider(this,
+                         inProvider);
+        provider = new String(inProvider);
+    }
+    /**
+     * Sets the content value.
+     *
+     * <p>This attribute is required.  If omitted, the value will be {@link Content#TOP_OF_BOOK}.
+     * 
+     * @param a <code>Content</code> value
+     * @throws MarketDataRequestException if the given content value is invalid 
+     */
+    private void setContent(Content inContent)
+        throws MarketDataRequestException
+    {
+        validateContent(this,
+                        inContent);
+        content = inContent;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder output = new StringBuilder();
+        boolean delimiterNeeded = false;
+        if(symbols != null &&
+           !symbols.isEmpty()) {
+            output.append(SYMBOLS_KEY).append(KEY_VALUE_SEPARATOR).append(symbols.toString().replaceAll("[\\[\\]]", //$NON-NLS-1$
+                                                                                                        "")); //$NON-NLS-1$
+            delimiterNeeded = true;
+        }
+        if(provider != null &&
+           !provider.isEmpty()) {
+            if(delimiterNeeded) {
+                output.append(KEY_VALUE_DELIMITER);
+            }
+            output.append(PROVIDER_KEY).append(KEY_VALUE_SEPARATOR).append(String.valueOf(provider));
+            delimiterNeeded = true;
+        }
+        if(content != null) {
+            if(delimiterNeeded) {
+                output.append(KEY_VALUE_DELIMITER);
+            }
+            output.append(CONTENT_KEY).append(KEY_VALUE_SEPARATOR).append(content);
+            delimiterNeeded = true;
+        }
+        if(type != null) {
+            if(delimiterNeeded) {
+               output.append(KEY_VALUE_DELIMITER);
+            }
+            output.append(TYPE_KEY).append(KEY_VALUE_SEPARATOR).append(type);
+            delimiterNeeded = true;
+        }
+        if(exchange != null &&
+           !exchange.isEmpty()) {
+            if(delimiterNeeded) {
+                output.append(KEY_VALUE_DELIMITER);
+            }
+            output.append(EXCHANGE_KEY).append(KEY_VALUE_SEPARATOR).append(String.valueOf(exchange));
+            delimiterNeeded = true;
+        }
+        if(date != null) {
+            if(delimiterNeeded) {
+                output.append(KEY_VALUE_DELIMITER);
+            }
+            output.append(DATE_KEY).append(KEY_VALUE_SEPARATOR).append(DateUtils.dateToString(date));
+            delimiterNeeded = true;
+        }
+        return output.toString();
+    }
+    /**
+     * the symbols for which to request data
+     */
+    private final List<String> symbols = new ArrayList<String>();
+    /**
+     * the provider key from which to request data
+     */
+    private String provider;
+    /**
+     * the exchange from which to request data
+     */
+    private String exchange;
+    /**
+     * the request content
+     */
+    private Content content = TOP_OF_BOOK;
+    /**
+     * the date as of which to request data
+     */
+    private Date date;
+    /**
+     * the request type
+     */
+    private Type type = SUBSCRIPTION;
+    /**
+     * The content types for market data requests.
+     * 
+     * <p>In this context, <em>content</em> refers to the type of market data request.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public static enum Content
+    {
+        /**
+         * best-bid-and-offer only
+         */
+        TOP_OF_BOOK(1),
+        /**
+         * NYSE OpenBook data
+         */
+        OPEN_BOOK(0),
+        /**
+         * Open-High-Low-Close data
+         */
+        OHLC(1),
+        /**
+         * NASDAQ TotalView data
+         */
+        TOTAL_VIEW(0),
+        /**
+         * NASDAQ Level II data
+         */
+        LEVEL_2(0);
+        /**
+         * Gets the depth implied by the content type.
+         *
+         * @return an <code>int</code> value
+         */
+        public int getDepth()
+        {
+            return impliedDepth;
+        }
+        /**
+         * Create a new Content instance.
+         *
+         * @param inImpliedDepth an <code>int</code> value
+         */
+        private Content(int inImpliedDepth)
+        {
+            impliedDepth = inImpliedDepth;
+        }
+        /**
+         * depth implied by the type of request
+         */
+        private final int impliedDepth;
+    }
+    /**
+     * The request types for market data requests.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public static enum Type
+    {
+        /**
+         * request for a single data-point with no updates
+         */
+        SNAPSHOT,
+        /**
+         * request for a stream of updates as they become available until cancelled
+         */
+        SUBSCRIPTION
+    }
+    private static final long serialVersionUID = 1L;
 }

@@ -60,7 +60,10 @@
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jms_1.1_spec</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
     <!-- Testing. -->
     <dependency>
       <groupId>${mvn.public.package}</groupId>

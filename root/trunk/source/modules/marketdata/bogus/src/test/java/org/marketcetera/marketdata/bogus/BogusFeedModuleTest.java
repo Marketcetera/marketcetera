@@ -49,4 +49,12 @@ public class BogusFeedModuleTest
     {
         return Capability.OHLC;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataModuleTestBase#getProvider()
+     */
+    @Override
+    protected String getProvider()
+    {
+        return BogusFeedModuleFactory.IDENTIFIER;
+    }
 }

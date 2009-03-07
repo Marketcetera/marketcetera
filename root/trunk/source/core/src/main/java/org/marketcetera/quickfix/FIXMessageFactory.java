@@ -44,6 +44,7 @@ import quickfix.field.OrigClOrdID;
 import quickfix.field.Price;
 import quickfix.field.RefMsgType;
 import quickfix.field.RefSeqNum;
+import quickfix.field.SecurityExchange;
 import quickfix.field.SecurityListRequestType;
 import quickfix.field.SecurityReqID;
 import quickfix.field.SenderCompID;
@@ -160,14 +161,18 @@ public class FIXMessageFactory {
     }
 
     private final int TOP_OF_BOOK_DEPTH = 1;
-
-    /** Creates a new MarketDataRequest for the specified symbols.
-     * Setting the incoming symbols array to empty results in a "get all" request
-     * @param reqID request id to assign to this
-     * @param symbols   List of symbols, or an empty list to get all available
-     * @return Message corresponding to the market data request
+    /**
+     * Returns a Market Data Request for the given symbols from the given exchange.
+     *
+     * @param reqID a <code>String</code> value containing the identifier to assign to the message
+     * @param symbols a <code>List&lt;MSymbol&gt;</code> value containing the symbols for which to request data
+     * @param inExchange a <code>String</code> value containing the exchange from which to request data or <code>null</code> to not specify an exchange
+     * @return a <code>Message</code> value
      */
-    public Message newMarketDataRequest(String reqID, List<MSymbol> symbols) {
+    public Message newMarketDataRequest(String reqID,
+                                        List<MSymbol> symbols,
+                                        String inExchange)
+    {
         Message request = msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST);
         request.setField(new MarketDepth(TOP_OF_BOOK_DEPTH));
         request.setField(new MDReqID(reqID));
@@ -186,10 +191,25 @@ public class FIXMessageFactory {
             if(oneSymbol != null) {
                 Group symbolGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
                 symbolGroup.setField(new Symbol(oneSymbol.getFullSymbol()));
+                if(inExchange != null &&
+                   !inExchange.isEmpty()) {
+                    symbolGroup.setField(new SecurityExchange(inExchange));
+                }
                 request.addGroup(symbolGroup);
             }
         }
         return request;
+    }
+    /** Creates a new MarketDataRequest for the specified symbols.
+     * Setting the incoming symbols array to empty results in a "get all" request
+     * @param reqID request id to assign to this
+     * @param symbols   List of symbols, or an empty list to get all available
+     * @return Message corresponding to the market data request
+     */
+    public Message newMarketDataRequest(String reqID, List<MSymbol> symbols) {
+        return newMarketDataRequest(reqID,
+                                    symbols,
+                                    null);
     }
     /**
      * Generates a <code>Security List Request</code> FIX message.

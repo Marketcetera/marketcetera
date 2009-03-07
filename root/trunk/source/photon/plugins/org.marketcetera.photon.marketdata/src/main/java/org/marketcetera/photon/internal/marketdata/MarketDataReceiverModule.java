@@ -1,6 +1,8 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestException;
+import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowRequester;
 import org.marketcetera.module.DataFlowSupport;
@@ -67,11 +69,17 @@ class MarketDataReceiverModule extends Module implements DataReceiver,
 					Messages.MARKET_DATA_RECEIVER_NO_SOURCE, mSubscriber
 							.getSymbols()));
 		}
-		org.marketcetera.marketdata.DataRequest request = MarketDataRequest
-				.newTopOfBookRequest(mSubscriber.getSymbols());
-		mDataFlowSupport.createDataFlow(new DataRequest[] {
-				new DataRequest(source, request),
-				new DataRequest(getURN()) }, false);
+		MarketDataRequest request = null;
+        try {
+            request = MarketDataRequest.newRequest().withSymbols(mSubscriber.getSymbols()).withContent(Content.TOP_OF_BOOK).fromProvider(source.instanceName());
+            mDataFlowSupport.createDataFlow(new DataRequest[] {
+                    new DataRequest(source, request),
+                    new DataRequest(getURN()) }, false);
+        } catch (MarketDataRequestException e) {
+            throw new ModuleException(e,
+                                      new I18NBoundMessage1P(Messages.MARKET_DATA_RECEIVER_REQUEST_FAILED,
+                                                             request));
+        }
 	}
 
 	@Override

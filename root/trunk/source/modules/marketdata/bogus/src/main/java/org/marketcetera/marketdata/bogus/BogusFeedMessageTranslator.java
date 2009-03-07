@@ -1,10 +1,13 @@
 package org.marketcetera.marketdata.bogus;
 
+import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 /* $License$ */
 
@@ -17,7 +20,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusFeedMessageTranslator
-    implements DataRequestTranslator<BogusMessage>
+    implements DataRequestTranslator<MarketDataRequest>
 {
     /**
      * static instance
@@ -40,29 +43,16 @@ public class BogusFeedMessageTranslator
     {
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.DataRequestTranslator#asDataRequest(java.lang.Object)
-     */
-    @Override
-    public DataRequest toDataRequest(BogusMessage inData)
-            throws CoreException
-    {
-        return inData.getAsDataRequest();
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.DataRequestTranslator#translate(org.marketcetera.marketdata.DataRequest)
      */
     @Override
-    public BogusMessage fromDataRequest(DataRequest inRequest)
+    public MarketDataRequest fromDataRequest(MarketDataRequest inRequest)
             throws CoreException
     {
-        if(inRequest instanceof MarketDataRequest) {
-            BogusMessage message = new BogusMessage(inRequest);
-            for(String symbol : ((MarketDataRequest)inRequest).getSymbols()) {
-                message.addSymbol(symbol);
-            }
-            return message;
-        } else {
-            throw new UnsupportedOperationException();
+        if(inRequest.getContent().equals(TOP_OF_BOOK)) {
+            return inRequest;
         }
+        throw new CoreException(new I18NBoundMessage1P(UNSUPPORTED_REQUEST,
+                                                       inRequest.getContent()));
     }
 }

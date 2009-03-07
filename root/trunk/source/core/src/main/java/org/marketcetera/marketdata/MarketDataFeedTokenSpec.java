@@ -23,12 +23,12 @@ import org.marketcetera.core.publisher.ISubscriber;
  * @version $Id$
  * @since 0.5.0
  */
-public class MarketDataFeedTokenSpec
+public final class MarketDataFeedTokenSpec
 {
     /**
-     * the <code>DataRequest</code> encapsulating the query
+     * the <code>MarketDataRequest</code> encapsulating the query
      */
-    private final DataRequest dataRequest;
+    private final MarketDataRequest dataRequest;
     /**
      * the subscribers to whom to send query results
      */
@@ -42,12 +42,12 @@ public class MarketDataFeedTokenSpec
      * for many transactions.
      * 
      * @param inRequest a <code>Message</code> value
-     * @param inSubscribers a <code>ISubscriber...</code> value which may be empty
+     * @param inSubscribers an <code>ISubscriber...</code> value which may be empty
      *   or null if no subscribers need to be notified of query results
-     * @return a MarketDataFeedTokenSpec&lt;C&gt; value
+     * @return a <code>MarketDataFeedTokenSpec</code> value
      * @throws NullPointerException if the passed credentials or message is null
      */
-    public static MarketDataFeedTokenSpec generateTokenSpec(DataRequest inRequest,
+    public static MarketDataFeedTokenSpec generateTokenSpec(MarketDataRequest inRequest,
                                                             ISubscriber... inSubscribers)
     {
         return new MarketDataFeedTokenSpec(inRequest,
@@ -56,12 +56,12 @@ public class MarketDataFeedTokenSpec
     /**
      * Create a new MarketDataFeedTokenSpec instance.
      *
-     * @param inRequest a <code>DataRequest</code> value
+     * @param inRequest a <code>MarketDataRequest</code> value
      * @param inSubscribers an <code>ISubscriber...</code> value which may be empty
      *   or null if no subscribers need to be notified of query results
      * @throws NullPointerException if the passed credentials or message is null
      */
-    private MarketDataFeedTokenSpec(DataRequest inRequest,
+    private MarketDataFeedTokenSpec(MarketDataRequest inRequest,
                                     ISubscriber... inSubscribers)
     {
         if(inRequest == null) {
@@ -74,15 +74,19 @@ public class MarketDataFeedTokenSpec
             mSubscribers = inSubscribers;
         }
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.IMarketDataFeedTokenSpec#getMessage()
+    /**
+     * Gets the market data request associated with this token spec.
+     *
+     * @return a <code>MarketDataRequest</code> value
      */
-    public DataRequest getDataRequest()
+    public MarketDataRequest getDataRequest()
     {
         return dataRequest;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.IMarketDataFeedTokenSpec#getSubscribers()
+    /**
+     * Gets the subscribers associated with this token spec.
+     *
+     * @return an <code>ISubscriber[]</code> value
      */
     public ISubscriber[] getSubscribers()
     {

@@ -24,6 +24,7 @@ import org.marketcetera.event.MessageEvent;
 import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
+import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
 
 /* $License$ */
@@ -135,9 +136,8 @@ public class AbstractMarketDataFeedTest
         throws Exception
     {
         MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
-        DataRequest request1 = MarketDataRequest.newFullBookRequest("GOOG", 
-                                                                    "MSFT");
-        DataRequest request2 = MarketDataRequest.newFullBookRequest("YHOO"); 
+        MarketDataRequest request1 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG,MSFT");
+        MarketDataRequest request2 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("YHOO"); 
         MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
         MockSubscriber subscriber = new MockSubscriber();
         MarketDataFeedTokenSpec spec1 = MarketDataFeedTokenSpec.generateTokenSpec(request1, 
@@ -334,7 +334,7 @@ public class AbstractMarketDataFeedTest
         feed.start();
         feed.login(new MockMarketDataFeedCredentials());
         feed.setShouldTimeout(true);
-        final MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataRequest.newFullBookRequest("GOOG"), 
+        final MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG"), 
                                                                                        new ISubscriber[0]);
         new ExpectedTestFailure(FeedException.class,
                                 Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getText()) {
@@ -376,7 +376,7 @@ public class AbstractMarketDataFeedTest
         assertTrue(feed.getCreatedHandles().isEmpty());
         // #3
         MockSubscriber s1 = new MockSubscriber();
-        DataRequest request0 = MarketDataRequest.newFullBookRequest("test");
+        MarketDataRequest request0 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("test");
         MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(request0,
                                                                                  s1);
         MockMarketDataFeedToken token = feed.execute(spec);
@@ -427,8 +427,8 @@ public class AbstractMarketDataFeedTest
         assertEquals(2,
                      handleList2.size());
         // create two new requests to use
-        DataRequest request1 = MarketDataRequest.newFullBookRequest("COLIN");
-        DataRequest request2 = MarketDataRequest.newFullBookRequest("NOT-COLIN");
+        MarketDataRequest request1 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("COLIN");
+        MarketDataRequest request2 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("NOT-COLIN");
         assertFalse(request1.equals(request2));
         // reset the subscriber counters
         s1.reset();
@@ -588,7 +588,7 @@ public class AbstractMarketDataFeedTest
             }
         }
         subscriber.reset();
-        DataRequest fullDepthMessage = MarketDataRequest.newFullBookRequest("GOOG");
+        MarketDataRequest fullDepthMessage = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG").withContent(Content.TOTAL_VIEW);
         doExecuteTest(fullDepthMessage,
                       subscriber,
                       false, 
@@ -1036,7 +1036,7 @@ public class AbstractMarketDataFeedTest
                       false, 
                       true);
     }
-    private void doExecuteTest(final DataRequest inRequest,
+    private void doExecuteTest(final MarketDataRequest inRequest,
                                final MockSubscriber inSubscriber,
                                boolean inLoginFails, 
                                boolean inInitFails, 

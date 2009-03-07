@@ -204,22 +204,18 @@ final class StrategyModule
      * @see org.marketcetera.strategy.OutboundServices#marketDataRequest(org.marketcetera.marketdata.MarketDataRequest, java.lang.String)
      */
     @Override
-    public int requestMarketData(MarketDataRequest inRequest,
-                                 String inSource)
+    public int requestMarketData(MarketDataRequest inRequest)
     {
-        if(inRequest == null ||
-           inSource == null ||
-           inSource.isEmpty()) {
+        if(inRequest == null) {
             StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
                                              String.valueOf(strategy),
-                                             inRequest,
-                                             inSource),
+                                             inRequest),
                                strategy);
             return 0;
         }
         int requestID = counter.incrementAndGet();
         try {
-            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inSource),
+            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inRequest.getProvider()),
                                                                                                        inRequest),
                                                                                        new DataRequest(getURN()) },
                                                                    false);
@@ -230,8 +226,7 @@ final class StrategyModule
         } catch (Exception e) {
             StrategyModule.log(LogEvent.warn(MARKET_DATA_REQUEST_FAILED,
                                              e,
-                                             inRequest,
-                                             inSource),
+                                             inRequest),
                                strategy);
             return 0;
         }
@@ -242,14 +237,11 @@ final class StrategyModule
      */
     @Override
     public int requestProcessedMarketData(MarketDataRequest inRequest,
-                                          String inMarketDataSource,
                                           String[] inStatements,
                                           String inCEPSource,
                                           String inNamespace)
     {
         if(inRequest == null ||
-           inMarketDataSource == null ||
-           inMarketDataSource.isEmpty() ||
            inStatements == null ||
            inStatements.length == 0 ||
            inCEPSource == null ||
@@ -259,7 +251,6 @@ final class StrategyModule
             StrategyModule.log(LogEvent.warn(INVALID_COMBINED_DATA_REQUEST,
                                              String.valueOf(strategy),
                                              inRequest,
-                                             inMarketDataSource,
                                              Arrays.toString(inStatements),
                                              inCEPSource,
                                              inNamespace),
@@ -269,7 +260,7 @@ final class StrategyModule
         int requestID = counter.incrementAndGet();
         // construct a request that connects the provider to the cep query
         try {
-            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inMarketDataSource),
+            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inRequest.getProvider()),
                                                                                                        inRequest),
                                                                                        new DataRequest(constructCepUrn(inCEPSource,
                                                                                                                        inNamespace),
@@ -287,7 +278,6 @@ final class StrategyModule
             StrategyModule.log(LogEvent.warn(COMBINED_DATA_REQUEST_FAILED,
                                              e,
                                              inRequest,
-                                             inMarketDataSource,
                                              Arrays.toString(inStatements),
                                              inCEPSource,
                                              inNamespace),

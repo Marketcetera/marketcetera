@@ -1,19 +1,19 @@
 package org.marketcetera.event;
 
-import org.marketcetera.marketdata.DataRequest;
+import org.marketcetera.marketdata.MarketDataRequest;
 
 import quickfix.Message;
 
 public class MessageEvent
     extends EventBase
 {
-    private final DataRequest request;
+    private final MarketDataRequest request;
     private final Message message;
     public MessageEvent()
     {
-        this((DataRequest)null);
+        this((MarketDataRequest)null);
     }        
-    public MessageEvent(DataRequest inRequest)
+    public MessageEvent(MarketDataRequest inRequest)
     {
         super(System.nanoTime(),
               System.currentTimeMillis());
@@ -27,7 +27,7 @@ public class MessageEvent
         message = inMessage;
         request = null;
     }
-    public DataRequest getRequest()
+    public MarketDataRequest getRequest()
     {
         return request;
     }

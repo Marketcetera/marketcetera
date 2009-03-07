@@ -1,5 +1,5 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.marketdata.DataRequest"
+include_class "org.marketcetera.marketdata.MarketDataRequest"
 include_class "org.marketcetera.trade.Factory"
 include_class "org.marketcetera.trade.MSymbol"
 include_class 'org.marketcetera.util.test.UnicodeData'

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.marketdata.DataRequest;
+import org.marketcetera.marketdata.MarketDataRequest;
 
 import quickfix.Message;
 
@@ -26,7 +26,7 @@ public class MockEventTranslator
     private static boolean sTranslateToEventsReturnsNull = false;
     private static boolean sTranslateToEventsReturnsZeroEvents = false;
     private static MockEventTranslator sInstance = new MockEventTranslator();
-    private static DataRequest requestToReturn = null;
+    private static MarketDataRequest requestToReturn = null;
     private static Message messageToReturn = null;
     /**
      * Gets a <code>TestEventTranslator</code> value.
@@ -52,11 +52,11 @@ public class MockEventTranslator
         if(getTranslateToEventsReturnsZeroEvents()) {
             return new ArrayList<EventBase>();
         }
-        DataRequest request = null;
+        MarketDataRequest request = null;
         if(requestToReturn != null) {
             request = requestToReturn;
-        } else if(inData instanceof DataRequest) {
-            request = (DataRequest)inData;
+        } else if(inData instanceof MarketDataRequest) {
+            request = (MarketDataRequest)inData;
         }
         if(inData instanceof SymbolExchangeEvent) {
             SymbolExchangeEvent see = (SymbolExchangeEvent)inData;
@@ -101,7 +101,7 @@ public class MockEventTranslator
      *
      * @param a <code>DataRequest</code> value
      */
-    public static void setRequestToReturn(DataRequest inRequestToReturn)
+    public static void setRequestToReturn(MarketDataRequest inRequestToReturn)
     {
         requestToReturn = inRequestToReturn;
     }
