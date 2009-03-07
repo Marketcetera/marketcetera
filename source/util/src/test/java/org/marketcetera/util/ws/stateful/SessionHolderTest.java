@@ -18,6 +18,8 @@ import static org.junit.Assert.*;
 public class SessionHolderTest
     extends TestCaseBase
 {
+    private static final String TEST_USER=
+        "metc";
     private static final StatelessClientContext TEST_CONTEXT=
         new StatelessClientContext();
     private static final Object TEST_SESSION=
@@ -28,7 +30,9 @@ public class SessionHolderTest
     public void all()
         throws Exception
     {
-        SessionHolder<Object> holder=new SessionHolder<Object>(TEST_CONTEXT);
+        SessionHolder<Object> holder=new SessionHolder<Object>
+            (TEST_USER,TEST_CONTEXT);
+        assertEquals(TEST_USER,holder.getUser());
         assertEquals(TEST_CONTEXT,holder.getCreationContext());
         assertEquals(0,holder.getLastAccess());
         assertNull(holder.getSession());

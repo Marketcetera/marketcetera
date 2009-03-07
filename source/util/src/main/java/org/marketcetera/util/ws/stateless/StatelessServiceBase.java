@@ -14,5 +14,5 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 @WebService
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface StatelessServiceBase {}

@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class CompSerWrapper<T extends Serializable &
                                       Comparable<? super T>>
     extends SerWrapper<T>

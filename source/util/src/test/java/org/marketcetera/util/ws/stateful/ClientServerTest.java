@@ -1,5 +1,6 @@
 package org.marketcetera.util.ws.stateful;
 
+import javax.xml.ws.soap.SOAPFaultException;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.stateless.ClientServerTestBase;
@@ -117,7 +118,7 @@ public class ClientServerTest
         SessionId id=c.getSessionId();
         assertNotNull(id);
         assertEquals(id,c.getContext().getSessionId());
-        assertNotNull(TEST_MANAGER.get(id));
+        assertEquals(TEST_USER,TEST_MANAGER.get(id).getUser());
 
         try {
             c.login(TEST_USER,TEST_PASSWORD);
@@ -127,7 +128,7 @@ public class ClientServerTest
         }
 
         assertEquals(id,c.getSessionId());
-        assertNotNull(TEST_MANAGER.get(id));
+        assertEquals(TEST_USER,TEST_MANAGER.get(id).getUser());
 
         c.logout();
         assertNull(c.getSessionId());
@@ -144,5 +145,13 @@ public class ClientServerTest
         assertNull(c.getSessionId());
 
         c.logout();
+
+        s.stop();
+        try {
+            c.login(TEST_USER,TEST_PASSWORD);
+            fail();
+        } catch (SOAPFaultException ex) {
+            // Desired.
+        }
     }
 }

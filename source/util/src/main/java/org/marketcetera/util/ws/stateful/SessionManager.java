@@ -23,7 +23,7 @@ import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class SessionManager<T>
 {
 
@@ -49,6 +49,7 @@ public class SessionManager<T>
 
     private NodeId mServerId;
     private final long mSessionLife;
+    private final SessionFactory<T> mSessionFactory;
     private final HashMap<SessionId,SessionHolder<T>> mMap=
         new HashMap<SessionId,SessionHolder<T>>();
 
@@ -56,7 +57,7 @@ public class SessionManager<T>
      * The reaper.
      */
 
-    @ClassVersion("$Id$") //$NON-NLS-1$
+    @ClassVersion("$Id$")
     class Reaper
         extends Thread
     {
@@ -107,6 +108,10 @@ public class SessionManager<T>
                             Messages.REAPER_EXPIRED_SESSION.info
                                 (this,entry.getKey(),
                                  entry.getValue().getCreationContext());
+                            if (getSessionFactory()!=null) {
+                                getSessionFactory().removedSession
+                                    (entry.getValue().getSession());
+                            }
                             i.remove();
                         }
                     }
@@ -125,6 +130,26 @@ public class SessionManager<T>
     // CONSTRUCTORS.
 
     /**
+     * Creates a new session manager whose sessions are created by the
+     * given factory, and which have the given lifespan, in ms.
+     *
+     * @param sessionFactory The session factory. It may be null.
+     * @param sessionLife The lifespan. Use {@link
+     * #INFINITE_SESSION_LIFESPAN} for an infinite lifespan.
+     */
+
+    public SessionManager
+        (SessionFactory<T> sessionFactory,
+         long sessionLife)
+    {
+        mSessionFactory=sessionFactory;
+        mSessionLife=sessionLife;
+        if (getLifespan()!=INFINITE_SESSION_LIFESPAN) {
+            (new Reaper()).start();
+        }
+    }
+
+    /**
      * Creates a new session manager whose sessions have the given
      * lifespan, in ms.
      *
@@ -135,10 +160,20 @@ public class SessionManager<T>
     public SessionManager
         (long sessionLife)
     {
-        mSessionLife=sessionLife;
-        if (getLifespan()!=INFINITE_SESSION_LIFESPAN) {
-            (new Reaper()).start();
-        }
+        this(null,sessionLife);
+    }
+
+    /**
+     * Creates a new session manager whose sessions are created by the
+     * given factory, and which never expire.
+     *
+     * @param sessionFactory The session factory. It may be null.
+     */
+
+    public SessionManager
+        (SessionFactory<T> sessionFactory)
+    {
+        this(sessionFactory,INFINITE_SESSION_LIFESPAN);
     }
 
     /**
@@ -177,6 +212,17 @@ public class SessionManager<T>
     }
 
     /**
+     * Returns the receiver's session factory.
+     *
+     * @return The factory. It may be null.
+     */
+
+    public SessionFactory<T> getSessionFactory()
+    {
+        return mSessionFactory;
+    }   
+
+    /**
      * Returns the lifespan of the sessions managed by the receiver.
      *
      * @return The lifespan, in ms.
@@ -199,7 +245,7 @@ public class SessionManager<T>
     }
 
     /**
-     * Adds the given holder, associated with the given session ID to
+     * Adds the given holder, associated with the given session ID, to
      * the receiver. This addition counts as an access that renews the
      * session's expiration counter.
      *
@@ -213,6 +259,11 @@ public class SessionManager<T>
     {
         synchronized (getMap()) {
             holder.markAccess();
+            if (getSessionFactory()!=null) {
+                holder.setSession
+                    (getSessionFactory().createSession
+                     (holder.getCreationContext(),holder.getUser(),id));
+            }
             getMap().put(id,holder);
         }
     }
@@ -253,7 +304,10 @@ public class SessionManager<T>
         (SessionId id)
     {
         synchronized (getMap()) {
-            getMap().remove(id);
+            SessionHolder<T> holder=getMap().remove(id);
+            if ((holder!=null) && (getSessionFactory()!=null)) {
+                getSessionFactory().removedSession(holder.getSession());
+            }
         }
     }
 }

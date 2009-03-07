@@ -22,7 +22,7 @@ import org.marketcetera.util.ws.wrappers.LocaleWrapper;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class StatelessClientContext
 {
 

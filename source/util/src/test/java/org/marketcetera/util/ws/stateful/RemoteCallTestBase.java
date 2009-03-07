@@ -36,10 +36,12 @@ public class RemoteCallTestBase
         SessionId.generate(); 
     private static final SessionId TEST_SESSION_D=
         SessionId.generate(); 
+    private static final String TEST_USER=
+        "metc";
     private static final StatelessClientContext TEST_CONTEXT=
         new StatelessClientContext();
     protected static final SessionHolder<Object> TEST_HOLDER=
-        new SessionHolder<Object>(TEST_CONTEXT);
+        new SessionHolder<Object>(TEST_USER,TEST_CONTEXT);
 
 
     static {

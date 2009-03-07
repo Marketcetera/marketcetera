@@ -96,6 +96,8 @@ public class ClientServerTestBase
          StatelessServer empty)
     {
         singleNode(server,empty);
+
+        server.stop();
     }
 
     protected static void checkException
@@ -119,8 +121,10 @@ public class ClientServerTestBase
          StatelessClient client2,
          String contextStr2)
     {
-        server1.publish(new TestServiceImpl(),TestService.class);
-        server2.publish(new TestServiceImpl(),TestService.class);
+        ServiceInterface si1=server1.publish
+            (new TestServiceImpl(),TestService.class);
+        ServiceInterface si2=server2.publish
+            (new TestServiceImpl(),TestService.class);
 
         TestService i1=client1.getService(TestService.class);
         TestService i2=client2.getService(TestService.class);
@@ -140,6 +144,26 @@ public class ClientServerTestBase
         } catch (RemoteException ex) {
             checkException(ex);
         }
+
+        si1.stop();
+        try {
+            i1.testCall(client1.getContext());
+            fail();
+        } catch (SOAPFaultException ex) {
+            // Desired.
+        }
+        assertEquals(contextStr2,i2.testCall(client2.getContext()));
+
+        si2.stop();
+        try {
+            i2.testCall(client2.getContext());
+            fail();
+        } catch (SOAPFaultException ex) {
+            // Desired.
+        }
+
+        server1.stop();
+        server2.stop();
     }
 
     protected static void badConnection
@@ -152,6 +176,7 @@ public class ClientServerTestBase
         } catch (ServiceConstructionException ex) {
             // Desired.
         }
+
         TestService i=badClient.getService(TestService.class);
         try {
             i.testCall(badClient.getContext());
@@ -159,5 +184,7 @@ public class ClientServerTestBase
         } catch (SOAPFaultException ex) {
             // Desired.
         }
+
+        badServer.stop();
     }
 }

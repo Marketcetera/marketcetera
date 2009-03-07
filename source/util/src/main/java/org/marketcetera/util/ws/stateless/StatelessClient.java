@@ -18,7 +18,7 @@ import org.marketcetera.util.ws.wrappers.LocaleWrapper;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class StatelessClient
     extends Node
 {
@@ -124,7 +124,7 @@ public class StatelessClient
      * @param iface The interface class.
      */
 
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public <T extends StatelessServiceBase> T getService
         (Class<T> iface)
     {

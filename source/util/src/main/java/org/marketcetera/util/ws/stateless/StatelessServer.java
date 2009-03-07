@@ -13,7 +13,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class StatelessServer
     extends Node
 {
@@ -50,13 +50,16 @@ public class StatelessServer
 
     /**
      * Publishes the given service interface, supported by the given
-     * implementation.
+     * implementation, and returns a handle that can be used to stop
+     * the interface.
      *
      * @param impl The implementation.
      * @param iface The interface class.
+     *
+     * @return The handle.
      */
 
-    public <T extends StatelessServiceBase> void publish
+    public <T extends StatelessServiceBase> ServiceInterface publish
         (T impl,
          Class<T> iface)
     {
@@ -64,6 +67,12 @@ public class StatelessServer
         f.setServiceClass(iface);
         f.setAddress(getConnectionUrl(iface));
         f.setServiceBean(impl);
-        f.create();
+        return new ServiceInterface(f.create());
     }
+
+    /**
+     * Shuts down the receiver.
+     */
+
+    public void stop() {}
 }

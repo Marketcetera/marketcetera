@@ -19,6 +19,11 @@ import static org.junit.Assert.*;
 public class ValidSessionTagFilterTest
     extends TagFilterTestBase
 {
+    private static final String TEST_USER=
+        "metc";
+    private static final StatelessClientContext TEST_CONTEXT=
+        new StatelessClientContext();
+
     @Test
     public void all()
         throws Exception
@@ -28,7 +33,7 @@ public class ValidSessionTagFilterTest
         SessionManager<Object> sessionManager=
             new SessionManager<Object>();
         sessionManager.put(sessionId,new SessionHolder<Object>
-                           (new StatelessClientContext()));
+                           (TEST_USER,TEST_CONTEXT));
 
         ValidSessionTagFilter<Object> filter=
             new ValidSessionTagFilter<Object>(sessionManager);

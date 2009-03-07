@@ -14,7 +14,7 @@ import org.marketcetera.util.ws.stateless.StatelessServiceBaseImpl;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ServiceBaseImpl<T>
     extends StatelessServiceBaseImpl
     implements ServiceBase

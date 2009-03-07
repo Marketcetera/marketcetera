@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class SerWrapper<T extends Serializable>
     extends DualWrapper<T,byte[]>
 {
@@ -47,8 +47,8 @@ public class SerWrapper<T extends Serializable>
 
     // DualWrapper.
 
+    @SuppressWarnings("unchecked")
     @Override
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
     protected void toRaw()
     {
         try {

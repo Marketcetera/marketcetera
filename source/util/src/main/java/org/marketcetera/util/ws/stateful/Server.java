@@ -1,6 +1,7 @@
 package org.marketcetera.util.ws.stateful;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessServer;
 
 /**
@@ -15,7 +16,7 @@ import org.marketcetera.util.ws.stateless.StatelessServer;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class Server<T>
     extends StatelessServer
 {
@@ -24,6 +25,7 @@ public class Server<T>
 
     private final Authenticator mAuthenticator;
     private final SessionManager<T> mSessionManager;
+    private final ServiceInterface mAuthService;
 
 
     // CONSTRUCTORS.
@@ -50,10 +52,12 @@ public class Server<T>
         if (getSessionManager()!=null) {
             getSessionManager().setServerId(getId());
         }
-        if (getAuthenticator()!=null) {
-            publish(new AuthServiceImpl<T>
-                    (getAuthenticator(),getSessionManager()),
-                    AuthService.class);
+        if (getAuthenticator()==null) {
+            mAuthService=null;
+        } else {
+            mAuthService=publish
+                (new AuthServiceImpl<T>(getAuthenticator(),getSessionManager()),
+                 AuthService.class);
         }
     }
 
@@ -106,4 +110,27 @@ public class Server<T>
     {
         return mSessionManager;
     }   
+
+    /**
+     * Returns the receiver's authentication service interface.
+     *
+     * @return The interface, which may be null.
+     */
+
+    private ServiceInterface getAuthService()
+    {
+        return mAuthService;
+    }   
+
+
+    // StatelessServer.
+
+    @Override
+    public void stop()
+    {
+        super.stop();
+        if (getAuthService()!=null) {
+            getAuthService().stop();
+        }
+    }
 }
