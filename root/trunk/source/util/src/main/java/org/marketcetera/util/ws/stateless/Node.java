@@ -13,7 +13,7 @@ import org.marketcetera.util.ws.tags.NodeId;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class Node
 {
 

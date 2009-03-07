@@ -16,6 +16,6 @@ import org.marketcetera.util.ws.stateless.StatelessServiceBase;
 /* $License$ */
 
 @WebService
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface ServiceBase
     extends StatelessServiceBase {}

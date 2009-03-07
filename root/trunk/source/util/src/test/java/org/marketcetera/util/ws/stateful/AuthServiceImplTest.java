@@ -47,7 +47,7 @@ public class AuthServiceImplTest
         SessionId id=impl.login(TEST_CONTEXT,TEST_USER,password);
         assertArrayEquals(NUL_VALUE,password);
 
-        assertNotNull(TEST_MANAGER.get(id));
+        assertEquals(TEST_USER,TEST_MANAGER.get(id).getUser());
 
         ClientContext context=getContext(id);
         impl.logout(context);
@@ -63,11 +63,11 @@ public class AuthServiceImplTest
         password=TEST_PASSWORD.clone();
         SessionId id2=impl.login(TEST_CONTEXT,TEST_USER,password);
         assertFalse(id1.equals(id2));
-        assertNotNull(TEST_MANAGER.get(id1));
-        assertNotNull(TEST_MANAGER.get(id2));
+        assertEquals(TEST_USER,TEST_MANAGER.get(id1).getUser());
+        assertEquals(TEST_USER,TEST_MANAGER.get(id2).getUser());
         impl.logout(getContext(id1));
         assertNull(TEST_MANAGER.get(id1));
-        assertNotNull(TEST_MANAGER.get(id2));
+        assertEquals(TEST_USER,TEST_MANAGER.get(id2).getUser());
         impl.logout(getContext(id2));
         assertNull(TEST_MANAGER.get(id2));
 

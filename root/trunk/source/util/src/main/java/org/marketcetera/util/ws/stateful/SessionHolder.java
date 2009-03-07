@@ -5,11 +5,11 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
 
 /**
  * A session holder. It is created after successful authentication,
- * and initially retains just the client context at that time. In
- * later calls during the same session, the service implementations
- * may associate session data with the holder; it is the
- * responsibility of the service implementations to ensure thread
- * safety in manipulating that data.
+ * and initially retains just the authenticated user name and client
+ * context at that time. In later calls during the same session, the
+ * service implementations may associate session data with the holder;
+ * it is the responsibility of the service implementations to ensure
+ * thread safety in manipulating that data.
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
@@ -18,12 +18,13 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class SessionHolder<T>
 {
 
     // INSTANCE DATA.
-    
+
+    private final String mUser;
     private final StatelessClientContext mCreationContext;
     private long mLastAccess;
     private T mSession;
@@ -32,19 +33,34 @@ public class SessionHolder<T>
     // CONSTRUCTORS.
 
     /**
-     * Creates a new holder with the given creation context.
+     * Creates a new holder with the given authenticated user name and
+     * creation context.
      *
+     * @param user The user name.
      * @param creationContext The context.
      */
 
     public SessionHolder
-        (StatelessClientContext creationContext)
+        (String user,
+         StatelessClientContext creationContext)
     {
+        mUser=user;
         mCreationContext=creationContext;
     }
 
 
     // INSTANCE METHODS.
+
+    /**
+     * Returns the receiver's user.
+     *
+     * @return The user.
+     */
+
+    public String getUser()
+    {
+        return mUser;
+    }
 
     /**
      * Returns the receiver's creation context.

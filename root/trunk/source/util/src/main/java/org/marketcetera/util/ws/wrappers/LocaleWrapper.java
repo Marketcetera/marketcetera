@@ -18,7 +18,7 @@ import org.marketcetera.util.ws.wrappers.MarshalledLocale;
 /* $License$ */
 
 @XmlSeeAlso(MarshalledLocale.class)
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class LocaleWrapper
     extends DualWrapper<Locale,MarshalledLocale>
 {

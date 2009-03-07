@@ -21,7 +21,7 @@ import org.marketcetera.util.ws.tags.ValidSessionTagFilter;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class RemoteCall<T>
     extends StatelessRemoteCall
 {

@@ -19,7 +19,7 @@ import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ClientContext
     extends StatelessClientContext
 {

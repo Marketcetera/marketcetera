@@ -13,7 +13,7 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Authenticator
 {
 

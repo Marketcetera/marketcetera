@@ -17,7 +17,7 @@ import org.marketcetera.util.ws.stateful.SessionManager;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ValidSessionTagFilter<T>
     implements TagFilter
 {

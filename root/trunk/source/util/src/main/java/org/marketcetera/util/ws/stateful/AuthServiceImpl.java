@@ -18,7 +18,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class AuthServiceImpl<T>
     extends ServiceBaseImpl<T>
     implements AuthService
@@ -85,7 +85,7 @@ public class AuthServiceImpl<T>
             throw new I18NException(Messages.BAD_CREDENTIALS);
         }
         SessionId sessionId=SessionId.generate();
-        getSessionManager().put(sessionId,new SessionHolder<T>(context));
+        getSessionManager().put(sessionId,new SessionHolder<T>(user,context));
         return sessionId;
     }
 

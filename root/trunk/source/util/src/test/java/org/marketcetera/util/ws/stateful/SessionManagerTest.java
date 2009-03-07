@@ -27,18 +27,71 @@ public class SessionManagerTest
         500;
     private static final NodeId TEST_SERVER_ID=
         NodeId.generate();
-    private static final SessionId TEST_SESSION=
+    private static final SessionId TEST_SESSION_ID=
         SessionId.generate();
-    private static final SessionId TEST_SESSION_D=
+    private static final SessionId TEST_SESSION_ID_D=
         SessionId.generate();
+    private static final String TEST_USER=
+        "metc";
     private static final StatelessClientContext TEST_CONTEXT=
         new StatelessClientContext();
-    private static final SessionHolder<Object> TEST_HOLDER=
-        new SessionHolder<Object>(TEST_CONTEXT);
-    private static final SessionHolder<Object> TEST_HOLDER_D=
-        new SessionHolder<Object>(TEST_CONTEXT);
+    private static final Integer TEST_SESSION=
+        new Integer(1);
+    private static final Integer TEST_SESSION_D=
+        new Integer(2);
     private static final String TEST_CATEGORY=
         SessionManager.Reaper.class.getName();
+
+
+    private static class TestFactory
+        implements SessionFactory<Integer>
+    {
+        private SessionId mLastSessionId;
+        private Integer mLastRemovedSession;
+
+        public void setLastSessionId
+            (SessionId lastSessionId)
+        {
+            mLastSessionId=lastSessionId;
+        }
+
+        public SessionId getLastSessionId()
+        {
+            return mLastSessionId;
+        }
+
+        public void setLastRemovedSession
+            (Integer lastRemovedSession)
+        {
+            mLastRemovedSession=lastRemovedSession;
+        }
+
+        public Object getLastRemovedSession()
+        {
+            return mLastRemovedSession;
+        }
+
+        @Override
+        public Integer createSession
+            (StatelessClientContext context,
+             String user,
+             SessionId id)
+        {
+            assertEquals(TEST_CONTEXT,context);
+            assertEquals(TEST_USER,user);
+            setLastSessionId(id);
+            if (id==TEST_SESSION_ID) {
+                return TEST_SESSION;
+            }
+            return TEST_SESSION_D;
+        }
+
+        @Override
+        public void removedSession(Integer session)
+        {
+            setLastRemovedSession(session);
+        }
+    }
 
 
     @Before
@@ -53,7 +106,9 @@ public class SessionManagerTest
     public void basics()
         throws Exception
     {
-        SessionManager<Object> s=new SessionManager<Object>();
+        TestFactory f=new TestFactory();
+        SessionManager<Integer> s=new SessionManager<Integer>(f);
+        assertSame(f,s.getSessionFactory());
         assertEquals(SessionManager.INFINITE_SESSION_LIFESPAN,s.getLifespan());
 
         assertNull(s.getServerId());
@@ -62,55 +117,109 @@ public class SessionManagerTest
         s.setServerId(null);
         assertNull(s.getServerId());
 
-        assertNull(s.get(TEST_SESSION));
+        assertNull(s.get(TEST_SESSION_ID));
 
-        long time=TEST_HOLDER_D.getLastAccess();
+        SessionHolder<Integer> hD=
+            new SessionHolder<Integer>(TEST_USER,TEST_CONTEXT);
+        long time=hD.getLastAccess();
         Thread.sleep(100);
-        s.put(TEST_SESSION,TEST_HOLDER_D);
-        assertTrue(TEST_HOLDER_D.getLastAccess()>time);
+        s.put(TEST_SESSION_ID,hD);
+        assertTrue(hD.getLastAccess()>time);
+        assertEquals(TEST_SESSION_ID,f.getLastSessionId());
 
-        time=TEST_HOLDER_D.getLastAccess();
+        time=hD.getLastAccess();
         Thread.sleep(100);
-        assertEquals(TEST_HOLDER_D,s.get(TEST_SESSION));
-        assertTrue(TEST_HOLDER_D.getLastAccess()>time);
+        assertSame(hD,s.get(TEST_SESSION_ID));
+        assertTrue(hD.getLastAccess()>time);
 
-        s.put(TEST_SESSION,TEST_HOLDER);
-        assertEquals(TEST_HOLDER,s.get(TEST_SESSION));
+        SessionHolder<Integer> h=
+            new SessionHolder<Integer>(TEST_USER,TEST_CONTEXT);
+        s.put(TEST_SESSION_ID,h);
+        assertSame(h,s.get(TEST_SESSION_ID));
 
-        assertNull(s.get(TEST_SESSION_D));
-        s.put(TEST_SESSION_D,TEST_HOLDER_D);
-        assertEquals(TEST_HOLDER_D,s.get(TEST_SESSION_D));
-        assertEquals(TEST_HOLDER,s.get(TEST_SESSION));
+        assertNull(s.get(TEST_SESSION_ID_D));
+        s.put(TEST_SESSION_ID_D,hD);
+        assertSame(hD,s.get(TEST_SESSION_ID_D));
+        assertSame(h,s.get(TEST_SESSION_ID));
+        assertEquals(TEST_SESSION_ID_D,f.getLastSessionId());
 
-        s.remove(TEST_SESSION);
-        assertNull(s.get(TEST_SESSION));
-        assertEquals(TEST_HOLDER_D,s.get(TEST_SESSION_D));
+        s.remove(TEST_SESSION_ID);
+        assertNull(s.get(TEST_SESSION_ID));
+        assertSame(hD,s.get(TEST_SESSION_ID_D));
+        assertEquals(TEST_SESSION,f.getLastRemovedSession());
 
         // Removal of nonexistent session ID.
 
-        s.remove(TEST_SESSION);
+        s.remove(TEST_SESSION_ID);
+    }
+
+    @Test
+    public void basicsNoFactory()
+        throws Exception
+    {
+        SessionManager<Integer> s=new SessionManager<Integer>();
+        assertEquals(SessionManager.INFINITE_SESSION_LIFESPAN,s.getLifespan());
+        SessionHolder<Integer> h=
+            new SessionHolder<Integer>(TEST_USER,TEST_CONTEXT);
+        s.put(TEST_SESSION_ID,h);
+        assertSame(h,s.get(TEST_SESSION_ID));
+        s.remove(TEST_SESSION_ID);
+        assertNull(s.get(TEST_SESSION_ID));
+
+        // Removal of nonexistent session ID.
+
+        s.remove(TEST_SESSION_ID);
     }
 
     @Test
     public void timeout()
         throws Exception
     {
-        SessionManager<Object> s=new SessionManager<Object>(TEST_LIFESPAN);
+        TestFactory f=new TestFactory();
+        SessionManager<Integer> s=new SessionManager<Integer>(f,TEST_LIFESPAN);
         assertEquals(TEST_LIFESPAN,s.getLifespan());
 
-        s.put(TEST_SESSION,TEST_HOLDER);
-        assertEquals(TEST_HOLDER,s.get(TEST_SESSION));
+        SessionHolder<Integer> h=
+            new SessionHolder<Integer>(TEST_USER,TEST_CONTEXT);
+        s.put(TEST_SESSION_ID,h);
+        assertSame(h,s.get(TEST_SESSION_ID));
+        assertEquals(TEST_SESSION_ID,f.getLastSessionId());
         for (int i=0;i<10;i++) {
             Thread.sleep(TEST_LIFESPAN/2);
-            assertEquals(TEST_HOLDER,s.get(TEST_SESSION));
+            assertSame(h,s.get(TEST_SESSION_ID));
         }
         Thread.sleep(TEST_LIFESPAN*2);
         assertSingleEvent
             (Level.INFO,TEST_CATEGORY,
-             "Session "+TEST_SESSION.toString()+
+             "Session "+TEST_SESSION_ID.toString()+
              " has expired; creation context: "+TEST_CONTEXT.toString(),
              TEST_CATEGORY);
-        assertNull(s.get(TEST_SESSION));
+        assertNull(s.get(TEST_SESSION_ID));
+        assertEquals(TEST_SESSION,f.getLastRemovedSession());
+    }
+
+    @Test
+    public void timeoutNoFactory()
+        throws Exception
+    {
+        SessionManager<Integer> s=new SessionManager<Integer>(TEST_LIFESPAN);
+        assertEquals(TEST_LIFESPAN,s.getLifespan());
+
+        SessionHolder<Integer> h=
+            new SessionHolder<Integer>(TEST_USER,TEST_CONTEXT);
+        s.put(TEST_SESSION_ID,h);
+        assertSame(h,s.get(TEST_SESSION_ID));
+        for (int i=0;i<10;i++) {
+            Thread.sleep(TEST_LIFESPAN/2);
+            assertSame(h,s.get(TEST_SESSION_ID));
+        }
+        Thread.sleep(TEST_LIFESPAN*2);
+        assertSingleEvent
+            (Level.INFO,TEST_CATEGORY,
+             "Session "+TEST_SESSION_ID.toString()+
+             " has expired; creation context: "+TEST_CONTEXT.toString(),
+             TEST_CATEGORY);
+        assertNull(s.get(TEST_SESSION_ID));
     }
 
     @Test
@@ -121,7 +230,7 @@ public class SessionManagerTest
         Thread t=new Thread(group,"testThread") {
             @Override
             public void run() {
-                (new SessionManager<Object>(TEST_LIFESPAN)).setServerId
+                (new SessionManager<Integer>(TEST_LIFESPAN)).setServerId
                     (TEST_SERVER_ID);
             }
         };

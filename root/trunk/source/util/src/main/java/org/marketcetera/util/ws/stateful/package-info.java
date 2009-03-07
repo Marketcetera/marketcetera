@@ -1,6 +1,4 @@
-/* $License$ */
 /**
- *
  * <p>Web services infrastructure.</p>
  *
  *
@@ -131,13 +129,15 @@
  *
  * </ul>
  *
- *
  * @author tlerios@marketcetera.com
  * @author anshul@marketcetera.com
- * @version $Id$
  * @since 1.0.0
+ * @version $Id$
  */
-@XmlSchema (namespace = "http://marketcetera.org/types/util")
+
+/* $License$ */
+
+@XmlSchema(namespace="http://marketcetera.org/types/util")
 package org.marketcetera.util.ws.stateful;
 
 import javax.xml.bind.annotation.XmlSchema;
