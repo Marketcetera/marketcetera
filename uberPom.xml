@@ -31,7 +31,7 @@
     <mvn.cxf.version>2.1.2</mvn.cxf.version>
     <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
     <mvn.xjc.version>2.1.7</mvn.xjc.version>
-    <mvn.eclipse.version>3.4.2</mvn.eclipse.version>
+    <mvn.eclipse.version>3.4.1</mvn.eclipse.version>
   </properties>
 
   <dependencyManagement>
