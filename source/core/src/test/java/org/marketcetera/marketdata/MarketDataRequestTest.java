@@ -995,7 +995,7 @@ public class MarketDataRequestTest
         assertEquals(inDate,
                      date);
         if(date != null) {
-           date = new Date();
+           date = new Date(System.currentTimeMillis() + 250);
             assertFalse(date.equals(inDate));
             assertEquals(inDate,
                          inActualRequest.getDate());
