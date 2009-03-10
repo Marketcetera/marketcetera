@@ -64,7 +64,7 @@ class MultiPersistentReportQuery extends MultipleEntityQuery {
      * the reports.
      */
     List<PersistentReport> fetch() throws PersistenceException {
-        return fetchRemote(new MultiQueryProcessor<PersistentReport>(false));
+        return fetchRemote(new MultiQueryProcessor<PersistentReport>(true));
     }
 
     /**
@@ -105,6 +105,9 @@ class MultiPersistentReportQuery extends MultipleEntityQuery {
             new SimpleEntityOrder(PersistentReport.ATTRIBUTE_ID);
 
     public Date mSendingTimeAfterFilter;
-    public static final String[] FETCH_JOIN_ATTRIBUTE_NAMES= new String[]{};
+    public static final String[] FETCH_JOIN_ATTRIBUTE_NAMES=new String[] {
+        PersistentReport.ATTRIBUTE_ACTOR,
+        PersistentReport.ATTRIBUTE_VIEWER,
+    };
     private static final long serialVersionUID = 1L;
 }

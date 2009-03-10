@@ -62,27 +62,158 @@ public class ORSCLITest extends PersistTestBase {
     }
     @Test
     public void parsingFailures() throws Exception {
+
+        // Bogus option.
+
+        runCLI(UnrecognizedOptionException.class,
+               "-b"); //$NON-NLS-1$
+
+        // Missing the required options.
+
         runCLI(MissingOptionException.class);
-        runCLI(MissingArgumentException.class, "-u"); //$NON-NLS-1$
-        runCLI(MissingArgumentException.class, "-p"); //$NON-NLS-1$
-        runCLI(UnrecognizedOptionException.class, "-b"); //$NON-NLS-1$
-        runCLI(MissingArgumentException.class, "-u","name","-p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        runCLI(MissingArgumentException.class, "-u","-p","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        runCLI(MissingArgumentException.class, "-u","name","-p","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        runCLI(I18NException.class, "-u","name","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        runCLI(I18NException.class, "-u","name","-p","pass","--addUser"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        runCLI(MissingArgumentException.class, "-u","name","-p","pass","--addUser","-n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-        runCLI(I18NException.class, "-u","name","-p","pass","--addUser","-n","name"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-        runCLI(MissingArgumentException.class, "-u","name","-p","pass","--addUser","-n","name","-w"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-        runCLI(MissingArgumentException.class, "-u","name","-p","pass","--addUser","-w","pass","-n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-        runCLI(I18NException.class, "-u","name","-p","pass","--deleteUser"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        runCLI(MissingArgumentException.class, "-u","name","-p","pass","--deleteUser","-n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-        runCLI(I18NException.class, "-u","name","-p","pass","--changePassword"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        runCLI(MissingArgumentException.class, "-u","name","-p","pass","--changePassword","-w"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-        runCLI(MissingArgumentException.class, "-u","name","-p","pass","--changePassword","-w","pass","-n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-        runCLI(MissingArgumentException.class, "-u","name","-p","pass","--changePassword","-n","name","-w"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-        runCLI(I18NException.class, "-u","name","-p","pass","--changePassword","-n","name"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-        runCLI(MissingArgumentException.class, "-u","name","-p","pass","--listUsers","-n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        runCLI(MissingOptionException.class,
+               "--listUsers"); //$NON-NLS-1$
+        runCLI(MissingOptionException.class,
+               "-u",    //$NON-NLS-1$
+               "name"); //$NON-NLS-1$
+
+        // Having the options, but missing arguments for options that
+        // require them.
+
+        runCLI(MissingArgumentException.class,
+               "-u",           //$NON-NLS-1$
+               "--listUsers"); //$NON-NLS-1$
+        runCLI(MissingArgumentException.class,
+               "-u",           //$NON-NLS-1$
+               "name",         //$NON-NLS-1$
+               "-p",           //$NON-NLS-1$
+               "--listUsers"); //$NON-NLS-1$
+        runCLI(MissingArgumentException.class,
+               "-u",          //$NON-NLS-1$
+               "name",        //$NON-NLS-1$
+               "--listUsers", //$NON-NLS-1$
+               "-n");         //$NON-NLS-1$
+        runCLI(MissingArgumentException.class,
+               "-u",          //$NON-NLS-1$
+               "name",        //$NON-NLS-1$
+               "--listUsers", //$NON-NLS-1$
+               "-w");         //$NON-NLS-1$
+        runCLI(MissingArgumentException.class,
+               "-u",          //$NON-NLS-1$
+               "name",        //$NON-NLS-1$
+               "--listUsers", //$NON-NLS-1$
+               "-s");         //$NON-NLS-1$
+        runCLI(MissingArgumentException.class,
+               "-u",          //$NON-NLS-1$
+               "name",        //$NON-NLS-1$
+               "--listUsers", //$NON-NLS-1$
+               "-a");         //$NON-NLS-1$
+
+        // addUser.
+
+        runCLI(I18NException.class,
+               "-u",        //$NON-NLS-1$
+               "name",      //$NON-NLS-1$
+               "--addUser", //$NON-NLS-1$
+               "-n",        //$NON-NLS-1$
+               "name",      //$NON-NLS-1$
+               "-w",        //$NON-NLS-1$
+               "pass");     //$NON-NLS-1$
+        runCLI(I18NException.class,
+               "-u",        //$NON-NLS-1$
+               "name",      //$NON-NLS-1$
+               "-p",        //$NON-NLS-1$
+               "pass",      //$NON-NLS-1$
+               "--addUser", //$NON-NLS-1$
+               "-w",        //$NON-NLS-1$
+               "pass");     //$NON-NLS-1$
+        runCLI(I18NException.class,
+               "-u",        //$NON-NLS-1$
+               "name",      //$NON-NLS-1$
+               "-p",        //$NON-NLS-1$
+               "pass",      //$NON-NLS-1$
+               "--addUser", //$NON-NLS-1$
+               "-n",        //$NON-NLS-1$
+               "name");     //$NON-NLS-1$
+
+        // deleteUser.
+
+        runCLI(I18NException.class,
+               "-u",           //$NON-NLS-1$
+               "name",         //$NON-NLS-1$
+               "--deleteUser", //$NON-NLS-1$
+               "-n",           //$NON-NLS-1$
+               "name");        //$NON-NLS-1$
+        runCLI(I18NException.class,
+               "-u",            //$NON-NLS-1$
+               "name",          //$NON-NLS-1$
+               "-p",            //$NON-NLS-1$
+               "pass",          //$NON-NLS-1$
+               "--deleteUser"); //$NON-NLS-1$
+
+        // restoreUser.
+
+        runCLI(I18NException.class,
+               "-u",            //$NON-NLS-1$
+               "name",          //$NON-NLS-1$
+               "--restoreUser", //$NON-NLS-1$
+               "-n",            //$NON-NLS-1$
+               "name");         //$NON-NLS-1$
+        runCLI(I18NException.class,
+               "-u",             //$NON-NLS-1$
+               "name",           //$NON-NLS-1$
+               "-p",             //$NON-NLS-1$
+               "pass",           //$NON-NLS-1$
+               "--restoreUser"); //$NON-NLS-1$
+
+        // listUsers.
+
+        runCLI(I18NException.class,
+               "-u",           //$NON-NLS-1$
+               "name",         //$NON-NLS-1$
+               "--listUsers"); //$NON-NLS-1$
+
+        // changePassword.
+
+        runCLI(I18NException.class,
+               "-u",               //$NON-NLS-1$
+               "name",             //$NON-NLS-1$
+               "--changePassword", //$NON-NLS-1$
+               "-w",               //$NON-NLS-1$
+               "pass");            //$NON-NLS-1$
+        runCLI(I18NException.class,
+               "-u",                //$NON-NLS-1$
+               "name",              //$NON-NLS-1$
+               "-p",                //$NON-NLS-1$
+               "pass",              //$NON-NLS-1$
+               "--changePassword"); //$NON-NLS-1$
+
+        // changeSuperuser.
+
+        runCLI(I18NException.class,
+               "-u",                //$NON-NLS-1$
+               "name",              //$NON-NLS-1$
+               "--changeSuperuser", //$NON-NLS-1$
+               "-n",                //$NON-NLS-1$
+               "name",              //$NON-NLS-1$
+               "-s",                //$NON-NLS-1$
+               "y");                //$NON-NLS-1$
+        runCLI(I18NException.class,
+               "-u",                //$NON-NLS-1$
+               "name",              //$NON-NLS-1$
+               "-p",                //$NON-NLS-1$
+               "pass",              //$NON-NLS-1$
+               "--changeSuperuser", //$NON-NLS-1$
+               "-s",                //$NON-NLS-1$
+               "y");                //$NON-NLS-1$
+        runCLI(I18NException.class,
+               "-u",                //$NON-NLS-1$
+               "name",              //$NON-NLS-1$
+               "-p",                //$NON-NLS-1$
+               "pass",              //$NON-NLS-1$
+               "--changeSuperuser", //$NON-NLS-1$
+               "-n",                //$NON-NLS-1$
+               "name");             //$NON-NLS-1$
     }
     @Test
     public void commands() throws Exception {
@@ -91,32 +222,33 @@ public class ORSCLITest extends PersistTestBase {
         admin.setName("admin"); //$NON-NLS-1$
         final String password = "admin"; //$NON-NLS-1$
         admin.setPassword(password.toCharArray());
+        admin.setSuperuser(true);
         admin.save();
         //Try list users
         runCLI("-u",admin.getName(),"-p",password,"--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        matchOut("^\\s*admin\\s*$"); //$NON-NLS-1$
+        matchOut("^\\s*admin \\[sa\\]\\s*$"); //$NON-NLS-1$
         //Try creating admin again
         runCLI(EntityExistsException.class, "-u", admin.getName(), "-p", //$NON-NLS-1$ //$NON-NLS-2$
                 password, "--addUser", "-n", "admin", "-w", "pssst"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         matchOut("^$"); //$NON-NLS-1$
         //Try creating a different user
         runCLI("-u", admin.getName(), "-p", //$NON-NLS-1$ //$NON-NLS-2$
-                password, "--addUser", "-n", "blah", "-w", "meh"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+               password, "--addUser", "-n", "blah", "-w", "meh", "-s", "n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         matchOut("^[\\p{L}\\s]*'blah'[\\p{L}\\s]*$"); //$NON-NLS-1$
         //Ensure that it appears in the listing
         //Try list users
         runCLI("-u",admin.getName(),"-p",password,"--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        matchOut("^\\s*admin\\s*blah\\s*$"); //$NON-NLS-1$
+        matchOut("^\\s*admin \\[sa\\]\\s*blah \\[a\\]\\s*$"); //$NON-NLS-1$
         //Try list users as the new user
         runCLI("-u","blah","-p","meh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        matchOut("^\\s*admin\\s*blah\\s*$"); //$NON-NLS-1$
+        matchOut("^\\s*admin \\[sa\\]\\s*blah \\[a\\]\\s*$"); //$NON-NLS-1$
         //Try list users with filtering
         runCLI("-u","blah","-p","meh","--listUsers","-n","*dm*"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-        matchOut("^\\s*admin\\s*$"); //$NON-NLS-1$
+        matchOut("^\\s*admin \\[sa\\]\\s*$"); //$NON-NLS-1$
         runCLI("-u","blah","-p","meh","--listUsers","-n","?la?"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-        matchOut("^\\s*blah\\s*$"); //$NON-NLS-1$
+        matchOut("^\\s*blah \\[a\\]\\s*$"); //$NON-NLS-1$
         runCLI("-u","blah","-p","meh","--listUsers","-n","*a*"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-        matchOut("^\\s*admin\\s*blah\\s*$"); //$NON-NLS-1$
+        matchOut("^\\s*admin \\[sa\\]\\s*blah \\[a\\]\\s*$"); //$NON-NLS-1$
         //Try logging in as an invalid user
         runCLI(I18NException.class,"-u","wah","-p","meh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         matchOut("^$"); //$NON-NLS-1$
@@ -128,13 +260,13 @@ public class ORSCLITest extends PersistTestBase {
         matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
         //verify that new password works
         runCLI("-u","blah","-p","mgh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        matchOut("^\\s*admin\\s*blah\\s*$"); //$NON-NLS-1$
+        matchOut("^\\s*admin \\[sa\\]\\s*blah \\[a\\]\\s*$"); //$NON-NLS-1$
         //Try changing new user's password by supplying the same user name
         runCLI("-u","blah","-p","mgh","--changePassword","-w","ugh","n","blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
         matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
         //verify that new password works
         runCLI("-u","blah","-p","ugh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        matchOut("^\\s*admin\\s*blah\\s*$"); //$NON-NLS-1$
+        matchOut("^\\s*admin \\[sa\\]\\s*blah \\[a\\]\\s*$"); //$NON-NLS-1$
         //Try changing another user password as a non-admin user
         runCLI(I18NException.class, "-u", "blah", "-p", "ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 "--changePassword", "-w", "meh", "-n", "admin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
@@ -145,7 +277,7 @@ public class ORSCLITest extends PersistTestBase {
         matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
         //verify that new password works
         runCLI("-u","blah","-p","meh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        matchOut("^\\s*admin\\s*blah\\s*$"); //$NON-NLS-1$
+        matchOut("^\\s*admin \\[sa\\]\\s*blah \\[a\\]\\s*$"); //$NON-NLS-1$
         //try deleting a user a non admin user
         runCLI(I18NException.class, "-u","blah","-p","meh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 "--deleteUser","-n","admin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -153,33 +285,66 @@ public class ORSCLITest extends PersistTestBase {
         //try deleting the user as admin user
         runCLI("-u","admin","-p",password, "--deleteUser","-n","blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
+        //try logging in as deleted user
+        runCLI(I18NException.class,"-u","blah","-p","meh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        matchOut("^$"); //$NON-NLS-1$
+        //list active users
+        runCLI("-u","admin","-p",password,"--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        matchOut("^\\s*admin \\[s\\]\\s*$"); //$NON-NLS-1$
+        //list inactive users
+        runCLI("-u","admin","-p",password,"--listUsers","-a","n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        matchOut("^\\s*blah\\s*$"); //$NON-NLS-1$
+        runCLI("-u","admin","-p",password,"--listUsers","-a","x"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        matchOut("^\\s*blah\\s*$"); //$NON-NLS-1$
+        //list all users
+        runCLI("-u","admin","-p",password,"--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        matchOut("^\\s*admin \\[sa\\]\\s*blah\\s*$"); //$NON-NLS-1$
+        //make blah a superuser.
+        runCLI("-u","admin","-p",password,"--changeSuperuser","-n","blah","-s","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
+        //list active users
+        runCLI("-u","admin","-p",password,"--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        matchOut("^\\s*admin \\[s\\]\\s*$"); //$NON-NLS-1$
+        //list active users
+        runCLI("-u","admin","-p",password,"--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        matchOut("^\\s*admin \\[s\\]\\s*$"); //$NON-NLS-1$
         //Try changing admin's password
         runCLI("-u","admin","-p",password,"--changePassword","-w","ugh"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         matchOut("[\\p{L}\\s]*'admin'[\\p{L}\\s]*"); //$NON-NLS-1$
         //verify that new password works
-        runCLI("-u","admin","-p","ugh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        matchOut("^\\s*admin\\s*$"); //$NON-NLS-1$
+        runCLI("-u","admin","-p","ugh","--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+        matchOut("^\\s*admin \\[s\\]\\s*$"); //$NON-NLS-1$
         //verify that admin cannot be deleted
         runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 "--deleteUser","-n","admin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        //verify that admin cannot be restored
+        runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                "--restoreUser","-n","admin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        //verify that admin cannot be changed into a non-superuser
+        runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+               "--changeSuperuser","-n","admin","-s","n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         //Try changing password of a non-existent user
         runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 "--changePassword","-w","ugh","-n","who"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         matchOut("^$"); //$NON-NLS-1$
 
-        //Create a user with unicode name and password
+        //Create a superuser with unicode name and password
         runCLI("-u", admin.getName(), "-p", "ugh", "--addUser", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                "-n", UnicodeData.HELLO_GR, "-w", UnicodeData.COMBO); //$NON-NLS-1$ //$NON-NLS-2$
+               "-n", UnicodeData.HELLO_GR, "-w", UnicodeData.COMBO, "-s", "y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         matchOut("^[\\p{L}\\s]*'" + UnicodeData.HELLO_GR + "'[\\p{L}\\s]*$"); //$NON-NLS-1$ //$NON-NLS-2$
-//        matchOut("^ User '" + UnicodeData.HELLO_GR + "' created$");
         //Ensure that it appears in the listing
         //Try list users
-        runCLI("-u",admin.getName(),"-p","ugh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        matchOut("^\\s*admin\\s*" + UnicodeData.HELLO_GR + "\\s*$"); //$NON-NLS-1$ //$NON-NLS-2$
+        runCLI("-u",admin.getName(),"-p","ugh","--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        matchOut("^\\s*admin \\[s\\]\\s*" + UnicodeData.HELLO_GR + " \\[s\\]\\s*$"); //$NON-NLS-1$ //$NON-NLS-2$
         //verify that the new user can login with the unicode password
-        runCLI("-u",UnicodeData.HELLO_GR,"-p", UnicodeData.COMBO, "--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        matchOut("^\\s*admin\\s*" + UnicodeData.HELLO_GR + "\\s*$"); //$NON-NLS-1$ //$NON-NLS-2$
-
+        runCLI("-u",UnicodeData.HELLO_GR,"-p", UnicodeData.COMBO, "--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        matchOut("^\\s*admin \\[s\\]\\s*" + UnicodeData.HELLO_GR + " \\[s\\]\\s*$"); //$NON-NLS-1$ //$NON-NLS-2$
+        //restore the blah user
+        runCLI("-u","admin","-p","ugh", "--restoreUser","-n","blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
+        //list active users
+        runCLI("-u","admin","-p","ugh","--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        matchOut("^\\s*admin \\[s\\]\\s*blah \\[s\\]\\s*" + UnicodeData.HELLO_GR + " \\[s\\]\\s*$"); //$NON-NLS-1$
     }
     static void matchOut(String regex) throws Exception {
         matchStream(regex, bOut);

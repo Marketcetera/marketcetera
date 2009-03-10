@@ -2,6 +2,7 @@ package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.MultipleEntityQuery;
+import org.marketcetera.persist.MultiQueryFilterTestHelper;
 import org.marketcetera.persist.NDEntityTestBase;
 import org.marketcetera.persist.ValidationException;
 import static org.marketcetera.persist.Messages.*;
@@ -47,6 +48,64 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         //verify that user can be updated after password has been set
         u.validate();
         u.save();
+        u.delete();
+    }
+
+    /**
+     * Validates the update behavior of the superuser flag
+     *
+     * @throws Exception if there was an error
+     */
+    @Test
+    public void superuser()
+        throws Exception
+    {
+        SimpleUser u=new SimpleUser();
+        final String name="TESTUSER";
+        u.setName(name);
+
+        assertFalse(u.isSuperuser());
+        u.setSuperuser(true);
+        assertTrue(u.isSuperuser());
+
+        save(u);
+        u=fetchByName(name);
+        assertTrue(u.isSuperuser());
+
+        u.setSuperuser(false);
+        save(u);
+        u=fetchByName(name);
+        assertFalse(u.isSuperuser());
+
+        u.delete();
+    }
+
+    /**
+     * Validates the update behavior of the active flag
+     *
+     * @throws Exception if there was an error
+     */
+    @Test
+    public void active()
+        throws Exception
+    {
+        SimpleUser u=new SimpleUser();
+        final String name="TESTUSER";
+        u.setName(name);
+
+        assertTrue(u.isActive());
+        u.setActive(false);
+        assertFalse(u.isActive());
+
+        save(u);
+        u=fetchByName(name);
+        assertFalse(u.isActive());
+
+        u.setActive(true);
+        save(u);
+        u=fetchByName(name);
+        assertTrue(u.isActive());
+
         u.delete();
     }
 
@@ -252,6 +311,16 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         return MultiSimpleUserQuery.class;
     }
     /* *****Over-ride necessary methods****** */
+
+    @Override
+    protected List<MultiQueryFilterTestHelper<SimpleUser, SimpleUser>>
+            getFilterTestHelpers() throws Exception {
+        List<MultiQueryFilterTestHelper<SimpleUser, SimpleUser>> l =
+                super.getFilterTestHelpers();
+        l.add(booleanFilterHelper(SimpleUser.ATTRIBUTE_ACTIVE, "activeFilter")); //$NON-NLS-1$
+        return l;
+    }
+
     @Override
     protected String getUserFriendlyName() {
         return Messages.SIMPLE_USER_NAME.getText();

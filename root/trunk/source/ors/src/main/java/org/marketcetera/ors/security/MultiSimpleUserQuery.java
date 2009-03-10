@@ -21,6 +21,13 @@ import java.util.List;
 public class MultiSimpleUserQuery extends MultiNDQuery {
     private static final long serialVersionUID = -4259099618197174176L;
 
+    @Override
+    protected void addWhereClauses(StringBuilder queryString) {
+        super.addWhereClauses(queryString);
+        addFilterIfNotNull(queryString, SimpleUser.ATTRIBUTE_ACTIVE,
+                getActiveFilter());
+    }
+
     /**
      * Creates an instance that fetches all user instances
      * 
@@ -56,6 +63,28 @@ public class MultiSimpleUserQuery extends MultiNDQuery {
     public int delete() throws PersistenceException {
         return deleteRemote();
     }
+
+    /**
+     * A filter when applied, filters the users based on the
+     * value of their {@link SimpleUser#isActive()} flag.
+     *
+     * @return the enabled flag filter.
+     */
+    public Boolean getActiveFilter() {
+        return activeFilter;
+    }
+
+    /**
+     * Sets the active flag filter
+     *
+     * @param activeFilter the filter value, can be null.
+     */
+    public void setActiveFilter(Boolean activeFilter) {
+        this.activeFilter = activeFilter;
+    }
+
+    private Boolean activeFilter = null;
+
     /**
      * Constructs an instance.
      *

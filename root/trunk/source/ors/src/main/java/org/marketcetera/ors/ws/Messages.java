@@ -39,4 +39,8 @@ public interface Messages
 
     static final I18NMessage1P BAD_CREDENTIALS=
         new I18NMessage1P(LOGGER,"bad_credentials"); //$NON-NLS-1$
+    static final I18NMessage1P CANNOT_CREATE_REPLY_TOPIC=
+        new I18NMessage1P(LOGGER,"cannot_create_reply_topic"); //$NON-NLS-1$
+    static final I18NMessage1P CANNOT_RETRIEVE_USER=
+        new I18NMessage1P(LOGGER,"cannot_retrieve_user"); //$NON-NLS-1$
 }

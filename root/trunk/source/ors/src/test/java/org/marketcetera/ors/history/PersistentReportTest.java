@@ -32,6 +32,7 @@ public class PersistentReportTest extends ReportsTestBase {
      *
      * @throws Exception if there were errors
      */
+
     @Test
     public void rejectSaveAndRetrieve() throws Exception {
         //Create order cancel reject, save and retrieve it.

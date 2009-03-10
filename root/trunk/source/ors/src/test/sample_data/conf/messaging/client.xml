@@ -29,6 +29,7 @@
     - activemq/spring/ActiveMQConnectionFactory.html' for a complete list
     - of options.
     -->
+
   <bean
    id="metc_connection_factory_in"
    class="org.apache.activemq.ActiveMQConnectionFactory"
@@ -51,6 +52,7 @@
     - activemq/pool/PooledConnectionFactory.html' for a complete list
     - of options.
     -->
+
   <bean
    id="metc_connection_factory_out"
    class="org.apache.activemq.pool.PooledConnectionFactory"

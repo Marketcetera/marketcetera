@@ -5,14 +5,19 @@ import java.util.Date;
 
 import org.marketcetera.client.Service;
 import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.persist.NoResultException;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.RemoteCaller;
@@ -112,6 +117,16 @@ public class ServiceImpl
         return getBrokers().getStatus();
     }
 
+
+    private UserInfo getUserInfoImpl
+        (UserID id)
+        throws PersistenceException
+    { // TODO. (add tests)
+        SimpleUser u=(new SingleSimpleUserQuery(id.getValue())).fetch();
+        return new UserInfo
+            (u.getName(),u.getUserID(),u.isActive(),u.isSuperuser());
+    }
+
     private ReportBaseImpl[] getReportsSinceImpl
         (Date date)
         throws ReportPersistenceException,
@@ -158,6 +173,24 @@ public class ServiceImpl
                  SessionHolder<ClientSession> sessionHolder)
             {
                 return getBrokersStatusImpl();
+            }}).execute(context);
+    }
+
+    @Override
+    public UserInfo getUserInfo
+        (ClientContext context,
+         final UserID id)
+        throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,UserInfo>
+                (getSessionManager()) {
+            @Override
+            protected UserInfo call
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+                throws PersistenceException
+            {
+                return getUserInfoImpl(id);
             }}).execute(context);
     }
 

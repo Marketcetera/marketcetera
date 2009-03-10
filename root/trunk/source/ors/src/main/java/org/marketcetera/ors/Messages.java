@@ -99,6 +99,10 @@ public interface Messages
         new I18NMessage1P(LOGGER,"rh_rej_augmentation_failed"); //$NON-NLS-1$
     static final I18NMessage1P RH_RECEIVED_MESSAGE=
         new I18NMessage1P(LOGGER,"rh_received_message"); //$NON-NLS-1$
+    static final I18NMessage0P RH_NULL_MESSAGE_ENVELOPE=
+        new I18NMessage0P(LOGGER,"rh_null_message_envelope"); //$NON-NLS-1$
+    static final I18NMessage1P RH_SESSION_EXPIRED=
+        new I18NMessage1P(LOGGER,"rh_session_expired"); //$NON-NLS-1$
     static final I18NMessage0P RH_NULL_MESSAGE=
         new I18NMessage0P(LOGGER,"rh_null_message"); //$NON-NLS-1$
     static final I18NMessage0P RH_UNSUPPORTED_MESSAGE=
@@ -136,4 +140,8 @@ public interface Messages
         new I18NMessage1P(LOGGER,"rp_persisted_reply"); //$NON-NLS-1$
     static final I18NMessage1P RP_PERSIST_ERROR=
         new I18NMessage1P(LOGGER,"rp_persist_error"); //$NON-NLS-1$
+    static final I18NMessage2P RP_ADD_TO_MAP_FAILED=
+        new I18NMessage2P(LOGGER,"rp_add_to_map_failed"); //$NON-NLS-1$
+    static final I18NMessage1P RP_GET_FROM_MAP_FAILED=
+        new I18NMessage1P(LOGGER,"rp_get_from_map_failed"); //$NON-NLS-1$
 }

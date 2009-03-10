@@ -1,10 +1,12 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
-import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.trade.UserID;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 import java.util.Date;
 import java.util.List;
@@ -86,14 +88,17 @@ public class ReportHistoryServices {
     }
 
     /**
-     * Saves the supplied report to the database.
+     * Saves the supplied report to the database. Returns the ID of
+     * the regular user who may view this report.
      *
      * @param inReport the report to be saved. Cannot be null.
+     *
+     * @return The viewer ID. It may be null.
      *
      * @throws org.marketcetera.persist.PersistenceException if there
      * were errors saving the report.
      */
-    public void save(ReportBase inReport) throws PersistenceException {
-        PersistentReport.save(inReport);
+    public UserID save(ReportBase inReport) throws PersistenceException {
+        return PersistentReport.save(inReport);
     }
 }

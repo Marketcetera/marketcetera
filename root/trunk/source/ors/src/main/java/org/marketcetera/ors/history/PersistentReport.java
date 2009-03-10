@@ -1,5 +1,8 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.ors.security.SingleSimpleUserQuery;
+
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.persist.*;
@@ -28,25 +31,34 @@ import quickfix.InvalidMessage;
 @Table(name = "reports")
 class PersistentReport extends EntityBase {
     /**
-     * Saves the supplied report to the database.
+     * Saves the supplied report to the database. Returns the ID of
+     * the regular user who may view this report.
      *
      * @param inReport The report to be saved.
+     *
+     * @return The viewer ID. It may be null.
      *
      * @throws PersistenceException if there were errors saving the
      * report to the database.
      */
-    static void save(ReportBase inReport) throws PersistenceException {
+    static UserID save(ReportBase inReport) throws PersistenceException {
         PersistentReport report = new PersistentReport(inReport);
         report.saveRemote(null);
         ReportBaseImpl.assignReportID((ReportBaseImpl) inReport,
                 new ReportID(report.getId()));
+        return report.getViewerUserID();
     }
     /**
      * Creates an instance, given a report.
      *
      * @param inReport the report instance.
+     *
+     * @throws PersistenceException if there were errors creating the
+     * instance.
      */
-    PersistentReport(ReportBase inReport) {
+    PersistentReport(ReportBase inReport)
+        throws PersistenceException
+    {
         mReportBase = inReport;
         setBrokerID(inReport.getBrokerID());
         setSendingTime(inReport.getSendingTime());
@@ -54,6 +66,11 @@ class PersistentReport extends EntityBase {
             setFixMessage(((HasFIXMessage) inReport).getMessage().toString());
         }
         setOriginator(inReport.getOriginator());
+        if (inReport.getActorID()!=null) {
+            setActor(new SingleSimpleUserQuery
+                     (inReport.getActorID().getValue()).fetch());
+        }
+        setViewer(getActor()); // TODO.
         if(inReport instanceof ExecutionReport) {
             mReportType = ReportType.ExecutionReport;
         } else if (inReport instanceof OrderCancelReject) {
@@ -85,11 +102,11 @@ class PersistentReport extends EntityBase {
                 case ExecutionReport:
                     returnValue =  Factory.getInstance().createExecutionReport(
                             fixMessage, getBrokerID(),
-                            getOriginator());
+                            getOriginator(), getActorUserID());
                     break;
                 case CancelReject:
                     returnValue =  Factory.getInstance().createOrderCancelReject(
-                            fixMessage, getBrokerID(), getOriginator());
+                            fixMessage, getBrokerID(), getOriginator(), getActor().getUserID());
                     break;
                 default:
                     //You added new report types but forgot to update the code
@@ -129,6 +146,40 @@ class PersistentReport extends EntityBase {
 
     private void setOriginator(Originator inOriginator) {
         mOriginator = inOriginator;
+    }
+
+    @ManyToOne
+    public SimpleUser getActor() {
+        return mActor;
+    }
+
+    private void setActor(SimpleUser inActor) {
+        mActor = inActor;
+    }
+
+    @Transient
+    private UserID getActorUserID() {
+        if (getActor()!=null) {
+            return getActor().getUserID();
+        }
+        return null;
+    }
+
+    @ManyToOne
+    public SimpleUser getViewer() {
+        return mViewer;
+    }
+
+    private void setViewer(SimpleUser inViewer) {
+        mViewer = inViewer;
+    }
+
+    @Transient
+    private UserID getViewerUserID() {
+        if (getViewer()!=null) {
+            return getViewer().getUserID();
+        }
+        return null;
     }
 
     @Transient
@@ -186,15 +237,25 @@ class PersistentReport extends EntityBase {
     }
 
     /**
-     * The attribute employee ID used in JPQL queries
+     * The attribute sending time used in JPQL queries
      */
     static final String ATTRIBUTE_SENDING_TIME = "sendingTime";  //$NON-NLS-1$
+    /**
+     * The attribute actor used in JPQL queries
+     */
+    static final String ATTRIBUTE_ACTOR = "actor";  //$NON-NLS-1$
+    /**
+     * The attribute viewer used in JPQL queries
+     */
+    static final String ATTRIBUTE_VIEWER = "viewer";  //$NON-NLS-1$
     /**
      * The entity name as is used in various JPQL Queries
      */
     static final String ENTITY_NAME = PersistentReport.class.getSimpleName();
 
     private Originator mOriginator;
+    private SimpleUser mActor; 
+    private SimpleUser mViewer; 
     private BrokerID mBrokerID;
     private String mFixMessage;
     private Date mSendingTime;

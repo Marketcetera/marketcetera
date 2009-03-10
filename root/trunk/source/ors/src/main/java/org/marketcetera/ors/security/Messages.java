@@ -53,24 +53,40 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "cli_cmd_add_user"); //$NON-NLS-1$
     static final I18NMessage0P CLI_CMD_DELETE_USER =
             new I18NMessage0P(LOGGER, "cli_cmd_delete_user"); //$NON-NLS-1$
+    static final I18NMessage0P CLI_CMD_RESTORE_USER =
+            new I18NMessage0P(LOGGER, "cli_cmd_restore_user"); //$NON-NLS-1$
     static final I18NMessage0P CLI_CMD_CHANGE_PASSWORD =
             new I18NMessage0P(LOGGER, "cli_cmd_change_password"); //$NON-NLS-1$
+    static final I18NMessage0P CLI_CMD_CHANGE_SUPERUSER =
+            new I18NMessage0P(LOGGER, "cli_cmd_change_superuser"); //$NON-NLS-1$
     static final I18NMessage0P CLI_PARM_OP_USER =
             new I18NMessage0P(LOGGER, "cli_parm_op_user"); //$NON-NLS-1$
     static final I18NMessage0P CLI_PARM_OP_PASSWORD =
             new I18NMessage0P(LOGGER, "cli_parm_op_password"); //$NON-NLS-1$
+    static final I18NMessage0P CLI_PARM_OP_SUPERUSER =
+            new I18NMessage0P(LOGGER, "cli_parm_op_superuser"); //$NON-NLS-1$
+    static final I18NMessage0P CLI_PARM_OP_ACTIVE =
+            new I18NMessage0P(LOGGER, "cli_parm_op_active"); //$NON-NLS-1$
     static final I18NMessage1P CLI_ERR_OPTION_MISSING =
             new I18NMessage1P(LOGGER, "cli_err_option_missing"); //$NON-NLS-1$
     static final I18NMessage1P CLI_OUT_USER_CREATED =
             new I18NMessage1P(LOGGER, "cli_out_user_created"); //$NON-NLS-1$
     static final I18NMessage1P CLI_OUT_USER_DELETED =
             new I18NMessage1P(LOGGER, "cli_out_user_deleted"); //$NON-NLS-1$
+    static final I18NMessage1P CLI_OUT_USER_RESTORED =
+            new I18NMessage1P(LOGGER, "cli_out_user_restored"); //$NON-NLS-1$
     static final I18NMessage1P CLI_OUT_USER_CHG_PASS =
             new I18NMessage1P(LOGGER, "cli_out_user_chg_pass"); //$NON-NLS-1$
+    static final I18NMessage1P CLI_OUT_USER_CHG_SUPERUSER =
+            new I18NMessage1P(LOGGER, "cli_out_user_chg_superuser"); //$NON-NLS-1$
     static final I18NMessage0P CLI_UNAUTHORIZED_ACTION =
             new I18NMessage0P(LOGGER, "cli_unauthorized_action"); //$NON-NLS-1$
     static final I18NMessage1P CLI_ERR_UNAUTH_DELETE =
             new I18NMessage1P(LOGGER, "cli_err_unauth_delete"); //$NON-NLS-1$
+    static final I18NMessage1P CLI_ERR_UNAUTH_RESTORE =
+            new I18NMessage1P(LOGGER, "cli_err_unauth_restore"); //$NON-NLS-1$
+    static final I18NMessage1P CLI_ERR_UNAUTH_CHANGE_SUPERUSER =
+            new I18NMessage1P(LOGGER, "cli_err_unauth_change_superuser"); //$NON-NLS-1$
     static final I18NMessage0P CLI_ERR_INVALID_LOGIN =
             new I18NMessage0P(LOGGER, "cli_err_invalid_login"); //$NON-NLS-1$
     static final I18NMessage0P CLI_ARG_LOGIN_VALUE =
@@ -81,6 +97,10 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "cli_arg_user_name_value"); //$NON-NLS-1$
     static final I18NMessage0P CLI_ARG_USER_PASSWORD_VALUE =
             new I18NMessage0P(LOGGER, "cli_arg_user_password_value"); //$NON-NLS-1$
+    static final I18NMessage0P CLI_ARG_USER_SUPERUSER_VALUE =
+            new I18NMessage0P(LOGGER, "cli_arg_user_superuser_value"); //$NON-NLS-1$
+    static final I18NMessage0P CLI_ARG_USER_ACTIVE_VALUE =
+            new I18NMessage0P(LOGGER, "cli_arg_user_active_value"); //$NON-NLS-1$
     static final I18NMessage0P CLI_DESC_OPTIONS_HEADER =
             new I18NMessage0P(LOGGER, "cli_desc_options_header"); //$NON-NLS-1$
     static final I18NMessage1P CLI_PROMPT_PASSWORD =
