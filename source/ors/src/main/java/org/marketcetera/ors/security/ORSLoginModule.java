@@ -64,6 +64,10 @@ public class ORSLoginModule implements LoginModule {
         char [] password = ((PasswordCallback)callbacks[1]).getPassword();
         try {
             SimpleUser u = new SingleSimpleUserQuery(username).fetch();
+            if (!u.isActive()) {
+                USER_LOGIN_ERROR_LOG.warn(this,username);
+                throw new AccountNotFoundException(USER_LOGIN_ERROR.getText());
+            }
             u.validatePassword(password);
         } catch (NoResultException e) {
             USER_LOGIN_ERROR_LOG.warn(this,e,username);

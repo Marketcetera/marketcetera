@@ -6,9 +6,12 @@ import org.marketcetera.persist.PersistTestBase;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.ors.security.MultiSimpleUserQuery;
 import org.marketcetera.trade.*;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.event.HasFIXMessage;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.After;
 import org.junit.Before;
@@ -44,7 +47,24 @@ public class ReportsTestBase extends TestCaseBase {
         PersistTestBase.springSetup(getSpringFiles());
         sMessageFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
         sServices = new ReportHistoryServices();
+        sUser=new SimpleUser();
+        sUser.setName("admin");
+        sUser.setPassword("pass".toCharArray());
+        sUser.setActive(true);
+        sUser.setSuperuser(true);
+        sUser.save();
+        sUserID=new UserID(sUser.getId());
     }
+
+    @AfterClass
+    public static void cleanUser() throws Exception {
+        MultiSimpleUserQuery suQuery = MultiSimpleUserQuery.all();
+        suQuery.delete();
+        //Verify everything's gone
+        assertEquals(0, suQuery.fetchCount());
+        assertEquals(0, suQuery.fetch().size());
+    }
+
     @Before
     @After
     public void cleanTables() throws Exception {
@@ -69,8 +89,8 @@ public class ReportsTestBase extends TestCaseBase {
         msg.setField(new ClOrdID("rejord1"));
         msg.setField(new OrigClOrdID("rejorigord1"));
         setSendingTime(msg);
-        return Factory.getInstance().createOrderCancelReject(msg,
-                inBrokerID, Originator.Server);
+        return Factory.getInstance().createOrderCancelReject
+            (msg, inBrokerID, Originator.Server, sUserID);
     }
 
     static ExecutionReport createExecReport(String inOrderID,
@@ -105,8 +125,8 @@ public class ReportsTestBase extends TestCaseBase {
             msg.setField(new OrigClOrdID(inOrigOrderID));
         }
         setSendingTime(msg);
-        return Factory.getInstance().createExecutionReport(
-                msg, inBrokerID, Originator.Server);
+        return Factory.getInstance().createExecutionReport
+            (msg, inBrokerID, Originator.Server, sUserID);
     }
 
     private static void setSendingTime(Message inMsg) {
@@ -238,6 +258,8 @@ public class ReportsTestBase extends TestCaseBase {
     }
 
     private static final BrokerID BROKER = new BrokerID("TestBroker");
+    private static SimpleUser sUser;
+    private static UserID sUserID;
     private static FIXMessageFactory sMessageFactory;
     protected static ReportHistoryServices sServices;
     protected static final int SCALE = ExecutionReportSummary.DECIMAL_SCALE;

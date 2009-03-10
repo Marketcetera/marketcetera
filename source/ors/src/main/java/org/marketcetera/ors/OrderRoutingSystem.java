@@ -6,14 +6,15 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.client.Service;
+import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.config.SpringConfig;
 import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.ors.jms.JmsManager;
 import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.marketcetera.ors.ws.ClientSession;
+import org.marketcetera.ors.ws.ClientSessionFactory;
 import org.marketcetera.ors.ws.DBAuthenticator;
 import org.marketcetera.ors.ws.ServiceImpl;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
@@ -57,12 +58,6 @@ public class OrderRoutingSystem
     private static final String APP_CONTEXT_CFG_BASE=
         "file:"+CONF_DIR+ //$NON-NLS-1$
         "properties.xml"; //$NON-NLS-1$
-    private static final String REPLY_TOPIC=
-        "ors-messages"; //$NON-NLS-1$
-    private static final String BROKER_STATUS_TOPIC=
-        "ors-broker-status"; //$NON-NLS-1$
-    private static final String REQUEST_QUEUE=
-        "ors-commands"; //$NON-NLS-1$
     private static final String TRADE_RECORDER_QUEUE=
         "trade-recorder"; //$NON-NLS-1$
     private static final String JMX_NAME=
@@ -138,6 +133,7 @@ public class OrderRoutingSystem
         LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
         localIdFactory.init();
         ReplyPersister persister=new ReplyPersister(historyServices);
+        UserManager userManager=new UserManager();
 
         // Set dictionary for all QuickFIX/J messages we generate.
 
@@ -149,7 +145,8 @@ public class OrderRoutingSystem
 
         SessionManager<ClientSession> sessionManager=
             new SessionManager<ClientSession>
-            ((cfg.getServerSessionLife()==
+            (new ClientSessionFactory(jmsMgr,userManager),
+             (cfg.getServerSessionLife()==
               SessionManager.INFINITE_SESSION_LIFESPAN)?
              SessionManager.INFINITE_SESSION_LIFESPAN:
              (cfg.getServerSessionLife()*1000));
@@ -163,18 +160,16 @@ public class OrderRoutingSystem
 
         // Initiate JMS.
 
-        QuickFIXSender sender=new QuickFIXSender();
+        QuickFIXSender qSender=new QuickFIXSender();
         RequestHandler handler=new RequestHandler
             (brokers,selector,cfg.getAllowedOrders(),
-             persister,sender,localIdFactory);
-        jmsMgr.getIncomingJmsFactory().registerHandlerXM
-            (handler,REQUEST_QUEUE,false,REPLY_TOPIC,true);
+             persister,qSender,userManager,localIdFactory);
+        jmsMgr.getIncomingJmsFactory().registerHandlerOEX
+            (handler,Service.REQUEST_QUEUE,false);
         QuickFIXApplication app=new QuickFIXApplication
-            (brokers,cfg.getSupportedMessages(),persister,sender,
-             jmsMgr.getOutgoingJmsFactory().createJmsTemplateXM
-             (REPLY_TOPIC,true),
-             jmsMgr.getOutgoingJmsFactory().createJmsTemplate
-             (BROKER_STATUS_TOPIC,true),
+            (brokers,cfg.getSupportedMessages(),persister,qSender,userManager,
+             jmsMgr.getOutgoingJmsFactory().createJmsTemplateX
+             (Service.BROKER_STATUS_TOPIC,true),
              jmsMgr.getOutgoingJmsFactory().createJmsTemplateQ
              (TRADE_RECORDER_QUEUE,false));
 
@@ -192,7 +187,7 @@ public class OrderRoutingSystem
         MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
         (new JmxExporter(mbeanServer)).export(initiator);
         mbeanServer.registerMBean
-            (new ORSAdmin(brokers,sender,localIdFactory),
+            (new ORSAdmin(brokers,qSender,localIdFactory),
              new ObjectName(JMX_NAME));
     }
 

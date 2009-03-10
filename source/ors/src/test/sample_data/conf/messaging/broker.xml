@@ -50,6 +50,7 @@
    id="metc_jms_broker"
    class="org.apache.activemq.broker.BrokerService"
    init-method="start"
+   destroy-method="stop"
    depends-on="metc_system_properties_setter,metc_ers">
     <property
      name="brokerName"

@@ -12,7 +12,9 @@ create table ors_users (
     updateCount integer not null,
     description varchar(255),
     name varchar(255) not null,
+    active bit not null,
     hashedPassword varchar(255) not null,
+    superuser bit not null,
     primary key (id),
     unique (name)
 );
@@ -26,8 +28,14 @@ create table reports (
     originator integer,
     reportType integer not null,
     sendingTime datetime not null,
+    viewer_id bigint,
+    actor_id bigint,
     primary key (id),
-    index idx_sendingTime (sendingTime)
+    index idx_sendingTime (sendingTime),
+    constraint fk_actor_id foreign key (actor_id)
+     references ors_users(id),
+    constraint fk_viewer_id foreign key (viewer_id)
+     references ors_users(id)
 );
 
 create table execreports (

@@ -580,7 +580,7 @@ public class RequestHandlerTest
                 throws ClassNotFoundException,
                        ConfigError, FieldConvertError, CoreException {
             super(null,null,null,null,
-                  inQuickFIXSender,
+                  inQuickFIXSender,null,
                   new InMemoryIDFactory(factoryStart));
             // simulate logon
             qfApp.onLogon(null);

@@ -1,6 +1,7 @@
 package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
 import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
@@ -35,6 +36,53 @@ import java.io.UnsupportedEncodingException;
 @AttributeOverride(name = "name", column = @Column(nullable = false)) //$NON-NLS-1$
 public class SimpleUser extends NDEntityBase {
     private static final long serialVersionUID = -244334398553751199L;
+
+    /**
+     * The superuser flag of this user.
+     * @return The flag.
+     */
+    @Column(nullable = false)
+    public boolean isSuperuser() {
+        return superuser;
+    }
+
+    /**
+     * Set the superuser flag for this user.
+     * @param superuser the superuser flag for this user.
+     */
+    public void setSuperuser(boolean superuser) {
+        this.superuser = superuser;
+    }
+
+    private boolean superuser = false;
+
+    /**
+     * The active flag of this user.
+     * @return The flag.
+     */
+    @Column(nullable = false)
+    public boolean isActive() {
+        return active;
+    }
+
+    /**
+     * Set the active flag for this user.
+     * @param active the active flag for this user.
+     */
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    private boolean active = true;
+
+    /**
+     * The UserID of this user.
+     * @return The UserID.
+     */
+    @Transient
+    public UserID getUserID() {
+        return new UserID(getId());
+    }
 
     /**
      * Returns true if the user password is set.
@@ -251,5 +299,6 @@ public class SimpleUser extends NDEntityBase {
             }
         }
     };
+    static final String ATTRIBUTE_ACTIVE = "active"; //$NON-NLS-1$
     static final String ENTITY_NAME = "SimpleUser"; //$NON-NLS-1$
 }

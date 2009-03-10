@@ -3,13 +3,14 @@ package org.marketcetera.ors;
 import java.math.BigDecimal;
 import java.util.Date;
 import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.filters.OrderFilter;
-import org.marketcetera.ors.jms.ReplyHandler;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -25,7 +26,9 @@ import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
@@ -69,7 +72,7 @@ import quickfix.field.Text;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class RequestHandler 
-    implements ReplyHandler<TradeMessage>
+    implements ReceiveOnlyHandler<OrderEnvelope>
 {
 
     // CLASS DATA.
@@ -95,6 +98,7 @@ public class RequestHandler
     private final OrderFilter mAllowedOrders;
     private final ReplyPersister mPersister;
     private final IQuickFIXSender mSender;
+    private final UserManager mUserManager;
     private final IDFactory mIDFactory;
     private final DataDictionary mDataDictionary;
 
@@ -107,6 +111,7 @@ public class RequestHandler
          OrderFilter allowedOrders,
          ReplyPersister persister,
          IQuickFIXSender sender,
+         UserManager userManager,
          IDFactory idFactory)
         throws ConfigError
     {
@@ -115,6 +120,7 @@ public class RequestHandler
         mAllowedOrders=allowedOrders;
         mPersister=persister;
         mSender=sender;
+        mUserManager=userManager;
         mIDFactory=idFactory;
         mDataDictionary=new DataDictionary
             (FIXVersion.FIX_SYSTEM.getDataDictionaryURL());
@@ -141,6 +147,11 @@ public class RequestHandler
     public ReplyPersister getPersister()
     {
         return mPersister;
+    }
+
+    public UserManager getUserManager()
+    {
+        return mUserManager;
     }
 
     public IQuickFIXSender getSender()
@@ -239,7 +250,7 @@ public class RequestHandler
 
     private Message createRejection
         (I18NException ex,
-         TradeMessage msg)
+         Order msg)
     {
         // Special handling of unsupported incoming messages.
 
@@ -254,13 +265,11 @@ public class RequestHandler
         // message using the system FIX dictionary.
 
         Message qMsg=null;
-        if (msg instanceof Order) {
-            try {
-                qMsg=FIXConverter.toQMessage
-                    (getMsgFactory(),FIXVersion.FIX_SYSTEM,(Order)msg);
-            } catch (I18NException ex2) {
-                Messages.RH_REJ_CONVERSION_FAILED.warn(this,ex2,msg);
-            }
+        try {
+            qMsg=FIXConverter.toQMessage
+                (getMsgFactory(),FIXVersion.FIX_SYSTEM,(Order)msg);
+        } catch (I18NException ex2) {
+            Messages.RH_REJ_CONVERSION_FAILED.warn(this,ex2,msg);
         }
 
         // Create basic rejection shell.
@@ -391,18 +400,36 @@ public class RequestHandler
     // ReplyHandler.
 
     @Override
-    public TradeMessage replyToMessage
-        (TradeMessage msg)
+    public void receiveMessage
+        (OrderEnvelope msgEnv)
     {
-        Messages.RH_RECEIVED_MESSAGE.info(this,msg);
+        Messages.RH_RECEIVED_MESSAGE.info(this,msgEnv);
+        Order msg=null;
+        UserID actorID=null;
         BrokerID bID=null;
         Broker b=null;
         Message qMsg=null;
         Message qMsgReply=null;
         try {
 
+            // Reject null message envelopes.
+
+            if (msgEnv==null) {
+                throw new I18NException(Messages.RH_NULL_MESSAGE_ENVELOPE);
+            }
+
+            // Reject invalid sessions.
+
+            actorID=getUserManager().getActorID(msgEnv.getSessionId());
+            if (actorID==null) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.RH_SESSION_EXPIRED,msgEnv.getSessionId()));
+            }
+
             // Reject null messages.
 
+            msg=msgEnv.getOrder();
             if (msg==null) {
                 throw new I18NException(Messages.RH_NULL_MESSAGE);
             }
@@ -481,6 +508,7 @@ public class RequestHandler
 
             // Send message to QuickFIX/J.
 
+            getPersister().addActorID(qMsg,actorID);
             try {
                 getSender().sendToTarget(qMsg,b.getSessionID());
             } catch (SessionNotFound ex) {
@@ -511,7 +539,7 @@ public class RequestHandler
         // warning/error has already been reported).
 
         if (qMsgReply==null) {
-            return null;
+            return;
         }
         if (SLF4JLoggerProxy.isDebugEnabled(this)) {
             Messages.RH_ANALYZED_MESSAGE.debug
@@ -523,7 +551,8 @@ public class RequestHandler
 
         TradeMessage reply=null;
         try {
-            reply=FIXConverter.fromQMessage(qMsgReply,Originator.Server,bID);
+            reply=FIXConverter.fromQMessage
+                (qMsgReply,Originator.Server,bID,actorID);
             if (reply==null) {
                 Messages.RH_REPORT_TYPE_UNSUPPORTED.warn(this,qMsgReply);
             }
@@ -535,13 +564,13 @@ public class RequestHandler
         // we are done (a warning/error has already been reported).
 
         if (reply==null) {
-            return null;
+            return;
         }
 
         // Persist and send reply.
         
-        getPersister().persistReply(reply);
+        UserID viewerID=getPersister().persistReply(reply);
         Messages.RH_SENDING_REPLY.info(this,reply);
-        return reply;
+        getUserManager().convertAndSend(reply,viewerID);
 	}
 }

@@ -10,6 +10,7 @@ import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.jms.core.JmsOperations;
 import quickfix.Application;
@@ -54,7 +55,7 @@ public class QuickFIXApplication
     private final MessageFilter mSupportedMessages;
     private final ReplyPersister mPersister;
     private final IQuickFIXSender mSender;
-    private final JmsOperations mToClientTrades;
+    private final UserManager mUserManager;
     private final JmsOperations mToClientStatus;
     private final JmsOperations mToTradeRecorder;
 
@@ -66,7 +67,7 @@ public class QuickFIXApplication
          MessageFilter supportedMessages,
          ReplyPersister persister,
          IQuickFIXSender sender,
-         JmsOperations toClientTrades,
+         UserManager userManager,
          JmsOperations toClientStatus,
          JmsOperations toTradeRecorder)
     {
@@ -74,7 +75,7 @@ public class QuickFIXApplication
         mSupportedMessages=supportedMessages;
         mPersister=persister;
         mSender=sender;
-        mToClientTrades=toClientTrades;
+        mUserManager=userManager;
         mToClientStatus=toClientStatus;
         mToTradeRecorder=toTradeRecorder;
     }
@@ -102,9 +103,9 @@ public class QuickFIXApplication
         return mSender;
     }
 
-    public JmsOperations getToClientTrades()
+    public UserManager getUserManager()
     {
-        return mToClientTrades;
+        return mUserManager;
     }
 
     public JmsOperations getToClientStatus()
@@ -152,11 +153,12 @@ public class QuickFIXApplication
     }
 
     private void sendToClientTrades
-        (Broker b,
+        (boolean admin,
+         Broker b,
          Message msg,
          Originator originator)
     {
-        if (getToClientTrades()==null) {
+        if (getUserManager()==null) {
             return;
         }
 
@@ -165,7 +167,8 @@ public class QuickFIXApplication
         TradeMessage reply=null;
         try {
             reply=FIXConverter.fromQMessage
-                (msg,originator,b.getBrokerID());
+                (msg,originator,b.getBrokerID(),
+                 (admin?null:getPersister().getActorID(msg)));
             if (reply==null) {
                 Messages.QF_REPORT_TYPE_UNSUPPORTED.warn
                     (getCategory(msg),msg,b.toString());
@@ -184,9 +187,9 @@ public class QuickFIXApplication
 
         // Persist and send reply.
         
-        getPersister().persistReply(reply);
+        UserID viewerID=getPersister().persistReply(reply);
         Messages.QF_SENDING_REPLY.info(getCategory(msg),reply);
-        getToClientTrades().convertAndSend(reply);
+        getUserManager().convertAndSend(reply,viewerID);
     }
 
 
@@ -252,7 +255,7 @@ public class QuickFIXApplication
                     (getCategory(msg),ex,msg,b.toString());
                 // Send original message instead of modified one.
             }
-            sendToClientTrades(b,msg,Originator.Server);
+            sendToClientTrades(true,b,msg,Originator.Server);
         }
     }
 
@@ -267,7 +270,7 @@ public class QuickFIXApplication
 
         // Send message to client.
 
-        sendToClientTrades(b,msg,Originator.Broker);
+        sendToClientTrades(true,b,msg,Originator.Broker);
     }
 
     @Override
@@ -309,7 +312,7 @@ public class QuickFIXApplication
 
         // Send message to client.
 
-        sendToClientTrades(b,msg,Originator.Broker);
+        sendToClientTrades(false,b,msg,Originator.Broker);
 
         // OpenFIX certification: we reject all DeliverToCompID since
         // we don't redeliver.

@@ -132,6 +132,16 @@ public class ORSAdminCLI
         String password = commandLine.getOptionValue(OPT_CURRENT_PASSWORD);
         String opUser = commandLine.getOptionValue(OPT_OPERATED_USER);
         String opPass = commandLine.getOptionValue(OPT_OPERATED_PASSWORD);
+        Boolean opSuperuser = null;
+        if (commandLine.hasOption(OPT_OPERATED_SUPERUSER)) {
+            opSuperuser = commandLine.getOptionValue(OPT_OPERATED_SUPERUSER).
+                equals(OPT_YES);
+        }
+        Boolean opActive = null;
+        if (commandLine.hasOption(OPT_OPERATED_ACTIVE)) {
+            opActive = commandLine.getOptionValue(OPT_OPERATED_ACTIVE).
+                equals(OPT_YES);
+        }
         if(commandLine.hasOption(CMD_ADD_USER)) {
             if(!commandLine.hasOption(OPT_OPERATED_USER)) {
                 throw new I18NException(new I18NBoundMessage1P(
@@ -142,7 +152,7 @@ public class ORSAdminCLI
                         OPT_OPERATED_PASSWORD, CLI_PROMPT_PASSWORD);
             }
             authorize(Authorization.ADD_USER,userName,password);
-            addUser(opUser, opPass);
+            addUser(opUser, opPass, opSuperuser);
         } else if (commandLine.hasOption(CMD_DELETE_USER)) {
             if(!commandLine.hasOption(OPT_OPERATED_USER)) {
                 throw new I18NException(new I18NBoundMessage1P(
@@ -150,9 +160,16 @@ public class ORSAdminCLI
             }
             authorize(Authorization.DELETE_USER,userName,password);
             deleteUser(opUser);
+        } else if (commandLine.hasOption(CMD_RESTORE_USER)) {
+            if(!commandLine.hasOption(OPT_OPERATED_USER)) {
+                throw new I18NException(new I18NBoundMessage1P(
+                        CLI_ERR_OPTION_MISSING, OPT_OPERATED_USER));
+            }
+            authorize(Authorization.RESTORE_USER,userName,password);
+            restoreUser(opUser);
         } else if (commandLine.hasOption(CMD_LIST_USERS)) {
             authorize(Authorization.LIST_USERS,userName,password);
-            listUsers(opUser);
+            listUsers(opUser, opActive);
         } else if (commandLine.hasOption(CMD_CHANGE_PASS)) {
             //The order of these statements is important as it
             //determines the order in which the user is prompted
@@ -177,6 +194,17 @@ public class ORSAdminCLI
                 authorize(Authorization.CHANGE_PASSWORD,userName,password);
             }
             changePassword(userName, opUser, password, opPass);
+        } else if (commandLine.hasOption(CMD_CHANGE_SUPERUSER)) {
+            if(!commandLine.hasOption(OPT_OPERATED_USER)) {
+                throw new I18NException(new I18NBoundMessage1P(
+                        CLI_ERR_OPTION_MISSING, OPT_OPERATED_USER));
+            }
+            if (opSuperuser==null) {
+                throw new I18NException(new I18NBoundMessage1P(
+                        CLI_ERR_OPTION_MISSING, OPT_OPERATED_SUPERUSER));
+            }
+            authorize(Authorization.CHANGE_SUPERUSER,userName,password);
+            changeSuperuser(opUser, opSuperuser);
         } else {
             //A MissingOptionException would have been already thrown
             throw new IllegalStateException();
@@ -246,18 +274,38 @@ public class ORSAdminCLI
      *
      * @param nameFilter a filter to filter the list of users. Can be null, in
      * which case all the users are listed.
+     * @param active the desired value of the active flag (null means
+     * "don't care")
      *
      * @throws PersistenceException if there was an error fetching the users.
      */
-    private void listUsers(String nameFilter) throws PersistenceException {
+    private void listUsers
+        (String nameFilter,
+         Boolean active)
+        throws PersistenceException
+    {
         MultiSimpleUserQuery q = MultiSimpleUserQuery.all();
+        q.setActiveFilter(active);
         q.setEntityOrder(q.BY_NAME);
         if(nameFilter != null) {
             q.setNameFilter(new StringFilter(nameFilter));
         }
         List<SimpleUser> l = q.fetch();
         for(SimpleUser u:l) {
-            out.println(u.getName());
+            StringBuilder flags=new StringBuilder();
+            if (u.isSuperuser()) {
+                flags.append(OPT_OPERATED_SUPERUSER); 
+            }
+            if ((active==null) && u.isActive()) {
+                flags.append(OPT_OPERATED_ACTIVE);
+            }
+            out.print(u.getName());
+            if (flags.length()>0) {
+                out.print(" [");
+                out.print(flags.toString());
+                out.print(']');
+            }
+            out.println();
         }
     }
 
@@ -275,8 +323,50 @@ public class ORSAdminCLI
                     CLI_ERR_UNAUTH_DELETE,opUser));
         }
         SimpleUser u = new SingleSimpleUserQuery(opUser).fetch();
-        u.delete();
+        u.setActive(false);
+        u.save();
         out.println(CLI_OUT_USER_DELETED.getText(u.getName()));
+    }
+
+    /**
+     * Restores the user in the database.
+     *
+     * @param opUser the name of the user to be restored.
+     *
+     * @throws I18NException if there were errors restoring the user.
+     */
+    private void restoreUser(String opUser) throws I18NException {
+        if(ADMIN_USER_NAME.equals(opUser)) {
+            throw new I18NException(new I18NBoundMessage1P(
+                    CLI_ERR_UNAUTH_RESTORE,opUser));
+        }
+        SimpleUser u = new SingleSimpleUserQuery(opUser).fetch();
+        u.setActive(true);
+        u.save();
+        out.println(CLI_OUT_USER_RESTORED.getText(u.getName()));
+    }
+
+    /**
+     * Changes the user's superuser flag.
+     *
+     * @param opUser the name of the user to be changed.
+     * @param superuser the new value of the superuser flag.
+     *
+     * @throws I18NException if there were errors setting the flag.
+     */
+    private void changeSuperuser
+        (String opUser,
+         Boolean superuser)
+        throws I18NException
+    {
+        if(ADMIN_USER_NAME.equals(opUser)) {
+            throw new I18NException(new I18NBoundMessage1P(
+                    CLI_ERR_UNAUTH_CHANGE_SUPERUSER,opUser));
+        }
+        SimpleUser u = new SingleSimpleUserQuery(opUser).fetch();
+        u.setSuperuser(superuser);
+        u.save();
+        out.println(CLI_OUT_USER_CHG_SUPERUSER.getText(u.getName()));
     }
 
     /**
@@ -284,15 +374,23 @@ public class ORSAdminCLI
      *
      * @param opUser the name of the new user
      * @param opPass the password for the new user
+     * @param superuser the new value of the superuser flag.
      *
      * @throws PersistenceException if there was an error adding
      * the new user
      */
-    private void addUser(String opUser, String opPass)
-            throws PersistenceException {
+    private void addUser
+        (String opUser,
+         String opPass,
+         Boolean superuser)
+        throws PersistenceException
+    {
         SimpleUser u = new SimpleUser();
         u.setName(opUser);
         u.setPassword(opPass.toCharArray());
+        if (superuser!=null) {
+            u.setSuperuser(superuser);
+        }
         u.save();
         out.println(CLI_OUT_USER_CREATED.getText(u.getName()));
     }
@@ -303,7 +401,9 @@ public class ORSAdminCLI
     private enum Authorization {
         ADD_USER,
         DELETE_USER,
+        RESTORE_USER,
         CHANGE_PASSWORD,
+        CHANGE_SUPERUSER,
         LIST_USERS {
             @Override
             public void authorize(String userName, String password)
@@ -320,10 +420,14 @@ public class ORSAdminCLI
         }
         private static void validateUser(String userName, String password)
                 throws I18NException {
+            SimpleUser u;
             try {
-                new SingleSimpleUserQuery(userName).fetch().validatePassword(
-                        password.toCharArray());
+                u=new SingleSimpleUserQuery(userName).fetch();
+                u.validatePassword(password.toCharArray());
             } catch (PersistenceException e) {
+                throw new I18NException(CLI_ERR_INVALID_LOGIN);
+            }
+            if (!u.isActive()) {
                 throw new I18NException(CLI_ERR_INVALID_LOGIN);
             }
         }
@@ -356,19 +460,33 @@ public class ORSAdminCLI
         commands.addOption(OptionBuilder.withLongOpt(CMD_DELETE_USER).
                 withDescription(CLI_CMD_DELETE_USER.getText()).
                 isRequired().create());
+        commands.addOption(OptionBuilder.withLongOpt(CMD_RESTORE_USER).
+                withDescription(CLI_CMD_RESTORE_USER.getText()).
+                isRequired().create());
         commands.addOption(OptionBuilder.withLongOpt(CMD_CHANGE_PASS).
                 withDescription(CLI_CMD_CHANGE_PASSWORD.getText()).
+                isRequired().create());
+        commands.addOption(OptionBuilder.withLongOpt(CMD_CHANGE_SUPERUSER).
+                withDescription(CLI_CMD_CHANGE_SUPERUSER.getText()).
                 isRequired().create());
         opts.addOptionGroup(commands);
         //Add optional arguments
         opts.addOption(OptionBuilder.withLongOpt("username"). //$NON-NLS-1$
-                hasArg(true).withArgName(CLI_ARG_USER_NAME_VALUE.getText()).
+                hasArg().withArgName(CLI_ARG_USER_NAME_VALUE.getText()).
                 withDescription(CLI_PARM_OP_USER.getText()).
                 isRequired(false).create(OPT_OPERATED_USER));
         opts.addOption(OptionBuilder.withLongOpt("password"). //$NON-NLS-1$
-                hasArg(true).withArgName(CLI_ARG_USER_PASSWORD_VALUE.getText()).
+                hasArg().withArgName(CLI_ARG_USER_PASSWORD_VALUE.getText()).
                 withDescription(CLI_PARM_OP_PASSWORD.getText()).
                 isRequired(false).create(OPT_OPERATED_PASSWORD));
+        opts.addOption(OptionBuilder.withLongOpt("superuser"). //$NON-NLS-1$
+                hasArg().withArgName(CLI_ARG_USER_SUPERUSER_VALUE.getText()).
+                withDescription(CLI_PARM_OP_SUPERUSER.getText()).
+                isRequired(false).create(OPT_OPERATED_SUPERUSER));
+        opts.addOption(OptionBuilder.withLongOpt("active"). //$NON-NLS-1$
+                hasArg().withArgName(CLI_ARG_USER_ACTIVE_VALUE.getText()).
+                withDescription(CLI_PARM_OP_ACTIVE.getText()).
+                isRequired(false).create(OPT_OPERATED_ACTIVE));
         return opts;
     }
 
@@ -389,15 +507,19 @@ public class ORSAdminCLI
         final int leftPad = 4;
         final int descPad = 4;
         final String LS = SystemUtils.LINE_SEPARATOR;
-        final String l = "-u <" + CLI_ARG_LOGIN_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
-        final String p = "-p <" + CLI_ARG_LOGIN_PASSWORD_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
-        final String u = "-n <" + CLI_ARG_USER_NAME_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
-        final String up = "-w <" + CLI_ARG_USER_PASSWORD_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
+        final String l = "-" + OPT_CURRENT_USER + " <" + CLI_ARG_LOGIN_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        final String p = "-" + OPT_CURRENT_PASSWORD + " <" + CLI_ARG_LOGIN_PASSWORD_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        final String u = "-" + OPT_OPERATED_USER + " <" + CLI_ARG_USER_NAME_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        final String up = "-" + OPT_OPERATED_PASSWORD + " <" + CLI_ARG_USER_PASSWORD_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        final String us = "-" + OPT_OPERATED_SUPERUSER + " " + OPT_YES + '|' +OPT_NO; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        final String ua = "-" + OPT_OPERATED_ACTIVE + " " + OPT_YES + '|' +OPT_NO; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         final String prefix = CMD_NAME + " " + l + p ; //$NON-NLS-1$
-        final String s = prefix + "--" + CMD_LIST_USERS + //$NON-NLS-1$
-                LS + prefix + "--" + CMD_ADD_USER + " " + u + " " + up + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        final String s = prefix + "--" + CMD_LIST_USERS + " [" + ua + "] " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                LS + prefix + "--" + CMD_ADD_USER + " " + u + " " + up + " [" + us + "] " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
                 LS + prefix + "--" + CMD_DELETE_USER + " " + u + //$NON-NLS-1$ //$NON-NLS-2$
-                LS + prefix + "--" + CMD_CHANGE_PASS + " " + up + " [" + u + "]" + LS; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                LS + prefix + "--" + CMD_RESTORE_USER + " " + u + //$NON-NLS-1$ //$NON-NLS-2$
+                LS + prefix + "--" + CMD_CHANGE_PASS + " " + up + " [" + u + "]" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                LS + prefix + "--" + CMD_CHANGE_SUPERUSER + " " + u + " "+ us + LS; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         final PrintWriter writer = new PrintWriter(err);
         h.printHelp(writer, width, s, CLI_DESC_OPTIONS_HEADER.getText(),
                 options(), leftPad, descPad, "", false); //$NON-NLS-1$
@@ -408,11 +530,19 @@ public class ORSAdminCLI
     private static final String CMD_LIST_USERS = "listUsers"; //$NON-NLS-1$
     private static final String CMD_ADD_USER = "addUser"; //$NON-NLS-1$
     private static final String CMD_DELETE_USER = "deleteUser"; //$NON-NLS-1$
+    private static final String CMD_RESTORE_USER = "restoreUser"; //$NON-NLS-1$
     private static final String CMD_CHANGE_PASS = "changePassword"; //$NON-NLS-1$
+    private static final String CMD_CHANGE_SUPERUSER = "changeSuperuser"; //$NON-NLS-1$
     private static final String OPT_CURRENT_USER = "u"; //$NON-NLS-1$
     private static final String OPT_CURRENT_PASSWORD = "p"; //$NON-NLS-1$
     private static final String OPT_OPERATED_USER = "n"; //$NON-NLS-1$
     private static final String OPT_OPERATED_PASSWORD = "w"; //$NON-NLS-1$
+    private static final String OPT_OPERATED_SUPERUSER = "s"; //$NON-NLS-1$
+    private static final String OPT_OPERATED_ACTIVE = "a"; //$NON-NLS-1$
     private static final String ADMIN_USER_NAME = "admin"; //$NON-NLS-1$
+
+    private static final String OPT_YES = "y"; //$NON-NLS-1$
+    private static final String OPT_NO = "n"; //$NON-NLS-1$
+
     static final String CMD_NAME = "orsadmin"; //$NON-NLS-1$
 }
