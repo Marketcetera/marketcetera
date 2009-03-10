@@ -29,6 +29,10 @@
  * 
  * <p>This package supports both queues and topics.</p>
  *
+ * <p>Additional classes provide JMS serialization (message
+ * converters) of certain object types, as well as serialization
+ * wrappers.</p>
+ *
  * @author tlerios@marketcetera.com
  * @since $Release$
  * @version $Id$

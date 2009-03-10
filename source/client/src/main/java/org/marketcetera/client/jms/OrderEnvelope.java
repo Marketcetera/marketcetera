@@ -44,7 +44,7 @@ public class OrderEnvelope
 
     /**
      * Creates a new envelope with the given order (which must be
-     * either a {@link OrderBaseImpl} or a {@link FIXOrderImpl} and
+     * either a {@link OrderBaseImpl} or a {@link FIXOrderImpl}) and
      * session ID.
      *
      * @param order The order.

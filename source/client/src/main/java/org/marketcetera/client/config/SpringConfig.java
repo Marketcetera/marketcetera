@@ -62,6 +62,7 @@ public class SpringConfig
     {
         setIncomingConnectionFactory(incomingCF);
         setOutgoingConnectionFactory(outgoingCF);
+        afterPropertiesSet();
         setSingleton(this);
     }
 

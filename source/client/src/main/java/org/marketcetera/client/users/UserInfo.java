@@ -8,7 +8,7 @@ import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * The web service representation of a single user's status.
+ * The web service representation of a user's information.
  *
  * @author tlerios@marketcetera.com
  * @since $Release$

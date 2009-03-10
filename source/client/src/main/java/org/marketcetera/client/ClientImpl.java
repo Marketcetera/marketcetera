@@ -171,20 +171,19 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     {
         failIfClosed();
         UserInfo result;
-        if (useCache) {
-            synchronized (mUserInfoCache) {
+        synchronized (mUserInfoCache) {
+            if (useCache) {
                 result=mUserInfoCache.get(id);
                 if (result!=null) {
                     return result;
                 }
             }
-        }
-        try {
-            result=mService.getUserInfo(getServiceContext(),id);
-        } catch (RemoteException ex) {
-            throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
-        }
-        synchronized (mUserInfoCache) {
+            try {
+                result=mService.getUserInfo(getServiceContext(),id);
+            } catch (RemoteException ex) {
+                throw new ConnectionException
+                    (ex,Messages.ERROR_REMOTE_EXECUTION);
+            }
             mUserInfoCache.put(id,result);
         }
         return result;
@@ -380,7 +379,16 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     private void internalClose() {
-        if (mContext != null) {
+        if (mContext == null) {
+            return;
+        }
+        try {
+            mBrokerStatusListener.destroy();
+        } catch (Exception ex) {
+            SLF4JLoggerProxy.debug
+                (this,"Error when closing broker status listener",ex); //$NON-NLS-1$
+            ExceptUtils.interrupt(ex);
+        } finally {
             try {
                 mTradeMessageListener.destroy();
             } catch (Exception ex) {
@@ -389,10 +397,10 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                 ExceptUtils.interrupt(ex);
             } finally {
                 try {
-                    mBrokerStatusListener.destroy();
+                    mServiceClient.logout();
                 } catch (Exception ex) {
                     SLF4JLoggerProxy.debug
-                        (this,"Error when closing broker status listener",ex); //$NON-NLS-1$
+                        (this,"Error when closing web service client",ex); //$NON-NLS-1$
                     ExceptUtils.interrupt(ex);
                 } finally {
                     try {
@@ -402,20 +410,12 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                             (this,"Error when closing context",ex); //$NON-NLS-1$
                         ExceptUtils.interrupt(ex);
                     } finally {
-                        try {
-                            mServiceClient.logout();
-                        } catch (Exception ex) {
-                            SLF4JLoggerProxy.debug
-                                (this,"Error when closing web service client",ex); //$NON-NLS-1$
-                            ExceptUtils.interrupt(ex);
-                        } finally {
-                            mToServer = null;
-                        }
+                        mToServer = null;
+                        setContext(null);
                     }
                 }
             }
         }
-        setContext(null);
     }
 
     private void connect() throws ConnectionException {
@@ -565,7 +565,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     private final Deque<ExceptionListener> mExceptionListeners =
             new LinkedList<ExceptionListener>();
     private Date mLastConnectTime;
-    private HashMap<UserID,UserInfo> mUserInfoCache=
+    private Map<UserID,UserInfo> mUserInfoCache=
         new HashMap<UserID,UserInfo>();
 
     private org.marketcetera.util.ws.stateful.Client mServiceClient;
