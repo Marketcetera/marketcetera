@@ -3,6 +3,7 @@ package org.marketcetera.photon;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Display;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientInitException;
@@ -35,7 +36,6 @@ import org.marketcetera.trade.ReportBase;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.ClOrdID;
 import quickfix.field.ExecID;
 import quickfix.field.OrigClOrdID;
 
@@ -225,31 +225,34 @@ public class PhotonController
 	 * Trying to cancel them while collecting results in a deadlock, since we are 
 	 * holding a read lock while collecting, and sending a cancel tries to acquire 
 	 * the write lock to add new messages to message history. 
+	 * @param monitor progress monitor
 	 */
-	public void cancelAllOpenOrders()
-	{
+	public void cancelAllOpenOrders(IProgressMonitor monitor) {
 		final Vector<String> clOrdIdsToCancel = new Vector<String>();
 		fixMessageHistory.visitOpenOrdersExecutionReports(new MessageVisitor() {
-            public void visitOpenOrderExecutionReports(Message message) {
-                String clOrdId = "unknown"; //$NON-NLS-1$
-                try {
-            		clOrdId = (String)message.getString(ClOrdID.FIELD);
-            		clOrdIdsToCancel.add(clOrdId);
-                } catch (FieldNotFound fnf){
-                    internalMainLogger.error(CANNOT_SEND_CANCEL_FOR_REASON.getText(clOrdId,
-                                                                                   message.toString()),
-                                                                                   fnf);
-                }
-            }
-        });
-		for (String clOrdId: clOrdIdsToCancel) {
-    		try {
+			public void visitOpenOrderExecutionReports(ReportBase report) {
+				String clOrdId = report.getOrderID().getValue();
+				if (clOrdId == null) {
+					internalMainLogger.error(CANNOT_SEND_CANCEL_FOR_REASON
+							.getText(clOrdId, report));
+				} else {
+					clOrdIdsToCancel.add(clOrdId);
+				}
+			}
+		});
+		monitor.beginTask(Messages.PHOTON_CONTROLLER_CANCEL_ALL_ORDERS_TASK
+				.getText(), clOrdIdsToCancel.size());
+		for (String clOrdId : clOrdIdsToCancel) {
+			try {
 				cancelOneOrderByClOrdID(clOrdId, "PANIC"); //$NON-NLS-1$
-	            if(internalMainLogger.isDebugEnabled()) { internalMainLogger.debug("cancelling order for "+clOrdId);}  //$NON-NLS-1$
-            } catch (NoMoreIDsException ignored) {
-                // ignore
+				if (internalMainLogger.isDebugEnabled()) {
+					internalMainLogger.debug("cancelling order for " + clOrdId);} //$NON-NLS-1$
+				monitor.worked(1);
+			} catch (NoMoreIDsException ignored) {
+				// ignore
 			}
 		}
+		monitor.done();
 	}
 
 	public void sendOrder(Order inOrder) {

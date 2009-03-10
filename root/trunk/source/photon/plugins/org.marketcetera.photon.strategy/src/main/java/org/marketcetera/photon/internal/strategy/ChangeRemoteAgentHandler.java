@@ -5,6 +5,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -31,16 +32,21 @@ public class ChangeRemoteAgentHandler extends ChangeStateHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelectionChecked(event);
-		RemoteStrategyAgent agent = (RemoteStrategyAgent) selection.getFirstElement();
+		final RemoteStrategyAgent agent = (RemoteStrategyAgent) selection.getFirstElement();
 		validateState(agent);
-		switch (getNewState()) {
-		case RUNNING:
-			StrategyManager.getCurrent().connect(agent);
-			break;
-		case STOPPED:
-			StrategyManager.getCurrent().disconnect(agent);
-			break;
-		}
+		BusyIndicator.showWhile(null, new Runnable() {
+			@Override
+			public void run() {
+				switch (getNewState()) {
+				case RUNNING:
+					StrategyManager.getCurrent().connect(agent);
+					break;
+				case STOPPED:
+					StrategyManager.getCurrent().disconnect(agent);
+					break;
+				}
+			}
+		});
 		return null;
 	}
 

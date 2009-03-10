@@ -1,10 +1,15 @@
 package org.marketcetera.photon;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.math.BigDecimal;
 import java.util.Vector;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -47,7 +52,12 @@ public class PhotonControllerTest extends TestCase {
         fixMessageHistory.addIncomingMessage(OrderManagerTest.createReport(msgFactory.newExecutionReport("123", "10002", "201", OrdStatus.NEW,
                 Side.BUY, new BigDecimal(10), new BigDecimal(10.10), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO, new MSymbol("BOB"), "tester")));
-        photonController.cancelAllOpenOrders();
+        IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
+        photonController.cancelAllOpenOrders(mockMonitor);
+        verify(mockMonitor).beginTask(Messages.PHOTON_CONTROLLER_CANCEL_ALL_ORDERS_TASK
+				.getText(), 2);
+        verify(mockMonitor, times(2)).worked(1);
+        verify(mockMonitor).done();
         assertEquals("not enough orders canceled", 2, photonController.sentOrders.size());
         Order order1 = photonController.sentOrders.get(0);
         Order order2 = photonController.sentOrders.get(1);

@@ -929,7 +929,7 @@ public abstract class OrderTicketView
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (e.keyCode == SWT.CR) {
+				if (e.character == SWT.CR) {
 					if (getOrderTicket().getSendButton().isEnabled()) {
 						handleSend();
 					}

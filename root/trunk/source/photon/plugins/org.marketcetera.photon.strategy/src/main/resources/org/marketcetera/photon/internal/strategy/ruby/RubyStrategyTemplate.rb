@@ -70,7 +70,7 @@ class __TEMPLATE_CLASS_NAME__ < Strategy
     # Executed when the strategy receives an order cancel reject #
     #  event                                                     #
     ##############################################################
-    def on_cancel(reject)
+    def on_cancel_reject(reject)
       
     end
 end

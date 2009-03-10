@@ -886,10 +886,11 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                                 BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol(
                                         "FRED"), null))); //$NON-NLS-1$
 
-        final Vector<Message> visited = new Vector<quickfix.Message>();
+        final Vector<ReportBase> visited = new Vector<ReportBase>();
         MessageVisitor visitor = new MessageVisitor() {
-            public void visitOpenOrderExecutionReports(Message message) {
-                visited.add(message);
+        	@Override
+            public void visitOpenOrderExecutionReports(ReportBase report) {
+                visited.add(report);
             }
         };
         history.visitOpenOrdersExecutionReports(visitor);

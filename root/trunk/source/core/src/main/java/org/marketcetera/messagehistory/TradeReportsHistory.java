@@ -406,7 +406,7 @@ public class TradeReportsHistory {
             ReportHolder[] holders = mOpenOrderList.toArray(new ReportHolder[mOpenOrderList.size()]);
             for(ReportHolder holder : holders)
             {
-                visitor.visitOpenOrderExecutionReports(holder.getMessage());
+                visitor.visitOpenOrderExecutionReports(holder.getReport());
             }
         } finally {
             mReadLock.unlock();

@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /* $License$ */
@@ -20,6 +21,7 @@ import org.junit.Test;
  */
 public class TimeOfDayTest {
 
+	@Ignore // need to fix PN-401
 	@Test
 	public void fromHoursMinutesSeconds() {
 		TimeOfDay fixture = TimeOfDay.create(0, 0, 0, TimeZone
