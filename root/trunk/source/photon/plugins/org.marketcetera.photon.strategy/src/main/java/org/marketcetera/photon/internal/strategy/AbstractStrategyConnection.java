@@ -24,7 +24,7 @@ public abstract class AbstractStrategyConnection {
 	/**
 	 * Strategy state.
 	 */
-	@ClassVersion("$Id: Strategy.java 10229 2008-12-09 21:48:48Z klim $")
+	@ClassVersion("$Id$")
 	public enum State {
 		RUNNING, STOPPED
 	}
