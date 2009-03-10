@@ -29,7 +29,7 @@
         <mvn.jvm.locale.country></mvn.jvm.locale.country>
         <mvn.jvm.locale.variant></mvn.jvm.locale.variant>
         <!-- Required for Photon: directory to install RCP target. --> 
-        <mvn.photon.target>C:\photon-target</mvn.photon.target> 
+        <mvn.photon.target>C:\photon-target</mvn.photon.target>
         <!-- Command-line options for the JVM during unit test execution. -->
         <mvn.test.options>-Xmx512m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
       </properties>
