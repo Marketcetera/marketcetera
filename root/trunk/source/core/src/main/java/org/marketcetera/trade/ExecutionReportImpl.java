@@ -133,6 +133,7 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
                 String.valueOf(getOrderType()),
                 String.valueOf(getOriginalOrderID()),
                 String.valueOf(getOriginator()),
+                String.valueOf(getActorID()),
                 String.valueOf(getPositionEffect()),
                 String.valueOf(getReportID()),
                 String.valueOf(getSendingTime()),
@@ -152,11 +153,13 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
      * @param inMessage The FIX Message of type execution report.
      * @param inBrokerID the brokerID from which this report originated.
      * @param inOriginator the originator of this message.
+     * @param inActorID the ID of the actor user of this report.
      */
     ExecutionReportImpl(Message inMessage,
                         BrokerID inBrokerID,
-                        Originator inOriginator) {
-        super(inMessage, inBrokerID, inOriginator);
+                        Originator inOriginator,
+                        UserID inActorID) {
+        super(inMessage, inBrokerID, inOriginator, inActorID);
     }
 
     /**

@@ -314,7 +314,7 @@ public abstract class MultipleEntityQuery
     }
 
     /**
-     * Adds the filter, if it's not null, to teh supplied queryString.
+     * Adds the filter, if it's not null, to the supplied queryString.
      * A where expression is added to the supplied query string for the
      * filter. The filter value is added as a parameter to the query.
      *

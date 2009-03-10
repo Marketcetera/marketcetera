@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /* $License$ */
 /**
  * Tests all the ID classes in this package. Tested classes
- * include {@link OrderID} & {@link BrokerID}.
+ * include {@link OrderID}, {@link UserID} &amp; {@link BrokerID}.
  * <p>
  * Also tests 
  * {@link Factory#setOrderIDFactory(org.marketcetera.core.IDFactory)} 
@@ -72,6 +72,23 @@ public class IDTest {
         BrokerID id = new BrokerID("yes");
         assertEquals("yes", id.getValue());
         assertEquals("yes", id.toString());
+        SerializableAssert.assertSerializable(id);
+    }
+
+    /**
+     * Verify {@link UserID}
+     *
+     * @throws Exception if there were errors.
+     */
+    @Test
+    public void userID() throws Exception {
+        EqualityAssert.assertEquality(new UserID(1),
+                new UserID(1),
+                new UserID(0));
+
+        UserID id = new UserID(2);
+        assertEquals(2, id.getValue());
+        assertEquals("2", id.toString());
         SerializableAssert.assertSerializable(id);
     }
 
@@ -133,7 +150,7 @@ public class IDTest {
     private ReportID getNextReportID() throws MessageCreationException {
         return Factory.getInstance().createExecutionReport(
                 TypesTestBase.createEmptyExecReport(),
-                new BrokerID("bro"), Originator.Server).getReportID();
+                new BrokerID("bro"), Originator.Server, null).getReportID();
     }
 
     /**

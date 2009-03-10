@@ -16,6 +16,7 @@ import org.marketcetera.trade.PositionEffect;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.trade.UserID;
 
 /* $License$ */
 
@@ -135,6 +136,11 @@ public class MockExecutionReport implements ExecutionReport {
 
 	@Override
 	public Originator getOriginator() {
+		return null;
+	}
+
+	@Override
+	public UserID getActorID() {
 		return null;
 	}
 

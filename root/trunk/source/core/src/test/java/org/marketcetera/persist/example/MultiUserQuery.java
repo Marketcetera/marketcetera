@@ -147,6 +147,7 @@ public class MultiUserQuery extends MultiNDQuery {
         this.employeeIDFilter = employeeIDFilter;
     }
 
+    @Override
     protected void addWhereClauses(StringBuilder queryString) {
         super.addWhereClauses(queryString);
         addFilterIfNotNull(queryString, User.ATTRIBUTE_ENABLED,

@@ -35,23 +35,24 @@ public class OrderCancelRejectTest extends TypesTestBase {
         // null message
         new ExpectedFailure<NullPointerException>(null){
              protected void run() throws Exception {
-                 sFactory.createOrderCancelReject(null, cID, Originator.Server);
+                 sFactory.createOrderCancelReject(null, cID, Originator.Server, null);
              }
          };
         //null originator
         new ExpectedFailure<NullPointerException>(null){
              protected void run() throws Exception {
-                 sFactory.createOrderCancelReject(
-                         getSystemMessageFactory().newOrderCancelReject(),
-                         cID, null);
+                 sFactory.createOrderCancelReject
+                     (getSystemMessageFactory().newOrderCancelReject(),
+                         cID, null, null);
              }
          };
+        // wrong quickfix message type
         final Message message = getSystemMessageFactory().newBasicOrder();
         new ExpectedFailure<MessageCreationException>(
                 Messages.NOT_CANCEL_REJECT, message.toString()){
             protected void run() throws Exception {
                 sFactory.createOrderCancelReject(
-                        message, null, Originator.Server);
+                        message, null, Originator.Server, null);
             }
         };
     }
@@ -66,9 +67,9 @@ public class OrderCancelRejectTest extends TypesTestBase {
         // report with all empty fields
         Message msg = getSystemMessageFactory().newOrderCancelReject();
         OrderCancelReject report = sFactory.createOrderCancelReject(msg, null,
-                Originator.Server);
+                Originator.Server, null);
         assertReportBaseValues(report, null, null, null, null, null, null,
-                null, Originator.Server);
+                null, Originator.Server, null);
         assertNull(report.getReportID());
         //Verify toString() doesn't fail.
         report.toString();
@@ -82,6 +83,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
         String text = "Cancel it please.";
         Date sendingTime = new Date();
         Date transactTime = new Date();
+        UserID actorID = new UserID(2);
         msg = getSystemMessageFactory().newOrderCancelReject(
                 new quickfix.field.OrderID(destOrderID),
                 new ClOrdID(orderID.getValue()),
@@ -89,9 +91,11 @@ public class OrderCancelRejectTest extends TypesTestBase {
                 text, null);
         msg.getHeader().setField(new SendingTime(sendingTime));
         msg.setField(new TransactTime(transactTime));
-        report = sFactory.createOrderCancelReject(msg, cID, Originator.Broker);
+        report = sFactory.createOrderCancelReject(msg, cID, Originator.Broker,
+                                                  actorID);
         assertReportBaseValues(report, cID, orderID, orderStatus, origOrderID,
-                sendingTime, text, destOrderID, Originator.Broker);
+                               sendingTime, text, destOrderID,
+                               Originator.Broker, actorID);
         assertNull(report.getReportID());
         report.toString();
         

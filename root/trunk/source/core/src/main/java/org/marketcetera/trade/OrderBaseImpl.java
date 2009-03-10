@@ -4,13 +4,15 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.HashMap;
 
 /* $License$ */
 /**
- * Base class for orders. 
+ * Base class for orders. This class is public for the sake of
+ * JAXB and is not intended for general use.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -24,7 +26,11 @@ import java.util.HashMap;
  * https://jaxb.dev.java.net/issues/show_bug.cgi?id=596
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-class OrderBaseImpl implements OrderBase {
+@XmlSeeAlso
+    ({OrderCancelImpl.class,
+      OrderReplaceImpl.class,
+      OrderSingleImpl.class})
+public class OrderBaseImpl implements OrderBase {
     @Override
     public OrderID getOrderID() {
         return mOrderID;

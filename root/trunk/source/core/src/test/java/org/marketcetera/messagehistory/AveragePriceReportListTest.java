@@ -167,6 +167,6 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
     private ExecutionReport createReport(Message message)
             throws MessageCreationException {
         return Factory.getInstance().createExecutionReport(message,
-                new BrokerID("null"), Originator.Server);
+                new BrokerID("null"), Originator.Server, null);
     }
 }
