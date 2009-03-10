@@ -49,8 +49,9 @@ public class BrokerManagerTest {
 		assertEquals(2, fixture.getAvailableBrokers().size());
 		assertSame(status1, fixture.getAvailableBrokers().get(0));
 		assertSame(status3, fixture.getAvailableBrokers().get(1));		
-		status2.setLoggedOn(true);
-		status3.setLoggedOn(false);
+		status2 = new BrokerStatus("2", new BrokerID("2"), true);
+		status3 = new BrokerStatus("3", new BrokerID("3"), false);
+		statuses =  new BrokersStatus(Arrays.asList(status1, status2, status3));
 		fixture.setBrokersStatus(statuses);
 		assertEquals(2, fixture.getAvailableBrokers().size());
 		assertSame(status1, fixture.getAvailableBrokers().get(0));
