@@ -38,6 +38,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -47,6 +48,7 @@ import org.marketcetera.event.LogEventTest;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
+import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.module.CopierModuleFactory;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -54,7 +56,6 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
 import org.marketcetera.trade.BrokerID;
@@ -1474,7 +1475,7 @@ public abstract class LanguageTestBase
         MockClient.getBrokersFails = false;
         doBrokerTest(brokers.getBrokers().toArray(new BrokerStatus[brokers.getBrokers().size()]));
         // succeeds and returns an empty list
-        brokers.setBrokers(new ArrayList<BrokerStatus>());
+        brokers=new BrokersStatus(new ArrayList<BrokerStatus>());
         doBrokerTest(new BrokerStatus[0]);
     }
     /**

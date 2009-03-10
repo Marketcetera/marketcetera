@@ -104,17 +104,17 @@ public abstract class CEPTestBase extends ModuleTestBase {
         // order cancel reject
         Message rej1 = FIXVersion.FIX42.getMessageFactory().newOrderCancelReject();
         rej1.setField(new Text("GOOG"));
-        ocr1 = sFactory.createOrderCancelReject(rej1, new BrokerID("dest"), Originator.Server);
+        ocr1 = sFactory.createOrderCancelReject(rej1, new BrokerID("dest"), Originator.Server, null);
         Message rej2 = FIXVersion.FIX42.getMessageFactory().newOrderCancelReject();
         rej2.setField(new Text("CSCO"));
-        ocr2 = sFactory.createOrderCancelReject(rej2, new BrokerID("dest"), Originator.Server);
+        ocr2 = sFactory.createOrderCancelReject(rej2, new BrokerID("dest"), Originator.Server, null);
         // execution report
         Message er1_fix = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderid", "clOrdID", "execID", 'a', 'b', BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IFLI"), "acct");
-        er1 = sFactory.createExecutionReport(er1_fix, new BrokerID("dest1"), Originator.Server);
+        er1 = sFactory.createExecutionReport(er1_fix, new BrokerID("dest1"), Originator.Server, null);
         Message er2_fix = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderid", "clOrdID", "execID", 'a', 'b', BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("GOOG"), "acct");
-        er2 = sFactory.createExecutionReport(er2_fix, new BrokerID("dest2"), Originator.Server);
+        er2 = sFactory.createExecutionReport(er2_fix, new BrokerID("dest2"), Originator.Server, null);
         // map
         map1 = new HashMap<Integer, String>();
         map1.put(0, "bob");

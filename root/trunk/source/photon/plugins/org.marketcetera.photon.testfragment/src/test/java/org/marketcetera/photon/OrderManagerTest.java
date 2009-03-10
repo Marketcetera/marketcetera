@@ -90,7 +90,7 @@ public class OrderManagerTest extends TestCase {
 		for (Message aMessage : messages) {
 			photonController.receiveExecutionReport(
 					Factory.getInstance().createExecutionReport(aMessage, 
-							new BrokerID("bro"), Originator.Server));
+							new BrokerID("bro"), Originator.Server, null));
 		}
 		EventList<ReportHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(2, historyList.size());
@@ -133,7 +133,7 @@ public class OrderManagerTest extends TestCase {
 		Message message = getTestableExecutionReport();
 		photonController.receiveExecutionReport(Factory.getInstance().
 				createExecutionReport(message,new BrokerID("bro"), 
-						Originator.Server)); 
+						Originator.Server, null)); 
 		EventList<ReportHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(1, historyList.size());
 		assertEquals(ReportHolder.class, historyList.get(0).getClass());
@@ -241,7 +241,7 @@ public class OrderManagerTest extends TestCase {
 	public static ExecutionReport createReport(Message message)
 			throws MessageCreationException {
 		return Factory.getInstance().createExecutionReport(message,
-				new BrokerID("null"), Originator.Server);
+				new BrokerID("null"), Originator.Server, null);
 	}
 
 }
