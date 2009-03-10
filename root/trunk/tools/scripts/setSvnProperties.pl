@@ -58,6 +58,10 @@ my(%patternsCustom)=(
 	  => ['profiles.xml'],
 	'public/source/photon/plugins/com.swtworkbench.community.xswt'
 	  => ['bin'],
+	'public/source/photon/plugins/org.marketcetera.photon.commons.ui'
+	  => ['bin'],
+	'public/source/photon/plugins/org.marketcetera.photon.commons.ui.tests'
+	  => ['bin'],
 	'public/source/photon/features/org.marketcetera.photon.feature'
 	  => ['plugin_customization.ini'],
 	'public/source/photon/plugins/org.marketcetera.core.tests'
