@@ -24,6 +24,7 @@ public interface Messages {
      */
     static final I18NLoggerProxy LOGGER =
             new I18NLoggerProxy(PROVIDER);
+
     static final I18NMessage0P PROVIDER_DESCRIPTION =
             new I18NMessage0P(LOGGER, "provider_description");   //$NON-NLS-1$
     static final I18NMessage2P UNSUPPORTED_DATA_TYPE =
@@ -38,10 +39,7 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "client_already_initialized");   //$NON-NLS-1$
     static final I18NMessage0P CLIENT_NOT_INITIALIZED =
             new I18NMessage0P(LOGGER, "client_not_initialized");   //$NON-NLS-1$
-    static final I18NMessage1P UNEXPECTED_MESSAGE_TO_SEND =
-            new I18NMessage1P(LOGGER, "unexpected_message_to_send");   //$NON-NLS-1$
-    static final I18NMessage1P UNEXPECTED_MESSAGE_RECEIVED =
-            new I18NMessage1P(LOGGER, "unexpected_message_received");   //$NON-NLS-1$
+
     static final I18NMessage1P ERROR_SEND_MESSAGE =
             new I18NMessage1P(LOGGER, "error_send_message");   //$NON-NLS-1$
     static final I18NMessage0P ERROR_REMOTE_EXECUTION =
@@ -54,6 +52,8 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "connect_error_no_hostname");   //$NON-NLS-1$
     static final I18NMessage1P CONNECT_ERROR_INVALID_PORT =
             new I18NMessage1P(LOGGER, "connect_error_invalid_port");   //$NON-NLS-1$
+    static final I18NMessage0P CONNECT_ERROR_NO_CONFIGURATION=
+            new I18NMessage0P(LOGGER, "connect_error_no_configuration"); //$NON-NLS-1$
     static final I18NMessage0P NOT_CONNECTED_TO_SERVER =
             new I18NMessage0P(LOGGER, "not_connected_to_server");   //$NON-NLS-1$
     static final I18NMessage0P ERROR_RECEIVING_JMS_MESSAGE =
@@ -90,11 +90,6 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "validation_suggest_order");   //$NON-NLS-1$
     static final I18NMessage0P UNABLE_FETCH_ID_SERVER =
             new I18NMessage0P(LOGGER, "unable_fetch_id_server");   //$NON-NLS-1$
-    static final I18NMessage1P ERROR_CONVERTING_MESSAGE_TO_OBJECT =
-            new I18NMessage1P(LOGGER, "error_converting_message_to_object");   //$NON-NLS-1$
-    static final I18NMessage1P ERROR_CONVERTING_OBJECT_TO_MESSAGE =
-            new I18NMessage1P(LOGGER, "error_converting_object_to_message");   //$NON-NLS-1$
-
 
     static final I18NMessage1P LOG_ERROR_RECEIVE_EXEC_REPORT =
             new I18NMessage1P(LOGGER, "log_error_receive_exec_report");   //$NON-NLS-1$

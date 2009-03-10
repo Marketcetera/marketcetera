@@ -15,7 +15,7 @@ import java.util.Date;
  * @since 1.0.0
  */
 @MXBean(true)
-@DisplayName("Management interface for the Client Module instance")  //$NON-NLS-1$
+@DisplayName("Management interface for the Client Module instance")
 @ClassVersion("$Id$") //$NON-NLS-1$
 public interface ClientModuleMXBean {
     /**
@@ -23,7 +23,7 @@ public interface ClientModuleMXBean {
      *
      * @throws RuntimeException if there were errors while reconnecting.
      */
-    @DisplayName("Reconnects the client module to the server")  //$NON-NLS-1$
+    @DisplayName("Reconnects the client module to the server")
     public void reconnect() throws RuntimeException;
 
     /**
@@ -33,7 +33,7 @@ public interface ClientModuleMXBean {
      * 
      * @throws RuntimeException if there errors fetching the parameters.
      */
-    @DisplayName("Parameters used by the client to connect to the server")  //$NON-NLS-1$
+    @DisplayName("Parameters used by the client to connect to the server")
     public ClientParameters getParameters() throws RuntimeException;
 
     /**
@@ -43,6 +43,6 @@ public interface ClientModuleMXBean {
      *
      * @throws RuntimeException if the client was not initialized.
      */
-    @DisplayName("The last time this module was connected to the server")  //$NON-NLS-1$
+    @DisplayName("The last time this module was connected to the server")
     public Date getLastConnectTime() throws RuntimeException;
 }

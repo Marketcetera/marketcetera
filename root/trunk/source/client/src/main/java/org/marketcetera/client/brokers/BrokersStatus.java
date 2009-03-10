@@ -1,8 +1,9 @@
 package org.marketcetera.client.brokers;
 
 import java.util.List;
-import java.util.Collections;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -16,13 +17,15 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 @ClassVersion("$Id$")
 public class BrokersStatus
 {
 
     // INSTANCE DATA.
 
-    private List<BrokerStatus> mBrokers;
+    private final List<BrokerStatus> mBrokers;
 
 
     // CONSTRUCTORS.
@@ -37,7 +40,7 @@ public class BrokersStatus
     public BrokersStatus
         (List<BrokerStatus> brokers)
     {
-        setBrokers(brokers);
+        mBrokers=brokers;
     }
 
     /**
@@ -45,23 +48,13 @@ public class BrokersStatus
      * constructor is intended for use by JAXB.
      */
 
-    protected BrokersStatus() {}
+    protected BrokersStatus()
+    {
+        mBrokers=null;
+    }
 
 
     // INSTANCE METHODS.
-
-    /**
-     * Sets the status of the receiver's brokers to the given
-     * one.
-     *
-     * @param brokers The status.
-     */
-
-    public void setBrokers
-        (List<BrokerStatus> brokers)
-    {
-        mBrokers=Collections.unmodifiableList(brokers);
-    }
 
     /**
      * Returns the status of the receiver's brokers. The returned

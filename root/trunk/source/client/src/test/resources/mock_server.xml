@@ -1,75 +1,123 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
 
-  <bean id="systemPropertiesSetter"
-        class="org.marketcetera.util.spring.SystemPropertiesSetter">
-    <property name="map">
+<!--
+  - Mock server configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!--
+    - Sets Java system properties.
+    -->
+
+  <bean
+   id="metc_system_properties_setter"
+   class="org.marketcetera.util.spring.SystemPropertiesSetter">
+    <property
+     name="map">
       <map>
-        <entry key="java.security.auth.login.config"
-               value="src/test/sample_data/conf/test_login.config"/>
+        <!--
+          - The name of the JAAS configuration file containing the JAAS
+          - 'test-amq-domain'.
+          -->
+        <entry
+         key="java.security.auth.login.config"
+         value="src/test/sample_data/conf/test_login.config"/>
       </map>
     </property>
   </bean>
-  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
-    <property name="config" value="classpath:mock_broker.xml"/>
-  </bean>
-  <bean id="requestQueue" class="org.apache.activemq.command.ActiveMQQueue">
-    <constructor-arg value="ors-commands"/>
-  </bean>
 
-  <bean id="replyTopic" class="org.apache.activemq.command.ActiveMQTopic">
-    <constructor-arg value="ors-messages"/>
-  </bean>
-
-  <bean id="connectionFactory"
-        class="org.apache.activemq.ActiveMQConnectionFactory">
-    <property name="brokerURL" value="tcp://localhost:61616"/>
-    <property name="userName" value="whatever"/>
-    <property name="password" value="whatever"/>
-  </bean>
-
-  <bean id="messageHandler" class="org.marketcetera.client.MockMessageHandler"/>
-
-  <bean id="listener"
-        class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
-    <property name="delegate" ref="messageHandler"/>
-    <property name="defaultResponseDestination" ref="replyTopic"/>
-    <property name="messageConverter">
-      <bean class="org.marketcetera.client.JMSXMLMessageConverter"/>
-    </property>
-  </bean>
-
-  <!-- note that this needs to use the non-pooled connection factory -->
-  <bean id="container"
-        class="org.springframework.jms.listener.SimpleMessageListenerContainer" depends-on="broker">
-    <property name="connectionFactory" ref="connectionFactory"/>
-    <property name="messageListener" ref="listener"/>
-    <property name="destination" ref="requestQueue"/>
-  </bean>
-
-  <bean id="pooledConnectionFactory"
-        class="org.apache.activemq.pool.PooledConnectionFactory">
-    <property name="connectionFactory" ref="connectionFactory"/>
-  </bean>
+  <!--
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/broker/BrokerService.html' for a complete list of options.
+    -->
 
   <bean
-   id="statusSender"
-   class="org.springframework.jms.core.JmsTemplate">
+   id="metc_jms_broker"
+   class="org.apache.activemq.broker.BrokerService"
+   init-method="start"
+   destroy-method="stop"
+   depends-on="metc_system_properties_setter">
+    <property
+     name="brokerName"
+     value="TEST_BROKER"/>
+    <property
+     name="persistent"
+     value="false"/>
+    <property
+     name="useShutdownHook"
+     value="false"/>
+    <property
+     name="useJmx"
+     value="true"/>
+    <property
+     name="transportConnectorURIs">
+      <list>
+        <value>tcp://localhost:61616?wireFormat.maxInactivityDurationInitalDelay=30000</value>
+        <value>stomp://localhost:61613</value>
+      </list>
+    </property>
+    <property
+     name="plugins">
+      <list>
+        <bean
+         class="org.apache.activemq.security.JaasAuthenticationPlugin">
+          <property
+           name="configuration"
+           value="test-amq-domain"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <!--
+    - The connection factory for incoming connections. Note that ActiveMQ
+    - pooled factories only support outgoing connections, hence a simple
+    - factory is used for incoming ones.
+    -
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/spring/ActiveMQConnectionFactory.html' for a complete list
+    - of options.
+    -->
+
+  <bean
+   id="metc_connection_factory_in"
+   class="org.apache.activemq.ActiveMQConnectionFactory"
+   depends-on="metc_jms_broker">
+    <property
+     name="brokerURL"
+     value="tcp://localhost:61616?wireFormat.maxInactivityDurationInitalDelay=30000"/>
+    <property
+     name="userName"
+     value="whatever"/>
+    <property
+     name="password"
+     value="whatever"/>
+  </bean>
+
+  <!--
+    - The connection factory for outgoing connections.
+    -
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/pool/PooledConnectionFactory.html' for a complete list
+    - of options.
+    -->
+
+  <bean
+   id="metc_connection_factory_out"
+   class="org.apache.activemq.pool.PooledConnectionFactory">
     <property
      name="connectionFactory"
-     ref="pooledConnectionFactory"/>
-    <property
-     name="defaultDestination">
-      <bean
-       class="org.apache.activemq.command.ActiveMQTopic">
-        <constructor-arg
-         value="ors-broker-status"/>
-      </bean>
-    </property>
+     ref="metc_connection_factory_in"/>
   </bean>
 </beans>

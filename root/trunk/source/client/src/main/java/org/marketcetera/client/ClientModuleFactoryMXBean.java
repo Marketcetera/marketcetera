@@ -11,15 +11,15 @@ import org.marketcetera.module.DisplayName;
  * @version $Id$
  * @since 1.0.0
  */
-@DisplayName("Management Interface for Client Module Provider")  //$NON-NLS-1$
-@ClassVersion("$Id$") //$NON-NLS-1$
+@DisplayName("Management Interface for Client Module Provider")
+@ClassVersion("$Id$")
 public interface ClientModuleFactoryMXBean {
     /**
      * The Server URL to connect to.
      *
      * @return the Server URL
      */
-    @DisplayName("The Server URL")  //$NON-NLS-1$
+    @DisplayName("The Server URL")
     String getURL();
 
     /**
@@ -27,9 +27,9 @@ public interface ClientModuleFactoryMXBean {
      *
      * @param inURL the Server URL
      */
-    @DisplayName("The Server URL")  //$NON-NLS-1$
+    @DisplayName("The Server URL")
     void setURL(
-            @DisplayName("The Server URL")  //$NON-NLS-1$
+            @DisplayName("The Server URL")
             String inURL);
 
     /**
@@ -37,7 +37,7 @@ public interface ClientModuleFactoryMXBean {
      *
      * @return the username.
      */
-    @DisplayName("The Username for connecting to the server")  //$NON-NLS-1$
+    @DisplayName("The Username for connecting to the server")
     String getUsername();
 
     /**
@@ -45,9 +45,9 @@ public interface ClientModuleFactoryMXBean {
      *
      * @param inUsername the username.
      */
-    @DisplayName("The Username for connecting to the server")  //$NON-NLS-1$
+    @DisplayName("The Username for connecting to the server")
     void setUsername(
-            @DisplayName("The Username for connecting to the server")  //$NON-NLS-1$
+            @DisplayName("The Username for connecting to the server")
             String inUsername);
 
     /**
@@ -55,7 +55,7 @@ public interface ClientModuleFactoryMXBean {
      *
      * @param inPassword the password.
      */
-    @DisplayName("The Password for connecting to the server")  //$NON-NLS-1$
+    @DisplayName("The Password for connecting to the server")
     void setPassword(String inPassword);
 
     /**
@@ -63,7 +63,7 @@ public interface ClientModuleFactoryMXBean {
      *
      * @return the server port number.
      */
-    @DisplayName("The server port number")   //$NON-NLS-1$
+    @DisplayName("The server port number")
     public int getPort();
 
     /**
@@ -71,9 +71,9 @@ public interface ClientModuleFactoryMXBean {
      *
      * @param inPort the server port number.
      */
-    @DisplayName("The server port number")   //$NON-NLS-1$
+    @DisplayName("The server port number")
     public void setPort(
-            @DisplayName("The server port number")   //$NON-NLS-1$
+            @DisplayName("The server port number")
             int inPort);
 
     /**
@@ -81,7 +81,7 @@ public interface ClientModuleFactoryMXBean {
      *
      * @return the server hostname.
      */
-    @DisplayName("The server host name")   //$NON-NLS-1$
+    @DisplayName("The server host name")
     public String getHostname();
 
     /**
@@ -89,9 +89,9 @@ public interface ClientModuleFactoryMXBean {
      *
      * @param inHostname the server hostname.
      */
-    @DisplayName("The server host name")  //$NON-NLS-1$
+    @DisplayName("The server host name")
     public void setHostname(
-            @DisplayName("The server host name")   //$NON-NLS-1$
+            @DisplayName("The server host name")
             String inHostname);
 
     /**
@@ -100,7 +100,7 @@ public interface ClientModuleFactoryMXBean {
      *
      * @return the orderID prefix.
      */
-    @DisplayName("The order ID prefix")  //$NON-NLS-1$
+    @DisplayName("The order ID prefix")
     String getIDPrefix();
 
     /**
@@ -109,8 +109,8 @@ public interface ClientModuleFactoryMXBean {
      *
      * @param inIDPrefix the orderID prefix.
      */
-    @DisplayName("The order ID prefix")  //$NON-NLS-1$
+    @DisplayName("The order ID prefix")
     void setIDPrefix(
-            @DisplayName("The order ID prefix")  //$NON-NLS-1$
+            @DisplayName("The order ID prefix")
             String inIDPrefix);
 }

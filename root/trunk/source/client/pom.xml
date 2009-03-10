@@ -82,6 +82,7 @@
 
   <build>
     <plugins>
+
       <!-- Place tests into a jar for use during testing of other packages. -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
@@ -135,7 +136,7 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.marketcetera.client.SchemaGen</mainClass>
+              <mainClass>org.marketcetera.client.jms.SchemaGen</mainClass>
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>

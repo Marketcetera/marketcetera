@@ -17,7 +17,7 @@ import org.marketcetera.core.NoMoreIDsException;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ClientIDFactory implements IDFactory {
     /**
      * Creates an instance.

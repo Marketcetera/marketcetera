@@ -3,6 +3,7 @@ package org.marketcetera.client;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.*;
 import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.client.users.UserInfo;
 
 import java.util.Date;
 import java.util.Map;
@@ -281,6 +282,24 @@ public interface Client {
      */
 
     BrokersStatus getBrokersStatus() throws ConnectionException;
+
+    /**
+     * Returns the information of the user with the given ID. A local
+     * cache can be used to avoid frequent server roundtrips, but it
+     * may return stale information. The cache is updated whether or
+     * not it was used for retrieval.
+     *
+     * @param id The user ID.
+     * @param useCache True if the local cache should be used.
+     *
+     * @return The information.
+     *
+     * @throws ConnectionException Thrown if the operation cannot be
+     * completed.
+     */
+
+    UserInfo getUserInfo(UserID id,
+                         boolean useCache) throws ConnectionException;
 
     /**
      * Returns true if the supplied user name, password match the

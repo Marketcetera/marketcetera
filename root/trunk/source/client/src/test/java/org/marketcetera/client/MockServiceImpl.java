@@ -5,10 +5,12 @@ import java.util.*;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.RemoteCaller;
@@ -29,7 +31,7 @@ import org.marketcetera.util.ws.wrappers.MapWrapper;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MockServiceImpl
     extends ServiceBaseImpl<Object>
     implements Service
@@ -57,6 +59,15 @@ public class MockServiceImpl
         list.add(new BrokerStatus("N1",new BrokerID("ID1"),true));
         list.add(new BrokerStatus("N2",new BrokerID("ID2"),false));
         return new BrokersStatus(list);
+    }
+
+    private UserInfo getUserInfoImpl
+        (UserID id)
+    {
+        if (id==null) {
+            throw new NullPointerException();
+        }
+        return new UserInfo("bob",id,sActive,false);
     }
 
     private ReportBaseImpl[] getReportsSinceImpl
@@ -100,6 +111,23 @@ public class MockServiceImpl
                  SessionHolder<Object> sessionHolder)
             {
                 return getBrokersStatusImpl();
+            }}).execute(context);
+    }
+
+    @Override
+    public UserInfo getUserInfo
+        (ClientContext context,
+         final UserID id)
+        throws RemoteException
+    {
+        return (new RemoteCaller<Object,UserInfo>
+                (getSessionManager()) {
+            @Override
+            protected UserInfo call
+                (ClientContext context,
+                 SessionHolder<Object> sessionHolder)
+            {
+                return getUserInfoImpl(id);
             }}).execute(context);
     }
 
@@ -177,6 +205,7 @@ public class MockServiceImpl
     // Mocking interface.
 
     static ReportBaseImpl[] sReports = null;
+    static boolean sActive = true;
     static final Map<MSymbol, BigDecimal> POSITIONS;
     static {
         Map<MSymbol, BigDecimal> positions = new HashMap<MSymbol, BigDecimal>();
