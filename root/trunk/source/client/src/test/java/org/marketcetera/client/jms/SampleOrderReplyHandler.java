@@ -1,9 +1,13 @@
 package org.marketcetera.client.jms;
 
-import java.math.BigDecimal;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.MessageCreationException;;
+import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
+import quickfix.Message;
+import quickfix.field.LastPx;
+import quickfix.field.MsgType;
 
 /**
  * @author tlerios@marketcetera.com
@@ -23,9 +27,15 @@ public class SampleOrderReplyHandler
     TradeMessage create
         (int i)
     {
-        OrderSingle msg=Factory.getInstance().createOrderSingle();
-        msg.setPrice(new BigDecimal(i));
-        return msg;
+        quickfix.fix42.ExecutionReport msg=
+            new quickfix.fix42.ExecutionReport();
+        msg.setField(new LastPx(i));
+        try {
+            return Factory.getInstance().createExecutionReport
+                (msg,null,Originator.Server,null);
+        } catch (MessageCreationException ex) {
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     @Override
@@ -33,13 +43,13 @@ public class SampleOrderReplyHandler
         (int i,
          TradeMessage msg)
     {
-        return (i==((OrderSingle)msg).getPrice().intValue());
+        return (i==((ExecutionReport)msg).getLastPrice().intValue());
     }
 
     @Override
     protected TradeMessage getReply
         (TradeMessage msg)
     {
-        return create(((OrderSingle)msg).getPrice().intValue()+1);
+        return create(((ExecutionReport)msg).getLastPrice().intValue()+1);
     }
 }
