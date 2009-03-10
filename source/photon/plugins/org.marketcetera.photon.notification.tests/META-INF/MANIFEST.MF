@@ -6,6 +6,6 @@ Bundle-Version: 1.2.0
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon.notification;bundle-version="1.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit4;bundle-version="4.3.1",
- org.marketcetera.photon.test;bundle-version="1.2.0"
+Require-Bundle: org.junit4,
+ org.marketcetera.photon.test
 Bundle-ClassPath: .

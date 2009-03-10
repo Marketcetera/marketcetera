@@ -1,5 +1,7 @@
 package org.marketcetera.photon.notification;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -12,6 +14,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleConstants;
+import org.eclipse.ui.console.IConsoleListener;
 import org.eclipse.ui.console.IConsoleView;
 import org.junit.After;
 import org.junit.Before;
@@ -60,6 +63,23 @@ public class NotificationConsoleControllerTest {
 	 */
 	@Test
 	public void testOpenConsole() {
+		final IConsole[] console = new IConsole[1];
+		IConsoleListener listener = new IConsoleListener() {
+		
+			@Override
+			public void consolesAdded(IConsole[] consoles) {
+				assertThat(consoles.length, is(1));
+				console[0] = consoles[0];
+			}
+		
+			@Override
+			public void consolesRemoved(IConsole[] consoles) {
+				assertThat(consoles.length, is(1));
+				assertThat(consoles[0], sameInstance(console[0]));
+				console[0] = null;
+			}
+		};
+		ConsolePlugin.getDefault().getConsoleManager().addConsoleListener(listener);
 		mFixture.openConsole();
 		verify(mMockNotificationManager).subscribe((ISubscriber) anyObject());
 		SWTTestUtil.conditionalDelayUnchecked(10, TimeUnit.SECONDS,
@@ -72,8 +92,10 @@ public class NotificationConsoleControllerTest {
 										.equals(view.getConsole().getName());
 					}
 				});
+		assertNotNull(console[0]);
 		ConsolePlugin.getDefault().getConsoleManager().removeConsoles(
-				new IConsole[] { getConsoleView().getConsole() });
+				new IConsole[] { console[0] });
+		assertNull(console[0]);
 		verify(mMockNotificationManager).unsubscribe((ISubscriber) anyObject());
 	}
 

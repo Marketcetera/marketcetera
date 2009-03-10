@@ -124,6 +124,10 @@ public interface Messages
                                                                                   "cancel_all_open_orders_action"); //$NON-NLS-1$
     public static I18NMessage0P CANCEL_ALL_OPEN_ORDERS_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
                                                                                               "cancel_all_open_orders_action_description"); //$NON-NLS-1$
+	public static I18NMessage0P CANCEL_ALL_OPEN_ORDERS_ACTION_CONFIRMATION = new I18NMessage0P(
+			LOGGER, "cancel_all_open_orders_action.confirmation"); //$NON-NLS-1$
+	public static I18NMessage0P CANCEL_ALL_OPEN_ORDERS_FAILED = new I18NMessage0P(
+			LOGGER, "cancel_all_open_orders_action.failed"); //$NON-NLS-1$
     public static I18NMessage0P MISSING_CLORDID = new I18NMessage0P(LOGGER,
                                                                     "missing_clordid"); //$NON-NLS-1$
     public static I18NMessage0P DISCONNECT_MESSAGE_SERVER = new I18NMessage0P(LOGGER,
@@ -463,6 +467,8 @@ public interface Messages
 			LOGGER, "google_finance_lookup.invalid_type"); //$NON-NLS-1$
     public static I18NMessage1P PHOTON_CONTROLLER_SENDING_MESSAGE = new I18NMessage1P(
 			LOGGER, "photon_controller.sending_message"); //$NON-NLS-1$
+	public static I18NMessage0P PHOTON_CONTROLLER_CANCEL_ALL_ORDERS_TASK = new I18NMessage0P(
+			LOGGER, "photon_controller_cancel_all_orders_task"); //$NON-NLS-1$
     public static I18NMessage0P FIX_MESSAGE_VIEW_FILTER_LABEL = new I18NMessage0P(
 			LOGGER, "fix_message_view.filter.label"); //$NON-NLS-1$
     public static I18NMessage0P TIME_OF_DAY_FIELD_EDITOR_ENABLE_BUTTON_LABEL = new I18NMessage0P(

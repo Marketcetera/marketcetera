@@ -1,7 +1,7 @@
 package org.marketcetera.messagehistory;
 
 import org.marketcetera.core.ClassVersion;
-import quickfix.Message;
+import org.marketcetera.trade.ReportBase;
 
 /**
  * Visitor Patter - visit all the messages and perfrom an operation on them
@@ -9,13 +9,13 @@ import quickfix.Message;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface MessageVisitor {
 
     /** Visits each Execution Report that we have gathered for all the
      * outstanding open orders
      * @param message
      */
-    public void visitOpenOrderExecutionReports(Message message);
+    public void visitOpenOrderExecutionReports(ReportBase report);
 
 }

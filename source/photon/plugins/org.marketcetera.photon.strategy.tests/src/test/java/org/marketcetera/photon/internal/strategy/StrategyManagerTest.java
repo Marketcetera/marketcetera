@@ -100,7 +100,6 @@ public class StrategyManagerTest {
 			
 				@Override
 				public Boolean call() throws Exception {
-					System.out.println(bean.getStatus());
 					return bean.getStatus().equals("STOPPED");
 				}
 			});

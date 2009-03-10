@@ -26,6 +26,7 @@ import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleNotFoundException;
+import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.URNUtils;
@@ -170,14 +171,15 @@ class RemoteAgentManager {
 							.instanceName());
 
 			// assert the factory gives the urn we expect
-			if (!mAgent.equals(urn)) {
+			if (!mAgentURN.equals(urn)) {
 				throw new IllegalStateException(urn.toString());
 			}
 			// assert that the module indeed auto-started, need to use try catch since
 			// we want a runtime exception no matter what goes wrong in the validation
 			try {
-				if (mModuleManager.getModuleInfo(mAgentURN).getState().isStarted()) {
-					throw new IllegalStateException();
+				ModuleState state = mModuleManager.getModuleInfo(mAgentURN).getState();
+				if (!state.isStarted()) {
+					throw new IllegalStateException(state.toString());
 				}
 			} catch (Exception e) {
 				throw new IllegalStateException(e);
