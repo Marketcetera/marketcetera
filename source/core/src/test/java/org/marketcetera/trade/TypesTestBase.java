@@ -226,6 +226,7 @@ public class TypesTestBase {
         assertEquals(inReport1.getBrokerOrderID(),
                 inReport2.getBrokerOrderID());
         assertEquals(inReport1.getOriginator(), inReport2.getOriginator());
+        assertEquals(inReport1.getActorID(), inReport2.getActorID());
     }
 
     /**
@@ -432,7 +433,8 @@ public class TypesTestBase {
                                                  Date inSendingTime,
                                                  String inText,
                                                  String inBrokerOrderID,
-                                                 Originator inOriginator) {
+                                                 Originator inOriginator,
+                                                 UserID inActorID) {
         assertEquals(inBrokerID, inReport.getBrokerID());
         assertEquals(inOrderID, inReport.getOrderID());
         assertEquals(inOrderStatus, inReport.getOrderStatus());
@@ -441,6 +443,7 @@ public class TypesTestBase {
         assertEquals(inText, inReport.getText());
         assertEquals(inBrokerOrderID, inReport.getBrokerOrderID());
         assertEquals(inOriginator, inReport.getOriginator());
+        assertEquals(inActorID, inReport.getActorID());
     }
 
     protected static void assertExecReportValues(ExecutionReport inReport,

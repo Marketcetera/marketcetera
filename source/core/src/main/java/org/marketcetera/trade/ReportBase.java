@@ -80,4 +80,11 @@ public interface ReportBase extends Serializable {
      * @return the originator of this message.
      */
     Originator getOriginator();
+
+    /**
+     * The ID of the actor user of this message.
+     *
+     * @return the ID of the actor user of this message.
+     */
+    UserID getActorID();
 }

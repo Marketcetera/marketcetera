@@ -48,7 +48,7 @@ public class OrderReplaceTest extends TypesTestBase {
         Message report = createEmptyExecReport();
         order = sFactory.createOrderReplace(
                 sFactory.createExecutionReport(report, null,
-                        Originator.Server));
+                        Originator.Server, null));
         assertOrderReplace(order, NOT_NULL, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null);
         //Verify toString() doesn't fail
@@ -72,7 +72,7 @@ public class OrderReplaceTest extends TypesTestBase {
                 OrderCapacity.Agency, PositionEffect.Open);
         //Create the order from the report.
         order = sFactory.createOrderReplace(
-                sFactory.createExecutionReport(report, cID, Originator.Server));
+                sFactory.createExecutionReport(report, cID, Originator.Server, null));
         assertOrderReplace(order, NOT_NULL, new OrderID(orderID),
                 destOrderID, OrderType.Limit, side,
                 orderQty, lastPrice,
@@ -83,7 +83,7 @@ public class OrderReplaceTest extends TypesTestBase {
         
         assertNotSame(order, sFactory.createOrderReplace(
                 sFactory.createExecutionReport(report, cID,
-                        Originator.Server)));
+                        Originator.Server, null)));
         
         //Test a replace for a partial fill
         //Create an exec report.
@@ -97,7 +97,7 @@ public class OrderReplaceTest extends TypesTestBase {
         
         //Create the order from the report.
         order = sFactory.createOrderReplace(
-                sFactory.createExecutionReport(report, cID, Originator.Server));
+                sFactory.createExecutionReport(report, cID, Originator.Server, null));
         assertOrderReplace(order, NOT_NULL, new OrderID(orderID),
                 destOrderID, OrderType.Limit, side,
                 orderQty, lastPrice,
@@ -108,7 +108,7 @@ public class OrderReplaceTest extends TypesTestBase {
         
         assertNotSame(order, sFactory.createOrderReplace(
                 sFactory.createExecutionReport(report, cID,
-                        Originator.Server)));
+                        Originator.Server, null)));
     }
 
     /**
@@ -122,7 +122,7 @@ public class OrderReplaceTest extends TypesTestBase {
         //Test with non-null exec report
         OrderReplace order = sFactory.createOrderReplace(
                 sFactory.createExecutionReport(createEmptyExecReport(), null,
-                        Originator.Server));
+                        Originator.Server, null));
         checkSetters(order);
 
         //Test with null exec report

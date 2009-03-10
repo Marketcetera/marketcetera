@@ -181,6 +181,9 @@ public abstract class Factory {
      * message was received.
      *
      * @param inOriginator the originator of this message. Cannot be null.
+     *
+     * @param inActorID the ID of the actor user of this
+     * message.
      * 
      * @return An execution report instance based on the supplied
      * FIX Message. The returned type will implement
@@ -189,10 +192,12 @@ public abstract class Factory {
      * @throws MessageCreationException if there were errors wrapping
      * the supplied FIX Message.
      */
-    public abstract ExecutionReport createExecutionReport(
-            Message inMessage, BrokerID inBrokerID,
-            Originator inOriginator)
-            throws MessageCreationException;
+    public abstract ExecutionReport createExecutionReport
+        (Message inMessage,
+         BrokerID inBrokerID,
+         Originator inOriginator,
+         UserID inActorID)
+        throws MessageCreationException;
     /**
      * Creates an order cancel reject message based on the supplied
      * order cancel reject FIX Message.
@@ -203,6 +208,9 @@ public abstract class Factory {
      * message was received.
      *
      * @param inOriginator the originator of this message. Cannot be null.
+     *
+     * @param inActorID the ID of the actor user of this
+     * message.
      * 
      * @return an order cancel reject message wrapping the supplied
      * FIX Message. The returned type will implement
@@ -211,9 +219,12 @@ public abstract class Factory {
      * @throws MessageCreationException if there were errors wrapping the
      * supplied FIX Message.
      */
-    public abstract OrderCancelReject createOrderCancelReject(
-            Message inMessage, BrokerID inBrokerID, Originator inOriginator)
-            throws MessageCreationException;
+    public abstract OrderCancelReject createOrderCancelReject
+        (Message inMessage,
+         BrokerID inBrokerID,
+         Originator inOriginator,
+         UserID inActorID)
+        throws MessageCreationException;
 
     /**
      * Initializes the orderID factory that should be used to assign

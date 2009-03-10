@@ -83,7 +83,9 @@ class FactoryImpl extends Factory {
     @Override
     public ExecutionReport createExecutionReport(
             Message inMessage,
-            BrokerID inBrokerID, Originator inOriginator)
+            BrokerID inBrokerID,
+            Originator inOriginator,
+            UserID inActorID)
             throws MessageCreationException {
         if(inMessage == null) {
             throw new NullPointerException();
@@ -93,7 +95,7 @@ class FactoryImpl extends Factory {
         }
         if(FIXMessageUtil.isExecutionReport(inMessage)) {
             return new ExecutionReportImpl(inMessage,
-                    inBrokerID, inOriginator);
+                    inBrokerID, inOriginator, inActorID);
         } else {
             throw new MessageCreationException(new I18NBoundMessage1P(
                     Messages.NOT_EXECUTION_REPORT, inMessage.toString()));
@@ -103,7 +105,9 @@ class FactoryImpl extends Factory {
     @Override
     public OrderCancelReject createOrderCancelReject(
             Message inMessage,
-            BrokerID inBrokerID, Originator inOriginator)
+            BrokerID inBrokerID,
+            Originator inOriginator,
+            UserID inActorID)
             throws MessageCreationException {
         if(inMessage == null) {
             throw new NullPointerException();
@@ -113,7 +117,7 @@ class FactoryImpl extends Factory {
         }
         if(FIXMessageUtil.isCancelReject(inMessage)) {
             return new OrderCancelRejectImpl(
-                    inMessage, inBrokerID, inOriginator);
+                    inMessage, inBrokerID, inOriginator, inActorID);
         } else {
             throw new MessageCreationException(new I18NBoundMessage1P(
                     Messages.NOT_CANCEL_REJECT, inMessage.toString()));

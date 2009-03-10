@@ -656,6 +656,8 @@ public final class FIXConverter
      * @param originator The message originator.
      * @param brokerID The ID of the broker which generated
      * the QuickFIX/J message. It may be null.
+     * @param actorID The ID of the actor user of this QuickFIX/J
+     * message.
      *
      * @return The FIX Agnostic message. It is null if conversion is
      * not available for the QuickFIX/J message type.
@@ -667,16 +669,17 @@ public final class FIXConverter
     public static TradeMessage fromQMessage
         (Message msg,
          Originator originator,
-         BrokerID brokerID)
+         BrokerID brokerID,
+         UserID actorID)
         throws MessageCreationException
     {
         if (FIXMessageUtil.isExecutionReport(msg)) {
             return Factory.getInstance().createExecutionReport
-                (msg,brokerID,originator);
+                (msg,brokerID,originator,actorID);
         }
         if (FIXMessageUtil.isCancelReject(msg)) {
             return Factory.getInstance().createOrderCancelReject
-                (msg,brokerID, originator);
+                (msg,brokerID,originator,actorID);
         }
         return null;
     }
