@@ -1,4 +1,4 @@
-package org.marketcetera.client;
+package org.marketcetera.client.jms;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

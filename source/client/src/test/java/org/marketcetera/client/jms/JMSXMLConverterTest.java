@@ -1,8 +1,10 @@
-package org.marketcetera.client;
+package org.marketcetera.client.jms;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.trade.*;
+import org.marketcetera.client.ClientTest;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -32,31 +34,43 @@ public class JMSXMLConverterTest {
     }
     @Test
     public void verifyOrderSingle() throws Exception {
-        OrderSingle orderSingle = ClientTest.createOrderSingle();
-        orderSingle.setCustomFields(generateCustomFields());
-        TypesTestBase.assertOrderSingleEquals(orderSingle,
-                (OrderSingle) roundTrip(orderSingle));
+        OrderSingle i = ClientTest.createOrderSingle();
+        i.setCustomFields(generateCustomFields());
+        OrderEnvelope o=(OrderEnvelope)roundTrip
+            (new OrderEnvelope(i,SESSION_ID));
+        assertEquals(SESSION_ID,o.getSessionId());
+        TypesTestBase.assertOrderSingleEquals
+            (i,(OrderSingle)o.getOrder());
     }
 
     @Test
     public void verifyOrderCancel() throws Exception {
-        OrderCancel orderCancel = ClientTest.createOrderCancel();
-        orderCancel.setCustomFields(generateCustomFields());
-        TypesTestBase.assertOrderCancelEquals(orderCancel,
-                (OrderCancel) roundTrip(orderCancel));
+        OrderCancel i = ClientTest.createOrderCancel();
+        i.setCustomFields(generateCustomFields());
+        OrderEnvelope o=(OrderEnvelope)roundTrip
+            (new OrderEnvelope(i,SESSION_ID));
+        assertEquals(SESSION_ID,o.getSessionId());
+        TypesTestBase.assertOrderCancelEquals
+            (i,(OrderCancel)o.getOrder());
     }
     @Test
     public void verifyOrderReplace() throws Exception {
-        OrderReplace orderReplace = ClientTest.createOrderReplace();
-        orderReplace.setCustomFields(generateCustomFields());
-        TypesTestBase.assertOrderReplaceEquals(orderReplace,
-                (OrderReplace) roundTrip(orderReplace));
+        OrderReplace i = ClientTest.createOrderReplace();
+        i.setCustomFields(generateCustomFields());
+        OrderEnvelope o=(OrderEnvelope)roundTrip
+            (new OrderEnvelope(i,SESSION_ID));
+        assertEquals(SESSION_ID,o.getSessionId());
+        TypesTestBase.assertOrderReplaceEquals
+            (i,(OrderReplace)o.getOrder());
     }
     @Test
     public void verifyFIXOrder() throws Exception {
-        FIXOrder fixOrder = ClientTest.createOrderFIX();
-        TypesTestBase.assertOrderFIXEquals(fixOrder,
-                (FIXOrder) roundTrip(fixOrder));
+        FIXOrder i = ClientTest.createOrderFIX();
+        OrderEnvelope o=(OrderEnvelope)roundTrip
+            (new OrderEnvelope(i,SESSION_ID));
+        assertEquals(SESSION_ID,o.getSessionId());
+        TypesTestBase.assertOrderFIXEquals
+            (i,(FIXOrder)o.getOrder());
     }
     @Test
     public void verifyExecReport() throws Exception {
@@ -111,4 +125,5 @@ public class JMSXMLConverterTest {
     }
 
     private static JMSXMLMessageConverter sConverter;
+    private static final SessionId SESSION_ID=SessionId.generate();
 }

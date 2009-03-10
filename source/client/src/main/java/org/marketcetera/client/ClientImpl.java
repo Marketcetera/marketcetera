@@ -6,18 +6,30 @@ import org.marketcetera.util.log.*;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.tags.AppId;
+import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.trade.*;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.client.config.SpringConfig;
+import org.marketcetera.client.jms.JmsManager;
+import org.marketcetera.client.jms.JmsUtils;
+import org.marketcetera.client.jms.ReceiveOnlyHandler;
+import org.marketcetera.client.jms.OrderEnvelope;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jms.core.JmsOperations;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
+import java.util.HashMap;
 import java.math.BigDecimal;
 import java.beans.ExceptionListener;
+
+import javax.jms.JMSException;
 
 /* $License$ */
 /**
@@ -28,7 +40,7 @@ import java.beans.ExceptionListener;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-class ClientImpl implements Client {
+class ClientImpl implements Client, javax.jms.ExceptionListener {
 
     @Override
     public void sendOrder(OrderSingle inOrderSingle)
@@ -153,6 +165,32 @@ class ClientImpl implements Client {
     }
 
     @Override
+    public UserInfo getUserInfo(UserID id,
+                                boolean useCache)
+        throws ConnectionException
+    {
+        failIfClosed();
+        UserInfo result;
+        if (useCache) {
+            synchronized (mUserInfoCache) {
+                result=mUserInfoCache.get(id);
+                if (result!=null) {
+                    return result;
+                }
+            }
+        }
+        try {
+            result=mService.getUserInfo(getServiceContext(),id);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
+        }
+        synchronized (mUserInfoCache) {
+            mUserInfoCache.put(id,result);
+        }
+        return result;
+    }
+
+    @Override
     public synchronized void close() {
         internalClose();
         ClientManager.reset();
@@ -231,6 +269,23 @@ class ClientImpl implements Client {
         connect();
     }
 
+    // TradeMessage reception; public scope required by Spring.
+
+    public class TradeMessageReceiver
+        implements ReceiveOnlyHandler<TradeMessage>
+    {
+        @Override
+        public void receiveMessage
+            (TradeMessage inReport)
+        {
+            if (inReport instanceof ExecutionReport) {
+                notifyExecutionReport((ExecutionReport)inReport);
+            } else {
+                notifyCancelReject((OrderCancelReject)inReport);
+            }
+        }
+    }
+
     void notifyExecutionReport(ExecutionReport inReport) {
         SLF4JLoggerProxy.debug(TRAFFIC, "Received Exec Report:{}", inReport);  //$NON-NLS-1$
         synchronized (mReportListeners) {
@@ -261,6 +316,19 @@ class ClientImpl implements Client {
         }
     }
 
+    // ReceiveOnlyHandler<BrokerStatus>; public scope required by Spring.
+
+    public class BrokerStatusReceiver
+        implements ReceiveOnlyHandler<BrokerStatus>
+    {
+        @Override
+        public void receiveMessage
+            (BrokerStatus status)
+        {
+            notifyBrokerStatus(status);
+        }
+    }
+    
     void notifyBrokerStatus(BrokerStatus status) {
         SLF4JLoggerProxy.debug
             (TRAFFIC,"Received Broker Status:{}",status); //$NON-NLS-1$
@@ -276,6 +344,14 @@ class ClientImpl implements Client {
                 }
             }
         }
+    }
+
+    // javax.jms.ExceptionListener.
+
+    @Override
+    public void onException(JMSException e) {
+        exceptionThrown(new ConnectionException
+                        (e,Messages.ERROR_RECEIVING_JMS_MESSAGE));
     }
 
     void exceptionThrown(ConnectionException inException) {
@@ -306,17 +382,40 @@ class ClientImpl implements Client {
     private void internalClose() {
         if (mContext != null) {
             try {
-                mContext.close();
-            } catch (Exception e) {
-                SLF4JLoggerProxy.debug(this,
-                        "Error when closing connection to server", e);  //$NON-NLS-1$
-                ExceptUtils.interrupt(e);
+                mTradeMessageListener.destroy();
+            } catch (Exception ex) {
+                SLF4JLoggerProxy.debug
+                    (this,"Error when closing trade message listener",ex); //$NON-NLS-1$
+                ExceptUtils.interrupt(ex);
+            } finally {
+                try {
+                    mBrokerStatusListener.destroy();
+                } catch (Exception ex) {
+                    SLF4JLoggerProxy.debug
+                        (this,"Error when closing broker status listener",ex); //$NON-NLS-1$
+                    ExceptUtils.interrupt(ex);
+                } finally {
+                    try {
+                        mContext.close();
+                    } catch (Exception ex) {
+                        SLF4JLoggerProxy.debug
+                            (this,"Error when closing context",ex); //$NON-NLS-1$
+                        ExceptUtils.interrupt(ex);
+                    } finally {
+                        try {
+                            mServiceClient.logout();
+                        } catch (Exception ex) {
+                            SLF4JLoggerProxy.debug
+                                (this,"Error when closing web service client",ex); //$NON-NLS-1$
+                            ExceptUtils.interrupt(ex);
+                        } finally {
+                            mToServer = null;
+                        }
+                    }
+                }
             }
-        mContext = null;
-        mDelegate = null;
         }
         setContext(null);
-        setDelegate(null);
     }
 
     private void connect() throws ConnectionException {
@@ -346,16 +445,19 @@ class ClientImpl implements Client {
                     ? null
                     : String.valueOf(mParameters.getPassword()));
             parentCtx.refresh();
+
             ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
                     new String[]{
-                            "jms.xml"},  //$NON-NLS-1$
+                            "client.xml"},  //$NON-NLS-1$
                     parentCtx);
             ctx.registerShutdownHook();
-            MessagingDelegate delegate = (MessagingDelegate) ctx.getBean("delegate",  //$NON-NLS-1$
-                    MessagingDelegate.class);
-            setDelegate(delegate);
-            setContext(ctx);
             ctx.start();
+            setContext(ctx);
+            SpringConfig cfg=SpringConfig.getSingleton();
+            if (cfg==null) {
+                throw new ConnectionException
+                    (Messages.CONNECT_ERROR_NO_CONFIGURATION);
+            }
 
             mServiceClient = new org.marketcetera.util.ws.stateful.Client
                 (mParameters.getHostname(), mParameters.getPort(),
@@ -363,6 +465,20 @@ class ClientImpl implements Client {
             mServiceClient.login(mParameters.getUsername(),
                                  mParameters.getPassword());
             mService = mServiceClient.getService(Service.class);
+
+            JmsManager jmsMgr=new JmsManager
+                (cfg.getIncomingConnectionFactory(),
+                 cfg.getOutgoingConnectionFactory(),this);
+            mTradeMessageListener =
+                jmsMgr.getIncomingJmsFactory().registerHandlerTMX
+                (new TradeMessageReceiver(),
+                 JmsUtils.getReplyTopicName(getSessionId()),true);
+            mBrokerStatusListener =
+                jmsMgr.getIncomingJmsFactory().registerHandlerBSX
+                (new BrokerStatusReceiver(),Service.BROKER_STATUS_TOPIC,true);
+            mToServer = jmsMgr.getOutgoingJmsFactory().createJmsTemplateX
+                (Service.REQUEST_QUEUE,false);
+
             ClientIDFactory idFactory = new ClientIDFactory(
                     mParameters.getIDPrefix(), this);
             idFactory.init();
@@ -385,8 +501,11 @@ class ClientImpl implements Client {
         failIfClosed();
         SLF4JLoggerProxy.debug(TRAFFIC, "Sending order:{}", inOrder);  //$NON-NLS-1$
         try {
-            MessagingDelegate delegate = getDelegate();
-            delegate.convertAndSend(inOrder);
+            if (mToServer == null) {
+                throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
+            }
+            mToServer.convertAndSend
+                (new OrderEnvelope(inOrder,getSessionId()));
         } catch (Exception e) {
             ConnectionException exception;
             exception = new ConnectionException(e, new I18NBoundMessage1P(
@@ -396,20 +515,6 @@ class ClientImpl implements Client {
             ExceptUtils.interrupt(e);
             exceptionThrown(exception);
             throw exception;
-        }
-    }
-
-    private MessagingDelegate getDelegate() throws ClientInitException {
-        if (mDelegate == null) {
-            throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
-        }
-        return mDelegate;
-    }
-
-    private void setDelegate(MessagingDelegate inDelegate) {
-        mDelegate = inDelegate;
-        if (inDelegate !=null) {
-            mDelegate.setClientImpl(this);
         }
     }
 
@@ -430,6 +535,11 @@ class ClientImpl implements Client {
         return mServiceClient.getContext();
     }
 
+    SessionId getSessionId()
+    {
+        return getServiceContext().getSessionId();
+    }
+
     /**
      * Sets the client parameters value.
      *
@@ -443,7 +553,9 @@ class ClientImpl implements Client {
     }
 
     private volatile AbstractApplicationContext mContext;
-    private volatile MessagingDelegate mDelegate;
+    private volatile SimpleMessageListenerContainer mTradeMessageListener;
+    private volatile SimpleMessageListenerContainer mBrokerStatusListener;
+    private volatile JmsOperations mToServer;
     private volatile ClientParameters mParameters;
     private volatile boolean mClosed = false;
     private final Deque<ReportListener> mReportListeners =
@@ -453,6 +565,8 @@ class ClientImpl implements Client {
     private final Deque<ExceptionListener> mExceptionListeners =
             new LinkedList<ExceptionListener>();
     private Date mLastConnectTime;
+    private HashMap<UserID,UserInfo> mUserInfoCache=
+        new HashMap<UserID,UserInfo>();
 
     private org.marketcetera.util.ws.stateful.Client mServiceClient;
     private Service mService;

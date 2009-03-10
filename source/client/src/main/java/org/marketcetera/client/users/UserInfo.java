@@ -1,17 +1,17 @@
-package org.marketcetera.client.brokers;
+package org.marketcetera.client.users;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * The web service representation of a single broker's status.
+ * The web service representation of a single user's status.
  *
  * @author tlerios@marketcetera.com
- * @since 1.0.0
+ * @since $Release$
  * @version $Id$
  */
 
@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 @ClassVersion("$Id$")
-public class BrokerStatus
+public class UserInfo
     implements Serializable
 {
 
@@ -32,29 +32,33 @@ public class BrokerStatus
     // INSTANCE DATA.
 
     private final String mName;
-    private final BrokerID mId;
-    private final boolean mLoggedOn;
+    private final UserID mId;
+    private final boolean mActive;
+    private final boolean mSuperuser;
 
 
     // CONSTRUCTORS.
 
     /**
-     * Creates a new status representation, given the broker
+     * Creates a new user info representation, given the user
      * information.
      *
-     * @param name The broker name.
-     * @param id The broker ID.
-     * @param loggedOn The logon flag.
+     * @param name The user name.
+     * @param id The user ID.
+     * @param active The active flag.
+     * @param superuser The superuser flag.
      */
 
-    public BrokerStatus
+    public UserInfo
         (String name,
-         BrokerID id,
-         boolean loggedOn)
+         UserID id,
+         boolean active,
+         boolean superuser)
     {
         mName=name;
         mId=id;
-        mLoggedOn=loggedOn;
+        mActive=active;
+        mSuperuser=superuser;
     }
 
     /**
@@ -62,11 +66,12 @@ public class BrokerStatus
      * intended for use by JAXB.
      */
 
-    protected BrokerStatus()
+    protected UserInfo()
     {
         mName=null;
         mId=null;
-        mLoggedOn=false;
+        mActive=false;
+        mSuperuser=false;
     }
 
 
@@ -84,25 +89,36 @@ public class BrokerStatus
     }
 
     /**
-     * Returns the receiver's broker ID.
+     * Returns the receiver's user ID.
      *
      * @return The ID.
      */
 
-    public BrokerID getId()
+    public UserID getId()
     {
         return mId;
     }
 
     /**
-     * Returns the receiver's logon flag.
+     * Returns the receiver's active flag.
      *
      * @return The flag.
      */
 
-    public boolean getLoggedOn()
+    public boolean getActive()
     {
-        return mLoggedOn;
+        return mActive;
+    }
+
+    /**
+     * Returns the receiver's superuser flag.
+     *
+     * @return The flag.
+     */
+
+    public boolean getSuperuser()
+    {
+        return mSuperuser;
     }
 
 
@@ -112,7 +128,8 @@ public class BrokerStatus
     public String toString()
     {
         return String.format
-            ("Broker: %s(%s,%s)", //$NON-NLS-1$
-             String.valueOf(getName()),String.valueOf(getId()),getLoggedOn());
+            ("User: %s(%s,%s,%s)", //$NON-NLS-1$
+             String.valueOf(getName()),String.valueOf(getId()),
+             getActive(),getSuperuser());
     }
 }

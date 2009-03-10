@@ -1,6 +1,8 @@
 package org.marketcetera.client;
 
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateless.Node;
@@ -81,6 +83,7 @@ public class ClientTest {
         initClient();
         assertNotNull(ClientManager.getInstance());
     }
+
     @Test
     public void connectFailure() throws Exception {
         //Null URL
@@ -211,6 +214,7 @@ public class ClientTest {
             }
         };
     }
+
     @Test
     public void credentialsMatch() throws Exception {
         initClient();
@@ -244,6 +248,7 @@ public class ClientTest {
         assertTrue(ClientManager.getInstance().isCredentialsMatch(
                 otherUser, otherUser.toCharArray()));
     }
+
     @Test
     public void webServices() throws Exception {
         initClient();
@@ -258,6 +263,37 @@ public class ClientTest {
         assertEquals("N2",d.getName());
         assertEquals("ID2",d.getId().getValue());
 
+        // existing user.
+        MockServiceImpl.sActive = false;
+        UserID id = new UserID(2);
+        UserInfo info = getClient().getUserInfo(id, true);
+        assertEquals("bob", info.getName());
+        assertEquals(id, info.getId());
+        assertFalse(info.getActive());
+        assertFalse(info.getSuperuser());
+
+        MockServiceImpl.sActive = true;
+        // cache contains old value.
+        assertFalse(getClient().getUserInfo(id, true).getActive());
+        // bypass cache.
+        assertTrue(getClient().getUserInfo(id, false).getActive());
+        // cache has been updated.
+        assertTrue(getClient().getUserInfo(id, true).getActive());
+
+        // nonexistent user.
+        new ExpectedFailure<ConnectionException>(
+                Messages.ERROR_REMOTE_EXECUTION){
+            protected void run() throws Exception {
+                getClient().getUserInfo(null, true);
+            }
+        };
+        new ExpectedFailure<ConnectionException>(
+                Messages.ERROR_REMOTE_EXECUTION){
+            protected void run() throws Exception {
+                getClient().getUserInfo(null, false);
+            }
+        };
+
         Factory f=Factory.getInstance();
         BrokerID dID=new BrokerID("me");
         quickfix.fix44.ExecutionReport er=new quickfix.fix44.ExecutionReport();
@@ -265,12 +301,12 @@ public class ClientTest {
         quickfix.fix44.OrderCancelReject ocr=new quickfix.fix44.OrderCancelReject();
         ocr.set(new OrigClOrdID("43"));
         ExecutionReportImpl reportImpl = (ExecutionReportImpl)
-                f.createExecutionReport(er, dID, Originator.Server);
+                f.createExecutionReport(er, dID, Originator.Server, null);
         //Add report ID to test its serialization
         ReportID reportID = new ReportID(1234);
         ReportBaseImpl.assignReportID(reportImpl, reportID);
         OrderCancelRejectImpl reject = (OrderCancelRejectImpl)
-                f.createOrderCancelReject(ocr, dID, Originator.Server);
+                f.createOrderCancelReject(ocr, dID, Originator.Server, null);
         ReportID rejectID = new ReportID(2345);
         ReportBaseImpl.assignReportID(reject, rejectID);
         MockServiceImpl.sReports = new ReportBaseImpl[] {
@@ -302,6 +338,7 @@ public class ClientTest {
         assertEquals(MockServiceImpl.POSITIONS, getClient().
                 getPositionsAsOf(new Date()));
     }
+
     @Test
     public void sendOrderSingle() throws Exception {
         //Initialize a client
@@ -339,6 +376,10 @@ public class ClientTest {
             //Verify transmitted order
             Object received = sServer.getHandler().removeReceived();
             assertNotNull(received);
+            assertTrue(received instanceof OrderEnvelope);
+            assertEquals(((ClientImpl)getClient()).getSessionId(),
+                         ((OrderEnvelope)received).getSessionId());
+            received = ((OrderEnvelope)received).getOrder();
             assertTrue(received instanceof OrderSingle);
             assertOrderSingleEquals(order, (OrderSingle)received);
             //Verify received report
@@ -347,6 +388,7 @@ public class ClientTest {
             assertExecReportEquals(report, (ExecutionReport) receivedReport);
         }
     }
+
     @Test
     public void sendOrderReplace() throws Exception {
         initClient();
@@ -371,6 +413,10 @@ public class ClientTest {
             //Verify transmitted order
             Object received = sServer.getHandler().removeReceived();
             assertNotNull(received);
+            assertTrue(received instanceof OrderEnvelope);
+            assertEquals(((ClientImpl)getClient()).getSessionId(),
+                         ((OrderEnvelope)received).getSessionId());
+            received = ((OrderEnvelope)received).getOrder();
             assertTrue(received instanceof OrderReplace);
             assertOrderReplaceEquals(order, (OrderReplace)received);
             //Verify received report
@@ -404,6 +450,10 @@ public class ClientTest {
             //Verify transmitted order
             Object received = sServer.getHandler().removeReceived();
             assertNotNull(received);
+            assertTrue(received instanceof OrderEnvelope);
+            assertEquals(((ClientImpl)getClient()).getSessionId(),
+                         ((OrderEnvelope)received).getSessionId());
+            received = ((OrderEnvelope)received).getOrder();
             assertTrue(received instanceof OrderCancel);
             assertOrderCancelEquals(order, (OrderCancel)received);
             //Verify received report
@@ -437,6 +487,10 @@ public class ClientTest {
             //Verify transmitted order
             Object received = sServer.getHandler().removeReceived();
             assertNotNull(received);
+            assertTrue(received instanceof OrderEnvelope);
+            assertEquals(((ClientImpl)getClient()).getSessionId(),
+                         ((OrderEnvelope)received).getSessionId());
+            received = ((OrderEnvelope)received).getOrder();
             assertTrue(received instanceof FIXOrder);
             assertOrderFIXEquals(order, (FIXOrder)received);
             //Verify received report
@@ -526,6 +580,7 @@ public class ClientTest {
      *
      * @throws Exception if there were errors.
      */
+
     @Test
     public void closedBehavior() throws Exception {
         initClient();
@@ -575,6 +630,11 @@ public class ClientTest {
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
                 client.getBrokersStatus();
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.getUserInfo(null, true);
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
@@ -728,6 +788,7 @@ public class ClientTest {
      *
      * @throws Exception if there were errors
      */
+
     @Test
     public void lifecycle() throws Exception {
         initClient();
@@ -779,6 +840,7 @@ public class ClientTest {
         initClient();
         assertTrue(ClientManager.isInitialized());
     }
+
     @Test
     public void reconnect() throws Exception {
         initClient();
@@ -839,6 +901,7 @@ public class ClientTest {
         //Verify order goes through
         sendVanillaOrder();
     }
+
     @Test
     public void reconnectParameters() throws Exception {
         initClient();
@@ -876,7 +939,7 @@ public class ClientTest {
                 new BigDecimal("783343.49"), new BigDecimal("598.34"),
                 new BigDecimal("234343.49"), new BigDecimal("798.34"),
                 new MSymbol("IBM", SecurityType.CommonStock), "my acc"),
-                new BrokerID("bro"), Originator.Broker);
+                new BrokerID("bro"), Originator.Broker, null);
     }
 
     /**
@@ -893,7 +956,7 @@ public class ClientTest {
                         new ClOrdID("clord" + sCounter.getAndIncrement()),
                         new OrigClOrdID("origord1"),
                         "what?", null),
-                new BrokerID("bro"), Originator.Broker);
+                new BrokerID("bro"), Originator.Broker, null);
     }
 
     public static OrderSingle createOrderSingle() {

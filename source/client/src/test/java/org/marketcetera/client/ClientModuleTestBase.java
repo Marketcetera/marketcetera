@@ -1,6 +1,8 @@
 package org.marketcetera.client;
 
+import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.module.*;
 import org.marketcetera.trade.*;
 
@@ -160,19 +162,35 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 false, 0, 0, null, true, 4, 0, null,
                 SinkModuleFactory.INSTANCE_URN, null);
         //Verify that the server got the orders
+
+        SessionId id = ((ClientImpl)(ClientManager.getInstance())).
+            getSessionId();
         assertEquals(4, sServer.getHandler().numReceived());
-        Order order = (Order) sServer.getHandler().removeReceived();
+
+        OrderEnvelope e=(OrderEnvelope)sServer.getHandler().removeReceived();
+        assertEquals(id, e.getSessionId());
+        Order order = (Order) e.getOrder();
         assert(order instanceof OrderSingle);
         assertOrderSingleEquals((OrderSingle)orders[0], (OrderSingle) order);
-        order = (Order) sServer.getHandler().removeReceived();
+
+        e=(OrderEnvelope)sServer.getHandler().removeReceived();
+        assertEquals(id, e.getSessionId());
+        order = (Order) e.getOrder();
         assert(order instanceof OrderReplace);
         assertOrderReplaceEquals((OrderReplace)orders[1], (OrderReplace) order);
-        order = (Order) sServer.getHandler().removeReceived();
+
+        e=(OrderEnvelope)sServer.getHandler().removeReceived();
+        assertEquals(id, e.getSessionId());
+        order = (Order) e.getOrder();
         assert(order instanceof OrderCancel);
         assertOrderCancelEquals((OrderCancel)orders[2], (OrderCancel) order);
-        order = (Order) sServer.getHandler().removeReceived();
+
+        e=(OrderEnvelope)sServer.getHandler().removeReceived();
+        assertEquals(id, e.getSessionId());
+        order = (Order) e.getOrder();
         assert(order instanceof FIXOrder);
         assertOrderFIXEquals((FIXOrder)orders[3], (FIXOrder) order);
+
         mManager.removeSinkListener(sink);
         mManager.stop(senderURN);
         mManager.deleteModule(senderURN);

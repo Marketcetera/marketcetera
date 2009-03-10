@@ -1,4 +1,4 @@
-package org.marketcetera.client;
+package org.marketcetera.client.jms;
 
 import java.io.Serializable;
 
@@ -25,7 +25,7 @@ import org.apache.commons.lang.ObjectUtils;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class JMSMessageConverter implements MessageConverter {
 
     /**

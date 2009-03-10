@@ -5,6 +5,10 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.trade.*;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.client.jms.ReceiveOnlyHandler;
+
+import org.springframework.jms.core.JmsOperations;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -27,12 +31,15 @@ import quickfix.FieldNotFound;
  * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class MockMessageHandler {
-    public Object handleMessage(Object inObject) {
+public class MockMessageHandler
+    implements ReceiveOnlyHandler<OrderEnvelope>
+{
+    @Override
+    public void receiveMessage(OrderEnvelope inObject) {
         Object send;
-        if(inObject instanceof HasFIXMessage) {
+        if(inObject.getOrder() instanceof HasFIXMessage) {
             try {
-                TypesTestBase.logFields(((HasFIXMessage)inObject).getMessage());
+                TypesTestBase.logFields(((HasFIXMessage)inObject.getOrder()).getMessage());
             } catch (FieldNotFound ignore) {
             }
         } else {
@@ -45,7 +52,7 @@ public class MockMessageHandler {
             send = createExecutionReport();
         }
         SLF4JLoggerProxy.debug(this, "Sending {}", send);
-        return send;
+        getReplySender().convertAndSend(send);
     }
     public synchronized void addToSend(Object inObject) {
         SLF4JLoggerProxy.debug(this, "ADDED {}", inObject);
@@ -80,15 +87,22 @@ public class MockMessageHandler {
                     new BigDecimal("783343.49"), new BigDecimal("598.34"),
                     new BigDecimal("234343.49"), new BigDecimal("798.34"),
                     new MSymbol("IBM", SecurityType.CommonStock), "my acc"),
-                    new BrokerID("bro"), Originator.Broker);
+                    new BrokerID("bro"), Originator.Broker, null);
         } catch (MessageCreationException e) {
             throw new RuntimeException(e);
         } catch (FieldNotFound e) {
             throw new RuntimeException(e);
         }
     }
+    JmsOperations getReplySender() {
+        return mReplySender;
+    }
+    void setReplySender(JmsOperations replySender) {
+        mReplySender=replySender;
+    }
     private final BlockingQueue<Object> mReceived = new LinkedBlockingQueue<Object>();
     private final Queue<Object> mToSend = new LinkedList<Object>();
     private final Queue<Object> mToSendStatus = new LinkedList<Object>();
+    private JmsOperations mReplySender;
     private static final AtomicLong mLong = new AtomicLong();
 }

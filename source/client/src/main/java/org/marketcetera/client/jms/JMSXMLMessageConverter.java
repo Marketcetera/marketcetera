@@ -1,4 +1,4 @@
-package org.marketcetera.client;
+package org.marketcetera.client.jms;
 
 import java.io.StringWriter;
 import java.io.StringReader;
@@ -6,11 +6,12 @@ import java.io.StringReader;
 import javax.jms.*;
 import javax.xml.bind.*;
 
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.*;
-import org.marketcetera.client.brokers.BrokerStatus;
 
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.MessageConverter;
@@ -18,8 +19,9 @@ import org.apache.commons.lang.ObjectUtils;
 
 /* $License$ */
 /**
- * Converts trading messages to be able to send them over JMS as XML.
- * This class is not meant to be used by clients of this package.
+ * Converts messaging objects to an XML representation that can be
+ * sent over JMS.  This class is not meant to be used by clients of
+ * this package.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -34,24 +36,24 @@ public class JMSXMLMessageConverter implements MessageConverter {
      * XML marshalling / unmarshalling system.
      */
     public JMSXMLMessageConverter() throws JAXBException {
-        mContext = JAXBContext.newInstance(ExecutionReportImpl.class,
-                OrderCancelRejectImpl.class, FIXOrderImpl.class,
-                OrderCancelImpl.class, OrderReplaceImpl.class,
-                OrderSingleImpl.class, BrokerStatus.class);
+        mContext = JAXBContext.newInstance
+            (OrderEnvelope.class,
+             ReportBaseImpl.class,
+             BrokerStatus.class);
     }
 
     /**
-     * Converts a JMS Message to a trade message.
+     * Converts a JMS Message to a messaging object.
      *
      * @param message the received JMS message. It should be of type
      * {@link javax.jms.ObjectMessage}.
      *
-     * @return the trade message converted from the supplied JMS message.
+     * @return the messaging object converted from the supplied JMS message.
      *
      * @throws javax.jms.JMSException if there were errors extracting the contents
      * of the JMS message.
      * @throws org.springframework.jms.support.converter.MessageConversionException if there were errors converting
-     * the contents of the JMS message to a trade message.
+     * the contents of the JMS message to a messaging object.
      */
     @Override
     public Object fromMessage(Message message)
@@ -66,7 +68,9 @@ public class JMSXMLMessageConverter implements MessageConverter {
                         Messages.ERROR_CONVERTING_MESSAGE_TO_OBJECT,
                         ObjectUtils.toString(object)).getText(), e);
             }
-            if(object instanceof TradeMessage) {
+            if((object instanceof TradeMessage) ||
+               (object instanceof OrderEnvelope) ||
+               (object instanceof BrokerStatus)) {
                 return object;
             } else {
                 throw new MessageConversionException(new I18NBoundMessage1P(
@@ -81,7 +85,7 @@ public class JMSXMLMessageConverter implements MessageConverter {
 	}
 
     /**
-     * Converts a trade message to a JMS Message.
+     * Converts a messaging object to a JMS Message.
      *
      * @param inObject the message to be converted. It should either be
      * an order or a report.
@@ -90,15 +94,17 @@ public class JMSXMLMessageConverter implements MessageConverter {
      * @return the JMS message.
      *
      * @throws javax.jms.JMSException if there were errors serializing the
-     * trade message.
+     * messaging object.
      * @throws org.springframework.jms.support.converter.MessageConversionException if the supplied object was not
-     * an acceptable trade message.
+     * an acceptable messaging object.
      */
     @Override
     public Message toMessage(Object inObject, Session session)
             throws JMSException, MessageConversionException {
         SLF4JLoggerProxy.debug(this, "Converting to JMS {}", inObject);  //$NON-NLS-1$
-        if (inObject instanceof TradeMessage) {
+        if ((inObject instanceof TradeMessage) ||
+            (inObject instanceof OrderEnvelope) ||
+            (inObject instanceof BrokerStatus)) {
             try {
                 return session.createTextMessage(toXML(inObject));
             } catch (JAXBException e) {

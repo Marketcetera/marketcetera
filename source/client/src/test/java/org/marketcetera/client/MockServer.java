@@ -1,5 +1,7 @@
 package org.marketcetera.client;
 
+import org.marketcetera.client.jms.JmsManager;
+import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateful.Server;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.misc.ClassVersion;
@@ -13,11 +15,15 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.MessageCreationException;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import quickfix.Message;
 import quickfix.FieldNotFound;
 import quickfix.InvalidMessage;
 import quickfix.field.*;
+
+import javax.jms.ConnectionFactory;
+import javax.xml.bind.JAXBException;
 
 import java.util.*;
 import java.io.File;
@@ -39,7 +45,7 @@ import java.io.IOException;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MockServer {
     public static void main(String[] args)
-            throws InterruptedException, FIXFieldConverterNotAvailable {
+        throws InterruptedException, FIXFieldConverterNotAvailable {
         LoggerConfiguration.logSetup();
         FIXVersionTestSuite.initializeFIXDataDictionaryManager(
                 FIXVersionTestSuite.ALL_FIX_VERSIONS);
@@ -58,24 +64,55 @@ public class MockServer {
         }
         ms.close();
     }
-    public MockServer() {
-        mContext = new ClassPathXmlApplicationContext("mock_server.xml");
+    public MockServer()
+    {
+        mContext = new ClassPathXmlApplicationContext
+            ("mock_server.xml"); //$NON-NLS-1$
         mContext.registerShutdownHook();
-        mHandler = (MockMessageHandler) mContext.getBean("messageHandler",
-                MockMessageHandler.class);
         mContext.start();
-        mStatusSender = (JmsTemplate) mContext.getBean("statusSender");
+
+        mHandler = new MockMessageHandler();
+
+        JmsManager jmsMgr=new JmsManager
+            ((ConnectionFactory)mContext.getBean
+             ("metc_connection_factory_in"),
+             (ConnectionFactory)mContext.getBean
+             ("metc_connection_factory_out"));
+        try {
+            mOrderEnvelopeListener = jmsMgr.getIncomingJmsFactory().
+                registerHandlerOEX
+                (mHandler,Service.REQUEST_QUEUE,false);
+        } catch (JAXBException ex) {
+            throw new IllegalStateException
+                ("Cannot initialize request queue listener",ex);
+        }
+        try {
+            mStatusSender = jmsMgr.getOutgoingJmsFactory().
+                createJmsTemplateX
+                (Service.BROKER_STATUS_TOPIC,true);
+        } catch (JAXBException ex) {
+            throw new IllegalStateException
+                ("Cannot initialize broker status sender",ex);
+        }
 
         // Use default Server host and port 
-        SessionManager<Object> sessionManager=new SessionManager<Object>();
-        Server<?> server=new Server<Object>
+        SessionManager<Object> sessionManager=new SessionManager<Object>
+            (new MockSessionFactory(jmsMgr,mHandler));
+        mServer=new Server<Object>
             (new MockAuthenticator(),sessionManager);
-        server.publish(new MockServiceImpl(sessionManager),Service.class);
+        mServiceInterface = mServer.publish
+            (new MockServiceImpl(sessionManager),Service.class);
     }
     public void close() {
+        mOrderEnvelopeListener.destroy();
         mContext.close();
+        mServiceInterface.stop();
+        mServer.stop();
     }
 
+    public ClassPathXmlApplicationContext getContext() {
+        return mContext;
+    }
     public MockMessageHandler getHandler() {
         return mHandler;
     }
@@ -160,10 +197,10 @@ public class MockServer {
                 if (FIXMessageUtil.isExecutionReport(message)) {
                     getHandler().addToSend(Factory.getInstance().createExecutionReport(
                         message, new BrokerID("default"),
-                            Originator.Server));
+                            Originator.Server, null));
                 } else if(FIXMessageUtil.isCancelReject(message)) {
                     getHandler().addToSend(Factory.getInstance().createOrderCancelReject(
-                        message, new BrokerID("default"), Originator.Server));
+                        message, new BrokerID("default"), Originator.Server, null));
                 } else {
                     SLF4JLoggerProxy.warn(this, "Ignoring:{}", message);
                 }
@@ -180,6 +217,9 @@ public class MockServer {
      */
     public static final String URL = "tcp://localhost:61616";
     private final ClassPathXmlApplicationContext mContext;
+    private Server<?> mServer;
+    private ServiceInterface mServiceInterface;
     private MockMessageHandler mHandler;
+    private SimpleMessageListenerContainer mOrderEnvelopeListener;
     private JmsTemplate mStatusSender;
 }
