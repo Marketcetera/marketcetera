@@ -144,6 +144,12 @@ public class ClientModuleTestBase extends ModuleTestBase {
             }
 
         }
+        //Sleep for a little while to let the sendMessage() call to the MQ
+        //Broker to return back. It's been observed that sometimes we receive
+        //execution reports even though the sendMessage() call has not returned.
+        //Cancelling the data flow at that point results in the sendMessage()
+        //call failing, as it's I/O gets interrupted.
+        Thread.sleep(1000);
         //All the data has been transmitted, cancel the data flow
         mManager.cancel(flowID);
         //Verify data flow has ended
@@ -217,6 +223,12 @@ public class ClientModuleTestBase extends ModuleTestBase {
         //Wait for sink to receive the report in respose to the order.
         Object data = sink.getNextData();
         assertTrue(data.getClass().getName(), data instanceof ExecutionReport);
+        //Sleep for a little while to let the sendMessage() call to the MQ
+        //Broker to return back. It's been observed that sometimes we receive
+        //execution reports even though the sendMessage() call has not returned.
+        //Cancelling the data flow at that point results in the sendMessage()
+        //call failing, as it's I/O gets interrupted.
+        Thread.sleep(1000);
         //We've received all data, cancel the data flow
         mManager.cancel(flowID);
         assertTrue(mManager.getDataFlows(true).isEmpty());
