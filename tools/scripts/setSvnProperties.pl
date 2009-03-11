@@ -67,7 +67,9 @@ my(%patternsCustom)=(
 	'public/source/photon/plugins/org.marketcetera.core.tests'
 	  => ['core-1.2.0-tests.jar'],
 	'public/source/strategyagent/src/test/sample_data/modules/jars'
-	  => ['first.jar','third.jar','fourth.jar'],
+	  => ['*.jar'],
+	'public/source/strategyagent/src/test/sample_data/modules/conf'
+	  => ['*.properties'],
 );
 
 # Run command.
