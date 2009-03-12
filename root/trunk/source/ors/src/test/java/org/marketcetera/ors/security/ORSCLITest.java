@@ -299,14 +299,11 @@ public class ORSCLITest extends PersistTestBase {
         //list all users
         runCLI("-u","admin","-p",password,"--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         matchOut("^\\s*admin \\[sa\\]\\s*blah\\s*$"); //$NON-NLS-1$
-        //make blah a superuser.
-        runCLI("-u","admin","-p",password,"--changeSuperuser","-n","blah","-s","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
         //list active users
         runCLI("-u","admin","-p",password,"--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         matchOut("^\\s*admin \\[s\\]\\s*$"); //$NON-NLS-1$
         //list active users
-        runCLI("-u","admin","-p",password,"--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        runCLI("-u","admin","-p",password,"--listUsers","-a"," y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         matchOut("^\\s*admin \\[s\\]\\s*$"); //$NON-NLS-1$
         //Try changing admin's password
         runCLI("-u","admin","-p",password,"--changePassword","-w","ugh"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
@@ -317,20 +314,31 @@ public class ORSCLITest extends PersistTestBase {
         //verify that admin cannot be deleted
         runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 "--deleteUser","-n","admin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        matchOut("^$"); //$NON-NLS-1$
         //verify that admin cannot be restored
         runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 "--restoreUser","-n","admin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        matchOut("^$"); //$NON-NLS-1$
         //verify that admin cannot be changed into a non-superuser
         runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                "--changeSuperuser","-n","admin","-s","n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        matchOut("^$"); //$NON-NLS-1$
         //Try changing password of a non-existent user
         runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 "--changePassword","-w","ugh","-n","who"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         matchOut("^$"); //$NON-NLS-1$
+        //Try changing password of an inactive user
+        runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                "--changePassword","-w","ugh","-n","blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        matchOut("^$"); //$NON-NLS-1$
+        //Try changing the superuser flag of an inactive user
+        runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                "--changeSuperuser","-n","blah","-s","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        matchOut("^$"); //$NON-NLS-1$
 
         //Create a superuser with unicode name and password
         runCLI("-u", admin.getName(), "-p", "ugh", "--addUser", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-               "-n", UnicodeData.HELLO_GR, "-w", UnicodeData.COMBO, "-s", "y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+               "-n", UnicodeData.HELLO_GR, "-w", UnicodeData.COMBO, "-s", " y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         matchOut("^[\\p{L}\\s]*'" + UnicodeData.HELLO_GR + "'[\\p{L}\\s]*$"); //$NON-NLS-1$ //$NON-NLS-2$
         //Ensure that it appears in the listing
         //Try list users
@@ -342,9 +350,15 @@ public class ORSCLITest extends PersistTestBase {
         //restore the blah user
         runCLI("-u","admin","-p","ugh", "--restoreUser","-n","blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
+        //make blah a superuser.
+        runCLI("-u","admin","-p","ugh","--changeSuperuser","-n","blah","-s","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
+        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
         //list active users
         runCLI("-u","admin","-p","ugh","--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         matchOut("^\\s*admin \\[s\\]\\s*blah \\[s\\]\\s*" + UnicodeData.HELLO_GR + " \\[s\\]\\s*$"); //$NON-NLS-1$
+        // superusers other than admin cannot perform admin operations
+        runCLI(I18NException.class,"-u",UnicodeData.HELLO_GR,"-p", UnicodeData.COMBO, "--deleteUser","-n","blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        matchOut("^$"); //$NON-NLS-1$
     }
     static void matchOut(String regex) throws Exception {
         matchStream(regex, bOut);

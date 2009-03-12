@@ -87,4 +87,11 @@ public interface ReportBase extends Serializable {
      * @return the ID of the actor user of this message.
      */
     UserID getActorID();
+
+    /**
+     * The ID of the viewer user of this message.
+     *
+     * @return the ID of the viewer user of this message.
+     */
+    UserID getViewerID();
 }

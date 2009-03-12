@@ -19,7 +19,7 @@ public class UCPFilterInfo
 
     // CLASS DATA.
 
-    private static HashMap<UCPFilter,UCPFilterInfo> mMap=
+    private static final HashMap<UCPFilter,UCPFilterInfo> mMap=
         new HashMap<UCPFilter,UCPFilterInfo>();
 
 
@@ -60,16 +60,18 @@ public class UCPFilterInfo
      * @return The holder.
      */
     
-    public synchronized static UCPFilterInfo getInfo
+    public static UCPFilterInfo getInfo
         (UCPFilter filter)
     {
-        UCPFilterInfo info=mMap.get(filter);
-        if (info!=null) {
+        synchronized (mMap) {
+            UCPFilterInfo info=mMap.get(filter);
+            if (info!=null) {
+                return info;
+            }
+            info=new UCPFilterInfo(filter);
+            mMap.put(filter,info);
             return info;
         }
-        info=new UCPFilterInfo(filter);
-        mMap.put(filter,info);
-        return info;
     }
 
 

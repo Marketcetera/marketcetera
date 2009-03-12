@@ -552,7 +552,7 @@ public class RequestHandler
         TradeMessage reply=null;
         try {
             reply=FIXConverter.fromQMessage
-                (qMsgReply,Originator.Server,bID,actorID);
+                (qMsgReply,Originator.Server,bID,actorID,null); // TODO(MT): set viewer.
             if (reply==null) {
                 Messages.RH_REPORT_TYPE_UNSUPPORTED.warn(this,qMsgReply);
             }

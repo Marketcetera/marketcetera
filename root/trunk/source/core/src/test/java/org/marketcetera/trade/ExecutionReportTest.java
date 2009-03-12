@@ -37,8 +37,8 @@ public class ExecutionReportTest extends TypesTestBase {
         // null message
         new ExpectedFailure<NullPointerException>(null){
              protected void run() throws Exception {
-                 sFactory.createExecutionReport(null, cID,
-                         Originator.Server, null);
+                 sFactory.createExecutionReport
+                     (null, cID, Originator.Server, null, null);
              }
          };
         // null originator
@@ -46,7 +46,7 @@ public class ExecutionReportTest extends TypesTestBase {
         new ExpectedFailure<NullPointerException>(null){
              protected void run() throws Exception {
                  sFactory.createExecutionReport
-                     (execReport, cID, null, null);
+                     (execReport, cID, null, null, null);
              }
          };
         // wrong quickfix message type
@@ -54,8 +54,8 @@ public class ExecutionReportTest extends TypesTestBase {
         new ExpectedFailure<MessageCreationException>(
                 Messages.NOT_EXECUTION_REPORT, message.toString()){
             protected void run() throws Exception {
-                sFactory.createExecutionReport(
-                        message, null, Originator.Server, null);
+                sFactory.createExecutionReport
+                    (message, null, Originator.Server, null, null);
             }
         };
     }
@@ -69,10 +69,10 @@ public class ExecutionReportTest extends TypesTestBase {
     public void getters() throws Exception {
         // report with all empty fields
         Message msg = createEmptyExecReport();
-        ExecutionReport report = sFactory.createExecutionReport(msg, null,
-                Originator.Server, null);
+        ExecutionReport report = sFactory.createExecutionReport
+            (msg, null, Originator.Server, null, null);
         assertReportBaseValues(report, null, null, null, null, null, null,
-                               null, Originator.Server, null);
+                               null, Originator.Server, null, null);
         assertExecReportValues(report, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null,
                 null, null, false);
@@ -95,6 +95,7 @@ public class ExecutionReportTest extends TypesTestBase {
         MSymbol symbol = new MSymbol("METC", SecurityType.Option);
         String account= "yes";
         UserID actorID = new UserID(2);
+        UserID viewerID = new UserID(3);
 
         //Verify returning FIX fields in a map.
         msg = getSystemMessageFactory().newExecutionReport(destOrderID,
@@ -126,10 +127,10 @@ public class ExecutionReportTest extends TypesTestBase {
 
         //Verify the regular factory method
         report = sFactory.createExecutionReport(msg, cID,
-                Originator.Broker, actorID);
+                                                Originator.Broker, actorID, viewerID);
         assertReportBaseValues(report, cID, orderID, orderStatus,
                                origOrderID, sendingTime, text, destOrderID,
-                               Originator.Broker, actorID);
+                               Originator.Broker, actorID, viewerID);
         assertExecReportValues(report, account, avgPrice, cumQty, execID,
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
                 orderQty, orderType, side, symbol, timeInForce,
@@ -196,26 +197,26 @@ public class ExecutionReportTest extends TypesTestBase {
     public void execTransTypeTranslation() throws Exception {
         Message msg = createEmptyExecReport();
         assertEquals(null, sFactory.createExecutionReport(msg,
-                null, Originator.Server, null).getExecutionType());
+                null, Originator.Server, null, null).getExecutionType());
 
         msg.setField(new ExecTransType(ExecTransType.NEW));
         assertEquals(ExecutionType.New,
                 sFactory.createExecutionReport(msg, null,
-                        Originator.Server, null).getExecutionType());
+                        Originator.Server, null, null).getExecutionType());
 
         msg.setField(new ExecTransType(ExecTransType.CANCEL));
         assertEquals(ExecutionType.TradeCancel,
                 sFactory.createExecutionReport(msg, null,
-                        Originator.Server, null).getExecutionType());
+                        Originator.Server, null, null).getExecutionType());
 
         msg.setField(new ExecTransType(ExecTransType.CORRECT));
         assertEquals(ExecutionType.TradeCorrect,
                 sFactory.createExecutionReport(msg, null,
-                        Originator.Server, null).getExecutionType());
+                        Originator.Server, null, null).getExecutionType());
 
         msg.setField(new ExecTransType(ExecTransType.STATUS));
         assertEquals(ExecutionType.OrderStatus,
                 sFactory.createExecutionReport(msg, null,
-                        Originator.Server, null).getExecutionType());
+                        Originator.Server, null, null).getExecutionType());
     }
 }

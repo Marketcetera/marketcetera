@@ -290,7 +290,7 @@ public class TradeReportsHistory {
                         mAllMessages.add(new ReportHolder(
                                 Factory.getInstance().createExecutionReport(
                                         newExecutionReport,
-                                        inReport.getBrokerID(), Originator.Server, inReport.getActorID()), groupID)); // TODO(MT): is this the correct ID?
+                                        inReport.getBrokerID(), Originator.Server, inReport.getActorID(), inReport.getViewerID()), groupID)); // TODO(MT): are these the correct actor/viewer IDs?
                     } catch (MessageCreationException e) {
                         throw new RuntimeException(Messages.SHOULD_NEVER_HAPPEN_IN_ADDINCOMINGMESSAGE.getText(), e);
                     }

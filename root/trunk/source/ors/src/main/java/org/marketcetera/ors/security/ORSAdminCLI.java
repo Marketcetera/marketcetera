@@ -135,12 +135,12 @@ public class ORSAdminCLI
         Boolean opSuperuser = null;
         if (commandLine.hasOption(OPT_OPERATED_SUPERUSER)) {
             opSuperuser = commandLine.getOptionValue(OPT_OPERATED_SUPERUSER).
-                equals(OPT_YES);
+                trim().equals(OPT_YES);
         }
         Boolean opActive = null;
         if (commandLine.hasOption(OPT_OPERATED_ACTIVE)) {
             opActive = commandLine.getOptionValue(OPT_OPERATED_ACTIVE).
-                equals(OPT_YES);
+                trim().equals(OPT_YES);
         }
         if(commandLine.hasOption(CMD_ADD_USER)) {
             if(!commandLine.hasOption(OPT_OPERATED_USER)) {
@@ -237,6 +237,24 @@ public class ORSAdminCLI
     }
 
     /**
+     * Fetches an active user with the given name.
+     *
+     * @param user the user name
+     * 
+     * @throws I18NException if there were errors fetching the user.
+     */
+
+    private SimpleUser fetchUser(String user)
+        throws I18NException
+    {
+        SimpleUser u = new SingleSimpleUserQuery(user).fetch();
+        if (!u.isActive()) {
+            throw new I18NException(CLI_ERR_INACTIVE_USER);
+        }
+        return u;
+    }
+
+    /**
      * Changes the user password.
      *
      * @param userName the user name of the user running the command
@@ -246,15 +264,16 @@ public class ORSAdminCLI
      * @param password the password supplied by the user running the command
      * @param opPass the new password value.
      * 
-     * @throws PersistenceException if there were errors reseting the password.
+     * @throws I18NException if there were errors reseting the password.
      */
     private void changePassword(String userName,
                                 String opUser,
                                 String password,
-                                String opPass) throws PersistenceException {
+                                String opPass)
+        throws I18NException {
         SimpleUser u = null;
         if(opUser != null) {
-            u = new SingleSimpleUserQuery(opUser).fetch();
+            u = fetchUser(opUser);
             //go through set name to reset the password as we do not have
             //the original password
             String name = u.getName();
@@ -262,7 +281,7 @@ public class ORSAdminCLI
             u.setName(name);
             u.setPassword(opPass.toCharArray());
         } else {
-            u = new SingleSimpleUserQuery(userName).fetch();
+            u = fetchUser(userName);
             u.changePassword(password.toCharArray(), opPass.toCharArray());
         }
         u.save();
@@ -363,7 +382,7 @@ public class ORSAdminCLI
             throw new I18NException(new I18NBoundMessage1P(
                     CLI_ERR_UNAUTH_CHANGE_SUPERUSER,opUser));
         }
-        SimpleUser u = new SingleSimpleUserQuery(opUser).fetch();
+        SimpleUser u = fetchUser(opUser);
         u.setSuperuser(superuser);
         u.save();
         out.println(CLI_OUT_USER_CHG_SUPERUSER.getText(u.getName()));

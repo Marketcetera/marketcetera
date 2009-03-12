@@ -72,6 +72,11 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
         return mActorID;
     }
 
+    @Override
+    public UserID getViewerID() {
+        return mViewerID;
+    }
+
     /**
      * This method is provided to assign ReportIDs to the instances
      * after they have been persisted. This method is an implementation
@@ -92,15 +97,18 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
      * @param inBrokerID the brokerID from which this report originated.
      * @param inOriginator the originator of this report.
      * @param inActorID the ID of the actor user of this report. It may be null.
+     * @param inViewerID the ID of the viewer user of this report. It may be null.
      */
     protected ReportBaseImpl(Message inMessage,
                              BrokerID inBrokerID,
                              Originator inOriginator,
-                             UserID inActorID) {
+                             UserID inActorID,
+                             UserID inViewerID) {
         super(inMessage);
         mBrokerID = inBrokerID;
         mOriginator = inOriginator;
         mActorID = inActorID;
+        mViewerID = inViewerID;
     }
 
     /**
@@ -112,6 +120,7 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
         mBrokerID = null;
         mOriginator = null;
         mActorID = null;
+        mViewerID = null;
     }
 
     private ReportID mReportID = null;
@@ -119,4 +128,5 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
     private static final long serialVersionUID = 1L;
     private final Originator mOriginator;
     private final UserID mActorID;
+    private final UserID mViewerID;
 }

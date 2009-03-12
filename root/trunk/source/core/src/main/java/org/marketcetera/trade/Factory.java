@@ -185,6 +185,9 @@ public abstract class Factory {
      * @param inActorID the ID of the actor user of this
      * message.
      * 
+     * @param inViewerID the ID of the viewer user of this
+     * message.
+     * 
      * @return An execution report instance based on the supplied
      * FIX Message. The returned type will implement
      * {@link FIXMessageSupport}.
@@ -196,7 +199,8 @@ public abstract class Factory {
         (Message inMessage,
          BrokerID inBrokerID,
          Originator inOriginator,
-         UserID inActorID)
+         UserID inActorID,
+         UserID inViewerID)
         throws MessageCreationException;
     /**
      * Creates an order cancel reject message based on the supplied
@@ -211,6 +215,9 @@ public abstract class Factory {
      *
      * @param inActorID the ID of the actor user of this
      * message.
+     *
+     * @param inViewerID the ID of the viewer user of this
+     * message.
      * 
      * @return an order cancel reject message wrapping the supplied
      * FIX Message. The returned type will implement
@@ -223,7 +230,8 @@ public abstract class Factory {
         (Message inMessage,
          BrokerID inBrokerID,
          Originator inOriginator,
-         UserID inActorID)
+         UserID inActorID,
+         UserID inViewerID)
         throws MessageCreationException;
 
     /**

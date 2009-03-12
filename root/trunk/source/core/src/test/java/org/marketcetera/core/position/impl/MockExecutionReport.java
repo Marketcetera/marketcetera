@@ -145,6 +145,11 @@ public class MockExecutionReport implements ExecutionReport {
 	}
 
 	@Override
+	public UserID getViewerID() {
+		return null;
+	}
+
+	@Override
 	public PositionEffect getPositionEffect() {
 		return null;
 	}
