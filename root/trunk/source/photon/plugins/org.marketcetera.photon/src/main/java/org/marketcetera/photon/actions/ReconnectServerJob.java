@@ -120,6 +120,11 @@ public class ReconnectServerJob extends UIJob {
 					client
 							.addBrokerStatusListener(new BrokerNotificationListener(
 									client));
+					try {
+						asyncUpdateBrokers(client.getBrokersStatus());
+					} catch (ConnectionException e) {
+						throw new InvocationTargetException(e);
+					}
 				}
 			};
 			try {
@@ -129,8 +134,7 @@ public class ReconnectServerJob extends UIJob {
 				return Status.OK_STATUS;
 			} catch (InterruptedException e) {
 				// Intentionally not restoring the interrupt status since this
-				// is
-				// the main UI thread where it will be ignored
+				// is the main UI thread where it will be ignored
 				Messages.RECONNECT_SERVER_JOB_CONNECTION_FAILED.error(this, e);
 				return Status.CANCEL_STATUS;
 			} catch (InvocationTargetException e) {
@@ -148,6 +152,15 @@ public class ReconnectServerJob extends UIJob {
 			}
 		}
 		return Status.CANCEL_STATUS;
+	}
+
+	private static void asyncUpdateBrokers(final BrokersStatus brokersStatus) {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				BrokerManager.getCurrent().setBrokersStatus(brokersStatus);
+			}
+		});
 	}
 
 	/**
@@ -186,15 +199,7 @@ public class ReconnectServerJob extends UIJob {
 								.getText(Messages.BROKER_LABEL_PATTERN.getText(
 										status.getName(), status.getId())),
 								getClass().getName()));
-				final BrokersStatus brokersStatus = mClient.getBrokersStatus();
-				PlatformUI.getWorkbench().getDisplay().asyncExec(
-						new Runnable() {
-							@Override
-							public void run() {
-								BrokerManager.getCurrent().setBrokersStatus(
-										brokersStatus);
-							}
-						});
+				asyncUpdateBrokers(mClient.getBrokersStatus());
 			} catch (Exception e) {
 				Messages.BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED.error(this,
 						e, status);
