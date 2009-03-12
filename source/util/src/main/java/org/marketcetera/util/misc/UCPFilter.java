@@ -137,7 +137,7 @@ public abstract class UCPFilter
             }
        };
 
-    private static HashMap<Charset,UCPFilter> mMap=
+    private static final HashMap<Charset,UCPFilter> mMap=
         new HashMap<Charset,UCPFilter>();
 
 
@@ -152,16 +152,18 @@ public abstract class UCPFilter
      * @return The filter.
      */
 
-    public synchronized static UCPFilter forCharset
+    public static UCPFilter forCharset
         (Charset cs)
     {
-        UCPFilter filter=mMap.get(cs);
-        if (filter!=null) {
+        synchronized (mMap) {
+            UCPFilter filter=mMap.get(cs);
+            if (filter!=null) {
+                return filter;
+            }
+            filter=new UCPCharsetFilter(cs);
+            mMap.put(cs,filter);
             return filter;
         }
-        filter=new UCPCharsetFilter(cs);
-        mMap.put(cs,filter);
-        return filter;
     }
 
     /**

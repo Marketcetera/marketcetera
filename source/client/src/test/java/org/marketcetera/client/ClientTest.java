@@ -301,12 +301,12 @@ public class ClientTest {
         quickfix.fix44.OrderCancelReject ocr=new quickfix.fix44.OrderCancelReject();
         ocr.set(new OrigClOrdID("43"));
         ExecutionReportImpl reportImpl = (ExecutionReportImpl)
-                f.createExecutionReport(er, dID, Originator.Server, null);
+                f.createExecutionReport(er, dID, Originator.Server, null, null);
         //Add report ID to test its serialization
         ReportID reportID = new ReportID(1234);
         ReportBaseImpl.assignReportID(reportImpl, reportID);
         OrderCancelRejectImpl reject = (OrderCancelRejectImpl)
-                f.createOrderCancelReject(ocr, dID, Originator.Server, null);
+                f.createOrderCancelReject(ocr, dID, Originator.Server, null, null);
         ReportID rejectID = new ReportID(2345);
         ReportBaseImpl.assignReportID(reject, rejectID);
         MockServiceImpl.sReports = new ReportBaseImpl[] {
@@ -939,7 +939,7 @@ public class ClientTest {
                 new BigDecimal("783343.49"), new BigDecimal("598.34"),
                 new BigDecimal("234343.49"), new BigDecimal("798.34"),
                 new MSymbol("IBM", SecurityType.CommonStock), "my acc"),
-                new BrokerID("bro"), Originator.Broker, null);
+                new BrokerID("bro"), Originator.Broker, null, null);
     }
 
     /**
@@ -956,7 +956,7 @@ public class ClientTest {
                         new ClOrdID("clord" + sCounter.getAndIncrement()),
                         new OrigClOrdID("origord1"),
                         "what?", null),
-                new BrokerID("bro"), Originator.Broker, null);
+                new BrokerID("bro"), Originator.Broker, null, null);
     }
 
     public static OrderSingle createOrderSingle() {

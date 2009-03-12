@@ -168,7 +168,7 @@ public class QuickFIXApplication
         try {
             reply=FIXConverter.fromQMessage
                 (msg,originator,b.getBrokerID(),
-                 (admin?null:getPersister().getActorID(msg)));
+                 (admin?null:getPersister().getActorID(msg)),null); // TODO(MT): set viewer.
             if (reply==null) {
                 Messages.QF_REPORT_TYPE_UNSUPPORTED.warn
                     (getCategory(msg),msg,b.toString());

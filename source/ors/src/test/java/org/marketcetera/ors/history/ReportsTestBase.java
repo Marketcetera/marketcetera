@@ -90,7 +90,7 @@ public class ReportsTestBase extends TestCaseBase {
         msg.setField(new OrigClOrdID("rejorigord1"));
         setSendingTime(msg);
         return Factory.getInstance().createOrderCancelReject
-            (msg, inBrokerID, Originator.Server, sUserID);
+            (msg, inBrokerID, Originator.Server, sUserID, sUserID);
     }
 
     static ExecutionReport createExecReport(String inOrderID,
@@ -126,7 +126,7 @@ public class ReportsTestBase extends TestCaseBase {
         }
         setSendingTime(msg);
         return Factory.getInstance().createExecutionReport
-            (msg, inBrokerID, Originator.Server, sUserID);
+            (msg, inBrokerID, Originator.Server, sUserID, sUserID);
     }
 
     private static void setSendingTime(Message inMsg) {

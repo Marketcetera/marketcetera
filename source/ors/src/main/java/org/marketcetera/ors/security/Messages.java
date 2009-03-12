@@ -89,6 +89,8 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "cli_err_unauth_change_superuser"); //$NON-NLS-1$
     static final I18NMessage0P CLI_ERR_INVALID_LOGIN =
             new I18NMessage0P(LOGGER, "cli_err_invalid_login"); //$NON-NLS-1$
+    static final I18NMessage0P CLI_ERR_INACTIVE_USER =
+            new I18NMessage0P(LOGGER, "cli_err_inactive_user"); //$NON-NLS-1$
     static final I18NMessage0P CLI_ARG_LOGIN_VALUE =
             new I18NMessage0P(LOGGER, "cli_arg_login_value"); //$NON-NLS-1$
     static final I18NMessage0P CLI_ARG_LOGIN_PASSWORD_VALUE =

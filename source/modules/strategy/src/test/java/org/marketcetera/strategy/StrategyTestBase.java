@@ -495,7 +495,7 @@ public class StrategyTestBase
                                         new BigDecimal("20000")));
             Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
             OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
-                                                                                                            null, Originator.Server, null);
+                                                                                                            null, Originator.Server, null, null);
             inSupport.send(cancel);
             Message executionReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport("orderid",
                                                                                               "clOrderID",
@@ -512,7 +512,7 @@ public class StrategyTestBase
                                                                                               "account");
             inSupport.send(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
                                                                                               new BrokerID("some-broker"),
-                                                                                              Originator.Server, null));
+                                                                                              Originator.Server, null, null));
             // send an object that doesn't fit one of the categories
             inSupport.send(this);
         }
@@ -1238,7 +1238,7 @@ public class StrategyTestBase
                 rawExeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
                 reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
                                                                                                inOrder.getBrokerID(),
-                                                                                               Originator.Broker, null));
+                                                                                               Originator.Broker, null, null));
                 lastQuantity = thisQuantity;
             }
             Message rawExeReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport(inOrder.getOrderID().toString(),
@@ -1257,7 +1257,7 @@ public class StrategyTestBase
             rawExeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
             reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
                                                                                            inOrder.getBrokerID(),
-                                                                                           Originator.Server, null));
+                                                                                           Originator.Server, null, null));
         }
         return reports;
     }

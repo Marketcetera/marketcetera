@@ -32,7 +32,7 @@ public class SampleOrderReplyHandler
         msg.setField(new LastPx(i));
         try {
             return Factory.getInstance().createExecutionReport
-                (msg,null,Originator.Server,null);
+                (msg,null,Originator.Server,null,null);
         } catch (MessageCreationException ex) {
             throw new IllegalArgumentException(ex);
         }

@@ -197,10 +197,10 @@ public class MockServer {
                 if (FIXMessageUtil.isExecutionReport(message)) {
                     getHandler().addToSend(Factory.getInstance().createExecutionReport(
                         message, new BrokerID("default"),
-                            Originator.Server, null));
+                            Originator.Server, null, null));
                 } else if(FIXMessageUtil.isCancelReject(message)) {
                     getHandler().addToSend(Factory.getInstance().createOrderCancelReject(
-                        message, new BrokerID("default"), Originator.Server, null));
+                        message, new BrokerID("default"), Originator.Server, null, null));
                 } else {
                     SLF4JLoggerProxy.warn(this, "Ignoring:{}", message);
                 }

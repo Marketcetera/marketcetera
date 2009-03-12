@@ -211,7 +211,7 @@ public class PhotonController
 		} catch (FieldNotFound ignored) {	}
 		try {
 			ExecutionReport report = Factory.getInstance().createExecutionReport(
-					latestMessage, latestExecutionReport.getBrokerID(), Originator.Server, null); // TODO(MT): use ID of currently logged-in user?
+					latestMessage, latestExecutionReport.getBrokerID(), Originator.Server, null, null); // TODO(MT): use ID of currently logged-in user?
 			sendOrder(Factory.getInstance().createOrderCancel(report));
 		} catch (MessageCreationException e) {
 			internalMainLogger.error(CANNOT_SEND_CANCEL_FOR_REASON.getText(clOrdID,

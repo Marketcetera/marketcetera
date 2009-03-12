@@ -102,11 +102,11 @@ class PersistentReport extends EntityBase {
                 case ExecutionReport:
                     returnValue =  Factory.getInstance().createExecutionReport(
                             fixMessage, getBrokerID(),
-                            getOriginator(), getActorUserID());
+                            getOriginator(), getActorUserID(), getViewerUserID());
                     break;
                 case CancelReject:
                     returnValue =  Factory.getInstance().createOrderCancelReject(
-                            fixMessage, getBrokerID(), getOriginator(), getActor().getUserID());
+                            fixMessage, getBrokerID(), getOriginator(), getActorUserID(), getViewerUserID());
                     break;
                 default:
                     //You added new report types but forgot to update the code

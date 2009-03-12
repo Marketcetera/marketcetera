@@ -1,5 +1,6 @@
 package org.marketcetera.ors.ws;
 
+import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.persist.NoResultException;
 import org.marketcetera.persist.PersistenceException;
@@ -31,8 +32,12 @@ public class DBAuthenticator
          char[] password)
     {
         try {
-            (new SingleSimpleUserQuery(user)).fetch().
-                validatePassword(password);
+            SimpleUser u=new SingleSimpleUserQuery(user).fetch();
+            if (!u.isActive()) {
+                Messages.BAD_CREDENTIALS.warn(this,user);
+                return false;
+            }
+            u.validatePassword(password);
         } catch (NoResultException ex) {
             Messages.BAD_CREDENTIALS.warn(this,ex,user);
             return false;

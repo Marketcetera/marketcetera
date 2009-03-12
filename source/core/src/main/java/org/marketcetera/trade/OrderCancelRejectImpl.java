@@ -26,12 +26,14 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
      * @param inBrokerID the brokerID from which this report originated.
      * @param inOriginator the originator of this report.
      * @param inActorID the ID of the actor user of this report. It may be null.
+     * @param inViewerID the ID of the viewer user of this report. It may be null.
      */
     OrderCancelRejectImpl(Message inMessage,
                           BrokerID inBrokerID,
                           Originator inOriginator,
-                          UserID inActorID) {
-        super(inMessage, inBrokerID, inOriginator, inActorID);
+                          UserID inActorID,
+                          UserID inViewerID) {
+        super(inMessage, inBrokerID, inOriginator, inActorID, inViewerID);
     }
 
     /**
@@ -54,6 +56,7 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
                 String.valueOf(getBrokerOrderID()),
                 String.valueOf(getOriginator()),
                 String.valueOf(getActorID()),
+                String.valueOf(getViewerID()),
                 String.valueOf(getMessage())
         );
     }

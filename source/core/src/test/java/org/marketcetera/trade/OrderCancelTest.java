@@ -47,8 +47,8 @@ public class OrderCancelTest extends TypesTestBase {
         //Test an empty report.
         Message report = createEmptyExecReport();
         order = sFactory.createOrderCancel(
-                sFactory.createExecutionReport(report, null, Originator.Server,
-                null));
+                sFactory.createExecutionReport
+                (report, null, Originator.Server, null, null));
         assertOrderCancel(order, NOT_NULL, null, null, null,
                 null, null, null, null, null, null);
         //Verify toString() doesn't fail
@@ -68,8 +68,8 @@ public class OrderCancelTest extends TypesTestBase {
                 symbol, account, destOrderID, orderQty);
         //Create the order from the report.
         order = sFactory.createOrderCancel(
-                sFactory.createExecutionReport(report, cID,
-                        Originator.Server, null));
+                sFactory.createExecutionReport
+                (report, cID, Originator.Server, null, null));
         assertOrderCancel(order, NOT_NULL, new OrderID(orderID), side,
                 symbol, symbol.getSecurityType(),
                 orderQty,
@@ -78,8 +78,8 @@ public class OrderCancelTest extends TypesTestBase {
         order.toString();
 
         assertNotSame(order, sFactory.createOrderCancel(
-                sFactory.createExecutionReport(report, cID,
-                        Originator.Server, null)));
+                sFactory.createExecutionReport
+                (report, cID, Originator.Server, null, null)));
         
 
         
@@ -94,8 +94,8 @@ public class OrderCancelTest extends TypesTestBase {
         
         //Create the order from the report.
         order = sFactory.createOrderCancel(
-                sFactory.createExecutionReport(report, cID,
-                        Originator.Server, null));
+                sFactory.createExecutionReport
+                (report, cID, Originator.Server, null, null));
         assertOrderCancel(order, NOT_NULL, new OrderID(orderID), side,
                 symbol, symbol.getSecurityType(),
                 orderQty,
@@ -104,8 +104,8 @@ public class OrderCancelTest extends TypesTestBase {
         order.toString();
 
         assertNotSame(order, sFactory.createOrderCancel(
-                sFactory.createExecutionReport(report, cID,
-                        Originator.Server, null)));
+                sFactory.createExecutionReport
+                (report, cID, Originator.Server, null, null)));
     }
 
     /**
@@ -118,8 +118,8 @@ public class OrderCancelTest extends TypesTestBase {
     public void pojoSetters()throws Exception {
         //Test with non-null exec report
         OrderCancel order = sFactory.createOrderCancel(
-                sFactory.createExecutionReport(createEmptyExecReport(), null,
-                        Originator.Server, null));
+                sFactory.createExecutionReport
+                (createEmptyExecReport(), null, Originator.Server, null, null));
         checkSetters(order);
 
         //Test with null exec report

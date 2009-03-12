@@ -35,7 +35,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
         // null message
         new ExpectedFailure<NullPointerException>(null){
              protected void run() throws Exception {
-                 sFactory.createOrderCancelReject(null, cID, Originator.Server, null);
+                 sFactory.createOrderCancelReject(null, cID, Originator.Server, null, null);
              }
          };
         //null originator
@@ -43,7 +43,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
              protected void run() throws Exception {
                  sFactory.createOrderCancelReject
                      (getSystemMessageFactory().newOrderCancelReject(),
-                         cID, null, null);
+                      cID, null, null, null);
              }
          };
         // wrong quickfix message type
@@ -51,8 +51,8 @@ public class OrderCancelRejectTest extends TypesTestBase {
         new ExpectedFailure<MessageCreationException>(
                 Messages.NOT_CANCEL_REJECT, message.toString()){
             protected void run() throws Exception {
-                sFactory.createOrderCancelReject(
-                        message, null, Originator.Server, null);
+                sFactory.createOrderCancelReject
+                    (message, null, Originator.Server, null, null);
             }
         };
     }
@@ -66,10 +66,10 @@ public class OrderCancelRejectTest extends TypesTestBase {
     public void getters() throws Exception {
         // report with all empty fields
         Message msg = getSystemMessageFactory().newOrderCancelReject();
-        OrderCancelReject report = sFactory.createOrderCancelReject(msg, null,
-                Originator.Server, null);
+        OrderCancelReject report = sFactory.createOrderCancelReject
+            (msg, null, Originator.Server, null, null);
         assertReportBaseValues(report, null, null, null, null, null, null,
-                null, Originator.Server, null);
+                               null, Originator.Server, null, null);
         assertNull(report.getReportID());
         //Verify toString() doesn't fail.
         report.toString();
@@ -84,6 +84,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
         Date sendingTime = new Date();
         Date transactTime = new Date();
         UserID actorID = new UserID(2);
+        UserID viewerID = new UserID(3);
         msg = getSystemMessageFactory().newOrderCancelReject(
                 new quickfix.field.OrderID(destOrderID),
                 new ClOrdID(orderID.getValue()),
@@ -92,10 +93,10 @@ public class OrderCancelRejectTest extends TypesTestBase {
         msg.getHeader().setField(new SendingTime(sendingTime));
         msg.setField(new TransactTime(transactTime));
         report = sFactory.createOrderCancelReject(msg, cID, Originator.Broker,
-                                                  actorID);
+                                                  actorID, viewerID);
         assertReportBaseValues(report, cID, orderID, orderStatus, origOrderID,
                                sendingTime, text, destOrderID,
-                               Originator.Broker, actorID);
+                               Originator.Broker, actorID, viewerID);
         assertNull(report.getReportID());
         report.toString();
         

@@ -658,6 +658,8 @@ public final class FIXConverter
      * the QuickFIX/J message. It may be null.
      * @param actorID The ID of the actor user of this QuickFIX/J
      * message.
+     * @param viewerID The ID of the viewer user of this QuickFIX/J
+     * message.
      *
      * @return The FIX Agnostic message. It is null if conversion is
      * not available for the QuickFIX/J message type.
@@ -670,16 +672,17 @@ public final class FIXConverter
         (Message msg,
          Originator originator,
          BrokerID brokerID,
-         UserID actorID)
+         UserID actorID,
+         UserID viewerID)
         throws MessageCreationException
     {
         if (FIXMessageUtil.isExecutionReport(msg)) {
             return Factory.getInstance().createExecutionReport
-                (msg,brokerID,originator,actorID);
+                (msg,brokerID,originator,actorID,viewerID);
         }
         if (FIXMessageUtil.isCancelReject(msg)) {
             return Factory.getInstance().createOrderCancelReject
-                (msg,brokerID,originator,actorID);
+                (msg,brokerID,originator,actorID,viewerID);
         }
         return null;
     }

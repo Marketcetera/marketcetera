@@ -150,7 +150,8 @@ public class IDTest {
     private ReportID getNextReportID() throws MessageCreationException {
         return Factory.getInstance().createExecutionReport(
                 TypesTestBase.createEmptyExecReport(),
-                new BrokerID("bro"), Originator.Server, null).getReportID();
+                new BrokerID("bro"), Originator.Server, null, null).
+            getReportID();
     }
 
     /**
