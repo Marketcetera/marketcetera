@@ -53,8 +53,7 @@
               <property name="m2.repo" value="${user.home}/.m2/repository"/>
               <property name="photon.target" value="${mvn.photon.target}"/>
               <property name="plugins.dir" value="${basedir}/../../plugins"/>
-              <!-- This needs to set properly once platform javadocs are published externally. -->
-              <property name="platform.javadoc.link" value="http://10.1.9.5/artifacts/metc/javadocs/public/apidocs/"/>
+              <property name="platform.javadoc.link" value="../platform/"/>
             </ant>
           </tasks>
         </configuration>
