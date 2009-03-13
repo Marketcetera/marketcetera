@@ -13,6 +13,7 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPTestBase;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MSymbol;
 
 import javax.management.JMX;
 import java.math.BigDecimal;
@@ -62,18 +63,18 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        new TradeEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new BidEvent(1, 2, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new TradeEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 // Esper -> Sink: only get IBM trade events
-                new DataRequest(TEST_URN, "select * from trade where symbol='IBM'")
+                new DataRequest(TEST_URN, "select * from trade where symbolAsString='IBM'")
         });
 
         Object obj = sSink.getReceived().take();
         assertEquals("Didn't receive right trade event", TradeEvent.class, obj.getClass());
         TradeEvent theTrade = (TradeEvent) obj;
-        assertEquals("Didn't receive right symbol event", "IBM", theTrade.getSymbol());
+        assertEquals("Didn't receive right symbol event", "IBM", theTrade.getSymbolAsString());
         assertEquals("Didn't receive right size event", new BigDecimal("200"), theTrade.getSize());
 
         assertNull("should not receive any more events", sSink.getReceived().poll(5, TimeUnit.SECONDS));
@@ -95,16 +96,16 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        new TradeEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new BidEvent(1, 2, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new TradeEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 // Esper -> Sink: only get IBM trade events
-                new DataRequest(TEST_URN, new String[]{"select * from trade where symbol='IBM'", "select * from trade where symbol='JAVA'"})
+                new DataRequest(TEST_URN, new String[]{"select * from trade where symbolAsString='IBM'", "select * from trade where symbolAsString='JAVA'"})
         });
 
         // verify that we only get the event for java, not IBM
-        assertEquals("JAVA", ((TradeEvent) sSink.getReceived().take()).getSymbol());
+        assertEquals("JAVA", ((TradeEvent) sSink.getReceived().take()).getSymbolAsString());
         assertEquals("wrong # of emitted events from Esper", 1, sManager.getDataFlowInfo(flowID).getFlowSteps()[1].getNumEmitted());
         assertEquals("# of running statements", 2, sEsperBean.getStatementNames().length);
         sManager.cancel(flowID);
@@ -119,16 +120,16 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        new TradeEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new BidEvent(1, 2, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new TradeEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 // Esper -> Sink: only get IBM trade events
-                new DataRequest(TEST_URN, "select * from trade where symbol='IBM'")
+                new DataRequest(TEST_URN, "select * from trade where symbolAsString='IBM'")
         });
 
         // verify we get 1 trade and then cancel
-        assertEquals("IBM", ((TradeEvent) sSink.getReceived().take()).getSymbol());
+        assertEquals("IBM", ((TradeEvent) sSink.getReceived().take()).getSymbolAsString());
         assertEquals("wrong # of emitted events from Esper", 1, sManager.getDataFlowInfo(flowID).getFlowSteps()[1].getNumEmitted());
         assertEquals("# of running statements before cancel", 1, sEsperBean.getStatementNames().length);        
         sManager.cancel(flowID);
@@ -136,15 +137,15 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flowID2 = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        new TradeEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new BidEvent(1, 2, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new TradeEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 // Esper -> Sink: only get IBM trade events
-                new DataRequest(TEST_URN, "select * from trade where symbol='JAVA'")
+                new DataRequest(TEST_URN, "select * from trade where symbolAsString='JAVA'")
         });
         // verify we only get 1 trade for Java
-        assertEquals("JAVA", ((TradeEvent) sSink.getReceived().take()).getSymbol());
+        assertEquals("JAVA", ((TradeEvent) sSink.getReceived().take()).getSymbolAsString());
         assertEquals("wrong # of emitted events from Esper", 1, sManager.getDataFlowInfo(flowID2).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flowID2);
     }
@@ -154,7 +155,7 @@ public class EsperModuleTest extends CEPTestBase {
     public void testCreateStatements() throws Exception {
         CEPEsperProcessor esperPr = new CEPEsperProcessor(CEPEsperFactory.PROVIDER_URN);
         esperPr.preStart();
-        ArrayList<EPStatement> stmts = esperPr.createStatements("select * from ask where symbol = 'entourage'",
+        ArrayList<EPStatement> stmts = esperPr.createStatements("select * from ask where symbolAsString = 'entourage'",
                 "p:every(spike=ask(exchange='sunday'))");
         junit.framework.Assert.assertEquals(2, stmts.size());
         assertFalse("Did not create a regular Esper statement", stmts.get(0).isPattern());
@@ -188,7 +189,7 @@ public class EsperModuleTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> Esper
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                                new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                                new BidEvent(1, 2, new MSymbol("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
                         }),
                         // ESPER -> Sink: invalid type name
                         new DataRequest(TEST_URN, "select * from bob")
@@ -204,7 +205,7 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        new BidEvent(1, 2, new MSymbol("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
                 }),
                 // ESPER -> Sink: invalid type name
                 new DataRequest(TEST_URN, new String[] {"select * from trade"})});
@@ -217,7 +218,7 @@ public class EsperModuleTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> Esper
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                                new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                                new BidEvent(1, 2, new MSymbol("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
                         }),
                         // ESPER -> Sink: invalid type name
                         new DataRequest(TEST_URN, new String[] {"select * from trade", "select * from bob"})
@@ -239,13 +240,13 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 2 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                        new AskEvent(1, 2, "IBM", "NYSE", new BigDecimal("100"), new BigDecimal("100")),
+                        new BidEvent(1, 2, new MSymbol("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        new AskEvent(1, 2, new MSymbol("IBM"), "NYSE", new BigDecimal("100"), new BigDecimal("100")),
                 }),
                 // ESPER -> Sink: pattern
-                new DataRequest(TEST_URN, new String[] {"p: ask(symbol='IBM') -> timer:interval(10 seconds)"})});
+                new DataRequest(TEST_URN, new String[] {"p: ask(symbolAsString='IBM') -> timer:interval(10 seconds)"})});
 
-        // gets an empty hashmpa back since we are not selecting anything
+        // gets an empty hashmap back since we are not selecting anything
         sSink.getReceived().take();
         long timeEnd = System.currentTimeMillis();
         assertTrue("Didn't wait longer than 10 secs: "+(timeEnd-timeStart), timeEnd - timeStart > 10*1000);
@@ -260,11 +261,11 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                        new AskEvent(1, 2, "IBM", "NYSE", new BigDecimal("100"), new BigDecimal("100")),
+                        new BidEvent(1, 2, new MSymbol("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        new AskEvent(1, 2, new MSymbol("IBM"), "NYSE", new BigDecimal("100"), new BigDecimal("100")),
                 }),
                 // ESPER -> Sink: explicit pattern
-                new DataRequest(TEST_URN, new String[] {"select 1 as toli from pattern [ask(symbol='IBM') -> timer:interval(10 seconds)]"})});
+                new DataRequest(TEST_URN, new String[] {"select 1 as toli from pattern [ask(symbolAsString='IBM') -> timer:interval(10 seconds)]"})});
         
         // should get back an integer with value 1
         assertEquals("received wrong object", 1, sSink.getReceived().take());

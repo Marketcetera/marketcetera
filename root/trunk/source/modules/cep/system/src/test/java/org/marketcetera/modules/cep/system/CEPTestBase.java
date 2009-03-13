@@ -68,12 +68,12 @@ public abstract class CEPTestBase extends ModuleTestBase {
         CurrentFIXDataDictionary.setCurrentFIXDataDictionary(new FIXDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryURL()));
 
         //  pre-create and pre-specify all events
-        ask1 = new AskEvent(1, 2, "ABC", "nyse", new BigDecimal("23"), new BigDecimal("23"));
-        ask2 = new AskEvent(1, 2, "BIDU", "nyse", new BigDecimal("23"), new BigDecimal("23"));
-        bid1 = new BidEvent(1, 2, "CSCO", "nyse", new BigDecimal("23"), new BigDecimal("23"));
-        bid2 = new BidEvent(1, 2, "DELL", "nyse", new BigDecimal("23"), new BigDecimal("23"));
-        trade1 = new TradeEvent(1, 2, "ECHO", "nyse", new BigDecimal("23"), new BigDecimal("23"));
-        trade2 = new TradeEvent(1, 2, "FIGA", "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        ask1 = new AskEvent(1, 2, new MSymbol("ABC"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        ask2 = new AskEvent(1, 2, new MSymbol("BIDU"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        bid1 = new BidEvent(1, 2, new MSymbol("CSCO"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        bid2 = new BidEvent(1, 2, new MSymbol("DELL"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        trade1 = new TradeEvent(1, 2, new MSymbol("ECHO"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        trade2 = new TradeEvent(1, 2, new MSymbol("FIGA"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
         sug1 = Factory.getInstance().createOrderSingleSuggestion();
         sug1.setIdentifier("acura");
         sug2 = Factory.getInstance().createOrderSingleSuggestion();
@@ -155,7 +155,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 1 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                                new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                                new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(getModuleURN(), 37)  // invalid request param
@@ -176,7 +176,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 1 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                                new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                                new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(getModuleURN(), query)  // invalid request param
@@ -193,9 +193,9 @@ public abstract class CEPTestBase extends ModuleTestBase {
     public void testValidJavaClass() throws Exception {
         final DataFlowID flow1 = sManager.createDataFlow(new DataRequest[] {
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        new BidEvent(1, 2, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        new AskEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new BidEvent(1, 2, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        new AskEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 new DataRequest(getModuleURN(), "select * from "+java.awt.BorderLayout.class.getName())
         });
@@ -208,10 +208,10 @@ public abstract class CEPTestBase extends ModuleTestBase {
     public void testUnmappedJavaObject() throws Exception {
         final DataFlowID flow1 = sManager.createDataFlow(new DataRequest[] {
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new Object[] {
-                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        new BidEvent(1, 2, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new BidEvent(1, 2, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
                         37,
-                        new AskEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new AskEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 new DataRequest(getModuleURN(), "select * from "+java.lang.Integer.class.getName())
         });
@@ -231,16 +231,16 @@ public abstract class CEPTestBase extends ModuleTestBase {
         final DataFlowID flow1 = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> System: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        new BidEvent(1, 2, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        new AskEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new BidEvent(1, 2, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        new AskEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 // System -> Sink: only get 1 bid event
                 new DataRequest(getModuleURN(), "select * from "+BidEvent.class.getName())
         }); 
 
         BidEvent theBid = (BidEvent) sSink.getReceived().take();
-        assertEquals("didnt' get bid event", "IBM", theBid.getSymbol());
+        assertEquals("didnt' get bid event", "IBM", theBid.getSymbolAsString());
         assertEquals("didnt' get right size", new BigDecimal("85"), theBid.getPrice());
         assertEquals("CEP sent out extra events", 1, sManager.getDataFlowInfo(flow1).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flow1);
@@ -253,15 +253,15 @@ public abstract class CEPTestBase extends ModuleTestBase {
         final DataFlowID flow2 = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> System: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "GOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                        new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        new AskEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new BidEvent(1, 2, new MSymbol("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        new AskEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 // System -> Sink: only get 1 bid event
                 new DataRequest(getModuleURN(), "select * from "+BidEvent.class.getName())
         });
         theBid = (BidEvent) sSink.getReceived().take();
-        assertEquals("didnt' get bid event", "GOOG", theBid.getSymbol());
+        assertEquals("didnt' get bid event", "GOOG", theBid.getSymbolAsString());
         assertEquals("didnt' get right size", new BigDecimal("300"), theBid.getPrice());
         assertEquals("CEP sent out extra events", 1, sManager.getDataFlowInfo(flow2).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flow2);
@@ -272,12 +272,12 @@ public abstract class CEPTestBase extends ModuleTestBase {
         }.run();
 
         // now subscribe to a totally different set of events, send sme events through and verify that we only get 3rd kind of events
-        TradeEvent tradeEvent = new TradeEvent(3, 4, "IBM", "NYSE", new BigDecimal("85"), new BigDecimal("200"));
+        TradeEvent tradeEvent = new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"));
         final DataFlowID flow3 = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> System: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                        new BidEvent(1, 2, "ZOOG", "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                        new AskEvent(5, 6, "JAVA", "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300")),
+                        new BidEvent(1, 2, new MSymbol("ZOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        new AskEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300")),
                         tradeEvent,
                 }),
                 // CEP -> Sink: should only get trade event
@@ -285,7 +285,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
         });
         TradeEvent theTrade = (TradeEvent) sSink.getReceived().take();
         assertSame("wrong event received", tradeEvent, theTrade);
-        assertEquals("didnt' get bid event", "IBM", theTrade.getSymbol());
+        assertEquals("didnt' get bid event", "IBM", theTrade.getSymbolAsString());
         assertEquals("didnt' get right size", new BigDecimal("85"), theTrade.getPrice());
         assertEquals("CEP didn't receive all events", 3, sManager.getDataFlowInfo(flow3).getFlowSteps()[1].getNumReceived());
         assertEquals("CEP sent out extra events", 1, sManager.getDataFlowInfo(flow3).getFlowSteps()[1].getNumEmitted());

@@ -230,7 +230,7 @@ class RubyStrategy < Strategy
   def suggestion_from_event(event)
       suggestedOrder = Factory.getInstance().createOrderSingle()
       suggestedOrder.setPrice event.getPrice
-      suggestedOrder.setSymbol MSymbol.new event.getSymbol
+      suggestedOrder.setSymbol event.getSymbol
       suggestedOrder.setQuantity event.getSize
       suggest_trade suggestedOrder, BigDecimal.new("1.0"), "CEP Event Received" 
   end

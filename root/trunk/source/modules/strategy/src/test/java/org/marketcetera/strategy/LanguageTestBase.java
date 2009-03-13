@@ -48,7 +48,6 @@ import org.marketcetera.event.LogEventTest;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.module.CopierModuleFactory;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -56,6 +55,7 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
 import org.marketcetera.trade.BrokerID;
@@ -2016,17 +2016,17 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
-        String validEsperStatement1 = "select * from trade where symbol='METC'";
-        String validEsperStatement2 = "select * from ask where symbol='ORCL'";
+        String validEsperStatement1 = "select * from trade where symbolAsString='METC'";
+        String validEsperStatement2 = "select * from ask where symbolAsString='ORCL'";
         String validSystemStatement1 = "select * from trade";
         String validSystemStatement2 = "select * from ask";
         String invalidStatement = "this statement is not syntactically valid";
-        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("1"), new BigDecimal("100")),
-                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("2"), new BigDecimal("200")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("3"), new BigDecimal("300")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("4"), new BigDecimal("400")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("5"), new BigDecimal("500")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
         String[] sources = new String[] { null, "esper", "system" };
         String[][] statements = new String[][] { { null }, { }, { invalidStatement },
                                                  { validSystemStatement1, validSystemStatement2 }, { validSystemStatement1 },
@@ -2179,12 +2179,12 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
-        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("1"), new BigDecimal("100")),
-                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("2"), new BigDecimal("200")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("3"), new BigDecimal("300")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("4"), new BigDecimal("400")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("5"), new BigDecimal("500")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
         assertNull(AbstractRunningStrategy.getProperty("requestID"));
         // create a strategy that creates some suggestions
         List<OrderSingleSuggestion> suggestions = doCEPTest("esper",
@@ -2238,12 +2238,12 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
-        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("1"), new BigDecimal("100")),
-                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("2"), new BigDecimal("200")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("3"), new BigDecimal("300")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("4"), new BigDecimal("400")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "METC", "Q", new BigDecimal("5"), new BigDecimal("500")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), "ORCL", "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
         assertEquals(2,
                      doCEPTest("esper",
                                new String[] { "select * from trade" },
@@ -2438,7 +2438,7 @@ public abstract class LanguageTestBase
         // these are the nominal test values
         String symbols = "METC,ORCL,GOOG,YHOO";
         String marketDataSource = BogusFeedModuleFactory.IDENTIFIER;
-        String compressedStatements = createConsolidatedCEPStatement(new String[] { "select * from ask where symbol='METC'" });
+        String compressedStatements = createConsolidatedCEPStatement(new String[] { "select * from ask where symbolAsString='METC'" });
         String cepSource = "esper";
         // set the default values
         AbstractRunningStrategy.setProperty("symbols",
@@ -3240,7 +3240,7 @@ public abstract class LanguageTestBase
         }
         runningStrategy.dataReceived(new BidEvent(System.nanoTime(),
                                                   System.currentTimeMillis(),
-                                                  "METC",
+                                                  new MSymbol("METC"),
                                                   "Q",
                                                   new BigDecimal("100.00"),
                                                   new BigDecimal("10000")));

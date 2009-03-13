@@ -3,6 +3,7 @@ package org.marketcetera.event;
 import java.math.BigDecimal;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
 
@@ -40,7 +41,7 @@ public class TradeEvent
      */
     public TradeEvent(long messageID, 
                       long timestamp, 
-                      String symbol,
+                      MSymbol symbol,
                       String inExchange,
                       BigDecimal price,
                       BigDecimal size) 

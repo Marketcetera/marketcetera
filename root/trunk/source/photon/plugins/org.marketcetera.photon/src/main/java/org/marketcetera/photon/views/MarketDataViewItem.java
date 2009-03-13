@@ -182,7 +182,7 @@ public class MarketDataViewItem implements ISymbolProvider {
 
 	private boolean validateSymbol(SymbolExchangeEvent event) {
 		if (event != null) {
-			final MSymbol newSymbol = new MSymbol(event.getSymbol());
+			final MSymbol newSymbol = event.getSymbol();
 			if (!getSymbol().equals(newSymbol)) {
 				Messages.MARKET_DATA_EVENT_SYMBOL_MISMATCH.warn(this, getSymbol(),
 						newSymbol);

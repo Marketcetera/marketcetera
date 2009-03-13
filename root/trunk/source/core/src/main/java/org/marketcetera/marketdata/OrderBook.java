@@ -532,9 +532,9 @@ public class OrderBook
      */
     private void checkEvent(SymbolExchangeEvent inEvent)
     {
-        if(!inEvent.getSymbol().equals(getSymbol().getFullSymbol())) {
+        if(!inEvent.getSymbol().equals(getSymbol())) {
             throw new IllegalArgumentException(SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL.getText(inEvent.getSymbol(),
-                                                                                               getSymbol().getFullSymbol()));
+                                                                                               getSymbol()));
         }
     }
     /**
