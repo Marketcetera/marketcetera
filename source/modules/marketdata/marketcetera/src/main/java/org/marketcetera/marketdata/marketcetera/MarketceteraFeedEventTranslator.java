@@ -13,6 +13,7 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.EventTranslator;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.UnsupportedEventException;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.FieldNotFound;
@@ -82,7 +83,7 @@ public class MarketceteraFeedEventTranslator
                     case MDEntryType.BID :
                         BidEvent bid = new BidEvent(System.nanoTime(),
                                                     System.currentTimeMillis(),
-                                                    symbol,
+                                                    new MSymbol(symbol),
                                                     exchange,
                                                     new BigDecimal(price),
                                                     new BigDecimal(size));
@@ -91,7 +92,7 @@ public class MarketceteraFeedEventTranslator
                     case MDEntryType.OFFER :
                         AskEvent ask = new AskEvent(System.nanoTime(),
                                                     System.currentTimeMillis(),
-                                                    symbol,
+                                                    new MSymbol(symbol),
                                                     exchange,
                                                     new BigDecimal(price),
                                                     new BigDecimal(size));
@@ -100,7 +101,7 @@ public class MarketceteraFeedEventTranslator
                     case MDEntryType.TRADE:
                         TradeEvent trade = new TradeEvent(System.nanoTime(),
                                                           System.currentTimeMillis(),
-                                                          symbol,
+                                                          new MSymbol(symbol),
                                                           exchange,
                                                           new BigDecimal(price),
                                                           new BigDecimal(size));

@@ -11,6 +11,7 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.DummySink;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.Suggestion;
 
 import javax.management.JMX;
@@ -69,19 +70,19 @@ public class ExternalTimeTest extends ModuleTestBase {
         Calendar cal = Calendar.getInstance();
         cal.set(2977, 7, 8, 10, 30, 40);
         // first time event on 2977-7-8
-        AskEvent ask1 = new AskEvent(1, cal.getTimeInMillis(), "AB1", "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        AskEvent ask1 = new AskEvent(1, cal.getTimeInMillis(), new MSymbol("AB1"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
         cal.set(2977, 7, 13, 10, 30, 40);
         // next time event on 2977-7-13
-        AskEvent ask2 = new AskEvent(1, cal.getTimeInMillis(), "AB2", "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        AskEvent ask2 = new AskEvent(1, cal.getTimeInMillis(), new MSymbol("AB2"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
         cal.set(2978, 7, 13, 10, 30, 40);
         // 3rd event year later on 2978-7-13, should reset window
-        AskEvent ask3 = new AskEvent(1, cal.getTimeInMillis(), "AB3", "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        AskEvent ask3 = new AskEvent(1, cal.getTimeInMillis(), new MSymbol("AB3"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
         cal.set(2978, 7, 14, 10, 30, 40);
         // 4th event day later than 3rd - should cause a hit
-        AskEvent ask4 = new AskEvent(1, cal.getTimeInMillis(), "AB4", "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        AskEvent ask4 = new AskEvent(1, cal.getTimeInMillis(), new MSymbol("AB4"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
         cal.set(2978, 7, 29, 11, 15, 40);
         // 5th event 15 days later  - window should be empty, reset to 1
-        AskEvent ask5 = new AskEvent(1, cal.getTimeInMillis(), "AB5", "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        AskEvent ask5 = new AskEvent(1, cal.getTimeInMillis(), new MSymbol("AB5"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
 
         sManager.createModule(CEPEsperFactory.PROVIDER_URN, TEST_URN);
         CEPEsperProcessorMXBean esperBean = JMX.newMXBeanProxy(

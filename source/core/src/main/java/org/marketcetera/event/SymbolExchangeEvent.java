@@ -1,6 +1,7 @@
 package org.marketcetera.event;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
 
@@ -19,7 +20,7 @@ public abstract class SymbolExchangeEvent
     /**
      * the symbol for this event
      */
-    private final String mSymbol;
+    private final MSymbol mSymbol;
     /**
      * the exchange on which the event occurred
      */
@@ -30,27 +31,39 @@ public abstract class SymbolExchangeEvent
      * @param inMessageID a <code>long</code> value uniquely identifying this event
      * @param inTimestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code>
      *   in GMT
-     * @param inSymbol a <code>String</code> value containing the symbol quoted in this event
+     * @param inSymbol an <code>MSymbol</code> value containing the symbol quoted in this event
      * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred 
      */    
     protected SymbolExchangeEvent(long inMessageID,
                                   long inTimestamp,
-                                  String inSymbol,
+                                  MSymbol inSymbol,
                                   String inExchange)
     {
         super(inMessageID, 
               inTimestamp);
+        if(inSymbol == null) {
+            throw new NullPointerException();
+        }
         mSymbol = inSymbol;
         mExchange = inExchange;
     }
     /**
      * Gets the symbol associated with this event.
      *
-     * @return a <code>String</code> value
+     * @return an <code>MSymbol</code> value
      */
-    public String getSymbol()
+    public MSymbol getSymbol()
     {
         return mSymbol;
+    }
+    /**
+     * Gets the symbol associated with this event expressed as a <code>String</code>. 
+     *
+     * @return a <code>String</code> value
+     */
+    public String getSymbolAsString()
+    {
+        return mSymbol.getFullSymbol();
     }
     /**
      * Gets the exchange associated with this event.
@@ -60,5 +73,5 @@ public abstract class SymbolExchangeEvent
     public String getExchange()
     {
         return mExchange;
-    }    
+    }
 }

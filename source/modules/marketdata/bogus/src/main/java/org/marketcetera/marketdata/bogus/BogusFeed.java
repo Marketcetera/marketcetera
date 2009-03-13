@@ -845,7 +845,7 @@ public class BogusFeed
                 // take the modified value and add a bid and an ask based on it
                 AskEvent ask = new AskEvent(System.nanoTime(),
                                             System.currentTimeMillis(),
-                                            getBook().getSymbol().getFullSymbol(),
+                                            getBook().getSymbol(),
                                             BGUS_MARKET,
                                             getValue().add(PENNY),
                                             new BigDecimal(sRandom.nextInt(50000) + 1));
@@ -853,7 +853,7 @@ public class BogusFeed
                 mPendingEvents.add(ask);
                 BidEvent bid = new BidEvent(System.nanoTime(),
                                             System.currentTimeMillis(),
-                                            getBook().getSymbol().getFullSymbol(),
+                                            getBook().getSymbol(),
                                             BGUS_MARKET,
                                             getValue().subtract(PENNY),
                                             new BigDecimal(sRandom.nextInt(50000) + 1));

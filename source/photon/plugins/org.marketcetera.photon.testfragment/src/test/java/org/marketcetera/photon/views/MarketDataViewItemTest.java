@@ -83,7 +83,7 @@ public class MarketDataViewItemTest {
 
 	@Test
 	public void testSetBidEvent() {
-		BidEvent bidEvent = new BidEvent(1L, 1L, "MSFT", "ABC", new BigDecimal(10), new BigDecimal(15)); //$NON-NLS-1$ //$NON-NLS-2$
+		BidEvent bidEvent = new BidEvent(1L, 1L, new MSymbol("MSFT"), "ABC", new BigDecimal(10), new BigDecimal(15)); //$NON-NLS-1$ //$NON-NLS-2$
 		fixture.setBidEvent(bidEvent);
 		assertEquals(new BigDecimal(10), fixture.getBidPx());
 		assertEquals(new BigDecimal(15), fixture.getBidSize());
@@ -98,7 +98,7 @@ public class MarketDataViewItemTest {
 		verifyNoMoreInteractions(listener);
 		
 		// change symbol, and make sure no events are fired
-		bidEvent = new BidEvent(1L, 1L, "GOOG", "ABC", new BigDecimal(20), new BigDecimal(25)); //$NON-NLS-1$ //$NON-NLS-2$
+		bidEvent = new BidEvent(1L, 1L, new MSymbol("GOOG"), "ABC", new BigDecimal(20), new BigDecimal(25)); //$NON-NLS-1$ //$NON-NLS-2$
 		assertEquals(new BigDecimal(10), fixture.getBidPx());
 		assertEquals(new BigDecimal(15), fixture.getBidSize());
 		verifyNoMoreInteractions(listener);
@@ -106,7 +106,7 @@ public class MarketDataViewItemTest {
 
 	@Test
 	public void testSetAskEvent() {
-		AskEvent askEvent = new AskEvent(1L, 1L, "MSFT", "ABC", new BigDecimal(10), new BigDecimal(15)); //$NON-NLS-1$ //$NON-NLS-2$
+		AskEvent askEvent = new AskEvent(1L, 1L, new MSymbol("MSFT"), "ABC", new BigDecimal(10), new BigDecimal(15)); //$NON-NLS-1$ //$NON-NLS-2$
 		fixture.setAskEvent(askEvent);
 		assertEquals(new BigDecimal(10), fixture.getOfferPx());
 		assertEquals(new BigDecimal(15), fixture.getOfferSize());
@@ -121,7 +121,7 @@ public class MarketDataViewItemTest {
 		verifyNoMoreInteractions(listener);
 		
 		// change symbol, and make sure no events are fired
-		askEvent = new AskEvent(1L, 1L, "GOOG", "ABC", new BigDecimal(20), new BigDecimal(25)); //$NON-NLS-1$ //$NON-NLS-2$
+		askEvent = new AskEvent(1L, 1L, new MSymbol("GOOG"), "ABC", new BigDecimal(20), new BigDecimal(25)); //$NON-NLS-1$ //$NON-NLS-2$
 		assertEquals(new BigDecimal(10), fixture.getOfferPx());
 		assertEquals(new BigDecimal(15), fixture.getOfferSize());
 		verifyNoMoreInteractions(listener);
@@ -129,7 +129,7 @@ public class MarketDataViewItemTest {
 
 	@Test
 	public void testSetTradeEvent() {
-		TradeEvent tradeEvent = new TradeEvent(1L, 1L, "MSFT", "ABC", new BigDecimal(10), new BigDecimal(15)); //$NON-NLS-1$ //$NON-NLS-2$
+		TradeEvent tradeEvent = new TradeEvent(1L, 1L, new MSymbol("MSFT"), "ABC", new BigDecimal(10), new BigDecimal(15)); //$NON-NLS-1$ //$NON-NLS-2$
 		fixture.setTradeEvent(tradeEvent);
 		assertEquals(new BigDecimal(10), fixture.getLastPx());
 		assertEquals(new BigDecimal(15), fixture.getLastQty());
@@ -144,7 +144,7 @@ public class MarketDataViewItemTest {
 		verifyNoMoreInteractions(listener);
 		
 		// change symbol, and make sure no events are fired
-		tradeEvent = new TradeEvent(1L, 1L, "GOOG", "ABC", new BigDecimal(20), new BigDecimal(25)); //$NON-NLS-1$ //$NON-NLS-2$
+		tradeEvent = new TradeEvent(1L, 1L, new MSymbol("GOOG"), "ABC", new BigDecimal(20), new BigDecimal(25)); //$NON-NLS-1$ //$NON-NLS-2$
 		assertEquals(new BigDecimal(10), fixture.getLastPx());
 		assertEquals(new BigDecimal(15), fixture.getLastQty());
 		verifyNoMoreInteractions(listener);

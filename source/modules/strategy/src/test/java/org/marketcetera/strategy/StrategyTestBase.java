@@ -477,19 +477,19 @@ public class StrategyTestBase
         {
             inSupport.send(new TradeEvent(System.nanoTime(),
                                           System.currentTimeMillis(),
-                                          "GOOG",
+                                          new MSymbol("GOOG"),
                                           "Exchange",
                                           new BigDecimal("100"),
                                           new BigDecimal("10000")));
             inSupport.send(new BidEvent(System.nanoTime(),
                                         System.currentTimeMillis(),
-                                        "GOOG",
+                                        new MSymbol("GOOG"),
                                         "Exchange",
                                         new BigDecimal("200"),
                                         new BigDecimal("20000")));
             inSupport.send(new AskEvent(System.nanoTime(),
                                         System.currentTimeMillis(),
-                                        "GOOG",
+                                        new MSymbol("GOOG"),
                                         "Exchange",
                                         new BigDecimal("200"),
                                         new BigDecimal("20000")));
@@ -1084,13 +1084,13 @@ public class StrategyTestBase
         setPropertiesToNull();
         tradeEvent = new TradeEvent(System.nanoTime(),
                                     System.currentTimeMillis(),
-                                    "METC",
+                                    new MSymbol("METC"),
                                     "Q",
                                     new BigDecimal("1000.25"),
                                     new BigDecimal("1000"));
         askEvent = new AskEvent(System.nanoTime(),
                                 System.currentTimeMillis(),
-                                "METC",
+                                new MSymbol("METC"),
                                 "Q",
                                 new BigDecimal("100.00"),
                                 new BigDecimal("10000"));

@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Set;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
 
@@ -43,7 +44,7 @@ public abstract class BidAskEvent
      */
     protected BidAskEvent(long inMessageID,
                           long inTimestamp,
-                          String inSymbol,
+                          MSymbol inSymbol,
                           String inExchange,
                           BigDecimal inPrice,
                           BigDecimal inSize, 

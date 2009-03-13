@@ -316,12 +316,12 @@ public class JavaStrategy
         if(inEvent instanceof BidAskEvent) {
             BidAskEvent event = (BidAskEvent)inEvent;
             suggestedOrder.setPrice(event.getPrice());
-            suggestedOrder.setSymbol(new MSymbol(event.getSymbol()));
+            suggestedOrder.setSymbol(event.getSymbol());
             suggestedOrder.setQuantity(event.getSize());
         } else if(inEvent instanceof TradeEvent) {
             TradeEvent event = (TradeEvent)inEvent;
             suggestedOrder.setPrice(event.getPrice());
-            suggestedOrder.setSymbol(new MSymbol(event.getSymbol()));
+            suggestedOrder.setSymbol(event.getSymbol());
             suggestedOrder.setQuantity(event.getSize());
         }
         suggestTrade(suggestedOrder,
