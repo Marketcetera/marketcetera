@@ -10,10 +10,10 @@ import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.commons.ui.table.ColumnConfiguration;
 import org.marketcetera.photon.commons.ui.table.TableConfiguration;
 import org.marketcetera.photon.commons.ui.table.TableSupport;
+import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
 import org.marketcetera.photon.internal.strategy.Messages;
 import org.marketcetera.photon.internal.strategy.TradeSuggestion;
 import org.marketcetera.photon.internal.strategy.TradeSuggestionManager;
-import org.marketcetera.photon.ui.ChooseColumnsMenu.ITableProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class TradeSuggestionsView extends ViewPart implements ITableProvider {
+public class TradeSuggestionsView extends ViewPart implements IColumnProvider {
 
 	private TableSupport mTableSupport = TableSupport
 			.create(getTableConfiguration());
@@ -55,7 +55,7 @@ public class TradeSuggestionsView extends ViewPart implements ITableProvider {
 	}
 
 	@Override
-	public Table getTable() {
+	public Table getColumnWidget() {
 		return mTableSupport.getTableViewer().getTable();
 	}
 

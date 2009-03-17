@@ -52,10 +52,11 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.commons.ui.table.ColumnState;
+import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.marketdata.MarketDataSubscriber;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.photon.ui.ChooseColumnsMenu.ITableProvider;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -72,30 +73,18 @@ import quickfix.field.Symbol;
 /**
  * Market data view.
  * 
- * Note: enabling/disabling the symbol entry text field based on feed status has been commented out
- * since I don't believe it is necessary anymore (now that you can still add tickers even if the feed
- * is offline). Someone may ask me to add this back so I haven't removed it yet.
- * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.0.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public final class MarketDataView extends ViewPart implements IMSymbolListener,
-		ITableProvider, Messages {
+		IColumnProvider, Messages {
 
 	/**
 	 * The view ID.
 	 */
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; //$NON-NLS-1$
-
-	private static final String RESTORED_WIDTH_KEY = "restoredWidth"; //$NON-NLS-1$
-
-	private static final String COLUMN_WIDTHS = "COLUMN_WIDTHS"; //$NON-NLS-1$
-
-	private static final String COLUMN_ORDER = "COLUMN_ORDER"; //$NON-NLS-1$
-
-	private static final String COLUMN_RESTORED_WIDTHS = "COLUMN_RESTORED_WIDTHS"; //$NON-NLS-1$
 
 	private Map<MSymbol, MarketDataViewSubscriber> mModules = new HashMap<MSymbol, MarketDataViewSubscriber>();
 
@@ -110,8 +99,6 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	private IMemento mViewState;
 
 	private Clipboard mClipboard;
-
-//	private IFeedStatusChangedListener mFeedStatusChangedListener;
 
 	/**
 	 * Constructor.
@@ -138,7 +125,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	@Override
-	public Table getTable() {
+	public Table getColumnWidget() {
 		return mViewer != null ? mViewer.getTable() : null;
 	}
 
@@ -147,15 +134,6 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		final IActionBars actionBars = getViewSite().getActionBars();
 		IToolBarManager toolbar = actionBars.getToolBarManager();
 		mSymbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
-//		mFeedStatusChangedListener = new IFeedStatusChangedListener() {
-//
-//			@Override
-//			public void feedStatusChanged(FeedStatusEvent event) {
-//				handleFeedStatusChanged(event.getNewStatus());				
-//			}			
-//		};
-//		mMarketDataManager.addActiveFeedStatusChangedListener(mFeedStatusChangedListener);
-//		handleFeedStatusChanged(mMarketDataManager.getActiveFeedStatus());
 		toolbar.add(mSymbolEntryText);
 		toolbar.add(new AddSymbolAction(mSymbolEntryText, this));
 
@@ -217,31 +195,10 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 		// restore table state if it exists
 		if (mViewState != null) {
-			String columnOrderString = mViewState.getString(COLUMN_ORDER);
-			if (columnOrderString != null) {
-				int[] columnOrder = deserialize(columnOrderString);
-				if (columnOrder.length == table.getColumns().length) {
-					table.setColumnOrder(columnOrder);
-				}
-			}
-			String columnWidthsString = mViewState.getString(COLUMN_WIDTHS);
-			if (columnWidthsString != null) {
-				int[] columnWidths = deserialize(columnWidthsString);
-				if (columnWidths.length == table.getColumns().length) {
-					for (int i = 0; i < columnWidths.length; i++) {
-						table.getColumn(i).setWidth(columnWidths[i]);
-					}
-				}
-			}
-			String columnRestoredWidthsString = mViewState
-					.getString(COLUMN_RESTORED_WIDTHS);
-			if (columnRestoredWidthsString != null) {
-				int[] restoredWidths = deserialize(columnRestoredWidthsString);
-				if (restoredWidths.length == table.getColumns().length) {
-					for (int i = 0; i < restoredWidths.length; i++) {
-						table.getColumn(i).setData(RESTORED_WIDTH_KEY,
-								restoredWidths[i]);
-					}
+			ColumnState.restore(table, mViewState);
+			for (TableColumn column : table.getColumns()) {
+				if (column.getWidth() == 0) {
+					column.setResizable(false);
 				}
 			}
 		}
@@ -292,57 +249,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 	@Override
 	public void saveState(IMemento memento) {
-		memento.putString(COLUMN_ORDER, serialize(getTable().getColumnOrder()));
-		final TableColumn[] columns = getTable().getColumns();
-		int[] columnWidths = new int[columns.length];
-		for (int i = 0; i < columns.length; i++) {
-			columnWidths[i] = columns[i].getWidth();
-		}
-		memento.putString(COLUMN_WIDTHS, serialize(columnWidths));
-		int[] restoredWidths = new int[columns.length];
-		for (int i = 0; i < columns.length; i++) {
-			final Integer restoredWidth = (Integer) columns[i]
-					.getData(RESTORED_WIDTH_KEY);
-			restoredWidths[i] = restoredWidth == null ? 70 : restoredWidth;
-		}
-		memento.putString(COLUMN_RESTORED_WIDTHS, serialize(restoredWidths));
+		ColumnState.save(getColumnWidget(), memento);
 	}
-
-	private String serialize(int[] array) {
-		StringBuilder builder = new StringBuilder();
-		if (array.length > 0) {
-			builder.append(array[0]);
-			for (int i = 1; i < array.length; i++) {
-				builder.append(',');
-				builder.append(array[i]);
-			}
-		}
-		return builder.toString();
-	}
-
-	private int[] deserialize(String string) {
-		String[] split = string.split(","); //$NON-NLS-1$
-		int[] array = new int[split.length];
-		try {
-			for (int i = 0; i < split.length; i++) {
-				array[i] = Integer.parseInt(split[i]);
-			}
-		} catch (NumberFormatException e) {
-			return new int[0];
-		}
-		return array;
-	}
-
-//	private void handleFeedStatusChanged(FeedStatus status) {
-//		if (mSymbolEntryText == null) {
-//			return;
-//		}
-//		if (status == FeedStatus.AVAILABLE) {
-//			mSymbolEntryText.setEnabled(true);
-//		} else {
-//			mSymbolEntryText.setEnabled(false);
-//		}
-//	}
 
 	@Override
 	public void setFocus() {
@@ -399,7 +307,6 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 	@Override
 	public void dispose() {
-//		mMarketDataManager.removeActiveFeedStatusChangedListener(mFeedStatusChangedListener);
 		for (Object object : mItems) {
 			mMarketDataManager.removeSubscriber(mModules.get(((MarketDataViewItem) object).getSymbol()));
 		}
