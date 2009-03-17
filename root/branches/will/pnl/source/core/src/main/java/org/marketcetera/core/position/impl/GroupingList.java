@@ -44,6 +44,11 @@ import ca.odell.glazedlists.matchers.Matcher;
 @ClassVersion("$Id$")
 public class GroupingList<E> extends TransformedList<E, EventList<E>> {
 
+    public static <T> GroupingList<T> newGroupingList(EventList<T> source,
+            GroupMatcherFactory<T, GroupMatcher<T>> factory) {
+        return new GroupingList<T>(source, factory);
+    }
+
     /**
      * The GroupLists that make up this GroupingList in sorted order (sorted by their
      * GroupMatchers).
@@ -312,6 +317,7 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
         }
 
         public GroupList(GroupMatcher<E> matcher) {
+            this.readWriteLock = GroupingList.this.readWriteLock;
             this.matcher = matcher;
         }
 

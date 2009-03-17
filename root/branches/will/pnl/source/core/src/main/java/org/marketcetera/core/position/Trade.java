@@ -33,7 +33,7 @@ public interface Trade {
     /**
      * Return the id of the trader who performed the trade.
      * 
-     * @return the trader id, cannot be null or empty
+     * @return the trader id, may be null
      */
     String getTraderId();
 
