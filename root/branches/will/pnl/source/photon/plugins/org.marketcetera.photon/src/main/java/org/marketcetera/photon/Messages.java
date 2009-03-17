@@ -493,8 +493,12 @@ public interface Messages
 			"client_connection_name");//$NON-NLS-1$
     public static final I18NMessage0P UNKNOWN_VALUE = new I18NMessage0P(LOGGER,
 			"unknown_value");//$NON-NLS-1$
-	public static final I18NMessage0P BROKER_SUPPORT_TABLE_FORMAT_BROKER_COLUMN = new I18NMessage0P(LOGGER,
-			"broker_support_table_format.broker_column");//$NON-NLS-1$
+	public static final I18NMessage0P BROKER_SUPPORT_TABLE_FORMAT_BROKER_COLUMN = new I18NMessage0P(
+			LOGGER, "broker_support_table_format.broker_column");//$NON-NLS-1$
+	public static final I18NMessage0P BROKER_SUPPORT_TABLE_FORMAT_TRADER_COLUMN = new I18NMessage0P(
+			LOGGER, "broker_support_table_format.trader_column");//$NON-NLS-1$
+	public static final I18NMessage1P BROKER_SUPPORT_TABLE_FORMAT_TRADER_NAME_ERROR = new I18NMessage1P(
+			LOGGER, "broker_support_table_format.trader_name_error");//$NON-NLS-1$
 	public static final I18NMessage0P BROKER_MANAGER_AUTO_SELECT = new I18NMessage0P(LOGGER,
 			"broker_manager.auto_select");//$NON-NLS-1$
 	public static final I18NMessage2P BROKER_LABEL_PATTERN = new I18NMessage2P(

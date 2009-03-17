@@ -16,7 +16,6 @@ import org.marketcetera.photon.parser.OrderFormatterTest;
 import org.marketcetera.photon.parser.ParserTest;
 import org.marketcetera.photon.preferences.PreferenceInitializerTest;
 import org.marketcetera.photon.quickfix.QuickFIXTest;
-import org.marketcetera.photon.ui.ChooseColumnsMenuTest;
 import org.marketcetera.photon.ui.databinding.FormTextObservableValueTest;
 import org.marketcetera.photon.ui.databinding.HasValueConverterTest;
 import org.marketcetera.photon.ui.databinding.IsNewOrderMessageConverterTest;
@@ -102,7 +101,6 @@ public class TS_Photon {
 		suite.addTestSuite(OpenOrdersViewTest.class);
 		
 		
-		suite.addTest(new JUnit4TestAdapter(ChooseColumnsMenuTest.class));
 		suite.addTest(new JUnit4TestAdapter(MarketDataViewItemTest.class));
 		
 		suite.addTest(new JUnit4TestAdapter(BrokerNotificationListenerTest.class));		
