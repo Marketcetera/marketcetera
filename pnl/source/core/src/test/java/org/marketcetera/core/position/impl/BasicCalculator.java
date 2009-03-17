@@ -1,8 +1,5 @@
 package org.marketcetera.core.position.impl;
 
-import static org.junit.Assert.assertThat;
-import static org.marketcetera.core.position.impl.OrderingComparison.comparesEqualTo;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,8 +12,8 @@ import org.marketcetera.core.position.Trade;
 /* $License$ */
 
 /**
- * Basic implementation of {@link PositionMetricsCalculator} that recomputes
- * each value from scratch every time.
+ * Basic implementation of {@link PositionMetricsCalculator} that recomputes each value from scratch
+ * every time.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -26,6 +23,13 @@ public class BasicCalculator implements PositionMetricsCalculator {
 
     private List<Trade> trades = new ArrayList<Trade>();
     private BigDecimal tick;
+    private final BigDecimal mIncomingPosition;
+    private final BigDecimal mClosingPrice;
+
+    public BasicCalculator(BigDecimal incomingPosition, BigDecimal closingPrice) {
+        mIncomingPosition = incomingPosition;
+        mClosingPrice = closingPrice;
+    }
 
     public PositionMetrics tick(String current) {
         return tick(new BigDecimal(current));
@@ -44,12 +48,18 @@ public class BasicCalculator implements PositionMetricsCalculator {
     }
 
     private PositionMetrics createPositionMetrics() {
-        return new PositionMetricsImpl(getPosition(), getPositionPL(), getTradingPL(),
-                getRealizedPL(), getUnrealizedPL(), getTotalPL());
+        BigDecimal positionPL = getPositionPL();
+        BigDecimal tradingPL = getTradingPL();
+        BigDecimal totalPL = null;
+        if (tick != null) {
+            totalPL = positionPL.add(tradingPL);
+        }
+        return new PositionMetricsImpl(mIncomingPosition, getPosition(), positionPL,
+                tradingPL, getRealizedPL(), getUnrealizedPL(), totalPL);
     }
 
     private BigDecimal getPosition() {
-        BigDecimal position = BigDecimal.ZERO;
+        BigDecimal position = mIncomingPosition;
         for (Trade trade : trades) {
             position = position.add(trade.getQuantity());
         }
@@ -57,13 +67,15 @@ public class BasicCalculator implements PositionMetricsCalculator {
     }
 
     private BigDecimal getPositionPL() {
-        // TODO: implement this using incoming position and closing price
-        return BigDecimal.ZERO;
+        if (tick == null) {
+            return null;
+        }
+        return mIncomingPosition.multiply(tick.subtract(mClosingPrice));
     }
 
     private BigDecimal getTradingPL() {
         if (tick == null) {
-            return BigDecimal.ZERO;
+            return null;
         }
         BigDecimal trading = BigDecimal.ZERO;
         for (Trade trade : trades) {
@@ -77,6 +89,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
         BigDecimal total = BigDecimal.ZERO;
         Queue<PositionElement> longs = new LinkedList<PositionElement>();
         Queue<PositionElement> shorts = new LinkedList<PositionElement>();
+        adjustIncomingPosition(longs, shorts);
         for (Trade trade : trades) {
             total = total.add(processTrade(longs, shorts, trade));
         }
@@ -84,8 +97,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
     }
 
     /**
-     * Helper method that updates two arrays of long and short position elements
-     * based on a trade.
+     * Helper method that updates two arrays of long and short position elements based on a trade.
      */
     private BigDecimal processTrade(Queue<PositionElement> longs, Queue<PositionElement> shorts,
             Trade trade) {
@@ -137,10 +149,12 @@ public class BasicCalculator implements PositionMetricsCalculator {
 
     private BigDecimal getUnrealizedPL() {
         if (tick == null) {
-            return BigDecimal.ZERO;
+            return null;
         }
         Queue<PositionElement> longs = new LinkedList<PositionElement>();
         Queue<PositionElement> shorts = new LinkedList<PositionElement>();
+
+        adjustIncomingPosition(longs, shorts);
         for (Trade trade : trades) {
             processTrade(longs, shorts, trade);
         }
@@ -154,11 +168,12 @@ public class BasicCalculator implements PositionMetricsCalculator {
         return total;
     }
 
-    private BigDecimal getTotalPL() {
-        BigDecimal total = getPositionPL().add(getTradingPL());
-        // the totals should be the same regardless of how you add it up
-        assertThat(total, comparesEqualTo(getUnrealizedPL().add(getRealizedPL())));
-        return total;
+    private void adjustIncomingPosition(Queue<PositionElement> longs, Queue<PositionElement> shorts) {
+        if (mIncomingPosition.signum() == 1) {
+            longs.add(new PositionElement(mIncomingPosition, mClosingPrice));
+        } else if (mIncomingPosition.signum() == -1) {
+            shorts.add(new PositionElement(mIncomingPosition.negate(), mClosingPrice));
+        }
     }
 
     private class PositionElement {

@@ -17,8 +17,7 @@ import ca.odell.glazedlists.event.ListEventListener;
 /* $License$ */
 
 /**
- * Responsible for updating a PositionRow when trade or market data events
- * occur.
+ * Responsible for updating a PositionRow when trade or market data events occur.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -29,7 +28,7 @@ public final class PositionRowUpdater {
 
     private final ListEventListener<Trade> listChangeListener;
     private final EventList<Trade> trades;
-    private PositionRowImpl positionRow;
+    private final PositionRowImpl mPositionRow;
     private PositionMarketData marketData;
     private PropertyChangeListenerProxy symbolChangeListener;
     private PositionMetricsCalculator calculator;
@@ -40,7 +39,7 @@ public final class PositionRowUpdater {
      * @return the dynamically updated position
      */
     public PositionRow getPosition() {
-        return positionRow;
+        return mPositionRow;
     }
 
     /**
@@ -48,17 +47,19 @@ public final class PositionRowUpdater {
      * 
      * {@link #dispose()} must be called when the instance is no longer in use.
      * 
+     * @param positionRow
+     *            the position to update
      * @param trades
      *            event list of trades that make up the position
      * @param marketData
      *            the market data provider
      */
-    public PositionRowUpdater(EventList<Trade> trades, PositionMarketData marketData) {
+    public PositionRowUpdater(PositionRowImpl positionRow, EventList<Trade> trades,
+            PositionMarketData marketData) {
+        mPositionRow = positionRow;
         this.trades = trades;
         this.marketData = marketData;
-        Trade trade = trades.get(0);
-        positionRow = new PositionRowImpl(trade.getAccount(), trade.getSymbol(), trade
-                .getTraderId(), BigDecimal.ZERO);
+
         listChangeListener = new ListEventListener<Trade>() {
 
             @Override
@@ -66,7 +67,7 @@ public final class PositionRowUpdater {
                 PositionRowUpdater.this.listChanged(listChanges);
             }
         };
-        symbolChangeListener = new PropertyChangeListenerProxy(trade.getSymbol(),
+        symbolChangeListener = new PropertyChangeListenerProxy(mPositionRow.getSymbol(),
                 new PropertyChangeListener() {
 
                     @Override
@@ -74,7 +75,7 @@ public final class PositionRowUpdater {
                         tick((BigDecimal) event.getNewValue());
                     }
                 });
-        positionRow.setPositionMetrics(recalculate());
+        mPositionRow.setPositionMetrics(recalculate());
         connect();
     }
 
@@ -85,8 +86,8 @@ public final class PositionRowUpdater {
     }
 
     /**
-     * Releases the resources held by this object. After dispose has been
-     * called, this object should no longer be used.
+     * Releases the resources held by this object. After dispose has been called, this object should
+     * no longer be used.
      */
     public void dispose() {
         trades.removeListEventListener(listChangeListener);
@@ -95,7 +96,7 @@ public final class PositionRowUpdater {
     }
 
     private void tick(BigDecimal tick) {
-        positionRow.setPositionMetrics(calculator.tick(tick));
+        mPositionRow.setPositionMetrics(calculator.tick(tick));
     }
 
     private void listChanged(ListEvent<Trade> listChanges) {
@@ -105,21 +106,21 @@ public final class PositionRowUpdater {
             final int changeType = listChanges.getType();
             if (changeType == ListEvent.INSERT && trades.size() == changeIndex + 1) {
                 Trade trade = trades.get(changeIndex);
-                positionRow.setPositionMetrics(calculator.trade(trade));
+                mPositionRow.setPositionMetrics(calculator.trade(trade));
             } else {
-                positionRow.setPositionMetrics(recalculate());
+                mPositionRow.setPositionMetrics(recalculate());
             }
         }
     }
 
     private PositionMetrics recalculate() {
-        // TODO: provide real incoming position and closing price
-        PositionMetrics metrics = new PositionMetricsImpl(null, null, null, null, null, null);
-        calculator = new PositionMetricsCalculatorImpl(marketData.getLastTradePrice(positionRow.getSymbol()));
+        String symbol = mPositionRow.getSymbol();
+        calculator = new PositionMetricsCalculatorImpl(mPositionRow.getPositionMetrics()
+                .getIncomingPosition(), marketData.getClosingPrice(symbol));
+        PositionMetrics metrics = calculator.tick(marketData.getLastTradePrice(symbol));
         for (Trade trade : trades) {
             metrics = calculator.trade(trade);
         }
         return metrics;
     }
-
 }

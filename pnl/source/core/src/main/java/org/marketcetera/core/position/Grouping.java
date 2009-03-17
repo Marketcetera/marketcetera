@@ -16,5 +16,31 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public enum Grouping {
-    Symbol, Account, Trader
+    Symbol {
+        @Override
+        public String get(PositionRow row) {
+            return row.getSymbol();
+        }
+    },
+    Account {
+        @Override
+        public String get(PositionRow row) {
+            return row.getAccount();
+        }
+    },
+    Trader {
+        @Override
+        public String get(PositionRow row) {
+            return row.getTraderId();
+        }
+    };
+
+    /**
+     * Extracts the value of the field represented by this grouping.
+     * 
+     * @param row
+     *            the row to extract from
+     * @return the value
+     */
+    public abstract String get(PositionRow row);
 };

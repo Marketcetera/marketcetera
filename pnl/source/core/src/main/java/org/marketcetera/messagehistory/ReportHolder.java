@@ -6,6 +6,7 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
@@ -74,6 +75,15 @@ public class ReportHolder
      */
     public BrokerID getBrokerID() {
     	return mReport.getBrokerID();
+    }
+
+    /**
+     * Gets the ID of the trader the report is associated with.
+     *
+     * @return the trader ID
+     */
+    public UserID getTraderID() {
+    	return mReport.getActorID();
     }
 
     /**
