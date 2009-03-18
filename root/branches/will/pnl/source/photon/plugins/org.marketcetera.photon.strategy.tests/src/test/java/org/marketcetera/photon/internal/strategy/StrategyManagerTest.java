@@ -100,7 +100,7 @@ public class StrategyManagerTest {
 			
 				@Override
 				public Boolean call() throws Exception {
-					return !bean.getStatus().equals("Compiling");
+					return !bean.getStatus().equals("COMPILING");
 				}
 			});
 			fixture.stop(strategy);
