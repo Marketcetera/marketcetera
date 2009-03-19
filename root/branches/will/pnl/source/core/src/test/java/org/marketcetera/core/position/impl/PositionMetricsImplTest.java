@@ -23,6 +23,8 @@ public class PositionMetricsImplTest {
 
     @Test
     public void testConstructor() throws Exception {
+        assertPNL(new PositionMetricsImpl(), "0", "0", null, null, "0", null, null);
+        assertPNL(new PositionMetricsImpl(convert("-10")), "-10", "-10", null, null, "0", null, null);
         String incomingPosition = "17";
         String position = "10";
         String positional = "15";
@@ -32,7 +34,7 @@ public class PositionMetricsImplTest {
         String total = "20";
         assertPNL(createMetrics(incomingPosition, position, positional, trading, realized, unrealized, total),
                 incomingPosition, position, positional, trading, realized, unrealized, total);
-        incomingPosition = "16";
+        incomingPosition = "-16.9";
         position = "10.8";
         positional = "15.9";
         trading = "12.5";

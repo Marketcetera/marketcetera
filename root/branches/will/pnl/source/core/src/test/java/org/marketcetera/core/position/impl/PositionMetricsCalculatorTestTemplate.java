@@ -31,33 +31,38 @@ public abstract class PositionMetricsCalculatorTestTemplate implements Runnable 
     }
 
     public void run() {
-	    Random random = new Random(1);
-	    
-	    BigDecimal incomingPosition = randomBigDecimal(random);
-	    BigDecimal closingPrice = randomBigDecimal(random);
+        Random random = new Random(1);
+
+        BigDecimal incomingPosition = randomBigDecimal(random);
+        BigDecimal closingPrice = randomBigDecimal(random);
+        SLF4JLoggerProxy.debug(this, MessageFormat.format(
+                "Incoming position is {0} and closing price is {1}.", incomingPosition,
+                closingPrice));
         PositionMetricsCalculator calculator = createCalculator(incomingPosition, closingPrice);
-		PositionMetricsCalculator basicCalculator = createBenchmarkCalculator(incomingPosition, closingPrice);
+        PositionMetricsCalculator basicCalculator = createBenchmarkCalculator(incomingPosition,
+                closingPrice);
 
-		for (int i = 0; i < numTests; i++) {
-			if (random.nextBoolean()) {
-				BigDecimal tradePrice = randomBigDecimal(random);
-				SLF4JLoggerProxy.debug(this, MessageFormat.format("Iteration {0}: Tick of ${1}", i,
-						tradePrice));
-				assertPositionMetrics(basicCalculator.tick(tradePrice),
-						calculator.tick(tradePrice), i);
-			} else {
-				Trade trade = createTrade(random.nextBoolean(), randomBigDecimal(random),
-						randomBigDecimal(random), i);
-				SLF4JLoggerProxy.debug(this, MessageFormat.format(
-						"Iteration {0}: Trade of {1} ${2}", i, trade
-								.getQuantity(), trade.getPrice()));
-				assertPositionMetrics(basicCalculator.trade(trade), calculator.trade(trade), i);
-			}
-		}
+        for (int i = 0; i < numTests; i++) {
+            if (random.nextBoolean()) {
+                BigDecimal tradePrice = randomBigDecimal(random);
+                SLF4JLoggerProxy.debug(this, MessageFormat.format("Iteration {0}: Tick of ${1}", i,
+                        tradePrice));
+                assertPositionMetrics(basicCalculator.tick(tradePrice),
+                        calculator.tick(tradePrice), i);
+            } else {
+                Trade trade = createTrade(random.nextBoolean(), randomBigDecimal(random),
+                        randomBigDecimal(random), i);
+                SLF4JLoggerProxy.debug(this, MessageFormat.format(
+                        "Iteration {0}: Trade of {1} ${2}", i, trade.getQuantity(), trade
+                                .getPrice()));
+                assertPositionMetrics(basicCalculator.trade(trade), calculator.trade(trade), i);
+            }
+        }
 
-	}
+    }
 
-    protected PositionMetricsCalculator createBenchmarkCalculator(BigDecimal incomingPosition, BigDecimal closingPrice) {
+    protected PositionMetricsCalculator createBenchmarkCalculator(BigDecimal incomingPosition,
+            BigDecimal closingPrice) {
         return new BasicCalculator(incomingPosition, closingPrice);
     }
 

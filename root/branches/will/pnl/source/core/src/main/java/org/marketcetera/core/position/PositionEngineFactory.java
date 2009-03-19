@@ -182,11 +182,7 @@ public class PositionEngineFactory {
 
         @Override
         public Trade evaluate(ReportBase sourceValue) {
-            return fromReport((ExecutionReport) sourceValue);
-        }
-
-        private Trade fromReport(ExecutionReport report) {
-            return new ExecutionReportAdapter(report);
+            return new ExecutionReportAdapter((ExecutionReport) sourceValue);
         }
     }
 

@@ -3,7 +3,6 @@ package org.marketcetera.core.position.impl;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.util.misc.ClassVersion;
@@ -15,7 +14,7 @@ import ca.odell.glazedlists.event.ListEventListener;
 /* $License$ */
 
 /**
- * This class maintains a summary position for an event list of positions.
+ * This class maintains a summary position row based on its child positions.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -31,22 +30,16 @@ public class SummaryRowUpdater {
     /**
      * Constructor.
      * 
-     * @param sourceValue
-     *            the list to summarize, must have at least one element
-     * @param grouping
-     *            the current grouping level, cannot be null
+     * @param summary
+     *            the summary row to be updated, must have a child list
      * @throws IllegalArgumentException
-     *             if sourceValue is null or empty, or grouping is null
+     *             if summary is null or summary.getChildren() is null
      */
-    public SummaryRowUpdater(EventList<PositionRow> sourceValue, Grouping grouping) {
-        Validate.notEmpty(sourceValue);
-        Validate.notNull(grouping);
-        mChildren = sourceValue;
-        PositionRow row = sourceValue.get(0);
-        // use the key data from the first row...it won't exactly match all rows, but it's
-        // sufficient for further grouping
-        mPositionRow = new PositionRowImpl(row.getSymbol(), row.getAccount(), row.getTraderId(),
-                grouping.get(row), mChildren);
+    public SummaryRowUpdater(PositionRowImpl summary) {
+        Validate.notNull(summary);
+        Validate.notNull(summary.getChildren());
+        mChildren = summary.getChildren();
+        mPositionRow = summary;
         listChangeListener = new ListEventListener<PositionRow>() {
 
             @Override
@@ -118,6 +111,7 @@ public class SummaryRowUpdater {
     }
 
     private BigDecimal add(BigDecimal current, BigDecimal augend) {
+        // if either is null (unknown), the result is also unknown
         return current == null || augend == null ? null : current.add(augend);
     }
 

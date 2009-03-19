@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.util.misc.ClassVersion;
@@ -26,7 +27,7 @@ class PositionRowImpl implements PositionRow {
     private final String mSymbol;
     private final String mAccount;
     private final String mTraderId;
-    private final String mGrouping;
+    private final Grouping[] mGrouping;
     private final EventList<PositionRow> mChildren;
     private PositionMetrics mPositionMetrics;
 
@@ -44,7 +45,7 @@ class PositionRowImpl implements PositionRow {
      * @param children
      *            the children
      */
-    PositionRowImpl(String symbol, String account, String trader, String grouping,
+    PositionRowImpl(String symbol, String account, String trader, Grouping[] grouping,
             EventList<PositionRow> children) {
         this(symbol, account, trader, grouping, children, new PositionMetricsImpl());
     }
@@ -103,7 +104,7 @@ class PositionRowImpl implements PositionRow {
      * @throws IllegalArgumentException
      *             if metrics is null
      */
-    PositionRowImpl(String symbol, String account, String trader, String grouping,
+    PositionRowImpl(String symbol, String account, String trader, Grouping[] grouping,
             EventList<PositionRow> children, PositionMetrics metrics) {
         Validate.notNull(metrics);
         mSymbol = symbol;
@@ -130,7 +131,7 @@ class PositionRowImpl implements PositionRow {
     }
 
     @Override
-    public String getGrouping() {
+    public Grouping[] getGrouping() {
         return mGrouping;
     }
 
@@ -164,6 +165,7 @@ class PositionRowImpl implements PositionRow {
                 .append("symbol", mSymbol) //$NON-NLS-1$
                 .append("account", mAccount) //$NON-NLS-1$
                 .append("traderId", mTraderId) //$NON-NLS-1$
+                .append("grouping", mGrouping) //$NON-NLS-1$
                 .toString();
     }
 
