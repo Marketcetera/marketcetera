@@ -7,7 +7,8 @@ import ca.odell.glazedlists.EventList;
 /* $License$ */
 
 /**
- * Represents a row of position data.
+ * Represents a row of position data. A PositionRow can either represent a unique position (for
+ * symbol, account, trader tuple) or a summary of multiple positions.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -19,12 +20,18 @@ public interface PositionRow {
     /**
      * Returns the symbol being held in this position.
      * 
-     * @return the symbol of the position, null if unknown
+     * If this position row is a summary and symbol is not part of the grouping, the value is
+     * undefined.
+     * 
+     * @return the symbol of the position
      */
     String getSymbol();
 
     /**
      * Returns the account to which the position is applied.
+     * 
+     * If this position row is a summary and account is not part of the grouping, the value is
+     * undefined.
      * 
      * @return the account of the position, null if unknown
      */
@@ -33,20 +40,20 @@ public interface PositionRow {
     /**
      * Returns the trader id of the position.
      * 
+     * If this position row is a summary and trader is not part of the grouping, the value is
+     * undefined.
+     * 
      * @return the trader id of the position, null if unknown
      */
     String getTraderId();
 
     /**
-     * Returns the grouping value. This property only makes sense if this is a summary row, in which
-     * case it will be the value controlling the grouping at the current level. It will be one of
-     * {@link #getSymbol()}, {@link #getAccount()}, or {@link #getTraderId()}.
+     * Returns the grouping in effect on this position. This property only applies if this is a
+     * summary row.
      * 
-     * If this is not a summary row, the returned value will always be null.
-     * 
-     * @return the grouping value
+     * @return the grouping in effect, null if this is not a summary row.
      */
-    String getGrouping();
+    Grouping[] getGrouping();
 
     /**
      * Returns the latest value of the computed position-related metrics for this position.

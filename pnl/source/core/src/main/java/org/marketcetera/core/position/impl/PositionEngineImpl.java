@@ -1,12 +1,12 @@
 package org.marketcetera.core.position.impl;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.IncomingPositionSupport;
 import org.marketcetera.core.position.PositionEngine;
@@ -140,8 +140,8 @@ public final class PositionEngineImpl implements PositionEngine {
     @ClassVersion("$Id$")
     private final static class GroupingMatcher implements GroupMatcher<PositionRow> {
 
-        private String[] mValues;
-        private Grouping[] mGrouping;
+        private final String[] mValues;
+        private final Grouping[] mGrouping;
 
         public GroupingMatcher(PositionRow row, Grouping... grouping) {
             mGrouping = grouping;
@@ -158,7 +158,7 @@ public final class PositionEngineImpl implements PositionEngine {
 
         @Override
         public boolean matches(PositionRow item) {
-            return new EqualsBuilder().append(mValues, getValues(item)).isEquals();
+            return Arrays.equals(mValues, getValues(item));
         }
 
         @Override
@@ -204,9 +204,9 @@ public final class PositionEngineImpl implements PositionEngine {
             AdvancedFunction<EventList<PositionRow>, PositionRow> {
 
         private final Map<EventList<PositionRow>, SummaryRowUpdater> map = new IdentityHashMap<EventList<PositionRow>, SummaryRowUpdater>();
-        private final Grouping mGrouping;
+        private final Grouping[] mGrouping;
 
-        public SummarizeFunction(Grouping grouping) {
+        public SummarizeFunction(Grouping... grouping) {
             mGrouping = grouping;
         }
 
@@ -224,7 +224,12 @@ public final class PositionEngineImpl implements PositionEngine {
 
         @Override
         public PositionRow evaluate(EventList<PositionRow> sourceValue) {
-            SummaryRowUpdater calculator = new SummaryRowUpdater(sourceValue, mGrouping);
+            PositionRow row = sourceValue.get(0);
+            // use the key data from the first row...it won't exactly match all rows, but it's
+            // sufficient for further grouping
+            PositionRowImpl summary = new PositionRowImpl(row.getSymbol(), row.getAccount(), row.getTraderId(),
+                    mGrouping, sourceValue);
+            SummaryRowUpdater calculator = new SummaryRowUpdater(summary);
             map.put(sourceValue, calculator);
             return calculator.getSummary();
         }
@@ -239,7 +244,7 @@ public final class PositionEngineImpl implements PositionEngine {
     /**
      * Constructor.
      * 
-     * @param base
+     * @param trades
      *            base list of reports to drive the positions lists, cannot be null
      * @param incomingPositionSupport
      *            support for incoming positions, cannot be null
@@ -280,13 +285,17 @@ public final class PositionEngineImpl implements PositionEngine {
 
     @Override
     public PositionData getGroupedData(Grouping... groupings) {
+        Validate.noNullElements(groupings);
+        if (groupings.length != 2 || groupings[0] == groupings[1]) {
+            throw new UnsupportedOperationException();
+        }
         Lock lock = mFlat.getReadWriteLock().readLock();
         lock.lock();
         try {
             final GroupingList<PositionRow> grouped = new GroupingList<PositionRow>(mFlat,
                     new GroupingMatcherFactory(groupings));
             final FunctionList<EventList<PositionRow>, PositionRow> summarized = new FunctionList<EventList<PositionRow>, PositionRow>(
-                    grouped, new SummarizeFunction(groupings[1]));
+                    grouped, new SummarizeFunction(groupings));
             final GroupingList<PositionRow> groupedAgain = new GroupingList<PositionRow>(
                     summarized, new GroupingMatcherFactory(groupings[0]));
             final FunctionList<EventList<PositionRow>, PositionRow> summarizedAgain = new FunctionList<EventList<PositionRow>, PositionRow>(

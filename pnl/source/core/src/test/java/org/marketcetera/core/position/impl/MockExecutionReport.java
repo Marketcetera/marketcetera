@@ -36,10 +36,11 @@ public class MockExecutionReport implements ExecutionReport {
 	private final BigDecimal price;
 	private final BigDecimal quantity;
 	private final OrderStatus status;
-	private final ReportID id;	
+	private final ReportID id;
+	private UserID viewer;	
 	
-	public MockExecutionReport(String account, String symbol, Side side, String price,
-			String quantity, long sequence, OrderStatus status) {
+	public MockExecutionReport(String account, String symbol, long trader, Side side,
+			String price, String quantity, long sequence, OrderStatus status) {
 		this.account = account;
 		this.symbol = new MSymbol(symbol);
 		this.side = side;
@@ -47,6 +48,7 @@ public class MockExecutionReport implements ExecutionReport {
 		this.quantity = new BigDecimal(quantity);
 		this.status = status;
 		this.id = new ReportID(sequence);
+		this.viewer = new UserID(trader);
 	}
 
 	@Override
@@ -82,6 +84,11 @@ public class MockExecutionReport implements ExecutionReport {
 	@Override
 	public ReportID getReportID() {
 		return id;
+	}
+
+	@Override
+	public UserID getViewerID() {
+		return viewer;
 	}
 
 	@Override
@@ -141,11 +148,6 @@ public class MockExecutionReport implements ExecutionReport {
 
 	@Override
 	public UserID getActorID() {
-		return null;
-	}
-
-	@Override
-	public UserID getViewerID() {
 		return null;
 	}
 

@@ -117,7 +117,8 @@ class PositionMetricsImpl implements PositionMetrics {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append(
-                "position", mPosition) //$NON-NLS-1$
+                "incomingPosition", mIncomingPosition) //$NON-NLS-1$
+                .append("position", mPosition) //$NON-NLS-1$
                 .append("positionPL", mPositionPL) //$NON-NLS-1$
                 .append("tradingPL", mTradingPL) //$NON-NLS-1$
                 .append("realizedPL", mRealizedPL) //$NON-NLS-1$

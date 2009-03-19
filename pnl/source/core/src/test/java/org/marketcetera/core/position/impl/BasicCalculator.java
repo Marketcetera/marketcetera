@@ -21,8 +21,8 @@ import org.marketcetera.core.position.Trade;
  */
 public class BasicCalculator implements PositionMetricsCalculator {
 
-    private List<Trade> trades = new ArrayList<Trade>();
-    private BigDecimal tick;
+    private List<Trade> mTrades = new ArrayList<Trade>();
+    private BigDecimal mTick;
     private final BigDecimal mIncomingPosition;
     private final BigDecimal mClosingPrice;
 
@@ -37,13 +37,13 @@ public class BasicCalculator implements PositionMetricsCalculator {
 
     @Override
     public PositionMetrics tick(BigDecimal current) {
-        this.tick = current;
+        this.mTick = current;
         return createPositionMetrics();
     }
 
     @Override
     public PositionMetrics trade(Trade trade) {
-        trades.add(trade);
+        mTrades.add(trade);
         return createPositionMetrics();
     }
 
@@ -51,7 +51,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
         BigDecimal positionPL = getPositionPL();
         BigDecimal tradingPL = getTradingPL();
         BigDecimal totalPL = null;
-        if (tick != null) {
+        if (mTick != null) {
             totalPL = positionPL.add(tradingPL);
         }
         return new PositionMetricsImpl(mIncomingPosition, getPosition(), positionPL,
@@ -60,26 +60,26 @@ public class BasicCalculator implements PositionMetricsCalculator {
 
     private BigDecimal getPosition() {
         BigDecimal position = mIncomingPosition;
-        for (Trade trade : trades) {
+        for (Trade trade : mTrades) {
             position = position.add(trade.getQuantity());
         }
         return position;
     }
 
     private BigDecimal getPositionPL() {
-        if (tick == null) {
+        if (mTick == null) {
             return null;
         }
-        return mIncomingPosition.multiply(tick.subtract(mClosingPrice));
+        return mIncomingPosition.multiply(mTick.subtract(mClosingPrice));
     }
 
     private BigDecimal getTradingPL() {
-        if (tick == null) {
+        if (mTick == null) {
             return null;
         }
         BigDecimal trading = BigDecimal.ZERO;
-        for (Trade trade : trades) {
-            BigDecimal single = tick.subtract(trade.getPrice()).multiply(trade.getQuantity());
+        for (Trade trade : mTrades) {
+            BigDecimal single = mTick.subtract(trade.getPrice()).multiply(trade.getQuantity());
             trading = trading.add(single);
         }
         return trading;
@@ -90,7 +90,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
         Queue<PositionElement> longs = new LinkedList<PositionElement>();
         Queue<PositionElement> shorts = new LinkedList<PositionElement>();
         adjustIncomingPosition(longs, shorts);
-        for (Trade trade : trades) {
+        for (Trade trade : mTrades) {
             total = total.add(processTrade(longs, shorts, trade));
         }
         return total;
@@ -148,22 +148,22 @@ public class BasicCalculator implements PositionMetricsCalculator {
     }
 
     private BigDecimal getUnrealizedPL() {
-        if (tick == null) {
+        if (mTick == null) {
             return null;
         }
         Queue<PositionElement> longs = new LinkedList<PositionElement>();
         Queue<PositionElement> shorts = new LinkedList<PositionElement>();
 
         adjustIncomingPosition(longs, shorts);
-        for (Trade trade : trades) {
+        for (Trade trade : mTrades) {
             processTrade(longs, shorts, trade);
         }
         BigDecimal total = BigDecimal.ZERO;
         for (PositionElement element : longs) {
-            total = total.add(tick.subtract(element.price).multiply(element.quantity));
+            total = total.add(mTick.subtract(element.price).multiply(element.quantity));
         }
         for (PositionElement element : shorts) {
-            total = total.subtract(tick.subtract(element.price).multiply(element.quantity));
+            total = total.subtract(mTick.subtract(element.price).multiply(element.quantity));
         }
         return total;
     }

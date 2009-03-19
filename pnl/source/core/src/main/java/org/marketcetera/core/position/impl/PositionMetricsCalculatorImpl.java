@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public final class PositionMetricsCalculatorImpl implements PositionMetricsCalculator {
 
-    private BigDecimal mPosition = BigDecimal.ZERO;
+    private BigDecimal mPosition;
     private BigDecimal realizedPL = BigDecimal.ZERO;
     private final CostElement mPositionCost = new CostElement();
     private final CostElement tradingCost = new CostElement();
