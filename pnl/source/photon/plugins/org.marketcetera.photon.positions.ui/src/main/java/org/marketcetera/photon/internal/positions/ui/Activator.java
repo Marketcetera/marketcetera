@@ -41,6 +41,7 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		positionEngineTracker.close();
+		positionLabelTracker.close();
 		super.stop(context);
 	}
 
@@ -68,7 +69,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @return the position label provider, or null if none exists.
 	 */
 	public IPositionLabelProvider getPositionLabelProvider() {
-		return (IPositionLabelProvider) positionEngineTracker.getService();
+		return (IPositionLabelProvider) positionLabelTracker.getService();
 	}
 
 }

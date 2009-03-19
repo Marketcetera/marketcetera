@@ -19,10 +19,8 @@ import org.marketcetera.photon.commons.ui.table.ColumnState;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TextFilterator;
-import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swt.EventTableViewer;
 import ca.odell.glazedlists.swt.TableComparatorChooser;
 import ca.odell.glazedlists.swt.TableItemConfigurer;
@@ -46,14 +44,51 @@ public class PositionsViewTablePage extends PositionsViewPage {
 		public void configure(TableItem item, PositionRow rowValue, Object columnValue, int row,
 				int column) {
 			String text;
-			if (column <= 1) {
+			if (column <= 2) {
 				text = formatKey((String) columnValue);
-			} else if (column == 2) {
-				text = formatKey(getTraderName((String) columnValue));
 			} else {
 				text = formatBigDecimal((BigDecimal) columnValue);
 			}
 			item.setText(column, text);
+		}
+	}
+
+	private static final class PositionTableFormat extends PositionMetricsFormat {
+
+		private static final String[] COLUMN_NAMES = new String[] {  Messages.POSITIONS_TABLE_SYMBOL_COLUMN_HEADING.getText(),
+			Messages.POSITIONS_TABLE_ACCOUNT_COLUMN_HEADING.getText(),
+			Messages.POSITIONS_TABLE_TRADER_COLUMN_HEADING.getText() };
+
+		public PositionTableFormat() {
+			super(COLUMN_NAMES.length);
+		}
+
+		@Override
+		public int getColumnCount() {
+			return super.getColumnCount() + COLUMN_NAMES.length;
+		}
+
+		@Override
+		public String getColumnName(int column) {
+			if (column < COLUMN_NAMES.length) {
+				return COLUMN_NAMES[column];
+			} else {
+				return super.getColumnName(column);
+			}
+		}
+
+		@Override
+		public Object getColumnValue(PositionRow baseObject, int column) {
+			switch (column) {
+			case 0:
+				return baseObject.getSymbol();
+			case 1:
+				return baseObject.getAccount();
+			case 2:
+				return getTraderName(baseObject.getTraderId());
+			default:
+				return super.getColumnValue(baseObject, column);
+			}
 		}
 	}
 
@@ -81,30 +116,9 @@ public class PositionsViewTablePage extends PositionsViewPage {
 		composite.setLayout(new MigLayout("fill, ins 0")); //$NON-NLS-1$
 		mTable = new Table(composite, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.VIRTUAL);
 		mTable.setLayoutData("dock center, hmin 100, wmin 100"); //$NON-NLS-1$
-		TableFormat<PositionRow> tableFormat = GlazedLists.tableFormat(PositionRow.class,
-				new String[] { "symbol", //$NON-NLS-1$  
-						"account", //$NON-NLS-1$ 
-						"traderId", //$NON-NLS-1$ 
-						"positionMetrics.position", //$NON-NLS-1$
-						"positionMetrics.incomingPosition", //$NON-NLS-1$
-						"positionMetrics.positionPL", //$NON-NLS-1$ 
-						"positionMetrics.tradingPL", //$NON-NLS-1$ 
-						"positionMetrics.realizedPL", //$NON-NLS-1$
-						"positionMetrics.unrealizedPL", //$NON-NLS-1$ 
-						"positionMetrics.totalPL" //$NON-NLS-1$ 
-				}, new String[] { Messages.POSITIONS_TABLE_SYMBOL_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_ACCOUNT_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_TRADER_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_POSITION_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_INCOMING_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_POSITION_PL_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_TRADING_PL_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_REALIZED_PL_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_UNREALIZED_PL_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_TOTAL_PL_COLUMN_HEADING.getText() });
 		EventList<PositionRow> positions = getPositions();
 		SortedList<PositionRow> sorted = new SortedList<PositionRow>(positions, null);
-		mViewer = new EventTableViewer<PositionRow>(sorted, mTable, tableFormat,
+		mViewer = new EventTableViewer<PositionRow>(sorted, mTable, new PositionTableFormat(),
 				new PositionRowConfigurer());
 		mChooser = TableComparatorChooser.install(mViewer, sorted, false);
 		// make unrealized PL a bit wider
