@@ -26,10 +26,8 @@ import org.marketcetera.photon.internal.positions.ui.glazed.TreeItemConfigurer;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TextFilterator;
-import ca.odell.glazedlists.gui.TableFormat;
 
 /* $License$ */
 
@@ -45,6 +43,9 @@ public class PositionsViewTreePage extends PositionsViewPage {
 
 	private static final String TREE_SORT_STATE_KEY = "treeSortState"; //$NON-NLS-1$
 
+	private static final String[] COLUMN_NAMES = new String[] { Messages.POSITIONS_TABLE_GROUPING_COLUMN_HEADING
+			.getText() };
+
 	private final class PositionRowConfigurer implements TreeItemConfigurer<PositionRow> {
 
 		@Override
@@ -52,18 +53,58 @@ public class PositionsViewTreePage extends PositionsViewPage {
 				int column) {
 			String text;
 			if (column == 0) {
-				if (rowValue.getChildren() == null) {
-					// can't use columnValue (grouping) since it isn't set on the bottom
-					// (non-summary) row
-					EnumSet<Grouping> groupings = EnumSet.allOf(Grouping.class);
-					groupings.removeAll(Arrays.asList(getView().getGrouping()));
-					columnValue = groupings.iterator().next().get(rowValue);
-				}
 				text = formatKey((String) columnValue);
 			} else {
 				text = formatBigDecimal((BigDecimal) columnValue);
 			}
 			item.setText(column, text);
+		}
+	}
+
+	private final class PositionTreeFormat extends PositionMetricsFormat {
+
+		public PositionTreeFormat() {
+			super(COLUMN_NAMES.length);
+		}
+
+		@Override
+		public int getColumnCount() {
+			return super.getColumnCount() + COLUMN_NAMES.length;
+		}
+
+		@Override
+		public String getColumnName(int column) {
+			if (column < COLUMN_NAMES.length) {
+				return COLUMN_NAMES[column];
+			} else {
+				return super.getColumnName(column);
+			}
+		}
+
+		@Override
+		public Object getColumnValue(PositionRow baseObject, int column) {
+			switch (column) {
+			case 0:
+				return getGroupingValue(baseObject);
+			default:
+				return super.getColumnValue(baseObject, column);
+			}
+		}
+
+		private Object getGroupingValue(PositionRow baseObject) {
+			Grouping[] grouping = baseObject.getGrouping();
+			Grouping current;
+			if (grouping != null) {
+				current = grouping[grouping.length - 1];
+			} else {
+				// this is a non-summary (bottom level) row, so show the value that is not part of
+				// the grouping
+				EnumSet<Grouping> groupings = EnumSet.allOf(Grouping.class);
+				groupings.removeAll(Arrays.asList(getView().getGrouping()));
+				current = groupings.iterator().next();
+			}
+			String value = current.get(baseObject);
+			return current == Grouping.Trader ? getTraderName(value) : value;
 		}
 	}
 
@@ -91,26 +132,9 @@ public class PositionsViewTreePage extends PositionsViewPage {
 		composite.setLayout(new MigLayout("fill, ins 0")); //$NON-NLS-1$
 		mTree = new Tree(composite, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.VIRTUAL);
 		mTree.setLayoutData("dock center, hmin 100, wmin 100"); //$NON-NLS-1$
-		TableFormat<PositionRow> tableFormat = GlazedLists.tableFormat(PositionRow.class,
-				new String[] { "grouping", //$NON-NLS-1$
-						"positionMetrics.position", //$NON-NLS-1$
-						"positionMetrics.incomingPosition", //$NON-NLS-1$
-						"positionMetrics.positionPL", //$NON-NLS-1$ 
-						"positionMetrics.tradingPL", //$NON-NLS-1$ 
-						"positionMetrics.realizedPL", //$NON-NLS-1$
-						"positionMetrics.unrealizedPL", //$NON-NLS-1$ 
-						"positionMetrics.totalPL" //$NON-NLS-1$ 
-				}, new String[] { Messages.POSITIONS_TABLE_GROUPING_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_POSITION_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_INCOMING_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_POSITION_PL_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_TRADING_PL_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_REALIZED_PL_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_UNREALIZED_PL_COLUMN_HEADING.getText(),
-						Messages.POSITIONS_TABLE_TOTAL_PL_COLUMN_HEADING.getText() });
 		EventList<PositionRow> positions = getPositions();
 		SortedList<PositionRow> sorted = new SortedList<PositionRow>(positions, null);
-		mViewer = new EventTreeViewer<PositionRow>(sorted, mTree, tableFormat,
+		mViewer = new EventTreeViewer<PositionRow>(sorted, mTree, new PositionTreeFormat(),
 				new EventTreeModel<PositionRow>() {
 
 					@Override

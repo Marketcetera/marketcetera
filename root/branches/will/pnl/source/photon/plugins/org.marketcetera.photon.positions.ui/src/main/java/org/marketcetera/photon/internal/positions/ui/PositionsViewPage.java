@@ -9,14 +9,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.part.Page;
+import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.PositionEngine.PositionData;
 import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
+import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.matchers.SearchEngineTextMatcherEditor;
 import ca.odell.glazedlists.util.concurrent.ReadWriteLock;
 
@@ -184,8 +187,65 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
 		return s == null ? Messages.POSITIONS_TABLE_EMPTY_KEY.getText() : s;
 	}
 
+	protected static String getTraderName(String s) {
+		if (s != null) {
+			IPositionLabelProvider provider = Activator.getDefault().getPositionLabelProvider();
+			if (provider != null) {
+				s = provider.getTraderName(s);
+			}
+		}
+		return s;
+	}
+
 	protected static String formatBigDecimal(BigDecimal n) {
 		return n == null ? Messages.POSITIONS_TABLE_UNKNOWN_VALUE.getText() : n.setScale(2,
 				BigDecimal.ROUND_HALF_UP).toPlainString();
+	}
+
+	protected static class PositionMetricsFormat implements TableFormat<PositionRow> {
+		private static final String[] COLUMN_NAMES = new String[] {
+				Messages.POSITIONS_TABLE_POSITION_COLUMN_HEADING.getText(),
+				Messages.POSITIONS_TABLE_INCOMING_COLUMN_HEADING.getText(),
+				Messages.POSITIONS_TABLE_POSITION_PL_COLUMN_HEADING.getText(),
+				Messages.POSITIONS_TABLE_TRADING_PL_COLUMN_HEADING.getText(),
+				Messages.POSITIONS_TABLE_REALIZED_PL_COLUMN_HEADING.getText(),
+				Messages.POSITIONS_TABLE_UNREALIZED_PL_COLUMN_HEADING.getText(),
+				Messages.POSITIONS_TABLE_TOTAL_PL_COLUMN_HEADING.getText() };
+
+		private int mOffset;
+
+		public int getColumnCount() {
+			return COLUMN_NAMES.length;
+		}
+
+		public PositionMetricsFormat(int offset) {
+			mOffset = offset;
+		}
+
+		public String getColumnName(int column) {
+			return COLUMN_NAMES[column - mOffset];
+		}
+
+		public Object getColumnValue(PositionRow baseObject, int column) {
+			PositionMetrics metrics = baseObject.getPositionMetrics();
+			switch (column - mOffset) {
+			case 0:
+				return metrics.getPosition();
+			case 1:
+				return metrics.getIncomingPosition();
+			case 2:
+				return metrics.getPositionPL();
+			case 3:
+				return metrics.getTradingPL();
+			case 4:
+				return metrics.getRealizedPL();
+			case 5:
+				return metrics.getUnrealizedPL();
+			case 6:
+				return metrics.getUnrealizedPL();
+			default:
+				throw new IllegalArgumentException(String.valueOf(column));
+			}
+		}
 	}
 }

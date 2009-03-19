@@ -46,8 +46,10 @@ public class PositionsViewTablePage extends PositionsViewPage {
 		public void configure(TableItem item, PositionRow rowValue, Object columnValue, int row,
 				int column) {
 			String text;
-			if (column <= 2) {
+			if (column <= 1) {
 				text = formatKey((String) columnValue);
+			} else if (column == 2) {
+				text = formatKey(getTraderName((String) columnValue));
 			} else {
 				text = formatBigDecimal((BigDecimal) columnValue);
 			}
@@ -145,15 +147,14 @@ public class PositionsViewTablePage extends PositionsViewPage {
 
 			@Override
 			public void getFilterStrings(List<String> baseList, PositionRow element) {
-				// search symbol, account, and traderId
-				if (mTable.getColumn(0).getWidth() > 0) {
-					baseList.add(element.getSymbol());
-				}
-				if (mTable.getColumn(1).getWidth() > 0) {
-					baseList.add(element.getAccount());
-				}
-				if (mTable.getColumn(2).getWidth() > 0) {
-					baseList.add(element.getTraderId());
+				// search symbol, account, and traderId (columns 0, 1, and 2)
+				for (int i = 0; i <= 2; i++) {
+					TableColumn column = mTable.getColumn(i);
+					if (column.getWidth() > 0) {
+						// use the column text instead of the row element value since it may be
+						// decorated
+						baseList.add(column.getText());
+					}
 				}
 			}
 		};

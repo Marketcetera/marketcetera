@@ -56,10 +56,10 @@ public class BrokerSupportTableFormat extends FIXMessageTableFormat<ReportHolder
 	protected String convertColumnValueToText(ReportHolder baseObject,
 			int columnIndex) {
 		if (columnIndex == mBrokerIndex) {
-			BrokerID brokerID = baseObject.getBrokerID();
+			BrokerID brokerID = baseObject.getReport().getBrokerID();
 			return brokerID == null ? null : brokerID.getValue();
 		} else if (columnIndex == mTraderIndex) {
-			UserID traderID = baseObject.getTraderID();
+			UserID traderID = baseObject.getReport().getActorID();
 			return traderID == null ? null : getTrader(traderID);
 		}
 		return super.convertColumnValueToText(baseObject, columnIndex);
