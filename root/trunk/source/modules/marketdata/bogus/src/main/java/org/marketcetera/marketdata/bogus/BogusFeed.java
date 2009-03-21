@@ -346,7 +346,7 @@ public class BogusFeed
     /**
      * Sets the loggedIn value.
      *
-     * @param a <code>BogusFeed</code> value
+     * @param inLoggedIn Logged-in status of the feed
      */
     private void setLoggedIn(boolean inLoggedIn)
     {
@@ -696,7 +696,6 @@ public class BogusFeed
         /**
          * Create a new Request instance.
          *
-         * @param inData
          * @param inSymbol
          */
         private Request(MSymbol inSymbol) 
