@@ -1,5 +1,7 @@
 package org.marketcetera.core.position.impl;
 
+import java.math.BigDecimal;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
@@ -27,8 +29,8 @@ public class PositionMetricsCalculatorImplTest {
         new PositionMetricsCalculatorTestTemplate(NUM_ITERATIONS) {
 
             @Override
-            protected PositionMetricsCalculator createCalculator() {
-                return new PositionMetricsCalculatorImpl(null);
+            protected PositionMetricsCalculator createCalculator(BigDecimal incomingPosition, BigDecimal closingPrice) {
+                return new PositionMetricsCalculatorImpl(incomingPosition, closingPrice);
             }
         }.run();
     }

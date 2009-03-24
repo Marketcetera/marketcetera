@@ -3,7 +3,6 @@ package org.marketcetera.messagehistory;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.misc.ClassVersion;
@@ -65,15 +64,6 @@ public class ReportHolder
             return ((HasFIXMessage)mReport).getMessage();
         }
         return null;
-    }
-    
-    /**
-     * Gets the ID of the broker from which this report was received.
-     *
-     * @return the broker ID from which this report was received.
-     */
-    public BrokerID getBrokerID() {
-    	return mReport.getBrokerID();
     }
 
     /**

@@ -14,8 +14,6 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * An implementation of {@link PositionMetricsCalculator}.
  * 
- * TODO: add incoming position support
- * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
@@ -23,20 +21,33 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public final class PositionMetricsCalculatorImpl implements PositionMetricsCalculator {
 
-    private BigDecimal position = BigDecimal.ZERO;
+    private BigDecimal mPosition;
     private BigDecimal realizedPL = BigDecimal.ZERO;
+    private final CostElement mPositionCost = new CostElement();
     private final CostElement tradingCost = new CostElement();
-    private final CostElement unrealizedCost = new CostElement();
-    private final LinkedList<PositionElement> positionElements = new LinkedList<PositionElement>();
-    private BigDecimal lastTradePrice;
+    private final CostElement mUnrealizedCost = new CostElement();
+    private final LinkedList<PositionElement> mPositionElements = new LinkedList<PositionElement>();
+    private BigDecimal mLastTradePrice;
 
-    public PositionMetricsCalculatorImpl(final BigDecimal lastTradePrice) {
-        this.lastTradePrice = lastTradePrice;
+    /**
+     * Constructor.
+     * 
+     * @param incomingPosition
+     *            the incoming position that will be used to calculate position PL, null if unknown
+     * @param closingPrice
+     *            the closing price that will be used to calculate position PL, null if unknown
+     */
+    public PositionMetricsCalculatorImpl(final BigDecimal incomingPosition, BigDecimal closingPrice) {
+        mPosition = incomingPosition == null ? BigDecimal.ZERO : incomingPosition;
+        closingPrice = closingPrice == null ? BigDecimal.ZERO : closingPrice;
+        mPositionCost.add(mPosition, closingPrice);
+        mUnrealizedCost.add(mPosition, closingPrice);
+        mPositionElements.add(new PositionElement(mPosition, closingPrice));
     }
 
     @Override
     public synchronized PositionMetrics tick(final BigDecimal tradePrice) {
-        lastTradePrice = tradePrice;
+        mLastTradePrice = tradePrice;
         return createPositionMetrics();
     }
 
@@ -55,18 +66,18 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
      *            the price of the trade
      */
     private void processTrade(final BigDecimal quantity, final BigDecimal price) {
-        position = position.add(quantity);
+        mPosition = mPosition.add(quantity);
         tradingCost.add(quantity, price);
         // determine the sides, +1 for long and -1 for short
-        int holdingSide = unrealizedCost.signum();
+        int holdingSide = mUnrealizedCost.signum();
         int tradingSide = quantity.signum();
         BigDecimal remaining = quantity;
         // if sides are different
         if (tradingSide * holdingSide == -1) {
             // close positions
-            while (!positionElements.isEmpty()) {
+            while (!mPositionElements.isEmpty()) {
                 // get the oldest open position
-                PositionElement toClose = positionElements.peek();
+                PositionElement toClose = mPositionElements.peek();
                 // add the remaining trade quantity
                 BigDecimal leftover = toClose.quantity.add(remaining);
                 int leftoverSide = leftover.signum();
@@ -80,7 +91,7 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
                 } else {
                     // the trade completely closed this position
                     processClose(toClose.quantity.negate(), toClose.price, price);
-                    positionElements.remove();
+                    mPositionElements.remove();
                     remaining = leftover;
                     // if leftover is zero
                     if (leftoverSide == 0) {
@@ -93,8 +104,8 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         // if non-zero remaining quantity
         if (remaining.signum() != 0) {
             // create new position
-            positionElements.add(new PositionElement(remaining, price));
-            unrealizedCost.add(remaining, price);
+            mPositionElements.add(new PositionElement(remaining, price));
+            mUnrealizedCost.add(remaining, price);
         }
 
     }
@@ -116,25 +127,26 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         // more readable may be:
         // quantity.negate().multiply(closePrice.subtract(openPrice))
         realizedPL = realizedPL.add(quantity.multiply(openPrice.subtract(closePrice)));
-        unrealizedCost.add(quantity, openPrice);
+        mUnrealizedCost.add(quantity, openPrice);
     }
 
     private PositionMetrics createPositionMetrics() {
-        BigDecimal unrealizedPL = BigDecimal.ZERO;
-        BigDecimal tradingPL = BigDecimal.ZERO;
-        // since no incoming positions, positionPL is zero for now
-        BigDecimal positionPL = BigDecimal.ZERO;
-        BigDecimal totalPL = BigDecimal.ZERO;
-        if (lastTradePrice != null) {
-            unrealizedPL = unrealizedCost.getPL(lastTradePrice);
-            tradingPL = tradingCost.getPL(lastTradePrice);
+        BigDecimal unrealizedPL = null;
+        BigDecimal tradingPL = null;
+        BigDecimal positionPL = null;
+        BigDecimal totalPL = null;
+        if (mLastTradePrice != null) {
+            positionPL = mPositionCost.getPL(mLastTradePrice);
+            unrealizedPL = mUnrealizedCost.getPL(mLastTradePrice);
+            tradingPL = tradingCost.getPL(mLastTradePrice);
             totalPL = realizedPL.add(unrealizedPL);
         }
-        PositionMetricsImpl positionMetrics = new PositionMetricsImpl(position, positionPL,
-                tradingPL, realizedPL, unrealizedPL, totalPL);
+        PositionMetricsImpl positionMetrics = new PositionMetricsImpl(mPositionCost.quantity,
+                mPosition, positionPL, tradingPL, realizedPL, unrealizedPL, totalPL);
+        // Theoretically, both ways of calculating total PL should give the same results
+        assert mLastTradePrice == null || totalPL.compareTo(positionPL.add(tradingPL)) == 0 : positionMetrics;
         if (SLF4JLoggerProxy.isDebugEnabled(this)) {
-            // Theoretically, both ways of calculating total PL should give the same results
-            if (totalPL.compareTo(positionPL.add(tradingPL)) != 0) {
+            if (mLastTradePrice != null && totalPL.compareTo(positionPL.add(tradingPL)) != 0) {
                 SLF4JLoggerProxy.debug(this, MessageFormat.format(
                         "There is a discrepancy in the total PL.\n{0}", positionMetrics)); //$NON-NLS-1$
             }

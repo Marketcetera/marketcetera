@@ -2,8 +2,15 @@ package org.marketcetera.core.position.impl;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.marketcetera.core.position.Grouping;
+import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.util.misc.ClassVersion;
+
+import ca.odell.glazedlists.EventList;
 
 /* $License$ */
 
@@ -15,41 +22,151 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class PositionRowImpl extends PositionRowBaseImpl implements PositionRow {
+class PositionRowImpl implements PositionRow {
 
-    private final String account;
-    private final String symbol;
-    private final String traderId;
+    private final String mSymbol;
+    private final String mAccount;
+    private final String mTraderId;
+    private final Grouping[] mGrouping;
+    private final EventList<PositionRow> mChildren;
+    private PositionMetrics mPositionMetrics;
 
     /**
-     * Constructor, providing all static fields.
+     * Convenience constructor for summary position rows.
      * 
-     * @param account
      * @param symbol
-     * @param traderId
-     * @param incomingPosition
+     *            the symbol
+     * @param account
+     *            the account
+     * @param trader
+     *            the trader
+     * @param grouping
+     *            the grouping
+     * @param children
+     *            the children
      */
-    public PositionRowImpl(String account, String symbol, String traderId,
-            BigDecimal incomingPosition) {
-        super(incomingPosition);
-        this.account = account;
-        this.symbol = symbol;
-        this.traderId = traderId;
+    PositionRowImpl(String symbol, String account, String trader, Grouping[] grouping,
+            EventList<PositionRow> children) {
+        this(symbol, account, trader, grouping, children, new PositionMetricsImpl());
     }
 
-    @Override
-    public String getAccount() {
-        return account;
+    /**
+     * Convenience constructor when only the incoming position is known.
+     * 
+     * @param symbol
+     *            the symbol
+     * @param account
+     *            the account
+     * @param trader
+     *            the trader
+     * @param incomingPosition
+     *            the incoming position
+     * @throws IllegalArgumentException
+     *             if incomingPosition is null
+     */
+    PositionRowImpl(String symbol, String account, String trader, BigDecimal incomingPosition) {
+        this(symbol, account, trader, new PositionMetricsImpl(incomingPosition));
+    }
+
+    /**
+     * Convenience constructor.
+     * 
+     * @param symbol
+     *            the symbol
+     * @param account
+     *            the account
+     * @param trader
+     *            the trader
+     * @param metrics
+     *            the position metrics
+     * @throws IllegalArgumentException
+     *             if metrics is null
+     */
+    PositionRowImpl(String symbol, String account, String trader, PositionMetrics metrics) {
+        this(symbol, account, trader, null, null, metrics);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param symbol
+     *            the symbol
+     * @param account
+     *            the account
+     * @param trader
+     *            the trader
+     * @param grouping
+     *            the grouping
+     * @param children
+     *            the children
+     * @param metrics
+     *            the position metrics
+     * @throws IllegalArgumentException
+     *             if metrics is null
+     */
+    PositionRowImpl(String symbol, String account, String trader, Grouping[] grouping,
+            EventList<PositionRow> children, PositionMetrics metrics) {
+        Validate.notNull(metrics);
+        mSymbol = symbol;
+        mAccount = account;
+        mTraderId = trader;
+        mGrouping = grouping;
+        mChildren = children;
+        mPositionMetrics = metrics;
     }
 
     @Override
     public String getSymbol() {
-        return symbol;
+        return mSymbol;
+    }
+
+    @Override
+    public String getAccount() {
+        return mAccount;
     }
 
     @Override
     public String getTraderId() {
-        return traderId;
+        return mTraderId;
+    }
+
+    @Override
+    public Grouping[] getGrouping() {
+        return mGrouping;
+    }
+
+    @Override
+    public PositionMetrics getPositionMetrics() {
+        return mPositionMetrics;
+    }
+
+    /**
+     * Set to the position metrics to a new value. For thread safety, the supplied PositionMetrics
+     * object must be immutable.
+     * 
+     * @param positionMetrics
+     *            the new position metrics, must be immutable
+     * @throws IllegalArgumentException
+     *             if positionMetrics is null
+     */
+    synchronized void setPositionMetrics(PositionMetrics positionMetrics) {
+        Validate.notNull(positionMetrics);
+        mPositionMetrics = positionMetrics;
+    }
+
+    @Override
+    public EventList<PositionRow> getChildren() {
+        return mChildren;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("symbol", mSymbol) //$NON-NLS-1$
+                .append("account", mAccount) //$NON-NLS-1$
+                .append("traderId", mTraderId) //$NON-NLS-1$
+                .append("grouping", mGrouping) //$NON-NLS-1$
+                .toString();
     }
 
 }

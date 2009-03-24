@@ -312,6 +312,7 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
         }
 
         public GroupList(GroupMatcher<E> matcher) {
+            this.readWriteLock = GroupingList.this.readWriteLock;
             this.matcher = matcher;
         }
 

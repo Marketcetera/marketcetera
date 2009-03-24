@@ -48,7 +48,7 @@ public class BrokerSupportTableFormat extends FIXMessageTableFormat<ReportHolder
 	protected String convertColumnValueToText(ReportHolder baseObject,
 			int columnIndex) {
 		if (columnIndex == mIndex) {
-			BrokerID brokerID = baseObject.getBrokerID();
+			BrokerID brokerID = baseObject.getReport().getBrokerID();
 			return brokerID == null ? null : brokerID.getValue();
 		}
 		return super.convertColumnValueToText(baseObject, columnIndex);
