@@ -2,6 +2,7 @@ package org.marketcetera.core.publisher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 /**
  * Test implementation of {@link ISubscriber}.
@@ -14,13 +15,16 @@ public class MockSubscriber
     implements ISubscriber
 {
     private boolean mInteresting = false;
-    private Object mData = null;
+    private volatile Object mData = null;
     private boolean mInterestingThrows = false;
     private boolean mPublishThrows = false;
     private int mCounter = 0;
     private static int sCounter = 0;
     private int mPublishCount = 0;
     private List<Object> mPublications;
+    private volatile Thread mPublishThread = null;
+    private volatile Semaphore mReleaseSemaphore = null;
+    private volatile Semaphore mAcquireSemaphore = null;
     
     public MockSubscriber()
     {
@@ -49,6 +53,12 @@ public class MockSubscriber
 
     public void publishTo(Object inData)
     {
+        if(mAcquireSemaphore != null) {
+            try {
+                mAcquireSemaphore.acquire();
+            } catch (InterruptedException ignore) {
+            }
+        }
         if(mPublishThrows) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
@@ -56,6 +66,10 @@ public class MockSubscriber
         mCounter = ++sCounter;
         mPublishCount += 1;
         mPublications.add(inData);
+        mPublishThread = Thread.currentThread();
+        if(mReleaseSemaphore != null) {
+            mReleaseSemaphore.release();
+        }
     }
     
     public int getPublishCount()
@@ -113,10 +127,25 @@ public class MockSubscriber
         return mPublications;
     }
 
+    public Thread getPublishThread()
+    {
+        return mPublishThread;
+    }
+
+    public void setReleaseSemaphore(Semaphore inReleaseSemaphore)
+    {
+        mReleaseSemaphore = inReleaseSemaphore;
+    }
+
+    public void setAcquireSemaphore(Semaphore inAcquireSemaphore)
+    {
+        mAcquireSemaphore = inAcquireSemaphore;
+    }
+
     /**
      * Sets the publishCount value.
      *
-     * @param a <code>TestSubscriber</code> value
+     * @param inPublishCount publish count value.
      */
     public void setPublishCount(int inPublishCount)
     {
@@ -133,5 +162,8 @@ public class MockSubscriber
         setPublishCount(0);
         setData(null);
         mPublications.clear();
+        mPublishThread = null;
+        mReleaseSemaphore = null;
+        mAcquireSemaphore = null;
     }
 }
