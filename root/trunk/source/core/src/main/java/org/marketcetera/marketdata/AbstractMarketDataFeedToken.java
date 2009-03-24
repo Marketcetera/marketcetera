@@ -38,10 +38,6 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
      */
     private Status mStatus = Status.NOT_STARTED;
     /**
-     * indicates whether the token would prefer to publish synchronously or asynchronously
-     */
-    private boolean mSynchronousPublications = false;
-    /**
      * Create a new <code>AbstractMarketDataFeedToken</code> object.
      *
      * @param inTokenSpec a <code>MarketDataFeedTokenSpec&lt;C&gt;</code> value encapsulating the data feed request
@@ -57,7 +53,7 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
         }
         mTokenSpec = inTokenSpec;
         mFeed = inFeed;
-        mPublisher = new PublisherEngine();
+        mPublisher = new PublisherEngine(true);
     }
     /**
      * Publishes the given data to all subscribers.
@@ -70,11 +66,7 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
     protected final void publish(Object inData) 
         throws InterruptedException, ExecutionException
     {
-        if(isSynchronousPublications()) {
-            getPublisher().publishAndWait(inData);
-        } else {
-            getPublisher().publish(inData);
-        }
+        getPublisher().publish(inData);
     }
     /**
      * Adds all given subscribers to the subscriber list.
@@ -145,26 +137,8 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
      * 
      * @return a <code>PublisherEnginer</code> value
      */
-    protected final PublisherEngine getPublisher()
+    final PublisherEngine getPublisher()
     {
         return mPublisher;
-    }
-    /**
-     * Get the synchronousPublications value.
-     *
-     * @return a <code>AbstractMarketDataFeedToken</code> value
-     */
-    protected final boolean isSynchronousPublications()
-    {
-        return mSynchronousPublications;
-    }
-    /**
-     * Sets the synchronousPublications value.
-     *
-     * @param a <code>AbstractMarketDataFeedToken</code> value
-     */
-    protected final void setSynchronousPublications(boolean inSynchronousPublications)
-    {
-        mSynchronousPublications = inSynchronousPublications;
     }
 }
