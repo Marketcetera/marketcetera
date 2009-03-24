@@ -148,7 +148,7 @@ public class PhotonPlugin
 
 		initMessageFactory();
 		initTradeReportsHistory();
-		mPositionEngine = PositionEngineFactory.createFromReportHolders(mTradeReportsHistory.getAllMessagesList());
+		mPositionEngine = PositionEngineFactory.createFromReportHolders(mTradeReportsHistory.getAllMessagesList(), new ClientPositionSupport());
 		context.registerService(PositionEngine.class.getName(), mPositionEngine, null);
 		initPhotonController();
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);

@@ -2,6 +2,9 @@ package org.marketcetera.core.position.impl;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -15,64 +18,112 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class PositionMetricsImpl implements PositionMetrics {
+class PositionMetricsImpl implements PositionMetrics {
 
-    private final BigDecimal position;
-    private final BigDecimal positionPL;
-    private final BigDecimal tradingPL;
-    private final BigDecimal realizedPL;
-    private final BigDecimal unrealizedPL;
-    private final BigDecimal totalPL;
+    private final BigDecimal mIncomingPosition;
+    private final BigDecimal mPosition;
+    private final BigDecimal mPositionPL;
+    private final BigDecimal mTradingPL;
+    private final BigDecimal mRealizedPL;
+    private final BigDecimal mUnrealizedPL;
+    private final BigDecimal mTotalPL;
 
     /**
-     * Constructor.
-     * 
-     * @param position
-     * @param positionPL
-     * @param tradingPL
-     * @param realizedPL
-     * @param unrealizedPL
-     * @param totalPL
-     * @throws IllegalArgumentException
-     *             if any parameters are null
+     * Convenience constructor for an empty position.
      */
-    public PositionMetricsImpl(BigDecimal position, BigDecimal positionPL, BigDecimal tradingPL,
-            BigDecimal realizedPL, BigDecimal unrealizedPL, BigDecimal totalPL) {
-        this.position = position;
-        this.positionPL = positionPL;
-        this.tradingPL = tradingPL;
-        this.realizedPL = realizedPL;
-        this.unrealizedPL = unrealizedPL;
-        this.totalPL = totalPL;
+    PositionMetricsImpl() {
+        this(BigDecimal.ZERO);
+    }
+
+    /**
+     * Convenience constructor for metrics that reflect a single incoming position.
+     * 
+     * @param incomingPosition
+     *            the incoming position, cannot be null
+     * @throws IllegalArgumentException
+     *             if incoming position is null
+     */
+    PositionMetricsImpl(BigDecimal incomingPosition) {
+        this(incomingPosition, incomingPosition, null, null, BigDecimal.ZERO, null, null);
+    }
+
+    /**
+     * Constructor initializing all fields.
+     * 
+     * @param incomingPosition
+     *            the incoming position, cannot be null
+     * @param position
+     *            the position, cannot be null
+     * @param positionPL
+     *            the position P&L value
+     * @param tradingPL
+     *            the trading P&L value
+     * @param realizedPL
+     *            the realized P&L value, cannot be null
+     * @param unrealizedPL
+     *            the unrealized P&L value
+     * @param totalPL
+     *            the total P&L value
+     * @throws IllegalArgumentException
+     *             if incoming position, position or realizedPL is null
+     */
+    PositionMetricsImpl(BigDecimal incomingPosition, BigDecimal position, BigDecimal positionPL,
+            BigDecimal tradingPL, BigDecimal realizedPL, BigDecimal unrealizedPL, BigDecimal totalPL) {
+        Validate.noNullElements(new Object[] { incomingPosition, position, realizedPL });
+        this.mIncomingPosition = incomingPosition;
+        this.mPosition = position;
+        this.mPositionPL = positionPL;
+        this.mTradingPL = tradingPL;
+        this.mRealizedPL = realizedPL;
+        this.mUnrealizedPL = unrealizedPL;
+        this.mTotalPL = totalPL;
+    }
+
+    @Override
+    public BigDecimal getIncomingPosition() {
+        return mIncomingPosition;
     }
 
     @Override
     public BigDecimal getPosition() {
-        return position;
+        return mPosition;
     }
 
     @Override
     public BigDecimal getPositionPL() {
-        return positionPL;
+        return mPositionPL;
     }
 
     @Override
     public BigDecimal getTradingPL() {
-        return tradingPL;
+        return mTradingPL;
     }
 
     @Override
     public BigDecimal getRealizedPL() {
-        return realizedPL;
+        return mRealizedPL;
     }
 
     @Override
     public BigDecimal getUnrealizedPL() {
-        return unrealizedPL;
+        return mUnrealizedPL;
     }
 
     @Override
     public BigDecimal getTotalPL() {
-        return totalPL;
+        return mTotalPL;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append(
+                "incomingPosition", mIncomingPosition) //$NON-NLS-1$
+                .append("position", mPosition) //$NON-NLS-1$
+                .append("positionPL", mPositionPL) //$NON-NLS-1$
+                .append("tradingPL", mTradingPL) //$NON-NLS-1$
+                .append("realizedPL", mRealizedPL) //$NON-NLS-1$
+                .append("unrealizedPL", mUnrealizedPL) //$NON-NLS-1$
+                .append("totalPL", mTotalPL) //$NON-NLS-1$
+                .toString();
     }
 }
