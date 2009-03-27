@@ -1,5 +1,7 @@
 package org.marketcetera.strategy;
 
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 import static org.marketcetera.strategy.Messages.CALLBACK_ERROR;
 import static org.marketcetera.strategy.Messages.CANCELING_ALL_DATA_REQUESTS;
 import static org.marketcetera.strategy.Messages.CANCELING_DATA_REQUEST;
@@ -58,7 +60,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.LogEvent;
@@ -1004,7 +1006,8 @@ public abstract class AbstractRunningStrategy
                                                          String inProvider)
         throws Exception
     {
-        return MarketDataRequest.newRequest().withSymbols(inSymbols).fromProvider(inProvider);
+        return MarketDataRequest.newRequest().withSymbols(inSymbols).fromProvider(inProvider).withContent(TOP_OF_BOOK,
+                                                                                                          LATEST_TICK);
     }
     /**
      * Indicates if outgoing data can be sent.

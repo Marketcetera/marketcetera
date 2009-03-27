@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.io.Serializable;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -16,7 +16,7 @@ import org.marketcetera.core.ClassVersion;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class EventBase implements TimestampCarrier, Serializable
 {
     private static final long serialVersionUID = 1L;
@@ -27,19 +27,46 @@ public abstract class EventBase implements TimestampCarrier, Serializable
     /**
      * milliseconds since EPOCH in GMT
      */
-    private final long timestamp; //i18n_datetime use Date instead?
+    private final long timestamp;
+    /**
+     * source of the event, may be null - note that this attribute alone is mutable
+     */
+    private Object source;
     /**
      * Create a new EventBase instance.
      *
      * @param messageId a <code>long</code> value uniquely identifying this market event
      * @param timestamp a <code>long</code> value expressing the time this event occurred in milliseconds since
      *   EPOCH in GMT
+     * @throws IllegalArgumentException if <code>messageId</code> or <code>timestamp</code> &lt; 0
      */
     protected EventBase(long messageId, 
                         long timestamp) 
     {
+        if(messageId < 0 ||
+           timestamp < 0) {
+            throw new IllegalArgumentException();
+        }
         this.messageId = messageId;
         this.timestamp = timestamp;
+    }
+    /**
+     * Get the source value.
+     *
+     * @return an <code>Object</code> value or null
+     */
+    public Object getSource()
+    {
+        return source;
+    }
+    /**
+     * Sets the source value.
+     *
+     * @param an <code>Object</code> value or null
+     */
+    public void setSource(Object inSource)
+    {
+        source = inSource;
     }
     /**
      * Returns the unique message identifier.
@@ -66,13 +93,13 @@ public abstract class EventBase implements TimestampCarrier, Serializable
      */
     public Date getTimestampAsDate()
     {
-        return new Date(getTimeMillis()); //non-i18n
+        return new Date(getTimeMillis());
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
-    public final int hashCode()
+    public int hashCode()
     {
         final int prime = 31;
         int result = 1;
@@ -84,7 +111,7 @@ public abstract class EventBase implements TimestampCarrier, Serializable
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public final boolean equals(Object obj)
+    public boolean equals(Object obj)
     {
         if (this == obj)
             return true;
@@ -105,13 +132,28 @@ public abstract class EventBase implements TimestampCarrier, Serializable
      * @version $Id$
      * @since 0.6.0
      */
-   @ClassVersion("$Id$") //$NON-NLS-1$
+   @ClassVersion("$Id$")
    public final static class BookAgeComparator
        implements Comparator<EventBase>
    {
+       /**
+        * <code>Comparator</code> object that sorts from newest to oldest (descending)
+        */
        public static final BookAgeComparator NewestToOldestComparator = new BookAgeComparator(false);
+       /**
+        * <code>Comparator</code> object that sorts from oldest to newest (ascending)
+        */
        public static final BookAgeComparator OldestToNewestComparator = new BookAgeComparator(true);
+       /**
+        * indicates whether the comparator should perform an ascending sort or not
+        */
        private final boolean mIsAscending;
+       /**
+        * Create a new BookAgeComparator instance.
+        *
+        * @param inIsAscending a <code>boolean</code> value indicating whether the comparator should perform
+        *  an ascending sort or not
+        */
        private BookAgeComparator(boolean inIsAscending)
        {
            mIsAscending = inIsAscending;

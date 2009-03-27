@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.event.EventBaseTest.MockEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
-
-import quickfix.Message;
 
 /* $License$ */
 /**
@@ -18,7 +16,6 @@ import quickfix.Message;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
 public class MockEventTranslator
     implements EventTranslator
 {
@@ -27,7 +24,6 @@ public class MockEventTranslator
     private static boolean sTranslateToEventsReturnsZeroEvents = false;
     private static MockEventTranslator sInstance = new MockEventTranslator();
     private static MarketDataRequest requestToReturn = null;
-    private static Message messageToReturn = null;
     /**
      * Gets a <code>TestEventTranslator</code> value.
      *
@@ -44,7 +40,7 @@ public class MockEventTranslator
             throws CoreException
     {
         if(getTranslateToEventsThrows()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         if(getTranslateToEventsReturnsNull()) {
             return null;
@@ -58,11 +54,14 @@ public class MockEventTranslator
         } else if(inData instanceof MarketDataRequest) {
             request = (MarketDataRequest)inData;
         }
-        if(inData instanceof SymbolExchangeEvent) {
-            SymbolExchangeEvent see = (SymbolExchangeEvent)inData;
-            return Arrays.asList(new EventBase[] { see });
+        if(inData instanceof SymbolExchangeEvent ||
+           inData instanceof AggregateEvent) {
+            return Arrays.asList(new EventBase[] { (EventBase)inData });
         }
-        return Arrays.asList(new EventBase[] { new MessageEvent(request) });
+        if(inData instanceof EventBase) {
+            return Arrays.asList(new EventBase[] { (EventBase)inData });
+        }
+        return Arrays.asList(new EventBase[] { new MockEvent(request) });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
@@ -114,14 +113,5 @@ public class MockEventTranslator
     	sTranslateToEventsReturnsNull = false;
     	sTranslateToEventsReturnsZeroEvents = false;
     	sTranslateToEventsThrows = false;
-    }
-    /**
-     * Sets the messageToReturn value.
-     *
-     * @param a <code>Message</code> value
-     */
-    public static void setMessageToReturn(Message inMessageToReturn)
-    {
-        messageToReturn = inMessageToReturn;
     }
 }

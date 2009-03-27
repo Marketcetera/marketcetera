@@ -1,9 +1,13 @@
 package org.marketcetera.marketdata.bogus;
 
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.TOTAL_VIEW;
 import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -18,7 +22,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class BogusFeedMessageTranslator
     implements DataRequestTranslator<MarketDataRequest>
 {
@@ -49,10 +53,14 @@ public class BogusFeedMessageTranslator
     public MarketDataRequest fromDataRequest(MarketDataRequest inRequest)
             throws CoreException
     {
-        if(inRequest.getContent().equals(TOP_OF_BOOK)) {
+        if(inRequest.validateWithCapabilities(TOP_OF_BOOK,
+                                              LEVEL_2,
+                                              OPEN_BOOK,
+                                              TOTAL_VIEW,
+                                              LATEST_TICK)) {
             return inRequest;
         }
         throw new CoreException(new I18NBoundMessage1P(UNSUPPORTED_REQUEST,
-                                                       inRequest.getContent()));
+                                                       String.valueOf(inRequest.getContent())));
     }
 }

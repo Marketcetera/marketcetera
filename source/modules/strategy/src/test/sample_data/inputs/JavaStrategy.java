@@ -4,7 +4,7 @@ import java.util.Date;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidAskEvent;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
@@ -313,8 +313,8 @@ public class JavaStrategy
     private void suggestionFromEvent(EventBase inEvent)
     {
         OrderSingle suggestedOrder = Factory.getInstance().createOrderSingle();
-        if(inEvent instanceof BidAskEvent) {
-            BidAskEvent event = (BidAskEvent)inEvent;
+        if(inEvent instanceof QuoteEvent) {
+            QuoteEvent event = (QuoteEvent)inEvent;
             suggestedOrder.setPrice(event.getPrice());
             suggestedOrder.setSymbol(event.getSymbol());
             suggestedOrder.setQuantity(event.getSize());

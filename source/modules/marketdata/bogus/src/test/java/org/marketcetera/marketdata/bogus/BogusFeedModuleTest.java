@@ -1,5 +1,11 @@
 package org.marketcetera.marketdata.bogus;
 
+import static org.marketcetera.marketdata.Capability.LATEST_TICK;
+import static org.marketcetera.marketdata.Capability.LEVEL_2;
+import static org.marketcetera.marketdata.Capability.OPEN_BOOK;
+import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Capability.TOTAL_VIEW;
+
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataModuleTestBase;
 import org.marketcetera.module.ModuleFactory;
@@ -39,7 +45,7 @@ public class BogusFeedModuleTest
     @Override
     protected Capability[] getExpectedCapabilities()
     {
-        return new Capability[] { Capability.TOP_OF_BOOK };
+        return new Capability[] { TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK };
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataModuleTestBase#getUnexpectedCapability()

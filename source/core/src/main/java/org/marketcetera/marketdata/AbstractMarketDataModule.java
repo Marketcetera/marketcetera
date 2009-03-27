@@ -17,7 +17,7 @@ import javax.management.NotificationEmitter;
 import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -87,11 +87,13 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
      */
     @Override
-    public final void cancel(DataFlowID inFlowID, RequestID inRequestID)
+    public final void cancel(DataFlowID inFlowID,
+                             RequestID inRequestID)
     {
         synchronized(tokens) {
             T token = tokens.remove(inRequestID);
             assert(token != null);
+            requests.remove(token);
             token.cancel();
         }
     }
@@ -133,14 +135,25 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                 @Override
                 public void publishTo(Object inEvent)
                 {
+                    synchronized(tokens) {
+                        if(inEvent instanceof EventBase) {
+                            EventBase event = (EventBase)inEvent;
+                            Object token = event.getSource();
+                            RequestID requestID = requests.get(token);
+                            event.setSource(requestID);
+                        }
+                    }
                     inSupport.send(inEvent);
                 }
             };
             MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(request,
                                                                                      subscriber);
             synchronized(tokens) {
+                T token = feed.execute(spec);
                 tokens.put(inSupport.getRequestID(),
-                           feed.execute(spec));
+                           token);
+                requests.put(token,
+                             inSupport.getRequestID());
             }
         } catch (Exception e) {
             throw new IllegalRequestParameterValue(instanceURN,
@@ -299,6 +312,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
      * tracks the tokens of active data requests
      */
     private final Map<RequestID,T> tokens = new HashMap<RequestID,T>();
+    private final Map<T,RequestID> requests = new HashMap<T,RequestID>();
     /**
      * provides JMX notification services
      */

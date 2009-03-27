@@ -12,13 +12,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.EventTranslator;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
@@ -499,12 +500,27 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         MarketDataHandle mdHandle = compose(inHandle);
         T token = mHandleHolder.getToken(mdHandle);
         if(token == null) {
-            Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.warn(this, inData);
+            Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.warn(this,
+                                                                inData);
         } else {
             try {
                 E eventTranslator = getEventTranslator();
                 List<EventBase> events = eventTranslator.toEvent(inData);
+                // events returned may contain aggregate events, which further need to be decomposed
+                // create a list of actual events
+                List<EventBase> actualEvents = new ArrayList<EventBase>();
+                // check the events returned to find aggregate events, if any
                 for(EventBase event : events) {
+                    if(event instanceof AggregateEvent) {
+                        AggregateEvent ae = (AggregateEvent)event;
+                        actualEvents.addAll(ae.decompose());
+                    } else {
+                        actualEvents.add(event);
+                    }
+                }
+                // now publish the complete list of events in the proper order
+                for(EventBase event : actualEvents) {
+                    event.setSource(token);
                     token.publish(event);
                 }
             } catch (Exception e) {
@@ -682,7 +698,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      *
      * @return a <code>String</code> value
      */
-    private String getProviderName()
+    protected final String getProviderName()
     {
         return mProviderName;
     }

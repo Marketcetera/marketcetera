@@ -5,11 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.management.JMX;
@@ -17,7 +15,6 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,6 +31,7 @@ import org.marketcetera.module.SinkDataListener;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvider;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.test.CollectionAssert;
 
 /* $License$ */
 
@@ -154,19 +152,12 @@ public abstract class MarketDataModuleTestBase
         throws Exception
     {
         AbstractMarketDataModuleMXBean mBeanProxy = getMXBeanProxy();
-        Set<Capability> actualCapabilities = mBeanProxy.getCapabilities();
-        Assert.assertArrayEquals("Expected: " + Arrays.toString(getExpectedCapabilities()) + "\nActual: " + Arrays.toString(mBeanProxy.getCapabilities().toArray()),
-                                 getExpectedCapabilities(),
-                                 actualCapabilities.toArray());
+        CollectionAssert.assertArrayPermutation(getExpectedCapabilities(),
+                                                mBeanProxy.getCapabilities().toArray(new Capability[0]));
         Capability unsupportedCapability = getUnexpectedCapability();
         if(unsupportedCapability != null) {
             assertFalse("The feed is not supposed to support " + unsupportedCapability,
-                        actualCapabilities.contains(unsupportedCapability));
-            actualCapabilities.add(unsupportedCapability);
-            actualCapabilities = mBeanProxy.getCapabilities();
-            Assert.assertArrayEquals("Expected: " + Arrays.toString(getExpectedCapabilities()) + "\nActual: " + Arrays.toString(mBeanProxy.getCapabilities().toArray()),
-                                     getExpectedCapabilities(),
-                                     actualCapabilities.toArray());
+                        mBeanProxy.getCapabilities().contains(unsupportedCapability));
         }
     }
     @Test

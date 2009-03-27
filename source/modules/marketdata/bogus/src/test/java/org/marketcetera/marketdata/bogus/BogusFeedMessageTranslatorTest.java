@@ -2,10 +2,14 @@ package org.marketcetera.marketdata.bogus;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.TOTAL_VIEW;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.marketcetera.marketdata.DataRequestTranslator;
@@ -32,7 +36,7 @@ public class BogusFeedMessageTranslatorTest
     @Override
     protected Set<Content> getCapabilities()
     {
-        return new HashSet<Content>(Arrays.asList(TOP_OF_BOOK));
+        return Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase#getTranslator()
@@ -48,15 +52,15 @@ public class BogusFeedMessageTranslatorTest
     @Override
     protected void verifyResponse(MarketDataRequest inActualResponse,
                                   String inExpectedExchange,
-                                  Content inExpectedContent,
+                                  Content[] inExpectedContent,
                                   Type inExpectedType,
                                   String[] inExpectedSymbols)
             throws Exception
     {
         assertEquals(inExpectedExchange == null || inExpectedExchange.isEmpty() ? null : inExpectedExchange,
                 inActualResponse.getExchange());
-        assertEquals(inExpectedContent,
-                     inActualResponse.getContent());
+        assertArrayEquals(inExpectedContent,
+                          inActualResponse.getContent().toArray(new Content[inActualResponse.getContent().size()]));
         assertEquals(inExpectedType,
                      inActualResponse.getType());
         assertArrayEquals(inExpectedSymbols,
