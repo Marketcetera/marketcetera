@@ -11,8 +11,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.event.EventBase;
 import org.marketcetera.event.MockEventTranslator;
 
 /* $License$ */
@@ -24,7 +25,7 @@ import org.marketcetera.event.MockEventTranslator;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MockMarketDataFeed
     extends AbstractMarketDataFeed<MockMarketDataFeedToken,
                                    MockMarketDataFeedCredentials,
@@ -70,6 +71,7 @@ public class MockMarketDataFeed
     
     private Set<String> mCanceledHandles = new LinkedHashSet<String>();
     private Set<String> mCreatedHandles = new LinkedHashSet<String>();
+    private final List<EventBase> eventsToReturn = new ArrayList<EventBase>();
     
     public MockMarketDataFeed()
         throws NoMoreIDsException
@@ -117,6 +119,16 @@ public class MockMarketDataFeed
     {
         capabilities = inCapabilities;
     }
+    /**
+     * Sets the events to return for a market data request.
+     *
+     * @param inEvents a <code>List&lt;EventBase&gt;</code> value
+     */
+    public void setEventsToReturn(List<EventBase> inEvents)
+    {
+        eventsToReturn.clear();
+        eventsToReturn.addAll(inEvents);
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(quickfix.Message)
      */
@@ -125,7 +137,7 @@ public class MockMarketDataFeed
             throws FeedException
     {
         if(getGenerateTokenThrows()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         return MockMarketDataFeedToken.getToken(inTokenSpec,
                                                 this);
@@ -137,7 +149,7 @@ public class MockMarketDataFeed
     protected boolean doLogin(MockMarketDataFeedCredentials inCredentials)
     {
         if(getLoginThrows()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         if(getLoginFails()) {
             return false;
@@ -164,15 +176,23 @@ public class MockMarketDataFeed
                                   Exception inException)
     {
         if(getAfterExecuteThrows()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         String handle = mQueue.poll();
         if(inToken != null) {
             inToken.setHandle(handle);
         }
         if(handle != null) {
-            dataReceived(handle,
-                         inToken.getTokenSpec().getDataRequest());
+            if(eventsToReturn.isEmpty()) {
+                dataReceived(handle,
+                             inToken.getTokenSpec().getDataRequest());
+            } else {
+                for(EventBase event : eventsToReturn) {
+                    dataReceived(handle,
+                                 event);
+                }
+                eventsToReturn.clear();
+            }
         }
     }
     /* (non-Javadoc)
@@ -181,7 +201,7 @@ public class MockMarketDataFeed
     protected MockDataRequestTranslator getMessageTranslator()
     {
         if(getGetMessageTranslatorThrows()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         return new MockDataRequestTranslator();
     }
@@ -198,7 +218,7 @@ public class MockMarketDataFeed
             }
         }
         if(getIsLoggedInThrows()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         return getState().isLoggedIn();
     }
@@ -270,7 +290,7 @@ public class MockMarketDataFeed
         throws InterruptedException
     {
         if(getInitThrows()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         if(isInitFails()) {
             super.doInitialize();
@@ -306,7 +326,7 @@ public class MockMarketDataFeed
     {        
         mCanceledHandles.add(inHandle);
         if(isCancelFails()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
     }
     
@@ -326,7 +346,7 @@ public class MockMarketDataFeed
     protected MockEventTranslator getEventTranslator()
     {
         if(getGetEventTranslatorThrows()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         return MockEventTranslator.getTestEventTranslator();
     }
@@ -352,14 +372,14 @@ public class MockMarketDataFeed
     protected boolean beforeDoExecute(MockMarketDataFeedToken inToken)
     {
         if(getBeforeExecuteThrows()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         if(getBeforeExecuteReturnsFalse()) {
             return false;
         }
         if(inToken != null &&
            inToken.getShouldFail()) {
-            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
+            throw new NullPointerException("This exception is expected");
         }
         return super.beforeDoExecute(inToken);
     }
@@ -512,7 +532,7 @@ public class MockMarketDataFeed
                 throw new FeedException(e);
             }
         }
-        String handle = String.format("%d", //$NON-NLS-1$
+        String handle = String.format("%d",
                                       ++mCounter);
         if(!getExecuteReturnsNothing() &&
            !getExecuteReturnsNull()) {

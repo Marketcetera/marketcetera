@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -37,5 +37,9 @@ public enum Capability
     /**
      * the market data feed is able to return Open-High-Low-Close data for a given date
      */
-    OHLC
+    OHLC,
+    /**
+     * the market data feed is able to return the latest trade
+     */
+    LATEST_TICK
 }

@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.marketcetera;
 
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Type.SUBSCRIPTION;
 import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
@@ -16,7 +17,6 @@ import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.Message;
-import quickfix.field.MarketDepth;
 import quickfix.field.SubscriptionRequestType;
 
 /* $License$ */
@@ -50,11 +50,11 @@ public class MarketceteraFeedMessageTranslator
     public Message fromDataRequest(MarketDataRequest inRequest)
             throws CoreException
     {
-        if(inRequest.getContent().equals(TOP_OF_BOOK)) {
+        if(inRequest.validateWithCapabilities(TOP_OF_BOOK,LATEST_TICK)) {
             return fixMessageFromMarketDataRequest((MarketDataRequest)inRequest);
         }
         throw new CoreException(new I18NBoundMessage1P(UNSUPPORTED_REQUEST,
-                                                       inRequest.getContent()));
+                                                       String.valueOf(inRequest.getContent())));
     }
     /**
      * Gets a <code>MarketceteraFeedMessageTranslator</code> instance.
@@ -88,9 +88,6 @@ public class MarketceteraFeedMessageTranslator
         Message message = DEFAULT_MESSAGE_FACTORY.getMessageFactory().newMarketDataRequest(Long.toString(counter.incrementAndGet()), 
                                                                                            symbolList,
                                                                                            inRequest.getExchange());
-        // set the depth indicator
-        message.setInt(MarketDepth.FIELD, 
-                       inRequest.getContent().getDepth());
         // set the update type indicator
         message.setChar(SubscriptionRequestType.FIELD, 
                         inRequest.getType().equals(SUBSCRIPTION) ? SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES : SubscriptionRequestType.SNAPSHOT);

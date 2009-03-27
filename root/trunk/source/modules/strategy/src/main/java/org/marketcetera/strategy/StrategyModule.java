@@ -58,7 +58,7 @@ import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientModuleFactory;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -182,6 +182,12 @@ final class StrategyModule
                                "{} received {}", //$NON-NLS-1$
                                strategy,
                                inData);
+        if(inData instanceof EventBase) {
+            EventBase event = (EventBase)inData;
+            synchronized(dataFlowsByRequest) {
+                event.setSource(requestsByDataFlow.get(inFlowID));
+            }
+        }
         strategy.dataReceived(inData);
     }
     /* (non-Javadoc)
@@ -219,9 +225,11 @@ final class StrategyModule
                                                                                                        inRequest),
                                                                                        new DataRequest(getURN()) },
                                                                    false);
-            synchronized(dataRequests) {
-                dataRequests.put(requestID,
+            synchronized(dataFlowsByRequest) {
+                dataFlowsByRequest.put(requestID,
                                        dataFlowID);
+                requestsByDataFlow.put(dataFlowID,
+                                       requestID);
             }
         } catch (Exception e) {
             StrategyModule.log(LogEvent.warn(MARKET_DATA_REQUEST_FAILED,
@@ -269,9 +277,11 @@ final class StrategyModule
                                                                                        new DataRequest(getURN()) },
                                                                    false);
             // add request to both counters
-            synchronized(dataRequests) {
-                dataRequests.put(requestID,
-                                 dataFlowID);
+            synchronized(dataFlowsByRequest) {
+                dataFlowsByRequest.put(requestID,
+                                       dataFlowID);
+                requestsByDataFlow.put(dataFlowID,
+                                       requestID);
             }
             return requestID;
         } catch (Exception e) {
@@ -291,9 +301,9 @@ final class StrategyModule
     @Override
     public void cancelAllDataRequests()
     {
-        synchronized(dataRequests) {
+        synchronized(dataFlowsByRequest) {
             // create a copy of the list because the cancel call is going to modify the collection
-            List<Integer> activeRequests = new ArrayList<Integer>(dataRequests.keySet());
+            List<Integer> activeRequests = new ArrayList<Integer>(dataFlowsByRequest.keySet());
             for(int request : activeRequests) {
                 try {
                     cancelDataRequest(request);
@@ -313,8 +323,8 @@ final class StrategyModule
     @Override
     public void cancelDataRequest(int inDataRequestID)
     {
-        synchronized(dataRequests) {
-            if(!dataRequests.containsKey(inDataRequestID)) {
+        synchronized(dataFlowsByRequest) {
+            if(!dataFlowsByRequest.containsKey(inDataRequestID)) {
                 StrategyModule.log(LogEvent.warn(NO_DATA_HANDLE,
                                                  String.valueOf(strategy),
                                                  inDataRequestID),
@@ -354,13 +364,16 @@ final class StrategyModule
         ModuleURN providerURN = constructCepUrn(inSource,
                                                 inNamespace);
         try {
-            synchronized(dataRequests) {
-                dataRequests.put(requestID,
-                                 dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(providerURN,
-                                                                                                    determineCepStatements(inSource,
-                                                                                                                           inStatements)),
-                                                                                    new DataRequest(getURN()) },
-                                                                false));
+            synchronized(dataFlowsByRequest) {
+                DataFlowID flowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(providerURN,
+                                                                                                       determineCepStatements(inSource,
+                                                                                                                              inStatements)),
+                                                                                       new DataRequest(getURN()) },
+                                                                   false); 
+                dataFlowsByRequest.put(requestID,
+                                       flowID);
+                requestsByDataFlow.put(flowID,
+                                       requestID);
             }
         } catch (Exception e) {
             StrategyModule.log(LogEvent.warn(CEP_REQUEST_FAILED,
@@ -1238,7 +1251,8 @@ final class StrategyModule
     private void doCancelDataRequest(int inRequest)
         throws ModuleException
     {
-        DataFlowID dataFlowID = dataRequests.remove(inRequest);
+        DataFlowID dataFlowID = dataFlowsByRequest.remove(inRequest);
+        requestsByDataFlow.remove(dataFlowID);
         if(dataFlowID != null) {
             dataFlowSupport.cancel(dataFlowID);
         }
@@ -1362,7 +1376,8 @@ final class StrategyModule
     /**
      * active data requests for this strategy 
      */
-    private final Map<Integer,DataFlowID> dataRequests = new HashMap<Integer,DataFlowID>();
+    private final Map<Integer,DataFlowID> dataFlowsByRequest = new HashMap<Integer,DataFlowID>();
+    private final Map<DataFlowID,Integer> requestsByDataFlow = new HashMap<DataFlowID,Integer>();
     /**
      * the list of dataflows started during the lifetime of this strategy
      */

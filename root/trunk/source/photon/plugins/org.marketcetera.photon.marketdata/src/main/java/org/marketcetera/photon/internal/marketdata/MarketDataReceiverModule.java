@@ -71,7 +71,7 @@ class MarketDataReceiverModule extends Module implements DataReceiver,
 		}
 		MarketDataRequest request = null;
         try {
-            request = MarketDataRequest.newRequest().withSymbols(mSubscriber.getSymbols()).withContent(Content.TOP_OF_BOOK).fromProvider(source.instanceName());
+            request = MarketDataRequest.newRequest().withSymbols(mSubscriber.getSymbols()).withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK).fromProvider(source.instanceName());
             mDataFlowSupport.createDataFlow(new DataRequest[] {
                     new DataRequest(source, request),
                     new DataRequest(getURN()) }, false);

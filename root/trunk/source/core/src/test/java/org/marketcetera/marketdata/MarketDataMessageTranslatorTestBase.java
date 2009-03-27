@@ -31,14 +31,14 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
      *
      * @param inActualResponse a <code>ResponseType</code> value
      * @param inExpectedExchange a <code>String</code> value
-     * @param inExpectedContent a <code>Content</code> value
+     * @param inExpectedContent a <code>Content[]</code> value
      * @param inExpectedType a <code>Type</code> value
      * @param inExpectedSymbols a <code>String[]</code> value
      * @throws Exception if an error occurs
      */
     protected abstract void verifyResponse(ResponseType inActualResponse,
                                            String inExpectedExchange,
-                                           Content inExpectedContent,
+                                           Content[] inExpectedContent,
                                            Type inExpectedType,
                                            String[] inExpectedSymbols)
         throws Exception;
@@ -137,7 +137,7 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
                 if(getCapabilities().contains(content)) {
                     verifyResponse(translator.fromDataRequest(request),
                                    inExchange,
-                                   content,
+                                   new Content[] { content},
                                    type,
                                    inSecurityList);
                 } else {

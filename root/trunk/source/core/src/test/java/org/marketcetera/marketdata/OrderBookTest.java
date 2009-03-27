@@ -1,32 +1,30 @@
 package org.marketcetera.marketdata;
 
+import static java.math.BigDecimal.TEN;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidAskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DepthOfBook;
+import org.marketcetera.event.EventBaseTest;
 import org.marketcetera.event.QuantityTuple;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.BidAskEvent.Action;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.event.TopOfBook;
+import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.MSymbol;
-
-import quickfix.Message;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryType;
-import quickfix.field.NoMDEntries;
-import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
 /* $License$ */
 
@@ -39,18 +37,65 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  */
 public class OrderBookTest
 {
-    private final MSymbol mSymbol = new MSymbol("GOOG");
-    
+    /**
+     * test symbol
+     */
+    private final MSymbol symbol = new MSymbol("GOOG");
+    /**
+     * test order book (reset each test)
+     */
+    private OrderBook book;
+    /**
+     * test exchange
+     */
+    private final String exchange = "TEST";
+    /**
+     * collection used to track expected values for bids
+     */
+    private final QuantityTupleList<BidEvent> bids = new QuantityTupleList<BidEvent>();
+    /**
+     * collection used to track expected values for asks
+     */
+    private final QuantityTupleList<AskEvent> asks = new QuantityTupleList<AskEvent>();
+    /**
+     * Run once before all tests.
+     *
+     * @throws Exception if an error occurs
+     */
+    @BeforeClass
+    public static void once()
+        throws Exception
+    {
+        LoggerConfiguration.logSetup();
+    }
+    /**
+     * Run before each test.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Before
+    public void setup()
+        throws Exception
+    {
+        bids.clear();
+        asks.clear();
+        book = new OrderBook(symbol);
+    }
+    /**
+     * Tests the behavior of {@link OrderBook#equals(Object)} and {@link OrderBook#hashCode()}.
+     *
+     * @throws Exception if an error occurs
+     */
     @Test
     public void equalsAndHashCode()
         throws Exception
     {
         MSymbol otherSymbol = new MSymbol("YHOO");
         MSymbol duplicateSymbol = new MSymbol("GOOG");
-        assertEquals(mSymbol,
+        assertEquals(symbol,
                      duplicateSymbol);
-        assertFalse(mSymbol.equals(otherSymbol));
-        OrderBook book1 = new OrderBook(mSymbol);
+        assertFalse(symbol.equals(otherSymbol));
+        OrderBook book1 = new OrderBook(symbol);
         // test easy ones
         assertFalse(book1.equals(null));
         assertFalse(book1.equals(this));
@@ -72,770 +117,542 @@ public class OrderBookTest
         assertEquals(book3.hashCode(),
                      book1.hashCode());
     }
+    /**
+     * Tests the order book constructors.
+     *
+     * @throws Exception if an error occurs
+     */
     @Test
-    public void nullConstructor()
+    public void bookConstruction()
         throws Exception
     {
-        new ExpectedTestFailure(NullPointerException.class) {
+        new ExpectedFailure<NullPointerException>(null) {
             @Override
-            protected void execute()
-                    throws Throwable
+            protected void run()
+                    throws Exception
             {
                 new OrderBook(null);
             }
-        }.run();
-    }
-    @Test
-    public void depthOfBook()
-        throws Exception
-    {
-        final OrderBook book = new OrderBook(mSymbol);
-        doWrongSymbolTest(book);
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[0]),
-                       Arrays.asList(new QuantityTuple[0]),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getDepthOfBook());
-        // add a trade early on just to make sure the trade doesn't appear in any d-o-b messages
-        book.processEvent(new TradeEvent(issueID(),
-                                         System.currentTimeMillis(),
-                                         mSymbol,
-                                         "exchange",
-                                         new BigDecimal(100),
-                                         new BigDecimal(50)));
-        // add good bid (checkEvent does not throw, add bid, add bid to empty book)
-        QuantityTuple bid1Tuple = new QuantityTuple(new BigDecimal("100"),
-                                                    new BigDecimal("1"));
-        BidEvent bid1 = new BidEvent(issueID(),
-                                     System.currentTimeMillis(),
-                                     mSymbol,
-                                     "exchange",
-                                     bid1Tuple.getPrice(),
-                                     bid1Tuple.getSize());
-        // before adding the bid, test removing from and changing an empty bid book
-        book.processEvent(convertEvent(bid1,
-                                       Action.DELETE));
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getDepthOfBook());
-        book.processEvent(convertEvent(bid1,
-                                       Action.CHANGE));
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getDepthOfBook());
-        // now add a bid
-        book.processEvent(bid1);
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getDepthOfBook());
-        // add duplicate bid (add duplicate bid)
-        BidEvent bid1Duplicate = new BidEvent(bid1.getMessageId(),
-                                              System.currentTimeMillis(),
-                                              mSymbol,
-                                              "exchange",
-                                              bid1Tuple.getPrice(),
-                                              bid1Tuple.getSize());
-        book.processEvent(bid1Duplicate);
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getDepthOfBook());
-        // add another bid (add bid to non-empty book, add non-duplicate bid)
-        QuantityTuple bid2Tuple = new QuantityTuple(new BigDecimal("200"),
-                                                    new BigDecimal("1"));
-        
-        // (bid2 is better than bid1)
-        BidEvent bid2 = new BidEvent(issueID(),
-                                     System.currentTimeMillis(),
-                                     mSymbol,
-                                     "exchange",
-                                     bid2Tuple.getPrice(),
-                                     bid2Tuple.getSize());
-        book.processEvent(bid2);
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getDepthOfBook());
-        // add a bid between bid1 and bid2 (bid 1.5?)
-        QuantityTuple bid3Tuple = new QuantityTuple(new BigDecimal("150"),
-                                                    new BigDecimal("1"));        
-        // (bid2 is better than bid3 and bid1)
-        BidEvent bid3 = new BidEvent(issueID(),
-                                     System.currentTimeMillis(),
-                                     mSymbol,
-                                     "exchange",
-                                     bid3Tuple.getPrice(),
-                                     bid3Tuple.getSize());
-        book.processEvent(bid3);
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid3Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getDepthOfBook());
-        // add ask (add non-bid, add ask, add ask to empty book)
-        QuantityTuple ask1Tuple = new QuantityTuple(new BigDecimal("1500"),
-                                                    new BigDecimal("10"));
-        
-        AskEvent ask1 = new AskEvent(issueID(),
-                                     System.currentTimeMillis(),
-                                     mSymbol,
-                                     "exchange",
-                                     ask1Tuple.getPrice(),
-                                     ask1Tuple.getSize());
-        // before adding the ask, test removing from an empty ask book
-        book.processEvent(convertEvent(ask1,
-                                       Action.DELETE));
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid3Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getDepthOfBook());
-        // check change, too
-        book.processEvent(convertEvent(ask1,
-                                       Action.CHANGE));
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid3Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getDepthOfBook());
-        book.processEvent(ask1);
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid3Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // add duplicate ask (add duplicate ask)
-        AskEvent ask1Duplicate = new AskEvent(ask1.getMessageId(),
-                                              System.currentTimeMillis(),
-                                              mSymbol,
-                                              "exchange",
-                                              ask1Tuple.getPrice(),
-                                              ask1Tuple.getSize());
-        book.processEvent(ask1Duplicate);
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid3Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // add a better ask (add ask to non-empty book, add non-duplicate ask)
-        QuantityTuple ask2Tuple = new QuantityTuple(new BigDecimal("1000"),
-                                                    new BigDecimal("10"));
-        
-        AskEvent ask2 = new AskEvent(issueID(),
-                                     System.currentTimeMillis(),
-                                     mSymbol,
-                                     "exchange",
-                                     ask2Tuple.getPrice(),
-                                     ask2Tuple.getSize());
-        book.processEvent(ask2);
-        // check contents of book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid3Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask2Tuple, ask1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // add an equal ask (but with different timestamps)
-        AskEvent ask3 = new AskEvent(issueID(),
-                                     System.currentTimeMillis(),
-                                     mSymbol,
-                                     "exchange",
-                                     ask2Tuple.getPrice(),
-                                     ask2Tuple.getSize());
-        book.processEvent(ask3);
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid3Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask2Tuple, ask2Tuple, ask1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // start with some removes
-        book.processEvent(convertEvent(bid3,
-                                       Action.DELETE));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask2Tuple, ask2Tuple, ask1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // try removing the same bid again
-        book.processEvent(convertEvent(bid3,
-                                       Action.DELETE));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask2Tuple, ask2Tuple, ask1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // remove an ask
-        book.processEvent(convertEvent(ask1,
-                                       Action.DELETE));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask2Tuple, ask2Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // remove the same ask again
-        book.processEvent(convertEvent(ask1,
-                                       Action.DELETE));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask2Tuple, ask2Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // test some changes
-        // change an event not in the book
-        book.processEvent(convertEvent(ask1,
-                                       Action.CHANGE));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask2Tuple, ask2Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        book.processEvent(convertEvent(bid3,
-                                       Action.CHANGE));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid2Tuple, bid1Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask2Tuple, ask2Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // change an event in the book
-        // change bid1 to be a better bid than bid2
-        QuantityTuple bid4Tuple = new QuantityTuple(new BigDecimal(bid2Tuple.getPrice().add(new BigDecimal(1)).toString()),
-                                                    new BigDecimal("10"));
-        // create a change for bid2 using the new quantities
-        book.processEvent(convertEvent(bid1,
-                                       bid4Tuple,
-                                       Action.CHANGE));
-        // note that bid1 (using bid4tuple) and bid2 have swapped places on the book because of the change
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid4Tuple, bid2Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask2Tuple, ask2Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // change an ask in the same way (making the ask smaller than the previous)
-        QuantityTuple ask3Tuple = new QuantityTuple(new BigDecimal(ask2Tuple.getPrice().subtract(new BigDecimal(1)).toString()),
-                                                    ask2Tuple.getSize());
-        book.processEvent(convertEvent(ask3,
-                                       ask3Tuple,
-                                       Action.CHANGE));
-        // note that ask3 (using ask3tuple) and ask2 have swapped places on the book because of the change
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bid4Tuple, bid2Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { ask3Tuple, ask2Tuple } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-    }
-    @Test
-    public void bbo()
-        throws Exception
-    {
-        OrderBook book = new OrderBook(mSymbol);
-        assertEquals(OrderBook.UNLIMITED_DEPTH,
-                     book.getMaxDepth());
-        doWrongSymbolTest(book);
-        verifySnapshot(Arrays.asList(new QuantityTuple[0]),
-                       Arrays.asList(new QuantityTuple[0]),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getBestBidAndOffer());
-        // add a trade early on just to make sure the trade doesn't appear in any d-o-b messages
-        book.processEvent(new TradeEvent(issueID(),
-                                         System.currentTimeMillis(),
-                                         mSymbol,
-                                         "exchange",
-                                         new BigDecimal(100),
-                                         new BigDecimal(50)));
-        QuantityTuple tuple1 = new QuantityTuple(new BigDecimal("100"),
-                                                 new BigDecimal("0"));
-        // add a bid
-        BidEvent bid = new BidEvent(issueID(),
-                                    System.currentTimeMillis(),
-                                    mSymbol,
-                                    "exchange",
-                                    tuple1.getPrice(),
-                                    tuple1.getSize());
-        book.processEvent(bid);
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { tuple1 } ),
-                       Arrays.asList(new QuantityTuple[0]),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getBestBidAndOffer());
-        // add an ask
-        QuantityTuple tuple2 = new QuantityTuple(new BigDecimal("95"),
-                                                 new BigDecimal("10"));
-        AskEvent ask = new AskEvent(issueID(),
-                                    System.currentTimeMillis(),
-                                    mSymbol,
-                                    "exchange",
-                                    tuple2.getPrice(),
-                                    tuple2.getSize());
-        book.processEvent(ask);
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { tuple1 } ),
-                       Arrays.asList(new QuantityTuple[] { tuple2 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getBestBidAndOffer());
-        // add an ask, but not as good as the existing ("good" for offers means "lower price")
-        QuantityTuple tuple3 = new QuantityTuple(new BigDecimal("105"),
-                                                 new BigDecimal("200"));
-        ask = new AskEvent(issueID(),
-                           System.currentTimeMillis(),
-                           mSymbol,
-                           "exchange",
-                           tuple3.getPrice(),
-                           tuple3.getSize());
-        book.processEvent(ask);
-        assertTrue(tuple3.getPrice().compareTo(tuple2.getPrice()) == 1);
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { tuple1 } ),
-                       Arrays.asList(new QuantityTuple[] { tuple2 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getBestBidAndOffer());
-        // add a better ask
-        QuantityTuple tuple4 = new QuantityTuple(new BigDecimal("75"),
-                                                 new BigDecimal("1"));
-        ask = new AskEvent(issueID(),
-                           System.currentTimeMillis(),
-                           mSymbol,
-                           "exchange",
-                           tuple4.getPrice(),
-                           tuple4.getSize());
-        book.processEvent(ask);
-        assertTrue(tuple4.getPrice().compareTo(tuple2.getPrice()) == -1);
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { tuple1 } ),
-                       Arrays.asList(new QuantityTuple[] { tuple4 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getBestBidAndOffer());
-        // add a worse (lower) bid
-        QuantityTuple tuple5 = new QuantityTuple(new BigDecimal("25"),
-                                                 new BigDecimal("250"));
-        bid = new BidEvent(issueID(),
-                           System.currentTimeMillis(),
-                           mSymbol,
-                           "exchange",
-                           tuple5.getPrice(),
-                           tuple5.getSize());
-        book.processEvent(bid);
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { tuple1 } ),
-                       Arrays.asList(new QuantityTuple[] { tuple4 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getBestBidAndOffer());
-        // add a better (higher) bid
-        QuantityTuple tuple6 = new QuantityTuple(new BigDecimal("500"),
-                                                 new BigDecimal("12000"));
-        bid = new BidEvent(issueID(),
-                           System.currentTimeMillis(),
-                           mSymbol,
-                           "exchange",
-                           tuple6.getPrice(),
-                           tuple6.getSize());
-        book.processEvent(bid);
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { tuple6 } ),
-                       Arrays.asList(new QuantityTuple[] { tuple4 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getBestBidAndOffer());
-        assertNotNull(book.toString());
-    }
-    @Test
-    public void latestTick()
-        throws Exception
-    {
-        OrderBook book = new OrderBook(mSymbol);
-        assertEquals(OrderBook.UNLIMITED_DEPTH,
-                     book.getMaxDepth());
-        doWrongSymbolTest(book);
-        // latest tick from an empty book
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getLatestTick());
-        // add ask
-        QuantityTuple askQty1 = new QuantityTuple(new BigDecimal(100),
-                                                  new BigDecimal(10));
-        book.processEvent(new AskEvent(issueID(),
-                                       System.currentTimeMillis(),
-                                       mSymbol,
-                                       "exchange",
-                                       askQty1.getPrice(),
-                                       askQty1.getSize()));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { askQty1 } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getLatestTick());
-        // add bid
-        QuantityTuple bidQty1 = new QuantityTuple(new BigDecimal(50),
-                                                  new BigDecimal(20));
-        book.processEvent(new BidEvent(issueID(),
-                                       System.currentTimeMillis(),
-                                       mSymbol,
-                                       "exchange",
-                                       bidQty1.getPrice(),
-                                       bidQty1.getSize()));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty1 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty1 } ),
-                       Arrays.asList(new QuantityTuple[] { } ), 
-                       book.getLatestTick());
-        // add trade
-        QuantityTuple tradeQty1 = new QuantityTuple(new BigDecimal(750),
-                                                    new BigDecimal(202));
-        book.processEvent(new TradeEvent(issueID(),
-                                         System.currentTimeMillis(),
-                                         mSymbol,
-                                         "exchange",
-                                         tradeQty1.getPrice(),
-                                         tradeQty1.getSize()));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty1 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty1 } ),
-                       Arrays.asList(new QuantityTuple[] { tradeQty1 } ), 
-                       book.getLatestTick());
-        // replace ask
-        QuantityTuple askQty2 = new QuantityTuple(new BigDecimal(5100),
-                                                  new BigDecimal(1001));
-        AskEvent ask2 = new AskEvent(issueID(),
-                                     System.currentTimeMillis(),
-                                     mSymbol,
-                                     "exchange",
-                                     askQty2.getPrice(),
-                                     askQty2.getSize());
-        book.processEvent(ask2);
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty1 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { tradeQty1 } ), 
-                       book.getLatestTick());
-        // replace bid
-        QuantityTuple bidQty2 = new QuantityTuple(new BigDecimal(5010),
-                                                  new BigDecimal(2090));
-        BidEvent bid2 = new BidEvent(issueID(),
-                                     System.currentTimeMillis(),
-                                     mSymbol,
-                                     "exchange",
-                                     bidQty2.getPrice(),
-                                     bidQty2.getSize());
-        book.processEvent(bid2);
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { tradeQty1 } ), 
-                       book.getLatestTick());
-        // replace trade
-        QuantityTuple tradeQty2 = new QuantityTuple(new BigDecimal(1750),
-                                                    new BigDecimal(1202));
-        book.processEvent(new TradeEvent(issueID(),
-                                         System.currentTimeMillis(),
-                                         mSymbol,
-                                         "exchange",
-                                         tradeQty2.getPrice(),
-                                         tradeQty2.getSize()));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { tradeQty2 } ), 
-                       book.getLatestTick());
-        // check that changes and deletes don't change the latest tick
-        QuantityTuple notUsedQty1 = new QuantityTuple(new BigDecimal(1),
-                                                      new BigDecimal(2));
-        book.processEvent(convertEvent(bid2,
-                                       notUsedQty1,
-                                       Action.CHANGE));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { tradeQty2 } ), 
-                       book.getLatestTick());
-        book.processEvent(convertEvent(ask2,
-                                       Action.DELETE));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { tradeQty2 } ), 
-                       book.getLatestTick());
-        assertNotNull(book.toString());
-    }
-    @Test
-    public void depthTests()
-        throws Exception
-    {
-        OrderBook book = new OrderBook(mSymbol,
-                                       2);
-        assertEquals(2,
-                     book.getMaxDepth());
-        // each side can have a max of 2 orders
-        // add each of the quantities in order making sure that the
-        //  max depth is respected and that the oldest bid is dropped if necessary (not the lowest bid or highest ask)
-        // the asks go from lowest to highest (descending value)
-        QuantityTuple askQty1 = new QuantityTuple(new BigDecimal(10),
-                                                  new BigDecimal(10));
-        QuantityTuple askQty2 = new QuantityTuple(new BigDecimal(100),
-                                                  new BigDecimal(10));
-        QuantityTuple askQty3 = new QuantityTuple(new BigDecimal(1000),
-                                                  new BigDecimal(10));
-        // the bids go from highest to lowest (ascending value)
-        QuantityTuple bidQty1 = new QuantityTuple(new BigDecimal(5000),
-                                                  new BigDecimal(2090));
-        QuantityTuple bidQty2 = new QuantityTuple(new BigDecimal(500),
-                                                  new BigDecimal(2090));
-        QuantityTuple bidQty3 = new QuantityTuple(new BigDecimal(50),
-                                                  new BigDecimal(2090));
-        // make sure the book is empty to start with - of course it is, why wouldn't it be?
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // add the events
-        book.processEvent(new AskEvent(issueID(),
-                                       System.currentTimeMillis(),
-                                       mSymbol,
-                                       "exchange",
-                                       askQty1.getPrice(),
-                                       askQty1.getSize()));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { askQty1 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        book.processEvent(new AskEvent(issueID(),
-                                       System.currentTimeMillis(),
-                                       mSymbol,
-                                       "exchange",
-                                       askQty2.getPrice(),
-                                       askQty2.getSize()));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { askQty1, askQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // the oldest ask should be dropped (ask1) - note that ask1 is the best ask, but it should still be removed
-        book.processEvent(new AskEvent(issueID(),
-                                       System.currentTimeMillis(),
-                                       mSymbol,
-                                       "exchange",
-                                       askQty3.getPrice(),
-                                       askQty3.getSize()));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2, askQty3 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        book.processEvent(new BidEvent(issueID(),
-                                       System.currentTimeMillis(),
-                                       mSymbol,
-                                       "exchange",
-                                       bidQty1.getPrice(),
-                                       bidQty1.getSize()));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty1 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2, askQty3 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        book.processEvent(new BidEvent(issueID(),
-                                       System.currentTimeMillis(),
-                                       mSymbol,
-                                       "exchange",
-                                       bidQty2.getPrice(),
-                                       bidQty2.getSize()));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty1, bidQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2, askQty3 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        BidEvent bid3 = new BidEvent(issueID(),
-                                     System.currentTimeMillis(),
-                                     mSymbol,
-                                     "exchange",
-                                     bidQty3.getPrice(),
-                                     bidQty3.getSize());
-        book.processEvent(bid3);
-        // the oldest bid should be dropped (bid1) - note that bid1 is the best bid, but it should still be removed
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty2, bidQty3 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2, askQty3 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-        // test removing of an event from a book with a max depth
-        book.processEvent(BidEvent.deleteEvent(bid3));
-        verifySnapshot(Arrays.asList(new QuantityTuple[] { bidQty2 } ),
-                       Arrays.asList(new QuantityTuple[] { askQty2, askQty3 } ),
-                       Arrays.asList(new QuantityTuple[] { } ),
-                       book.getDepthOfBook());
-    }
-    @Test
-    public void invalidDepth()
-        throws Exception
-    {
-        new ExpectedTestFailure(IllegalArgumentException.class) {
+        };
+        new ExpectedFailure<NullPointerException>(null) {
             @Override
-            protected void execute()
-                    throws Throwable
+            protected void run()
+                    throws Exception
             {
-                new OrderBook(mSymbol,
-                              0);
+                new OrderBook(null,
+                              1);
             }
-        }.run();
-        new ExpectedTestFailure(IllegalArgumentException.class) {
+        };
+        new ExpectedFailure<IllegalArgumentException>(null) {
             @Override
-            protected void execute()
-                    throws Throwable
+            protected void run()
+                    throws Exception
             {
-                new OrderBook(mSymbol,
+                new OrderBook(symbol,
                               -2);
             }
-        }.run();
-        // this is OK because -1 happens to be the sentinel value
-        assertNotNull(new OrderBook(mSymbol,
-                                    -1));
-    }
-    /**
-     * Verifies that the proper exception is thrown if an event for the wrong symbol is offered
-     * to an order book.
-     *
-     * @param inOrderBook an <code>OrderBook</code> value
-     * @throws Exception if an error occurs
-     */
-    private void doWrongSymbolTest(final OrderBook inOrderBook)
-        throws Exception
-    {
-        // an event for the wrong symbol (checkEvent throws)
-        // TODO add message from catalog
-        new ExpectedTestFailure(IllegalArgumentException.class) {
+        };
+        new ExpectedFailure<IllegalArgumentException>(null) {
             @Override
-            protected void execute()
-                    throws Throwable
+            protected void run()
+                    throws Exception
             {
-                inOrderBook.processEvent(new BidEvent(issueID(),
-                                                      System.currentTimeMillis(),
-                                                      new MSymbol("COLIN"),
-                                                      "exchange",
-                                                      new BigDecimal("1"),
-                                                      new BigDecimal("2")));
+                new OrderBook(symbol,
+                              0);
             }
-        }.run();
+        };
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   new OrderBook(symbol));
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   new OrderBook(symbol,
+                                 10));
     }
     /**
-     * Verifies the contents of the given snapshot.
+     * Tests book processing of a series of bids, asks, and trades.
      *
-     * @param inBids a <code>List&lt;QuantityTuple&gt;</code> value containing the values expected for the bid component of the snapshot or null
-     * @param inAsks a <code>List&lt;QuantityTuple&gt;</code> value containing the values expected for the ask component of the snapshot or null
-     * @param inTrades a <code>List&lt;QuantityTuple&gt;</code> value containing the values expected for the trade component of the snapshot or null
-     * @param inSnapshot a <code>Message</code> value containing the value to be verified
      * @throws Exception if an error occurs
      */
-    private void verifySnapshot(List<QuantityTuple> inBids,
-                                List<QuantityTuple> inAsks,
-                                List<QuantityTuple> inTrades, 
-                                Message inSnapshot)
+    @Test
+    public void bookAdds()
         throws Exception
     {
-        // the snapshot may have bids, asks, trades, all, or none
-        int bids = 0;
-        int asks = 0;
-        int trades = 0;
-        Iterator<QuantityTuple> bidIterator = inBids.iterator();
-        Iterator<QuantityTuple> askIterator = inAsks.iterator();
-        Iterator<QuantityTuple> tradeIterator = inTrades.iterator();
-        // this is the number of these components that exist in the snapshot
-        int noEntries = inSnapshot.getInt(NoMDEntries.FIELD);
-        // examine each one in turn
-        for (int i = 1; i <= noEntries; i++) {
-            // grab the group
-            MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-            inSnapshot.getGroup(i,
-                              group);
-            // check the type
-            char groupType = group.getChar(MDEntryType.FIELD);
-            if(groupType == MDEntryType.BID) {
-                assertFalse("There's supposed to be at least one bid in " + inSnapshot,
-                            inBids.isEmpty());
-                bids += 1;
-                verifyGroup(group,
-                            bidIterator.next());
-            } else if(groupType == MDEntryType.OFFER) {
-                assertFalse("There's supposed to be at least one ask in " + inSnapshot,
-                            inAsks.isEmpty());
-                asks += 1;
-                verifyGroup(group,
-                            askIterator.next());
-            } else if(groupType == MDEntryType.TRADE) {
-                assertFalse("There's supposed to be at least one trade in " + inSnapshot,
-                            inTrades.isEmpty());
-                trades += 1;
-                verifyGroup(group,
-                            tradeIterator.next());
-            } else {
-                fail("Unknown group type: " + groupType);
-            }
-        }
-        // make sure that if we were expecting a group, we got one
-        assertEquals(inBids.size(),
-                     bids);
-        assertEquals(inAsks.size(),
-                     asks);
-        assertEquals(inTrades.size(),
-                     trades);
-        // there should be no bids/asks left unexamined
-        assertFalse(bidIterator.hasNext());
-        assertFalse(askIterator.hasNext());
-        assertFalse(tradeIterator.hasNext());
+        // bid book and ask book are both empty
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // create an ask
+        AskEvent ask1 = EventBaseTest.generateAskEvent(symbol,
+                                                       exchange);
+        book.process(ask1);
+        asks.add(ask1);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // create a new ask of lesser worth (higher price)
+        AskEvent ask2 = EventBaseTest.generateAskEvent(symbol,
+                                                       exchange,
+                                                       ask1.getPrice().add(TEN));
+        book.process(ask2);
+        asks.add(ask2);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // create a new ask of greater worth (lower price)
+        AskEvent ask3 = EventBaseTest.generateAskEvent(symbol,
+                                                       exchange,
+                                                       ask1.getPrice().subtract(TEN));
+        book.process(ask3);
+        asks.add(ask3);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // add a bid
+        BidEvent bid1 = EventBaseTest.generateBidEvent(symbol,
+                                                       exchange);
+        book.process(bid1);
+        bids.add(bid1);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // create a new bid of lesser worth (lower price)
+        BidEvent bid2 = EventBaseTest.generateBidEvent(symbol,
+                                                       exchange,
+                                                       bid1.getPrice().subtract(TEN));
+        book.process(bid2);
+        bids.add(bid2);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // create a new bid of greater worth (higher price)
+        BidEvent bid3 = EventBaseTest.generateBidEvent(symbol,
+                                                       exchange,
+                                                       bid1.getPrice().add(TEN));
+        book.process(bid3);
+        bids.add(bid3);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
     }
     /**
-     * Verifies the quantities of a single group. 
+     * Tests the order book's ability to correctly process event change and delete actions.
      *
-     * @param inGroup a <code>MarketDataSnapshotFullRefresh.NoMDEntries</code> value containing the quantities to verify
-     * @param inExpected a <code>QuantityTuple</code> value containing the expected quantities
      * @throws Exception if an error occurs
      */
-    private void verifyGroup(MarketDataSnapshotFullRefresh.NoMDEntries inGroup,
-                             QuantityTuple inExpected)
+    @Test
+    public void bookChangesAndDeletes()
         throws Exception
     {
-        assertEquals(inExpected,
-                     new QuantityTuple(new BigDecimal(inGroup.getString(MDEntryPx.FIELD).toString()),
-                                       new BigDecimal(inGroup.getString(MDEntrySize.FIELD).toString())));
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // add an ask
+        AskEvent ask1 = EventBaseTest.generateAskEvent(symbol,
+                                                       exchange);
+        asks.add(ask1);
+        book.process(ask1);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        BidEvent bid1 = EventBaseTest.generateBidEvent(symbol,
+                                                       exchange);
+        bids.add(bid1);
+        book.process(bid1);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // delete each event in turn
+        AskEvent ask1Killer = AskEvent.deleteEvent(ask1);
+        asks.clear();
+        book.process(ask1Killer);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        BidEvent bid1Killer = BidEvent.deleteEvent(bid1);
+        bids.clear();
+        book.process(bid1Killer);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // try to delete from empty book (matching bid/ask doesn't exist)
+        book.process(ask1Killer);
+        book.process(bid1Killer);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // add the bid and ask back
+        book.process(ask1);
+        book.process(bid1);
+        asks.add(ask1);
+        bids.add(bid1);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // change the ask
+        AskEvent askChange = AskEvent.changeEvent(ask1,
+                                                  ask1.getSize().add(TEN));
+        asks.clear();
+        asks.add(askChange);
+        book.process(askChange);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // change the bid
+        BidEvent bidChange = BidEvent.changeEvent(bid1,
+                                                  bid1.getSize().add(TEN));
+        bids.clear();
+        bids.add(bidChange);
+        book.process(bidChange);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        // create changes for non-existant events
+        AskEvent unusedAsk = EventBaseTest.generateAskEvent(symbol,
+                                                            exchange);
+        book.process(AskEvent.changeEvent(unusedAsk,
+                                          unusedAsk.getSize().add(TEN)));
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
+        BidEvent unusedBid = EventBaseTest.generateBidEvent(symbol,
+                                                            exchange);
+        book.process(BidEvent.changeEvent(unusedBid,
+                                          unusedBid.getSize().add(TEN)));
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   10,
+                   book);
     }
     /**
-     * ID counter
-     */
-    private long mCounter = 0;
-    /**
-     * Returns a unique ID.
+     * Tests bad values passed to {@link OrderBook#process(QuoteEvent)}.
      *
-     * @return a <code>long</code> value
+     * @throws Exception if an error occurs
      */
-    private long issueID()
+    @Test
+    public void processBadEvents()
+        throws Exception
     {
-        return ++mCounter;
+        new ExpectedFailure<NullPointerException>(null) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                book.process(null);
+            }
+        };
+        final AskEvent badAsk = EventBaseTest.generateAskEvent(new MSymbol("METC"),
+                                                               exchange);
+        assertFalse(badAsk.getSymbol().equals(symbol));
+        new ExpectedFailure<IllegalArgumentException>(null) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                book.process(badAsk);
+            }
+        };
     }
     /**
-     * Creates an event that exactly matches the given event except for the given action.
-     * 
-     * <p>Use this method to generate, for example, a request to delete an event already added to an {@link OrderBook}.
+     * Tests the behavior of order books with a defined maximum depth.
      *
-     * @param inEvent a <code>BidAskEvent</code> value
-     * @param inAction an <code>Action</code> value
-     * @return a <code>BidAskEvent</code> value that differs from the given event only by the given <code>Action</code>
-     * @throws UnsupportedOperationException if conversion of the given event is not supported
+     * @throws Exception if an error occurs
      */
-    public static BidAskEvent convertEvent(BidAskEvent inEvent,
-                                           Action inAction)
+    @Test
+    public void bookDepths()
+        throws Exception
     {
-        return convertEvent(inEvent,
-                            new QuantityTuple(inEvent.getPrice(),
-                                              inEvent.getSize()),
-                                              inAction);
+        // events removed from a book are oldest not best, keep that in mind
+        book = new OrderBook(symbol,
+                             2);
+        // create three asks with a measurable difference in their timestamps
+        // to prove that the pruning technique is by age instead of value, make the oldest ask the best (lowest price)
+        AskEvent ask1 = EventBaseTest.generateAskEvent(symbol,
+                                                       exchange);
+        Thread.sleep(250);
+        AskEvent ask2 = EventBaseTest.generateAskEvent(symbol,
+                                                       exchange,
+                                                       ask1.getPrice().add(TEN));
+        Thread.sleep(250);
+        AskEvent ask3 = EventBaseTest.generateAskEvent(symbol,
+                                                       exchange,
+                                                       ask2.getPrice().add(TEN));
+        // add the ask events to the book
+        book.process(ask1);
+        asks.add(ask1);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   2,
+                   book);
+        book.process(ask2);
+        asks.add(ask2);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   2,
+                   book);
+        // so far, so good, the order book is now at max size
+        // add the third ask, which will trigger the pruning algorithm
+        // the pruned event will be the oldest (ask1) not the worst (ask3)
+        book.process(ask3);
+        asks.add(ask3);
+        asks.remove(ask1);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   2,
+                   book);
+        // verify the same behavior for bids
+        BidEvent bid1 = EventBaseTest.generateBidEvent(symbol,
+                                                       exchange);
+        Thread.sleep(250);
+        BidEvent bid2 = EventBaseTest.generateBidEvent(symbol,
+                                                       exchange,
+                                                       bid1.getPrice().subtract(TEN));
+        Thread.sleep(250);
+        BidEvent bid3 = EventBaseTest.generateBidEvent(symbol,
+                                                       exchange,
+                                                       bid2.getPrice().subtract(TEN));
+        // add the bid events to the book
+        book.process(bid1);
+        bids.add(bid1);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   2,
+                   book);
+        book.process(bid2);
+        bids.add(bid2);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   2,
+                   book);
+        // so far, so good, the order book is now at max size
+        // add the third Bid, which will trigger the pruning algorithm
+        // the pruned event will be the oldest (Bid1) not the worst (Bid3)
+        book.process(bid3);
+        bids.add(bid3);
+        bids.remove(bid1);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   2,
+                   book);
+        // verify deletion behavior on a limited-size book
+        AskEvent askKiller = AskEvent.deleteEvent(ask2);
+        asks.remove(ask2);
+        book.process(askKiller);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   2,
+                   book);
+        BidEvent bidKiller = BidEvent.deleteEvent(bid2);
+        bids.remove(bid2);
+        book.process(bidKiller);
+        verifyBook(symbol,
+                   bids,
+                   asks,
+                   2,
+                   book);
     }
     /**
-     * Creates an event that exactly matches the given event except for the given action and quantities.
-     * 
-     * <p>Use this method to generate, for example, a request to change an event already added to an {@link OrderBook}.
+     * Verifies that the given {@link OrderBook} contains the given expected values.
      *
-     * @param inEvent a <code>BidAskEvent</code> value
-     * @param inTuple a <code>QuantityTuple</code> value
-     * @param inAction an <code>Action</code> value
-     * @return a <code>BidAskEvent</code> value that differs from the given event only by the given <code>Action</code> and quantities
-     * @throws UnsupportedOperationException if conversion of the given event is not supported
+     * @param inExpectedSymbol
+     * @param inExpectedBids
+     * @param inExpectedAsks
+     * @param inExpectedMaxDepth
+     * @param inActualBook
+     * @throws Exception
      */
-    public static BidAskEvent convertEvent(BidAskEvent inEvent,
-                                           QuantityTuple inTuple,
-                                           Action inAction)
+    private void verifyBook(MSymbol inExpectedSymbol,
+                            QuantityTupleList<BidEvent> inExpectedBids,
+                            QuantityTupleList<AskEvent> inExpectedAsks,
+                            int inExpectedMaxDepth,
+                            OrderBook inActualBook)
+        throws Exception
     {
-        if(inEvent instanceof BidEvent) {
-            return new BidEvent(inEvent.getMessageId(),
-                                inEvent.getTimeMillis(),
-                                inEvent.getSymbol(),
-                                inEvent.getExchange(),
-                                inTuple.getPrice(),
-                                inTuple.getSize(),
-                                inAction);
+        inExpectedAsks.sort(QuantityTuple.PriceComparator.ASCENDING);
+        inExpectedBids.sort(QuantityTuple.PriceComparator.DESCENDING);
+        List<QuantityTuple> convertedBids = convertEvents(inActualBook.getBidBook());
+        List<QuantityTuple> convertedAsks = convertEvents(inActualBook.getAskBook());
+        assertEquals(inExpectedSymbol,
+                     inActualBook.getSymbol());
+        assertEquals(inExpectedBids.getList(),
+                     convertedBids);
+        assertEquals(inExpectedAsks.getList(),
+                     convertedAsks);
+        assertEquals(inExpectedMaxDepth,
+                     inActualBook.getMaxDepth());
+        TopOfBook top = inActualBook.getTopOfBook();
+        DepthOfBook depth = inActualBook.getDepthOfBook();
+        List<QuantityTuple> convertedDepthBids = convertEvents(depth.getBids());
+        List<QuantityTuple> convertedDepthAsks = convertEvents(depth.getAsks());
+        if(inExpectedBids.isEmpty()) {
+            assertNull(top.getBid());
+            assertTrue(depth.getBids().isEmpty());
+        } else {
+            assertEquals(inExpectedBids.get(0),
+                         convertEvent(top.getBid()));
+            assertEquals(inExpectedBids.getList(),
+                         convertedDepthBids);
         }
-        if(inEvent instanceof AskEvent) {
-            return new AskEvent(inEvent.getMessageId(),
-                                inEvent.getTimeMillis(),
-                                inEvent.getSymbol(),
-                                inEvent.getExchange(),
-                                inTuple.getPrice(),
-                                inTuple.getSize(),
-                                inAction);
+        if(inExpectedAsks.isEmpty()) {
+            assertNull(top.getAsk());
+            assertTrue(depth.getAsks().isEmpty());
+        } else {
+            assertEquals(inExpectedAsks.get(0),
+                         convertEvent(top.getAsk()));
+            assertEquals(inExpectedAsks.getList(),
+                         convertedDepthAsks);
         }
-        throw new UnsupportedOperationException();
+    }
+    /**
+     * Converts the given {@link QuoteEvent} values to {@link QuantityTuple} values.
+     *
+     * @param inEvents a <code>List&lt;? extends QuoteEvent&gt;</code> value
+     * @return a <code>List&lt;QuantityTuple&gt;</code>value
+     */
+    public static List<QuantityTuple> convertEvents(List<? extends SymbolExchangeEvent> inEvents)
+    {
+        List<QuantityTuple> result = new ArrayList<QuantityTuple>();
+        for(SymbolExchangeEvent event : inEvents) {
+            result.add(convertEvent(event));
+        }
+        return result;
+    }
+    /**
+     * Convert the given {@link SymbolExchangeEvent} to a {@link QuantityTuple} value.
+     *
+     * @param inEvent a <code>SymbolExchangeEvent</code> value
+     * @return a <code>QuantityTuple</code> value
+     */
+    public static QuantityTuple convertEvent(SymbolExchangeEvent inEvent)
+    {
+        if(inEvent == null) {
+            return null;
+        }
+        return new QuantityTuple(inEvent.getPrice(),
+                                 inEvent.getSize(),
+                                 inEvent.getClass());
+    }
+    /**
+     * Wrapper around a {@link QuantityTuple} {@link List} that accepts {@link QuoteEvent} inputs.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class QuantityTupleList<E extends QuoteEvent>
+    {
+        /**
+         * the list of quantitytuple values
+         */
+        private final List<QuantityTuple> tuples = new ArrayList<QuantityTuple>();
+        /**
+         * Adds an event to the list.
+         *
+         * @param inEvent an <code>E</code> value
+         */
+        private void add(E inEvent)
+        {
+            tuples.add(convertEvent(inEvent));
+        }
+        /**
+         * Removes the given <code>E</code> value from the list.
+         *
+         * @param inEvent an <code>E</code> value
+         */
+        private void remove(E inEvent)
+        {
+            tuples.remove(convertEvent(inEvent));
+        }
+        /**
+         * Sorts the list with the given <code>Comparator</code>. 
+         *
+         * @param inComparator a <code>Comparator&lt;QuantityTuple&gt;</code> value
+         */
+        private void sort(Comparator<QuantityTuple> inComparator)
+        {
+            Collections.sort(tuples,
+                             inComparator);
+        }
+        /**
+         * Gets the <code>QuantityTuple</code> at the specified index.
+         *
+         * @param inIndex an <code>int</code> value
+         * @return a <code>QuantityTuple</code> value
+         */
+        private QuantityTuple get(int inIndex)
+        {
+            return tuples.get(inIndex);
+        }
+        /**
+         * Indicates if the list is empty or not.
+         *
+         * @return a <code>boolean</code> value
+         */
+        private boolean isEmpty()
+        {
+            return tuples.isEmpty();
+        }
+        /**
+         * Clears all objects from the list.
+         */
+        private void clear()
+        {
+            tuples.clear();
+        }
+        /**
+         * Returns the list. 
+         *
+         * @return a <code>List&lt;QuantityTuple&gt;</code> value
+         */
+        private List<QuantityTuple> getList()
+        {
+            return tuples;
+        }
     }
 }

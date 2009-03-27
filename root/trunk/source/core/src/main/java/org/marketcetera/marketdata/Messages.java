@@ -4,6 +4,7 @@ import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -97,4 +98,21 @@ public interface Messages
                                                                 "invalid_date"); //$NON-NLS-1$
     static final I18NMessage1P UNSUPPORTED_REQUEST = new I18NMessage1P(LOGGER,
                                                                        "unsupported_request"); //$NON-NLS-1$
+    static final I18NMessage1P SIMULATED_EXCHANGE_TICK_ERROR = new I18NMessage1P(LOGGER,
+                                                                                 "simulated_exchange_tick_error"); //$NON-NLS-1$
+    static final I18NMessage1P SIMULATED_EXCHANGE_PUBLICATION_ERROR = new I18NMessage1P(LOGGER,
+                                                                                        "simulated_exchange_publication_error"); //$NON-NLS-1$
+    static final I18NMessage1P SIMULATED_EXCHANGE_OUT_OF_EVENTS = new I18NMessage1P(LOGGER,
+                                                                                    "simulated_exchange_out_of_events"); //$NON-NLS-1$
+    static final I18NMessage1P STARTING_SCRIPTED_EXCHANGE = new I18NMessage1P(LOGGER,
+                                                                              "starting_scripted_exchange"); //$NON-NLS-1$
+    static final I18NMessage1P STARTING_RANDOM_EXCHANGE = new I18NMessage1P(LOGGER,
+                                                                            "starting_random_exchange"); //$NON-NLS-1$
+    static final I18NMessage1P STOPPING_SIMULATED_EXCHANGE = new I18NMessage1P(LOGGER,
+                                                                               "stopping_simulated_exchange"); //$NON-NLS-1$
+    static final I18NMessage4P SIMULATED_EXCHANGE_CODE_MISMATCH = new I18NMessage4P(LOGGER,
+                                                                                    "simulated_exchange_code_mismatch");  //$NON-NLS-1$
+    static final I18NMessage2P SIMULATED_EXCHANGE_SKIPPED_EVENT = new I18NMessage2P(LOGGER,
+                                                                                    "simulated_exchange_skipped_event"); //$NON-NLS-1$
+    
 }

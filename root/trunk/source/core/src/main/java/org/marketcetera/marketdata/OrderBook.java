@@ -1,41 +1,28 @@
 package org.marketcetera.marketdata;
 
-import static org.marketcetera.marketdata.Messages.CANNOT_CONVERT_EVENT_TO_ENTRY_TYPE;
 import static org.marketcetera.marketdata.Messages.ORDER_BOOK_DEPTH_MUST_BE_POSITIVE;
 import static org.marketcetera.marketdata.Messages.SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 
-import org.marketcetera.core.ClassVersion;
+import org.apache.commons.lang.SystemUtils;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidAskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.SymbolExchangeEvent;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.BidAskEvent.Action;
+import org.marketcetera.event.DepthOfBook;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TopOfBook;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-
-import quickfix.Group;
-import quickfix.Message;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryType;
-import quickfix.field.MDMkt;
-import quickfix.field.NoMDEntries;
-import quickfix.field.SendingTime;
-import quickfix.field.Symbol;
-import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
 /* $License$ */
 
@@ -48,15 +35,27 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * on the source exchange allowing the object to represent the orders from
  * a specific exchange or an aggregation of orders from multiple exchanges.
  * 
- * <p>To populate the <code>OrderBook</code>, add {@link BidAskEvent} objects
- * via {@link #processEvent(BidAskEvent)}.  It is important that the events so added
+ * <p>To populate the <code>OrderBook</code>, add {@link QuoteEvent} objects
+ * via {@link #process(QuoteEvent)}.  It is important that the events so added
  * all be unique according to the event's natural ordering.
+ * 
+ * <p>A book may be specified with a depth limit or unlimited depth.  A book
+ * with unlimited depth will continue to grow as new events are added to the book.
+ * The book may decrease in size if events are added that remove existing events.
+ * A limited book, on the other hand, will never exceed the specified number of
+ * entries on either side of the book.  Naturally, a limited book may contain
+ * fewer than the specified maximum.  The maximum depth limit is imposed separately
+ * for either side of the book, i.e. a book limited to a depth of ten may have
+ * as many as ten asks and ten bids.  When an event is added to a limited book
+ * that is already at its maximum, the <em>oldest</em> event on the appropriate side of the
+ * book is removed.  It is important to note that the event removed may in fact be the
+ * best event (lowest bid or highest ask) if it is the oldest.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 0.6.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class OrderBook
 {
     /**
@@ -64,48 +63,28 @@ public class OrderBook
      */
     public final static int UNLIMITED_DEPTH = -1;
     /**
-     * the symbol for this book
+     * the order book depth if none is specified
      */
-    private final MSymbol mSymbol;
+    public final static int DEFAULT_DEPTH = 10;
     /**
-     * the ask side of the book
-     */
-    private final BookCollection<AskEvent> mAskBook;
-    /**
-     * the bid side of the book
-     */
-    private final BookCollection<BidEvent> mBidBook;
-    /**
-     * the latest trade tick
-     */
-    private TradeEvent mLatestTrade;
-    /**
-     * the latest bid tick
-     */
-    private BidEvent mLatestBid;
-    /**
-     * the latest ask tick
-     */
-    private AskEvent mLatestAsk;
-    /**
-     * the maximum depth of the order book 
-     */
-    private final int mMaxDepth;
-    /**
-     * Create a new OrderBook instance with unlimited depth.
+     * Create a new OrderBook instance a reasonable maximum depth.
      *
+     * <p>The resulting <code>OrderBook</code> will have a maximum depth
+     * of {@link #DEFAULT_DEPTH}.
+     * 
      * @param inSymbol a <code>MSymbol</code> instance
      */
     public OrderBook(MSymbol inSymbol)
     {
         this(inSymbol,
-             UNLIMITED_DEPTH);
+             DEFAULT_DEPTH);
     }
     /**
      * Create a new OrderBook instance.
      *
      * @param inSymbol a <code>MSymbol</code> instance
      * @param inMaxDepth an <code>int</code> instance
+     * @throws IllegalArgumentException if the given depth is invalid
      */
     public OrderBook(MSymbol inSymbol,
                      int inMaxDepth)
@@ -113,14 +92,23 @@ public class OrderBook
         if(inSymbol == null) {
             throw new NullPointerException();
         }
-        if(inMaxDepth != UNLIMITED_DEPTH &&
-           inMaxDepth <= 0) {
-            throw new IllegalArgumentException(ORDER_BOOK_DEPTH_MUST_BE_POSITIVE.getText());
-        }
+        validateMaximumBookDepth(inMaxDepth);
         mSymbol = inSymbol;
         mAskBook = new BookCollection<AskEvent>(inMaxDepth);
         mBidBook = new BookCollection<BidEvent>(inMaxDepth);
         mMaxDepth = inMaxDepth;
+    }
+    /**
+     * Checks the given depth to see if it is a valid maximum book depth.
+     *
+     * @param inMaximumDepth an <code>int</code> value
+     */
+    public static void validateMaximumBookDepth(int inMaximumDepth)
+    {
+        if(inMaximumDepth != UNLIMITED_DEPTH &&
+           inMaximumDepth <= 0) {
+            throw new IllegalArgumentException(ORDER_BOOK_DEPTH_MUST_BE_POSITIVE.getText());
+        }
     }
     /**
      * Get the symbol value.
@@ -141,39 +129,30 @@ public class OrderBook
         return mMaxDepth;
     }
     /**
-     * Returns a Full Refresh Market Data Snapshot containing the full depth of
-     * book such as is known at this time.
-     *
-     * @return a <code>Message</code> value
+     * Gets the {@link TopOfBook} view of the order book.
+     * 
+     * @return a <code>TopOfBook</code> value
      */
-    public final Message getDepthOfBook()
+    public final TopOfBook getTopOfBook()
     {
-        return constructMessage(MessageType.FULL_BOOK);
+        List<BidEvent> bidBook = getBidBook();
+        List<AskEvent> askBook = getAskBook();
+        return new TopOfBook(bidBook.isEmpty() ? null : bidBook.get(0),
+                             askBook.isEmpty() ? null : askBook.get(0),
+                             new Date(),
+                             getSymbol());
     }
     /**
-     * Returns a Full Refresh Market Data Snapshot containing the best bid and offer on the
-     * order book.
-     * 
-     * <p>If the order book does not contain any bids or offers, the corresponding group will not be present
-     * in the returned snapshot.  The snapshot will not contain a trade group.
+     * Returns the {@link DepthOfBook} view of the order book. 
      *
-     * @return a <code>Message</code> value
+     * @return a <code>DepthOfBook</code> value
      */
-    public final Message getBestBidAndOffer()
+    public final DepthOfBook getDepthOfBook()
     {
-        return constructMessage(MessageType.BBO);
-    }
-    /**
-     * Returns a Full Refresh Market Data Snapshot containing the latest tick on the order book.
-     *
-     * <p>If the order book does not contain any bids, trades, or offers, the corresponding group will not be present
-     * in the returned snapshot.
-     * 
-     * @return a <code>Message</code> value
-     */
-    public final Message getLatestTick()
-    {
-        return constructMessage(MessageType.LATEST_TICK);
+        return new DepthOfBook(getBidBook(),
+                               getAskBook(),
+                               new Date(),
+                               getSymbol());
     }
     /**
      * Gets the current state of the <code>Bid</code> book. 
@@ -182,7 +161,7 @@ public class OrderBook
      */
     public final List<BidEvent> getBidBook()
     {
-        return mBidBook.getSortedView(BidAskEvent.BookPriceComparator.BidComparator);
+        return mBidBook.getSortedView(QuoteEvent.BookPriceComparator.BidComparator);
     }
     /**
      * Gets the current state of the <code>Ask</code> book.
@@ -191,15 +170,16 @@ public class OrderBook
      */
     public final List<AskEvent> getAskBook()
     {
-        return mAskBook.getSortedView(BidAskEvent.BookPriceComparator.AskComparator);
+        return mAskBook.getSortedView(QuoteEvent.BookPriceComparator.AskComparator);
     }
     /**
      * Processes the given event for the order book.
      *
-     * @param inEvent a <code>SymbolExchangeEvent</code> value
+     * @param inEvent a <code>QuoteEvent</code> value
+     * @return a <code>QuoteEvent</code> value containing the event displaced by the change or null
      * @throws IllegalArgumentException if the event's symbol does not match the book's symbol
      */
-    public final void processEvent(SymbolExchangeEvent inEvent)
+    public final QuoteEvent process(QuoteEvent inEvent)
     {
         // make sure the event is valid before proceeding
         checkEvent(inEvent);
@@ -207,23 +187,24 @@ public class OrderBook
                                "Received {}\nBook starts at\n{}", //$NON-NLS-1$
                                inEvent,
                                this);
-        // check to see if it's a bid or an ask, special processing is required, if so
-        if(inEvent instanceof BidAskEvent) {
-            BidAskEvent event = (BidAskEvent)inEvent;
-            if(Action.ADD.equals(event.getAction())) {
-                addEvent(event);
-            } else if(Action.DELETE.equals(event.getAction())) {
-                removeEvent(event);
-            } else if(Action.CHANGE.equals(event.getAction())) {
-                changeEvent(event);
-            }
-        } else {
-            // it's neither a bid nor an ask, no special work is required
-            addEvent(inEvent);
+        QuoteEvent eventToReturn = null;
+        switch(inEvent.getAction()) {
+            case ADD :
+                eventToReturn = addEvent(inEvent);
+                break;
+            case DELETE :
+                removeEvent(inEvent);
+                break;
+            case CHANGE :
+                changeEvent(inEvent);
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
         SLF4JLoggerProxy.debug(this,
                                "Book is now\n{}", //$NON-NLS-1$
                                this);
+        return eventToReturn;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -262,8 +243,26 @@ public class OrderBook
     @Override
     public String toString()
     {
-        Iterator<BidEvent> bidIterator = getBidBook().iterator();
-        Iterator<AskEvent> askIterator = getAskBook().iterator();
+        StringBuilder book = new StringBuilder();
+        book.append(getSymbol()).append(SystemUtils.LINE_SEPARATOR);
+        book.append(printBook(getBidBook().iterator(),
+                              getAskBook().iterator(),
+                              false));
+        return book.toString();
+    }
+    /**
+     * Creates a human-readable representation of an order book as defined
+     * by the given {@link Iterator} values.
+     *
+     * @param bidIterator an <code>Iterator&lt;BidEvent&gt;</code> value representing the bids to display
+     * @param askIterator an <code>Iterator&lt;AskEvent&gt;</code> value representing the asks to display
+     * @param inShowExchange a <code>boolean</code> value indicating whether to display the exchange associated with each bid and ask
+     * @return a <code>String</code> containing the human-readable representation of the order book implied by the given <code>Iterator</code> objects
+     */
+    public static String printBook(Iterator<BidEvent> bidIterator,
+                                   Iterator<AskEvent> askIterator,
+                                   boolean inShowExchange)
+    {
         List<String> bids = new ArrayList<String>();
         List<String> asks = new ArrayList<String>();
         int maxSize = 10;
@@ -271,6 +270,9 @@ public class OrderBook
             if(bidIterator.hasNext()) {
                 BidEvent bid = bidIterator.next();
                 StringBuilder entry = new StringBuilder();
+                if(inShowExchange) {
+                    entry.append(" ").append(bid.getExchange()); //$NON-NLS-1$
+                }
                 entry.append(" ").append(bid.getSize()).append(" ").append(bid.getPrice()).append(" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 String line = entry.toString();
                 maxSize = Math.max(maxSize,
@@ -281,6 +283,9 @@ public class OrderBook
                 AskEvent ask = askIterator.next();
                 StringBuilder entry = new StringBuilder();
                 entry.append(ask.getPrice()).append(" ").append(ask.getSize()); //$NON-NLS-1$
+                if(inShowExchange) {
+                    entry.append(" ").append(ask.getExchange()); //$NON-NLS-1$
+                }
                 maxSize = Math.max(maxSize,
                                    entry.toString().length());
                 String line = entry.toString();
@@ -289,7 +294,7 @@ public class OrderBook
                 asks.add(line);
             }
             if(bidIterator.hasNext() ||
-                    askIterator.hasNext()) {
+               askIterator.hasNext()) {
                 continue;
             } else {
                 break;
@@ -298,11 +303,6 @@ public class OrderBook
         String bidHeader = "bid"; //$NON-NLS-1$
         String askHeader = "ask"; //$NON-NLS-1$
         StringBuilder finalBook = new StringBuilder();
-        finalBook.append(getSymbol()).append("\n"); //$NON-NLS-1$
-        finalBook.append("Latest Tick\n"); //$NON-NLS-1$
-        finalBook.append(getLatestTrade()).append("\n"); //$NON-NLS-1$
-        finalBook.append(getLatestBid()).append("\n"); //$NON-NLS-1$
-        finalBook.append(getLatestAsk()).append("\n"); //$NON-NLS-1$
         finalBook.append("Order Book\n"); //$NON-NLS-1$
         finalBook.append(bidHeader);
         for(int i=0;i<maxSize-bidHeader.length();i++) {
@@ -347,166 +347,6 @@ public class OrderBook
         return finalBook.toString();
     }
     /**
-     * Constructs a Market Data Snapshot Full Refresh FIX message representing the
-     * data in the order book.
-     *
-     * @param inIsFullBook a <code>boolean</code> value which, if true, returns the full depth of
-     *  book, otherwise returns the best bid and offer
-     * @return a <code>Message</code> value
-     */
-    private Message constructMessage(MessageType inMessageType)
-    {
-        // construct an empty message of the correct type
-        Message snapshot = new MarketDataSnapshotFullRefresh();
-        // set the symbol
-        snapshot.setField(new Symbol(getSymbol().getFullSymbol()));
-        // set the creation time in GMT
-        snapshot.setField(new SendingTime(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime())); //$NON-NLS-1$
-        // count the number of groups - there is a group for each ask/buy
-        int groupCounter = 0;
-        if(MessageType.LATEST_TICK.equals(inMessageType)) {
-            groupCounter += addToGroup(getLatestAsk(),
-                                       snapshot);
-            groupCounter += addToGroup(getLatestBid(),
-                                       snapshot);
-            groupCounter += addToGroup(getLatestTrade(),
-                                       snapshot);
-        } else {
-            // grab the ask side of the book and sort it appropriately
-            List<AskEvent> asks = getAskBook();
-            Iterator<AskEvent> askIterator = asks.iterator();
-            // iterate over the asks, adding the first (ask book is sorted) or all depending on
-            //  whether we want the full book or not
-            while(askIterator.hasNext()) {
-                groupCounter += addToGroup(askIterator.next(),
-                                           snapshot);
-                // for BBO, quit after the first ask
-                if(MessageType.BBO.equals(inMessageType)) {
-                    break;
-                }
-            }
-            // grab the bid side of the book and sort it appropriately
-            List<BidEvent> bids = getBidBook();
-            Iterator<BidEvent> bidIterator = bids.iterator();
-            // iterate over the bids, adding the first (bid book is also sorted) or all depending on
-            //  whether we want the full book or not
-            while(bidIterator.hasNext()) {
-                groupCounter += addToGroup(bidIterator.next(),
-                                           snapshot);
-                // for BBO, quit after the first bid
-                if(MessageType.BBO.equals(inMessageType)) {
-                    break;
-                }
-            }
-        }
-        // set the total number of groups
-        snapshot.setField(new NoMDEntries(groupCounter));
-        return snapshot;
-    }
-    /**
-     * Add a <code>Group</code> to the given snapshot corresponding to the
-     * given <code>SymbolExchangeEvent</code>.
-     *
-     * @param inEvent a <code>SymbolExchangeEvent</code> value containing the event to add to the snapshot or null to add nothing
-     * @param inSnapshot a <code>Message</code> value containing the snapshot to which to add the group
-     * @return an <code>int</code> value indicating how many groups were added to the snapshot
-     */
-    private int addToGroup(SymbolExchangeEvent inEvent,
-                           Message inSnapshot)
-    {
-        if(inEvent == null) {
-            return 0;
-        }
-        Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-        group.setField(getEntryType(inEvent));
-        group.setField(new MDMkt(inEvent.getExchange()));
-        if(inEvent instanceof BidAskEvent) {
-            BidAskEvent bidAsk = (BidAskEvent)inEvent;
-            group.setField(new MDEntryPx(bidAsk.getPrice()));
-            group.setField(new MDEntrySize(bidAsk.getSize()));
-        } else if(inEvent instanceof TradeEvent) {
-            TradeEvent tradeEvent = (TradeEvent)inEvent;
-            group.setField(new MDEntryPx(tradeEvent.getPrice()));
-            group.setField(new MDEntrySize(tradeEvent.getSize()));
-        }
-        inSnapshot.addGroup(group);
-        return 1;
-    }
-    /**
-     * Determines the <code>MDEntryType</code> that corresponds to the given <code>SymbolExchangeEvent</code>.
-     *
-     * @param inEvent a <code>SymboLExchangeEvent</code> value
-     * @return a <code>MDEntryType</code> value
-     * @throws IllegalArgumentException if the given event does not correspond to a <code>MDEntryType</code> value
-     */
-    private MDEntryType getEntryType(SymbolExchangeEvent inEvent)
-    {
-        if(inEvent instanceof AskEvent) {
-            return new MDEntryType(MDEntryType.OFFER);
-        }
-        if(inEvent instanceof BidEvent) {
-            return new MDEntryType(MDEntryType.BID);
-        }
-        if(inEvent instanceof TradeEvent) {
-            return new MDEntryType(MDEntryType.TRADE);
-        }
-        throw new IllegalArgumentException(CANNOT_CONVERT_EVENT_TO_ENTRY_TYPE.getText(inEvent));
-    }
-    /**
-     * Get the latestTrade value.
-     *
-     * @return a <code>OrderBook</code> value
-     */
-    private TradeEvent getLatestTrade()
-    {
-        return mLatestTrade;
-    }
-    /**
-     * Get the latestBid value.
-     *
-     * @return a <code>OrderBook</code> value
-     */
-    private BidEvent getLatestBid()
-    {
-        return mLatestBid;
-    }
-    /**
-     * Get the latestAsk value.
-     *
-     * @return a <code>OrderBook</code> value
-     */
-    private AskEvent getLatestAsk()
-    {
-        return mLatestAsk;
-    }
-    /**
-     * Sets the latestTrade value.
-     *
-     * @param a <code>OrderBook</code> value
-     */
-    private void setLatestTrade(TradeEvent inLatestTrade)
-    {
-        mLatestTrade = inLatestTrade;
-    }
-    /**
-     * Sets the latestBid value.
-     *
-     * @param a <code>OrderBook</code> value
-     */
-    private void setLatestBid(BidEvent inLatestBid)
-    {
-        mLatestBid = inLatestBid;
-    }
-    /**
-     * Sets the latestAsk value.
-     *
-     * @param a <code>OrderBook</code> value
-     */
-    private void setLatestAsk(AskEvent inLatestAsk)
-    {
-        mLatestAsk = inLatestAsk;
-    }
-    /**
      * Returns a string padded on the right with the given character to the given size.
      *
      * @param inBase a <code>String</code> value containing the string to pad
@@ -514,9 +354,9 @@ public class OrderBook
      * @param inPadChar a <code>char</code> value containing the character with which to pad, if necessary
      * @return a <code>String</code> value containing the passed string padded, if necessary, with the passed char to reach the passed size
      */
-    private String pad(String inBase,
-                       int inSize, 
-                       char inPadChar)
+    private static String pad(String inBase,
+                              int inSize, 
+                              char inPadChar)
     {
         StringBuilder output = new StringBuilder(inBase);
         for(int i=output.length();i<inSize;i++) {
@@ -527,10 +367,10 @@ public class OrderBook
     /**
      * Checks the given event to make sure it is appropriate to add to the <code>OrderBook</code>. 
      *
-     * @param inEvent a <code>SymbolExchangeEvent</code> value
+     * @param inEvent a <code>QuoteEvent</code> value
      * @throws IllegalArgumentException if the event's symbol does not match the book's symbol
      */
-    private void checkEvent(SymbolExchangeEvent inEvent)
+    private void checkEvent(QuoteEvent inEvent)
     {
         if(!inEvent.getSymbol().equals(getSymbol())) {
             throw new IllegalArgumentException(SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL.getText(inEvent.getSymbol(),
@@ -540,19 +380,17 @@ public class OrderBook
     /**
      * Adds the given event to the order book.
      * 
-     * @param inEvent a <code>SymbolExchangeEvent</code> value
+     * @param inEvent a <code>QuoteEvent</code> value
+     * @return a <code>QuoteEvent</code> value containing the event displaced by the new event or null
      */
-    private void addEvent(SymbolExchangeEvent inEvent)
+    private QuoteEvent addEvent(QuoteEvent inEvent)
     {
         if(inEvent instanceof BidEvent) {
-            mBidBook.add((BidEvent)inEvent);
-            setLatestBid((BidEvent)inEvent);
+            return mBidBook.add((BidEvent)inEvent);
         } else if(inEvent instanceof AskEvent) {
-            mAskBook.add((AskEvent)inEvent);
-            setLatestAsk((AskEvent)inEvent);
-        } else if(inEvent instanceof TradeEvent) {
-            setLatestTrade((TradeEvent)inEvent);
+            return mAskBook.add((AskEvent)inEvent);
         }
+        throw new UnsupportedOperationException();
     }
     /**
      * Updates the given event on the order book if it is already present.
@@ -561,7 +399,7 @@ public class OrderBook
      * 
      * @param inEvent a <code>BidAskEvent</code> value
      */
-    private void changeEvent(BidAskEvent inEvent)
+    private void changeEvent(QuoteEvent inEvent)
     {
         if(inEvent instanceof BidEvent) {
             mBidBook.change((BidEvent)inEvent);
@@ -576,27 +414,13 @@ public class OrderBook
      * 
      * @param inEvent a <code>BidAskEvent</code> value
      */
-    private void removeEvent(BidAskEvent inEvent)
+    private void removeEvent(QuoteEvent inEvent)
     {
         if(inEvent instanceof BidEvent) {
             mBidBook.remove((BidEvent)inEvent);
         } else if(inEvent instanceof AskEvent) {
             mAskBook.remove((AskEvent)inEvent);
         }
-    }
-    /**
-     * Describes the type of FIX message to produce.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since 0.6.0
-     */
-    @ClassVersion("$Id$") //$NON-NLS-1$
-    private enum MessageType
-    {
-        BBO,
-        FULL_BOOK,
-        LATEST_TICK
     }
     /**
      * Stores the orders of one side of a book.
@@ -606,7 +430,7 @@ public class OrderBook
      * @since 0.6.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
-    private static class BookCollection<E extends BidAskEvent>
+    private static class BookCollection<E extends QuoteEvent>
     {
         /**
          * the set of events that make of the book
@@ -705,7 +529,7 @@ public class OrderBook
          * @param inComparator a <code>Comparator&lt;BidAskEvent&gt;</code> value to sort the list
          * @return a <code>List&lt;E&gt;</code> value
          */
-        private synchronized List<E> getSortedView(Comparator<BidAskEvent> inComparator)
+        private synchronized List<E> getSortedView(Comparator<QuoteEvent> inComparator)
         {
             List<E> events = new ArrayList<E>();
             for(E event : mBook) {
@@ -720,4 +544,20 @@ public class OrderBook
             return Collections.unmodifiableList(events);
         }
     }
+    /**
+     * the symbol for this book
+     */
+    private final MSymbol mSymbol;
+    /**
+     * the ask side of the book
+     */
+    private final BookCollection<AskEvent> mAskBook;
+    /**
+     * the bid side of the book
+     */
+    private final BookCollection<BidEvent> mBidBook;
+    /**
+     * the maximum depth of the order book 
+     */
+    private final int mMaxDepth;
 }

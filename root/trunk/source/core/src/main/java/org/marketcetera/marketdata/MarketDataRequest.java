@@ -20,17 +20,16 @@ import static org.marketcetera.marketdata.Messages.OHLC_NO_DATE;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
@@ -80,116 +79,6 @@ public class MarketDataRequest
      */
     public static final String TYPE_KEY = "type"; //$NON-NLS-1$
     /**
-     * Offers date translation utilities for {@link MarketDataRequest} objects.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    public static class DateUtils
-    {
-        private static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,
-                                                                                                       4).toFormatter();
-        private static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
-        private static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
-        private static final DateTimeFormatter T = new DateTimeFormatterBuilder().appendLiteral('T').toFormatter();
-        private static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
-        private static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
-        private static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
-        private static final DateTimeFormatter MILLI = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
-        private static final DateTimeFormatter TZ = new DateTimeFormatterBuilder().appendTimeZoneOffset("Z", //$NON-NLS-1$
-                                                                                                        true,
-                                                                                                        2,
-                                                                                                        4).toFormatter();
-        /**
-         * valid date formats
-         */
-        private static final DateTimeFormatter[] DATE_FORMATS = new DateTimeFormatter[] {
-          // yyyyMMdd'T'HHmmssSSSZ
-          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(MILLI).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
-          // yyyyMMdd'T'HHmmssSSS
-          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(MILLI).toFormatter().withZone(DateTimeZone.UTC),
-          // yyyyMMdd'T'HHmmssZ
-          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
-          // yyyyMMdd'T'HHmmss
-          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).toFormatter().withZone(DateTimeZone.UTC),
-          // yyyyMMdd'T'HHmmZ
-          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
-          // yyyyMMdd'T'HHmm
-          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).toFormatter().withZone(DateTimeZone.UTC),
-          // yyyyMMddZ
-          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
-          // yyyyMMdd
-          new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter().withZone(DateTimeZone.UTC) };
-        /**
-         * default date pattern
-         */
-        private static final DateTimeFormatter DEFAULT_FORMAT = DATE_FORMATS[0];
-        /**
-         * Converts the given <code>Date</code> value to a <code>String</code> representation usable with
-         * {@link MarketDataRequest} objects.
-         * 
-         * <p>The format of the returned value is ISO 8601 basic format to millisecond precision with
-         * time zone offset.  This format can be expressed as: <code>yyyyMMdd'T'HHmmssSSSZ</code> in terms of the format expected
-         * by {@link http://java.sun.com/javase/6//docs/api/java/text/SimpleDateFormat.html}.  This format
-         * can be used with {@link MarketDataRequest#newRequestFromString(String)} and
-         * {@link MarketDataRequest#asOf(String)}.
-         *
-         * @param inDate a <code>Date</code> value
-         * @return a <code>String</code> value
-         */
-        public static String dateToString(Date inDate)
-        {
-            return DEFAULT_FORMAT.print(new DateTime(inDate));
-        }
-        /**
-         * Parses the given <code>String</code> to a <code>Date</code> value.
-         * 
-         * <p>The given <code>String</code> is expected to be formatted in ISO 8601 basic format as described
-         * by {@link DateUtils#dateToString(Date)}.  The following formats are accepted:
-         * <ul>
-         *   <li>yyyyMMdd'T'HHmmssSSSZ (e.g. 20090303T224025444-0800)</li>
-         *   <li>yyyyMMdd'T'HHmmssSSS (e.g. 20090303T224025444)</li>
-         *   <li>yyyyMMdd'T'HHmmssZ (e.g. 20090303T224025-0800)</li>
-         *   <li>yyyyMMdd'T'HHmmss (e.g. 20090303T224025)</li>
-         *   <li>yyyyMMdd'T'HHmmZ (e.g. 20090303T2240-0800)</li>
-         *   <li>yyyyMMdd'T'HHmm (e.g. 20090303T2240)</li>
-         *   <li>yyyyMMddZ (e.g. 20090303-0800)</li>
-         *   <li>yyyyMMdd (e.g. 20090303)</li>
-         * </ul>
-         * 
-         * <p>If the timezone offset is omitted form the given <code>String</code>, the date/time is assumed
-         * to be in UTC.  If omitted, milliseconds, seconds, minutes, and hours are set to zero.  Fields
-         * may not be abbreviated, i.e., minutes must contain two digits even if the value is less than ten,
-         * <code>01</code> instead of <code>1</code>.  Timezone offsets may be expressed as <code>Z</code>
-         * for UTC or as an offset from UTC indicated by <code>+</code> or <code>-</code> and four digits.
-         * With the exception of the timezone offset indicator, no punctuation is allowed in the expression
-         *
-         * @param inDateString a <code>String</code> value a <code>String</code> containing a date value to be
-         *  parsed.
-         * @return a <code>Date</code> value 
-         * @throws MarketDataRequestException if the given <code>String</code> could not be parsed 
-         */
-        public static Date stringToDate(String inDateString)
-            throws MarketDataRequestException
-        {
-            if(inDateString == null ||
-               inDateString.isEmpty()) {
-                throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_DATE,
-                                                                            inDateString));
-            }
-            for(int formatCounter=0;formatCounter<DATE_FORMATS.length;formatCounter++) {
-                try {
-                    return new Date(DATE_FORMATS[formatCounter].parseDateTime(inDateString).getMillis());
-                } catch (IllegalArgumentException e) {
-                    // this format didn't work, try a less specific one
-                }
-            }
-            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_DATE,
-                                                                        inDateString));
-        }
-    }
-    /**
      * Creates a <code>MarketDataRequest</code>.
      * 
      * <p>The <code>String</code> parameter should be a set of key/value pairs delimited
@@ -236,7 +125,7 @@ public class MarketDataRequest
                 request.setProvider(sanitizedProps.get(PROVIDER_KEY));
             }
             if(sanitizedProps.containsKey(CONTENT_KEY)) {
-                request.setContent(Content.valueOf(sanitizedProps.get(CONTENT_KEY).toUpperCase()));
+                request.withContent(sanitizedProps.get(CONTENT_KEY).split(SYMBOL_DELIMITER));
             }
             if(sanitizedProps.containsKey(TYPE_KEY)) {
                 request.setType(Type.valueOf(sanitizedProps.get(TYPE_KEY).toUpperCase()));
@@ -285,12 +174,12 @@ public class MarketDataRequest
         validateContent(inRequest,
                         inRequest.content);
         // this condition means that a date was provided but is not needed
-        if(inRequest.content == OHLC &&
+        if(inRequest.content.contains(OHLC) &&
            inRequest.date == null) {
             // content is OHLC but no date
             throw new MarketDataRequestException(OHLC_NO_DATE);
         }
-        if(inRequest.content != OHLC &&
+        if(!inRequest.content.contains(OHLC) &&
            inRequest.date != null) {
             // date specified but request not OHLC
             EXTRA_DATE.warn(MarketDataRequest.class);
@@ -314,6 +203,7 @@ public class MarketDataRequest
      */
     public MarketDataRequest()
     {
+        content.add(TOP_OF_BOOK);
     }
     /**
      * Adds the given symbols to the market data request. 
@@ -347,7 +237,7 @@ public class MarketDataRequest
     public MarketDataRequest withSymbols(String inSymbols)
         throws MarketDataRequestException
     {
-        if(isEmptySymbolList(inSymbols)) {
+        if(isEmptyStringList(inSymbols)) {
             throw new MarketDataRequestException(MISSING_SYMBOLS);
         }
         setSymbols(inSymbols.split(SYMBOL_DELIMITER));
@@ -392,7 +282,8 @@ public class MarketDataRequest
      * Adds the given content to the market data request.
      *
      * <p>The given value must not be null or of zero-length and must correspond to
-     * a valid {@link Content}.  Case is not considered.
+     * one or more valid {@link Content} values separated by {@link #SYMBOL_DELIMITER}.
+     * Case is not considered.
      * 
      * <p>This attribute is required and no default is provided.
      *
@@ -403,8 +294,11 @@ public class MarketDataRequest
     public MarketDataRequest withContent(String inContent)
         throws MarketDataRequestException
     {
+        if(isEmptyStringList(inContent)) {
+            throw new MarketDataRequestException(MISSING_CONTENT);
+        }
         try {
-            return withContent(Content.valueOf(inContent.toUpperCase()));
+            return withContent(inContent.split(SYMBOL_DELIMITER));
         } catch (Exception e) {
             throw new MarketDataRequestException(e,
                                                  new I18NBoundMessage1P(INVALID_CONTENT,
@@ -417,14 +311,43 @@ public class MarketDataRequest
      * <p>The given content value must not be null.  This attribute is required and no
      * default is provided.
      *
-     * @param inContent a <code>Content</code> value
+     * @param inContent a <code>Content[]</code> value
      * @return a <code>MarketDataRequest</code> value
      * @throws MarketDataRequestException if the specified content results in an invalid request 
      */
-    public MarketDataRequest withContent(Content inContent)
+    public MarketDataRequest withContent(Content...inContent)
         throws MarketDataRequestException
     {
         setContent(inContent);
+        return this;
+    }
+    /**
+     * Adds the given content to the market data request.
+     *
+     * <p>The given content value must not be null.  This attribute is required and no
+     * default is provided.
+     *
+     * @param inContent a <code>String[]</code> value
+     * @return a <code>MarketDataRequest</code> value
+     * @throws MarketDataRequestException if the specified content results in an invalid request 
+     */
+    public MarketDataRequest withContent(String...inContent)
+        throws MarketDataRequestException
+    {
+        if(isEmptyStringList(inContent)) {
+            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_CONTENT,
+                                                                        inContent));
+        }
+        List<Content> newContents = new ArrayList<Content>();
+        for(String contentString : inContent) {
+            try {
+                newContents.add(Content.valueOf(contentString.toUpperCase()));
+            } catch (Exception e) {
+                throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_CONTENT,
+                                                                            inContent));
+            }
+        }
+        setContent(newContents.toArray(new Content[newContents.size()]));
         return this;
     }
     /**
@@ -572,11 +495,23 @@ public class MarketDataRequest
     /**
      * Get the content value.
      * 
-     * @return a <code>Content</code> value
+     * @return a <code>Set&lt;Content&gt;</code> value
      */
-    public Content getContent()
+    public Set<Content> getContent()
     {
-        return content;
+        return Collections.unmodifiableSet(content);
+    }
+    /**
+     * Determines if the request is valid apropos the given capabilities.
+     *
+     * @param inCapabilities a <code>Content[]</code> value containing the capabilities against which to verify the request
+     * @return a <code>boolean</code> value indicating whether the request if valid according to the given capabilities
+     */
+    public boolean validateWithCapabilities(Content...inCapabilities)
+    {
+        Set<Content> results = new HashSet<Content>(content);
+        results.removeAll(Arrays.asList(inCapabilities));
+        return results.isEmpty();
     }
     /**
      * Get the date value.
@@ -671,7 +606,7 @@ public class MarketDataRequest
                                         String[] inSymbols)
         throws MarketDataRequestException
     {
-        if(isEmptySymbolList(inSymbols)) {
+        if(isEmptyStringList(inSymbols)) {
             throw new MarketDataRequestException(MISSING_SYMBOLS);
         }
         for(String symbol : inSymbols) {
@@ -741,50 +676,94 @@ public class MarketDataRequest
      * Verifies that the <code>Content</code> on the given <code>MarketDataRequest</code> is valid.
      *
      * @param inRequest a <code>MarketDataRequest</code> value
-     * @param inContent a <code>Content</code> value
+     * @param inContent a <code>Content[]</code> value
      * @throws MarketDataRequestException if the <code>Content</code> is not valid
      */
     private static void validateContent(MarketDataRequest inRequest,
-                                        Content inContent)
+                                        Content...inContent)
         throws MarketDataRequestException
     {
-        if(inContent == null) {
+        if(inContent == null ||
+           inContent.length == 0) {
             throw new MarketDataRequestException(MISSING_CONTENT);
         }
+        if(!isValidEnumList(inContent)) {
+            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_CONTENT,
+                                                                        Arrays.toString(inContent)));
+        }
     }
     /**
-     * Checks to see if the given <code>String</code> represents an empty symbol list.
-     * 
-     * <p>The list is considered empty if it is empty or if all symbols in the list are whitespace or empty.
+     * Verifies that the <code>Content</code> on the given <code>MarketDataRequest</code> is valid.
      *
-     * @param inSymbols a <code>String</code> value allegedly containing a list of symbols delimited by {@link MarketDataRequest#SYMBOL_DELIMITER}
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inContent a <code>Set&lt;Content&gt;</code> value
+     * @throws MarketDataRequestException if the <code>Content</code> is not valid
+     */
+    private static void validateContent(MarketDataRequest inRequest,
+                                        Set<Content> inContent)
+        throws MarketDataRequestException
+    {
+        if(inContent == null ||
+           inContent.isEmpty()) {
+            throw new MarketDataRequestException(MISSING_CONTENT);
+        }
+        if(!isValidEnumList(inContent.toArray(new Content[inContent.size()]))) {
+            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_CONTENT,
+                                                                        String.valueOf(inContent)));
+        }
+    }
+    /**
+     * Checks to see if the given <code>String</code> represents an empty list.
+     * 
+     * <p>The list is considered empty if it is empty or if all strings in the list are whitespace or empty.
+     *
+     * @param inStrings a <code>String</code> value allegedly containing a list of tokens delimited by {@link MarketDataRequest#SYMBOL_DELIMITER}
      * @return a <code>boolean</code>value
      */
-    private static boolean isEmptySymbolList(String inSymbols)
+    private static boolean isEmptyStringList(String inStrings)
     {
-        if(inSymbols == null ||
-           inSymbols.isEmpty()) {
+        if(inStrings == null ||
+           inStrings.isEmpty()) {
             return true;
         }
-        return isEmptySymbolList(inSymbols.split(MarketDataRequest.SYMBOL_DELIMITER));
+        return isEmptyStringList(inStrings.split(MarketDataRequest.SYMBOL_DELIMITER));
     }
     /**
-     * Checks to see if the given <code>String[]</code> value represents an empty symbol list.
+     * Checks to see if the given <code>String[]</code> value represents an empty list.
      * 
      * <p>The list is considered empty if the array is empty or contains only null or whitespace values.
      *
-     * @param inSymbols a <code>String[]</code> value
+     * @param inStrings a <code>String[]</code> value
      * @return a <code>boolean</cod> value
      */
-    private static boolean isEmptySymbolList(String[] inSymbols)
+    private static boolean isEmptyStringList(String[] inStrings)
     {
-        if(inSymbols == null ||
-           inSymbols.length == 0) {
+        if(inStrings == null ||
+           inStrings.length == 0) {
             return true;
         }
-        for(String symbol : inSymbols) {
-            if(symbol != null &&
-               !symbol.trim().isEmpty()) {
+        for(String string : inStrings) {
+            if(string != null &&
+               !string.trim().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * Checks to see if the given <code>Enum&lt;E&gt;[]</code> value represents a list of valid enums.
+     *
+     * @param inEnums an <code>Enum&lt;E&gt;[]</code> value
+     * @return a <code>boolean</code> value
+     */
+    private static <E extends Enum<E>> boolean isValidEnumList(Enum<E>[] inEnums)
+    {
+        if(inEnums == null ||
+           inEnums.length == 0) {
+            return false;
+        }
+        for(Enum<E> e : inEnums) {
+            if(e == null) {
                 return false;
             }
         }
@@ -896,15 +875,16 @@ public class MarketDataRequest
      *
      * <p>This attribute is required.  If omitted, the value will be {@link Content#TOP_OF_BOOK}.
      * 
-     * @param a <code>Content</code> value
+     * @param a <code>Content[]</code> value
      * @throws MarketDataRequestException if the given content value is invalid 
      */
-    private void setContent(Content inContent)
+    private void setContent(Content...inContent)
         throws MarketDataRequestException
     {
         validateContent(this,
                         inContent);
-        content = inContent;
+        content.clear();
+        content.addAll(Arrays.asList(inContent));
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -928,11 +908,12 @@ public class MarketDataRequest
             output.append(PROVIDER_KEY).append(KEY_VALUE_SEPARATOR).append(String.valueOf(provider));
             delimiterNeeded = true;
         }
-        if(content != null) {
+        if(!content.isEmpty()) {
             if(delimiterNeeded) {
                 output.append(KEY_VALUE_DELIMITER);
             }
-            output.append(CONTENT_KEY).append(KEY_VALUE_SEPARATOR).append(content);
+            output.append(CONTENT_KEY).append(KEY_VALUE_SEPARATOR).append(content.toString().replaceAll("[\\[\\] ]", //$NON-NLS-1$
+                                                                                                        "")); //$NON-NLS-1$
             delimiterNeeded = true;
         }
         if(type != null) {
@@ -974,7 +955,7 @@ public class MarketDataRequest
     /**
      * the request content
      */
-    private Content content = TOP_OF_BOOK;
+    private final Set<Content> content = new HashSet<Content>();
     /**
      * the date as of which to request data
      */
@@ -1013,7 +994,11 @@ public class MarketDataRequest
         /**
          * NASDAQ Level II data
          */
-        LEVEL_2(0);
+        LEVEL_2(0),
+        /**
+         * latest trade
+         */
+        LATEST_TICK(1);
         /**
          * Gets the depth implied by the content type.
          *

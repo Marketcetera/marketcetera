@@ -1,6 +1,7 @@
 package org.marketcetera.marketdata.marketcetera;
 
 import static org.junit.Assert.assertEquals;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Type.SUBSCRIPTION;
 
@@ -18,7 +19,6 @@ import org.marketcetera.quickfix.FIXVersion;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
-import quickfix.field.MarketDepth;
 import quickfix.field.MsgType;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.SecurityExchange;
@@ -45,7 +45,7 @@ public class MarketceteraFeedMessageTranslatorTest
     @Override
     protected Set<Content> getCapabilities()
     {
-        return new HashSet<Content>(Arrays.asList(TOP_OF_BOOK));
+        return new HashSet<Content>(Arrays.asList(TOP_OF_BOOK,LATEST_TICK));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase#getTranslator()
@@ -61,7 +61,7 @@ public class MarketceteraFeedMessageTranslatorTest
     @Override
     protected void verifyResponse(Message inActualResponse,
                                   String inExpectedExchange,
-                                  Content inExpectedContent,
+                                  Content[] inExpectedContent,
                                   Type inExpectedType,
                                   String[] inExpectedSymbols)
             throws Exception
@@ -89,9 +89,6 @@ public class MarketceteraFeedMessageTranslatorTest
                              symbolGroup.getString(SecurityExchange.FIELD));
             }
         }
-        // check depth (related to content)
-        assertEquals(inExpectedContent.getDepth(),
-                     inActualResponse.getInt(MarketDepth.FIELD));
         // check subscription type
         assertEquals(inExpectedType.equals(SUBSCRIPTION) ? SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES : SubscriptionRequestType.SNAPSHOT,
                      inActualResponse.getChar(SubscriptionRequestType.FIELD));

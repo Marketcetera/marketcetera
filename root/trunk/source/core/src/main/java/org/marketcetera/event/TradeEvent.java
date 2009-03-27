@@ -2,7 +2,8 @@ package org.marketcetera.event;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
@@ -15,85 +16,49 @@ import org.marketcetera.trade.MSymbol;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class TradeEvent 
     extends SymbolExchangeEvent
 {
     private static final long serialVersionUID = 1L;
     /**
-     * the price of the trade 
-	 */
-    private final BigDecimal price;
-    /**
-     * the size of the trade
-     */
-	private final BigDecimal size;
-    /**
      * Create a new TradeEvent instance.
      *
-     * @param messageID a <code>long</code> value uniquely identifying this event
-     * @param timestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code>
+     * @param inMessageID a <code>long</code> value uniquely identifying this event
+     * @param inTimestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code>
      *   in GMT
-     * @param symbol a <code>String</code> value containing the symbol quoted in this event
-     * @param inExchange a <code>String</code> value containing the exchange on which the trade occurred 
-     * @param price a <code>BigDecimal</code> value containing the price 
-     * @param size a <code>BigDecimal</code> value containing the size
-     */
-    public TradeEvent(long messageID, 
-                      long timestamp, 
-                      MSymbol symbol,
+     * @param inSymbol an <code>MSymbol</code> value containing the symbol quoted in this event
+     * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred 
+     * @param inPrice a <code>BigDecimal</code> value containing the price of this event
+     * @param inSize a <code>BigDecimal</code> value containing the size of this event
+     * @throws IllegalArgumentException if <code>inMessageID</code> or <code>inTimestamp</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inExchange</code> is non-null but empty
+     * @throws NullPointerException if <code>inSymbol</code>, <code>inExchange</code>, <code>inPrice</code>, or
+     *  <code>inSize</code> is null
+    */
+    public TradeEvent(long inMessageID, 
+                      long inTimestamp, 
+                      MSymbol inSymbol,
                       String inExchange,
-                      BigDecimal price,
-                      BigDecimal size) 
+                      BigDecimal inPrice,
+                      BigDecimal inSize) 
     {
-        super(messageID, 
-              timestamp, 
-              symbol,
-              inExchange);
-        this.price = price;
-        this.size = size;
+        super(inMessageID, 
+              inTimestamp,
+              inSymbol,
+              inExchange,
+              inPrice,
+              inSize);
     }
-	/**
-     * Gets the price of the trade. 
-     *
-     * @return a <code>BigDecimal</code> value
-	 */
-    public BigDecimal getPrice() 
-    {
-		return price;
-	}
-	/**
-     * Gets the size of the trade. 
-     *
-     * @return a <code>BigDecimal</code> value
-	 */
-    public BigDecimal getSize() 
-    {
-		return size;
-	}
-	/**
-     * Indicates if the event has a price. 
-     *
-     * @return a <code>boolean</code> value
-	 */
-    public boolean hasPrice()
-    {
-		return price != null;
-	}
-    /**
-     * Indicates if the event has a size. 
-     *
-     * @return a <code>boolean</code> value
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
-	public boolean hasSize()
-    {        
-		return size != null;
-	}
+    @Override
     public String toString()
     {
         StringBuffer output = new StringBuffer();
         output.append("Trade for ").append(getSymbol()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        output.append(" ").append(getSymbol()).append(" ").append(getExchange()).append(" at ").append(getTimestampAsDate()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        output.append(" ").append(getSymbol()).append(" ").append(getExchange()).append(" at ").append(DateUtils.dateToString(getTimestampAsDate())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return output.toString();
     }
 }

@@ -2,7 +2,7 @@ package org.marketcetera.event;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
@@ -14,20 +14,23 @@ import org.marketcetera.trade.MSymbol;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class AskEvent
-        extends BidAskEvent
+        extends QuoteEvent
 {
-    private static final long serialVersionUID = 1L;
     /**
-     * Create a new AskEvent instance.
+     * Create a new AskEvent {@link QuoteEvent.Action#ADD} event.
      *
-     * @param inMessageID
-     * @param inTimestamp
-     * @param inSymbol
-     * @param inExchange
-     * @param inPrice
-     * @param inSize
+     * @param inMessageID a <code>long</code> value containing the unique identifier for this event
+     * @param inTimestamp a <code>long</code> value containing the timestamp for this event
+     * @param inSymbol an <code>MSymbol</code> value containing the symbol for this event
+     * @param inExchange a <code>String</code> value containing the exchange code for this event
+     * @param inPrice a <code>BigDecimal</code> value containing the price of the ask event
+     * @param inSize a <code>BigDecimal</code> value containing the size of the ask event
+     * @throws IllegalArgumentException if <code>inMessageID</code> or <code>inTimestamp</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inExchange</code> is non-null but empty
+     * @throws NullPointerException if <code>inSymbol</code>, <code>inExchange</code>, <code>inPrice</code>,
+     *  or <code>inSize</code> is null
      */
     public AskEvent(long inMessageID,
                     long inTimestamp,
@@ -45,23 +48,56 @@ public class AskEvent
              Action.ADD);
     }
     /**
+     * Returns a {@link QuoteEvent.Action#DELETE} event that is otherwise equal to the
+     * given <code>AskEvent</code>.
+     * 
+     * @param inAsk an <code>AskEvent</code> value
+     * @return an <code>AskEvent</code> exactly the same as the given <code>AskEvent</code> of type 
+     * {@link QuoteEvent.Action#DELETE}
+     */
+    public static AskEvent deleteEvent(AskEvent inAsk)
+    {
+        return new AskEvent(inAsk,
+                            Action.DELETE);
+    }
+    /**
+     * Returns a {@link QuoteEvent.Action#CHANGE} event that is, but also for the size, otherwise equal to the
+     * given <code>AskEvent</code>.
+     *
+     * @param inAsk an <code>AskEvent</code> value
+     * @param inNewSize a <code>BigDecimal</code> value containing the new size 
+     * @return an <code>AskEvent</code> exactly the same as the given <code>AskEvent</code> of type 
+     * {@link QuoteEvent.Action#CHANGE} and with the new given size
+     */
+    public static AskEvent changeEvent(AskEvent inAsk,
+                                       BigDecimal inNewSize)
+    {
+        return new AskEvent(inAsk.getMessageId(),
+                            inAsk.getTimeMillis(),
+                            inAsk.getSymbol(),
+                            inAsk.getExchange(),
+                            inAsk.getPrice(),
+                            inNewSize,
+                            Action.CHANGE);
+    }
+    /**
      * Create a new AskEvent instance.
      *
-     * @param inMessageID
-     * @param inTimestamp
-     * @param inSymbol
-     * @param inExchange
-     * @param inPrice
-     * @param inSize
-     * @param inAction an <code>Action</code> value
+     * @param inMessageID a <code>long</code> value containing the unique identifier for this event
+     * @param inTimestamp a <code>long</code> value containing the timestamp for this event
+     * @param inSymbol an <code>MSymbol</code> value containing the symbol for this event
+     * @param inExchange a <code>String</code> value containing the exchange code for this event
+     * @param inPrice a <code>BigDecimal</code> value containing the price of the ask event
+     * @param inSize a <code>BigDecimal</code> value containing the size of the ask event
+     * @param inAction an <code>Action</code> value containing the type of the ask event
      */
-    public AskEvent(long inMessageID,
-                    long inTimestamp,
-                    MSymbol inSymbol,
-                    String inExchange,
-                    BigDecimal inPrice,
-                    BigDecimal inSize,
-                    Action inAction)
+    private AskEvent(long inMessageID,
+                     long inTimestamp,
+                     MSymbol inSymbol,
+                     String inExchange,
+                     BigDecimal inPrice,
+                     BigDecimal inSize,
+                     Action inAction)
     {
         super(inMessageID,
               inTimestamp,
@@ -70,16 +106,6 @@ public class AskEvent
               inPrice,
               inSize,
               inAction);
-    }
-    /**
-     * Create a new AskEvent instance.
-     *
-     * @param inAsk an <code>AskEvent</code> value which serves as the source for the new ask
-     */
-    public AskEvent(AskEvent inAsk)
-    {
-        this(inAsk,
-             inAsk.getAction());
     }
     /**
      * Create a new AskEvent instance.
@@ -98,27 +124,12 @@ public class AskEvent
              inAsk.getSize(),
              inAction);
     }
-    public static AskEvent deleteEvent(AskEvent inAsk)
-    {
-        return new AskEvent(inAsk,
-                            Action.DELETE);
-    }
-    public static AskEvent changeEvent(AskEvent inAsk,
-                                       BigDecimal inNewSize)
-    {
-        return new AskEvent(inAsk.getMessageId(),
-                            inAsk.getTimeMillis(),
-                            inAsk.getSymbol(),
-                            inAsk.getExchange(),
-                            inAsk.getPrice(),
-                            inNewSize,
-                            Action.CHANGE);
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.automation.event.AskAskEvent#getDescription()
      */
-    protected String getDescription()
+    protected final String getDescription()
     {
         return "Ask"; //$NON-NLS-1$
     }
+    private static final long serialVersionUID = 1L;
 }

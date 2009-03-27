@@ -4,7 +4,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * Translates between the specified external data type <code>T</code> and {@link DataRequest} format.
+ * Translates between the specified external data type <code>T</code> and {@link MarketDataRequest} format.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

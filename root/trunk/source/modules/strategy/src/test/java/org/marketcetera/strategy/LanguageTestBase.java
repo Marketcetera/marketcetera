@@ -552,7 +552,7 @@ public abstract class LanguageTestBase
         verifyPropertyNonNull("onBid");
         // TODO almost certainly Bogus will provide a trade within 5 seconds, but it's nonetheless
         //  not deterministic.  the fix is to implement the deterministic provider described above
-//        verifyPropertyNonNull("onTrade");
+        verifyPropertyNonNull("onTrade");
     }
     /**
      * Tests a market data request from a market data provider that does not exist.
