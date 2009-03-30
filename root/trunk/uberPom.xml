@@ -633,21 +633,35 @@
 
   <repositories>
     <!--
-     -  The central repository is included here due to a bug in Maven 2.0.9.
-     -  Without this inclusion, Maven finds commons-i18n in the central repo
-      -  (versions 0.4 and 0.5) and in the Internal repo (20yymmdd). Since
-      -  we need 20yymmdd, Maven downloads the pom from the Internal repo,
-     -  but then tries to fetch the jar from the central repo, where it
-     -  does not exist. Thus Maven fails to resolve the commons-i18n
-     -  artifact. The workaround is to search central ahead of Internal.
+     -  The central repository used to be included here due to a bug
+     -  in Maven 2.0.9. Without this inclusion, Maven used to find
+     -  commons-i18n in the central repo (versions 0.4 and 0.5) and in
+     -  the internal repo (20yymmdd). Since we need 20yymmdd, Maven
+     -  downloaded the pom from the internal repo, but then tried to
+     -  fetch the jar from the central repo, where it does not exist.
+     -  Thus Maven failed to resolve the commons-i18n artifact. The
+     -  workaround was to search central ahead of internal. This odd
+     -  behaviour stopped at some point, prob. due to the order of
+     -  artifact resolution, and then another problem came up where
+     -  esper would have its pom located in the public repo, but then
+     -  its jar would be downloaded from the internal repo (where an
+     -  an older version of esper resided, but not the sought-after
+     -  jar). So builds failed again. That was when the central repo
+     -  was removed from here, and builds worked fine again (and the
+     -  commons-i18n issue did not resurface). This comment was kept in
+     -  place because Maven 2.0.10 and 2.1.0 failed to resolve esper
+     -  correctly when the central repo was placed here, indicating this
+     -  is a still-outstanding Maven issue that might require a future
+     -  workaround.
+     -
+     -  <repository>
+     -    <id>central</id>
+     -    <url>http://repo1.maven.org/maven2</url>
+     -    <snapshots>
+     -      <enabled>false</enabled>
+     -    </snapshots>
+     -  </repository>
      -->
-    <repository>
-      <id>central</id>
-      <url>http://repo1.maven.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
     <repository>
       <id>java.net</id>
       <url>http://download.java.net/maven/2</url>
