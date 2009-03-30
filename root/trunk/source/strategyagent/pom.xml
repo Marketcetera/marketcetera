@@ -106,7 +106,7 @@
               <arguments>
                 <argument>../../tools/scripts/createScript.pl</argument>
                 <argument>${project.build.directory}/${project.artifactId}</argument>
-                <argument>strategyAgent</argument>
+                <argument>strategyagent</argument>
                 <argument>org.marketcetera.strategyagent.StrategyAgent</argument>
               </arguments>
             </configuration>

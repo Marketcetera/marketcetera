@@ -59,11 +59,13 @@ while (@ARGV) {
 
 	print OUT 'SET APPLICATION_DIR='.$artifact.$sep.$sep;
 
-	print OUT 'SET THE_CLASSPATH=${METC_HOME}\\${APPLICATION_DIR}\\conf'.$sep;
-	print OUT 'FOR /F %%f IN (\'DIR /B /O:N %METC_HOME%\\%APPLICATION_DIR%\\lib\\*.jar\') DO CALL :SETCP %METC_HOME%\\%APPLICATION_DIR%\\lib\\%%f'.$sep.$sep;
+	print OUT 'CD %METC_HOME%\\%APPLICATION_DIR%'.$sep.$sep;
+
+	print OUT 'SET THE_CLASSPATH=.\\conf'.$sep;
+	print OUT 'FOR /F %%f IN (\'DIR /B /O:N .\\lib\\*.jar\') DO CALL :SETCP .\\lib\\%%f'.$sep.$sep;
 
 	print OUT 'java.exe '.$commonArgs.
-		' -Dorg.marketcetera.appDir="%METC_HOME%\\%APPLICATION_DIR%"^'.$sep;
+		' -Dorg.marketcetera.appDir=%METC_HOME%\\%APPLICATION_DIR%^'.$sep;
 	print OUT ' -cp "%THE_CLASSPATH%"^'.$sep;
 	print OUT ' '.$class.' %*'.$sep.$sep;
 
@@ -91,14 +93,16 @@ while (@ARGV) {
 
 	print OUT 'APPLICATION_DIR='.$artifact.$sep.$sep;
 
-	print OUT 'THE_CLASSPATH=${METC_HOME}/${APPLICATION_DIR}/conf'.$sep;
-	print OUT 'for file in `ls -1 ${METC_HOME}/${APPLICATION_DIR}/lib/*.jar`'.$sep;
+	print OUT 'cd ${METC_HOME}/${APPLICATION_DIR}'.$sep.$sep;
+
+	print OUT 'THE_CLASSPATH=./conf'.$sep;
+	print OUT 'for file in `ls -1 ./lib/*.jar`'.$sep;
 	print OUT 'do'.$sep;
 	print OUT '    THE_CLASSPATH=${THE_CLASSPATH}:${file}'.$sep;
 	print OUT 'done'.$sep.$sep;
 
 	print OUT 'exec java '.$commonArgs.
-		' -Dorg.marketcetera.appDir="${METC_HOME}/${APPLICATION_DIR}"\\'.$sep;
+		' -Dorg.marketcetera.appDir=${METC_HOME}/${APPLICATION_DIR}\\'.$sep;
 	print OUT ' -cp "${THE_CLASSPATH}"\\'.$sep;
 	print OUT ' '.$class.' $*'.$sep;
 	close(OUT);
