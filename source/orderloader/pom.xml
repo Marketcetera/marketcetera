@@ -134,7 +134,7 @@
               <arguments>
                 <argument>../../tools/scripts/createScript.pl</argument>
                 <argument>${project.build.directory}/${project.artifactId}</argument>
-                <argument>runOrderloader</argument>
+                <argument>orderloader</argument>
                 <argument>org.marketcetera.orderloader.Main</argument>
               </arguments>
             </configuration>
