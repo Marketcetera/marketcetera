@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.marketcetera.photon.marketdata;singleton:=true
-Bundle-Version: 1.2.0
+Bundle-Version: 1.5.0
 Bundle-Activator: org.marketcetera.photon.internal.marketdata.Activator
 Bundle-Vendor: %bundleVendor
 Require-Bundle: org.eclipse.core.runtime,
