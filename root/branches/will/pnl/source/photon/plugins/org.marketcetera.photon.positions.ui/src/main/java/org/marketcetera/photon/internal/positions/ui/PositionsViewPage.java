@@ -1,10 +1,18 @@
 package org.marketcetera.photon.internal.positions.ui;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.apache.commons.lang.Validate;
+import org.eclipse.jface.util.OpenStrategy;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IMemento;
@@ -248,4 +256,69 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
 			}
 		}
 	}
+
+	protected abstract static class PositionSelectionProvider extends Viewer {
+		private final Control mControl;
+
+		public PositionSelectionProvider(Control control) {
+			Validate.notNull(control);
+			mControl = control;
+			OpenStrategy handler = new OpenStrategy(control);
+			handler.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					handleSelect(e);
+				}
+			});
+		}
+
+		@Override
+		public Control getControl() {
+			return mControl;
+		}
+
+		@Override
+		public ISelection getSelection() {
+			if (mControl.isDisposed()) {
+				return StructuredSelection.EMPTY;
+			}
+			List<PositionRow> list = getSelectionFromWidget();
+			return new StructuredSelection(list);
+		}
+
+		protected abstract List<PositionRow> getSelectionFromWidget();
+
+		private void handleSelect(SelectionEvent event) {
+			// handle case where an earlier selection listener disposed the control.
+			if (!mControl.isDisposed()) {
+				updateSelection(getSelection());
+			}
+		}
+
+		private void updateSelection(ISelection selection) {
+			SelectionChangedEvent event = new SelectionChangedEvent(this, selection);
+			fireSelectionChanged(event);
+		}
+
+		@Override
+		public void setSelection(ISelection selection, boolean reveal) {
+			// not used
+		}
+
+		@Override
+		public void setInput(Object input) {
+			// not using input
+		}
+
+		@Override
+		public void refresh() {
+			// no op
+		}
+
+		@Override
+		public Object getInput() {
+			// not using input provider
+			return null;
+		}
+	}
+
 }

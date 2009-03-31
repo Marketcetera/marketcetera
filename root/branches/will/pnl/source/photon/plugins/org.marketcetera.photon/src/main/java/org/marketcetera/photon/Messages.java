@@ -533,4 +533,16 @@ public interface Messages
 			"preference_initializer.save_failed"); //$NON-NLS-1$
 	public static I18NMessage1P TABLE_COMPARATOR_CHOOSER_INVALID_LISTENER =
 			new I18NMessage1P(LOGGER, "table_comparator_chooser_invalid_listener"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_DEFAULT_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.default_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_POSITION_FILLS_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.position_fills_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_SYMBOL_FILTER_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.symbol_filter_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_ACCOUNT_FILTER_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.account_filter_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_TRADER_FILTER_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.trader_filter_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_UNKNOWN_FILTER_VALUE = new I18NMessage0P(LOGGER,
+			"fills_view.unknown_filter_value"); //$NON-NLS-1$
 }

@@ -7,8 +7,6 @@ import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.util.concurrent.Lock;
 
 /* $License$ */
 
@@ -36,14 +34,7 @@ public class FIXMessagesView extends AbstractFIXMessagesView {
 	}
 
 	@Override
-	protected FilterList<ReportHolder> getMessageList(TradeReportsHistory inHistory) {
-		EventList<ReportHolder> allMessagesList = inHistory.getAllMessagesList();
-		Lock readLock = allMessagesList.getReadWriteLock().readLock();
-		readLock.lock();
-		try {
-			return new FilterList<ReportHolder>(allMessagesList, getFilterMatcherEditor());
-		} finally {
-			readLock.unlock();
-		}
+	protected EventList<ReportHolder> getMessageList(TradeReportsHistory inHistory) {
+		return inHistory.getAllMessagesList();
 	}
 }

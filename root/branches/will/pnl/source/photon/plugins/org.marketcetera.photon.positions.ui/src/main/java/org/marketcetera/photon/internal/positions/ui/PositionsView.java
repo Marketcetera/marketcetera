@@ -376,5 +376,11 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 		if (!(part instanceof PositionsView)) return null;
 		return (PositionsView) part;
 	}
+	
+	@Override
+	public void setFocus() {
+		System.out.println("position view got focus");
+		super.setFocus();
+	}
 
 }
