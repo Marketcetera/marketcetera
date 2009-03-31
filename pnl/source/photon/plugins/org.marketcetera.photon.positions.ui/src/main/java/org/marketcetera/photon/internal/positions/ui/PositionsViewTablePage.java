@@ -5,13 +5,19 @@ import java.util.List;
 
 import net.miginfocom.swt.MigLayout;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.PositionEngine.PositionData;
@@ -39,6 +45,19 @@ public class PositionsViewTablePage extends PositionsViewPage {
 
 	private static final String TABLE_SORT_STATE_KEY = "tableSortState"; //$NON-NLS-1$
 
+	private final class TableSelectionProvider extends PositionSelectionProvider {
+
+		public TableSelectionProvider(Table table) {
+			super(table);
+		}
+
+		@Override
+		protected List<PositionRow> getSelectionFromWidget() {
+			return mViewer.getSelected();
+		}
+
+	}
+
 	private static final class PositionRowConfigurer implements TableItemConfigurer<PositionRow> {
 		@Override
 		public void configure(TableItem item, PositionRow rowValue, Object columnValue, int row,
@@ -55,9 +74,10 @@ public class PositionsViewTablePage extends PositionsViewPage {
 
 	private static final class PositionTableFormat extends PositionMetricsFormat {
 
-		private static final String[] COLUMN_NAMES = new String[] {  Messages.POSITIONS_TABLE_SYMBOL_COLUMN_HEADING.getText(),
-			Messages.POSITIONS_TABLE_ACCOUNT_COLUMN_HEADING.getText(),
-			Messages.POSITIONS_TABLE_TRADER_COLUMN_HEADING.getText() };
+		private static final String[] COLUMN_NAMES = new String[] {
+				Messages.POSITIONS_TABLE_SYMBOL_COLUMN_HEADING.getText(),
+				Messages.POSITIONS_TABLE_ACCOUNT_COLUMN_HEADING.getText(),
+				Messages.POSITIONS_TABLE_TRADER_COLUMN_HEADING.getText() };
 
 		public PositionTableFormat() {
 			super(COLUMN_NAMES.length);
@@ -136,6 +156,21 @@ public class PositionsViewTablePage extends PositionsViewPage {
 				column.setResizable(false);
 			}
 		}
+		getSite().setSelectionProvider(new TableSelectionProvider(mTable));
+		mTable.addListener(SWT.Activate, new Listener() {
+		
+			@Override
+			public void handleEvent(Event event) {
+				System.out.println("activation");
+			}
+		});
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().addSelectionListener(new ISelectionListener() {
+		
+			@Override
+			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+				System.out.println(part.getTitle() + " " + selection);
+			}
+		});
 		return composite;
 	}
 

@@ -7,6 +7,8 @@ Bundle-Version: 1.2.0
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.debug.core,
  org.marketcetera.util,
- org.eclipse.ui
+ org.eclipse.ui,
+ org.marketcetera.core,
+ org.marketcetera.photon
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Localization: plugin

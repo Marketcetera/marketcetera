@@ -1,6 +1,7 @@
 package org.marketcetera.photon.internal.positions.ui;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -108,6 +109,29 @@ public class PositionsViewTreePage extends PositionsViewPage {
 		}
 	}
 
+	private static final class TreeSelectionProvider extends PositionSelectionProvider {
+
+		public TreeSelectionProvider(Tree tree) {
+			super(tree);
+		}
+
+		@Override
+		public Tree getControl() {
+			return (Tree) super.getControl();
+		}
+
+		@Override
+		protected List<PositionRow> getSelectionFromWidget() {
+			List<PositionRow> selected = new ArrayList<PositionRow>();
+			Tree tree = getControl();
+			for (TreeItem item : tree.getSelection()) {
+				selected.add((PositionRow) item.getData());
+			}
+			return selected;
+		}
+
+	}
+
 	private EventTreeViewer<PositionRow> mViewer;
 	private Tree mTree;
 	private TreeComparatorChooser<PositionRow> mChooser;
@@ -160,6 +184,7 @@ public class PositionsViewTreePage extends PositionsViewPage {
 				column.setResizable(false);
 			}
 		}
+		getSite().setSelectionProvider(new TreeSelectionProvider(mTree));
 		return composite;
 
 	}

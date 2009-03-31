@@ -19,7 +19,7 @@ import quickfix.Message;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ReportHolder
     implements Comparable<ReportHolder> {
 
@@ -40,6 +40,8 @@ public class ReportHolder
      */
     public ReportHolder(ReportBase inReport, OrderID inGroupID){
         this.mReport = inReport;
+        // A unique reference number must be used instead of mReport.getReportID()
+        // since some "fake" reports are created by this package with null ids.
         this.mMessageReference = sCounter.incrementAndGet();
         this.mGroupID = inGroupID;
     }
@@ -66,18 +68,6 @@ public class ReportHolder
         return null;
     }
 
-    /**
-     * The message reference value. This is a unique, monotonically
-     * increasing value in the order in which instances of this class
-     * are created.
-     *
-     * @return the message reference value.
-     */
-    public long getMessageReference()
-    {
-        return mMessageReference;
-    }
-
     @Override
     public int compareTo(ReportHolder mh) {
         return (int)(mMessageReference - mh.mMessageReference);
@@ -91,32 +81,7 @@ public class ReportHolder
     public OrderID getGroupID() {
         return mGroupID;
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (mMessageReference ^ (mMessageReference >>> 32));
-        return result;
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ReportHolder other = (ReportHolder) obj;
-        return mMessageReference == other.mMessageReference;
-    }
+
     private final ReportBase mReport;
     private final long mMessageReference;
     private static AtomicLong sCounter = new AtomicLong();

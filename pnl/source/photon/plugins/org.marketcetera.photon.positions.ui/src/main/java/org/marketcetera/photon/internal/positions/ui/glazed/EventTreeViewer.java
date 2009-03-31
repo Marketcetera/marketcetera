@@ -185,9 +185,9 @@ public class EventTreeViewer<E> implements ListEventListener<E> {
             final Object cellValue = tableFormat.getColumnValue(value, i);
             treeItemConfigurer.configure(item, value, cellValue, row, i);
         }
+        item.setData(value);
         EventList<E> children = treeModel.getChildren(value);
         if (children != null) {
-            item.setData(children);
             item.setItemCount(children.size());
         }
     }
@@ -461,7 +461,7 @@ public class EventTreeViewer<E> implements ListEventListener<E> {
                 // root level
                 list = source;
             } else {
-                list = (EventList<E>) parentItem.getData();
+                list = treeModel.getChildren((E) parentItem.getData());
             }
             E value = list.get(e.index);
             renderTreeItem(item, value, e.index);
