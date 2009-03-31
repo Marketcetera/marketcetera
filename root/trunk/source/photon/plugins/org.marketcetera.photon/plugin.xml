@@ -143,14 +143,14 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.marketcetera.photon.application"
-            description="Marketcetera Photon 1.2.0 (Plugin)"
-            name="Photon 1.2.0">
+            description="Marketcetera Photon 1.5.0 (Plugin)"
+            name="Photon 1.5.0">
          <property
                name="aboutImage"
                value="icons/marketcetera/logo-150x55.gif"/>
          <property
                name="aboutText"
-               value="Marketcetera Photon&#x0A;&#x0A;Version: 1.2.0&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2009.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
+               value="Marketcetera Photon&#x0A;&#x0A;Version: 1.5.0&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2009.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
          <property
                name="preferenceCustomization"
                value="plugin_customization.ini"/>
@@ -168,7 +168,7 @@
                value="225,75,170,20"/>
          <property
                name="appName"
-               value="Photon 1.2.0">
+               value="Photon 1.5.0">
          </property>
       </product>
    </extension>
