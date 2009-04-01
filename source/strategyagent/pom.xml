@@ -84,6 +84,32 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>executeSample</id>
+      <properties>
+        <sampleName>HelloWorld.txt</sampleName>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <executable>${java.home}/bin/java</executable>
+              <arguments>
+                <argument>-Dorg.marketcetera.appDir=.</argument>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>org.marketcetera.strategyagent.StrategyAgent</argument>
+                <argument>samples/inputs/${sampleName}</argument>
+              </arguments>
+              <workingDirectory>src/main/sample_data</workingDirectory>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
 
     <!-- Assembly. -->
     <profile>
