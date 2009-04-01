@@ -34,12 +34,12 @@
         - as a workaround, use 420 decimal which results in 0644 octal.
         -->
       <fileMode>420</fileMode>
-      <directory>src/main/sample_data/inputs</directory>
+      <directory>src/main/sample_data/samples/inputs</directory>
       <outputDirectory>samples/commands</outputDirectory>
     </fileSet>
     <fileSet>
       <fileMode>420</fileMode>
-      <directory>src/main/sample_data/scripts</directory>
+      <directory>src/main/sample_data/samples/scripts</directory>
       <outputDirectory>samples/scripts</outputDirectory>
     </fileSet>
     <fileSet>

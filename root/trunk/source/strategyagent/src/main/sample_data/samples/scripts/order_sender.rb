@@ -50,7 +50,7 @@ class OrderSender < Strategy
       order.setPrice bid.price
       order.setQuantity bid.size
       order.setSide Side::Buy
-      order.setSymbol MSymbol.new(bid.symbol)
+      order.setSymbol bid.symbol
       order.setTimeInForce TimeInForce::Day
       puts "Sending Order " + order.to_s
 
@@ -78,7 +78,7 @@ class OrderSender < Strategy
       order.setPrice ask.price
       order.setQuantity ask.size
       order.setSide Side::Sell
-      order.setSymbol MSymbol.new(ask.symbol)
+      order.setSymbol ask.symbol
       order.setTimeInForce TimeInForce::Day
       puts "Sending Order " + order.to_s
 
