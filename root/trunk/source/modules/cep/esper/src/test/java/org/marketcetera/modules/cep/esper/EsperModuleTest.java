@@ -12,6 +12,7 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPTestBase;
+import org.marketcetera.modules.cep.system.CEPDataTypes;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MSymbol;
 
@@ -19,6 +20,8 @@ import javax.management.JMX;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -272,5 +275,41 @@ public class EsperModuleTest extends CEPTestBase {
         long timeEnd = System.currentTimeMillis();
         assertTrue("Didn't wait longer than 10 secs: "+(timeEnd-timeStart), timeEnd - timeStart > 10*1000);
         sManager.cancel(flow);
+    }
+
+    /**
+     * Verifies that map type is correctly registered such it's keys can
+     * be referred via dynamic property syntax
+     *
+     * @throws Exception if there were unexpected failures
+     */
+    @Test
+    public void testDynamicMapProperties() throws Exception {
+        Map map1 = new HashMap();
+        map1.put("name","nap");
+        map1.put("game","tap");
+
+        Map map2 = new HashMap();
+        map2.put("name","gap");
+        map2.put("game","kebap");
+        DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
+                // Copier -> Esper
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, new Map[] {
+                        map1,map2
+                }),
+                // ESPER -> Fetch the name from the map
+                new DataRequest(TEST_URN, new String[] {"select name? from map"})});
+
+        assertEquals("received wrong object", "nap", sSink.getReceived().take());
+        assertEquals("received wrong object", "gap", sSink.getReceived().take());
+        sManager.cancel(flow);
+    }
+
+    @Override
+    public void testMap() throws Exception {
+        //since maps are a special type in esper, they cannot be
+        //matched as java.util.Map type, they can only be matched with
+        //the alias
+        flowTestHelper(CEPDataTypes.MAP, new Object[]{map1, map2});
     }
 }

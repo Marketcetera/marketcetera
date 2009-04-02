@@ -217,7 +217,11 @@ public class CEPEsperProcessor extends Module
             }
 
             for (Pair<String, Class<?>> stringClassPair : CEPDataTypes.REQUEST_PRECANNED_TYPES) {
-                configuration.addEventType(stringClassPair.getFirstMember(), stringClassPair.getSecondMember());
+                if (stringClassPair.getFirstMember().equals(CEPDataTypes.MAP)) {
+                    configuration.addEventType(CEPDataTypes.MAP, new Properties());
+                } else {
+                    configuration.addEventType(stringClassPair.getFirstMember(), stringClassPair.getSecondMember());
+                }
             }
             configuration.addEventType(CEPDataTypes.TIME_CARRIER, TimestampCarrier.class);
 

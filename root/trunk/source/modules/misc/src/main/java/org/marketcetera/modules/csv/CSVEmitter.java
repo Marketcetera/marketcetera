@@ -36,15 +36,17 @@ import org.apache.commons.csv.CSVStrategy;
  * <p>
  * The module accepts request parameters of following types:
  * <ul>
- *      <li><b>{@link String}</b> : interpreted as a file path
- *      from which the csv file can be read.</li>
+ *      <li><b>{@link String}</b> : interpreted as a URL, if that fails, a
+ *      file path from which the csv file can be read. If the string starts
+ *      with 'r:', it's stripped from the string and rows are emitted in
+ *      the reverse order of their appearance.</li>
  *      <li>{@link File}: path to the csv file.</li>
  *      <li>{@link URL}: the url of the csv file.</li>
  * </ul>
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class CSVEmitter extends Module implements DataEmitter {
     /**
      * Creates an instance.
@@ -73,12 +75,18 @@ public class CSVEmitter extends Module implements DataEmitter {
             throw new IllegalRequestParameterValue(getURN(), null);
         }
         URL csv = null;
+        boolean isReverse = false;
         try {
             if(obj instanceof String) {
+                String s = (String)obj;
+                if(s.startsWith(PREFIX_REVERSE)) {
+                    isReverse = true;
+                    s = s.substring(PREFIX_REVERSE.length());
+                }
                 try {
-                    csv = new URL((String)obj);
+                    csv = new URL(s);
                 } catch(MalformedURLException ignore) {
-                    csv = new File((String) obj).toURI().toURL();
+                    csv = new File(s).toURI().toURL();
                 }
             } else if (obj instanceof File) {
                 csv = ((File)obj).toURI().toURL();
@@ -87,7 +95,7 @@ public class CSVEmitter extends Module implements DataEmitter {
             } else {
                 throw new UnsupportedRequestParameterType(getURN(), obj);
             }
-            CSVReader reader = new CSVReader(csv, inSupport);
+            CSVReader reader = new CSVReader(csv, inSupport, isReverse);
             Future<Boolean> future = mService.submit(reader);
             mRequests.put(inSupport.getRequestID(), future);
         } catch (MalformedURLException e) {
@@ -114,10 +122,14 @@ public class CSVEmitter extends Module implements DataEmitter {
          *
          * @param inSource The URL from which the csv file can be read.
          * @param inSupport the handle to emit data.
+         * @param inReverse if the emitter should reverse the rows, emitting
+         * the last row first.
          */
-        private CSVReader(URL inSource, DataEmitterSupport inSupport) {
+        private CSVReader(URL inSource, DataEmitterSupport inSupport,
+                          boolean inReverse) {
             mSource = inSource;
             mSupport = inSupport;
+            mReverse = inReverse;
         }
 
         @Override
@@ -138,9 +150,14 @@ public class CSVEmitter extends Module implements DataEmitter {
                             true);
                     return false;
                 }
-                for(int i = 1; i < rows.length; i++) {
-                    Map map = createMap(rows[0], rows[i]);
-                    mSupport.send(map);
+                if (mReverse) {
+                    for(int i = rows.length - 1; i > 0; i--) {
+                        mSupport.send(createMap(rows[0], rows[i]));
+                    }
+                } else {
+                    for(int i = 1; i < rows.length; i++) {
+                        mSupport.send(createMap(rows[0], rows[i]));
+                    }
                 }
                 //Terminate the data flow.
                 mSupport.dataEmitError(Messages.NO_MORE_DATA,true);
@@ -178,10 +195,12 @@ public class CSVEmitter extends Module implements DataEmitter {
             return map;
         }
 
-        private URL mSource;
-        private DataEmitterSupport mSupport;
+        private final URL mSource;
+        private final boolean mReverse;
+        private final DataEmitterSupport mSupport;
     }
     private ExecutorService mService;
     private final Map<RequestID, Future<Boolean>> mRequests =
             new Hashtable<RequestID, Future<Boolean>>();
+    static final String PREFIX_REVERSE = "r:";  //$NON-NLS-1$
 }
