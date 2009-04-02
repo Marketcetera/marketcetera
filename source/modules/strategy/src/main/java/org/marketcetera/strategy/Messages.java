@@ -193,4 +193,6 @@ public interface Messages
                                                               "message_1p"); //$NON-NLS-1$
     static final I18NMessage2P COMPILATION_FAILED_DIAGNOSTIC = new I18NMessage2P(LOGGER,
                                                                                  "compilation_failed_diagnostic"); //$NON-NLS-1$
+    static final I18NMessage1P ERROR_CONVERTING_CLASSPATH_URL =
+            new I18NMessage1P(LOGGER, "error_converting_classpath_url");   //$NON-NLS-1$
 }
