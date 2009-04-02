@@ -123,7 +123,11 @@ public class JavaCompilerExecutionEngine
         do {
             if(currentLoader instanceof URLClassLoader) {
                 for(URL url: ((URLClassLoader)currentLoader).getURLs()) {
-                    classpathString.append(url.getFile()).append(File.pathSeparator);
+                    try {
+                        classpathString.append(url.toURI().getPath()).append(File.pathSeparator);
+                    } catch (URISyntaxException e) {
+                        Messages.ERROR_CONVERTING_CLASSPATH_URL.warn(this,e, url);
+                    }
                 }
             }
         } while((currentLoader = currentLoader.getParent()) != null);
