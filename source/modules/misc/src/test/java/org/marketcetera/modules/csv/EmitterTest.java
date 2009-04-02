@@ -2,7 +2,9 @@ package org.marketcetera.modules.csv;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.module.*;
+import org.marketcetera.core.LoggerConfiguration;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -24,6 +26,10 @@ import java.net.MalformedURLException;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class EmitterTest extends ModuleTestBase {
 
+    @BeforeClass
+    public static void logSetup() {
+        LoggerConfiguration.logSetup();
+    }
     /**
      * Verifies failures when incorrect request parameters are provided.
      *
@@ -138,7 +144,24 @@ public class EmitterTest extends ModuleTestBase {
             }
         };
         //Try the file path
-        checkEmitCSV(VALID_CSV_FILE.getAbsolutePath());
+        checkEmitCSV(VALID_CSV_FILE.getAbsolutePath(), false);
+    }
+    /**
+     * Verifies a reverse data flow request with a file path string parameter.
+     *
+     * @throws Exception if there unexpected errors.
+     */
+    @Test(timeout = 60000)
+    public void emitCSVStringFileReverse() throws Exception {
+        assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
+        //verify that creating a URL out of file path, with reverse prefix, fails
+        new ExpectedFailure<MalformedURLException>(null){
+            protected void run() throws Exception {
+                new URL(CSVEmitter.PREFIX_REVERSE + VALID_CSV_FILE.getAbsolutePath());
+            }
+        };
+        //Try reverse
+        checkEmitCSV(CSVEmitter.PREFIX_REVERSE + VALID_CSV_FILE.getAbsolutePath(), true);
     }
     /**
      * Verifies a data flow request with a URL string parameter.
@@ -149,7 +172,19 @@ public class EmitterTest extends ModuleTestBase {
     public void emitCSVStringURL() throws Exception {
         assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
         //Try the URL
-        checkEmitCSV(VALID_CSV_FILE.toURI().toURL().toString());
+        checkEmitCSV(VALID_CSV_FILE.toURI().toURL().toString(), false);
+    }
+    /**
+     * Verifies a reverse data flow request with a URL string parameter.
+     *
+     * @throws Exception if there unexpected errors.
+     */
+    @Test(timeout = 60000)
+    public void emitCSVStringURLReverse() throws Exception {
+        assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
+        //Try reverse
+        checkEmitCSV(CSVEmitter.PREFIX_REVERSE + VALID_CSV_FILE.toURI().
+                toURL().toString(), true);
     }
 
     /**
@@ -160,7 +195,7 @@ public class EmitterTest extends ModuleTestBase {
     @Test(timeout = 60000)
     public void emitCSVFile() throws Exception {
         assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
-        checkEmitCSV(VALID_CSV_FILE);
+        checkEmitCSV(VALID_CSV_FILE, false);
     }
     /**
      * Verifies a data flow request with a URL parameter.
@@ -170,7 +205,7 @@ public class EmitterTest extends ModuleTestBase {
     @Test(timeout = 60000)
     public void emitCSVURL() throws Exception {
         assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
-        checkEmitCSV(VALID_CSV_FILE.toURI().toURL());
+        checkEmitCSV(VALID_CSV_FILE.toURI().toURL(), false);
     }
 
     /**
@@ -204,9 +239,10 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @param inRequestParam the request parameter to the emitter.
      *
+     * @param inReverse
      * @throws Exception if there were errors
      */
-    private void checkEmitCSV(Object inRequestParam)
+    private void checkEmitCSV(Object inRequestParam, boolean inReverse)
             throws Exception {
         assertTrue(mManager.getDataFlows(true).isEmpty());
         FirstAndLastTracker tracker = new FirstAndLastTracker();
@@ -235,11 +271,11 @@ public class EmitterTest extends ModuleTestBase {
         assertNotNull(tracker.getFirst());
         assertTrue(tracker.getFirst() instanceof Map);
         assertEquals(createMap("2008-10-02","16.77","16.85","15.54",
-                "15.58","23416200","15.58"),tracker.getFirst());
+                "15.58","23416200","15.58"),inReverse? tracker.getLast(): tracker.getFirst());
         assertNotNull(tracker.getLast());
         assertTrue(tracker.getLast() instanceof Map);
         assertEquals(createMap("1996-04-12","25.25","43.00","24.50",
-                "33.00","408720000","1.38"),tracker.getLast());
+                "33.00","408720000","1.38"),inReverse? tracker.getFirst(): tracker.getLast());
     }
 
     /**
