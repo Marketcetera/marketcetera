@@ -41,6 +41,9 @@ public interface Messages
 
     static final I18NMessage0P APP_COPYRIGHT=
         new I18NMessage0P(LOGGER,"app_copyright"); //$NON-NLS-1$
+    static final I18NMessage2P APP_VERSION_BUILD =
+            new I18NMessage2P(LOGGER, "app_version_build");   //$NON-NLS-1$
+
     static final I18NMessage0P APP_START=
         new I18NMessage0P(LOGGER,"app_start"); //$NON-NLS-1$
     static final I18NMessage0P APP_STOP=

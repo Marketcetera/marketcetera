@@ -115,4 +115,7 @@ public interface Messages
 
     static final I18NMessage1P INFO_WAITING_FOR_RESOURCE = 
         new I18NMessage1P(LOGGER,"info_waiting_for_resource"); //$NON-NLS-1$
+    static final I18NMessage0P ERROR_FETCHING_VERSION_PROPERTIES =
+            new I18NMessage0P(LOGGER, "error_fetching_version_properties");   //$NON-NLS-1$
+
 }

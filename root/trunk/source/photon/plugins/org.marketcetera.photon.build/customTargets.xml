@@ -113,6 +113,7 @@
 	<!-- Steps to do before running the build.xmls for the elements being built. -->
 	<!-- ===================================================================== -->
 	<target name="preProcess">
+		<antcall target="updateBuildAndVersionNumber" />
 	</target>
 
 	<!-- ===================================================================== -->
@@ -211,6 +212,14 @@
 	    <arg value="photon"/>
 	  </exec>
 	  <delete dir="${launcherTmp}"/>
+	</target>
+	
+	<!-- ===================================================================== -->
+	<!-- Updates the build and version number in photon about screen. -->
+	<!-- ===================================================================== -->
+	<target name="updateBuildAndVersionNumber">
+	  <replace file="${buildDirectory}/plugins/org.marketcetera.photon/plugin.xml" 
+	    token="metc.build.number" value="${ant.build.number}"/>
 	</target>
 
 	<!-- ===================================================================== -->
