@@ -264,6 +264,23 @@ public class ReceiverTest extends ModuleTestBase {
     }
 
     /**
+     * Verifies that the log level can be overridden by supplying a default
+     * value.
+     *
+     * @throws Exception if there were unexpected failures.
+     */
+    @Test
+    public void specifyDefaultLogLevel() throws Exception {
+        MockConfigProvider prov = configProviderWithURLValue(DEFAULT_URL);
+        prov.addDefault(ReceiverFactory.INSTANCE_URN, "LogLevel", "DEBUG");
+        initManager(prov);
+        final ReceiverModuleMXBean bean = JMX.newMXBeanProxy(getMBeanServer(),
+                ReceiverFactory.INSTANCE_URN.toObjectName(),
+                ReceiverModuleMXBean.class);
+        assertLogLevel(bean, LogEvent.Level.DEBUG);
+    }
+
+    /**
      * Stops the module manager.
      *
      * @throws Exception if there were failures.

@@ -85,6 +85,8 @@ public class ReceiverModule extends Module
      */
     ReceiverModule(ModuleURN inURN) {
         super(inURN, true);
+        //Set the log level to the default value
+        setLogLevel(LogEvent.Level.WARN);
     }
 
     @Override
@@ -114,8 +116,6 @@ public class ReceiverModule extends Module
             mContext.start();
             mSender = (JmsTemplate) mContext.getBean("sender",  //$NON-NLS-1$
                     JmsTemplate.class);
-            //Set the log level to the default value
-            setLogLevel(LogEvent.Level.WARN);
         } catch(Exception e) {
             throw new ModuleException(e, Messages.ERROR_STARTING_MODULE);
         }
