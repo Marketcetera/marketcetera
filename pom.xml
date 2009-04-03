@@ -16,7 +16,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>marketcetera</groupId>
+    <groupId>org.marketcetera</groupId>
     <artifactId>declarations</artifactId>
     <version>1.5.0</version>
     <relativePath>uberPom.xml</relativePath>

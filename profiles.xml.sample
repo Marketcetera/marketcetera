@@ -31,6 +31,8 @@
         <mvn.photon.target>C:\photon-target</mvn.photon.target>
         <!-- Command-line options for the JVM during unit test execution. -->
         <mvn.test.options>-Xmx512m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
+        <!-- Build Number. -->
+        <mvn.build.number>Development Build</mvn.build.number>
       </properties>
     </profile>
   </profiles>

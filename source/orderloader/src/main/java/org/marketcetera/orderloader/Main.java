@@ -9,6 +9,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.cli.*;
 import static org.marketcetera.core.ApplicationBase.*;
+import org.marketcetera.core.ApplicationVersion;
 import static org.marketcetera.orderloader.Messages.*;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.client.ClientParameters;
@@ -40,6 +41,9 @@ public class Main {
         PropertyConfigurator.configureAndWatch
             (CONF_DIR + LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
         LOG_APP_COPYRIGHT.info(Main.class);
+        LOG_APP_VERSION_BUILD.info(Main.class,
+                ApplicationVersion.getVersion(),
+                ApplicationVersion.getBuildNumber());
         Main main = new Main();
         run(inArgs, main);
     }

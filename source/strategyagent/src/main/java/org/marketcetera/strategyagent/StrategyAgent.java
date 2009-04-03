@@ -5,6 +5,7 @@ import org.marketcetera.util.unicode.UnicodeFileReader;
 import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.module.*;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -50,6 +51,9 @@ public class StrategyAgent extends ApplicationBase {
     public static void main(String[] args) {
         initializeLogger(LOGGER_CONF_FILE);
         Messages.LOG_APP_COPYRIGHT.info(StrategyAgent.class);
+        Messages.LOG_APP_VERSION_BUILD.info(StrategyAgent.class,
+                ApplicationVersion.getVersion(),
+                ApplicationVersion.getBuildNumber());
         //Run the application.
         run(new StrategyAgent(), args);
     }

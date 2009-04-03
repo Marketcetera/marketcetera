@@ -8,6 +8,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.client.Service;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.config.SpringConfig;
@@ -249,6 +250,9 @@ public class OrderRoutingSystem
         // Log application start.
 
         Messages.APP_COPYRIGHT.info(LOGGER_CATEGORY);
+        Messages.APP_VERSION_BUILD.info(LOGGER_CATEGORY,
+                ApplicationVersion.getVersion(),
+                ApplicationVersion.getBuildNumber());
         Messages.APP_START.info(LOGGER_CATEGORY);
 
         // Hook to log shutdown.

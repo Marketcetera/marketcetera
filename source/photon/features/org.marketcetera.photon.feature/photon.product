@@ -9,6 +9,7 @@
          Marketcetera Photon
 
 Version: 1.5.0
+Build: metc.build.number
 
 (c) Copyright Marketcetera Inc 2006-2009.  All rights reserved.
 Visit http://www.marketcetera.org
@@ -41,6 +42,7 @@ Visit http://www.marketcetera.org
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>

@@ -51,5 +51,6 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "create_module_invalid_syntax");  //$NON-NLS-1$
     static final I18NMessage0P LOG_APP_COPYRIGHT =
             new I18NMessage0P(LOGGER, "log_app_copyright");   //$NON-NLS-1$
-
+    static final I18NMessage2P LOG_APP_VERSION_BUILD =
+            new I18NMessage2P(LOGGER, "log_app_version_build");   //$NON-NLS-1$
 }
