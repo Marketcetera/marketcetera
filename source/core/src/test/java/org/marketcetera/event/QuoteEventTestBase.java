@@ -66,154 +66,173 @@ public abstract class QuoteEventTestBase
         // note that there are currently no restrictions on values < 0, not sure enough to impose that restriction yet
         for(int idCounter=0;idCounter<longValues.length;idCounter++) {
             for(int timestampCounter=0;timestampCounter<longValues.length;timestampCounter++) {
-                for(int symbolCounter=0;symbolCounter<symbols.length;symbolCounter++) {
-                    for(int exchangeCounter=0;exchangeCounter<exchanges.length;exchangeCounter++) {
-                        for(int priceCounter=0;priceCounter<bigValues.length;priceCounter++) {
-                            for(int sizeCounter=0;sizeCounter<bigValues.length;sizeCounter++) {
-                                for(int newSizeCounter=0;newSizeCounter<bigValues.length;newSizeCounter++) {
-                                    final long id = longValues[idCounter];
-                                    final long timestamp = longValues[timestampCounter];
-                                    final MSymbol symbol = symbols[symbolCounter];
-                                    final String exchange = exchanges[exchangeCounter];
-                                    final BigDecimal price = bigValues[priceCounter];
-                                    final BigDecimal size = bigValues[sizeCounter];
-                                    final BigDecimal newSize = bigValues[newSizeCounter];
-                                    SLF4JLoggerProxy.debug(QuoteEventTestBase.class,
-                                                           "{} {} {} {} {} {}",
-                                                           id,
-                                                           timestamp,
-                                                           symbol,
-                                                           exchange,
-                                                           price,
-                                                           size,
-                                                           newSize);
-                                    if(id < 0 ||
-                                       timestamp < 0) {
-                                        new ExpectedFailure<IllegalArgumentException>(null) {
-                                            @Override
-                                            protected void run()
-                                                throws Exception
-                                            {
-                                                constructObject(id,
-                                                                timestamp,
-                                                                symbol,
-                                                                exchange,
-                                                                price,
-                                                                size);
-                                            }
-                                        };
-                                        continue;
-                                    }
-                                    if(symbol == null ||
-                                       exchange == null ||
-                                       price == null ||
-                                       size == null) {
-                                        new ExpectedFailure<NullPointerException>(null) {
-                                            @Override
-                                            protected void run()
+                for(int newTimestampCounter=0;newTimestampCounter<longValues.length;newTimestampCounter++) {
+                    for(int symbolCounter=0;symbolCounter<symbols.length;symbolCounter++) {
+                        for(int exchangeCounter=0;exchangeCounter<exchanges.length;exchangeCounter++) {
+                            for(int priceCounter=0;priceCounter<bigValues.length;priceCounter++) {
+                                for(int sizeCounter=0;sizeCounter<bigValues.length;sizeCounter++) {
+                                    for(int newSizeCounter=0;newSizeCounter<bigValues.length;newSizeCounter++) {
+                                        final long id = longValues[idCounter];
+                                        final long timestamp = longValues[timestampCounter];
+                                        final long newTimestamp = longValues[newTimestampCounter];
+                                        final MSymbol symbol = symbols[symbolCounter];
+                                        final String exchange = exchanges[exchangeCounter];
+                                        final BigDecimal price = bigValues[priceCounter];
+                                        final BigDecimal size = bigValues[sizeCounter];
+                                        final BigDecimal newSize = bigValues[newSizeCounter];
+                                        SLF4JLoggerProxy.debug(QuoteEventTestBase.class,
+                                                               "{} {} {} {} {} {} {}",
+                                                               id,
+                                                               timestamp,
+                                                               newTimestamp,
+                                                               symbol,
+                                                               exchange,
+                                                               price,
+                                                               size,
+                                                               newSize);
+                                        if(id < 0 ||
+                                           timestamp < 0) {
+                                            new ExpectedFailure<IllegalArgumentException>(null) {
+                                                @Override
+                                                protected void run()
                                                     throws Exception
-                                            {
-                                                constructObject(id,
-                                                                timestamp,
-                                                                symbol,
-                                                                exchange,
-                                                                price,
-                                                                size);
-                                            }
-                                        };
-                                        continue;
-                                    }
-                                    if(exchange.isEmpty()) {
-                                        new ExpectedFailure<IllegalArgumentException>(null) {
-                                            @Override
-                                            protected void run()
-                                                throws Exception
-                                            {
-                                                constructObject(id,
-                                                                timestamp,
-                                                                symbol,
-                                                                exchange,
-                                                                price,
-                                                                size);
-                                            }
-                                        };
-                                        continue;
-                                    }
-                                    final QuoteEvent event = constructObject(id,
-                                                                             timestamp,
-                                                                             symbol,
-                                                                             exchange,
-                                                                             price,
-                                                                             size);
-                                    verifyEvent(event,
-                                                id,
-                                                timestamp,
-                                                symbol,
-                                                exchange,
-                                                price,
-                                                size,
-                                                getEventType(),
-                                                ADD);
-                                    QuoteEvent deleteEvent = deleteEvent(event); 
-                                    verifyEvent(deleteEvent,
-                                                id,
-                                                timestamp,
-                                                symbol,
-                                                exchange,
-                                                price,
-                                                size,
-                                                getEventType(),
-                                                DELETE);
-                                    verifyEvent(deleteEvent(deleteEvent),
-                                                id,
-                                                timestamp,
-                                                symbol,
-                                                exchange,
-                                                price,
-                                                size,
-                                                getEventType(),
-                                                DELETE);
-                                    if(newSize == null) {
-                                        new ExpectedFailure<NullPointerException>(null) {
-                                            @Override
-                                            protected void run()
+                                                {
+                                                    constructObject(id,
+                                                                    timestamp,
+                                                                    symbol,
+                                                                    exchange,
+                                                                    price,
+                                                                    size);
+                                                }
+                                            };
+                                            continue;
+                                        }
+                                        if(symbol == null ||
+                                           exchange == null ||
+                                           price == null ||
+                                           size == null) {
+                                            new ExpectedFailure<NullPointerException>(null) {
+                                                @Override
+                                                protected void run()
                                                     throws Exception
-                                            {
-                                                verifyEvent(changeEvent(event,
-                                                                        newSize),
-                                                            id,
-                                                            timestamp,
-                                                            symbol,
-                                                            exchange,
-                                                            price,
-                                                            size,
-                                                            getEventType(),
-                                                            CHANGE);
-                                            }
-                                        };
-                                        continue;
+                                                {
+                                                    constructObject(id,
+                                                                    timestamp,
+                                                                    symbol,
+                                                                    exchange,
+                                                                    price,
+                                                                    size);
+                                                }
+                                            };
+                                            continue;
+                                        }
+                                        if(exchange.isEmpty()) {
+                                            new ExpectedFailure<IllegalArgumentException>(null) {
+                                                @Override
+                                                protected void run()
+                                                    throws Exception
+                                                {
+                                                    constructObject(id,
+                                                                    timestamp,
+                                                                    symbol,
+                                                                    exchange,
+                                                                    price,
+                                                                    size);
+                                                }
+                                            };
+                                            continue;
+                                        }
+                                        final QuoteEvent event = constructObject(id,
+                                                                                 timestamp,
+                                                                                 symbol,
+                                                                                 exchange,
+                                                                                 price,
+                                                                                 size);
+                                        verifyEvent(event,
+                                                    id,
+                                                    timestamp,
+                                                    symbol,
+                                                    exchange,
+                                                    price,
+                                                    size,
+                                                    getEventType(),
+                                                    ADD);
+                                        QuoteEvent deleteEvent = deleteEvent(event); 
+                                        verifyEvent(deleteEvent,
+                                                    id,
+                                                    timestamp,
+                                                    symbol,
+                                                    exchange,
+                                                    price,
+                                                    size,
+                                                    getEventType(),
+                                                    DELETE);
+                                        verifyEvent(deleteEvent(deleteEvent),
+                                                    id,
+                                                    timestamp,
+                                                    symbol,
+                                                    exchange,
+                                                    price,
+                                                    size,
+                                                    getEventType(),
+                                                    DELETE);
+                                        if(newSize == null) {
+                                            new ExpectedFailure<NullPointerException>(null) {
+                                                @Override
+                                                protected void run()
+                                                    throws Exception
+                                                {
+                                                    verifyEvent(changeEvent(event,
+                                                                            timestamp,
+                                                                            newSize),
+                                                                            id,
+                                                                            timestamp,
+                                                                            symbol,
+                                                                            exchange,
+                                                                            price,
+                                                                            size,
+                                                                            getEventType(),
+                                                                            CHANGE);
+                                                }
+                                            };
+                                            continue;
+                                        }
+                                        if(newTimestamp < 0) {
+                                            new ExpectedFailure<IllegalArgumentException>(null) {
+                                                @Override
+                                                protected void run()
+                                                    throws Exception
+                                                {
+                                                    changeEvent(event,
+                                                                newTimestamp,
+                                                                newSize);                                                }
+                                            };
+                                            continue;
+                                        }
+                                        QuoteEvent changeEvent = changeEvent(event,
+                                                                             newTimestamp,
+                                                                             newSize);
+                                        verifyEvent(changeEvent,
+                                                    id,
+                                                    newTimestamp,
+                                                    symbol,
+                                                    exchange,
+                                                    price,
+                                                    newSize,
+                                                    getEventType(),
+                                                    CHANGE);
+                                        verifyEvent(changeEvent(changeEvent,
+                                                                newTimestamp,
+                                                                newSize),
+                                                                id,
+                                                                newTimestamp,
+                                                                symbol,
+                                                                exchange,
+                                                                price,
+                                                                newSize,
+                                                                getEventType(),
+                                                                CHANGE);
                                     }
-                                    QuoteEvent changeEvent = changeEvent(event,
-                                                                         newSize);
-                                    verifyEvent(changeEvent,
-                                                id,
-                                                timestamp,
-                                                symbol,
-                                                exchange,
-                                                price,
-                                                newSize,
-                                                getEventType(),
-                                                CHANGE);
-                                    verifyEvent(changeEvent(changeEvent,
-                                                            newSize),
-                                                id,
-                                                timestamp,
-                                                symbol,
-                                                exchange,
-                                                price,
-                                                newSize,
-                                                getEventType(),
-                                                CHANGE);
                                 }
                             }                            
                         }
@@ -277,6 +296,7 @@ public abstract class QuoteEventTestBase
                     DELETE);
         // delete from change
         event = changeEvent(event,
+                            event.getTimeMillis(),
                             ONE);
         assertEquals(CHANGE,
                      event.getAction());
@@ -586,24 +606,19 @@ public abstract class QuoteEventTestBase
      * Creates an event of {@link Action#CHANGE} action for the given event. 
      *
      * @param inEvent a <code>QuoteEvent</code> value
+     * @param inTimestamp a <code>long</code> value
      * @param inNewSize a <code>BigDecimal</code> value
      * @return a <code>QuoteEvent</code>
      * @throws Exception if an error occurs
      */
     private QuoteEvent changeEvent(QuoteEvent inEvent,
+                                   long inTimestamp,
                                    BigDecimal inNewSize)
         throws Exception
     {
-        Class<? extends QuoteEvent> type = getEventType();
-        try {
-            return (QuoteEvent)type.getMethod("changeEvent",
-                                              getEventType(),
-                                              BigDecimal.class).invoke(null,
-                                                                       inEvent,
-                                                                       inNewSize);
-        } catch (InvocationTargetException e) {
-            throw (Exception)e.getCause();
-        }
+        return QuoteEvent.changeEvent(inEvent,
+                                      inTimestamp,
+                                      inNewSize);
     }
     /**
      * Constructs a new object of the type to test.

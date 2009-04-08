@@ -24,14 +24,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -955,7 +956,7 @@ public class MarketDataRequest
     /**
      * the request content
      */
-    private final Set<Content> content = new HashSet<Content>();
+    private final Set<Content> content = new LinkedHashSet<Content>();
     /**
      * the date as of which to request data
      */

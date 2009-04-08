@@ -65,15 +65,17 @@ public class BidEvent
      * given <code>BidEvent</code>.
      *
      * @param inBid a <code>BidEvent</code> value
+     * @param inNewTimestamp a <code>long</code> value containing the new timestamp
      * @param inNewSize a <code>BigDecimal</code> value containing the new size 
      * @return a <code>BidEvent</code> exactly the same as the given <code>BidEvent</code> of type 
-     * {@link QuoteEvent.Action#CHANGE} and with the new given size
+     * {@link QuoteEvent.Action#CHANGE} and with the new given size and timestamp
      */
     public static BidEvent changeEvent(BidEvent inBid,
+                                       long inNewTimestamp,
                                        BigDecimal inNewSize)
     {
         return new BidEvent(inBid.getMessageId(),
-                            inBid.getTimeMillis(),
+                            inNewTimestamp,
                             inBid.getSymbol(),
                             inBid.getExchange(),
                             inBid.getPrice(),

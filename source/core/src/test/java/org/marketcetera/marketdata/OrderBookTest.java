@@ -323,6 +323,7 @@ public class OrderBookTest
                    book);
         // change the ask
         AskEvent askChange = AskEvent.changeEvent(ask1,
+                                                  ask1.getTimeMillis(),
                                                   ask1.getSize().add(TEN));
         asks.clear();
         asks.add(askChange);
@@ -334,6 +335,7 @@ public class OrderBookTest
                    book);
         // change the bid
         BidEvent bidChange = BidEvent.changeEvent(bid1,
+                                                  bid1.getTimeMillis(),
                                                   bid1.getSize().add(TEN));
         bids.clear();
         bids.add(bidChange);
@@ -343,10 +345,11 @@ public class OrderBookTest
                    asks,
                    10,
                    book);
-        // create changes for non-existant events
+        // create changes for non-existent events
         AskEvent unusedAsk = EventBaseTest.generateAskEvent(symbol,
                                                             exchange);
         book.process(AskEvent.changeEvent(unusedAsk,
+                                          unusedAsk.getTimeMillis(),
                                           unusedAsk.getSize().add(TEN)));
         verifyBook(symbol,
                    bids,
@@ -356,6 +359,7 @@ public class OrderBookTest
         BidEvent unusedBid = EventBaseTest.generateBidEvent(symbol,
                                                             exchange);
         book.process(BidEvent.changeEvent(unusedBid,
+                                          unusedBid.getTimeMillis(),
                                           unusedBid.getSize().add(TEN)));
         verifyBook(symbol,
                    bids,
