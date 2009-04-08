@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Commons UI Tests
+Bundle-SymbolicName: org.marketcetera.photon.commons.ui.tests;singleton:=true
+Bundle-Version: 1.5.0
+Bundle-Vendor: Marketcetera, Inc.
+Fragment-Host: org.marketcetera.photon.commons.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.photon.test,
+ org.junit4
