@@ -81,7 +81,32 @@ public class ReportHolder
     public OrderID getGroupID() {
         return mGroupID;
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (mMessageReference ^ (mMessageReference >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ReportHolder other = (ReportHolder) obj;
+        return mMessageReference == other.mMessageReference;
+    }
     private final ReportBase mReport;
     private final long mMessageReference;
     private static AtomicLong sCounter = new AtomicLong();
