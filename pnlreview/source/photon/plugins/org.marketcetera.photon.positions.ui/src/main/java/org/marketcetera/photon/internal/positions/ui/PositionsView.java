@@ -2,6 +2,8 @@ package org.marketcetera.photon.internal.positions.ui;
 
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.miginfocom.swt.MigLayout;
 
@@ -12,16 +14,21 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
@@ -32,6 +39,7 @@ import org.eclipse.ui.part.PageBookView;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.photon.commons.ui.FilterBox;
 import org.marketcetera.photon.commons.ui.FilterBox.FilterChangeEvent;
+import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -44,7 +52,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class PositionsView extends PageBookView {
+public class PositionsView extends PageBookView implements IColumnProvider {
 
 	/**
 	 * Dummy part that allows us to take advantage of {@link PageBookView} infrastructure to support
@@ -133,13 +141,16 @@ public class PositionsView extends PageBookView {
 				switch (part) {
 				case HIERARCHICAL:
 					view.grouping = view.lastGrouping;
+					view.partActivated(part);
 					break;
 				case FLAT:
 					if (view.grouping != null) view.lastGrouping = view.grouping;
 					view.grouping = null;
+					// dispose the last tree page if it exists to free up resources
+					view.partClosed(PositionsPart.HIERARCHICAL);
+					view.partActivated(part);
 					break;
 				}
-				view.partActivated(part);
 			}
 			return null;
 		}
@@ -177,11 +188,58 @@ public class PositionsView extends PageBookView {
 		}
 	}
 
+	private static final String DEFAULT_PART_KEY = "defaultPart"; //$NON-NLS-1$
+	private static final String GROUPING_KEY_1 = "grouping1"; //$NON-NLS-1$
+	private static final String GROUPING_KEY_2 = "grouping2"; //$NON-NLS-1$
+
 	private final EnumMap<PositionsPart, IPageBookViewPage> mPartsToPages = new EnumMap<PositionsPart, IPageBookViewPage>(
 			PositionsPart.class);
-	private Grouping[] grouping;
+	private final Map<IPageBookViewPage, PositionsPart> mPagesToParts = new HashMap<IPageBookViewPage, PositionsPart>();
+	private PositionsPart defaultPart = PositionsPart.FLAT;
+	private Grouping[] grouping = null;
 	private Grouping[] lastGrouping = new Grouping[] { Grouping.Symbol, Grouping.Account };
 	private String filterText = ""; //$NON-NLS-1$
+	private IMemento mMemento;
+	private MenuManager mMenuManager;
+
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
+		mMemento = memento;
+		if (memento != null) {
+			try {
+				String part = memento.getString(DEFAULT_PART_KEY);
+				if (part != null) {
+					defaultPart = PositionsPart.valueOf(part);
+				}
+			} catch (IllegalArgumentException e) {
+				Messages.POSITIONS_VIEW_STATE_RESTORE_FAILURE.error(this, e);
+			}
+			try {
+				String one = memento.getString(GROUPING_KEY_1);
+				String two = memento.getString(GROUPING_KEY_2);
+				if (one != null && two != null) {
+					lastGrouping = new Grouping[] { Grouping.valueOf(one), Grouping.valueOf(two) };
+				}
+			} catch (IllegalArgumentException e) {
+				Messages.POSITIONS_VIEW_STATE_RESTORE_FAILURE.error(this, e);
+			}
+			if (defaultPart == PositionsPart.HIERARCHICAL) {
+				grouping = lastGrouping;
+			}
+		}
+		mMenuManager = new MenuManager();
+		site.registerContextMenu(mMenuManager, getSelectionProvider());
+	}
+
+	@Override
+	public void saveState(IMemento memento) {
+		memento.putString(DEFAULT_PART_KEY, mPagesToParts.get(getCurrentPage()).toString());
+		Grouping[] savedGrouping = grouping != null ? grouping : lastGrouping;
+		memento.putString(GROUPING_KEY_1, savedGrouping[0].name());
+		memento.putString(GROUPING_KEY_2, savedGrouping[1].name());
+		getCurrentPage().saveState(memento);
+	}
 
 	@Override
 	protected boolean isImportant(IWorkbenchPart part) {
@@ -195,18 +253,18 @@ public class PositionsView extends PageBookView {
 	}
 
 	@Override
+	public Control getColumnWidget() {
+		return getCurrentPage().getColumnWidget();
+	}
+
+	@Override
 	protected IWorkbenchPart getBootstrapPart() {
-		return getDefaultPart();
+		return defaultPart;
 	}
 
 	@Override
 	protected IPage createDefaultPage(PageBook book) {
-		return createPage(getDefaultPart());
-	}
-
-	private PositionsPart getDefaultPart() {
-		// TODO: use preferences
-		return PositionsPart.FLAT;
+		return createPage(PositionsPart.FLAT);
 	}
 
 	@Override
@@ -229,16 +287,17 @@ public class PositionsView extends PageBookView {
 
 		// empty cross-reference cache
 		mPartsToPages.remove(part);
+		mPagesToParts.remove(page);
 	}
 
 	private IPageBookViewPage createPage(final PositionsPart part) {
 		final IPageBookViewPage page;
 		switch (part) {
 		case FLAT:
-			page = new PositionsViewTablePage(this);
+			page = new PositionsViewTablePage(this, mMemento);
 			break;
 		case HIERARCHICAL:
-			page = new PositionsViewTreePage(this);
+			page = new PositionsViewTreePage(this, mMemento);
 			break;
 		default:
 			throw new AssertionError("Invalid part"); //$NON-NLS-1$
@@ -247,31 +306,57 @@ public class PositionsView extends PageBookView {
 		initPage(page);
 		page.createControl(getPageBook());
 		mPartsToPages.put(part, page);
+		mPagesToParts.put(page, part);
 		return page;
 	}
 
 	@Override
 	protected void showPageRec(PageRec pageRec) {
 		super.showPageRec(pageRec);
+		installContextMenu();
 		getCurrentPage().setFilterText(getFilterText());
+	}
+
+	/**
+	 * Adds the common context menu to the column widget.
+	 */
+	private void installContextMenu() {
+		MenuManager contextMenu = mMenuManager;
+		Control control = getColumnWidget();
+		Menu menu = contextMenu.createContextMenu(control);
+		control.setMenu(menu);
 	}
 
 	private void setFilterText(String filterText) {
 		this.filterText = filterText;
 		getCurrentPage().setFilterText(filterText);
 	}
-	
+
+	/**
+	 * @return the current filter text
+	 */
 	String getFilterText() {
 		return filterText;
 	}
 
+	/**
+	 * @return the current grouping
+	 */
 	Grouping[] getGrouping() {
 		return grouping;
 	}
 
+	/**
+	 * Sets the view grouping.
+	 * 
+	 * @param grouping
+	 *            the new grouping
+	 */
 	void setGrouping(Grouping[] grouping) {
 		if (!Arrays.equals(this.grouping, grouping)) {
 			this.grouping = grouping;
+			// dispose the last tree page if it exists to free up resources
+			partClosed(PositionsPart.HIERARCHICAL);
 			partActivated(PositionsPart.HIERARCHICAL);
 		}
 	}
@@ -291,5 +376,4 @@ public class PositionsView extends PageBookView {
 		if (!(part instanceof PositionsView)) return null;
 		return (PositionsView) part;
 	}
-
 }

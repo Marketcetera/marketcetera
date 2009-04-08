@@ -108,7 +108,7 @@ class RemoteAgentManager {
 		// the agent (UI) should be in the stopped state
 		if (mAgent.getState() != State.STOPPED) {
 			assert false : mAgent.getState();
-			SLF4JLoggerProxy.debug(this, "Unexpected invocation of connect(), agent state is {0}.", mAgent.getState());
+			SLF4JLoggerProxy.debug(this, "Unexpected invocation of connect(), agent state is {0}.", mAgent.getState()); //$NON-NLS-1$
 			mAgent.setState(State.STOPPED);
 		}
 

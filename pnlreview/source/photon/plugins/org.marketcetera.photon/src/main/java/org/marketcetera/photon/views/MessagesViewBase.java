@@ -6,11 +6,11 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -90,18 +90,15 @@ public abstract class MessagesViewBase<T>
     }
 
 	@SuppressWarnings("unchecked")  //$NON-NLS-1$
-    @Override
+	@Override
 	public void createPartControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		composite.setLayout(layout);
+		GridLayoutFactory.fillDefaults().applyTo(composite);
 		
 		GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
 		composite.setLayoutData(gridData);
-		
-		layout.numColumns = 1;
 
-        messageTable = createMessageTable(composite);
+		messageTable = createMessageTable(composite);
 		messagesViewer = createTableViewer(messageTable, getEnumValues());
 		
 		tableFormat = (TableFormat<T>)messagesViewer.getLabelProvider();
@@ -267,7 +264,7 @@ public abstract class MessagesViewBase<T>
 
 			
     protected Table createMessageTable(Composite parent) {
-        Table messageTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
+        Table messageTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL);
         GridData messageTableLayout = new GridData();
         messageTableLayout.horizontalSpan = 2;
         messageTableLayout.verticalSpan = 1;
@@ -339,8 +336,7 @@ public abstract class MessagesViewBase<T>
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-		
+		messageTable.setFocus();
 	}
 	
     private void createSelectAllAction() {

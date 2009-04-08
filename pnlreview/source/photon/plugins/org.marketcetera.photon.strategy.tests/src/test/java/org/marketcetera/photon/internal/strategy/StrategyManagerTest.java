@@ -96,11 +96,11 @@ public class StrategyManagerTest {
 		private void stopAndAssert(Strategy strategy, final StrategyMXBean bean) throws Exception {
 			bean.interrupt();
 			// give time for strategy to compile/start since it is run in a separate thread
-			SWTTestUtil.conditionalDelayUnchecked(20, TimeUnit.SECONDS, new Callable<Boolean>() {
+			SWTTestUtil.conditionalDelayUnchecked(5, TimeUnit.SECONDS, new Callable<Boolean>() {
 			
 				@Override
 				public Boolean call() throws Exception {
-					return bean.getStatus().equals("STOPPED");
+					return !bean.getStatus().equals("COMPILING");
 				}
 			});
 			fixture.stop(strategy);

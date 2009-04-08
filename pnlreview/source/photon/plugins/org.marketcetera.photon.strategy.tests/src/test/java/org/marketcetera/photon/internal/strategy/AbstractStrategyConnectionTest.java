@@ -2,6 +2,7 @@ package org.marketcetera.photon.internal.strategy;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.marketcetera.photon.test.IsExpectedPropertyChangeEvent.isPropertyChange;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -11,7 +12,6 @@ import java.beans.PropertyChangeListener;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.photon.internal.strategy.AbstractStrategyConnection.State;
-import org.marketcetera.photon.test.IsExpectedPropertyChangeEvent;
 
 /* $License$ */
 
@@ -71,21 +71,21 @@ public class AbstractStrategyConnectionTest {
 		final String displayName = "ABC";
 		fixture.setDisplayName(displayName);
 		verify(listener).propertyChange(
-				argThat(new IsExpectedPropertyChangeEvent("displayName", "Test",
-						displayName)));
+				argThat(isPropertyChange("displayName", is("Test"),
+				        is(displayName))));
 		final String displayName2 = "ABC2";
 		fixture.setDisplayName(displayName2);
 		verify(listener).propertyChange(
-				argThat(new IsExpectedPropertyChangeEvent("displayName",
-						displayName, displayName2)));
+				argThat(isPropertyChange("displayName",
+				        is(displayName), is(displayName2))));
 		fixture.setState(State.RUNNING);
 		verify(listener).propertyChange(
-				argThat(new IsExpectedPropertyChangeEvent("state", State.STOPPED,
-						State.RUNNING)));
+				argThat(isPropertyChange("state", is(State.STOPPED),
+				        is(State.RUNNING))));
 		fixture.setState(State.STOPPED);
 		verify(listener).propertyChange(
-				argThat(new IsExpectedPropertyChangeEvent("state",
-						State.RUNNING, State.STOPPED)));
+				argThat(isPropertyChange("state",
+				        is(State.RUNNING), is(State.STOPPED))));
 	}
 
 }
