@@ -1,11 +1,17 @@
 package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertNotNull;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.OHLC;
-import static org.marketcetera.marketdata.Messages.MISSING_SYMBOLS;
-import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -14,6 +20,8 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.marketdata.MarketDataRequest.Type;
 import org.marketcetera.module.ExpectedFailure;
+
+import java.util.Arrays;
 
 /* $License$ */
 
@@ -25,6 +33,7 @@ import org.marketcetera.module.ExpectedFailure;
  * @since $Release$
  */
 public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
+    implements Messages
 {
     /**
      * Verifies that the actual response matches the expected values. 
@@ -112,6 +121,24 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
         }
     }
     /**
+     * Indicates if the underlying adapter supports the given contents.
+     *
+     * <p>Subclasses may override this method.  The default implementation indicates
+     * if the given content is part of the capabilities asserted by {@link #getCapabilities()}.
+     * Typically, this method would be overridden if the underlying adapter provides a dynamic
+     * set of capabilities dependent on logging in to the actual source.
+     * 
+     * <p>The semantics of this method are that the underlying adapter has to support all of
+     * the given contents.
+     *
+     * @param inContent a <code>Set&lt;Content&gt;</code> value
+     * @return a <code>boolean</code> value
+     */
+    protected boolean supports(Set<Content> inContent)
+    {
+        return getCapabilities().containsAll(inContent);
+    }
+    /**
      * Executes a test iteration for the given exchange and security list.
      * 
      * @param inExchange a <code>String</code> value containing an exchange to use or <code>null</code>
@@ -123,21 +150,30 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
                                   String... inSecurityList)
         throws Exception
     {
+        List<List<Content>> contents = new ArrayList<List<Content>>();
+        // first, generate a list of single contents of all types
         for(Content content : Content.values()) {
+            contents.add(new ArrayList<Content>(EnumSet.of(content)));
+        }
+        // next, generate a few permutations
+        contents.add(Arrays.asList(new Content[] { TOP_OF_BOOK,LATEST_TICK } ));
+        contents.add(Arrays.asList(new Content[] { TOP_OF_BOOK,LATEST_TICK,OPEN_BOOK } ));
+        contents.add(Arrays.asList(new Content[] { TOP_OF_BOOK,LATEST_TICK,OPEN_BOOK,LEVEL_2 } ));
+        for(List<Content> content : contents) {
             for(Type type : Type.values()) {
                 Date ohlcDate = new Date();
-                final MarketDataRequest request = MarketDataRequest.newRequest().withSymbols(inSecurityList).withContent(content).ofType(type);
-                if(content.equals(OHLC)) {
+                final MarketDataRequest request = MarketDataRequest.newRequest().withSymbols(inSecurityList).withContent(content.toArray(new Content[content.size()])).ofType(type);
+                if(content.contains(OHLC)) {
                     request.asOf(ohlcDate);
                 }
                 if(inExchange != null &&
                    !inExchange.isEmpty()) {
                     request.fromExchange(inExchange);
                 }
-                if(getCapabilities().contains(content)) {
+                if(supports(new HashSet<Content>(content))) {
                     verifyResponse(translator.fromDataRequest(request),
                                    inExchange,
-                                   new Content[] { content},
+                                   content.toArray(new Content[content.size()]),
                                    type,
                                    inSecurityList);
                 } else {

@@ -65,15 +65,17 @@ public class AskEvent
      * given <code>AskEvent</code>.
      *
      * @param inAsk an <code>AskEvent</code> value
+     * @param inNewTimestamp a <code>long</code> value containing the new timestamp
      * @param inNewSize a <code>BigDecimal</code> value containing the new size 
      * @return an <code>AskEvent</code> exactly the same as the given <code>AskEvent</code> of type 
-     * {@link QuoteEvent.Action#CHANGE} and with the new given size
+     * {@link QuoteEvent.Action#CHANGE} and with the new given size and timestamp
      */
     public static AskEvent changeEvent(AskEvent inAsk,
+                                       long inNewTimestamp,
                                        BigDecimal inNewSize)
     {
         return new AskEvent(inAsk.getMessageId(),
-                            inAsk.getTimeMillis(),
+                            inNewTimestamp,
                             inAsk.getSymbol(),
                             inAsk.getExchange(),
                             inAsk.getPrice(),

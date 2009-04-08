@@ -72,7 +72,7 @@ public abstract class QuoteEvent
     public String toString()
     {
         StringBuffer output = new StringBuffer();
-        output.append(getDescription()).append("(").append(getAction()).append(") for ").append(getSymbol()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        output.append(getDescription()).append("(").append(getAction()).append("-").append(getMessageId()).append(") for ").append(getSymbol()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         output.append(" ").append(getSymbol()).append(" ").append(getExchange()).append(" at ").append(DateUtils.dateToString(getTimestampAsDate())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return output.toString();
     }
@@ -94,6 +94,35 @@ public abstract class QuoteEvent
         }
         if(inEvent instanceof AskEvent) {
             return AskEvent.deleteEvent((AskEvent)inEvent);
+        }
+        throw new UnsupportedOperationException();
+    }
+    /**
+     * Creates a <code>QuoteEvent</code> of the same type as the given event
+     * with the same attributes except for the {@link QuoteEvent.Action} which
+     * will always be {@link QuoteEvent.Action#CHANGE}, size, and timestamp.
+     *
+     * @param inEvent a <code>QuoteEvent</code> value
+     * @param inNewTimestamp a <code>long</code> value containing the timestamp to apply to the returned event 
+     * @param inNewSize a <code>BigDecimal</code> value containing the size to use for the returned event
+     * @return a <code>QuoteEvent</code> value
+     */
+    public static QuoteEvent changeEvent(QuoteEvent inEvent,
+                                         long inNewTimestamp,
+                                         BigDecimal inNewSize)
+    {
+        if(inEvent == null) {
+            throw new NullPointerException();
+        }
+        if(inEvent instanceof BidEvent) {
+            return BidEvent.changeEvent((BidEvent)inEvent,
+                                        inNewTimestamp,
+                                        inNewSize);
+        }
+        if(inEvent instanceof AskEvent) {
+            return AskEvent.changeEvent((AskEvent)inEvent,
+                                        inNewTimestamp,
+                                        inNewSize);
         }
         throw new UnsupportedOperationException();
     }

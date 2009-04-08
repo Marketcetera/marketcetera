@@ -996,6 +996,7 @@ public final class SimulatedExchange
                             if(tradeSize.compareTo(bidSize) == -1) {
                                 // trade is smaller than the bid, this is a partial fill
                                 bidCorrection = BidEvent.changeEvent(bid,
+                                                                     tradeTime,
                                                                      bidSize.subtract(tradeSize));
                                 askCorrection = AskEvent.deleteEvent(ask); 
                             } else {
@@ -1003,6 +1004,7 @@ public final class SimulatedExchange
                                 bidCorrection = BidEvent.deleteEvent(bid);
                                 askCorrection = tradeSize.equals(askSize) ? AskEvent.deleteEvent(ask) :
                                                                             AskEvent.changeEvent(ask,
+                                                                                                 tradeTime,
                                                                                                  askSize.subtract(tradeSize));
                             }
                             // adjust the remainder we need to fill
