@@ -5,12 +5,13 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.photon.internal.marketdata.IMarketDataSubscriber;
 import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory;
 import org.marketcetera.photon.internal.marketdata.Messages;
-import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory.IConfigurationProvider;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.except.I18NException;
 
@@ -41,31 +42,11 @@ public class MarketDataReceiverModuleTest {
 	@Test
 	public void testCreation() throws Exception {
 		new ExpectedFailure<I18NException>(
-				Messages.MARKET_DATA_RECEIVER_NO_CONFIG) {
-			@Override
-			protected void run() throws Exception {
-				mModuleManager.createModule(
-						MarketDataReceiverFactory.PROVIDER_URN, null,
-						new MarketDataSubscriber("ABC") {
-
-							@Override
-							public void receiveData(Object inData) {
-							}
-						});
-			}
-		};
-		new ExpectedFailure<I18NException>(
 				Messages.MARKET_DATA_RECEIVER_NO_SUBSCRIBER) {
 			@Override
 			protected void run() throws Exception {
 				mModuleManager.createModule(
-						MarketDataReceiverFactory.PROVIDER_URN, new IConfigurationProvider() {
-
-							@Override
-							public ModuleURN getMarketDataSourceModule() {
-								return null;
-							}
-						}, null);
+						MarketDataReceiverFactory.PROVIDER_URN, (IMarketDataSubscriber) null);
 			}
 		};
 	}
@@ -74,21 +55,47 @@ public class MarketDataReceiverModuleTest {
 
 	@Test
 	public void testStart() throws Exception {
-		new ExpectedFailure<I18NException>(
-				Messages.MARKET_DATA_RECEIVER_NO_SOURCE) {
+		new ExpectedFailure<I18NException>(Messages.MARKET_DATA_RECEIVER_NO_REQUEST) {
 			@Override
 			protected void run() throws Exception {
 				ModuleURN receiver = mModuleManager.createModule(
-						MarketDataReceiverFactory.PROVIDER_URN, new IConfigurationProvider() {
-
-							@Override
-							public ModuleURN getMarketDataSourceModule() {
-								return null;
-							}
-						}, new MarketDataSubscriber("ABC") {
+						MarketDataReceiverFactory.PROVIDER_URN, new IMarketDataSubscriber() {
 
 							@Override
 							public void receiveData(Object inData) {
+							}
+
+							@Override
+							public MarketDataRequest getRequest() {
+								return null;
+							}
+
+							@Override
+							public ModuleURN getSourceModule() {
+								return new ModuleURN("abc:abc:abc:abc");
+							}
+						});
+				mModuleManager.start(receiver);
+			}
+		};
+		new ExpectedFailure<I18NException>(Messages.MARKET_DATA_RECEIVER_NO_SOURCE) {
+			@Override
+			protected void run() throws Exception {
+				ModuleURN receiver = mModuleManager.createModule(
+						MarketDataReceiverFactory.PROVIDER_URN, new IMarketDataSubscriber() {
+
+							@Override
+							public void receiveData(Object inData) {
+							}
+
+							@Override
+							public MarketDataRequest getRequest() {
+								return MarketDataRequest.newRequest();
+							}
+
+							@Override
+							public ModuleURN getSourceModule() {
+								return null;
 							}
 						});
 				mModuleManager.start(receiver);
@@ -99,19 +106,22 @@ public class MarketDataReceiverModuleTest {
 	@Test
 	public void testDataFlow() throws Exception {
 		final Object[] received = new Object[1];
-		ModuleURN receiver = mModuleManager.createModule(
-				MarketDataReceiverFactory.PROVIDER_URN,
-				new IConfigurationProvider() {
-
-					@Override
-					public ModuleURN getMarketDataSourceModule() {
-						return MockMarketDataModuleFactory.INSTANCE_URN;
-					}
-				}, new MarketDataSubscriber("ABC") {
+		ModuleURN receiver = mModuleManager.createModule(MarketDataReceiverFactory.PROVIDER_URN,
+				new IMarketDataSubscriber() {
 
 					@Override
 					public void receiveData(Object inData) {
 						received[0] = inData;
+					}
+
+					@Override
+					public MarketDataRequest getRequest() {
+						return MarketDataRequest.newRequest();
+					}
+
+					@Override
+					public ModuleURN getSourceModule() {
+						return MockMarketDataModuleFactory.INSTANCE_URN;
 					}
 				});
 		mModuleManager.start(receiver);
@@ -121,5 +131,4 @@ public class MarketDataReceiverModuleTest {
 		mModuleManager.stop(receiver);
 		mModuleManager.deleteModule(receiver);
 	}
-
 }
