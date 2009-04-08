@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,8 +11,12 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.map.CompositeMap;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.runtime.AssertionFailedException;
+import org.eclipse.emf.databinding.EMFObservables;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -46,16 +51,14 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.TradeEvent;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.commons.ui.table.ColumnState;
+import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
 import org.marketcetera.photon.marketdata.MarketDataManager;
-import org.marketcetera.photon.marketdata.MarketDataSubscriber;
+import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.photon.ui.ChooseColumnsMenu.ITableProvider;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -72,32 +75,20 @@ import quickfix.field.Symbol;
 /**
  * Market data view.
  * 
- * Note: enabling/disabling the symbol entry text field based on feed status has been commented out
- * since I don't believe it is necessary anymore (now that you can still add tickers even if the feed
- * is offline). Someone may ask me to add this back so I haven't removed it yet.
- * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.0.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public final class MarketDataView extends ViewPart implements IMSymbolListener,
-		ITableProvider, Messages {
+		IColumnProvider, Messages {
 
 	/**
 	 * The view ID.
 	 */
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; //$NON-NLS-1$
 
-	private static final String RESTORED_WIDTH_KEY = "restoredWidth"; //$NON-NLS-1$
-
-	private static final String COLUMN_WIDTHS = "COLUMN_WIDTHS"; //$NON-NLS-1$
-
-	private static final String COLUMN_ORDER = "COLUMN_ORDER"; //$NON-NLS-1$
-
-	private static final String COLUMN_RESTORED_WIDTHS = "COLUMN_RESTORED_WIDTHS"; //$NON-NLS-1$
-
-	private Map<MSymbol, MarketDataViewSubscriber> mModules = new HashMap<MSymbol, MarketDataViewSubscriber>();
+	private Map<MSymbol, MarketDataViewItem> mItemMap = new HashMap<MSymbol, MarketDataViewItem>();
 
 	private TextContributionItem mSymbolEntryText;
 
@@ -110,8 +101,6 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	private IMemento mViewState;
 
 	private Clipboard mClipboard;
-
-//	private IFeedStatusChangedListener mFeedStatusChangedListener;
 
 	/**
 	 * Constructor.
@@ -138,7 +127,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	@Override
-	public Table getTable() {
+	public Table getColumnWidget() {
 		return mViewer != null ? mViewer.getTable() : null;
 	}
 
@@ -147,15 +136,6 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		final IActionBars actionBars = getViewSite().getActionBars();
 		IToolBarManager toolbar = actionBars.getToolBarManager();
 		mSymbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
-//		mFeedStatusChangedListener = new IFeedStatusChangedListener() {
-//
-//			@Override
-//			public void feedStatusChanged(FeedStatusEvent event) {
-//				handleFeedStatusChanged(event.getNewStatus());				
-//			}			
-//		};
-//		mMarketDataManager.addActiveFeedStatusChangedListener(mFeedStatusChangedListener);
-//		handleFeedStatusChanged(mMarketDataManager.getActiveFeedStatus());
 		toolbar.add(mSymbolEntryText);
 		toolbar.add(new AddSymbolAction(mSymbolEntryText, this));
 
@@ -217,31 +197,10 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 		// restore table state if it exists
 		if (mViewState != null) {
-			String columnOrderString = mViewState.getString(COLUMN_ORDER);
-			if (columnOrderString != null) {
-				int[] columnOrder = deserialize(columnOrderString);
-				if (columnOrder.length == table.getColumns().length) {
-					table.setColumnOrder(columnOrder);
-				}
-			}
-			String columnWidthsString = mViewState.getString(COLUMN_WIDTHS);
-			if (columnWidthsString != null) {
-				int[] columnWidths = deserialize(columnWidthsString);
-				if (columnWidths.length == table.getColumns().length) {
-					for (int i = 0; i < columnWidths.length; i++) {
-						table.getColumn(i).setWidth(columnWidths[i]);
-					}
-				}
-			}
-			String columnRestoredWidthsString = mViewState
-					.getString(COLUMN_RESTORED_WIDTHS);
-			if (columnRestoredWidthsString != null) {
-				int[] restoredWidths = deserialize(columnRestoredWidthsString);
-				if (restoredWidths.length == table.getColumns().length) {
-					for (int i = 0; i < restoredWidths.length; i++) {
-						table.getColumn(i).setData(RESTORED_WIDTH_KEY,
-								restoredWidths[i]);
-					}
+			ColumnState.restore(table, mViewState);
+			for (TableColumn column : table.getColumns()) {
+				if (column.getWidth() == 0) {
+					column.setResizable(false);
 				}
 			}
 		}
@@ -251,19 +210,28 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 		ObservableListContentProvider content = new ObservableListContentProvider();
 		mViewer.setContentProvider(content);
-		IObservableMap[] maps = BeansObservables.observeMaps(content
-				.getKnownElements(), MarketDataViewItem.class, new String[] {
-				"symbol", //$NON-NLS-1$
-				"lastPx", //$NON-NLS-1$
-				"lastQty", //$NON-NLS-1$
-				"bidSize", //$NON-NLS-1$
-				"bidPx", //$NON-NLS-1$
-				"offerPx", //$NON-NLS-1$
-				"offerSize" }); //$NON-NLS-1$
+		IObservableSet domain = content.getKnownElements();
+		IObservableMap[] maps = new IObservableMap[] {
+				BeansObservables.observeMap(domain, MarketDataViewItem.class, "symbol"), //$NON-NLS-1$
+				createCompositeMap(domain, "latestTick", MDPackage.Literals.MD_LATEST_TICK__PRICE), //$NON-NLS-1$
+				createCompositeMap(domain, "latestTick", MDPackage.Literals.MD_LATEST_TICK__SIZE), //$NON-NLS-1$
+				createCompositeMap(domain, "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__BID_SIZE), //$NON-NLS-1$
+				createCompositeMap(domain,
+						"topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__BID_PRICE), //$NON-NLS-1$
+				createCompositeMap(domain,
+						"topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__ASK_PRICE), //$NON-NLS-1$
+				createCompositeMap(domain, "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__ASK_SIZE) //$NON-NLS-1$
+		};
 		mViewer.setLabelProvider(new ObservableMapLabelProvider(maps));
 		mViewer.setUseHashlookup(true);
 		mItems = WritableList.withElementType(MarketDataViewItem.class);
 		mViewer.setInput(mItems);
+	}
+
+	private IObservableMap createCompositeMap(IObservableSet domain, String property,
+			EStructuralFeature feature) {
+		return new CompositeMap(BeansObservables.observeMap(domain, MarketDataViewItem.class,
+				property), EMFObservables.mapFactory(feature));
 	}
 
 	private TableColumn createColumn(final Table table, String text,
@@ -292,57 +260,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 	@Override
 	public void saveState(IMemento memento) {
-		memento.putString(COLUMN_ORDER, serialize(getTable().getColumnOrder()));
-		final TableColumn[] columns = getTable().getColumns();
-		int[] columnWidths = new int[columns.length];
-		for (int i = 0; i < columns.length; i++) {
-			columnWidths[i] = columns[i].getWidth();
-		}
-		memento.putString(COLUMN_WIDTHS, serialize(columnWidths));
-		int[] restoredWidths = new int[columns.length];
-		for (int i = 0; i < columns.length; i++) {
-			final Integer restoredWidth = (Integer) columns[i]
-					.getData(RESTORED_WIDTH_KEY);
-			restoredWidths[i] = restoredWidth == null ? 70 : restoredWidth;
-		}
-		memento.putString(COLUMN_RESTORED_WIDTHS, serialize(restoredWidths));
+		ColumnState.save(getColumnWidget(), memento);
 	}
-
-	private String serialize(int[] array) {
-		StringBuilder builder = new StringBuilder();
-		if (array.length > 0) {
-			builder.append(array[0]);
-			for (int i = 1; i < array.length; i++) {
-				builder.append(',');
-				builder.append(array[i]);
-			}
-		}
-		return builder.toString();
-	}
-
-	private int[] deserialize(String string) {
-		String[] split = string.split(","); //$NON-NLS-1$
-		int[] array = new int[split.length];
-		try {
-			for (int i = 0; i < split.length; i++) {
-				array[i] = Integer.parseInt(split[i]);
-			}
-		} catch (NumberFormatException e) {
-			return new int[0];
-		}
-		return array;
-	}
-
-//	private void handleFeedStatusChanged(FeedStatus status) {
-//		if (mSymbolEntryText == null) {
-//			return;
-//		}
-//		if (status == FeedStatus.AVAILABLE) {
-//			mSymbolEntryText.setEnabled(true);
-//		} else {
-//			mSymbolEntryText.setEnabled(false);
-//		}
-//	}
 
 	@Override
 	public void setFocus() {
@@ -367,77 +286,49 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	 * @param symbol
 	 *            symbol to add to view
 	 */
-	public void addSymbol(MSymbol symbol) {
-		if (mModules.containsKey(symbol)) {
+	public void addSymbol(final MSymbol symbol) {
+		if (mItemMap.containsKey(symbol)) {
 			PhotonPlugin.getMainConsoleLogger().warn(
 					DUPLICATE_SYMBOL.getText(symbol));
 		} else {
-			MarketDataViewItem item = new MarketDataViewItem(symbol);
-			mModules.put(symbol, doSubscribe(item));
-			mItems.add(item);
+			busyRun(new Runnable() {
+				@Override
+				public void run() {
+					MarketDataViewItem item = new MarketDataViewItem(mMarketDataManager
+							.getMarketData(), symbol);
+					mItemMap.put(symbol, item);
+					mItems.add(item);
+				}
+			});
 		}
 	}
 
-	private MarketDataViewSubscriber doSubscribe(final MarketDataViewItem viewItem) {
-		final MarketDataViewSubscriber subscriber = new MarketDataViewSubscriber(viewItem);
-		BusyIndicator.showWhile(getViewSite().getShell().getDisplay(), new Runnable() {
-		
+	private void busyRun(Runnable runnable) {
+	    BusyIndicator.showWhile(getViewSite().getShell().getDisplay(), runnable);
+    }
+
+	private void remove(final MarketDataViewItem item) {
+		busyRun(new Runnable() {
 			@Override
 			public void run() {
-				mMarketDataManager.addSubscriber(subscriber);
+				item.dispose();
+				mItemMap.remove(item.getSymbol());
+				mItems.remove(item);
 			}
 		});
-		return subscriber;
-	}
-
-	private void remove(MarketDataViewItem item) {
-
-		mMarketDataManager.removeSubscriber(mModules.get(item.getSymbol()));
-		mModules.remove(item.getSymbol());
-		mItems.remove(item);
 	}
 
 	@Override
 	public void dispose() {
-//		mMarketDataManager.removeActiveFeedStatusChangedListener(mFeedStatusChangedListener);
-		for (Object object : mItems) {
-			mMarketDataManager.removeSubscriber(mModules.get(((MarketDataViewItem) object).getSymbol()));
+		for (MarketDataViewItem item : mItemMap.values()) {
+		    item.dispose();
 		}
+		mItemMap = null;
+		mItems = null;
 		if (mClipboard != null) {
 			mClipboard.dispose();
 		}
 		super.dispose();
-	}	
-	
-	private final class MarketDataViewSubscriber extends MarketDataSubscriber {
-
-		MarketDataViewItem mItem;
-		
-		MarketDataViewSubscriber(MarketDataViewItem item) {
-			super(item.getSymbol().toString());
-			mItem = item;
-		}
-		
-		@Override
-		public void receiveData(final Object inData) {
-			getViewSite().getShell().getDisplay().asyncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					if (inData instanceof BidEvent) {
-						mItem.setBidEvent((BidEvent) inData);
-					} else if (inData instanceof AskEvent) {
-						mItem.setAskEvent((AskEvent) inData);
-					} else if (inData instanceof TradeEvent) {
-						mItem.setTradeEvent((TradeEvent) inData);
-					} else {
-						MARKET_DATA_UNEXPECTED_EVENT_TYPE.warn(this, inData
-								.getClass());
-					}
-				}
-			});
-		}
-		
 	}
 
 	/**
@@ -478,49 +369,59 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			int compare;
 			switch (mIndex) {
 			case 0:
-				compare = compareNulls(item1.getSymbol().toString(), item2
-						.getSymbol().toString());
+				String symbol1 = item1.getSymbol().toString();
+				String symbol2 = item2.getSymbol().toString();
+				compare = compareNulls(symbol1, symbol2);
 				if (compare == 0) {
-					compare = item1.getSymbol().toString().compareTo(
-							item2.getSymbol().toString());
+					compare = symbol1.compareTo(symbol2);
 				}
 				break;
 			case 1:
-				compare = compareNulls(item1.getLastPx(), item2.getLastPx());
+				BigDecimal tradePrice1 = item1.getLatestTick().getPrice();
+				BigDecimal tradePrice2 = item2.getLatestTick().getPrice();
+				compare = compareNulls(tradePrice1, tradePrice2);
 				if (compare == 0) {
-					compare = item1.getLastPx().compareTo(item2.getLastPx());
+					compare = tradePrice1.compareTo(tradePrice2);
 				}
 				break;
 			case 2:
-				compare = compareNulls(item1.getLastQty(), item2.getLastQty());
+				BigDecimal tradeSize1 = item1.getLatestTick().getSize();
+				BigDecimal tradeSize2 = item2.getLatestTick().getSize();
+				compare = compareNulls(tradeSize1, tradeSize2);
 				if (compare == 0) {
-					compare = item1.getLastQty().compareTo(item2.getLastQty());
+					compare = tradeSize1.compareTo(tradeSize2);
 				}
 				break;
 			case 3:
-				compare = compareNulls(item1.getBidSize(), item2.getBidSize());
+				BigDecimal bidSize1 = item1.getTopOfBook().getBidSize();
+				BigDecimal bidSize2 = item2.getTopOfBook().getBidSize();
+				compare = compareNulls(bidSize1, bidSize2);
 				if (compare == 0) {
-					compare = item1.getBidSize().compareTo(item2.getBidSize());
+					compare = bidSize1.compareTo(bidSize2);
 				}
 				break;
 			case 4:
-				compare = compareNulls(item1.getBidPx(), item2.getBidPx());
+				BigDecimal bidPrice1 = item1.getTopOfBook().getBidPrice();
+				BigDecimal bidPrice2 = item2.getTopOfBook().getBidPrice();
+				compare = compareNulls(bidPrice1, bidPrice2);
 				if (compare == 0) {
-					compare = item1.getBidPx().compareTo(item2.getBidPx());
+					compare = bidPrice1.compareTo(bidPrice2);
 				}
 				break;
 			case 5:
-				compare = compareNulls(item1.getOfferPx(), item2.getOfferPx());
+				BigDecimal askPrice1 = item1.getTopOfBook().getAskPrice();
+				BigDecimal askPrice2 = item2.getTopOfBook().getAskPrice();
+				compare = compareNulls(askPrice1, askPrice2);
 				if (compare == 0) {
-					compare = item1.getOfferPx().compareTo(item2.getOfferPx());
+					compare = askPrice1.compareTo(askPrice2);
 				}
 				break;
 			case 6:
-				compare = compareNulls(item1.getOfferSize(), item2
-						.getOfferSize());
+				BigDecimal askSize1 = item1.getTopOfBook().getAskSize();
+				BigDecimal askSize2 = item2.getTopOfBook().getAskSize();
+				compare = compareNulls(askSize1, askSize2);
 				if (compare == 0) {
-					compare = item1.getOfferSize().compareTo(
-							item2.getOfferSize());
+					compare = askSize1.compareTo(askSize2);
 				}
 				break;
 			default:
@@ -561,21 +462,24 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		protected void setValue(Object element, Object value) {
 			if (StringUtils.isBlank(value.toString()))
 				return;
-			MarketDataViewItem item = (MarketDataViewItem) element;
+			final MarketDataViewItem item = (MarketDataViewItem) element;
 			final MSymbol symbol = item.getSymbol();
 			if (symbol.toString().equals(value))
 				return;
-			MSymbol newSymbol = new MSymbol(value.toString());
-			if (mModules.containsKey(newSymbol)) {
+			final MSymbol newSymbol = new MSymbol(value.toString());
+			if (mItemMap.containsKey(newSymbol)) {
 				PhotonPlugin.getMainConsoleLogger().warn(
 						DUPLICATE_SYMBOL.getText(symbol));
 				return;
 			}
-
-			mMarketDataManager.removeSubscriber(mModules.get(symbol));
-			mModules.remove(symbol);
-			item.setSymbol(newSymbol);
-			mModules.put(newSymbol, doSubscribe(item));
+			busyRun(new Runnable() {
+				@Override
+				public void run() {
+					mItemMap.remove(symbol);
+					item.setSymbol(newSymbol);
+					mItemMap.put(newSymbol, item);
+				}
+			});
 		}
 
 		@Override

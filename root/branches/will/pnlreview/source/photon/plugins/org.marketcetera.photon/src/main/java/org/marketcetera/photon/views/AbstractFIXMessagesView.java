@@ -33,9 +33,11 @@ import org.marketcetera.photon.ui.TextContributionItem;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Field;
+import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.Matchers;
+import ca.odell.glazedlists.util.concurrent.Lock;
 
 /* $License$ */
 
@@ -55,7 +57,7 @@ public abstract class AbstractFIXMessagesView
      */
     private FIXMessageTableRefresher tableRefresher;
     /**
-     * filter matcher editor used to dynamically filter the table contants
+     * filter matcher editor used to dynamically filter the table contents
      */
     private final FilterMatcherEditor filterMatcherEditor = new FilterMatcherEditor();
     /**
@@ -100,11 +102,14 @@ public abstract class AbstractFIXMessagesView
      */
     public void setInput(TradeReportsHistory inHistory)
     {
-        // this list object is used to hold the messages to be displayed 
-        FilterList<ReportHolder> extractedList = (FilterList<ReportHolder>)getMessageList(inHistory);
-        // register the dynamic filter generator with the list
-        extractedList.setMatcherEditor(getFilterMatcherEditor());
-        super.setInput(extractedList);
+        EventList<ReportHolder> list = getMessageList(inHistory);
+		Lock readLock = list.getReadWriteLock().readLock();
+		readLock.lock();
+		try {
+			super.setInput(new FilterList<ReportHolder>(list, getFilterMatcherEditor()));
+		} finally {
+			readLock.unlock();
+		}
     }   
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.MessagesViewBase#dispose()
@@ -129,9 +134,9 @@ public abstract class AbstractFIXMessagesView
      * implementing subclass.
      *
      * @param inHistory a <code>FIXMessageHistory</code> value
-     * @return a <code>FilterList&lt;MessageHolder&gt;</code> value
+     * @return the event list of report holders
      */
-    protected abstract FilterList<ReportHolder> getMessageList(TradeReportsHistory inHistory);
+    protected abstract EventList<ReportHolder> getMessageList(TradeReportsHistory inHistory);
     /**
      * Gets the current value of the filter widget.
      *

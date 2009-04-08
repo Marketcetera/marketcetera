@@ -9,8 +9,6 @@ import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 import org.marketcetera.photon.ui.FIXMessageTableFormat;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.util.concurrent.Lock;
 
 /* $License$ */
 
@@ -38,16 +36,9 @@ public class AveragePriceView extends AbstractFIXMessagesView {
 	}
 
 	@Override
-	protected FilterList<ReportHolder> getMessageList(
+	protected EventList<ReportHolder> getMessageList(
 			TradeReportsHistory inHistory) {
-		EventList<ReportHolder> avPrice = inHistory.getAveragePricesList();
-		Lock readLock = avPrice.getReadWriteLock().readLock();
-		readLock.lock();
-		try {
-			return new FilterList<ReportHolder>(avPrice, getFilterMatcherEditor());
-		} finally {
-			readLock.unlock();
-		}
+		return inHistory.getAveragePricesList();
 	}
 
 	@Override

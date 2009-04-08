@@ -148,4 +148,30 @@
       <startup
             class="org.marketcetera.photon.product.EarlyStartup"></startup>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.marketcetera.photon.positions.ui.commands.category"
+            defaultHandler="org.marketcetera.photon.product.handlers.ShowPositionFills"
+            description="Show fills for the selected position"
+            id="org.marketcetera.photon.positions.ui.commands.showPositionFills"
+            name="Show Position Fills">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.marketcetera.photon.positions.ui.PositionsView?before=org.marketcetera.photon.positions.ui.PositionsViewPopup.chooseColumnsMenu">
+         <command
+               commandId="org.marketcetera.photon.positions.ui.commands.showPositionFills"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <count
+                     value="1">
+               </count>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
 </plugin>
