@@ -57,9 +57,7 @@ public class LatestReportFunction implements
      * @return true if ReportHolder1 occurred after ReportHolder2, false otherwise
      */
     protected boolean isLater(ReportHolder inHolder1, ReportHolder inHolder2) {
-        long ref1 = inHolder1.getMessageReference();
-        long ref2 = inHolder2.getMessageReference();
-        return (ref1 > ref2);
+        return inHolder1.compareTo(inHolder2) > 0;
     }
     /**
      * Determines whether a given {@link org.marketcetera.messagehistory.ReportHolder} should

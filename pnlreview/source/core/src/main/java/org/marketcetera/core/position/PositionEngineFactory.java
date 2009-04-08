@@ -46,13 +46,13 @@ public class PositionEngineFactory {
      *             if any parameter is null
      */
     public static PositionEngine create(EventList<Trade> trades,
-            IncomingPositionSupport incomingPositionSupport) {
+            IncomingPositionSupport incomingPositionSupport, MarketDataSupport marketDataSupport) {
         Validate.noNullElements(new Object[] { trades, incomingPositionSupport });
         Lock readLock = trades.getReadWriteLock().readLock();
         readLock.lock();
         try {
             FilterList<Trade> validTrades = new FilterList<Trade>(trades, new ValidationMatcher());
-            return new PositionEngineImpl(validTrades, incomingPositionSupport);
+            return new PositionEngineImpl(validTrades, incomingPositionSupport, marketDataSupport);
         } finally {
             readLock.unlock();
         }
@@ -70,7 +70,7 @@ public class PositionEngineFactory {
      *             if any parameter is null
      */
     public static PositionEngine createFromReports(EventList<ReportBase> reports,
-            IncomingPositionSupport incomingPositionSupport) {
+            IncomingPositionSupport incomingPositionSupport, MarketDataSupport marketDataSupport) {
         Validate.noNullElements(new Object[] { reports, incomingPositionSupport });
         Lock readLock = reports.getReadWriteLock().readLock();
         readLock.lock();
@@ -78,7 +78,7 @@ public class PositionEngineFactory {
             FilterList<ReportBase> fills = new FilterList<ReportBase>(reports, new FillMatcher());
             FunctionList<ReportBase, Trade> trades = new FunctionList<ReportBase, Trade>(fills,
                     new TradeFunction());
-            return create(trades, incomingPositionSupport);
+            return create(trades, incomingPositionSupport, marketDataSupport);
         } finally {
             readLock.unlock();
         }
@@ -96,14 +96,14 @@ public class PositionEngineFactory {
      *             if any parameter is null
      */
     public static PositionEngine createFromReportHolders(EventList<ReportHolder> holders,
-            IncomingPositionSupport incomingPositionSupport) {
+            IncomingPositionSupport incomingPositionSupport, MarketDataSupport marketDataSupport) {
         Validate.noNullElements(new Object[] { holders, incomingPositionSupport });
         Lock readLock = holders.getReadWriteLock().readLock();
         readLock.lock();
         try {
             FunctionList<ReportHolder, ReportBase> reports = new FunctionList<ReportHolder, ReportBase>(
                     holders, new ReportExtractor());
-            return createFromReports(reports, incomingPositionSupport);
+            return createFromReports(reports, incomingPositionSupport, marketDataSupport);
         } finally {
             readLock.unlock();
         }
