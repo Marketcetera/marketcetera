@@ -14,7 +14,14 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDItem/symbol"/>
     </genClasses>
     <genClasses ecoreClass="mdata.ecore#//MDLatestTick">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDLatestTick/latestTick"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDLatestTick/price"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDLatestTick/size"/>
+    </genClasses>
+    <genClasses ecoreClass="mdata.ecore#//MDTopOfBook">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDTopOfBook/bidSize"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDTopOfBook/bidPrice"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDTopOfBook/askSize"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDTopOfBook/askPrice"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>
