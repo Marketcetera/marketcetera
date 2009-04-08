@@ -3,13 +3,11 @@ package org.marketcetera.marketdata;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -27,10 +25,11 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.BookEntryTuple;
 import org.marketcetera.event.DepthOfBook;
 import org.marketcetera.event.DepthOfBookTest;
-import org.marketcetera.event.OpenHighLowClose;
+import org.marketcetera.event.EventBase;
 import org.marketcetera.event.QuantityTuple;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.event.SymbolStatisticEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
@@ -335,58 +334,23 @@ public class SimulatedExchangeTest
         assertFalse(dob.getBids().isEmpty());
     }
     /**
-     * Tests the ability to generate OHLC (Open-High-Low-Close) data.
+     * Tests the ability to generate symbol statistics data.
      * 
      * <p>Note that testing this is made challenging by the random nature of data generation
-     * for OHLC.
+     * for statistics.
      *
      * @throws Exception if an error occurs
      */
     @Test
-    public void ohlc()
+    public void statistics()
         throws Exception
     {
-        final Date start = new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 30)); // 30 minutes ago
-        final Date end = new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 15)); // 15 minutes ago
         new ExpectedFailure<NullPointerException>(null) {
             @Override
             protected void run()
                     throws Exception
             {
-                exchange.getOHLC(null,
-                                 start,
-                                 end);
-            }
-        };
-        new ExpectedFailure<NullPointerException>(null) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                exchange.getOHLC(metc,
-                                 null,
-                                 end);
-            }
-        };
-        new ExpectedFailure<NullPointerException>(null) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                exchange.getOHLC(metc,
-                                 start,
-                                 null);
-            }
-        };
-        // start later than end
-        new ExpectedFailure<IllegalArgumentException>(null) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                exchange.getOHLC(metc,
-                                 end,
-                                 start);
+                exchange.getStatistics(null);
             }
         };
         // exchange not started
@@ -395,47 +359,39 @@ public class SimulatedExchangeTest
             protected void run()
                     throws Exception
             {
-                exchange.getOHLC(metc,
-                                 start,
-                                 end);
+                exchange.getStatistics(metc);
             }
         };
         // done with error conditions
         exchange.start();
-        // start equal to end
-        verifyOHLC(exchange.getOHLC(metc,
-                                    start,
-                                    start),
-                   metc,
-                   start,
-                   start);
         // quantities are random, even for subsequent calls and scripted mode, but
         //  there are some conditions we can expect the values to adhere to
         for(int i=0;i<50000;i++) {
-            verifyOHLC(exchange.getOHLC(metc,
-                                        start,
-                                        end),
-                       metc,
-                       start,
-                       end);
+            verifyStatistics(exchange.getStatistics(metc),
+                             metc);
         }
-        // grab one OHLC with a close date in the future
-        Date futureDate = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 30)); // 30 minutes in the future
-        verifyOHLC(exchange.getOHLC(metc,
-                                    start,
-                                    futureDate),
-                   metc,
-                   start,
-                   futureDate);
-        // set up an overflow condition with an interval > Integer.MAX_VALUE
-        long bigStart = 0;
-        long bigEnd = Integer.MAX_VALUE + 1l;
-        verifyOHLC(exchange.getOHLC(metc,
-                                    new Date(bigStart),
-                                    new Date(bigEnd)),
-                   metc,
-                   new Date(bigStart),
-                   new Date(bigEnd));
+    }
+    /**
+     * Tests the ability to receive statistics in a subscription.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void statisticSubscriber()
+        throws Exception
+    {
+        final AllEventsSubscriber stream = new AllEventsSubscriber();
+        exchange.getStatistics(metc,
+                               stream);
+        exchange.start();
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return stream.events.size() >= 15;
+            }
+        });
     }
     /**
      * Tests subscribing to market data from an exchange.
@@ -962,43 +918,25 @@ public class SimulatedExchangeTest
                      OrderBookTest.convertEvents(inActualStream));
     }
     /**
-     * Verifies OHLC data.
+     * Verifies symbol statistical data.
      *
-     * @param inOHLC an <code>OpenHighLowClose</code> value containing the actual value
+     * @param inStatistics a <code>SymbolStatisticEvent</code> value containing the actual value
      * @param inSymbol an <code>MSymbol</code> value containing the expected symbol
-     * @param inStart a <code>Date</code> value containing the expected start date
-     * @param inEnd a <code>Date</code> value containing the expected end date
      * @throws Exception if an error occurs
      */
-    private void verifyOHLC(OpenHighLowClose inOHLC,
-                            MSymbol inSymbol,
-                            Date inStart,
-                            Date inEnd)
+    private void verifyStatistics(SymbolStatisticEvent inStatistics,
+                                  MSymbol inSymbol)
         throws Exception
     {
-        assertNotNull(inOHLC.getOpen());
-        assertNotNull(inOHLC.getHigh());
-        assertNotNull(inOHLC.getLow());
-        if(inEnd.getTime() < inOHLC.getTimeMillis()) {
-            assertNotNull(inOHLC.getClose());
-        } else {
-            assertNull(inOHLC.getClose());
-        }
-        assertTrue(String.format("Found high price %s which was less than open price %s",
-                                 inOHLC.getHigh().getPrice().toPlainString(),
-                                 inOHLC.getOpen().getPrice().toPlainString()),
-                   inOHLC.getHigh().getPrice().compareTo(inOHLC.getOpen().getPrice()) != -1);
-        assertTrue(String.format("Found high price %s which was less than low price %s",
-                                 inOHLC.getHigh().getPrice().toPlainString(),
-                                 inOHLC.getLow().getPrice().toPlainString()),
-                   inOHLC.getHigh().getPrice().compareTo(inOHLC.getLow().getPrice()) != -1);
-        if(inOHLC.getClose() != null) {
-            assertTrue(String.format("Found high price %s which was less than close price %s",
-                                     inOHLC.getHigh().getPrice().toPlainString(),
-                                     inOHLC.getClose().getPrice().toPlainString()),
-                       inOHLC.getHigh().getPrice().compareTo(inOHLC.getClose().getPrice()) != -1);
-        }
-    }
+        assertNotNull(inStatistics.getOpen());
+        assertNotNull(inStatistics.getHigh());
+        assertNotNull(inStatistics.getLow());
+        assertNotNull(inStatistics.getClose());
+        assertNotNull(inStatistics.getPreviousClose());
+        assertNotNull(inStatistics.getVolume());
+        assertNotNull(inStatistics.getCloseDate());
+        assertNotNull(inStatistics.getPreviousCloseDate());
+   }
     /**
      * Verifies that the given exchange and symbol will produce the expected snapshots. 
      *
@@ -1121,6 +1059,37 @@ public class SimulatedExchangeTest
        public void publishTo(Object inData)
        {
            events.add((SymbolExchangeEvent)inData);
+       }
+   }
+   /**
+    * Captures any events from a <code>SimulatedExchange</code>.
+    *
+    * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+    * @version $Id$
+    * @since $Release$
+    */
+   private static class AllEventsSubscriber
+       implements ISubscriber
+   {
+       /**
+        * the events received
+        */
+       private final List<EventBase> events = new ArrayList<EventBase>();
+       /* (non-Javadoc)
+        * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+        */
+       @Override
+       public boolean isInteresting(Object inData)
+       {
+           return true;
+       }
+       /* (non-Javadoc)
+        * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+        */
+       @Override
+       public void publishTo(Object inData)
+       {
+           events.add((EventBase)inData);
        }
    }
 }

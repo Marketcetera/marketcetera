@@ -3,12 +3,10 @@ package org.marketcetera.marketdata;
 import static org.junit.Assert.assertNotNull;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.OHLC;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -161,11 +159,7 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
         contents.add(Arrays.asList(new Content[] { TOP_OF_BOOK,LATEST_TICK,OPEN_BOOK,LEVEL_2 } ));
         for(List<Content> content : contents) {
             for(Type type : Type.values()) {
-                Date ohlcDate = new Date();
                 final MarketDataRequest request = MarketDataRequest.newRequest().withSymbols(inSecurityList).withContent(content.toArray(new Content[content.size()])).ofType(type);
-                if(content.contains(OHLC)) {
-                    request.asOf(ohlcDate);
-                }
                 if(inExchange != null &&
                    !inExchange.isEmpty()) {
                     request.fromExchange(inExchange);

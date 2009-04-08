@@ -1,14 +1,12 @@
 package org.marketcetera.marketdata;
 
-import java.util.Date;
-
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.DepthOfBook;
-import org.marketcetera.event.OpenHighLowClose;
+import org.marketcetera.event.SymbolStatisticEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.MSymbol;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -23,17 +21,24 @@ import org.marketcetera.trade.MSymbol;
 public interface Exchange<T>
 {
     /**
-     * Returns the OHLC data for the given symbol over the given interval.
+     * Returns statistical data for the given symbol.
      *
-     * @param inSymbol a <code>MSymbol</code> value
-     * @param inStart a <code>Date</code> value
-     * @param inEnd a <code>Date</code> value
-     * @return an <code>OpenHighLowClose</code> value
-     * @throws IllegalArgumentException if <code>inStart</code> &gt; <code>inEnd</code>
+     * @param inSymbol an <code>MSymbol</code> value
+     * @return a <code>SymbolStatisticEvent</code> value
      */
-    public OpenHighLowClose getOHLC(MSymbol inSymbol,
-                                    Date inStart,
-                                    Date inEnd);
+    public SymbolStatisticEvent getStatistics(MSymbol inSymbol);
+    /**
+     * Establishes a subscription to statistical data for the given symbol.
+     *
+     * <p>The subscription will remain active until canceled via {@link Exchange#cancel(Object)} or
+     * the exchange is stopped via {@link Exchange#stop}.
+     *
+     * @param inSymbol an <code>MSymbol</code> value
+     * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
+     * @return a <code>T</code> value representing the subscription
+     */
+    public T getStatistics(MSymbol inSymbol,
+                           ISubscriber inSubscriber);
     /**
      * Gets the top of the exchange book for the given symbol.
      *
@@ -156,6 +161,10 @@ public interface Exchange<T>
         /**
          * bids, asks, and trades as they are added to the book
          */
-        STREAM
+        STREAM,
+        /**
+         * statistics for a symbol
+         */
+        STATISTICS
     }
 }

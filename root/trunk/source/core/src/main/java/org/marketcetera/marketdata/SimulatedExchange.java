@@ -4,6 +4,7 @@ import static org.marketcetera.event.QuoteEvent.Action.ADD;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.AskEvent;
@@ -22,13 +22,14 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DepthOfBook;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.HasSymbol;
-import org.marketcetera.event.OpenHighLowClose;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.event.SymbolStatisticEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -148,30 +149,20 @@ public final class SimulatedExchange
         return getBookWrapper(inSymbol).getLatestTick();
     }
     /**
-     * Returns the OHLC data for the given symbol over the given interval.
+     * Returns statistical data for the given symbol.
      *
-     * <p>The data returned by this method are random.  Though the OHLC returned will be
+     * <p>The data returned by this method are random.  Though the data returned will be
      * consistent with respect to itself, subsequent calls to this method will return
      * unrelated random data.
      * 
-     * @param inSymbol a <code>MSymbol</code> value
-     * @param inStart a <code>Date</code> value
-     * @param inEnd a <code>Date</code> value
-     * @return an <code>OpenHighLowClose</code> value
-     * @throws IllegalArgumentException if inEnd.getTime() &lt; inStart.getTime()
+     * @param inSymbol an <code>MSymbol</code> value
+     * @return a <code>SymbolStatisticEvent</code> value
      */
     @Override
-    public OpenHighLowClose getOHLC(MSymbol inSymbol,
-                                    Date inStart,
-                                    Date inEnd)
+    public SymbolStatisticEvent getStatistics(MSymbol inSymbol)
     {
-        if(inSymbol == null ||
-           inStart == null ||
-           inEnd == null) {
+        if(inSymbol == null) {
             throw new NullPointerException();
-        }
-        if(inEnd.getTime() < inStart.getTime()) {
-            throw new IllegalArgumentException();
         }
         if(!status.isRunning()) {
             throw new IllegalStateException();
@@ -198,60 +189,44 @@ public final class SimulatedExchange
         if(closePrice.compareTo(BigDecimal.ZERO) == -1) {
             closePrice = PENNY;
         }
+        BigDecimal previousClosePrice = currentValue.add(randomDecimalDifference(10));
+        if(closePrice.compareTo(BigDecimal.ZERO) == -1) {
+            closePrice = PENNY;
+        }
         // calculate high price (the max of current, open, and close + 0.00-4.99 inclusive)
         BigDecimal highPrice = currentValue.max(openPrice).max(closePrice).add(randomDecimalDifference(5).abs());
         // calculate low price (the min of current, open, and close - 0.00-4.99 inclusive)
         BigDecimal lowPrice = currentValue.min(openPrice).min(closePrice).subtract(randomDecimalDifference(5).abs());
-        // calculate the time stamps of high and low
-        // high was some time between start and min(end,current)
-        Date highTime = new Date(createTimeInterval(inStart.getTime(),
-                                                    Math.min(inEnd.getTime(),
-                                                             currentTime)));
-        // low was not at open, not unexpected
-        // low was some time between start and min(end,current)
-        Date lowTime = new Date(createTimeInterval(inStart.getTime(),
-                                                   Math.min(inEnd.getTime(),
-                                                            currentTime)));
-        // construct the relevant trade events
-        TradeEvent open = new TradeEvent(System.nanoTime(),
-                                         inStart.getTime(),
-                                         inSymbol,
-                                         getCode(),
-                                         openPrice,
-                                         randomInteger(10000).add(BigDecimal.ONE));
-        TradeEvent high = new TradeEvent(System.nanoTime(),
-                                         highTime.getTime(),
-                                         inSymbol,
-                                         getCode(),
-                                         highPrice,
-                                         randomInteger(10000).add(BigDecimal.ONE));
-        TradeEvent low = new TradeEvent(System.nanoTime(),
-                                        lowTime.getTime(),
-                                        inSymbol,
-                                        getCode(),
-                                        lowPrice,
-                                        randomInteger(10000).add(BigDecimal.ONE));
-        // close is a special case because the doofus may have requested a close > current
-        TradeEvent close;
-        if(inEnd.getTime() > currentTime) {
-            close = null;
-        } else {
-            close = new TradeEvent(System.nanoTime(),
-                                   inEnd.getTime(),
-                                   inSymbol,
-                                   getCode(),
-                                   closePrice,
-                                   randomInteger(10000).add(BigDecimal.ONE));
-        }
         // ready to return the data
-        return new OpenHighLowClose(open,
-                                    high,
-                                    low,
-                                    close,
-                                    inStart,
-                                    inEnd,
-                                    new Date(currentTime),
-                                    inSymbol);
+        return new SymbolStatisticEvent(inSymbol,
+                                        new Date(currentTime),
+                                        openPrice,
+                                        highPrice,
+                                        lowPrice,
+                                        closePrice,
+                                        previousClosePrice,
+                                        randomInteger(100000),
+                                        new Date(currentTime-(1000*60*60*8)),
+                                        new Date(currentTime-(1000*60*60*24)));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.Exchange#getStatistics(org.marketcetera.trade.MSymbol, org.marketcetera.core.publisher.ISubscriber)
+     */
+    @Override
+    public Token getStatistics(MSymbol inSymbol,
+                               ISubscriber inSubscriber)
+    {
+        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                               "{} received statistics subscription request for {}", //$NON-NLS-1$
+                               getCode(),
+                               inSymbol);
+        if(status == Status.RANDOM) {
+            getBookWrapper(inSymbol);
+        }
+        return FilteringSubscriber.subscribe(inSubscriber,
+                                             Type.STATISTICS,
+                                             inSymbol,
+                                             this); 
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.Exchange#getDepthOfBook(org.marketcetera.trade.MSymbol, org.marketcetera.core.publisher.ISubscriber)
@@ -265,7 +240,7 @@ public final class SimulatedExchange
                                getCode(),
                                inSymbol);
         if(status == Status.RANDOM) {
-          getBookWrapper(inSymbol);
+            getBookWrapper(inSymbol);
         }
         return FilteringSubscriber.subscribe(inSubscriber,
                                              Type.DEPTH_OF_BOOK,
@@ -439,31 +414,6 @@ public final class SimulatedExchange
         return String.format("%s(%s)", //$NON-NLS-1$
                              getName(),
                              getCode());
-    }
-    /**
-     * Picks a random time between the the two points.
-     * 
-     * <p>If the two points are equal, that value is returned.  No
-     * validation is done to make sure that <code>inEnd</code> &gt;=
-     * <code>inStart</code>.
-     *
-     * @param inStart a <code>long</code> value
-     * @param inEnd a <code>long</code> value
-     * @return a <code>long</code> value
-     */
-    private long createTimeInterval(long inStart,
-                                    long inEnd)
-    {
-        if(inStart == inEnd) {
-            return inStart;
-        }
-        int interval;
-        if(inEnd - inStart > (long)Integer.MAX_VALUE) {
-            interval = Integer.MAX_VALUE;
-        } else {
-            interval = (int)(inEnd - inStart);
-        }
-        return inStart + random.nextInt(interval);
     }
     /**
      * Generates a random decimal value in the interval (-(inUpperBound-1).99,+(inUpperBound-1).99).
@@ -669,6 +619,8 @@ public final class SimulatedExchange
         // settle the book (generates additional activity which needs to be published)
         inBook.publish(OrderBookSettler.settleBook(inBook,
                                                    maxDepth));
+        // produce statistics
+        inBook.publish(Arrays.asList(new EventBase[] { getStatistics(inBook.getBook().getSymbol()) } ));
     }
     /**
      * Unique identifier for a specific subscription request to the {@link SimulatedExchange}.
@@ -792,20 +744,20 @@ public final class SimulatedExchange
         /**
          * Publishes the given events to relevant subscribers, if any.
          *
-         * @param inEvents a <code>List&lt;SymbolExchangeEvent&gt;</code> value
+         * @param inEvents a <code>List&lt;? extends EventBase&gt;</code> value
          */
-        private void publish(List<SymbolExchangeEvent> inEvents)
+        private void publish(List<? extends EventBase> inEvents)
         {
-            for(SymbolExchangeEvent event : inEvents) {
+            for(EventBase event : inEvents) {
                 publish(event);
             }
         }
         /**
          * Publishes the given event to relevant subscribers, if any. 
          *
-         * @param inEvent a <code>SymbolExchangeEvent</code> value
+         * @param inEvent an <code>EventBase</code> value
          */
-        private void publish(SymbolExchangeEvent inEvent)
+        private void publish(EventBase inEvent)
         {
             // publish the event if it's a trade (that's latest tick and stream) or if it's a new quote (stream)
             if(inEvent instanceof TradeEvent ||
@@ -828,6 +780,10 @@ public final class SimulatedExchange
                     publisher.publish(newDepthOfBook);
                     lastDepthOfBook = newDepthOfBook;
                 }
+            }
+            if(inEvent instanceof SymbolStatisticEvent) {
+                // statistics are always published
+                publisher.publish(inEvent);
             }
         }
         /**
@@ -1149,6 +1105,8 @@ public final class SimulatedExchange
                     return inData instanceof DepthOfBook;
                 case STREAM :
                     return inData instanceof SymbolExchangeEvent;
+                case STATISTICS :
+                    return inData instanceof SymbolStatisticEvent;
                 default :
                     throw new UnsupportedOperationException();
             }

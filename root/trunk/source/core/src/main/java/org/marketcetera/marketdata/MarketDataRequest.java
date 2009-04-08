@@ -2,12 +2,9 @@ package org.marketcetera.marketdata;
 
 import static org.marketcetera.core.Util.KEY_VALUE_DELIMITER;
 import static org.marketcetera.core.Util.KEY_VALUE_SEPARATOR;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.OHLC;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Type.SUBSCRIPTION;
-import static org.marketcetera.marketdata.Messages.EXTRA_DATE;
 import static org.marketcetera.marketdata.Messages.INVALID_CONTENT;
-import static org.marketcetera.marketdata.Messages.INVALID_DATE;
 import static org.marketcetera.marketdata.Messages.INVALID_REQUEST;
 import static org.marketcetera.marketdata.Messages.INVALID_SYMBOLS;
 import static org.marketcetera.marketdata.Messages.INVALID_TYPE;
@@ -15,13 +12,11 @@ import static org.marketcetera.marketdata.Messages.MISSING_CONTENT;
 import static org.marketcetera.marketdata.Messages.MISSING_PROVIDER;
 import static org.marketcetera.marketdata.Messages.MISSING_SYMBOLS;
 import static org.marketcetera.marketdata.Messages.MISSING_TYPE;
-import static org.marketcetera.marketdata.Messages.OHLC_NO_DATE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -72,10 +67,6 @@ public class MarketDataRequest
      */
     public static final String EXCHANGE_KEY = "exchange"; //$NON-NLS-1$
     /**
-     * the key used to identify the date in the string representation of the market data request
-     */
-    public static final String DATE_KEY = "date"; //$NON-NLS-1$
-    /**
      * the key used to identify the type in the string representation of the market data request
      */
     public static final String TYPE_KEY = "type"; //$NON-NLS-1$
@@ -91,7 +82,6 @@ public class MarketDataRequest
      *   <li>{@link #CONTENT_KEY} - the content of the market data</li>
      *   <li>{@link #TYPE_KEY} - the type of market data request</li>
      *   <li>{@link #EXCHANGE_KEY} - the exchange for which to request market data</li>
-     *   <li>{@link #DATE_KEY} - the date for which to request market data, if applicable</li>
      * </ul>
      * 
      * <p>Example:
@@ -131,9 +121,6 @@ public class MarketDataRequest
             if(sanitizedProps.containsKey(TYPE_KEY)) {
                 request.setType(Type.valueOf(sanitizedProps.get(TYPE_KEY).toUpperCase()));
             }
-            if(sanitizedProps.containsKey(DATE_KEY)) {
-                request.setDate(DateUtils.stringToDate(sanitizedProps.get(DATE_KEY)));
-            }
             if(sanitizedProps.containsKey(EXCHANGE_KEY)) {
                 request.setExchange(sanitizedProps.get(EXCHANGE_KEY));
             }
@@ -164,8 +151,6 @@ public class MarketDataRequest
         }
         validateType(inRequest,
                      inRequest.type);
-        validateDate(inRequest,
-                     inRequest.date);
         validateExchange(inRequest,
                          inRequest.exchange);
         validateSymbols(inRequest,
@@ -174,17 +159,6 @@ public class MarketDataRequest
                          inRequest.provider);
         validateContent(inRequest,
                         inRequest.content);
-        // this condition means that a date was provided but is not needed
-        if(inRequest.content.contains(OHLC) &&
-           inRequest.date == null) {
-            // content is OHLC but no date
-            throw new MarketDataRequestException(OHLC_NO_DATE);
-        }
-        if(!inRequest.content.contains(OHLC) &&
-           inRequest.date != null) {
-            // date specified but request not OHLC
-            EXTRA_DATE.warn(MarketDataRequest.class);
-        }
     }
     /**
      * Creates a new market data request.
@@ -390,75 +364,6 @@ public class MarketDataRequest
         return this;
     }
     /**
-     * Adds the given date to the market data request. 
-     *
-     * <p>The given value must be greater than 0 and is interpreted as the number
-     * of milliseconds since EPOCH.  The date is valid (and required) only for
-     * requests with <code>Content</code> of {@link Content#OHLC}, but is
-     * not otherwise forbidden.  If specified for other <code>Content</code>
-     * types, the attribute is ignored.
-     * 
-     * <p>This attribute is required for requests of content {@link Content#OHLC} and
-     * no default is provided.
-     *
-     * @param inDate a <code>long</code> value
-     * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified date results in an invalid request 
-     */ 
-    public MarketDataRequest asOf(long inDate)
-        throws MarketDataRequestException
-    {
-        if(inDate < 0) {
-            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_DATE,
-                                                                        inDate));
-        }
-        return asOf(new Date(inDate));
-    }
-    /**
-     * Adds the given date to the market data request. 
-     *
-     * <p>The given value must be parseable according to the rules described
-     * in {@link DateUtils#stringToDate(String)}.
-     *  
-     * <p>The date is valid (and required) only for
-     * requests with <code>Content</code> of {@link Content#OHLC}, but is
-     * not otherwise forbidden.  If specified for other <code>Content</code>
-     * types, the attribute is ignored.
-     * 
-     * <p>This attribute is required for requests of content {@link Content#OHLC} and
-     * no default is provided.
-     *
-     * @param inDate a <code>String</code> value
-     * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified date results in an invalid request 
-     */ 
-    public MarketDataRequest asOf(String inDate)
-        throws MarketDataRequestException
-    {
-        return asOf(DateUtils.stringToDate(inDate));
-    }
-    /**
-     * Adds the given date to the market data request. 
-     *
-     * <p>The given value must not be null.  The date is valid (and required) only for
-     * requests with <code>Content</code> of {@link Content#OHLC}, but is
-     * not otherwise forbidden.  If specified for other <code>Content</code>
-     * types, the attribute is ignored.
-     * 
-     * <p>This attribute is required for requests of content {@link Content#OHLC} and
-     * no default is provided.
-     *
-     * @param inDate a <code>Date</code> value
-     * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified date results in an invalid request 
-     */
-    public MarketDataRequest asOf(Date inDate)
-        throws MarketDataRequestException
-    {
-        setDate(inDate);
-        return this;
-    }
-    /**
      * Get the symbols value.
      * 
      * @return a <code>String[]</code> value
@@ -515,18 +420,6 @@ public class MarketDataRequest
         return results.isEmpty();
     }
     /**
-     * Get the date value.
-     * 
-     * @return a <code>Date</code> value
-     */
-    public Date getDate()
-    {
-        if(date == null) {
-            return null;
-        }
-        return date;
-    }
-    /**
      * Get the type value.
      * 
      * @return a <code>Type</code> value
@@ -544,7 +437,6 @@ public class MarketDataRequest
         final int prime = 31;
         int result = 1;
         result = prime * result + ((content == null) ? 0 : content.hashCode());
-        result = prime * result + ((date == null) ? 0 : date.hashCode());
         result = prime * result + ((exchange == null) ? 0 : exchange.hashCode());
         result = prime * result + ((provider == null) ? 0 : provider.hashCode());
         result = prime * result + ((symbols == null) ? 0 : symbols.hashCode());
@@ -568,11 +460,6 @@ public class MarketDataRequest
             if (other.content != null)
                 return false;
         } else if (!content.equals(other.content))
-            return false;
-        if (date == null) {
-            if (other.date != null)
-                return false;
-        } else if (!date.equals(other.date))
             return false;
         if (exchange == null) {
             if (other.exchange != null)
@@ -632,19 +519,6 @@ public class MarketDataRequest
         if(inType == null) {
             throw new MarketDataRequestException(MISSING_TYPE);
         }
-    }
-    /**
-     * Verifies that the given <code>Date</code> is valid. 
-     *
-     * @param inRequest a <code>MarketDataRequest</code> value
-     * @param inDate a <code>Date</code> value
-     * @throws MarketDataRequestException if the given <code>Date</code> is not valid
-     */
-    private static void validateDate(MarketDataRequest inRequest,
-                                     Date inDate)
-        throws MarketDataRequestException
-    {
-        // nothing to do
     }
     /**
      * Verifies that the given <code>Exchange</code> is valid.
@@ -786,28 +660,6 @@ public class MarketDataRequest
         type = Type.valueOf(inType.toString());
     }
     /**
-     * Sets the date value.
-     *
-     * <p>The date is valid (and required) only for
-     * requests with <code>Content</code> of {@link Content#OHLC}, but is
-     * not otherwise forbidden.  If specified for other <code>Content</code>
-     * types, the attribute is ignored.
-     * 
-     * @param a <code>Date</code> value
-     * @throws MarketDataRequestException if the specified date results in an invalid request 
-     */
-    private void setDate(Date inDate)
-        throws MarketDataRequestException
-    {
-        validateDate(this,
-                     inDate);
-        if(inDate == null) {
-            date = null;
-        } else {
-            date = new Date(inDate.getTime());
-        }
-    }
-    /**
      * Sets the symbols.
      *
      * <p>The given symbols must be non-null and non-empty.
@@ -932,13 +784,6 @@ public class MarketDataRequest
             output.append(EXCHANGE_KEY).append(KEY_VALUE_SEPARATOR).append(String.valueOf(exchange));
             delimiterNeeded = true;
         }
-        if(date != null) {
-            if(delimiterNeeded) {
-                output.append(KEY_VALUE_DELIMITER);
-            }
-            output.append(DATE_KEY).append(KEY_VALUE_SEPARATOR).append(DateUtils.dateToString(date));
-            delimiterNeeded = true;
-        }
         return output.toString();
     }
     /**
@@ -958,10 +803,6 @@ public class MarketDataRequest
      */
     private final Set<Content> content = new LinkedHashSet<Content>();
     /**
-     * the date as of which to request data
-     */
-    private Date date;
-    /**
      * the request type
      */
     private Type type = SUBSCRIPTION;
@@ -979,49 +820,27 @@ public class MarketDataRequest
         /**
          * best-bid-and-offer only
          */
-        TOP_OF_BOOK(1),
+        TOP_OF_BOOK,
         /**
          * NYSE OpenBook data
          */
-        OPEN_BOOK(0),
+        OPEN_BOOK,
         /**
-         * Open-High-Low-Close data
+         * Statistics for the symbol, as available
          */
-        OHLC(1),
+        STATISTICS,
         /**
          * NASDAQ TotalView data
          */
-        TOTAL_VIEW(0),
+        TOTAL_VIEW,
         /**
          * NASDAQ Level II data
          */
-        LEVEL_2(0),
+        LEVEL_2,
         /**
          * latest trade
          */
-        LATEST_TICK(1);
-        /**
-         * Gets the depth implied by the content type.
-         *
-         * @return an <code>int</code> value
-         */
-        public int getDepth()
-        {
-            return impliedDepth;
-        }
-        /**
-         * Create a new Content instance.
-         *
-         * @param inImpliedDepth an <code>int</code> value
-         */
-        private Content(int inImpliedDepth)
-        {
-            impliedDepth = inImpliedDepth;
-        }
-        /**
-         * depth implied by the type of request
-         */
-        private final int impliedDepth;
+        LATEST_TICK
     }
     /**
      * The request types for market data requests.

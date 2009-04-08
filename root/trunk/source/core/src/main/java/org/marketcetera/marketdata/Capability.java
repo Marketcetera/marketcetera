@@ -35,9 +35,9 @@ public enum Capability
      */
     LEVEL_2,
     /**
-     * the market data feed is able to return Open-High-Low-Close data for a given date
+     * the market data feed is able to return statistical data
      */
-    OHLC,
+    STATISTICS,
     /**
      * the market data feed is able to return the latest trade
      */

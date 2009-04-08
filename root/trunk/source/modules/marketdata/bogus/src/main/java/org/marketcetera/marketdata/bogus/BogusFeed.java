@@ -3,6 +3,7 @@ package org.marketcetera.marketdata.bogus;
 import static org.marketcetera.marketdata.Capability.LATEST_TICK;
 import static org.marketcetera.marketdata.Capability.LEVEL_2;
 import static org.marketcetera.marketdata.Capability.OPEN_BOOK;
+import static org.marketcetera.marketdata.Capability.STATISTICS;
 import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.Capability.TOTAL_VIEW;
 
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.EventBase;
@@ -31,6 +31,7 @@ import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -232,7 +233,7 @@ public class BogusFeed
     /**
      * capabilities for BogusFeed - note that these are not dynamic as Bogus requires no provisioning
      */
-    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK));
+    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,STATISTICS));
     /**
      * indicates if the feed has been logged in to
      */
@@ -368,6 +369,10 @@ public class BogusFeed
                                 doLatestTick(symbol,
                                              request.getExchange());
                                 break;
+                            case STATISTICS :
+                                doStatistics(symbol,
+                                             request.getExchange());
+                                break;
                             default:
                                 throw new UnsupportedOperationException();
                         }
@@ -375,6 +380,21 @@ public class BogusFeed
                 }
             } finally {
                 executed = true;
+            }
+        }
+        /**
+         * Executes a statistics request for the given symbol using the
+         * given exchange code.
+         *
+         * @param inSymbol an <code>MSymbol</code> value
+         * @param inExchangeToUse a <code>String</code> value
+         */
+        private void doStatistics(MSymbol inSymbol,
+                                  String inExchangeToUse)
+        {
+            for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
+                exchangeTokens.add(exchange.getStatistics(inSymbol,
+                                                          subscriber));
             }
         }
         /**
