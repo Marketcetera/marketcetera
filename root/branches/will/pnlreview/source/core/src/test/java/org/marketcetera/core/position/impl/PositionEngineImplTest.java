@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import org.junit.Test;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.IncomingPositionSupport;
+import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionEngineFactory;
 import org.marketcetera.core.position.PositionKey;
@@ -50,7 +51,7 @@ public class PositionEngineImplTest {
             stub(incomingPositionSupport.getIncomingPositionFor((PositionKey) anyObject()))
                     .toReturn(BigDecimal.ZERO);
             PositionEngine engine = PositionEngineFactory.createFromReportHolders(reports,
-                    incomingPositionSupport);
+                    incomingPositionSupport, mock(MarketDataSupport.class));
             EventList<PositionRow> positions = getPositionData(engine);
             positions.addListEventListener(new ExpectedListChanges<PositionRow>("Positions",
                     getExpectedPositionListChanges()));

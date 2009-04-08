@@ -11,6 +11,7 @@ import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.IncomingPositionSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.position.impl.GroupingList.GroupMatcher;
@@ -119,7 +120,7 @@ public final class PositionEngineImpl implements PositionEngine {
             PositionRowImpl positionRow = new PositionRowImpl(key.getSymbol(), key.getAccount(),
                     key.getTraderId(), mIncomingPositionSupport.getIncomingPositionFor(key));
             PositionRowUpdater calculator = new PositionRowUpdater(positionRow, sourceValue,
-                    mMarketData);
+                    mMarketDataSupport);
             map.put(sourceValue, calculator);
             return calculator.getPosition();
         }
@@ -235,7 +236,7 @@ public final class PositionEngineImpl implements PositionEngine {
         }
     }
 
-    private final PositionMarketData mMarketData;
+    private final MarketDataSupport mMarketDataSupport;
     private final IncomingPositionSupport mIncomingPositionSupport;
     private final SortedList<Trade> mSorted;
     private final GroupingList<Trade> mGrouped;
@@ -252,9 +253,9 @@ public final class PositionEngineImpl implements PositionEngine {
      *             if any parameter is null
      */
     public PositionEngineImpl(EventList<Trade> trades,
-            IncomingPositionSupport incomingPositionSupport) {
-        Validate.noNullElements(new Object[] { trades, incomingPositionSupport });
-        mMarketData = new PositionMarketDataImpl();
+            IncomingPositionSupport incomingPositionSupport, MarketDataSupport marketDataSupport) {
+        Validate.noNullElements(new Object[] { trades, incomingPositionSupport, marketDataSupport });
+        mMarketDataSupport = marketDataSupport;
         mIncomingPositionSupport = incomingPositionSupport;
         mSorted = new SortedList<Trade>(trades, new Comparator<Trade>() {
 
