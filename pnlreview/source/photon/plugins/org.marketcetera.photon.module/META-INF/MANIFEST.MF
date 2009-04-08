@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.photon.module;singleton:=true
+Bundle-Name: %pluginName
+Bundle-Vendor: %providerName
+Bundle-Version: 1.5.0
+Bundle-Activator: org.marketcetera.photon.internal.module.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.marketcetera.core;visibility:=reexport
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.marketcetera.photon.module

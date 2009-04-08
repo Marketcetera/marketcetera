@@ -1,0 +1,264 @@
+<project name="Build specific targets and properties" default="noDefault">
+
+	<!-- ===================================================================== -->
+	<!-- Run a given ${target} on all elements being built -->
+	<!-- Add on <ant> task for each top level element being built. -->
+	<!-- ===================================================================== -->
+	<property name="allElementsFile" value="${builder}/allElements.xml"/>
+	<import file="${allElementsFile}" />
+	<target name="allElements">
+		<antcall target="allElementsDelegator" />
+	</target>
+	
+        <target name="assemble.org.eclipse.pde.build.container.feature.win32.win32.x86">
+             <property name="archiveName" value="${archiveNamePrefix}-win32.zip"/>
+             <ant antfile="${assembleScriptName}"/>
+        </target>
+        <target name="assemble.org.eclipse.pde.build.container.feature.linux.gtk.x86">
+             <property name="archiveName" value="${archiveNamePrefix}-linux.gtk.x86.tar.gz"/>
+             <ant antfile="${assembleScriptName}"/>
+        </target>
+        <target name="assemble.org.eclipse.pde.build.container.feature.macosx.carbon.ppc">
+             <property name="archiveName" value="${archiveNamePrefix}-macosx.carbon.tar.gz"/>
+             <ant antfile="${assembleScriptName}"/>
+        </target>
+
+	<!-- ===================================================================== -->
+	<!-- ===================================================================== -->
+	<target name="getBaseComponents" depends="checkLocalBase" unless="skipBase">
+		<get src="${eclipseBaseURL}" dest="${buildDirectory}/../temp-base.zip" />
+		<unzip dest="${base}" overwrite="true" src="${buildDirectory}/../temp-base.zip" />
+	</target>
+
+	<target name="checkLocalBase">
+		<available file="${base}" property="skipBase" />
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Check out map files from correct repository -->
+	<!-- Replace values for mapsCheckoutTag as desired. -->
+	<!-- ===================================================================== -->
+	<target name="getMapFiles" depends="checkLocalMaps" unless="skipMaps">
+		<property name="mapsCheckoutTag" value="HEAD" />
+		<cvs cvsRoot="${mapsRepo}" package="${mapsRoot}" dest="${buildDirectory}/maps" tag="${mapsCheckoutTag}" />
+	</target>
+
+	<target name="checkLocalMaps">
+		<available property="skipMaps" file="${buildDirectory}/maps" />
+	</target>
+
+	<target name="tagMapFiles" if="tagMaps">
+		<cvs dest="${buildDirectory}/maps/${mapsRoot}" command="tag ${mapsTagTag}" />
+	</target>
+
+	<!-- ===================================================================== -->
+
+	<target name="clean" unless="noclean">
+		<antcall target="allElements">
+			<param name="target" value="cleanElement" />
+		</antcall>
+	</target>
+
+	<target name="gatherLogs">
+		<mkdir dir="${buildDirectory}/${buildLabel}/compilelogs" />
+		<antcall target="allElements">
+			<param name="target" value="gatherLogs" />
+		</antcall>
+		<unzip dest="${buildDirectory}/${buildLabel}/compilelogs" overwrite="true">
+			<fileset dir="${buildDirectory}/features">
+				<include name="**/*.log.zip" />
+			</fileset>
+		</unzip>
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do before setup -->
+	<!-- ===================================================================== -->
+	<target name="preSetup">
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do after setup but before starting the build proper -->
+	<!-- ===================================================================== -->
+	<target name="postSetup">
+		<antcall target="getBaseComponents" />
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do before fetching the build elements -->
+	<!-- ===================================================================== -->
+	<target name="preFetch">
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do after fetching the build elements -->
+	<!-- ===================================================================== -->
+	<target name="postFetch">
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do before generating the build scripts. -->
+	<!-- ===================================================================== -->
+	<target name="preGenerate">
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do after generating the build scripts. -->
+	<!-- ===================================================================== -->
+	<target name="postGenerate">
+		<antcall target="clean" />
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do before running the build.xmls for the elements being built. -->
+	<!-- ===================================================================== -->
+	<target name="preProcess">
+		<antcall target="updateBuildAndVersionNumber" />
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do after running the build.xmls for the elements being built. -->
+	<!-- ===================================================================== -->
+	<target name="postProcess">
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do before running assemble. -->
+	<!-- ===================================================================== -->
+	<target name="preAssemble">
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do after  running assemble. -->
+	<!-- ===================================================================== -->
+	<target name="postAssemble">
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do before running package. -->
+	<!-- ===================================================================== -->
+	<target name="prePackage">
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do after  running package. -->
+	<!-- ===================================================================== -->
+	<target name="postPackage">
+	   <property name="tarballDir" value="${buildDirectory}/${buildType}.${buildId}"/>
+	   <antcall target="updateLinuxLauncherPerms">
+	      <param name="fileToUpdate" value="${archiveNamePrefix}-linux.gtk.x86.tar.gz"/>
+	   </antcall>
+	   <antcall target="manuallyAdd_photon.ini"/>
+	</target>
+
+		<!-- Manually re-add the photon.ini file 
+		  This is a workaround for bug #91
+		  The way it works is this: the above assemble.xxx.macos target gets called twice
+		  We only want to be invoked on the second call, so we set the 'secondPass' flag
+		  after the first run.
+		  Essentially, we copy the "needed" photon.ini into the same path structure, 
+		  then concat the other useful MacOS-related info to it, and then we want to 
+		  tar it into the existing archive.
+		  Since the tarball is actually gzipped already, we need to gunzip it, 
+		  update the tarball, then gzip it again and cleanup.
+		-->
+		<target name="manuallyAdd_photon.ini" 
+		   description="Manually add the photon.ini file while building the macos cilent">
+		     <echo message="Manually copying photon.ini to mac build"/>
+			 <copy file="${buildDirectory}/features/org.eclipse.pde.build.container.feature/productRootFiles/macosx.carbon.ppc/photon.app/Contents/MacOS/photon.ini" 
+			      tofile="${tarballDir}/photon/photon.app/Contents/MacOS/photon.ini"/>
+			<concat destfile="${tarballDir}/photon/photon.app/Contents/MacOS/photon.ini" append="yes">-Xdock:icon=../Resources/photon.icns
+-XstartOnFirstThread
+-Xbootclasspath/p:../../../plugins/org.eclipse.jdt.debug_3.2.1.r321_v20060731/jdi.jar
+-Xms40m
+-Xmx256m
+-Dorg.eclipse.swt.internal.carbon.smallFonts
+-Dorg.eclipse.swt.internal.carbon.noFocusRing</concat>
+			 <!-- first unzip existing, then tar in new and re-zip -->
+			 <gunzip src="${tarballDir}/${archiveNamePrefix}-macosx.carbon.tar.gz"
+			         dest="${tarballDir}"/>
+			 <exec dir="${tarballDir}" executable="tar">
+			    <arg line="-uf"/>
+				<arg line="${archiveNamePrefix}-macosx.carbon.tar"/>
+				<arg line="photon/photon.app/Contents/MacOS/photon.ini"/>
+			 </exec>
+			 <gzip src="${tarballDir}/${archiveNamePrefix}-macosx.carbon.tar" 
+			       destfile="${tarballDir}/${archiveNamePrefix}-macosx.carbon.tar.gz"/>
+		     <!-- cleanup -->
+			 <delete dir="${tarballDir}/photon"/>
+			 <delete file="${tarballDir}/${archiveNamePrefix}-macosx.carbon.tar"/>
+		</target>
+
+
+	<!-- expecting the ${tarballDir} to be the location of the built binaries 
+	     and the ${fileToUpdate} to be the name of the file we need to 
+	     uncompress/chmod/recompress
+	-->
+	<target name="updateLinuxLauncherPerms">
+	  <property name="launcherTmp" value="${buildDirectory}/launcherTmp"/>
+	  <echo message="Updating the perms for file ${fileToUpdate}"/>
+	  <mkdir dir="${launcherTmp}"/>
+	  <copy file="${tarballDir}/${fileToUpdate}" 
+	        tofile="${launcherTmp}/${fileToUpdate}"/>
+	  <exec executable="tar" dir="${launcherTmp}">
+	    <arg value="-zxf"/>
+	    <arg value="${fileToUpdate}"/>
+	  </exec>
+	  <chmod perm="755" file="${launcherTmp}/photon/photon"/>
+	  <!-- rezip it -->
+	  <exec executable="tar" dir="${launcherTmp}">
+	    <arg value="-zcf"/>
+	    <arg value="${tarballDir}/${fileToUpdate}"/>
+	    <arg value="photon"/>
+	  </exec>
+	  <delete dir="${launcherTmp}"/>
+	</target>
+	
+	<!-- ===================================================================== -->
+	<!-- Updates the build and version number in photon about screen. -->
+	<!-- ===================================================================== -->
+	<target name="updateBuildAndVersionNumber">
+	  <replace file="${buildDirectory}/plugins/org.marketcetera.photon/plugin.xml" 
+	    token="metc.build.number" value="${ant.build.number}"/>
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do after the build is done. -->
+	<!-- ===================================================================== -->
+	<target name="postBuild">
+		<!--antcall target="test" /-->
+		<antcall target="gatherLogs" />
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do to test the build results -->
+	<!-- ===================================================================== -->
+	<target name="test">
+		<echo message="Setting up tests in ${eclipseAutomatedTestHome}" />
+
+		<copy file="${buildDirectory}/${buildLabel}/${buildId}-linux.gtk.x86.zip" tofile="${eclipseAutomatedTestHome}/eclipse-SDK-photon-${buildId}.zip" />
+		<copy file="${buildDirectory}/${buildLabel}/org.marketcetera.photon.tests-${buildId}.zip" tofile="${eclipseAutomatedTestHome}/eclipse-junit-tests-photon-${buildId}.zip" />
+
+		<ant antfile="${eclipseAutomatedTestHome}/test.xml" target="runtests" dir="${eclipseAutomatedTestHome}">
+			<property name="os" value="${baseos}" />
+			<property name="ws" value="${basews}" />
+			<property name="arch" value="${basearch}" />
+			<property name="testPlugin" value="org.marketcetera.photon.tests.all_1.5.0" />
+			<property name="report" value="org.marketcetera.photon.tests.all" />
+		</ant>
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Steps to do to publish the build results -->
+	<!-- ===================================================================== -->
+	<target name="publish">
+	</target>
+
+	<!-- ===================================================================== -->
+	<!-- Default target                                                        -->
+	<!-- ===================================================================== -->
+	<target name="noDefault">
+		<echo message="You must specify a target when invoking this file" />
+	</target>
+
+</project>

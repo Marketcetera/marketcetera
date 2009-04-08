@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests Fragment
+Bundle-SymbolicName: org.marketcetera.photon.module.tests;singleton:=true
+Bundle-Version: 1.5.0
+Fragment-Host: org.marketcetera.photon.module
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit4,
+ org.marketcetera.photon.test,
+ org.marketcetera.core.tests
