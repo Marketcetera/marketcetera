@@ -5,7 +5,7 @@
     nsURI="http://www.marketcetera.org/models/marketdata" nsPrefix="mdata">
   <eClassifiers xsi:type="ecore:EClass" name="MDItem" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="symbol" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true">
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="suppressedSetVisibility" value="true"/>
       </eAnnotations>

@@ -24,14 +24,10 @@ public interface MDItem extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Symbol</b></em>' attribute.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Symbol</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Symbol</em>' attribute.
 	 * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDItem_Symbol()
-	 * @model id="true" required="true" suppressedSetVisibility="true"
+	 * @model required="true" suppressedSetVisibility="true"
 	 * @generated
 	 */
 	String getSymbol();

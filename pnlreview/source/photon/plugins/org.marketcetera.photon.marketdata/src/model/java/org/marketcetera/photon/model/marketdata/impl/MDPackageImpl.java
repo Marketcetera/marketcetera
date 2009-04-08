@@ -279,7 +279,7 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 		initEAttribute(
 				getMDItem_Symbol(),
 				ecorePackage.getEString(),
-				"symbol", null, 1, 1, MDItem.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+				"symbol", null, 1, 1, MDItem.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mdLatestTickEClass, MDLatestTick.class,
 				"MDLatestTick", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
