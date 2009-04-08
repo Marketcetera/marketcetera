@@ -2,6 +2,7 @@ package org.marketcetera.event;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 import java.io.Serializable;
 
 import org.marketcetera.util.misc.ClassVersion;
@@ -124,7 +125,19 @@ public abstract class EventBase implements TimestampCarrier, Serializable
             return false;
         return true;
     }
-
+    /**
+     * Assigns an identifier guaranteed to be unique.
+     *
+     * @return a <code>long</code> value
+     */
+    static long assignCounter()
+    {
+        return counter.incrementAndGet();
+    }
+    /**
+     * the counter used to guarantee that aggregate events are distinct from each-other
+     */
+    private static final AtomicLong counter = new AtomicLong(0);
     /**
      * Compares two events based on their timestamps.
      *

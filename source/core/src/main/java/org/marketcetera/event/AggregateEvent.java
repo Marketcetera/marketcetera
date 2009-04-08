@@ -3,11 +3,10 @@ package org.marketcetera.event;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.marketdata.Exchange;
 import org.marketcetera.trade.MSymbol;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -34,7 +33,7 @@ public abstract class AggregateEvent
     protected AggregateEvent(Date inTimestamp,
                              MSymbol inSymbol)
     {
-        super(counter.incrementAndGet(),
+        super(EventBase.assignCounter(),
               inTimestamp.getTime());
         if(inSymbol == null) {
             throw new NullPointerException();
@@ -60,9 +59,5 @@ public abstract class AggregateEvent
      * the symbol of this event
      */
     private final MSymbol symbol;
-    /**
-     * the counter used to guarantee that aggregate events are distinct from each-other
-     */
-    private static final AtomicLong counter = new AtomicLong(0);
     private static final long serialVersionUID = 1L;
 }

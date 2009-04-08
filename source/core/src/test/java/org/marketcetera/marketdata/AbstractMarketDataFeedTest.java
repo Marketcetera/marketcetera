@@ -659,7 +659,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeed feed = new MockMarketDataFeed();
         assertTrue(Arrays.equals(new Capability[0],
                                  feed.getCapabilities().toArray()));
-        Set<Capability> capabilities = EnumSet.of(Capability.OHLC,
+        Set<Capability> capabilities = EnumSet.of(Capability.STATISTICS,
                                                   Capability.TOP_OF_BOOK);
         feed.setCapabilities(capabilities);
         Assert.assertArrayEquals(capabilities.toArray(),
