@@ -20,7 +20,13 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Base class for data flow managers.
+ * Base class for data flow managers. This class handles the interactions with the
+ * {@link ModuleManager} and implements all the methods required by the IDataFlowManager interface.
+ * 
+ * Subclasses must implement abstract methods to create concrete data items and to update them when
+ * data arrives.
+ * 
+ * @see IDataFlowManager
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -35,12 +41,12 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 	private final Map<K, T> mItems = new HashMap<K, T>();
 	private ModuleURN mSourceModule;
 
-	public DataFlowManager(ModuleManager marketDataManager) {
+	protected DataFlowManager(ModuleManager marketDataManager) {
 		mModuleManager = marketDataManager;
 	}
 
 	@Override
-	public synchronized T getItem(K key) {
+	public final synchronized T getItem(K key) {
 		T item;
 		if (!mItems.containsKey(key)) {
 			item = createItem(key);
@@ -52,7 +58,7 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 	}
 
 	@Override
-	public synchronized void setSourceModule(ModuleURN module) {
+	public final synchronized void setSourceModule(ModuleURN module) {
 		if (mSourceModule == module) {
 			return;
 		}
@@ -121,7 +127,7 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 	}
 
 	@Override
-	public synchronized void startFlow(K key) {
+	public final synchronized void startFlow(K key) {
 		Validate.notNull(key);
 		if (mSubscribers.containsKey(key)) {
 			return;
@@ -151,7 +157,7 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 	}
 
 	@Override
-	public synchronized void stopFlow(K key) {
+	public final synchronized void stopFlow(K key) {
 		Validate.notNull(key);
 		ModuleURN subscriberURN = mSubscribers.remove(key);
 		if (subscriberURN == null) {
@@ -189,7 +195,8 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 	 * Hook for subclasses to reset data items to their initial state since the source module is
 	 * changing.
 	 * 
-	 * @param item the item to reset
+	 * @param item
+	 *            the item to reset
 	 */
 	abstract protected void resetItem(T item);
 
@@ -201,7 +208,7 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 	 *            the data key, will not be null
 	 * @return a subscriber that will handle the market data
 	 */
-	abstract protected IMarketDataSubscriber createSubscriber(K key);
+	abstract protected Subscriber createSubscriber(K key);
 
 	/**
 	 * Abstract market data subscriber providing the source module.
@@ -221,7 +228,7 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 		 *            the unexpected data
 		 */
 		protected void reportUnexpectedData(Object data) {
-			Messages.DATA_FLOW_MANAGER_UNEXPECTED_DATA.warn(this, data);
+			Messages.DATA_FLOW_MANAGER_UNEXPECTED_DATA.warn(DataFlowManager.this, data, getRequest());
 		}
 
 		/**
@@ -238,7 +245,8 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 			if (symbol.equals(newSymbol)) {
 				return true;
 			} else {
-				Messages.DATA_FLOW_MANAGER_EVENT_SYMBOL_MISMATCH.warn(this, newSymbol, symbol);
+				Messages.DATA_FLOW_MANAGER_EVENT_SYMBOL_MISMATCH.warn(DataFlowManager.this,
+						newSymbol, symbol);
 				return false;
 			}
 		}

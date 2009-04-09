@@ -162,7 +162,7 @@ public class MockMarketDataModuleFactory extends ModuleFactory {
 		
 		@Override
 		public Set<Capability> getCapabilities() {
-			return EnumSet.allOf(Capability.class);
+			return EnumSet.complementOf(EnumSet.of(Capability.UNKNOWN));
 		}
 	}
 }

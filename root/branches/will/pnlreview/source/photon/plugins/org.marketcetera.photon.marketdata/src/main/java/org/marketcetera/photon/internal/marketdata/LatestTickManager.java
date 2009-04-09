@@ -44,12 +44,7 @@ public class LatestTickManager extends DataFlowManager<MDLatestTick, LatestTickK
 	}
 
 	@Override
-	public MDLatestTickImpl getItem(LatestTickKey key) {
-		return (MDLatestTickImpl) super.getItem(key);
-	}
-
-	@Override
-	protected IMarketDataSubscriber createSubscriber(final LatestTickKey key) {
+	protected Subscriber createSubscriber(final LatestTickKey key) {
 		final String symbol = key.getSymbol();
 		try {
 			final MarketDataRequest request = MarketDataRequest.newRequest().withSymbols(symbol)
@@ -64,11 +59,11 @@ public class LatestTickManager extends DataFlowManager<MDLatestTick, LatestTickK
 				@Override
 				public void receiveData(Object inData) {
 					synchronized (LatestTickManager.this) {
-						MDLatestTickImpl item = getItem(key);
+						MDLatestTickImpl item = (MDLatestTickImpl) getItem(key);
 						if (inData instanceof TradeEvent) {
 							TradeEvent data = (TradeEvent) inData;
-							// log a mismatch, but still handle the data
-							validateSymbol(symbol, data);
+							if (!validateSymbol(symbol, data))
+								return;
 							item.setPrice(data.getPrice());
 							item.setSize(data.getSize());
 						} else {
@@ -79,7 +74,7 @@ public class LatestTickManager extends DataFlowManager<MDLatestTick, LatestTickK
 			};
 		} catch (MarketDataRequestException e) {
 			// should not happen and we can't recover
-			throw new IllegalStateException(e);
+			throw new AssertionError(e);
 		}
 	}
 }

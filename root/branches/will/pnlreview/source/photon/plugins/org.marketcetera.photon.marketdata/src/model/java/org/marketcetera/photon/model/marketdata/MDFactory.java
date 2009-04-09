@@ -1,12 +1,15 @@
 package org.marketcetera.photon.model.marketdata;
 
 import org.eclipse.emf.ecore.EFactory;
+import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
- * The <b>Factory</b> for the model.
- * It provides a create method for each non-abstract class of the model.
+ * A factory for creating objects from this package.
+ * <p>
+ * This class is <b>not</b> API and should not be used outside of this plugin, except for testing
+ * purposes. Market data items should be obtained only via the {@link IMarketData} interface. 
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.model.marketdata.MDPackage
  * @generated

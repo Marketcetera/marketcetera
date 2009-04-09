@@ -2,6 +2,7 @@ package org.marketcetera.photon.internal.marketdata;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang.Validate;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
@@ -34,22 +35,63 @@ public class MarketData implements IMarketData {
 	private final ILatestTickManager mLatestTickManager;
 	private final ITopOfBookManager mTopOfBookManager;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param latestTickManager
+	 *            the manager for latest tick requests
+	 * @param topOfBookManager
+	 *            the manager for top of book requests
+	 * @throws IllegalArgumentException
+	 *             if any parameter is null
+	 */
 	@Inject
 	public MarketData(ILatestTickManager latestTickManager, ITopOfBookManager topOfBookManager) {
+		Validate.noNullElements(new Object[] { latestTickManager, topOfBookManager });
 		mLatestTickManager = latestTickManager;
 		mTopOfBookManager = topOfBookManager;
 	}
 
 	/**
+	 * Sets the source for all data.
+	 * 
 	 * @param module
+	 *            the source module
+	 * @throws IllegalArgumentException
+	 *             if module is null
 	 */
 	public void setSourceModule(ModuleURN module) {
+		setLatestTickSourceModule(module);
+		setTopOfBookSourceModule(module);
+	}
+
+	/**
+	 * Sets the source for the latest tick data.
+	 * 
+	 * @param module
+	 *            the source module
+	 * @throws IllegalArgumentException
+	 *             if module is null
+	 */
+	public void setLatestTickSourceModule(ModuleURN module) {
 		mLatestTickManager.setSourceModule(module);
+	}
+
+	/**
+	 * Sets the source for the top of book data.
+	 * 
+	 * @param module
+	 *            the source module
+	 * @throws IllegalArgumentException
+	 *             if module is null
+	 */
+	public void setTopOfBookSourceModule(ModuleURN module) {
 		mTopOfBookManager.setSourceModule(module);
 	}
 
 	@Override
 	public synchronized IMarketDataReference<MDLatestTick> getLatestTick(String symbol) {
+		Validate.notNull(symbol);
 		synchronized (mLatestTickManager) {
 			return new Reference<MDLatestTick, LatestTickKey>(mLatestTickManager,
 					new LatestTickKey(symbol));
@@ -58,6 +100,7 @@ public class MarketData implements IMarketData {
 
 	@Override
 	public synchronized IMarketDataReference<MDTopOfBook> getTopOfBook(String symbol) {
+		Validate.notNull(symbol);
 		synchronized (mTopOfBookManager) {
 			return new Reference<MDTopOfBook, TopOfBookKey>(mTopOfBookManager, new TopOfBookKey(
 					symbol));
@@ -98,7 +141,7 @@ public class MarketData implements IMarketData {
 			synchronized (mManager) {
 				if (!mReferences.remove(mKey)) {
 					// should always be able to remove the reference if not yet disposed
-					throw new IllegalStateException();
+					throw new AssertionError();
 				}
 				if (!mReferences.contains(mKey)) {
 					mManager.stopFlow(mKey);

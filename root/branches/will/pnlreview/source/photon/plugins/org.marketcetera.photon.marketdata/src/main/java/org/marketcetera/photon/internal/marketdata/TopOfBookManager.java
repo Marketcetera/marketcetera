@@ -2,6 +2,7 @@ package org.marketcetera.photon.internal.marketdata;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestException;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
@@ -47,12 +48,7 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBook, TopOfBookKey>
 	}
 
 	@Override
-	public MDTopOfBookImpl getItem(TopOfBookKey key) {
-		return (MDTopOfBookImpl) super.getItem(key);
-	}
-
-	@Override
-	protected IMarketDataSubscriber createSubscriber(final TopOfBookKey key) {
+	protected Subscriber createSubscriber(final TopOfBookKey key) {
 		final String symbol = key.getSymbol();
 		try {
 			final MarketDataRequest request = MarketDataRequest.newRequest().withSymbols(symbol)
@@ -67,17 +63,17 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBook, TopOfBookKey>
 				@Override
 				public void receiveData(Object inData) {
 					synchronized (TopOfBookManager.this) {
-						MDTopOfBookImpl item = getItem(key);
+						MDTopOfBookImpl item = (MDTopOfBookImpl) getItem(key);
+						if (inData instanceof SymbolExchangeEvent
+								&& !validateSymbol(symbol, (SymbolExchangeEvent) inData)) {
+							return;
+						}
 						if (inData instanceof BidEvent) {
 							BidEvent event = (BidEvent) inData;
-							// log a mismatch, but still handle the data
-							validateSymbol(symbol, event);
 							item.setBidPrice(event.getPrice());
 							item.setBidSize(event.getSize());
 						} else if (inData instanceof AskEvent) {
 							AskEvent event = (AskEvent) inData;
-							// log a mismatch, but still handle the data
-							validateSymbol(symbol, event);
 							item.setAskPrice(event.getPrice());
 							item.setAskSize(event.getSize());
 						} else {
@@ -88,7 +84,7 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBook, TopOfBookKey>
 			};
 		} catch (MarketDataRequestException e) {
 			// should not happen and we can't recover
-			throw new IllegalStateException(e);
+			throw new AssertionError(e);
 		}
 	}
 }

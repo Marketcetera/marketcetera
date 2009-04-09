@@ -15,17 +15,17 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public interface IMarketDataReference<T extends MDItem> {
 
-    /**
-     * Returns an instance of the the market data item that reflects live market data. Clients
-     * should not modify the item except to add/remove adapters.
-     * 
-     * @return the market data item, null if this reference has been disposed
-     */
-    public T get();
+	/**
+	 * Returns an instance of the the market data item that reflects dynamically updated market
+	 * data. Clients should not modify the returned item except to add/remove adapters.
+	 * 
+	 * @return the market data item, null if this reference has been disposed
+	 */
+	public T get();
 
-    /**
-     * Disposes the reference. After this is call, {@link #get()} will return null and any cached
-     * references to the market data item are not guaranteed to reflect live data.
-     */
-    public void dispose();
+	/**
+	 * Disposes the reference. After this is called, {@link #get()} will return null and any cached
+	 * references to the market data item are not guaranteed to reflect the latest data.
+	 */
+	public void dispose();
 }

@@ -44,6 +44,11 @@ public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick,
     }
 
     @Override
+    protected LatestTickKey createKey3() {
+        return new LatestTickKey("JAVA");
+    }
+
+    @Override
     protected void validateInitialConditions(MDLatestTick item, LatestTickKey key) {
         assertThat(item.getSymbol(), is(key.getSymbol()));
         assertThat(item.getPrice(), nullValue());
@@ -72,7 +77,7 @@ public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick,
     }
 
     private Object createEvent(String symbol, int price, int size) {
-        return new TradeEvent(1L, 1L, new MSymbol(symbol), "Q", new BigDecimal(price),
+        return new TradeEvent(1L, System.currentTimeMillis(), new MSymbol(symbol), "Q", new BigDecimal(price),
                 new BigDecimal(size));
     }
 
