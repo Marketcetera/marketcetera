@@ -5,8 +5,8 @@
     modelDirectory="/org.marketcetera.photon.marketdata/src/model/java" modelPluginID="org.marketcetera.photon.marketdata"
     templateDirectory="" redirection="" modelName="MarketData" modelPluginClass=""
     updateClasspath="false" nonNLSMarkers="true" codeFormatting="true" testsDirectory="/org.marketcetera.photon.marketdata.tests/src/test/java"
-    booleanFlagsField="" importerID="org.eclipse.emf.importer.ecore" complianceLevel="6.0"
-    copyrightFields="false" publicConstructors="true">
+    booleanFlagsField="" importerID="org.eclipse.emf.importer.ecore" bundleManifest="false"
+    complianceLevel="6.0" copyrightFields="false" publicConstructors="true">
   <foreignModel>mdata.ecore</foreignModel>
   <genPackages prefix="MD" basePackage="org.marketcetera.photon.model" disposableProviderFactory="true"
       contentTypeIdentifier="" ecorePackage="mdata.ecore#/">

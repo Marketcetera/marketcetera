@@ -1,15 +1,18 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory;
 import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory.MockMarketDataModule;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.module.ModuleSupport;
+import org.marketcetera.util.test.TestCaseBase;
 
 /* $License$ */
 
@@ -20,7 +23,8 @@ import org.marketcetera.photon.module.ModuleSupport;
  * @version $Id$
  * @since $Release$
  */
-public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>> {
+public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>> extends
+		TestCaseBase {
 
 	/**
 	 * @return the test fixture
@@ -36,6 +40,11 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	 * @return another key
 	 */
 	protected abstract K createKey2();
+
+	/**
+	 * @return a third key
+	 */
+	protected abstract K createKey3();
 
 	/**
 	 * Verify item for given key was initialized properly
@@ -73,6 +82,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	private K mKey2;
 	private T mItem2;
 	private MockMarketDataModule mMockMarketDataModule;
+	private K mKey3;
 
 	@Before
 	public void before() {
@@ -88,6 +98,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		mKey2 = createKey2();
 		mItem2 = mFixture.getItem(mKey2);
 		validateInitialConditions(mItem2, mKey2);
+		mKey3 = createKey3();
 	}
 
 	@After
@@ -95,11 +106,15 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		if (mFixture != null) {
 			mFixture.stopFlow(mKey1);
 			mFixture.stopFlow(mKey2);
+			mFixture.stopFlow(mKey3);
 		}
 	}
 
 	@Test
-	public void testSuccessiveStartAndStops() {
+	public void testSuccessiveStartsAndStops() {
+		// stop before start, make sure nothing bad happens
+		mFixture.stopFlow(mKey1);
+		// start
 		mFixture.startFlow(mKey1);
 		// try again, make sure nothing bad happens
 		mFixture.startFlow(mKey1);
@@ -107,6 +122,8 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		mFixture.stopFlow(mKey1);
 		// try again, make sure nothing bad happens
 		mFixture.stopFlow(mKey1);
+		// start again
+		mFixture.startFlow(mKey1);
 	}
 
 	@Test
@@ -180,10 +197,60 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		validateRequest(mKey2);
 	}
 
+	@Test
+	public void testUnexpectedDataReported() throws Exception {
+		setLevel(mFixture.getClass().getName(), Level.WARN);
+		mFixture.startFlow(mKey1);
+		Object unexpected = new Object();
+		emit(unexpected);
+		assertSingleEvent(Level.WARN, mFixture.getClass().getName(),
+				Messages.DATA_FLOW_MANAGER_UNEXPECTED_DATA.getText(unexpected, getLastRequest()), null);
+	}
+
+	@Test
+	public void testInvalidSymbolIgnoredAndReported() throws Exception {
+		setLevel(mFixture.getClass().getName(), Level.WARN);
+		mFixture.startFlow(mKey1);
+		validateInitialConditions(mItem1, mKey1);
+		// emit data for wrong key
+		emit(createEvent1(mKey2));
+		validateInitialConditions(mItem1, mKey1);
+		assertSingleEvent(Level.WARN, mFixture.getClass().getName(),
+				Messages.DATA_FLOW_MANAGER_EVENT_SYMBOL_MISMATCH.getText(mKey2.getSymbol(), mKey1
+						.getSymbol()), null);
+	}
+
+	@Test
+	public void testStartFlowBeforeGetItem() throws Exception {
+		mFixture.startFlow(mKey3);
+		emit(createEvent1(mKey3));
+		validateState1(mFixture.getItem(mKey3));
+	}
+	
+	@Test
+	public void nullKeys() throws Exception {
+		new ExpectedFailure<IllegalArgumentException>(null) {
+			@Override
+			protected void run() throws Exception {
+				mFixture.startFlow(null);
+			}
+		};
+		new ExpectedFailure<IllegalArgumentException>(null) {
+			@Override
+			protected void run() throws Exception {
+				mFixture.stopFlow(null);
+			}
+		};
+	}
+
 	private void validateRequest(K key) {
-		MarketDataRequest request = (MarketDataRequest) mMockMarketDataModule.getLastRequest()
-				.getData();
+		MarketDataRequest request = getLastRequest();
 		validateRequest(key, request);
+	}
+
+	private MarketDataRequest getLastRequest() {
+		return (MarketDataRequest) mMockMarketDataModule.getLastRequest()
+				.getData();
 	}
 
 	private void emit(Object object) {

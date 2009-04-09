@@ -45,6 +45,13 @@ public abstract class Key<T extends MDItem> {
 		return new HashCodeBuilder().append(getClass()).append(mSymbol).toHashCode();
 	}
 
+	/**
+	 * Subclasses may override this, but must start with:
+	 * <p>
+	 * <code>if (!super.equals(obj)) return false;</code>
+	 * 
+	 * @see Object#equals(Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

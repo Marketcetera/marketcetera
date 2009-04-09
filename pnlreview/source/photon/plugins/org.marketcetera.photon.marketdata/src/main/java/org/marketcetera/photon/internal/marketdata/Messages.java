@@ -62,7 +62,7 @@ public interface Messages {
 	static final I18NMessage1P MARKET_DATA_RECEIVER_NO_SOURCE = new I18NMessage1P(
 			LOGGER, "market_data_receiver.no_source"); //$NON-NLS-1$
 	
-	static final I18NMessage1P DATA_FLOW_MANAGER_UNEXPECTED_DATA = new I18NMessage1P(LOGGER,
+	static final I18NMessage2P DATA_FLOW_MANAGER_UNEXPECTED_DATA = new I18NMessage2P(LOGGER,
 			"data_flow_manager.unexpected_data"); //$NON-NLS-1$
 	static I18NMessage2P DATA_FLOW_MANAGER_EVENT_SYMBOL_MISMATCH = new I18NMessage2P(LOGGER,
 			"data_flow_manager.event_symbol_mismatch"); //$NON-NLS-1$

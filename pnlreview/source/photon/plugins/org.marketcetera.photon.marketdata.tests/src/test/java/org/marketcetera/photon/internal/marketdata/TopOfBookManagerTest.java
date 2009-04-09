@@ -45,6 +45,11 @@ public class TopOfBookManagerTest extends DataFlowManagerTestBase<MDTopOfBook, T
     }
 
     @Override
+    protected TopOfBookKey createKey3() {
+        return new TopOfBookKey("GIB");
+    }
+
+    @Override
     protected void validateInitialConditions(MDTopOfBook item, TopOfBookKey key) {
         assertThat(item.getSymbol(), is(key.getSymbol()));
         assertThat(item.getAskPrice(), nullValue());
@@ -76,12 +81,12 @@ public class TopOfBookManagerTest extends DataFlowManagerTestBase<MDTopOfBook, T
     }
 
     private Object createAskEvent(String symbol, int price, int size) {
-        return new AskEvent(1L, 1L, new MSymbol(symbol), "Q", new BigDecimal(price),
+        return new AskEvent(1L, System.currentTimeMillis(), new MSymbol(symbol), "Q", new BigDecimal(price),
                 new BigDecimal(size));
     }
 
     private Object createBidEvent(String symbol, int price, int size) {
-        return new BidEvent(1L, 1L, new MSymbol(symbol), "Q", new BigDecimal(price),
+        return new BidEvent(1L, System.currentTimeMillis(), new MSymbol(symbol), "Q", new BigDecimal(price),
                 new BigDecimal(size));
     }
 

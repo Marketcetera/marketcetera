@@ -98,6 +98,9 @@ public final class MarketDataManager {
 
 	/**
 	 * Attempts to reconnect to the default active market data feed.
+	 * @throws IllegalStateException
+	 *             if the module framework is in an unexpected state, or if an unrecoverable error
+	 *             occurs
 	 */
 	public void reconnectFeed() {
 		reconnectFeed(getDefaultActiveFeed());
