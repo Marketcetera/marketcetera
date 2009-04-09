@@ -171,7 +171,7 @@ class PositionRowImpl implements PositionRow {
                 .append("grouping", mGrouping) //$NON-NLS-1$
                 .toString();
     }
-    
+
     // Boiler plate property change code
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -181,6 +181,17 @@ class PositionRowImpl implements PositionRow {
      */
     protected PropertyChangeSupport getPropertyChangeSupport() {
         return propertyChangeSupport;
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        getPropertyChangeSupport().addPropertyChangeListener(listener);
+
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        getPropertyChangeSupport().removePropertyChangeListener(listener);
     }
 
     @Override

@@ -20,6 +20,8 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FunctionList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.ObservableElementList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.FunctionList.AdvancedFunction;
 import ca.odell.glazedlists.util.concurrent.Lock;
@@ -240,7 +242,7 @@ public final class PositionEngineImpl implements PositionEngine {
     private final IncomingPositionSupport mIncomingPositionSupport;
     private final SortedList<Trade> mSorted;
     private final GroupingList<Trade> mGrouped;
-    private final FunctionList<EventList<Trade>, PositionRow> mFlat;
+    private final EventList<PositionRow> mFlat;
 
     /**
      * Constructor.
@@ -265,7 +267,9 @@ public final class PositionEngineImpl implements PositionEngine {
             }
         });
         mGrouped = new GroupingList<Trade>(mSorted, new TradeGroupMatcherFactory());
-        mFlat = new FunctionList<EventList<Trade>, PositionRow>(mGrouped, new PositionFunction());
+        mFlat = new ObservableElementList<PositionRow>(
+				new FunctionList<EventList<Trade>, PositionRow>(mGrouped, new PositionFunction()),
+				GlazedLists.beanConnector(PositionRow.class, true, "positionMetrics")); //$NON-NLS-1$
     }
 
     @Override
