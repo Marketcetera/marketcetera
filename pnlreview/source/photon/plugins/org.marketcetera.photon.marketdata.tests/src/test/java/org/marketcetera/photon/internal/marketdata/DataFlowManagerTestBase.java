@@ -203,7 +203,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		mFixture.startFlow(mKey1);
 		Object unexpected = new Object();
 		emit(unexpected);
-		assertSingleEvent(Level.WARN, mFixture.getClass().getName(),
+		assertLastEvent(Level.WARN, mFixture.getClass().getName(),
 				Messages.DATA_FLOW_MANAGER_UNEXPECTED_DATA.getText(unexpected, getLastRequest()), null);
 	}
 
@@ -215,7 +215,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		// emit data for wrong key
 		emit(createEvent1(mKey2));
 		validateInitialConditions(mItem1, mKey1);
-		assertSingleEvent(Level.WARN, mFixture.getClass().getName(),
+		assertLastEvent(Level.WARN, mFixture.getClass().getName(),
 				Messages.DATA_FLOW_MANAGER_EVENT_SYMBOL_MISMATCH.getText(mKey2.getSymbol(), mKey1
 						.getSymbol()), null);
 	}
