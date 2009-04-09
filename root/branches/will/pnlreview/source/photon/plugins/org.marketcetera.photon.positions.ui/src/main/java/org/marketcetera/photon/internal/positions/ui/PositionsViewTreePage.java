@@ -1,20 +1,14 @@
 package org.marketcetera.photon.internal.positions.ui;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
@@ -53,9 +47,8 @@ public class PositionsViewTreePage extends PositionsViewPage {
 	private static final String[] COLUMN_NAMES = new String[] { Messages.POSITIONS_TABLE_GROUPING_COLUMN_HEADING
 			.getText() };
 
-	private final class PositionRowConfigurer implements TreeItemConfigurer<PositionRow> {
+	private static final class PositionRowConfigurer implements TreeItemConfigurer<PositionRow> {
 
-		private final Map<TreeItem, PropertyChangeListener> mListeners = new HashMap<TreeItem, PropertyChangeListener>();
 		@Override
 		public void configure(final TreeItem item, final PositionRow rowValue, Object columnValue, int row,
 				int column) {
@@ -66,41 +59,6 @@ public class PositionsViewTreePage extends PositionsViewPage {
 				text = formatBigDecimal((BigDecimal) columnValue);
 			}
 			item.setText(column, text);
-			// Hack code to refresh tree when the position changes due to market data.  Glazed Lists only know about 
-			// structural updates (adding trades) and not property updates.
-			// FIXME: known bug where summary rows don't reflect market data until they are expanded.
-			if (!mListeners.containsKey(item)) {
-				PropertyChangeListener listener = new PropertyChangeListener() {
-
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						if (!item.isDisposed()) {
-							item.getDisplay().asyncExec(new Runnable() {
-							
-								@Override
-								public void run() {
-									TreeItem current = item;
-									while (current != null) {
-										for (int i = 3; i < current.getParent().getColumnCount(); i++) {
-											current.setText(i, formatBigDecimal((BigDecimal) mTreeFormat.getColumnValue(rowValue, i)));
-										}
-										current = current.getParentItem();
-									}
-								}
-							});
-						}
-					}
-				};
-				mListeners.put(item, listener);
-				item.addDisposeListener(new DisposeListener() {
-				
-					@Override
-					public void widgetDisposed(DisposeEvent e) {
-						mListeners.remove(item);
-					}
-				});
-				rowValue.addPropertyChangeListener("positionMetrics", listener); //$NON-NLS-1$
-			}
 		}
 	}
 
@@ -174,7 +132,6 @@ public class PositionsViewTreePage extends PositionsViewPage {
 
 	}
 
-	private final PositionTreeFormat mTreeFormat = new PositionTreeFormat();
 	private EventTreeViewer<PositionRow> mViewer;
 	private Tree mTree;
 	private TreeComparatorChooser<PositionRow> mChooser;
@@ -201,7 +158,7 @@ public class PositionsViewTreePage extends PositionsViewPage {
 		mTree.setLayoutData("dock center, hmin 100, wmin 100"); //$NON-NLS-1$
 		EventList<PositionRow> positions = getPositions();
 		SortedList<PositionRow> sorted = new SortedList<PositionRow>(positions, null);
-		mViewer = new EventTreeViewer<PositionRow>(sorted, mTree, mTreeFormat,
+		mViewer = new EventTreeViewer<PositionRow>(sorted, mTree, new PositionTreeFormat(),
 				new EventTreeModel<PositionRow>() {
 
 					@Override

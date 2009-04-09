@@ -541,4 +541,6 @@ public interface Messages
 			"fills_view.trader_filter_label"); //$NON-NLS-1$
 	public static I18NMessage0P FILLS_VIEW_UNKNOWN_FILTER_VALUE = new I18NMessage0P(LOGGER,
 			"fills_view.unknown_filter_value"); //$NON-NLS-1$
+	public static I18NMessage1P USER_NAME_SERVICE_LOOKUP_FAILED = new I18NMessage1P(LOGGER,
+			"user_name_service.lookup_failed"); //$NON-NLS-1$
 }

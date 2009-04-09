@@ -1,17 +1,11 @@
 package org.marketcetera.photon.internal.positions.ui;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
@@ -58,9 +52,8 @@ public class PositionsViewTablePage extends PositionsViewPage {
 
 	}
 
-	private final class PositionRowConfigurer implements TableItemConfigurer<PositionRow> {
+	private static final class PositionRowConfigurer implements TableItemConfigurer<PositionRow> {
 		
-		private final Map<TableItem, PropertyChangeListener> mListeners = new HashMap<TableItem, PropertyChangeListener>();
 		@Override
 		public void configure(final TableItem item, final PositionRow rowValue, final Object columnValue, final int row,
 				final int column) {
@@ -71,36 +64,6 @@ public class PositionsViewTablePage extends PositionsViewPage {
 				text = formatBigDecimal((BigDecimal) columnValue);
 			}
 			item.setText(column, text);
-			// Hack code to refresh table when the position changes due to market data.  Glazed Lists only know about 
-			// structural updates (adding trades) and not property updates.
-			if (!mListeners.containsKey(item)) {
-				PropertyChangeListener listener = new PropertyChangeListener() {
-
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						if (!item.isDisposed()) {
-							item.getDisplay().asyncExec(new Runnable() {
-							
-								@Override
-								public void run() {
-									for (int i = 3; i < item.getParent().getColumnCount(); i++) {
-										item.setText(i, formatBigDecimal((BigDecimal) mTableFormat.getColumnValue(rowValue, i)));
-									}
-								}
-							});
-						}
-					}
-				};
-				mListeners.put(item, listener);
-				item.addDisposeListener(new DisposeListener() {
-				
-					@Override
-					public void widgetDisposed(DisposeEvent e) {
-						mListeners.remove(item);
-					}
-				});
-				rowValue.addPropertyChangeListener("positionMetrics", listener); //$NON-NLS-1$
-			}
 		}
 	}
 
@@ -144,7 +107,6 @@ public class PositionsViewTablePage extends PositionsViewPage {
 		}
 	}
 
-	private final PositionTableFormat mTableFormat = new PositionTableFormat();
 	private EventTableViewer<PositionRow> mViewer;
 	private Table mTable;
 	private TableComparatorChooser<PositionRow> mChooser;
@@ -171,7 +133,7 @@ public class PositionsViewTablePage extends PositionsViewPage {
 		mTable.setLayoutData("dock center, hmin 100, wmin 100"); //$NON-NLS-1$
 		EventList<PositionRow> positions = getPositions();
 		SortedList<PositionRow> sorted = new SortedList<PositionRow>(positions, null);
-		mViewer = new EventTableViewer<PositionRow>(sorted, mTable, mTableFormat,
+		mViewer = new EventTableViewer<PositionRow>(sorted, mTable, new PositionTableFormat(),
 				new PositionRowConfigurer());
 		mChooser = TableComparatorChooser.install(mViewer, sorted, false);
 		// make unrealized PL a bit wider

@@ -13,6 +13,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.photon.internal.product.Messages;
 import org.marketcetera.photon.views.FillsView;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -51,6 +52,7 @@ public class ShowPositionFills extends AbstractHandler implements IHandler {
 					FillsView view = (FillsView) page.showView(FillsView.ID, filters.toString(), IWorkbenchPage.VIEW_ACTIVATE);
 					view.setFillsFilter(filters);
 				} catch (PartInitException e) {
+					Messages.SHOW_POSITION_FILLS_UNABLE_TO_OPEN_VIEW.error(ShowPositionFills.this, e);
 				}
 			}
 		});

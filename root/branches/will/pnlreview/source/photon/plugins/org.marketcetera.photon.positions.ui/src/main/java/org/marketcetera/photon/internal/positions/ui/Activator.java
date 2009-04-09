@@ -3,12 +3,20 @@ package org.marketcetera.photon.internal.positions.ui;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
+import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
+/* $License$ */
+
 /**
- * The activator class controls the plug-in life cycle
+ * The activator class controls the plug-in life cycle.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
