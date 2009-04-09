@@ -42,6 +42,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
+            <id>unpack</id>
             <phase>install</phase>
             <goals>
               <goal>unpack</goal>
@@ -145,6 +146,26 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.eclipse</groupId>
+                  <artifactId>emf</artifactId>
+                  <version>2.4.2</version>
+                  <type>zip</type>
+                  <includes>
+                    eclipse/plugins/org.eclipse.emf.common_*,
+                    eclipse/plugins/org.eclipse.emf.ecore_*,
+                    eclipse/plugins/org.eclipse.emf.databinding_*
+                  </includes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse</groupId>
+                  <artifactId>emf-source</artifactId>
+                  <version>2.4.2</version>
+                  <type>zip</type>
+                  <includes>
+                    eclipse/plugins/org.eclipse.emf.source_*
+                  </includes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse</groupId>
                   <artifactId>junit45-feature-patch-3.4.1</artifactId>
                   <version>20090204</version>
                   <type>zip</type>
@@ -190,6 +211,30 @@
                   <version>${project.version}</version>
                   <type>jar</type>
                   <outputDirectory>${mvn.photon.target}/eclipse/plugins/org.marketcetera.thirdparty.test_${project.version}</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${mvn.photon.target}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.google</groupId>
+                  <artifactId>guice</artifactId>
+                  <version>20090205</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.google</groupId>
+                  <artifactId>guice-source</artifactId>
+                  <version>20090205</version>
+                  <type>jar</type>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${mvn.photon.target}</outputDirectory>
