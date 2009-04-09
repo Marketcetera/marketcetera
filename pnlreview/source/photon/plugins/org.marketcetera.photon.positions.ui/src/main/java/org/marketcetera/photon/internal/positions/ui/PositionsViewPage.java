@@ -234,6 +234,11 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
 			return COLUMN_NAMES[column - mOffset];
 		}
 
+		/**
+		 * @see TableFormat#getColumnValue(java.lang.Object, int)
+		 * @throws IllegalArgumentException
+		 *             if column is not in the expected range
+		 */
 		public Object getColumnValue(PositionRow baseObject, int column) {
 			PositionMetrics metrics = baseObject.getPositionMetrics();
 			switch (column - mOffset) {

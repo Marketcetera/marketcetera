@@ -68,6 +68,7 @@ public class EventTreeViewer<E> implements ListEventListener<E> {
      * @param tree the Tree viewing the source objects
      * @param tableFormat the object responsible for extracting column data
      *      from the row objects
+     * @throws IllegalArgumentException if any parameters are null
      */
     @SuppressWarnings("unchecked")
 	public EventTreeViewer(EventList<E> source, Tree tree, TableFormat<? super E> tableFormat, EventTreeModel<E> treeModel) {
@@ -84,6 +85,7 @@ public class EventTreeViewer<E> implements ListEventListener<E> {
      * @param tableFormat the object responsible for extracting column data
      *      from the row objects
      * @param treeItemConfigurer responsible for configuring table items
+     * @throws IllegalArgumentException if any parameters are null
      */
     public EventTreeViewer(EventList<E> source, Tree tree, TableFormat<? super E> tableFormat, EventTreeModel<E> treeModel,
             TreeItemConfigurer<? super E> treeItemConfigurer) {
@@ -232,7 +234,6 @@ public class EventTreeViewer<E> implements ListEventListener<E> {
         try {
             // reprocess all table items between indexes 0 and maxIndex
             for (int i = 0; i <= maxIndex; i++) {
-    //            System.out.println("setTreeItemConfigurer: Reconfigure Item " + i);
                 final E rowValue = source.get(i);
                 renderTreeItem(tree.getItem(i), rowValue, i);
             }

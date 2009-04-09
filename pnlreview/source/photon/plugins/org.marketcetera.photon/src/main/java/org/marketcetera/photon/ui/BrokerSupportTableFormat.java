@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Label provider that adds a additional non-fix message columns.
+ * Label provider that adds additional non-fix message columns.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$

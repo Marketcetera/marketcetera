@@ -88,19 +88,27 @@ public class StrategyManagerTest {
 			fixture.start(strategy);
 			assertThat(moduleManager.getModuleInfo(strategy.getURN()).getState(),
 					is(ModuleState.STARTED));
-			StrategyMXBean proxy = JMX.newMXBeanProxy(mBeanConnection, strategy.getURN()
+			final StrategyMXBean bean = JMX.newMXBeanProxy(mBeanConnection, strategy.getURN()
 					.toObjectName(), StrategyMXBean.class);
-			return proxy;
+			// give time for strategy to compile/start since it is run in a separate thread
+			SWTTestUtil.conditionalDelayUnchecked(5, TimeUnit.SECONDS, new Callable<Boolean>() {
+
+				@Override
+				public Boolean call() throws Exception {
+					return bean.getStatus().equals("RUNNING");
+				}
+			});
+			return bean;
 		}
 
 		private void stopAndAssert(Strategy strategy, final StrategyMXBean bean) throws Exception {
 			bean.interrupt();
-			// give time for strategy to compile/start since it is run in a separate thread
+			// give time for strategy to stop since it is run in a separate thread
 			SWTTestUtil.conditionalDelayUnchecked(5, TimeUnit.SECONDS, new Callable<Boolean>() {
 			
 				@Override
 				public Boolean call() throws Exception {
-					return !bean.getStatus().equals("COMPILING");
+					return bean.getStatus().equals("STOPPED");
 				}
 			});
 			fixture.stop(strategy);
