@@ -59,6 +59,11 @@ while (@ARGV) {
 
 	print OUT 'SET APPLICATION_DIR='.$artifact.$sep.$sep;
 
+	if ($artifact eq "ors") {
+            print OUT 'CD %METC_HOME%\\sql'.$sep;
+            print OUT 'CALL start_mysql.bat'.$sep.$sep;
+	}
+
 	print OUT 'CD %METC_HOME%\\%APPLICATION_DIR%'.$sep.$sep;
 
 	print OUT 'SET THE_CLASSPATH=.\\conf'.$sep;
@@ -92,6 +97,11 @@ while (@ARGV) {
 	print OUT '. "$(dirname $0)/../../setEnv.sh"'.$sep.$sep;
 
 	print OUT 'APPLICATION_DIR='.$artifact.$sep.$sep;
+
+	if ($artifact eq "ors") {
+            print OUT 'cd ${METC_HOME}/sql'.$sep;
+            print OUT './start_mysql.sh'.$sep.$sep;
+	}
 
 	print OUT 'cd ${METC_HOME}/${APPLICATION_DIR}'.$sep.$sep;
 
