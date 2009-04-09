@@ -71,6 +71,16 @@ public interface PositionRow {
      * @return the child positions, or null if this is not a summary row
      */
     EventList<PositionRow> getChildren();
+    
+    /**
+     * @see PropertyChangeSupport#addPropertyChangeListener(PropertyChangeListener)
+     */
+    void addPropertyChangeListener(PropertyChangeListener listener);
+
+    /**
+     * @see PropertyChangeSupport#removePropertyChangeListener(PropertyChangeListener)
+     */
+    void removePropertyChangeListener(PropertyChangeListener listener);
 
     /**
      * @see PropertyChangeSupport#addPropertyChangeListener(String, PropertyChangeListener)
