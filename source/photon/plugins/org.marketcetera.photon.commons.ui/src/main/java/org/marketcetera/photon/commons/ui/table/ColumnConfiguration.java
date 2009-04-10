@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Configuration for columns in a {@link TableConfiguration}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: ColumnConfiguration.java 10229 2008-12-09 21:48:48Z klim $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: ColumnConfiguration.java 10229 2008-12-09 21:48:48Z klim $")
 public final class ColumnConfiguration {
 
 	/**
