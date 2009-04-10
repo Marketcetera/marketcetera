@@ -3,10 +3,8 @@ package org.marketcetera.photon.marketdata;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.ListenerList;
@@ -16,13 +14,13 @@ import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.internal.marketdata.Activator;
-import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory;
+import org.marketcetera.photon.internal.marketdata.MarketData;
 import org.marketcetera.photon.internal.marketdata.Messages;
-import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory.IConfigurationProvider;
 import org.marketcetera.photon.marketdata.MarketDataFeed.FeedStatusEvent;
 import org.marketcetera.photon.marketdata.MarketDataFeed.IFeedStatusChangedListener;
-import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.inject.Inject;
 
 /* $License$ */
 
@@ -36,6 +34,8 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public final class MarketDataManager {
 
+	private static final String USER_MSG_CATEGORY = org.marketcetera.core.Messages.USER_MSG_CATEGORY;
+
 	/**
 	 * Returns the singleton instance for the currently running plug-in.
 	 * 
@@ -45,23 +45,12 @@ public final class MarketDataManager {
 		return Activator.getDefault().getMarketDataManager();
 	}
 
-	private final ModuleManager mModuleManager = ModuleSupport
-			.getModuleManager();
+	private final ModuleManager mModuleManager;
 	private final Map<String, MarketDataFeed> mFeeds = new HashMap<String, MarketDataFeed>();
-	private final Map<MarketDataSubscriber, ModuleURN> mSubscribers = new HashMap<MarketDataSubscriber, ModuleURN>();
 	private final ListenerList mActiveFeedListeners = new ListenerList();
 	private final AtomicBoolean mReconnecting = new AtomicBoolean(false);
 
 	private volatile MarketDataFeed mActiveFeed;
-
-	private final IConfigurationProvider mModuleConfigProvider = new IConfigurationProvider() {
-
-		@Override
-		public ModuleURN getMarketDataSourceModule() {
-			MarketDataFeed feed = mActiveFeed;
-			return feed == null ? null : feed.getURN();
-		}
-	};
 
 	private final IFeedStatusChangedListener mFeedStatusChangesListener = new IFeedStatusChangedListener() {
 		@Override
@@ -71,26 +60,31 @@ public final class MarketDataManager {
 			}
 		}
 	};
+	private MarketData mMarketData;
 
 	/**
 	 * Constructor.
 	 */
-	public MarketDataManager() {
+	@Inject
+	public MarketDataManager(ModuleManager moduleManager, MarketData marketData) {
+		mModuleManager = moduleManager;
+		mMarketData = marketData;
 		List<ModuleURN> providers = mModuleManager.getProviders();
 		for (ModuleURN providerURN : providers) {
-			if (providerURN.providerType().equals(
-					MarketDataFeed.MARKET_DATA_PROVIDER_TYPE)) {
+			if (providerURN.providerType().equals(MarketDataFeed.MARKET_DATA_PROVIDER_TYPE)) {
 				try {
 					MarketDataFeed feed = new MarketDataFeed(providerURN);
-					feed
-							.addFeedStatusChangedListener(mFeedStatusChangesListener);
+					feed.addFeedStatusChangedListener(mFeedStatusChangesListener);
 					mFeeds.put(providerURN.toString(), feed);
 				} catch (Exception e) {
-					Messages.MARKET_DATA_MANAGER_IGNORING_PROVIDER.warn(this,
-							e, providerURN);
+					Messages.MARKET_DATA_MANAGER_IGNORING_PROVIDER.warn(this, e, providerURN);
 				}
 			}
 		}
+	}
+
+	public IMarketData getMarketData() {
+		return mMarketData;
 	}
 
 	/**
@@ -104,162 +98,52 @@ public final class MarketDataManager {
 
 	/**
 	 * Attempts to reconnect to the default active market data feed.
+	 * @throws IllegalStateException
+	 *             if the module framework is in an unexpected state, or if an unrecoverable error
+	 *             occurs
 	 */
 	public void reconnectFeed() {
 		reconnectFeed(getDefaultActiveFeed());
 	}
 
-	private void reconnectFeed(String providerId) {
+	/**
+	 * This is only public for testing purposes. 
+	 * TODO: Refactor for better encapsulation
+	 */
+	public void reconnectFeed(String providerId) {
 		if (!mReconnecting.compareAndSet(false, true)) {
 			return;
 		}
-		synchronized (mSubscribers) {
+		synchronized (this) {
 			final MarketDataFeed oldFeed = mActiveFeed;
 			mActiveFeed = mFeeds.get(providerId);
 			if (mActiveFeed == null && oldFeed == null) {
 				return;
 			}
-			if (oldFeed != mActiveFeed && oldFeed != null) {
-				stopDataFlows();
-			}
-			if (mActiveFeed != null) {
-				try {
-					if (!mModuleManager.getModuleInfo(mActiveFeed.getURN())
-							.getState().isStarted()) {
-						mModuleManager.start(mActiveFeed.getURN());
-					} else if (mActiveFeed.getStatus() != FeedStatus.AVAILABLE) {
-						mActiveFeed.reconnect();
-					}
-					if (oldFeed != mActiveFeed) {
-						startDataFlows();
-					}
-				} catch (ModuleException e) {
-					// TODO: May be better to propagate message to UI
-					// PhotonPlugin.getMainConsoleLogger().error(
-					// Messages.MARKET_DATA_MANAGER_FEED_START_FAILED
-					// .getText(mActiveFeed.getName()));
-					Messages.MARKET_DATA_MANAGER_FEED_START_FAILED.error(this,
-							mActiveFeed.getName());
-				} catch (UnsupportedOperationException e) {
-					// TODO: May be better to propagate message to UI
-					// PhotonPlugin.getMainConsoleLogger().error(
-					// Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED
-					// .getText(mActiveFeed.getName()));
-					Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED.error(
-							this, e, mActiveFeed.getName());
+			try {
+				if (!mModuleManager.getModuleInfo(mActiveFeed.getURN()).getState().isStarted()) {
+					mModuleManager.start(mActiveFeed.getURN());
+				} else if (mActiveFeed.getStatus() != FeedStatus.AVAILABLE) {
+					mActiveFeed.reconnect();
 				}
+			} catch (ModuleException e) {
+				// TODO: May be better to propagate the exception so there can be dialog boxes, etc
+				Messages.MARKET_DATA_MANAGER_FEED_START_FAILED.error(USER_MSG_CATEGORY, mActiveFeed.getName());
+			} catch (UnsupportedOperationException e) {
+				// TODO: May be better to propagate the exception so there can be dialog boxes, etc
+				Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED.error(USER_MSG_CATEGORY, e, mActiveFeed
+						.getName());
 			}
-
+			mMarketData.setSourceModule(mActiveFeed.getURN());
 			final FeedStatusEvent event;
 			if (mActiveFeed == null) {
-				event = oldFeed.createFeedStatusEvent(oldFeed.getStatus(),
-						FeedStatus.OFFLINE);
+				event = oldFeed.createFeedStatusEvent(oldFeed.getStatus(), FeedStatus.OFFLINE);
 			} else {
-				event = mActiveFeed.createFeedStatusEvent(FeedStatus.OFFLINE,
-						mActiveFeed.getStatus());
+				event = mActiveFeed.createFeedStatusEvent(FeedStatus.OFFLINE, mActiveFeed
+						.getStatus());
 			}
 			mReconnecting.set(false);
 			notifyListeners(event);
-		}
-	}
-
-	private void startDataFlows() {
-		Iterator<Entry<MarketDataSubscriber, ModuleURN>> iterator = mSubscribers
-				.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<MarketDataSubscriber, ModuleURN> entry = iterator.next();
-			try {
-				mModuleManager.start(entry.getValue());
-			} catch (ModuleException e) {
-				Messages.MARKET_DATA_MANAGER_RECEIVER_START_FAILED.error(this,
-						e, entry.getKey().getSymbols());
-				iterator.remove();
-				try {
-					mModuleManager.deleteModule(entry.getValue());
-				} catch (ModuleException ex) {
-					Messages.MARKET_DATA_MANAGER_DELETE_FAILED.error(this, ex,
-							entry.getKey().getSymbols());
-				}
-			}
-		}
-	}
-
-	private void stopDataFlows() {
-		Iterator<Entry<MarketDataSubscriber, ModuleURN>> iterator = mSubscribers
-				.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<MarketDataSubscriber, ModuleURN> entry = iterator.next();
-			try {
-				if (mModuleManager.getModuleInfo(entry.getValue()).getState()
-						.isStarted()) {
-					mModuleManager.stop(entry.getValue());
-				}
-			} catch (ModuleException e) {
-				Messages.MARKET_DATA_MANAGER_RECEIVER_STOP_FAILED.error(this,
-						e, entry.getKey().getSymbols());
-				try {
-					mModuleManager.deleteModule(entry.getValue());
-				} catch (ModuleException ex) {
-					Messages.MARKET_DATA_MANAGER_DELETE_FAILED.error(this, ex,
-							entry.getKey().getSymbols());
-				}
-				iterator.remove();
-			}
-		}
-	}
-
-	/**
-	 * Add a subscriber to process incoming market data for a given symbol.
-	 * 
-	 * @param subscriber
-	 *            the new subscriber
-	 */
-	public void addSubscriber(MarketDataSubscriber subscriber) {
-		synchronized (mSubscribers) {
-			// subscriber will receive market data for it's symbol and will
-			// persist even if feed changes or restarts
-			try {
-				ModuleURN subscriberURN = mModuleManager.createModule(
-						MarketDataReceiverFactory.PROVIDER_URN,
-						mModuleConfigProvider, subscriber);
-				if (getActiveFeedStatus() == FeedStatus.AVAILABLE) {
-					mModuleManager.start(subscriberURN);
-				}
-				mSubscribers.put(subscriber, subscriberURN);
-			} catch (ModuleException e) {
-				// TODO: May be better to propagate message to UI
-				// PhotonPlugin.getMainConsoleLogger().error(
-				// Messages.MARKET_DATA_MANAGER_SUBSCRIBE_FAILED
-				// .getText(subscriber.getSymbol()));
-				Messages.MARKET_DATA_MANAGER_SUBSCRIBE_FAILED.error(this, e,
-						subscriber.getSymbols());
-			}
-		}
-	}
-
-	/**
-	 * Removes the subscriber if it has been registered. This is a no-op if the
-	 * subscriber was never registered.
-	 * 
-	 * @param subscriber
-	 *            subscriber to remove
-	 */
-	public void removeSubscriber(MarketDataSubscriber subscriber) {
-		synchronized (mSubscribers) {
-			ModuleURN subscriberURN = mSubscribers.get(subscriber);
-			if (subscriberURN == null)
-				return;
-			mSubscribers.remove(subscriber);
-			try {
-				if (mModuleManager.getModuleInfo(subscriberURN).getState()
-						.isStarted()) {
-					mModuleManager.stop(subscriberURN);
-				}
-				mModuleManager.deleteModule(subscriberURN);
-			} catch (ModuleException e) {
-				Messages.MARKET_DATA_MANAGER_DELETE_FAILED.error(this, e,
-						subscriber.getSymbols());
-			}
 		}
 	}
 
@@ -269,8 +153,7 @@ public final class MarketDataManager {
 	 * @param listener
 	 *            to be notified when the active feed status changes
 	 */
-	public void addActiveFeedStatusChangedListener(
-			IFeedStatusChangedListener listener) {
+	public void addActiveFeedStatusChangedListener(IFeedStatusChangedListener listener) {
 		mActiveFeedListeners.add(listener);
 	}
 
@@ -280,8 +163,7 @@ public final class MarketDataManager {
 	 * @param listener
 	 *            listener to remove
 	 */
-	public void removeActiveFeedStatusChangedListener(
-			IFeedStatusChangedListener listener) {
+	public void removeActiveFeedStatusChangedListener(IFeedStatusChangedListener listener) {
 		mActiveFeedListeners.remove(listener);
 	}
 
@@ -304,11 +186,11 @@ public final class MarketDataManager {
 	}
 
 	/**
-	 * Returns the human readable name of the active market data feed. If there
-	 * is no active feed, <code>null</code> will be returned.
+	 * Returns the human readable name of the active market data feed. If there is no active feed,
+	 * <code>null</code> will be returned.
 	 * 
-	 * @return the human readable name of the active market data feed or
-	 *         <code>null</code> if none exists
+	 * @return the human readable name of the active market data feed or <code>null</code> if none
+	 *         exists
 	 */
 	public String getActiveFeedName() {
 		MarketDataFeed feed = mActiveFeed;
@@ -316,11 +198,10 @@ public final class MarketDataManager {
 	}
 
 	/**
-	 * Returns the status of the active market data feed. If there is no active
-	 * feed, FeedStatus.OFFLINE will be returned.
+	 * Returns the status of the active market data feed. If there is no active feed,
+	 * FeedStatus.OFFLINE will be returned.
 	 * 
-	 * @return the status of the active market data feed or FeedStatus.OFFLINE
-	 *         if none exists
+	 * @return the status of the active market data feed or FeedStatus.OFFLINE if none exists
 	 */
 	public FeedStatus getActiveFeedStatus() {
 		MarketDataFeed feed = mActiveFeed;

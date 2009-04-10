@@ -40,9 +40,9 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
  */
 public class MockMarketDataModuleFactory extends ModuleFactory {
 
-	static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:mock");
-	static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN, "single");
-	static MockMarketDataModule sInstance;
+	public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:mock");
+	public static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN, "single");
+	public static MockMarketDataModule sInstance;
 
 	public MockMarketDataModuleFactory() {
 		super(PROVIDER_URN, new MockI18NMessage("Mock Feed"), false, false);
@@ -71,26 +71,29 @@ public class MockMarketDataModuleFactory extends ModuleFactory {
 		private String mStatus;
 
 		private DataEmitterSupport mEmitSupport;
-		
-		void setStatus(String status) {
+
+		private DataRequest mLastRequest;
+
+		public void setStatus(String status) {
 			mStatus = status;
 		}
-		
-		void fireNotification(String oldStatus, String newStatus) {
-			mNotificationDelegate.sendNotification(new AttributeChangeNotification(this,
-	                mSequence.getAndIncrement(),
-	                System.currentTimeMillis(),
-	                FEED_STATUS_CHANGED.getText(),
-	                "FeedStatus", //$NON-NLS-1$
-	                "String", //$NON-NLS-1$
-	                oldStatus,
-	                newStatus));
+
+		public void fireNotification(String oldStatus, String newStatus) {
+			mNotificationDelegate.sendNotification(new AttributeChangeNotification(this, mSequence
+					.getAndIncrement(), System.currentTimeMillis(), FEED_STATUS_CHANGED.getText(),
+					"FeedStatus", //$NON-NLS-1$
+					"String", //$NON-NLS-1$
+					oldStatus, newStatus));
 		}
 		
-		void emitData(Object data) {
+		public void emitData(Object data) {
 			if (mEmitSupport != null) {
 				mEmitSupport.send(data);
 			}
+		}
+		
+		public DataRequest getLastRequest() {
+			return mLastRequest;
 		}
 
 		protected MockMarketDataModule(ModuleURN urn) {
@@ -147,22 +150,19 @@ public class MockMarketDataModuleFactory extends ModuleFactory {
 		}
 
 		@Override
-		public void requestData(DataRequest inRequest,
-				DataEmitterSupport inSupport)
-				throws UnsupportedRequestParameterType,
-				IllegalRequestParameterValue {
-			mEmitSupport = inSupport;			
+		public void requestData(DataRequest inRequest, DataEmitterSupport inSupport)
+				throws UnsupportedRequestParameterType, IllegalRequestParameterValue {
+			mLastRequest = inRequest;
+			mEmitSupport = inSupport;
 		}
+		
 		@Override
 		public void reconnect() {
 		}
-        /* (non-Javadoc)
-         * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCapabilities()
-         */
-        @Override
-        public Set<Capability> getCapabilities()
-        {
-            return EnumSet.of(Capability.TOP_OF_BOOK);
-        }
+		
+		@Override
+		public Set<Capability> getCapabilities() {
+			return EnumSet.complementOf(EnumSet.of(Capability.UNKNOWN));
+		}
 	}
 }
