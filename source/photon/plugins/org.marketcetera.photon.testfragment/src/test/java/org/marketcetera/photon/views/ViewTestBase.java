@@ -148,7 +148,7 @@ public abstract class ViewTestBase extends TestCase {
                        hist);
         }
         assertEquals(messages.size(),
-                     view.getMessageList(hist).size());
+                     view.getInput().size());
         IndexedTableViewer tableViewer = view.getMessagesViewer();
         Table table = tableViewer.getTable();
         assertEquals(messages.size(),
@@ -156,7 +156,7 @@ public abstract class ViewTestBase extends TestCase {
         FilterMatcherEditor filter = view.getFilterMatcherEditor();
         // view is set up with all messages, begin filter tests
         assertEquals(messages.size(),
-                     view.getMessageList(hist).size());
+                     view.getInput().size());
         // get the test conditions
         List<FilterTestCondition> conditions = getFilterTestConditions();
         // execute the test conditions
@@ -165,17 +165,17 @@ public abstract class ViewTestBase extends TestCase {
             // construct the expected results
             List<ReportHolder> expectedResults = new ArrayList<ReportHolder>();
             for(int index : condition.mMatchingMessages) {
-                expectedResults.add(view.getMessageList(hist).get(index));
+                expectedResults.add(view.getInput().get(index));
             }
             // implement the filter
             filter.setMatcher(condition.mMatcher);
             // make sure messages in the view are the ones expected in the test condition
             assertEquals("Test condition " + testConditionCounter + " failed",
                          expectedResults.size(),
-                         view.getMessageList(hist).size());
+                         view.getInput().size());
             for(ReportHolder expectedMessage : expectedResults) {
                 boolean found = false;
-                for(ReportHolder actualMessage : view.getMessageList(hist)) {
+                for(ReportHolder actualMessage : view.getInput()) {
                     if(actualMessage.getMessage().equals(expectedMessage.getMessage())) {
                         found = true;
                         break;
@@ -190,7 +190,7 @@ public abstract class ViewTestBase extends TestCase {
             filter.setMatcher(trueMatcher);
             assertEquals("Test condition " + testConditionCounter + " failed",
                          messages.size(),
-                         view.getMessageList(hist).size());
+                         view.getInput().size());
             testConditionCounter += 1;
         }
     }

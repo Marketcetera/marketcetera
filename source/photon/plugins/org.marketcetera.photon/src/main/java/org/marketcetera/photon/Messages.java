@@ -457,10 +457,6 @@ public interface Messages
                                                                             "medium_priority_subject"); //$NON-NLS-1$
     public static I18NMessage0P LOW_PRIORITY_SUBJECT = new I18NMessage0P(LOGGER,
                                                                          "low_priority_subject"); //$NON-NLS-1$
-    public static I18NMessage2P MARKET_DATA_EVENT_SYMBOL_MISMATCH = new I18NMessage2P(
-			LOGGER, "market_data.event_symbol_mismatch"); //$NON-NLS-1$
-    public static I18NMessage1P MARKET_DATA_UNEXPECTED_EVENT_TYPE = new I18NMessage1P(
-			LOGGER, "market_data.unexpected_event_type"); //$NON-NLS-1$
     public static I18NMessage1P STATUS_INDICATOR_OVERLAY_ERROR = new I18NMessage1P(
 			LOGGER, "status_indicator.overlay_error"); //$NON-NLS-1$
     public static I18NMessage1P GOOGLE_FINANCE_LOOKUP_INVALID_TYPE = new I18NMessage1P(
@@ -493,8 +489,12 @@ public interface Messages
 			"client_connection_name");//$NON-NLS-1$
     public static final I18NMessage0P UNKNOWN_VALUE = new I18NMessage0P(LOGGER,
 			"unknown_value");//$NON-NLS-1$
-	public static final I18NMessage0P BROKER_SUPPORT_TABLE_FORMAT_BROKER_COLUMN = new I18NMessage0P(LOGGER,
-			"broker_support_table_format.broker_column");//$NON-NLS-1$
+	public static final I18NMessage0P BROKER_SUPPORT_TABLE_FORMAT_BROKER_COLUMN = new I18NMessage0P(
+			LOGGER, "broker_support_table_format.broker_column");//$NON-NLS-1$
+	public static final I18NMessage0P BROKER_SUPPORT_TABLE_FORMAT_TRADER_COLUMN = new I18NMessage0P(
+			LOGGER, "broker_support_table_format.trader_column");//$NON-NLS-1$
+	public static final I18NMessage1P BROKER_SUPPORT_TABLE_FORMAT_TRADER_NAME_ERROR = new I18NMessage1P(
+			LOGGER, "broker_support_table_format.trader_name_error");//$NON-NLS-1$
 	public static final I18NMessage0P BROKER_MANAGER_AUTO_SELECT = new I18NMessage0P(LOGGER,
 			"broker_manager.auto_select");//$NON-NLS-1$
 	public static final I18NMessage2P BROKER_LABEL_PATTERN = new I18NMessage2P(
@@ -529,4 +529,18 @@ public interface Messages
 			"preference_initializer.save_failed"); //$NON-NLS-1$
 	public static I18NMessage1P TABLE_COMPARATOR_CHOOSER_INVALID_LISTENER =
 			new I18NMessage1P(LOGGER, "table_comparator_chooser_invalid_listener"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_DEFAULT_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.default_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_POSITION_FILLS_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.position_fills_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_SYMBOL_FILTER_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.symbol_filter_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_ACCOUNT_FILTER_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.account_filter_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_TRADER_FILTER_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.trader_filter_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_UNKNOWN_FILTER_VALUE = new I18NMessage0P(LOGGER,
+			"fills_view.unknown_filter_value"); //$NON-NLS-1$
+	public static I18NMessage1P USER_NAME_SERVICE_LOOKUP_FAILED = new I18NMessage1P(LOGGER,
+			"user_name_service.lookup_failed"); //$NON-NLS-1$
 }

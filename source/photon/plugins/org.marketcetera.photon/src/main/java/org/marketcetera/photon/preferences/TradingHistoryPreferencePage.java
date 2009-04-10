@@ -46,7 +46,7 @@ public class TradingHistoryPreferencePage extends FieldEditorPreferencePage
 		addField(new TimeOfDayFieldEditor(
 				PhotonPreferences.TRADING_HISTORY_START_TIME,
 				Messages.TRADING_HISTORY_PREFERENCE_PAGE_SESSION_START_TIME_LABEL
-						.getText(), getFieldEditorParent(), false));
+						.getText(), getFieldEditorParent(), true));
 	}
 
 	@Override

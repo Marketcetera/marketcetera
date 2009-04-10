@@ -8,8 +8,6 @@ Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.marketcetera.thirdparty, org.jruby.bsf, org.marketcetera.core
 Eclipse-BuddyPolicy: registered
-Bundle-ClassPath: .,
- src/main/resources
 Require-Bundle: org.eclipse.core.commands;visibility:=reexport,
  org.eclipse.core.expressions;visibility:=reexport,
  org.eclipse.core.runtime;visibility:=reexport,
@@ -38,7 +36,11 @@ Require-Bundle: org.eclipse.core.commands;visibility:=reexport,
  org.marketcetera.client,
  org.marketcetera.photon.marketdata,
  org.marketcetera.photon.module.ui,
- org.marketcetera.photon.notification
+ org.marketcetera.photon.notification,
+ org.marketcetera.photon.commons.ui,
+ org.eclipse.emf.common,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.databinding
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
  org.marketcetera.photon.commands,

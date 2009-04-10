@@ -14,9 +14,7 @@ import org.marketcetera.photon.marketdata.OptionMessageHolderTest;
 import org.marketcetera.photon.parser.LexerTest;
 import org.marketcetera.photon.parser.OrderFormatterTest;
 import org.marketcetera.photon.parser.ParserTest;
-import org.marketcetera.photon.preferences.PreferenceInitializerTest;
 import org.marketcetera.photon.quickfix.QuickFIXTest;
-import org.marketcetera.photon.ui.ChooseColumnsMenuTest;
 import org.marketcetera.photon.ui.databinding.FormTextObservableValueTest;
 import org.marketcetera.photon.ui.databinding.HasValueConverterTest;
 import org.marketcetera.photon.ui.databinding.IsNewOrderMessageConverterTest;
@@ -43,29 +41,29 @@ import org.marketcetera.photon.views.StockOrderTicketXSWTTest;
 
 public class TS_Photon {
 	public static Test suite() throws Exception {
-		TestSuite suite = new TestSuite(){
+		TestSuite suite = new TestSuite() {
 
 			@Override
 			public void run(TestResult result) {
-				// Running this suite in Photon with logging causes a the process to hang when the Photon
-				// Console fills up.  This is a temporary workaround, see EG-153 for details.
+				// Running this suite in Photon with logging causes a the process to hang when the
+				// Photon Console fills up. This is a temporary workaround, see EG-153 for details.
 				BasicConfigurator.resetConfiguration();
 				Logger.getRootLogger().setLevel(Level.OFF);
 				super.run(result);
 			}
-			
+
 		};
-		
+
 		// photon
 		suite.addTestSuite(OrderManagerTest.class);
 		suite.addTestSuite(PhotonControllerTest.class);
 		suite.addTestSuite(FIXFieldLocalizerTest.class);
-		
+
 		// marketdata
 		suite.addTestSuite(OptionContractDataTest.class);
 		suite.addTestSuite(OptionMessageHolderTest.class);
-		
-		//parser
+
+		// parser
 		suite.addTest(ParserTest.suite());
 		suite.addTestSuite(LexerTest.class);
 		suite.addTest(OrderFormatterTest.suite());
@@ -75,11 +73,11 @@ public class TS_Photon {
 
 		suite.addTestSuite(IgnoreFirstNullValidatorTest.class);
 		suite.addTestSuite(IntegerRequiredValidatorTest.class);
-        // ui.validation.fix
+		// ui.validation.fix
 		suite.addTestSuite(PriceConverterBuilderTest.class);
 		suite.addTest(StringDateObservableValueTest.suite());
 		suite.addTest(PriceObservableValueTest.suite());
-		
+
 		// ui.databinding
 		suite.addTestSuite(HasValueConverterTest.class);
 		suite.addTestSuite(ObservableEventListTest.class);
@@ -87,7 +85,7 @@ public class TS_Photon {
 		suite.addTest(IsNewOrderMessageConverterTest.suite());
 		suite.addTestSuite(LabelBooleanImageObservableValueTest.class);
 		suite.addTest(DataDictionaryValidatorTest.suite());
-		
+
 		// views
 		suite.addTestSuite(AveragePricesViewTest.class);
 		suite.addTestSuite(FillsViewTest.class);
@@ -100,17 +98,16 @@ public class TS_Photon {
 		suite.addTestSuite(StockOrderTicketXSWTTest.class);
 		suite.addTestSuite(SWTTestViewTest.class);
 		suite.addTestSuite(OpenOrdersViewTest.class);
-		
-		
-		suite.addTest(new JUnit4TestAdapter(ChooseColumnsMenuTest.class));
+
 		suite.addTest(new JUnit4TestAdapter(MarketDataViewItemTest.class));
-		
-		suite.addTest(new JUnit4TestAdapter(BrokerNotificationListenerTest.class));		
+
+		suite.addTest(new JUnit4TestAdapter(BrokerNotificationListenerTest.class));
 
 		suite.addTest(new JUnit4TestAdapter(MessagesTest.class));
 		suite.addTest(new JUnit4TestAdapter(TimeOfDayTest.class));
-		suite.addTest(new JUnit4TestAdapter(PreferenceInitializerTest.class));
+		
+		suite.addTest(new JUnit4TestAdapter(PhotonPositionMarketDataTest.class));
 
-        return suite; 
+		return suite;
 	}
 }

@@ -170,7 +170,7 @@
          </property>
          <property
                name="aboutText"
-               value="Marketcetera Photon&#x0D;&#x0A;&#x0D;&#x0A;Version: 1.5.0&#x0D;&#x0A;Build: metc.build.number&#x0D;&#x0A;&#x0D;&#x0A;(c) Copyright Marketcetera Inc 2006-2009.  All rights reserved.&#x0D;&#x0A;Visit http://www.marketcetera.org">
+               value="Marketcetera Photon&#x0A;&#x0A;Version: 1.5.0&#x0A;Build: metc.build.number&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2009.  All rights reserved.&#x0A;Visit http://www.marketcetera.org">
          </property>
       </product>
    </extension>
@@ -308,7 +308,7 @@
           <menu
                 label="%chooseColumns.label">
              <dynamic
-                   class="org.marketcetera.photon.ui.ChooseColumnsMenu"
+                   class="org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu"
                    id="org.marketcetera.photon.chooseColumnsMenu">
              </dynamic>
           </menu>
