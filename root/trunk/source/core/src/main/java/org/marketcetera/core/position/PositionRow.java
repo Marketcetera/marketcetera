@@ -1,5 +1,7 @@
 package org.marketcetera.core.position;
 
+import java.beans.PropertyChangeListener;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -69,4 +71,24 @@ public interface PositionRow {
      * @return the child positions, or null if this is not a summary row
      */
     EventList<PositionRow> getChildren();
+    
+    /**
+     * @see PropertyChangeSupport#addPropertyChangeListener(PropertyChangeListener)
+     */
+    void addPropertyChangeListener(PropertyChangeListener listener);
+
+    /**
+     * @see PropertyChangeSupport#removePropertyChangeListener(PropertyChangeListener)
+     */
+    void removePropertyChangeListener(PropertyChangeListener listener);
+
+    /**
+     * @see PropertyChangeSupport#addPropertyChangeListener(String, PropertyChangeListener)
+     */
+    void addPropertyChangeListener(String propertyName, PropertyChangeListener listener);
+
+    /**
+     * @see PropertyChangeSupport#removePropertyChangeListener(String, PropertyChangeListener)
+     */
+    void removePropertyChangeListener(String propertyName, PropertyChangeListener listener);
 }

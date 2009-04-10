@@ -1,13 +1,13 @@
 package org.marketcetera.core.position.impl;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeListenerProxy;
 import java.math.BigDecimal;
 
+import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.Trade;
+import org.marketcetera.core.position.MarketDataSupport.SymbolChangeEvent;
+import org.marketcetera.core.position.MarketDataSupport.SymbolChangeListener;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -26,12 +26,12 @@ import ca.odell.glazedlists.event.ListEventListener;
 @ClassVersion("$Id$")
 public final class PositionRowUpdater {
 
-    private final ListEventListener<Trade> listChangeListener;
-    private final EventList<Trade> trades;
+    private final ListEventListener<Trade> mListChangeListener;
+    private final EventList<Trade> mTrades;
     private final PositionRowImpl mPositionRow;
-    private PositionMarketData marketData;
-    private PropertyChangeListenerProxy symbolChangeListener;
-    private PositionMetricsCalculator calculator;
+    private MarketDataSupport mMarketDataSupport;
+    private SymbolChangeListener mSymbolChangeListener;
+    private PositionMetricsCalculator mCalculator;
 
     /**
      * Returns the PositionRow being managed by this class.
@@ -55,34 +55,32 @@ public final class PositionRowUpdater {
      *            the market data provider
      */
     public PositionRowUpdater(PositionRowImpl positionRow, EventList<Trade> trades,
-            PositionMarketData marketData) {
+            MarketDataSupport marketData) {
         mPositionRow = positionRow;
-        this.trades = trades;
-        this.marketData = marketData;
+        this.mTrades = trades;
+        this.mMarketDataSupport = marketData;
 
-        listChangeListener = new ListEventListener<Trade>() {
+        mListChangeListener = new ListEventListener<Trade>() {
 
             @Override
             public void listChanged(ListEvent<Trade> listChanges) {
                 PositionRowUpdater.this.listChanged(listChanges);
             }
         };
-        symbolChangeListener = new PropertyChangeListenerProxy(mPositionRow.getSymbol(),
-                new PropertyChangeListener() {
+        mSymbolChangeListener = new SymbolChangeListener() {
 
-                    @Override
-                    public void propertyChange(PropertyChangeEvent event) {
-                        tick((BigDecimal) event.getNewValue());
-                    }
-                });
+            @Override
+            public void symbolChanged(SymbolChangeEvent event) {
+                tick(event.getNewPrice());
+            }
+        };
         mPositionRow.setPositionMetrics(recalculate());
         connect();
     }
 
     private void connect() {
-        marketData.addSymbolTradeListener(symbolChangeListener.getPropertyName(),
-                symbolChangeListener);
-        trades.addListEventListener(listChangeListener);
+        mMarketDataSupport.addSymbolChangeListener(mPositionRow.getSymbol(), mSymbolChangeListener);
+        mTrades.addListEventListener(mListChangeListener);
     }
 
     /**
@@ -90,23 +88,22 @@ public final class PositionRowUpdater {
      * no longer be used.
      */
     public void dispose() {
-        trades.removeListEventListener(listChangeListener);
-        marketData.removeSymbolTradeListener(symbolChangeListener.getPropertyName(),
-                symbolChangeListener);
+        mTrades.removeListEventListener(mListChangeListener);
+        mMarketDataSupport.removeSymbolChangeListener(mPositionRow.getSymbol(), mSymbolChangeListener);
     }
 
     private void tick(BigDecimal tick) {
-        mPositionRow.setPositionMetrics(calculator.tick(tick));
+        mPositionRow.setPositionMetrics(mCalculator.tick(tick));
     }
 
     private void listChanged(ListEvent<Trade> listChanges) {
-        assert listChanges.getSourceList() == trades;
+        assert listChanges.getSourceList() == mTrades;
         while (listChanges.next()) {
             final int changeIndex = listChanges.getIndex();
             final int changeType = listChanges.getType();
-            if (changeType == ListEvent.INSERT && trades.size() == changeIndex + 1) {
-                Trade trade = trades.get(changeIndex);
-                mPositionRow.setPositionMetrics(calculator.trade(trade));
+            if (changeType == ListEvent.INSERT && mTrades.size() == changeIndex + 1) {
+                Trade trade = mTrades.get(changeIndex);
+                mPositionRow.setPositionMetrics(mCalculator.trade(trade));
             } else {
                 mPositionRow.setPositionMetrics(recalculate());
             }
@@ -115,11 +112,11 @@ public final class PositionRowUpdater {
 
     private PositionMetrics recalculate() {
         String symbol = mPositionRow.getSymbol();
-        calculator = new PositionMetricsCalculatorImpl(mPositionRow.getPositionMetrics()
-                .getIncomingPosition(), marketData.getClosingPrice(symbol));
-        PositionMetrics metrics = calculator.tick(marketData.getLastTradePrice(symbol));
-        for (Trade trade : trades) {
-            metrics = calculator.trade(trade);
+        mCalculator = new PositionMetricsCalculatorImpl(mPositionRow.getPositionMetrics()
+                .getIncomingPosition(), mMarketDataSupport.getClosingPrice(symbol));
+        PositionMetrics metrics = mCalculator.tick(mMarketDataSupport.getLastTradePrice(symbol));
+        for (Trade trade : mTrades) {
+            metrics = mCalculator.trade(trade);
         }
         return metrics;
     }

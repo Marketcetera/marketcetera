@@ -1,5 +1,7 @@
 package org.marketcetera.core.position.impl;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang.Validate;
@@ -151,7 +153,8 @@ class PositionRowImpl implements PositionRow {
      */
     synchronized void setPositionMetrics(PositionMetrics positionMetrics) {
         Validate.notNull(positionMetrics);
-        mPositionMetrics = positionMetrics;
+        propertyChangeSupport.firePropertyChange("positionMetrics", //$NON-NLS-1$
+                mPositionMetrics, mPositionMetrics = positionMetrics);
     }
 
     @Override
@@ -167,6 +170,38 @@ class PositionRowImpl implements PositionRow {
                 .append("traderId", mTraderId) //$NON-NLS-1$
                 .append("grouping", mGrouping) //$NON-NLS-1$
                 .toString();
+    }
+
+    // Boiler plate property change code
+
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    /**
+     * @return {@link PropertyChangeSupport} for this class
+     */
+    protected PropertyChangeSupport getPropertyChangeSupport() {
+        return propertyChangeSupport;
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        getPropertyChangeSupport().addPropertyChangeListener(listener);
+
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        getPropertyChangeSupport().removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        getPropertyChangeSupport().addPropertyChangeListener(propertyName, listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        getPropertyChangeSupport().removePropertyChangeListener(propertyName, listener);
     }
 
 }
