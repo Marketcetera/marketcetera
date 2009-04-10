@@ -11,6 +11,7 @@ import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.IncomingPositionSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.position.impl.GroupingList.GroupMatcher;
@@ -19,6 +20,8 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FunctionList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.ObservableElementList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.FunctionList.AdvancedFunction;
 import ca.odell.glazedlists.util.concurrent.Lock;
@@ -119,7 +122,7 @@ public final class PositionEngineImpl implements PositionEngine {
             PositionRowImpl positionRow = new PositionRowImpl(key.getSymbol(), key.getAccount(),
                     key.getTraderId(), mIncomingPositionSupport.getIncomingPositionFor(key));
             PositionRowUpdater calculator = new PositionRowUpdater(positionRow, sourceValue,
-                    mMarketData);
+                    mMarketDataSupport);
             map.put(sourceValue, calculator);
             return calculator.getPosition();
         }
@@ -235,11 +238,11 @@ public final class PositionEngineImpl implements PositionEngine {
         }
     }
 
-    private final PositionMarketData mMarketData;
+    private final MarketDataSupport mMarketDataSupport;
     private final IncomingPositionSupport mIncomingPositionSupport;
     private final SortedList<Trade> mSorted;
     private final GroupingList<Trade> mGrouped;
-    private final FunctionList<EventList<Trade>, PositionRow> mFlat;
+    private final EventList<PositionRow> mFlat;
 
     /**
      * Constructor.
@@ -252,9 +255,9 @@ public final class PositionEngineImpl implements PositionEngine {
      *             if any parameter is null
      */
     public PositionEngineImpl(EventList<Trade> trades,
-            IncomingPositionSupport incomingPositionSupport) {
-        Validate.noNullElements(new Object[] { trades, incomingPositionSupport });
-        mMarketData = new PositionMarketDataImpl();
+            IncomingPositionSupport incomingPositionSupport, MarketDataSupport marketDataSupport) {
+        Validate.noNullElements(new Object[] { trades, incomingPositionSupport, marketDataSupport });
+        mMarketDataSupport = marketDataSupport;
         mIncomingPositionSupport = incomingPositionSupport;
         mSorted = new SortedList<Trade>(trades, new Comparator<Trade>() {
 
@@ -264,7 +267,9 @@ public final class PositionEngineImpl implements PositionEngine {
             }
         });
         mGrouped = new GroupingList<Trade>(mSorted, new TradeGroupMatcherFactory());
-        mFlat = new FunctionList<EventList<Trade>, PositionRow>(mGrouped, new PositionFunction());
+        mFlat = new ObservableElementList<PositionRow>(
+				new FunctionList<EventList<Trade>, PositionRow>(mGrouped, new PositionFunction()),
+				GlazedLists.beanConnector(PositionRow.class, true, "positionMetrics")); //$NON-NLS-1$
     }
 
     @Override

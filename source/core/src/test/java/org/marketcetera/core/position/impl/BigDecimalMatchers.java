@@ -8,13 +8,17 @@ import org.hamcrest.Matcher;
 
 /**
  * Utility matchers for BigDecimals.
- *
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 public class BigDecimalMatchers {
-	public static Matcher<? super BigDecimal> comparesEqualTo(String value) {
+    public static Matcher<? super BigDecimal> comparesEqualTo(String value) {
+        return OrderingComparison.comparesEqualTo(new BigDecimal(value));
+    }
+
+    public static Matcher<? super BigDecimal> comparesEqualTo(int value) {
         return OrderingComparison.comparesEqualTo(new BigDecimal(value));
     }
 }

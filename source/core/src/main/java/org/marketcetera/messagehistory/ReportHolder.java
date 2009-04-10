@@ -19,7 +19,7 @@ import quickfix.Message;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ReportHolder
     implements Comparable<ReportHolder> {
 
@@ -40,6 +40,8 @@ public class ReportHolder
      */
     public ReportHolder(ReportBase inReport, OrderID inGroupID){
         this.mReport = inReport;
+        // A unique reference number must be used instead of mReport.getReportID()
+        // since some "fake" reports are created by this package with null ids.
         this.mMessageReference = sCounter.incrementAndGet();
         this.mGroupID = inGroupID;
     }
@@ -64,18 +66,6 @@ public class ReportHolder
             return ((HasFIXMessage)mReport).getMessage();
         }
         return null;
-    }
-
-    /**
-     * The message reference value. This is a unique, monotonically
-     * increasing value in the order in which instances of this class
-     * are created.
-     *
-     * @return the message reference value.
-     */
-    public long getMessageReference()
-    {
-        return mMessageReference;
     }
 
     @Override
