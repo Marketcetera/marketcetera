@@ -6,7 +6,6 @@ import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.marketdata.MarketDataSubscriber;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -34,33 +33,13 @@ public class MarketDataReceiverFactory extends
 	 * Constructor.
 	 */
 	public MarketDataReceiverFactory() {
-		super(PROVIDER_URN, Messages.MARKET_DATA_RECEIVER_FACTORY_DESCRIPTION, true, false, IConfigurationProvider.class, MarketDataSubscriber.class);
+		super(PROVIDER_URN, Messages.MARKET_DATA_RECEIVER_FACTORY_DESCRIPTION, true, false, IMarketDataSubscriber.class);
 	}
 
 	@Override
 	public Module create(Object... inParameters) throws ModuleCreationException {
 		ModuleURN urn = new ModuleURN(PROVIDER_URN, "item" + counter.incrementAndGet()); //$NON-NLS-1$
-		IConfigurationProvider config = (IConfigurationProvider) inParameters[0];
-		MarketDataSubscriber subscriber = (MarketDataSubscriber) inParameters[1];
-		return new MarketDataReceiverModule(urn, config, subscriber);
+		IMarketDataSubscriber subscriber = (IMarketDataSubscriber) inParameters[0];
+		return new MarketDataReceiverModule(urn, subscriber);
 	}
-
-	/**
-	 * Interface for objects providing configuration to {@link MarketDataReceiverModule}.
-	 *
-	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
-	 * @since 1.0.0
-	 */
-	@ClassVersion("$Id$")
-	public interface IConfigurationProvider {
-
-		/**
-		 * Returns the {@link ModuleURN} of the market data source module.
-		 * 
-		 * @return market data source module URN
-		 */
-		ModuleURN getMarketDataSourceModule();
-	}
-
 }

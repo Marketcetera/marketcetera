@@ -2,6 +2,8 @@ package org.marketcetera.photon.marketdata.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.marketcetera.photon.internal.marketdata.LatestTickManagerTest;
+import org.marketcetera.photon.internal.marketdata.TopOfBookManagerTest;
 import org.marketcetera.photon.marketdata.MarketDataFeedTest;
 import org.marketcetera.photon.marketdata.MarketDataReceiverModuleTest;
 
@@ -18,7 +20,9 @@ import org.marketcetera.photon.marketdata.MarketDataReceiverModuleTest;
 @Suite.SuiteClasses({
 	HeadlessSuite.class,
 	MarketDataFeedTest.class,
-	MarketDataReceiverModuleTest.class
+	MarketDataReceiverModuleTest.class,
+	LatestTickManagerTest.class,
+	TopOfBookManagerTest.class
 })
 public class PluginSuite {
 

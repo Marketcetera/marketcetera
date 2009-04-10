@@ -1,8 +1,13 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import org.eclipse.core.runtime.Plugin;
+import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.marketdata.MarketDataManager;
+import org.marketcetera.photon.module.ModuleSupport;
 import org.osgi.framework.BundleContext;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -18,17 +23,11 @@ public class Activator extends Plugin {
 	 * The shared instance
 	 */
 	private static Activator sInstance;
-	
+
 	/**
 	 * The {@link MarketDataManager} singleton for this plug-in instance.
 	 */
 	private MarketDataManager mMarketDataManager;
-
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -45,7 +44,7 @@ public class Activator extends Plugin {
 
 	/**
 	 * Returns the shared instance
-	 *
+	 * 
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
@@ -53,17 +52,26 @@ public class Activator extends Plugin {
 	}
 
 	/**
-	 * Returns the {@link MarketDataManager} singleton for this plug-in.
-	 * Typically, this should be accessed through
-	 * {@link MarketDataManager#getCurrent()}.
+	 * Returns the {@link MarketDataManager} singleton for this plug-in. Typically, this should be
+	 * accessed through {@link MarketDataManager#getCurrent()}.
 	 * 
 	 * @return the MarketDataManager singleton for this plug-in
 	 */
 	public synchronized MarketDataManager getMarketDataManager() {
 		if (mMarketDataManager == null) {
-			mMarketDataManager = new MarketDataManager();
+			mMarketDataManager = Guice.createInjector(new Module()).getInstance(
+					MarketDataManager.class);
 		}
 		return mMarketDataManager;
+	}
+
+	private class Module extends AbstractModule {
+
+		@Override
+		protected void configure() {
+			bind(ModuleManager.class).toInstance(ModuleSupport.getModuleManager());
+		}
+
 	}
 
 }
