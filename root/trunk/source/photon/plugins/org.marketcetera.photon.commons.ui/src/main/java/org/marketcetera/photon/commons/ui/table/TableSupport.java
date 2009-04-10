@@ -42,10 +42,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see ColumnConfiguration
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: TableSupport.java 10229 2008-12-09 21:48:48Z klim $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: TableSupport.java 10229 2008-12-09 21:48:48Z klim $")
 public class TableSupport {
 
 	/**
@@ -169,10 +169,10 @@ public class TableSupport {
 	 * Handles column sorting.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
+	 * @version $Id: TableSupport.java 10229 2008-12-09 21:48:48Z klim $
 	 * @since 1.0.0
 	 */
-	@ClassVersion("$Id$")
+	@ClassVersion("$Id: TableSupport.java 10229 2008-12-09 21:48:48Z klim $")
 	private class ColumnComparator extends ViewerComparator {
 
 		private int mIndex = -1;
