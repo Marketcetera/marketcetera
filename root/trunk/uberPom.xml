@@ -229,13 +229,13 @@
       <dependency>
         <groupId>com.google</groupId>
         <artifactId>guice</artifactId>
-        <version>20090205</version>
+        <version>[20090205]</version>
       </dependency>
       <!-- guice is an OSGi bundle and guice-source is an Eclipse ready source package for it. -->
       <dependency>
         <groupId>com.google</groupId>
         <artifactId>guice-source</artifactId>
-        <version>20090205</version>
+        <version>[20090205]</version>
       </dependency>
 
       <!-- Runtime. -->

@@ -3,7 +3,6 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 import java.util.EventObject;
 
-import org.apache.commons.lang.Validate;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -89,18 +88,19 @@ public interface MarketDataSupport {
          * @param source
          *            the object on which the Event initially occurred
          * @param newPrice
-         *            the new value for the symbol price, must not be null
+         *            the new value for the symbol price, may be null to indicate market data is no
+         *            longer available
          */
         public SymbolChangeEvent(Object source, BigDecimal newPrice) {
             super(source);
-            Validate.notNull(newPrice);
             mNewPrice = newPrice;
         }
 
         /**
          * The new price for the symbol.
          * 
-         * @return the new price for the symbol, will not be null
+         * @return the new price for the symbol, may be null to indicate market data is no longer
+         *         available
          */
         public BigDecimal getNewPrice() {
             return mNewPrice;

@@ -234,6 +234,8 @@
               <outputDirectory>${mvn.photon.target}/eclipse/plugins</outputDirectory>
               <!-- Don't copy in marketcetera dependencies, they have their own projects. -->
               <excludeGroupIds>org.marketcetera</excludeGroupIds>
+              <!-- Don't copy transitive dependencies, they may not be plugins and will be handled by photon-bundle. -->
+              <excludeTransitive>true</excludeTransitive>
             </configuration>
           </execution>
         </executions>
