@@ -21,6 +21,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.SymbolStatisticEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.trade.ExecutionReport;
@@ -160,8 +161,13 @@ class StrategyImpl
                 runningStrategy.onBid((BidEvent)inData);
                 return;
             }
+            if(inData instanceof SymbolStatisticEvent) {
+                method = "onStatistics"; //$NON-NLS-1$
+                runningStrategy.onStatistics((SymbolStatisticEvent)inData);
+                return;
+            }
             if(inData instanceof OrderCancelReject) {
-                method = "onCancel"; //$NON-NLS-1$
+                method = "onCancelReject"; //$NON-NLS-1$
                 runningStrategy.onCancelReject((OrderCancelReject)inData);
                 return;
             }

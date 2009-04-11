@@ -84,12 +84,6 @@ public interface Messages
                                                            "null_url"); //$NON-NLS-1$
     static final I18NMessage0P MISSING_CONTENT = new I18NMessage0P(LOGGER,
                                                                   "missing_source"); //$NON-NLS-1$
-    static final I18NMessage0P MISSING_PROVIDER = new I18NMessage0P(LOGGER,
-                                                                    "missing_provider"); //$NON-NLS-1$
-    static final I18NMessage0P OHLC_NO_DATE = new I18NMessage0P(LOGGER,
-                                                                "ohlc_no_date"); //$NON-NLS-1$
-    static final I18NMessage0P EXTRA_DATE = new I18NMessage0P(LOGGER,
-                                                              "extra_date"); //$NON-NLS-1$
     static final I18NMessage0P INVALID_REQUEST = new I18NMessage0P(LOGGER,
                                                                    "invalid_request"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_CONTENT = new I18NMessage1P(LOGGER,

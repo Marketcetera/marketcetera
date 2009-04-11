@@ -9,7 +9,9 @@ import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
+import org.marketcetera.event.SymbolStatisticEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
 import org.marketcetera.trade.BrokerID;
@@ -52,6 +54,14 @@ public class Strategy
     public final void onBid(BidEvent inBid)
     {
         on_bid(inBid);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.RunningStrategy#onStatistics(org.marketcetera.event.SymbolStatisticEvent)
+     */
+    @Override
+    public void onStatistics(SymbolStatisticEvent inStatistics)
+    {
+        on_statistics(inStatistics);
     }
     /*
      * (non-Javadoc)
@@ -132,6 +142,14 @@ public class Strategy
      * @param inBid a <code>BidEvent</code> value
      */
     protected void on_bid(BidEvent inBid)
+    {
+    }
+    /**
+     * Invoked when the <code>Strategy</code> receives a {@link SymbolStatisticEvent}.
+     * 
+     * @param inStatistics a <code>SymbolStatisticEvent</code> value
+     */
+    protected void on_statistics(SymbolStatisticEvent inStatistics)
     {
     }
     /**
@@ -268,24 +286,31 @@ public class Strategy
     /**
      * Creates a market data request.
      * 
-     * <p>The <code>inSource</code> parameter must contain the identifier of a started market data provider
-     * module.
+     * <p>The <code>inRequest</code> object must refer to a started market data provider module.
      * 
-     * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols for which to request data
-     * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
+     * @param inRequest a <code>MarketDataRequest</code> value containing the request to execute
      * @return an <code>int</code> value containing an identifier corresponding to this market data request or 0 if the request failed
      */
-    public final int request_market_data(String inSymbols,
-                                         String inSource)
+    public final int request_market_data(MarketDataRequest inRequest)
     {
-        return requestMarketData(inSymbols,
-                                 inSource);
+        return requestMarketData(inRequest);
+    }
+    /**
+     * Creates a market data request.
+     * 
+     * <p>The <code>inRequest</code> object must refer to a started market data provider module.
+     * 
+     * @param inRequest a <code>String</code> value containing the representation of a {@link MarketDataRequest} to execute
+     * @return an <code>int</code> value containing an identifier corresponding to this market data request or 0 if the request failed
+     */
+    public final int request_market_data(String inRequest)
+    {
+        return requestMarketData(inRequest);
     }
     /**
      * Requests market data processed by the given complex event processor from the given source.
      *
-     * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols
-     * @param inMarketDataSource a <code>String</code> value containing a string corresponding to a market data provider identifier
+     * @param inRequest a <code>MarketDataRequest</code> value containing the request to execute
      * @param inStatements a <code>String[]</code> value containing the statements to pass to the
      *   complex event processor.  The meaning of the statements varies according to the actual
      *   event processor that handles them.
@@ -293,13 +318,30 @@ public class Strategy
      *   to which to send the query request
      * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
      */
-    public final int request_processed_market_data(String inSymbols,
-                                                   String inMarketDataSource,
+    public final int request_processed_market_data(MarketDataRequest inRequest,
                                                    String[] inStatements,
                                                    String inCepSource)
     {
-        return requestProcessedMarketData(inSymbols,
-                                          inMarketDataSource,
+        return requestProcessedMarketData(inRequest,
+                                          inStatements,
+                                          inCepSource);
+    }
+    /**
+     * Requests market data processed by the given complex event processor from the given source.
+     *
+     * @param inRequest a <code>String</code> value containing the representation of a {@link MarketDataRequest} to execute
+     * @param inStatements a <code>String[]</code> value containing the statements to pass to the
+     *   complex event processor.  The meaning of the statements varies according to the actual
+     *   event processor that handles them.
+     * @param inCepSource a <code>String</code> value containing the name of the complex event processor
+     *   to which to send the query request
+     * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
+     */
+    public final int request_processed_market_data(String inRequest,
+                                                   String[] inStatements,
+                                                   String inCepSource)
+    {
+        return requestProcessedMarketData(inRequest,
                                           inStatements,
                                           inCepSource);
     }

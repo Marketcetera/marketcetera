@@ -4,6 +4,7 @@ import java.util.Map;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.strategy.java.Strategy;
+import org.marketcetera.marketdata.MarketDataRequest;
 
 /* $License$ */
 
@@ -123,10 +124,23 @@ public class CombinedRequest
             statements = null;
         }
         String cepSource = getProperty("cepSource");
-        setProperty("requestID",
-                    Integer.toString(requestProcessedMarketData(symbols,
-                                                             marketDataSource,
-                                                             statements,
-                                                             cepSource)));
+        String stringAPI = getProperty("useStringAPI");
+        try {
+            if(stringAPI != null) {
+                setProperty("requestID",
+                            Integer.toString(requestProcessedMarketData(MarketDataRequest.newRequest().withSymbols(symbols).fromProvider(marketDataSource).
+                                                                          withContent("TOP_OF_BOOK,LATEST_TICK").toString(),
+                                                                        statements,
+                                                                        cepSource)));
+            } else {
+                setProperty("requestID",
+                            Integer.toString(requestProcessedMarketData(MarketDataRequest.newRequest().withSymbols(symbols).fromProvider(marketDataSource).
+                                                                          withContent("TOP_OF_BOOK,LATEST_TICK"),
+                                                                        statements,
+                                                                        cepSource)));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

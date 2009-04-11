@@ -9,7 +9,6 @@ import static org.marketcetera.marketdata.Messages.INVALID_REQUEST;
 import static org.marketcetera.marketdata.Messages.INVALID_SYMBOLS;
 import static org.marketcetera.marketdata.Messages.INVALID_TYPE;
 import static org.marketcetera.marketdata.Messages.MISSING_CONTENT;
-import static org.marketcetera.marketdata.Messages.MISSING_PROVIDER;
 import static org.marketcetera.marketdata.Messages.MISSING_SYMBOLS;
 import static org.marketcetera.marketdata.Messages.MISSING_TYPE;
 
@@ -96,10 +95,9 @@ public class MarketDataRequest
      *
      * @param inRequest a <code>String</code> value
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the request cannot be constructed
+     * @throws IllegalArgumentException if the request cannot be constructed
      */
     public static MarketDataRequest newRequestFromString(String inRequest)
-        throws MarketDataRequestException
     {
         try {
             Properties props = Util.propertiesFromString(inRequest);
@@ -126,11 +124,11 @@ public class MarketDataRequest
             }
             validate(request);
             return request;
-        } catch (MarketDataRequestException e) {
+        } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
-            throw new MarketDataRequestException(e,
-                                                 INVALID_REQUEST);
+            throw new IllegalArgumentException(INVALID_REQUEST.getText(),
+                                               e);
         }
     }
     /**
@@ -141,13 +139,12 @@ public class MarketDataRequest
      * a completed request.
      *
      * @param inRequest a <code>MarketDataRequest</code> value to validate
-     * @throws MarketDataRequestException if the request is invalid
+     * @throws IllegalArgumentException if the request is invalid
      */
     public static void validate(MarketDataRequest inRequest)
-        throws MarketDataRequestException
     {
         if(inRequest == null) {
-            throw new MarketDataRequestException(INVALID_REQUEST);
+            throw new NullPointerException();
         }
         validateType(inRequest,
                      inRequest.type);
@@ -189,10 +186,9 @@ public class MarketDataRequest
      * 
      * @param inSymbols a <code>String[]</code> value containing symbols to add to the request
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified symbols result in an invalid request 
+     * @throws IllegalArgumentException if the specified symbols result in an invalid request 
      */
     public MarketDataRequest withSymbols(String... inSymbols)
-        throws MarketDataRequestException
     {
         setSymbols(inSymbols);
         return this;
@@ -205,15 +201,14 @@ public class MarketDataRequest
      * 
      * <p>This attribute is required and no default is provided.
      * 
-     * @param inSymbols a <code>String[]</code> value containing symbols to add to the request
+     * @param inSymbols a <code>String</code> value containing symbols separated by {@link #SYMBOL_DELIMITER} to add to the request
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified symbols result in an invalid request 
+     * @throws IllegalArgumentException if the specified symbols result in an invalid request 
      */
     public MarketDataRequest withSymbols(String inSymbols)
-        throws MarketDataRequestException
     {
         if(isEmptyStringList(inSymbols)) {
-            throw new MarketDataRequestException(MISSING_SYMBOLS);
+            throw new IllegalArgumentException(MISSING_SYMBOLS.getText());
         }
         setSymbols(inSymbols.split(SYMBOL_DELIMITER));
         return this;
@@ -229,10 +224,9 @@ public class MarketDataRequest
      * 
      * @param inProvider a <code>String</code> value containing the provider from which to request data
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified provider results in an invalid request 
+     * @throws IllegalArgumentException if the specified provider results in an invalid request 
      */
     public MarketDataRequest fromProvider(String inProvider)
-        throws MarketDataRequestException
     {
         setProvider(inProvider);
         return this;
@@ -264,21 +258,14 @@ public class MarketDataRequest
      *
      * @param inContent a <code>String</code> value
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified content results in an invalid request 
+     * @throws IllegalArgumentException if the specified content results in an invalid request 
      */
     public MarketDataRequest withContent(String inContent)
-        throws MarketDataRequestException
     {
         if(isEmptyStringList(inContent)) {
-            throw new MarketDataRequestException(MISSING_CONTENT);
+            throw new IllegalArgumentException(MISSING_CONTENT.getText());
         }
-        try {
-            return withContent(inContent.split(SYMBOL_DELIMITER));
-        } catch (Exception e) {
-            throw new MarketDataRequestException(e,
-                                                 new I18NBoundMessage1P(INVALID_CONTENT,
-                                                                        inContent));
-        }
+        return withContent(inContent.split(SYMBOL_DELIMITER));
     }
     /**
      * Adds the given content to the market data request.
@@ -288,10 +275,9 @@ public class MarketDataRequest
      *
      * @param inContent a <code>Content[]</code> value
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified content results in an invalid request 
+     * @throws IllegalArgumentException if the specified content results in an invalid request 
      */
     public MarketDataRequest withContent(Content...inContent)
-        throws MarketDataRequestException
     {
         setContent(inContent);
         return this;
@@ -304,22 +290,22 @@ public class MarketDataRequest
      *
      * @param inContent a <code>String[]</code> value
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified content results in an invalid request 
+     * @throws IllegalArgumentException if the specified content results in an invalid request 
      */
     public MarketDataRequest withContent(String...inContent)
-        throws MarketDataRequestException
     {
         if(isEmptyStringList(inContent)) {
-            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_CONTENT,
-                                                                        inContent));
+            throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_CONTENT,
+                                                                      Arrays.toString(inContent)).getText());
         }
         List<Content> newContents = new ArrayList<Content>();
         for(String contentString : inContent) {
             try {
                 newContents.add(Content.valueOf(contentString.toUpperCase()));
             } catch (Exception e) {
-                throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_CONTENT,
-                                                                            inContent));
+                throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_CONTENT,
+                                                                          contentString).getText(),
+                                                   e);
             }
         }
         setContent(newContents.toArray(new Content[newContents.size()]));
@@ -335,17 +321,16 @@ public class MarketDataRequest
      * 
      * @param inType a <code>Type</code> value
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified type results in an invalid request
+     * @throws IllegalArgumentException if the specified type results in an invalid request
      */
     public MarketDataRequest ofType(String inType)
-        throws MarketDataRequestException
     {
         try {
             return ofType(Type.valueOf(inType.toUpperCase()));
         } catch (Exception e) {
-            throw new MarketDataRequestException(e,
-                                                 new I18NBoundMessage1P(INVALID_TYPE,
-                                                                        inType));
+            throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_TYPE,
+                                                                      inType).getText(),
+                                               e);
         }
     }
     /**
@@ -355,10 +340,9 @@ public class MarketDataRequest
      * 
      * @param inType a <code>Type</code> value
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified type results in an invalid request
+     * @throws IllegalArgumentException if the specified type results in an invalid request
      */
     public MarketDataRequest ofType(Type inType)
-        throws MarketDataRequestException
     {
         setType(inType);
         return this;
@@ -488,20 +472,19 @@ public class MarketDataRequest
      * 
      * @param inRequest a <code>MarketDataRequest</code> value
      * @param inSymbols a <code>String[]</code> value
-     * @throws MarketDataRequestException if the symbols are not valid
+     * @throws IllegalArgumentException if the symbols are not valid
      */
     private static void validateSymbols(MarketDataRequest inRequest,
                                         String[] inSymbols)
-        throws MarketDataRequestException
     {
         if(isEmptyStringList(inSymbols)) {
-            throw new MarketDataRequestException(MISSING_SYMBOLS);
+            throw new IllegalArgumentException(MISSING_SYMBOLS.getText());
         }
         for(String symbol : inSymbols) {
             if(symbol == null ||
                symbol.trim().isEmpty()) {
-                throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_SYMBOLS,
-                                                                            Arrays.toString(inSymbols)));
+                throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_SYMBOLS,
+                                                                          Arrays.toString(inSymbols)).getText());
             }
         }
     }
@@ -510,14 +493,13 @@ public class MarketDataRequest
      *
      * @param inRequest a <code>MarketDataRequest</code> value
      * @param inType a <code>Type</code> value
-     * @throws MarketDataRequestException if the given <code>Type</code> is not valid
+     * @throws IllegalArgumentException if the given <code>Type</code> is not valid
      */
     private static void validateType(MarketDataRequest inRequest,
                                      Type inType)
-        throws MarketDataRequestException
     {
         if(inType == null) {
-            throw new MarketDataRequestException(MISSING_TYPE);
+            throw new IllegalArgumentException(MISSING_TYPE.getText());
         }
     }
     /**
@@ -536,35 +518,30 @@ public class MarketDataRequest
      *
      * @param inRequest a <code>MarketDataRequest</code> value
      * @param inProvider a <code>String</code> value
-     * @throws MarketDataRequestException if the <code>Provider</code> is not valid
+     * @throws IllegalArgumentException if the <code>Provider</code> is not valid
      */
     private static void validateProvider(MarketDataRequest inRequest,
                                          String inProvider)
-        throws MarketDataRequestException
     {
-        if(inProvider == null ||
-           inProvider.isEmpty()) {
-            throw new MarketDataRequestException(MISSING_PROVIDER);
-        }
+        // provider is optional when an MDR is passed directly to a Market Data Module
     }
     /**
      * Verifies that the <code>Content</code> on the given <code>MarketDataRequest</code> is valid.
      *
      * @param inRequest a <code>MarketDataRequest</code> value
      * @param inContent a <code>Content[]</code> value
-     * @throws MarketDataRequestException if the <code>Content</code> is not valid
+     * @throws IllegalArgumentException if the <code>Content</code> is not valid
      */
     private static void validateContent(MarketDataRequest inRequest,
                                         Content...inContent)
-        throws MarketDataRequestException
     {
         if(inContent == null ||
            inContent.length == 0) {
-            throw new MarketDataRequestException(MISSING_CONTENT);
+            throw new IllegalArgumentException(MISSING_CONTENT.getText());
         }
         if(!isValidEnumList(inContent)) {
-            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_CONTENT,
-                                                                        Arrays.toString(inContent)));
+            throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_CONTENT,
+                                                                      Arrays.toString(inContent)).getText());
         }
     }
     /**
@@ -572,19 +549,18 @@ public class MarketDataRequest
      *
      * @param inRequest a <code>MarketDataRequest</code> value
      * @param inContent a <code>Set&lt;Content&gt;</code> value
-     * @throws MarketDataRequestException if the <code>Content</code> is not valid
+     * @throws IllegalArgumentException if the <code>Content</code> is not valid
      */
     private static void validateContent(MarketDataRequest inRequest,
                                         Set<Content> inContent)
-        throws MarketDataRequestException
     {
         if(inContent == null ||
            inContent.isEmpty()) {
-            throw new MarketDataRequestException(MISSING_CONTENT);
+            throw new IllegalArgumentException(MISSING_CONTENT.getText());
         }
         if(!isValidEnumList(inContent.toArray(new Content[inContent.size()]))) {
-            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_CONTENT,
-                                                                        String.valueOf(inContent)));
+            throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_CONTENT,
+                                                                      String.valueOf(inContent)).getText());
         }
     }
     /**
@@ -650,10 +626,9 @@ public class MarketDataRequest
      * <p>The given value must not be null.  This attribute is required and no default is provided.
      * 
      * @param a <code>Type</code> value
-     * @throws MarketDataRequestException if the specified type results in an invalid request
+     * @throws IllegalArgumentException if the specified type results in an invalid request
      */
     private void setType(Type inType)
-        throws MarketDataRequestException
     {
         validateType(this,
                      inType);
@@ -668,10 +643,9 @@ public class MarketDataRequest
      * 
      * @param inSymbols a <code>String[]</code> value containing symbols to add to the request
      * @return a <code>MarketDataRequest</code> value
-     * @throws MarketDataRequestException if the specified symbols result in an invalid request 
+     * @throws IllegalArgumentException if the specified symbols result in an invalid request 
      */
     private void setSymbols(String[] inSymbols)
-        throws MarketDataRequestException
     {
         validateSymbols(this,
                         inSymbols);
@@ -708,20 +682,23 @@ public class MarketDataRequest
      * Sets the provider.
      *
      * <p>The provider is not validated because the set of valid providers is
-     * resolved at run-time.  The specified provider must be non-null and of non-zero
-     * length.
+     * resolved at run-time.
      * 
      * <p>This attribute is required and no default is provided.
      * 
      * @param inProvider a <code>String</code> value containing the provider from which to request data
-     * @throws MarketDataRequestException if the specified provider results in an invalid request 
+     * @throws IllegalArgumentException if the specified provider results in an invalid request 
      */
     private void setProvider(String inProvider)
-        throws MarketDataRequestException
     {
         validateProvider(this,
                          inProvider);
-        provider = new String(inProvider);
+        if(inProvider == null ||
+           inProvider.isEmpty()) {
+            provider = null;
+        } else {
+            provider = new String(inProvider);
+        }
     }
     /**
      * Sets the content value.
@@ -729,10 +706,9 @@ public class MarketDataRequest
      * <p>This attribute is required.  If omitted, the value will be {@link Content#TOP_OF_BOOK}.
      * 
      * @param a <code>Content[]</code> value
-     * @throws MarketDataRequestException if the given content value is invalid 
+     * @throws IllegalArgumentException if the given content value is invalid 
      */
     private void setContent(Content...inContent)
-        throws MarketDataRequestException
     {
         validateContent(this,
                         inContent);

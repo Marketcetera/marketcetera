@@ -248,4 +248,15 @@ public class JavaLanguageTest
         return StrategyCoordinates.get(COMBINED_STRATEGY,
                                        COMBINED_STRATEGY_NAME);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getNotificationCount()
+     */
+    @Override
+    protected int getExpectedCompilationWarningsFor(StrategyCoordinates inStrategy)
+    {
+        if(inStrategy.getName().equals(JAVA_STRATEGY_NAME)) {
+            return 2;
+        }
+        return 0;
+    }
 }

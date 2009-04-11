@@ -16,7 +16,6 @@ import java.util.concurrent.Semaphore;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -32,6 +31,7 @@ import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.MSymbol;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -45,6 +45,7 @@ import org.marketcetera.trade.MSymbol;
 @ClassVersion("$Id$")
 public class AbstractMarketDataFeedTest
     extends MarketDataFeedTestBase
+    implements Messages
 {
     private final MSymbol metc = new MSymbol("METC");
     private final String exchange = "TEST";
@@ -489,6 +490,43 @@ public class AbstractMarketDataFeedTest
                      token.getStatus());
         assertEquals(Status.ACTIVE,
                      token2.getStatus());
+    }
+    /**
+     * Tests the ability of the feed to catch invalid requests.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void requestValidation()
+        throws Exception
+    {
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
+        feed.start();
+        feed.login(new MockMarketDataFeedCredentials());
+        // create an invalid request
+        final MarketDataRequest invalidRequest = MarketDataRequest.newRequest();
+        // prove that it's invalid
+        new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                MarketDataRequest.validate(invalidRequest);
+            }
+        };
+        // try to submit the request, make sure the request fails
+        MockSubscriber subscriber = new MockSubscriber();
+        MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(invalidRequest,
+                                                                                 subscriber);
+        MockMarketDataFeedToken token = feed.execute(spec);
+        assertEquals(Status.EXECUTION_FAILED,
+                     token.getStatus());
+        // fix the request
+        invalidRequest.withSymbols("METC");
+        // resubmit
+        token = feed.execute(spec);
+        assertEquals(Status.ACTIVE,
+                     token.getStatus());
     }
     private static class TestFeedComponentListener
     	implements IFeedComponentListener
