@@ -153,15 +153,15 @@
       <command
             categoryId="org.marketcetera.photon.positions.ui.commands.category"
             defaultHandler="org.marketcetera.photon.product.handlers.ShowPositionFills"
-            description="Show fills for the selected position"
+            description="%command.showPositionFills.description"
             id="org.marketcetera.photon.positions.ui.commands.showPositionFills"
-            name="Show Position Fills">
+            name="%command.showPositionFills.name">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.marketcetera.photon.positions.ui.PositionsView?before=org.marketcetera.photon.positions.ui.PositionsViewPopup.chooseColumnsMenu">
+            locationURI="popup:org.marketcetera.photon.positions.ui.PositionsView?before=org.marketcetera.photon.positions.ui.positionsPopup.chooseColumnsMenu">
          <command
                commandId="org.marketcetera.photon.positions.ui.commands.showPositionFills"
                style="push">

@@ -20,19 +20,19 @@
          point="org.eclipse.ui.commands">
       <category
             id="org.marketcetera.photon.positions.ui.commands.category"
-            name="Position Commands">
+            name="%category.positionCommands">
       </category>
       <command
             categoryId="org.marketcetera.photon.positions.ui.commands.category"
             defaultHandler="org.marketcetera.photon.internal.positions.ui.PositionsView$ChangePageHandler:FLAT"
             id="org.marketcetera.photon.positions.ui.commands.flatLayout"
-            name="Set Flat Layout">
+            name="%command.setFlatLayout.name">
       </command>
       <command
             categoryId="org.marketcetera.photon.positions.ui.commands.category"
             defaultHandler="org.marketcetera.photon.internal.positions.ui.PositionsView$ChangePageHandler:HIERARCHICAL"
             id="org.marketcetera.photon.positions.ui.commands.groupedLayout"
-            name="Set Grouped Layout">
+            name="%command.setGroupedLayout.name">
       </command>
    </extension>
    <extension
@@ -46,14 +46,14 @@
                commandId="org.marketcetera.photon.positions.ui.commands.flatLayout"
                icon="icons/elcl16/flatLayout.gif"
                style="push"
-               tooltip="Set Flat Layout">
+               tooltip="%command.setFlatLayout.name">
          </command>
          <command
                commandId="org.marketcetera.photon.positions.ui.commands.groupedLayout"
                icon="icons/elcl16/groupedLayout.gif"
                id="org.marketcetera.photon.positions.ui.groupedLayoutPulldown"
                style="pulldown"
-               tooltip="Set Grouped Layout">
+               tooltip="%command.setGroupedLayout.name">
          </command>
       </menuContribution>
       <menuContribution
@@ -65,10 +65,14 @@
       </menuContribution>
       <menuContribution
             locationURI="popup:org.marketcetera.photon.positions.ui.PositionsView">
-         <dynamic
-               class="org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu"
-               id="org.marketcetera.photon.positions.ui.positionsPopup.chooseColumns">
-         </dynamic>
+         <menu
+               id="org.marketcetera.photon.positions.ui.positionsPopup.chooseColumnsMenu"
+               label="%menu.chooseColumnsMenu.label">
+            <dynamic
+                  class="org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu"
+                  id="org.marketcetera.photon.positions.ui.positionsPopup.chooseColumns">
+            </dynamic>
+         </menu>
       </menuContribution>
    </extension>
 
