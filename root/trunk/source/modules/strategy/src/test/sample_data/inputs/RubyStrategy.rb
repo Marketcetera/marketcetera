@@ -32,9 +32,21 @@ class RubyStrategy < Strategy
       end
       marketDataSource = get_parameter("shouldRequestData")
       if(marketDataSource != nil)
-          symbols = get_parameter("symbols")
-          set_property("requestID",
-                       (request_market_data(symbols, marketDataSource)).to_s)
+        symbols = get_parameter("symbols")
+        content = get_parameter("content")
+        if(content == nil)
+          content = "LATEST_TICK,TOP_OF_BOOK";
+        end
+          stringAPI = get_parameter "useStringAPI"
+          if(stringAPI != nil)
+            set_property("requestID",
+                         (request_market_data(MarketDataRequest.newRequest().
+                                              withContent(content.to_s).withSymbols(symbols).fromProvider(marketDataSource).to_s)).to_s)
+          else
+            set_property("requestID",
+                         (request_market_data(MarketDataRequest.newRequest().
+                                              withContent(content.to_s).withSymbols(symbols).fromProvider(marketDataSource))).to_s)
+          end
       end
       if(get_parameter("shouldRequestCEPData") != nil)
           do_cep_request
@@ -96,8 +108,7 @@ class RubyStrategy < Strategy
       if(marketDataSource != nil)
           symbols = get_parameter("symbols")
           set_property("requestID",
-                       Long.toString(request_market_data(symbols,
-                                                         marketDataSource)))
+                       Long.toString(request_market_data(MarketDataRequest.newRequest().withContent("LATEST_TICK").withSymbols(symbols).fromProvider(marketDataSource))))
       end
       shouldLoop = get_parameter("shouldLoopOnStop")
       if(shouldLoop != nil)
@@ -132,6 +143,14 @@ class RubyStrategy < Strategy
       end
       set_property("onBid",
                    bid.toString())
+  end
+  def on_statistics(statistics)
+    shouldFail = get_parameter("shouldFailOnStatistics")
+    if(shouldFail != nil) 
+        10 / 0
+    end
+    set_property("onStatistics",
+                 statistics.toString())
   end  
   def on_callback(data)
     @callbackCounter += 1

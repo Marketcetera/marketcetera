@@ -582,6 +582,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             X xlator = getMessageTranslator();
             // the request is represented by a request stored on the token
             MarketDataRequest request = inToken.getTokenSpec().getDataRequest();
+            // validate the request
+            MarketDataRequest.validate(request);
             // translate the request to an appropriate proprietary format
             D data = xlator.fromDataRequest(request);
             if(request instanceof MarketDataRequest) {
@@ -594,7 +596,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             return false;
         } catch (Exception e) {
             thrownException = e;
-            Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.error(this, e);
+            Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.error(this,
+                                                                   e);
             return false;
         } finally {
             afterDoExecute(inToken, 

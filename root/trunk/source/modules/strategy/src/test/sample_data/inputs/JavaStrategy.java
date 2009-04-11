@@ -6,8 +6,10 @@ import org.marketcetera.trade.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.SymbolStatisticEvent;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderCancelReject;
@@ -49,9 +51,22 @@ public class JavaStrategy
         String marketDataSource = getParameter("shouldRequestData");
         if(marketDataSource != null) {
             String symbols = getParameter("symbols");
-            setProperty("requestID",
-                        Integer.toString(requestMarketData(symbols,
-                                                           marketDataSource)));
+            String content = getParameter("content");
+            if(content == null) {
+                content = "LATEST_TICK,TOP_OF_BOOK";
+            }
+            String stringAPI = getParameter("useStringAPI");
+            try {
+                if(stringAPI != null) {
+                    setProperty("requestID",
+                                Integer.toString(requestMarketData(MarketDataRequest.newRequest().withContent(content).withSymbols(symbols).fromProvider(marketDataSource).toString())));
+                } else {
+                    setProperty("requestID",
+                                Integer.toString(requestMarketData(MarketDataRequest.newRequest().withContent(content).withSymbols(symbols).fromProvider(marketDataSource))));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         if(getParameter("shouldRequestCEPData") != null) {
             String cepDataSource = getParameter("source");
@@ -138,8 +153,7 @@ public class JavaStrategy
         if(marketDataSource != null) {
             String symbols = getParameter("symbols");
             setProperty("requestID",
-                        Long.toString(requestMarketData(symbols,
-                                                        marketDataSource)));
+                        Long.toString(requestMarketData(MarketDataRequest.newRequest().withContent("LATEST_TICK").withSymbols(symbols).fromProvider(marketDataSource))));
         }
         String shouldLoop = getParameter("shouldLoopOnStop");
         if(shouldLoop != null) {
@@ -188,6 +202,17 @@ public class JavaStrategy
         }
         setProperty("onBid",
                     bid.toString());
+    }
+    
+    @Override
+    public void onStatistics(SymbolStatisticEvent statistics)
+    {
+        String shouldFail = getParameter("shouldFailOnStatistics");
+        if(shouldFail != null) {
+            int x = 10 / 0;
+        }
+        setProperty("onStatistics",
+                    statistics.toString());
     }
     
     @Override

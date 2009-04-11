@@ -93,7 +93,7 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
     public void translateMarketDataRequest()
         throws Exception
     {
-        new ExpectedFailure<MarketDataRequestException>(MISSING_SYMBOLS) {
+        new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
             protected void run()
                 throws Exception
             {
@@ -101,7 +101,7 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
                                  "");
             }
         };
-        new ExpectedFailure<MarketDataRequestException>(MISSING_SYMBOLS) {
+        new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
             protected void run()
                 throws Exception
             {

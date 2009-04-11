@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Base class for all market events.
+ * Base class for all system events.
  *
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>

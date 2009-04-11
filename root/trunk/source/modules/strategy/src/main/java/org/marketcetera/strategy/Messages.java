@@ -7,7 +7,6 @@ import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessage3P;
 import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessage5P;
-import org.marketcetera.util.log.I18NMessage6P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -171,9 +170,9 @@ public interface Messages
                                                                      "received_position"); //$NON-NLS-1$
     static final I18NMessage4P SUBMITTING_CEP_REQUEST = new I18NMessage4P(LOGGER,
                                                                           "submitting_cep_request"); //$NON-NLS-1$
-    static final I18NMessage3P SUBMITTING_MARKET_DATA_REQUEST = new I18NMessage3P(LOGGER,
+    static final I18NMessage2P SUBMITTING_MARKET_DATA_REQUEST = new I18NMessage2P(LOGGER,
                                                                                   "submitting_market_data_request"); //$NON-NLS-1$
-    static final I18NMessage6P SUBMITTING_PROCESSED_MARKET_DATA_REQUEST = new I18NMessage6P(LOGGER,
+    static final I18NMessage5P SUBMITTING_PROCESSED_MARKET_DATA_REQUEST = new I18NMessage5P(LOGGER,
                                                                                             "submitting_processed_market_data_request"); //$NON-NLS-1$
     static final I18NMessage3P EXECUTION_REPORTS_FOUND = new I18NMessage3P(LOGGER,
                                                                            "execution_reports_found"); //$NON-NLS-1$

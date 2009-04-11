@@ -3,6 +3,7 @@ package org.marketcetera.strategy;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.SymbolStatisticEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
@@ -37,6 +38,12 @@ public interface RunningStrategy
      * @param inAsk an <code>AskEvent</code> value
      */
     public void onAsk(AskEvent inAsk);
+    /**
+     * Indicates a <code>SymbolStatisticEvent</code> has been received. 
+     *
+     * @param inStatistics a <code>SymbolStatisticEvent</code> value
+     */
+    public void onStatistics(SymbolStatisticEvent inStatistics);
     /**
      * Indicates an <code>ExecutionReport</code> has been received.
      * 

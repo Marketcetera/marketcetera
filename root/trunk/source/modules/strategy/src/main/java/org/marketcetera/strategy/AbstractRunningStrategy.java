@@ -1,51 +1,5 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
-import static org.marketcetera.strategy.Messages.CALLBACK_ERROR;
-import static org.marketcetera.strategy.Messages.CANCELING_ALL_DATA_REQUESTS;
-import static org.marketcetera.strategy.Messages.CANCELING_DATA_REQUEST;
-import static org.marketcetera.strategy.Messages.CANCEL_REQUEST_SUBMITTED;
-import static org.marketcetera.strategy.Messages.CANNOT_REQUEST_DATA;
-import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_BROKERS;
-import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_POSITION;
-import static org.marketcetera.strategy.Messages.CANNOT_SEND_DATA;
-import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
-import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
-import static org.marketcetera.strategy.Messages.EXECUTING_CALLBACK;
-import static org.marketcetera.strategy.Messages.EXECUTION_REPORTS_FOUND;
-import static org.marketcetera.strategy.Messages.INVALID_CANCEL;
-import static org.marketcetera.strategy.Messages.INVALID_CEP_REQUEST;
-import static org.marketcetera.strategy.Messages.INVALID_EVENT;
-import static org.marketcetera.strategy.Messages.INVALID_EVENT_TO_CEP;
-import static org.marketcetera.strategy.Messages.INVALID_LOG;
-import static org.marketcetera.strategy.Messages.INVALID_MARKET_DATA_REQUEST;
-import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
-import static org.marketcetera.strategy.Messages.INVALID_NOTIFICATION;
-import static org.marketcetera.strategy.Messages.INVALID_ORDER;
-import static org.marketcetera.strategy.Messages.INVALID_ORDERID;
-import static org.marketcetera.strategy.Messages.INVALID_POSITION_REQUEST;
-import static org.marketcetera.strategy.Messages.INVALID_REPLACEMENT_ORDER;
-import static org.marketcetera.strategy.Messages.INVALID_TRADE_SUGGESTION;
-import static org.marketcetera.strategy.Messages.MESSAGE_1P;
-import static org.marketcetera.strategy.Messages.NO_EXECUTION_REPORT;
-import static org.marketcetera.strategy.Messages.NO_PARAMETERS;
-import static org.marketcetera.strategy.Messages.NULL_PROPERTY_KEY;
-import static org.marketcetera.strategy.Messages.ORDER_CANCEL_FAILED;
-import static org.marketcetera.strategy.Messages.RECEIVED_BROKERS;
-import static org.marketcetera.strategy.Messages.RECEIVED_POSITION;
-import static org.marketcetera.strategy.Messages.SUBMITTING_CANCEL_ALL_ORDERS_REQUEST;
-import static org.marketcetera.strategy.Messages.SUBMITTING_CANCEL_ORDER_REQUEST;
-import static org.marketcetera.strategy.Messages.SUBMITTING_CANCEL_REPLACE_REQUEST;
-import static org.marketcetera.strategy.Messages.SUBMITTING_CEP_REQUEST;
-import static org.marketcetera.strategy.Messages.SUBMITTING_EVENT_TO_CEP;
-import static org.marketcetera.strategy.Messages.SUBMITTING_FIX_MESSAGE;
-import static org.marketcetera.strategy.Messages.SUBMITTING_MARKET_DATA_REQUEST;
-import static org.marketcetera.strategy.Messages.SUBMITTING_ORDER;
-import static org.marketcetera.strategy.Messages.SUBMITTING_PROCESSED_MARKET_DATA_REQUEST;
-import static org.marketcetera.strategy.Messages.SUBMITTING_TRADE_SUGGESTION;
-import static org.marketcetera.strategy.Messages.USING_EXECUTION_REPORT;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +14,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.LogEvent;
@@ -76,6 +29,7 @@ import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
 
@@ -90,7 +44,7 @@ import quickfix.Message;
  */
 @ClassVersion("$Id$")
 public abstract class AbstractRunningStrategy
-        implements RunningStrategy
+        implements RunningStrategy, Messages
 {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -212,14 +166,12 @@ public abstract class AbstractRunningStrategy
         return parameters.getProperty(inName);
     }
     /**
-     * Requests market data from the given source.
+     * Requests market data.
      *
-     * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols
-     * @param inProvider a <code>String</code> value containing a string corresponding to a market data provider identifier
+     * @param inRequest a <code>MarketDataRequest</code> value containing the request to execute
      * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
      */
-    protected final int requestMarketData(String inSymbols,
-                                          String inProvider)
+    protected final int requestMarketData(MarketDataRequest inRequest)
     {
         if(!canReceiveData()) {
             StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
@@ -228,37 +180,56 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return 0;
         }
-        if(inSymbols != null &&
-           !inSymbols.isEmpty()) {
-            try {
-                MarketDataRequest request = constructMarketDataRequest(inSymbols,
-                                                                       inProvider);
-                StrategyModule.log(LogEvent.debug(SUBMITTING_MARKET_DATA_REQUEST,
-                                                  String.valueOf(strategy),
-                                                  String.valueOf(request),
-                                                  inProvider),
-                                   strategy);
-                return strategy.getOutboundServicesProvider().requestMarketData(request);
-            } catch (Exception e) {
-                StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
-                                                 e,
-                                                 String.valueOf(strategy),
-                                                 inSymbols),
-                                   strategy);
-                return 0;
-            }
+        if(inRequest == null) {
+            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
+                                             String.valueOf(strategy),
+                                             inRequest),
+                               strategy);
+            return 0;
         }
-        StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
-                                         String.valueOf(strategy),
-                                         inSymbols),
-                           strategy);
-        return 0;
+        try {
+            StrategyModule.log(LogEvent.debug(SUBMITTING_MARKET_DATA_REQUEST,
+                                              String.valueOf(strategy),
+                                              String.valueOf(inRequest)),
+                               strategy);
+            return strategy.getOutboundServicesProvider().requestMarketData(inRequest);
+        } catch (Exception e) {
+            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
+                                             e,
+                                             String.valueOf(strategy),
+                                             inRequest),
+                               strategy);
+            return 0;
+        }
     }
     /**
-     * Requests market data processed by the given complex event processor from the given source.
+     * Requests market data.
      *
-     * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols
-     * @param inMarketDataSource a <code>String</code> value containing a string corresponding to a market data provider identifier
+     * @param inRequest a <code>String</code> value containing the representation of a {@link MarketDataRequest} to execute
+     * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
+     */
+    protected final int requestMarketData(String inRequest)
+    {
+        try {
+            MarketDataRequest request = MarketDataRequest.newRequestFromString(inRequest);
+            StrategyModule.log(LogEvent.debug(SUBMITTING_MARKET_DATA_REQUEST,
+                                              String.valueOf(strategy),
+                                              request),
+                               strategy);
+            return strategy.getOutboundServicesProvider().requestMarketData(request);
+        } catch (Exception e) {
+            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
+                                             e,
+                                             String.valueOf(strategy),
+                                             inRequest),
+                               strategy);
+            return 0;
+        }
+    }
+    /**
+     * Requests market data processed by the given complex event processor.
+     *
+     * @param inRequest a <code>MarketDataRequest</code> value containing the request to execute
      * @param inStatements a <code>String[]</code> value containing the statements to pass to the
      *   complex event processor.  The meaning of the statements varies according to the actual
      *   event processor that handles them.
@@ -266,8 +237,7 @@ public abstract class AbstractRunningStrategy
      *   to which to send the query request
      * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
      */
-    protected final int requestProcessedMarketData(String inSymbols,
-                                                   String inMarketDataSource,
+    protected final int requestProcessedMarketData(MarketDataRequest inRequest,
                                                    String[] inStatements,
                                                    String inCepSource)
     {
@@ -278,13 +248,10 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return 0;
         }
-        if(inSymbols == null ||
-           inSymbols.isEmpty() ||
-           inMarketDataSource == null ||
-           inMarketDataSource.isEmpty()) {
+        if(inRequest == null) {
             StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
                                              String.valueOf(strategy),
-                                             inSymbols),
+                                             inRequest),
                                strategy);
             return 0;
         }
@@ -300,36 +267,97 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return 0;
         }
-        MarketDataRequest marketDataRequest = null;
         String namespace = strategy.getDefaultNamespace();
         try {
-            // construct market data request
-            marketDataRequest = constructMarketDataRequest(inSymbols,
-                                                           inMarketDataSource);
             // retrieve CEP default namespace
             StrategyModule.log(LogEvent.debug(SUBMITTING_PROCESSED_MARKET_DATA_REQUEST,
                                               String.valueOf(strategy),
-                                              String.valueOf(marketDataRequest),
-                                              inMarketDataSource,
+                                              String.valueOf(inRequest),
                                               Arrays.toString(inStatements),
                                               inCepSource,
                                               namespace),
                                strategy);
-            return strategy.getOutboundServicesProvider().requestProcessedMarketData(marketDataRequest,
-                                                                                   inStatements,
-                                                                                   inCepSource,
-                                                                                   namespace);
+            return strategy.getOutboundServicesProvider().requestProcessedMarketData(inRequest,
+                                                                                     inStatements,
+                                                                                     inCepSource,
+                                                                                     namespace);
         } catch (Exception e) {
             StrategyModule.log(LogEvent.warn(COMBINED_DATA_REQUEST_FAILED,
                                              e,
-                                             String.valueOf(marketDataRequest),
+                                             String.valueOf(inRequest),
                                              Arrays.toString(inStatements),
                                              inCepSource,
                                              namespace),
                                strategy);
             return 0;
         }
-   }
+    }
+    /**
+     * Requests market data processed by the given complex event processor from the given source.
+     *
+     * @param inRequest a <code>String</code> value containing the representation of a {@link MarketDataRequest} to execute
+     * @param inStatements a <code>String[]</code> value containing the statements to pass to the
+     *   complex event processor.  The meaning of the statements varies according to the actual
+     *   event processor that handles them.
+     * @param inCepSource a <code>String</code> value containing the name of the complex event processor
+     *   to which to send the query request
+     * @return an <code>int</code> value containing the handle of the request or 0 if the request failed
+     */
+    protected final int requestProcessedMarketData(String inRequest,
+                                                   String[] inStatements,
+                                                   String inCepSource)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
+                                             String.valueOf(strategy),
+                                             strategy.getStatus()),
+                               strategy);
+            return 0;
+        }
+        if(inRequest == null) {
+            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
+                                             String.valueOf(strategy),
+                                             inRequest),
+                               strategy);
+            return 0;
+        }
+        if(inStatements == null ||
+           inStatements.length == 0 ||
+           inCepSource == null ||
+           inCepSource.isEmpty()) {
+            StrategyModule.log(LogEvent.warn(INVALID_CEP_REQUEST,
+                                             String.valueOf(strategy),
+                                             Arrays.toString(inStatements),
+                                             inCepSource,
+                                             strategy.getDefaultNamespace()),
+                               strategy);
+            return 0;
+        }
+        String namespace = strategy.getDefaultNamespace();
+        try {
+            // retrieve CEP default namespace
+            StrategyModule.log(LogEvent.debug(SUBMITTING_PROCESSED_MARKET_DATA_REQUEST,
+                                              String.valueOf(strategy),
+                                              String.valueOf(inRequest),
+                                              Arrays.toString(inStatements),
+                                              inCepSource,
+                                              namespace),
+                               strategy);
+            return strategy.getOutboundServicesProvider().requestProcessedMarketData(MarketDataRequest.newRequestFromString(inRequest),
+                                                                                     inStatements,
+                                                                                     inCepSource,
+                                                                                     namespace);
+        } catch (Exception e) {
+            StrategyModule.log(LogEvent.warn(COMBINED_DATA_REQUEST_FAILED,
+                                             e,
+                                             String.valueOf(inRequest),
+                                             Arrays.toString(inStatements),
+                                             inCepSource,
+                                             namespace),
+                               strategy);
+            return 0;
+        }
+    }
     /**
      * Cancels the given data request.
      *
@@ -993,21 +1021,6 @@ public abstract class AbstractRunningStrategy
                                           String.valueOf(strategy)),
                            strategy);
         return null;
-    }
-    /**
-     * Constructs a market data request from the given string of symbols.
-     *
-     * @param inSymbols a <code>String</code> value containing the list of symbols for which to request market data
-     * @param inProvider a <code>String</code> value containing the provider from which to request the data
-     * @return a <code>MarketDataRequest</code> value
-     * @throws Exception if an error occurs
-     */
-    private MarketDataRequest constructMarketDataRequest(String inSymbols,
-                                                         String inProvider)
-        throws Exception
-    {
-        return MarketDataRequest.newRequest().withSymbols(inSymbols).fromProvider(inProvider).withContent(TOP_OF_BOOK,
-                                                                                                          LATEST_TICK);
     }
     /**
      * Indicates if outgoing data can be sent.

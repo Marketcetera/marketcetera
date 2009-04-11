@@ -1,4 +1,5 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
+include_class "org.marketcetera.marketdata.MarketDataRequest"
 include_class "java.lang.Integer"
 
 class CombinedRequest < Strategy
@@ -19,11 +20,11 @@ class CombinedRequest < Strategy
       end
   end
   def on_ask ask
-      record_symbol ask.getSymbol, @asks
+      record_symbol ask.getSymbol.to_s, @asks
       transcribe_collection "ask", @asks
   end
   def on_bid bid
-      record_symbol bid.getSymbol, @bids
+      record_symbol bid.getSymbol.to_s, @bids
       transcribe_collection "bid", @bids
   end
   def record_symbol symbol, collection
@@ -43,13 +44,31 @@ class CombinedRequest < Strategy
   def do_combined_request
       symbols = get_property "symbols"
       marketDataSource = get_property "marketDataSource"
-      cepSource = get_property "cepSource"
       compressedStatements = get_property "statements"
-      if(compressedStatements != nil) 
-          statements = compressedStatements.split("#")
-          set_property("requestID", Integer.toString(request_processed_market_data(symbols, marketDataSource, statements.to_java(:string), cepSource)))
+      if(compressedStatements != nil)
+        statements = compressedStatements.split("#")
+        statementsToUse = statements.to_java(:string)
       else
-          set_property("requestID", Integer.toString(request_processed_market_data(symbols, marketDataSource, nil, cepSource)))
+        statementsToUse = nil
+      end 
+      cepSource = get_property "cepSource"
+      stringAPI = get_property("useStringAPI")
+      begin
+        if(stringAPI != nil)
+          set_property("requestID",
+                       Integer.toString(request_processed_market_data(MarketDataRequest.newRequest().withContent("LATEST_TICK,TOP_OF_BOOK").withSymbols(symbols).
+                         fromProvider(marketDataSource).to_s,
+                       statementsToUse,
+                       cepSource)))
+        else
+          set_property("requestID",
+                       Integer.toString(request_processed_market_data(MarketDataRequest.newRequest().withContent("LATEST_TICK,TOP_OF_BOOK").withSymbols(symbols).
+                         fromProvider(marketDataSource),
+                       statementsToUse,
+                       cepSource)))
+        end
+        rescue Exception => e
+          puts "#{ e } (#{ e.class })"
       end
   end  
 end

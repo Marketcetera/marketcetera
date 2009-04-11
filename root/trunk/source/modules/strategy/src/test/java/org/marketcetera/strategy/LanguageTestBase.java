@@ -542,17 +542,22 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
-        getMarketData(BogusFeedModuleFactory.IDENTIFIER,
-                      "GOOG,YHOO,MSFT,METC");
-        // strategy is now receiving data
-        Thread.sleep(5000);
-        // verify that bid/ask/trades have been received
-        // TODO substitute a market data provider that provides a known script of events
-        verifyPropertyNonNull("onAsk");
-        verifyPropertyNonNull("onBid");
-        // TODO almost certainly Bogus will provide a trade within 5 seconds, but it's nonetheless
-        //  not deterministic.  the fix is to implement the deterministic provider described above
-        verifyPropertyNonNull("onTrade");
+        for(int apiStringCounter=0;apiStringCounter<=0;apiStringCounter++) {
+            getMarketData(BogusFeedModuleFactory.IDENTIFIER,
+                          "GOOG,YHOO,MSFT,METC",
+                          (apiStringCounter == 0),
+                          new Properties());
+            // strategy is now receiving data
+            Thread.sleep(2500);
+            // verify that bid/ask/trades have been received
+            // TODO substitute a market data provider that provides a known script of events
+            verifyPropertyNonNull("onAsk");
+            verifyPropertyNonNull("onBid");
+            // TODO almost certainly Bogus will provide a trade within 5 seconds, but it's nonetheless
+            //  not deterministic.  the fix is to implement the deterministic provider described above
+            verifyPropertyNonNull("onTrade");
+            setPropertiesToNull();
+        }
     }
     /**
      * Tests a market data request from a market data provider that does not exist.
@@ -564,12 +569,17 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
-        getMarketData("provider-does-not-exist",
-                      "GOOG,YHOO,MSFT,METC");
-        // TODO same note as above: create a market data provider that deterministically produces data 
-        Thread.sleep(5000);
-        // the script does not fail, but no market data was provided
-        verifyNullProperties();
+        for(int apiStringCounter=0;apiStringCounter<=0;apiStringCounter++) {
+            verifyNullProperties();
+            getMarketData("provider-does-not-exist",
+                          "GOOG,YHOO,MSFT,METC",
+                          (apiStringCounter == 0),
+                          new Properties());
+            // TODO same note as above: create a market data provider that deterministically produces data 
+            Thread.sleep(2500);
+            // the script does not fail, but no market data was provided
+            verifyNullProperties();
+        }
     }
     /**
      * Tests a market data request from a market data provider that exists but has not been started.
@@ -581,20 +591,24 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
-        // stop the bogus provider
-        assertTrue(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
-        moduleManager.stop(BogusFeedModuleFactory.INSTANCE_URN);
-        assertFalse(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
-        // request market data from the stopped provider
-        getMarketData(BogusFeedModuleFactory.IDENTIFIER,
-                      "GOOG,YHOO,MSFT,METC");
-        // TODO same note as above: create a market data provider that deterministically produces data 
-        Thread.sleep(5000);
-        // the script does not fail, but no market data was provided
-        verifyNullProperties();
-        // start the bogus module again
-        moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
-        assertTrue(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
+        for(int apiStringCounter=0;apiStringCounter<=0;apiStringCounter++) {
+            // stop the bogus provider
+            assertTrue(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
+            moduleManager.stop(BogusFeedModuleFactory.INSTANCE_URN);
+            assertFalse(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
+            // request market data from the stopped provider
+            getMarketData(BogusFeedModuleFactory.IDENTIFIER,
+                          "GOOG,YHOO,MSFT,METC",
+                          (apiStringCounter == 0),
+                          new Properties());
+            // TODO same note as above: create a market data provider that deterministically produces data 
+            Thread.sleep(2500);
+            // the script does not fail, but no market data was provided
+            verifyNullProperties();
+            // start the bogus module again
+            moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
+            assertTrue(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
+        }
     }
     /**
      * Tests a strategy's ability to cancel a market data request.
@@ -606,36 +620,41 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
-        ModuleURN strategyURN = getMarketData(BogusFeedModuleFactory.IDENTIFIER,
-                                              "GOOG,YHOO,MSFT,METC");
-        // TODO same note as above: create a market data provider that deterministically produces data 
-        Thread.sleep(5000);
-        // market data request has produced some data, verify that now
-        verifyPropertyNonNull("onAsk");
-        verifyPropertyNonNull("onBid");
-        // TODO almost certainly Bogus will provide a trade within 5 seconds, but it's nonetheless
-        //  not deterministic.  the fix is to implement the deterministic provider described above
-//        verifyPropertyNonNull("onTrade");
-        // retrieve the id of the market data request
-        verifyPropertyNonNull("requestID");
-        Properties properties = AbstractRunningStrategy.getProperties();
-        long id = Long.parseLong(properties.getProperty("requestID"));
-        // reset properties to clear data received markers
-        setPropertiesToNull();
-        // set the indicators back in the properties to tell the script what to cancel
-        properties.setProperty("shouldCancel",
-                               "true");
-        properties.setProperty("requestID",
-                               Long.toString(id));
-        // execute the onCallback method in the running strategy to force the market data
-        //  request cancel
-        getRunningStrategy(strategyURN).getRunningStrategy().onCallback(this);
-        setPropertiesToNull();
-        // collect more market data, or, give it the chance to, anyway
-        Thread.sleep(5000);
-        // make sure no more data was received
-        verifyPropertyNull("onAsk");
-        verifyPropertyNull("onBid");
+        for(int apiStringCounter=0;apiStringCounter<=0;apiStringCounter++) {
+            ModuleURN strategyURN = getMarketData(BogusFeedModuleFactory.IDENTIFIER,
+                                                  "GOOG,YHOO,MSFT,METC",
+                                                  (apiStringCounter == 0),
+                                                  new Properties());
+            // TODO same note as above: create a market data provider that deterministically produces data 
+            Thread.sleep(5000);
+            // market data request has produced some data, verify that now
+            verifyPropertyNonNull("onAsk");
+            verifyPropertyNonNull("onBid");
+            // TODO almost certainly Bogus will provide a trade within 5 seconds, but it's nonetheless
+            //  not deterministic.  the fix is to implement the deterministic provider described above
+            verifyPropertyNonNull("onTrade");
+            // retrieve the id of the market data request
+            verifyPropertyNonNull("requestID");
+            Properties properties = AbstractRunningStrategy.getProperties();
+            long id = Long.parseLong(properties.getProperty("requestID"));
+            // reset properties to clear data received markers
+            setPropertiesToNull();
+            // set the indicators back in the properties to tell the script what to cancel
+            properties.setProperty("shouldCancel",
+            "true");
+            properties.setProperty("requestID",
+                                   Long.toString(id));
+            // execute the onCallback method in the running strategy to force the market data
+            //  request cancel
+            getRunningStrategy(strategyURN).getRunningStrategy().onCallback(this);
+            // collect more market data, or, give it the chance to, anyway
+            Thread.sleep(2500);
+            setPropertiesToNull();
+            Thread.sleep(2500);
+            // make sure no more data was received
+            verifyPropertyNull("onAsk");
+            verifyPropertyNull("onBid");
+        }
     }
     /**
      * Tests what happens when a strategy tries to cancel a non-existent market data request.
@@ -2429,84 +2448,102 @@ public abstract class LanguageTestBase
     {
         assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
         StrategyCoordinates strategy = getCombinedStrategy();
-        theStrategy = createStrategy(strategy.getName(),
-                                     getLanguage(),
-                                     strategy.getFile(),
-                                     null,
-                                     null,
-                                     null);
-        // these are the nominal test values
-        String symbols = "METC,ORCL,GOOG,YHOO";
-        String marketDataSource = BogusFeedModuleFactory.IDENTIFIER;
-        String compressedStatements = createConsolidatedCEPStatement(new String[] { "select * from ask where symbolAsString='METC'" });
-        String cepSource = "esper";
-        // set the default values
-        AbstractRunningStrategy.setProperty("symbols",
-                                            symbols);
-        AbstractRunningStrategy.setProperty("marketDataSource",
-                                            marketDataSource);
-        AbstractRunningStrategy.setProperty("statements",
-                                            compressedStatements);
-        AbstractRunningStrategy.setProperty("cepSource",
-                                            cepSource);
-        doProcessedMarketDataRequestVerification(false);
-        // begin testing
-        // test with null symbols
-        AbstractRunningStrategy.setProperty("symbols",
-                                            null);
-        executeProcessedMarketDataRequest(false);
-        // test with empty symbols string
-        AbstractRunningStrategy.setProperty("symbols",
-                                            "");
-        executeProcessedMarketDataRequest(false);
-        // done with negative symbols, replace the value
-        AbstractRunningStrategy.setProperty("symbols",
-                                            symbols);
-        // test null market data source
-        AbstractRunningStrategy.setProperty("marketDataSource",
-                                            null);
-        executeProcessedMarketDataRequest(false);
-        // test empty market data source
-        AbstractRunningStrategy.setProperty("marketDataSource",
-                                            "");
-        executeProcessedMarketDataRequest(false);
-        // done with negative market data source, replace the value
-        AbstractRunningStrategy.setProperty("marketDataSource",
-                                            marketDataSource);
-        // test null statements
-        AbstractRunningStrategy.setProperty("statements",
-                                            null);
-        executeProcessedMarketDataRequest(false);
-        // test zero statements
-        AbstractRunningStrategy.setProperty("statements",
-                                            createConsolidatedCEPStatement(new String[0]));
-        executeProcessedMarketDataRequest(false);
-        // done with negative statements, replace the value
-        AbstractRunningStrategy.setProperty("statements",
-                                            compressedStatements);
-        // test null cep source
-        AbstractRunningStrategy.setProperty("cepSource",
-                                            null);
-        executeProcessedMarketDataRequest(false);
-        // test empty cep source
-        AbstractRunningStrategy.setProperty("cepSource",
-                                            "");
-        executeProcessedMarketDataRequest(false);
-        // done with negative cep source, replace the value
-        AbstractRunningStrategy.setProperty("cepSource",
-                                            cepSource);
-        // turn off the md feed
-        moduleManager.stop(bogusDataFeedURN);
-        executeProcessedMarketDataRequest(false);
-        // start the md feed again
-        moduleManager.start(bogusDataFeedURN);
-        // next test returns some values
-        executeProcessedMarketDataRequest(true);
-        // test cancellation of a combined request
-        AbstractRunningStrategy.setProperty("cancelCep",
-                                            "true");
-        AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(theStrategy).getRunningStrategy();
-        runningStrategy.onCallback(this);
+        for(int apiCounter=0;apiCounter<=1;apiCounter++) {
+            boolean useStringAPI = (apiCounter == 1);
+            AbstractRunningStrategy.getProperties().clear();
+            if(useStringAPI) {
+                AbstractRunningStrategy.setProperty("useStringAPI",
+                                                    "true");
+            }
+            theStrategy = createStrategy(strategy.getName(),
+                                         getLanguage(),
+                                         strategy.getFile(),
+                                         null,
+                                         null,
+                                         null);
+            // these are the nominal test values
+            String symbols = "METC,ORCL,GOOG,YHOO";
+            String marketDataSource = BogusFeedModuleFactory.IDENTIFIER;
+            String compressedStatements = createConsolidatedCEPStatement(new String[] { "select * from ask where symbolAsString='METC'" });
+            String cepSource = "esper";
+            // set the default values
+            AbstractRunningStrategy.setProperty("symbols",
+                                                symbols);
+            AbstractRunningStrategy.setProperty("marketDataSource",
+                                                marketDataSource);
+            AbstractRunningStrategy.setProperty("statements",
+                                                compressedStatements);
+            AbstractRunningStrategy.setProperty("cepSource",
+                                                cepSource);
+            doProcessedMarketDataRequestVerification(false);
+            // begin testing
+            // test with null symbols
+            AbstractRunningStrategy.setProperty("symbols",
+                                                null);
+            executeProcessedMarketDataRequest(false,
+                                              false);
+            // test with empty symbols string
+            AbstractRunningStrategy.setProperty("symbols",
+                                                "");
+            executeProcessedMarketDataRequest(false,
+                                              false);
+            // done with negative symbols, replace the value
+            AbstractRunningStrategy.setProperty("symbols",
+                                                symbols);
+            // test null market data source
+            AbstractRunningStrategy.setProperty("marketDataSource",
+                                                null);
+            executeProcessedMarketDataRequest(false,
+                                              true);
+            // test empty market data source
+            AbstractRunningStrategy.setProperty("marketDataSource",
+                                                "");
+            executeProcessedMarketDataRequest(false,
+                                              true);
+            // done with negative market data source, replace the value
+            AbstractRunningStrategy.setProperty("marketDataSource",
+                                                marketDataSource);
+            // test null statements
+            AbstractRunningStrategy.setProperty("statements",
+                                                null);
+            executeProcessedMarketDataRequest(false,
+                                              true);
+            // test zero statements
+            AbstractRunningStrategy.setProperty("statements",
+                                                createConsolidatedCEPStatement(new String[0]));
+            executeProcessedMarketDataRequest(false,
+                                              true);
+            // done with negative statements, replace the value
+            AbstractRunningStrategy.setProperty("statements",
+                                                compressedStatements);
+            // test null cep source
+            AbstractRunningStrategy.setProperty("cepSource",
+                                                null);
+            executeProcessedMarketDataRequest(false,
+                                              true);
+            // test empty cep source
+            AbstractRunningStrategy.setProperty("cepSource",
+                                                "");
+            executeProcessedMarketDataRequest(false,
+                                              true);
+            // done with negative cep source, replace the value
+            AbstractRunningStrategy.setProperty("cepSource",
+                                                cepSource);
+            // turn off the md feed
+            moduleManager.stop(bogusDataFeedURN);
+            executeProcessedMarketDataRequest(false,
+                                              true);
+            // start the md feed again
+            moduleManager.start(bogusDataFeedURN);
+            // next test returns some values
+            executeProcessedMarketDataRequest(true,
+                                              true);
+            // test cancellation of a combined request
+            AbstractRunningStrategy.setProperty("cancelCep",
+                                                "true");
+            AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(theStrategy).getRunningStrategy();
+            runningStrategy.onCallback(this);
+        }
     }
     /**
      * Tests that starting or stopping a strategy succeeds or fails depending on the strategy state.
@@ -2699,6 +2736,26 @@ public abstract class LanguageTestBase
         verifyStrategyReady(strategyURN);
     }
     /**
+     * Tests the ability for a strategy to request and receive {@link org.marketcetera.marketdata.MarketDataRequest.Content#STATISTICS} data.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void statistics()
+        throws Exception
+    {
+        assumeTrue(!(Platform.isWindows() && getLanguage().equals(JAVA)));
+        verifyPropertyNull("onStatistics");
+        Properties parameters = new Properties();
+        parameters.setProperty("content",
+                               "STATISTICS");
+        getMarketData(BogusFeedModuleFactory.IDENTIFIER,
+                      "GOOG,YHOO,MSFT,METC",
+                      false,
+                      parameters);
+        verifyPropertyNonNull("onStatistics");
+    }
+    /**
      * Gets the language to use for this test.
      *
      * @return a <code>Language</code> value
@@ -2789,6 +2846,20 @@ public abstract class LanguageTestBase
      */
     protected abstract StrategyCoordinates getCombinedStrategy();
     /**
+     * Indicates the number of expected compiler warnings for the given strategy.
+     * 
+     * <p>Subclasses may override this method to assist calculations for tests that
+     * compute the number of expected messages.  The default implementation returns
+     * zero.
+     *
+     * @param inStrategy a <code>StrategyCoordinates</code> value
+     * @return an <code>int</code> value
+     */
+    protected int getExpectedCompilationWarningsFor(StrategyCoordinates inStrategy)
+    {
+        return 0;
+    }
+    /**
      * Executes a single interrupt test.
      *
      * @param inLoopOnStart a <code>boolean</code> value if the start loop should hang
@@ -2849,9 +2920,11 @@ public abstract class LanguageTestBase
      * Executes a single processed market data request test. 
      *
      * @param inSucceeds a <code>boolean</code> value indicating whether the test is expected to succeed or not
+     * @param inCanConstructRequest a <code>boolean</code> value indicating whether the request can be constructed or not
      * @throws Exception if an error occurs
      */
-    private void executeProcessedMarketDataRequest(boolean inSucceeds)
+    private void executeProcessedMarketDataRequest(boolean inSucceeds,
+                                                   boolean inCanConstructRequest)
         throws Exception
     {
         AbstractRunningStrategy strategy = (AbstractRunningStrategy)getRunningStrategy(theStrategy).getRunningStrategy();
@@ -2861,8 +2934,12 @@ public abstract class LanguageTestBase
         strategy.onOther(this);
         // retrieve the id returned by the request
         String requestIDString = AbstractRunningStrategy.getProperty("requestID");
-        assertNotNull("The request should have returned a value, either zero or non-zero, but null means the request didn't even happen",
-                      requestIDString);
+        if(inCanConstructRequest) {
+            assertNotNull("The request should have returned a value, either zero or non-zero, but null means the request didn't even happen",
+                          requestIDString);
+        } else {
+            assertNull(requestIDString);
+        }
         // wait until the agreed-upon number of events have arrived (if the strategy is going to work)
         if(inSucceeds) {
             assertTrue(Integer.parseInt(requestIDString) > 0);
@@ -2875,8 +2952,12 @@ public abstract class LanguageTestBase
                 }
             });
         } else {
-            assertEquals(requestIDString,
-                         "0");
+            if(inCanConstructRequest) {
+                assertEquals(requestIDString,
+                             "0");
+            } else {
+                assertNull(requestIDString);
+            }
         }
         // check results
         doProcessedMarketDataRequestVerification(inSucceeds);
@@ -3350,23 +3431,30 @@ public abstract class LanguageTestBase
      * @param inProvider a <code>String</code> value containing the instance identifier of a market data provider
      * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols for which to
      *   request market data
+     * @param inUseStringAPI a <code>boolean</code> value indicating whether to use the string version of the new market data API
+     * @param inParameters a <code>Properties</code> value containing parameters to pass to the strategy
      * @return a <code>ModuleURN</code> value containing the instance URN of the strategy guaranteed to be running
      * @throws Exception if an error occurs
      */
     private ModuleURN getMarketData(String inProvider,
-                                    String inSymbols)
+                                    String inSymbols,
+                                    boolean inUseStringAPI,
+                                    Properties inParameters)
         throws Exception
     {
         final StrategyCoordinates strategy = getStrategyCompiles();
-        final Properties parameters = new Properties();
-        parameters.setProperty("shouldRequestData",
+        inParameters.setProperty("shouldRequestData",
                                inProvider);
-        parameters.setProperty("symbols",
+        inParameters.setProperty("symbols",
                                inSymbols);
+        if(inUseStringAPI) {
+            inParameters.setProperty("useStringAPI",
+                                     "true");
+        }
         return createStrategy(strategy.getName(),
                               getLanguage(),
                               strategy.getFile(),
-                              parameters,
+                              inParameters,
                               null,
                               null);
     }
