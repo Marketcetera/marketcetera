@@ -1,5 +1,6 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.*;
 import static org.marketcetera.persist.JPQLConstants.*;
@@ -37,6 +38,8 @@ class MultiPersistentReportQuery extends MultipleEntityQuery {
         super.addWhereClauses(queryString);
         addFilterIfNotNull(queryString, PersistentReport.ATTRIBUTE_SENDING_TIME,
                 getSendingTimeAfterFilter(), true);
+        addFilterIfNotNull(queryString, PersistentReport.ATTRIBUTE_VIEWER,
+                getViewerFilter());
     }
     /**
      * Creates a query that returns all the instances.
@@ -64,7 +67,7 @@ class MultiPersistentReportQuery extends MultipleEntityQuery {
      * the reports.
      */
     List<PersistentReport> fetch() throws PersistenceException {
-        return fetchRemote(new MultiQueryProcessor<PersistentReport>(true));
+        return fetchRemote(new MultiQueryProcessor<PersistentReport>(false));
     }
 
     /**
@@ -88,6 +91,25 @@ class MultiPersistentReportQuery extends MultipleEntityQuery {
     }
 
     /**
+     * Gets the value of viewer filter. If specified, it only matches
+     * reports with the given viewer.
+     *
+     * @return the viewer filter value.
+     */
+    SimpleUser getViewerFilter() {
+        return mViewerFilter;
+    }
+
+    /**
+     * Sets the value of viewer filter.
+     *
+     * @param inViewerFilter the viewer filter value. Can be null.
+     */
+    void setViewerFilter(SimpleUser inViewerFilter) {
+        mViewerFilter = inViewerFilter;
+    }
+
+    /**
      * Deletes the instances matched by this query.
      *
      * @return the number of instances deleted.
@@ -105,6 +127,7 @@ class MultiPersistentReportQuery extends MultipleEntityQuery {
             new SimpleEntityOrder(PersistentReport.ATTRIBUTE_ID);
 
     public Date mSendingTimeAfterFilter;
+    public SimpleUser mViewerFilter;
     public static final String[] FETCH_JOIN_ATTRIBUTE_NAMES=new String[] {
         PersistentReport.ATTRIBUTE_ACTOR,
         PersistentReport.ATTRIBUTE_VIEWER,
