@@ -30,6 +30,11 @@ public class OrderEnvelope
     implements Serializable
 {
 
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
+
     // INSTANCE DATA.
 
     @XmlElementRefs(value={

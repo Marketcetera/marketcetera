@@ -378,33 +378,130 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         return mService.getNextOrderID(getServiceContext());
     }
 
+    /**
+     * Sets the time interval between heartbeats.
+     *
+     * @param heartbeatInterval The interval, in ms.
+     */
+
+    static void setHeartbeatInterval
+        (long heartbeatInterval)
+    {
+        sHeartbeatInterval=heartbeatInterval;
+    }
+
+    /**
+     * Returns the time interval between heartbeats.
+     *
+     * @return The interval, in ms.
+     */
+
+    static long getHeartbeatInterval()
+    {
+        return sHeartbeatInterval;
+    }
+
+    /**
+     * The 'heart' that produces heartbeats, keeping the connection to
+     * the ORS server alive.
+     */
+
+    private class Heart
+        extends Thread
+    {
+        private volatile boolean mMarked;
+
+        Heart()
+        {
+            super(Thread.currentThread().getThreadGroup(),
+                  Messages.HEARTBEAT_THREAD_NAME.getText());
+            setDaemon(true);
+        }
+
+        void markExit()
+        {
+            mMarked=true;
+        }
+
+        private boolean isMarked()
+        {
+            return mMarked;
+        }
+
+        @Override
+        public void run()
+        {
+            while (true) {
+                try {
+                    Thread.sleep(getHeartbeatInterval());
+                } catch (InterruptedException ex) {
+                    SLF4JLoggerProxy.debug
+                        (HEARTBEATS,"Stopped (interrupted)"); //$NON-NLS-1$
+                    markExit();
+                    return;
+                }
+                if (isMarked()) {
+                    SLF4JLoggerProxy.debug
+                        (HEARTBEATS,"Stopped (marked)"); //$NON-NLS-1$
+                    return;
+                }
+                try {
+                    mService.heartbeat(getServiceContext());
+                } catch (RemoteException ex) {
+                    SLF4JLoggerProxy.debug
+                        (HEARTBEATS,"Failed",ex); //$NON-NLS-1$
+                    exceptionThrown(new ConnectionException
+                                    (ex,Messages.ERROR_REMOTE_EXECUTION));
+                }
+                if (isMarked()) {
+                    SLF4JLoggerProxy.debug
+                        (HEARTBEATS,"Stopped (marked)"); //$NON-NLS-1$
+                    return;
+                }
+            }
+        }
+    }
+
+
     private void internalClose() {
         if (mContext == null) {
             return;
         }
         try {
-            mBrokerStatusListener.destroy();
+            if (mBrokerStatusListener!=null) {
+                mBrokerStatusListener.destroy();
+            }
         } catch (Exception ex) {
             SLF4JLoggerProxy.debug
                 (this,"Error when closing broker status listener",ex); //$NON-NLS-1$
             ExceptUtils.interrupt(ex);
         } finally {
             try {
-                mTradeMessageListener.destroy();
+                if (mTradeMessageListener!=null) {
+                    mTradeMessageListener.destroy();
+                }
             } catch (Exception ex) {
                 SLF4JLoggerProxy.debug
                     (this,"Error when closing trade message listener",ex); //$NON-NLS-1$
                 ExceptUtils.interrupt(ex);
             } finally {
+                if (mHeart!=null) {
+                    mHeart.markExit();
+                    mHeart.interrupt();
+                }
                 try {
-                    mServiceClient.logout();
+                    if (mServiceClient!=null) {
+                        mServiceClient.logout();
+                    }
                 } catch (Exception ex) {
                     SLF4JLoggerProxy.debug
                         (this,"Error when closing web service client",ex); //$NON-NLS-1$
                     ExceptUtils.interrupt(ex);
                 } finally {
                     try {
-                        mContext.close();
+                        if (mContext!=null) {
+                            mContext.close();
+                        }
                     } catch (Exception ex) {
                         SLF4JLoggerProxy.debug
                             (this,"Error when closing context",ex); //$NON-NLS-1$
@@ -465,6 +562,8 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             mServiceClient.login(mParameters.getUsername(),
                                  mParameters.getPassword());
             mService = mServiceClient.getService(Service.class);
+            mHeart = new Heart();
+            mHeart.start();
 
             JmsManager jmsMgr=new JmsManager
                 (cfg.getIncomingConnectionFactory(),
@@ -484,6 +583,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             idFactory.init();
             Factory.getInstance().setOrderIDFactory(idFactory);
         } catch (Throwable t) {
+            internalClose();
             ExceptUtils.interrupt(t);
             throw new ConnectionException(t, new I18NBoundMessage4P(
                     Messages.ERROR_CONNECT_TO_SERVER, mParameters.getURL(),
@@ -568,9 +668,16 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     private Map<UserID,UserInfo> mUserInfoCache=
         new HashMap<UserID,UserInfo>();
 
+    private static final long DEFAULT_HEARTBEAT_INTERVAL = 5000;
+    private static long sHeartbeatInterval=
+        DEFAULT_HEARTBEAT_INTERVAL;
+
     private org.marketcetera.util.ws.stateful.Client mServiceClient;
     private Service mService;
+    private Heart mHeart;
 
     private static final String TRAFFIC = ClientImpl.class.getPackage().
             getName() + ".traffic";  //$NON-NLS-1$
+    private static final String HEARTBEATS = ClientImpl.class.getPackage().
+            getName() + ".heartbeats";  //$NON-NLS-1$
 }
