@@ -221,7 +221,7 @@ public class AnalyzedMessage
         if (getValidationException()!=null) {
             stream.println();
             stream.println(Messages.VALIDATION_TITLE.getText());
-            stream.print(" ");
+            stream.print(" "); //$NON-NLS-1$
             stream.print(getValidationException().getLocalizedMessage());
         }
         printSection(stream,Messages.HEADER_TITLE,getHeader());
