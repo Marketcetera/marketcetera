@@ -200,12 +200,21 @@ public class MockServiceImpl
             }}).execute(context);
     }
 
+    @Override
+    public void heartbeat
+        (ClientContext context)
+        throws RemoteException
+    {
+        sHeartBeatCount++;
+    }
+
     static final String ID_PREFIX = "MyID";
 
     // Mocking interface.
 
     static ReportBaseImpl[] sReports = null;
     static boolean sActive = true;
+    static int sHeartBeatCount;
     static final Map<MSymbol, BigDecimal> POSITIONS;
     static {
         Map<MSymbol, BigDecimal> positions = new HashMap<MSymbol, BigDecimal>();

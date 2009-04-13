@@ -105,4 +105,6 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "log_client_not_init_cancel_request");   //$NON-NLS-1$
     static final I18NMessage0P LOG_UNABLE_FETCH_ID_SERVER =
             new I18NMessage0P(LOGGER, "log_unable_fetch_id_server");   //$NON-NLS-1$
+    static final I18NMessage0P HEARTBEAT_THREAD_NAME =
+            new I18NMessage0P(LOGGER, "heartbeat_thread_name");   //$NON-NLS-1$
 }

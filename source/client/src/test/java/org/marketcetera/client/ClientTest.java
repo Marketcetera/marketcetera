@@ -339,6 +339,28 @@ public class ClientTest {
                 getPositionsAsOf(new Date()));
     }
 
+    @Test(timeout=60000)
+    public void heartbeats()
+        throws Exception
+    {
+        ClientImpl.setHeartbeatInterval(2000);
+        initClient();
+        int count=MockServiceImpl.sHeartBeatCount;
+        while (true) {
+            // Keep trying, in case the heartbeat thread is
+            // experiencing starvation.
+            Thread.sleep(3000);
+            if (MockServiceImpl.sHeartBeatCount>count) {
+                break;
+            }
+        }
+
+        count=MockServiceImpl.sHeartBeatCount;
+        closeClient();
+        Thread.sleep(5000);
+        assertTrue(MockServiceImpl.sHeartBeatCount<=count+1);
+    }
+
     @Test
     public void sendOrderSingle() throws Exception {
         //Initialize a client

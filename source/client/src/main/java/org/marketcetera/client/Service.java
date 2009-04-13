@@ -163,4 +163,17 @@ public interface Service
     String getNextOrderID
         (@WebParam(name= "context")ClientContext context)
         throws RemoteException;
+
+    /**
+     * Sends a heartbeat to the server.
+     *
+     * @param context The context.
+     *
+     * @throws RemoteException Thrown if the operation cannot be
+     * completed.
+     */
+
+    void heartbeat
+        (@WebParam(name= "context")ClientContext context)
+        throws RemoteException;
 }
