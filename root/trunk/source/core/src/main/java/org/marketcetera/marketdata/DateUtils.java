@@ -15,7 +15,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  * Offers date translation utilities for {@link MarketDataRequest} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRequest.java 10390 2009-03-07 04:53:17Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")

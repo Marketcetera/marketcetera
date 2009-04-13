@@ -5,9 +5,7 @@ import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
-import quickfix.Message;
 import quickfix.field.LastPx;
-import quickfix.field.MsgType;
 
 /**
  * @author tlerios@marketcetera.com
