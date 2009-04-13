@@ -33,7 +33,7 @@ public class SessionManager<T>
      * The maximum sleep interval between reaper scans, in ms.
      */
 
-    public static final long MAX_REAPER_SLEEP=
+    public static final long MAX_SCAN_INTERVAL=
         60*1000;
 
     /**
@@ -79,7 +79,7 @@ public class SessionManager<T>
                   Messages.REAPER_THREAD_NAME.getText());
             setDaemon(true);
             mScanInterval=Math.min
-                (MAX_REAPER_SLEEP,(long)(getLifespan()*0.05));
+                (MAX_SCAN_INTERVAL,(long)(getLifespan()*0.05));
         }
 
         /**
