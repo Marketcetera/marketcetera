@@ -28,14 +28,14 @@ import quickfix.SessionID;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class Broker
 {
 
     // CLASS DATA
 
     private static final String HEARTBEAT_CATEGORY=
-        Broker.class.getName()+".HEARTBEATS";
+        Broker.class.getName()+".HEARTBEATS"; //$NON-NLS-1$
 
 
     // INSTANCE DATA.

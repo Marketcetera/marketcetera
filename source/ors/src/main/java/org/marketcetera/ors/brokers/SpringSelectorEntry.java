@@ -14,7 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class SpringSelectorEntry
     implements InitializingBean
 {
