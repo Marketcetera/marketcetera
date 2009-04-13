@@ -12,7 +12,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ReportPersistenceException extends I18NException {
     /**
      * Create an instance.

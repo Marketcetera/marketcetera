@@ -1,17 +1,17 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.MSymbol;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.ReportBaseImpl;
-import org.marketcetera.trade.UserID;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
-
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.math.BigDecimal;
+import org.marketcetera.ors.Principals;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -21,24 +21,32 @@ import java.math.BigDecimal;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ReportHistoryServices {
     /**
-     * Returns all the reports received after the supplied date-time value.
+     * Returns all the reports received after the supplied date-time
+     * value, and which are visible to the given user.
      *
+     * @param inUser the user making the query. Cannot be null.
      * @param inDate the date-time value. Cannot be null.
      *
-     * @return the reports that were received after the date-time value.
+     * @return the reports that were received after the date-time
+     * value, and which are visible to the given user.
      *
      * @throws PersistenceException if there were persistence errors
      * fetching the reports.
      * @throws ReportPersistenceException if the data retrieved had
      * unexpected errors.
      */
-    public ReportBaseImpl[] getReportsSince(Date inDate)
+    public ReportBaseImpl[] getReportsSince
+        (SimpleUser inUser,
+         Date inDate)
             throws PersistenceException, ReportPersistenceException {
         MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
         query.setSendingTimeAfterFilter(inDate);
+        if (!inUser.isSuperuser()) {
+            query.setViewerFilter(inUser);
+        }
         query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
 
         List<PersistentReport> reportList = query.fetch();
@@ -51,9 +59,11 @@ public class ReportHistoryServices {
     }
 
     /**
-     * Returns the position of the symbol based on all reports received for
-     * it before the supplied date.
+     * Returns the position of the symbol based on all reports
+     * received for it before the supplied date, and which are visible
+     * to the given user.
      *
+     * @param inUser the user making the query. Cannot be null.
      * @param inDate the date to compare with all the reports. Only the reports
      * that were received prior to this date will be used in this calculation.
      * Cannot be null.
@@ -65,14 +75,21 @@ public class ReportHistoryServices {
      * @throws PersistenceException if there were errors retrieving the symbol
      * position
      */
-    public BigDecimal getPositionAsOf(Date inDate, MSymbol inSymbol)
-            throws PersistenceException {
-        return ExecutionReportSummary.getPositionForSymbol(inDate, inSymbol);
+    public BigDecimal getPositionAsOf
+        (SimpleUser inUser,
+         Date inDate,
+         MSymbol inSymbol)
+        throws PersistenceException
+    {
+        return ExecutionReportSummary.getPositionForSymbol
+            (inUser,inDate,inSymbol);
     }
     /**
-     * Returns the positions of all the symbol based on all reports received for
-     * them before the supplied date.
+     * Returns the positions of all the symbol based on all reports
+     * received for them before the supplied date, and which are
+     * visible to the given user.
      *
+     * @param inUser the user making the query. Cannot be null.
      * @param inDate the date to compare with all the reports. Only the reports
      * that were received prior to this date will be used in this calculation.
      * Cannot be null.
@@ -82,23 +99,44 @@ public class ReportHistoryServices {
      * @throws PersistenceException if there were errors retrieving the symbol
      * position
      */
-    public Map<MSymbol, BigDecimal> getPositionsAsOf(final Date inDate)
-            throws PersistenceException {
-        return ExecutionReportSummary.getPositionsAsOf(inDate);
+    public Map<MSymbol, BigDecimal> getPositionsAsOf
+        (SimpleUser inUser,
+         Date inDate)
+        throws PersistenceException
+    {
+        return ExecutionReportSummary.getPositionsAsOf(inUser,inDate);
     }
 
     /**
-     * Saves the supplied report to the database. Returns the ID of
-     * the regular user who may view this report.
+     * Saves the supplied report to the database.
      *
      * @param inReport the report to be saved. Cannot be null.
-     *
-     * @return The viewer ID. It may be null.
      *
      * @throws org.marketcetera.persist.PersistenceException if there
      * were errors saving the report.
      */
-    public UserID save(ReportBase inReport) throws PersistenceException {
-        return PersistentReport.save(inReport);
+    public void save(ReportBase inReport) throws PersistenceException {
+        PersistentReport.save(inReport);
+    }
+
+    /**
+     * Returns the principals associated with the report with given
+     * order ID.
+     *
+     * @param orderID The order ID.
+     *
+     * @return The principals. If no report with the given order ID
+     * exists, {@link Principals#UNKNOWN} is returned, and no
+     * exception is thrown.
+     *
+     * @throws PersistenceException Thrown if there were errors
+     * accessing the report.
+     */
+
+    public Principals getPrincipals
+        (OrderID orderID)
+        throws PersistenceException
+    {
+        return PersistentReport.getPrincipals(orderID);
     }
 }

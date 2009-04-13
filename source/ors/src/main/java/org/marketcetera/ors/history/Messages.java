@@ -28,7 +28,7 @@ public interface Messages {
 
     static final I18NMessage2P LOG_ROOT_ID_NOT_FOUND =
             new I18NMessage2P(LOGGER, "log_root_id_not_found");  //$NON-NLS-1$
-   static final I18NMessage1P ERROR_RECONSTITUTE_FIX_MSG =
+    static final I18NMessage1P ERROR_RECONSTITUTE_FIX_MSG =
             new I18NMessage1P(LOGGER, "error_reconstitute_fix_msg");   //$NON-NLS-1$
 
 }

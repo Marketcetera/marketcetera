@@ -1,5 +1,6 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
 
@@ -12,6 +13,7 @@ import org.marketcetera.event.HasFIXMessage;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 import quickfix.Message;
 import quickfix.InvalidMessage;
@@ -29,25 +31,65 @@ import quickfix.InvalidMessage;
 @ClassVersion("$Id$")
 @Entity
 @Table(name = "reports")
+
+@NamedQuery(name = "forOrderID",
+    query = "select e from PersistentReport e " +
+            "where e.orderID = :orderID")
 class PersistentReport extends EntityBase {
     /**
-     * Saves the supplied report to the database. Returns the ID of
-     * the regular user who may view this report.
+     * Saves the supplied report to the database.
      *
      * @param inReport The report to be saved.
-     *
-     * @return The viewer ID. It may be null.
      *
      * @throws PersistenceException if there were errors saving the
      * report to the database.
      */
-    static UserID save(ReportBase inReport) throws PersistenceException {
+    static void save(ReportBase inReport) throws PersistenceException {
         PersistentReport report = new PersistentReport(inReport);
         report.saveRemote(null);
         ReportBaseImpl.assignReportID((ReportBaseImpl) inReport,
                 new ReportID(report.getId()));
-        return report.getViewerUserID();
     }
+
+    /**
+     * Returns the principals associated with the report with given
+     * order ID.
+     *
+     * @param orderID The order ID.
+     *
+     * @return The principals. If no report with the given order ID
+     * exists, {@link Principals#UNKNOWN} is returned, and no
+     * exception is thrown.
+     *
+     * @throws PersistenceException if there were errors accessing the
+     * report.
+     */
+
+    static Principals getPrincipals
+        (final OrderID orderID)
+        throws PersistenceException 
+    {
+        return executeRemote(new Transaction<Principals>() {
+            private static final long serialVersionUID=1L;
+
+            @Override
+            public Principals execute
+                (EntityManager em,
+                 PersistContext context)
+            {
+                Query query=em.createNamedQuery("forOrderID"); //$NON-NLS-1$
+                query.setParameter("orderID",orderID); //$NON-NLS-1$
+                List<?> list=query.getResultList();
+                if (list.isEmpty()) {
+                    return Principals.UNKNOWN;
+                }
+                PersistentReport report=(PersistentReport)(list.get(0));
+                return new Principals(report.getActorID(),
+                                      report.getViewerID());
+            }
+        },null);
+    }
+
     /**
      * Creates an instance, given a report.
      *
@@ -66,11 +108,15 @@ class PersistentReport extends EntityBase {
             setFixMessage(((HasFIXMessage) inReport).getMessage().toString());
         }
         setOriginator(inReport.getOriginator());
+        setOrderID(inReport.getOrderID());
         if (inReport.getActorID()!=null) {
             setActor(new SingleSimpleUserQuery
                      (inReport.getActorID().getValue()).fetch());
         }
-        setViewer(getActor()); // TODO.
+        if (inReport.getViewerID()!=null) {
+            setViewer(new SingleSimpleUserQuery
+                      (inReport.getViewerID().getValue()).fetch());
+        }
         if(inReport instanceof ExecutionReport) {
             mReportType = ReportType.ExecutionReport;
         } else if (inReport instanceof OrderCancelReject) {
@@ -102,11 +148,11 @@ class PersistentReport extends EntityBase {
                 case ExecutionReport:
                     returnValue =  Factory.getInstance().createExecutionReport(
                             fixMessage, getBrokerID(),
-                            getOriginator(), getActorUserID(), getViewerUserID());
+                            getOriginator(), getActorID(), getViewerID());
                     break;
                 case CancelReject:
                     returnValue =  Factory.getInstance().createOrderCancelReject(
-                            fixMessage, getBrokerID(), getOriginator(), getActorUserID(), getViewerUserID());
+                            fixMessage, getBrokerID(), getOriginator(), getActorID(), getViewerID());
                     break;
                 default:
                     //You added new report types but forgot to update the code
@@ -148,6 +194,18 @@ class PersistentReport extends EntityBase {
         mOriginator = inOriginator;
     }
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="value",
+                    column = @Column(name = "orderID", nullable = false))})
+    OrderID getOrderID() {
+        return mOrderID;
+    }
+
+    private void setOrderID(OrderID inOrderID) {
+        mOrderID = inOrderID;
+    }
+
     @ManyToOne
     public SimpleUser getActor() {
         return mActor;
@@ -158,11 +216,11 @@ class PersistentReport extends EntityBase {
     }
 
     @Transient
-    private UserID getActorUserID() {
-        if (getActor()!=null) {
-            return getActor().getUserID();
+    UserID getActorID() {
+        if (getActor()==null) {
+            return null;
         }
-        return null;
+        return getActor().getUserID();
     }
 
     @ManyToOne
@@ -175,11 +233,11 @@ class PersistentReport extends EntityBase {
     }
 
     @Transient
-    private UserID getViewerUserID() {
-        if (getViewer()!=null) {
-            return getViewer().getUserID();
+    UserID getViewerID() {
+        if (getViewer()==null) {
+            return null;
         }
-        return null;
+        return getViewer().getUserID();
     }
 
     @Transient
@@ -190,7 +248,7 @@ class PersistentReport extends EntityBase {
     private void setBrokerID(BrokerID inBrokerID) {
         mBrokerID = inBrokerID;
     }
-    @Column(name = "brokerID", nullable = false)
+    @Column(name = "brokerID")
     private String getBrokerIDAsString() {
         return getBrokerID() == null
                 ? null
@@ -254,6 +312,7 @@ class PersistentReport extends EntityBase {
     static final String ENTITY_NAME = PersistentReport.class.getSimpleName();
 
     private Originator mOriginator;
+    private OrderID mOrderID;
     private SimpleUser mActor; 
     private SimpleUser mViewer; 
     private BrokerID mBrokerID;

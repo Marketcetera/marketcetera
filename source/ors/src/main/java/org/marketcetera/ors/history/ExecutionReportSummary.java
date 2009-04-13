@@ -1,10 +1,12 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderStatus;
@@ -50,6 +52,7 @@ import java.util.HashMap;
             "from execreports e " +
             "where e.symbol = :symbol " +
             "and e.sendingTime <= :sendingTime " +
+            "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
             "(select max(s.id) from execreports s where s.rootID = e.rootID)",
             resultSetMapping = "positionForSymbol"),
@@ -57,6 +60,7 @@ import java.util.HashMap;
             "e.symbol as symbol, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
             "from execreports e " +
             "where e.sendingTime <= :sendingTime " +
+            "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
             "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
             "group by e.symbol having position <> 0",
@@ -66,12 +70,15 @@ import java.util.HashMap;
 class ExecutionReportSummary extends EntityBase {
 
     /**
-     * Gets the current aggregate position for the symbol based on execution
-     * reports received before the supplied time.
+     * Gets the current aggregate position for the symbol based on
+     * execution reports received before the supplied time, and which
+     * are visible to the given user.
+     *
      * <p>
      * Buy trades result in positive positions. All other kinds of trades
      * result in negative positions.
      *
+     * @param inUser the user making the query. Cannot be null.
      * @param inDate the time. execution reports with sending time values less
      * than this time are included in this calculation.
      * @param inSymbol the symbol for which this position needs to be computed
@@ -81,9 +88,12 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position.
      */
-    static BigDecimal getPositionForSymbol(final Date inDate,
-                                           final MSymbol inSymbol)
-            throws PersistenceException {
+    static BigDecimal getPositionForSymbol
+        (final SimpleUser inUser,
+         final Date inDate,
+         final MSymbol inSymbol)
+        throws PersistenceException
+    {
         BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
             private static final long serialVersionUID = 1L;
 
@@ -91,6 +101,9 @@ class ExecutionReportSummary extends EntityBase {
             public BigDecimal execute(EntityManager em, PersistContext context) {
                 Query query = em.createNamedQuery(
                         "positionForSymbol");  //$NON-NLS-1$
+
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
                 query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
                 query.setParameter("symbol", inSymbol.getFullSymbol());  //$NON-NLS-1$
                 query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
@@ -102,12 +115,14 @@ class ExecutionReportSummary extends EntityBase {
 
     }
     /**
-     * Gets the current aggregate positions for all the symbols based on execution
-     * reports received before the supplied time.
-     * <p>
-     * Buy trades result in positive positions. All other kinds of trades
-     * result in negative positions.
+     * Gets the current aggregate positions for all the symbols based
+     * on execution reports received before the supplied time, and
+     * which are visible to the given user.
      *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
      * @param inDate the time. execution reports with sending time values less
      * than this time are included in this calculation.
      *
@@ -116,8 +131,11 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position.
      */
-    static Map<MSymbol, BigDecimal> getPositionsAsOf(final Date inDate)
-            throws PersistenceException {
+    static Map<MSymbol, BigDecimal> getPositionsAsOf
+        (final SimpleUser inUser,
+         final Date inDate)
+        throws PersistenceException
+    {
         return executeRemote(new Transaction<Map<MSymbol, BigDecimal>>() {
             private static final long serialVersionUID = 1L;
 
@@ -126,12 +144,14 @@ class ExecutionReportSummary extends EntityBase {
                                                     PersistContext context) {
                 Query query = em.createNamedQuery(
                         "allPositions");  //$NON-NLS-1$
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
                 query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
                 query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
                         TemporalType.TIMESTAMP);
                 HashMap<MSymbol, BigDecimal> map =
                         new HashMap<MSymbol, BigDecimal>();
-                List list = query.getResultList();
+                List<?> list = query.getResultList();
                 Object[] columns;
                 for(Object o: list) {
                     columns = (Object[]) o;
@@ -167,6 +187,7 @@ class ExecutionReportSummary extends EntityBase {
         mLastPrice = inReport.getLastPrice();
         mOrderStatus = inReport.getOrderStatus();
         mSendingTime = inReport.getSendingTime();
+        mViewer = inSavedReport.getViewer();
     }
 
     /**
@@ -195,7 +216,7 @@ class ExecutionReportSummary extends EntityBase {
             //fetch the rootID from the original order
             Query query = em.createNamedQuery("rootIDForOrderID");  //$NON-NLS-1$
             query.setParameter("orderID", getOrigOrderID());  //$NON-NLS-1$
-            List list = query.getResultList();
+            List<?> list = query.getResultList();
             if (!list.isEmpty()) {
                 setRootID((OrderID) list.get(0));
             } else {
@@ -324,6 +345,23 @@ class ExecutionReportSummary extends EntityBase {
         mSendingTime = inSendingTime;
     }
 
+    @ManyToOne
+    public SimpleUser getViewer() {
+        return mViewer;
+    }
+
+    private void setViewer(SimpleUser inViewer) {
+        mViewer = inViewer;
+    }
+
+    @Transient
+    UserID getViewerID() {
+        if (getViewer()==null) {
+            return null;
+        }
+        return getViewer().getUserID();
+    }
+
     /**
      * Defined to get JPA to work.
      */
@@ -341,7 +379,12 @@ class ExecutionReportSummary extends EntityBase {
     private BigDecimal mLastPrice;
     private OrderStatus mOrderStatus;
     private Date mSendingTime;
+    private SimpleUser mViewer; 
     private PersistentReport mReport;
+    /**
+     * The attribute viewer used in JPQL queries
+     */
+    static final String ATTRIBUTE_VIEWER = "viewer";  //$NON-NLS-1$
     /**
      * The entity name as is used in various JPQL Queries
      */

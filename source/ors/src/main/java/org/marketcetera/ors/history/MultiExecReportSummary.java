@@ -70,6 +70,8 @@ class MultiExecReportSummary extends MultipleEntityQuery {
         return FETCH_JOIN_ATTRIBUTE_NAMES;
     }
 
-    public static final String[] FETCH_JOIN_ATTRIBUTE_NAMES= new String[]{};
+    public static final String[] FETCH_JOIN_ATTRIBUTE_NAMES= new String[]{
+        ExecutionReportSummary.ATTRIBUTE_VIEWER,
+    };
     private static final long serialVersionUID = 1L;
 }
