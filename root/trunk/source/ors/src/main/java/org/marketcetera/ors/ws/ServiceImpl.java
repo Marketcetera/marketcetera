@@ -2,7 +2,6 @@ package org.marketcetera.ors.ws;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
 import org.marketcetera.client.Service;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
@@ -13,19 +12,20 @@ import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.persist.NoResultException;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.RemoteCaller;
+import org.marketcetera.util.ws.stateful.RemoteRunner;
 import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
-import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
+import org.marketcetera.util.ws.wrappers.RemoteException;
 
 /**
  * The implementation of the application's web services.
@@ -37,7 +37,7 @@ import org.marketcetera.util.ws.wrappers.MapWrapper;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ServiceImpl
     extends ServiceBaseImpl<ClientSession>
     implements Service
@@ -117,38 +117,42 @@ public class ServiceImpl
         return getBrokers().getStatus();
     }
 
-
     private UserInfo getUserInfoImpl
         (UserID id)
         throws PersistenceException
-    { // TODO. (add tests)
+    {
         SimpleUser u=(new SingleSimpleUserQuery(id.getValue())).fetch();
         return new UserInfo
             (u.getName(),u.getUserID(),u.isActive(),u.isSuperuser());
     }
 
     private ReportBaseImpl[] getReportsSinceImpl
-        (Date date)
+        (ClientSession session,
+         Date date)
         throws ReportPersistenceException,
                PersistenceException
     {
-        return getHistoryServices().getReportsSince(date);
+        return getHistoryServices().getReportsSince
+            (session.getUser(),date);
     }
 
     private BigDecimal getPositionAsOfImpl
-        (Date date,
+        (ClientSession session,
+         Date date,
          MSymbol symbol)
         throws PersistenceException
     {
-        return getHistoryServices().getPositionAsOf(date,symbol);
+        return getHistoryServices().getPositionAsOf
+            (session.getUser(),date,symbol);
     }
 
     private MapWrapper<MSymbol,BigDecimal> getPositionsAsOfImpl
-        (Date date)
+        (ClientSession session,
+         Date date)
         throws PersistenceException
     {
         return new MapWrapper<MSymbol, BigDecimal>(
-                getHistoryServices().getPositionsAsOf(date));
+                getHistoryServices().getPositionsAsOf(session.getUser(),date));
     }
 
     private String getNextOrderIDImpl()
@@ -209,7 +213,7 @@ public class ServiceImpl
                 throws ReportPersistenceException,
                        PersistenceException
             {
-                return getReportsSinceImpl(date);
+                return getReportsSinceImpl(sessionHolder.getSession(),date);
             }}).execute(context);
     }
 
@@ -228,7 +232,8 @@ public class ServiceImpl
                  SessionHolder<ClientSession> sessionHolder)
                 throws PersistenceException
             {
-                return getPositionAsOfImpl(date,symbol);
+                return getPositionAsOfImpl
+                    (sessionHolder.getSession(),date,symbol);
             }}).execute(context);
     }
 
@@ -246,7 +251,7 @@ public class ServiceImpl
                  SessionHolder<ClientSession> sessionHolder)
                 throws PersistenceException
             {
-                return getPositionsAsOfImpl(date);
+                return getPositionsAsOfImpl(sessionHolder.getSession(),date);
             }}).execute(context);
     }
 
@@ -264,6 +269,26 @@ public class ServiceImpl
                 throws CoreException
             {
                 return getNextOrderIDImpl();
+            }}).execute(context);
+    }
+
+    @Override
+    public void heartbeat
+        (ClientContext context)
+        throws RemoteException
+    {
+        (new RemoteRunner<ClientSession>
+         (getSessionManager()) {
+            @Override
+            protected void run
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+            {
+                // The RemoteRunner takes care of marking the session
+                // as active.
+                SLF4JLoggerProxy.debug
+                    (this,"Received heartbeat for: {}", //$NON-NLS-1$
+                     context.getSessionId());
             }}).execute(context);
     }
 }

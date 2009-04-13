@@ -2,6 +2,7 @@ package org.marketcetera.ors.ws;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -15,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Messages
 {
 
@@ -43,4 +44,6 @@ public interface Messages
         new I18NMessage1P(LOGGER,"cannot_create_reply_topic"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_RETRIEVE_USER=
         new I18NMessage1P(LOGGER,"cannot_retrieve_user"); //$NON-NLS-1$
+    static final I18NMessage2P CLIENT_SESSION_STRING=
+        new I18NMessage2P(LOGGER,"client_session_string"); //$NON-NLS-1$
 }
