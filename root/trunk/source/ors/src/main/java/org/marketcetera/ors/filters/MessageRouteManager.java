@@ -20,7 +20,7 @@ import quickfix.field.TargetSubID;
  * $Id$
  * @author gmiller
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MessageRouteManager {
 
 

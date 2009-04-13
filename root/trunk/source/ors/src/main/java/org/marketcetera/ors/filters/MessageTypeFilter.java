@@ -15,7 +15,7 @@ import quickfix.field.MsgType;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MessageTypeFilter
     implements MessageFilter
 {

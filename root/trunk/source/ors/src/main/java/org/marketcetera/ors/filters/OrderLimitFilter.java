@@ -13,7 +13,7 @@ import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.Symbol;
 
-@ClassVersion("$Id$$") //$NON-NLS-1$
+@ClassVersion("$Id$$")
 public class OrderLimitFilter
     implements OrderFilter
 {

@@ -16,7 +16,7 @@ import quickfix.Message;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MessageModifierManager {
     private List<MessageModifier> messageModifiers;
     private FIXMessageFactory msgFactory;

@@ -13,7 +13,7 @@ import quickfix.Message;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface OrderFilter
 {
     void assertAccepted
