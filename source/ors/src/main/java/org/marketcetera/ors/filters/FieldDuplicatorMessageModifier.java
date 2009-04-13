@@ -35,7 +35,7 @@ import quickfix.StringField;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class FieldDuplicatorMessageModifier implements MessageModifier {
     private int destField;
     private int sourceField;

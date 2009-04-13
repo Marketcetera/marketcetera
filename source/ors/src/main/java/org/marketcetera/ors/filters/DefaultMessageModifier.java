@@ -23,7 +23,7 @@ import quickfix.field.MsgType;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class DefaultMessageModifier implements MessageModifier {
     private static final String ADMIN_MODIFIER_KEY = "ADMIN"; //$NON-NLS-1$
     private static final String APP_MODIFIER_KEY = "APP"; //$NON-NLS-1$

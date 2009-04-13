@@ -15,7 +15,7 @@ import quickfix.field.TransactTime;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class TransactionTimeInsertMessageModifier implements MessageModifier
 {
     @Override

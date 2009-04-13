@@ -18,7 +18,7 @@ import quickfix.field.Symbol;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class OptionSymbolSplitterMessageModifier implements MessageModifier {
 
     @Override
