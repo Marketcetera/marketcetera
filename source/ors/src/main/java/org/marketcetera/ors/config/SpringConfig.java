@@ -28,7 +28,7 @@ import org.springframework.context.ApplicationContext;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class SpringConfig
     implements InitializingBean
 {

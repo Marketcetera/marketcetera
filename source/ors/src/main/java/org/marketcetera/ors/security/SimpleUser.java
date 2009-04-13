@@ -27,13 +27,13 @@ import java.io.UnsupportedEncodingException;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 @Entity
 @Table(
-        name = "ors_users", //$NON-NLS-1$
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})} //$NON-NLS-1$
+        name = "ors_users",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})}
 )
-@AttributeOverride(name = "name", column = @Column(nullable = false)) //$NON-NLS-1$
+@AttributeOverride(name = "name", column = @Column(nullable = false))
 public class SimpleUser extends NDEntityBase {
     private static final long serialVersionUID = -244334398553751199L;
 

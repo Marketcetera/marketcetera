@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MultiSimpleUserQuery extends MultiNDQuery {
     private static final long serialVersionUID = -4259099618197174176L;
 
@@ -65,10 +65,10 @@ public class MultiSimpleUserQuery extends MultiNDQuery {
     }
 
     /**
-     * A filter when applied, filters the users based on the
+     * A filter which, when applied, filters the users based on the
      * value of their {@link SimpleUser#isActive()} flag.
      *
-     * @return the enabled flag filter.
+     * @return the active flag filter.
      */
     public Boolean getActiveFilter() {
         return activeFilter;
