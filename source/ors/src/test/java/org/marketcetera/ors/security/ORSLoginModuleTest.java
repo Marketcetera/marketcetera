@@ -32,7 +32,7 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ORSLoginModuleTest extends TestCaseBase {
     private static SimpleUser user;
     private static char[] password;

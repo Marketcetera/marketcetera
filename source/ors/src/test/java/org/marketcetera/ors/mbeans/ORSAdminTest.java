@@ -19,7 +19,7 @@ import quickfix.field.Password;
  */
 
 @org.junit.Ignore
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ORSAdminTest extends FIXVersionedTestCase {
     public ORSAdminTest(String inName, FIXVersion version) {
         super(inName, version);
@@ -31,7 +31,7 @@ public class ORSAdminTest extends FIXVersionedTestCase {
 
     public void testSendPasswordReset() throws Exception {
         NullQuickFIXSender qfSender = new NullQuickFIXSender();
-        ORSAdmin admin = new ORSAdmin(null,qfSender, new InMemoryIDFactory(100));
+        ORSAdmin admin = new ORSAdmin(null,qfSender, new InMemoryIDFactory(100),null);
         admin.sendPasswordReset("metc1", "old", "new"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         assertEquals(1, qfSender.getCapturedMessages().size());
         Message msg = qfSender.getCapturedMessages().get(0);

@@ -30,7 +30,7 @@ import java.math.BigDecimal;
  * @version $Id$
  */
 @org.junit.Ignore
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class OrderRoutingSystemTest extends FIXVersionedTestCase
 {
     private static ClassPathXmlApplicationContext appContext = null;

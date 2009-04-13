@@ -47,7 +47,7 @@ import quickfix.SocketInitiator;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class OrderRoutingSystem
     extends ApplicationBase
 {
@@ -188,7 +188,7 @@ public class OrderRoutingSystem
         MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
         (new JmxExporter(mbeanServer)).export(initiator);
         mbeanServer.registerMBean
-            (new ORSAdmin(brokers,qSender,localIdFactory),
+            (new ORSAdmin(brokers,qSender,localIdFactory,userManager),
              new ObjectName(JMX_NAME));
     }
 

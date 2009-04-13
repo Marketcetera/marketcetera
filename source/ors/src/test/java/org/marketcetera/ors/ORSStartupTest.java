@@ -15,7 +15,7 @@ import quickfix.field.Symbol;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ORSStartupTest extends TestCase {
 
     private boolean failed = false;

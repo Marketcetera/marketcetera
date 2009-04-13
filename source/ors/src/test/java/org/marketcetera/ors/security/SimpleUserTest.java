@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
     /**
      * Validates the update behavior of name and password

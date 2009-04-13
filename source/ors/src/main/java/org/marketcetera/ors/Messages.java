@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Messages
 {
     /**
@@ -145,6 +145,6 @@ public interface Messages
         new I18NMessage1P(LOGGER,"rp_persist_error"); //$NON-NLS-1$
     static final I18NMessage2P RP_ADD_TO_MAP_FAILED=
         new I18NMessage2P(LOGGER,"rp_add_to_map_failed"); //$NON-NLS-1$
-    static final I18NMessage1P RP_GET_FROM_MAP_FAILED=
-        new I18NMessage1P(LOGGER,"rp_get_from_map_failed"); //$NON-NLS-1$
+    static final I18NMessage1P RP_GET_FROM_DB_FAILED=
+        new I18NMessage1P(LOGGER,"rp_get_from_db_failed"); //$NON-NLS-1$
 }

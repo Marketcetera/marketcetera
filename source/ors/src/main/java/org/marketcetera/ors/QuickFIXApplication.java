@@ -10,7 +10,6 @@ import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.jms.core.JmsOperations;
 import quickfix.Application;
@@ -29,7 +28,8 @@ import quickfix.field.Text;
 import quickfix.field.TradSesStatus;
 
 /**
- * A handler for incoming trade requests (orders).
+ * The QuickFIX/J intermediary, intercepting messages from/to the
+ * QuickFIX/J counterparties and the ORS.
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
@@ -38,7 +38,7 @@ import quickfix.field.TradSesStatus;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class QuickFIXApplication
     implements Application
 {
@@ -46,7 +46,7 @@ public class QuickFIXApplication
     // CLASS DATA
 
     private static final String HEARTBEAT_CATEGORY=
-        QuickFIXApplication.class.getName()+".HEARTBEATS";
+        QuickFIXApplication.class.getName()+".HEARTBEATS"; //$NON-NLS-1$
 
 
     // INSTANCE DATA.
@@ -164,18 +164,20 @@ public class QuickFIXApplication
 
         // Convert reply to FIX Agnostic messsage.
 
+        Principals principals=getPersister().getPrincipals(msg);
         TradeMessage reply=null;
         try {
             reply=FIXConverter.fromQMessage
                 (msg,originator,b.getBrokerID(),
-                 (admin?null:getPersister().getActorID(msg)),null); // TODO(MT): set viewer.
-            if (reply==null) {
-                Messages.QF_REPORT_TYPE_UNSUPPORTED.warn
-                    (getCategory(msg),msg,b.toString());
-            }
+                 (admin?null:principals.getActorID()),
+                 admin?null:principals.getViewerID());
         } catch (MessageCreationException ex) {
             Messages.QF_REPORT_FAILED.error
                 (getCategory(msg),ex,msg,b.toString());
+        }
+        if (reply==null) {
+            Messages.QF_REPORT_TYPE_UNSUPPORTED.warn
+                (getCategory(msg),msg,b.toString());
         }
 
         // If reply could not be packaged in FIX Agnostic format, we
@@ -187,9 +189,9 @@ public class QuickFIXApplication
 
         // Persist and send reply.
         
-        UserID viewerID=getPersister().persistReply(reply);
+        getPersister().persistReply(reply);
         Messages.QF_SENDING_REPLY.info(getCategory(msg),reply);
-        getUserManager().convertAndSend(reply,viewerID);
+        getUserManager().convertAndSend(reply);
     }
 
 
