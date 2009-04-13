@@ -43,34 +43,43 @@ public final class ComparableAssert
     {
         String content=null;
         if (c.compareTo(c)!=0) {
-            content="'"+c+"' unequal to self";
+            content="'"+c+"' unequal to self"; //$NON-NLS-1$ //$NON-NLS-2$
         } else if (cEqual.compareTo(cEqual)!=0) {
-            content="'"+cEqual+"' unequal to self";
+            content="'"+cEqual+"' unequal to self"; //$NON-NLS-1$ //$NON-NLS-2$
         } else if (cGreater.compareTo(cGreater)!=0) {
-            content="'"+cGreater+"' unequal to self";
+            content="'"+cGreater+ //$NON-NLS-1$
+                "' unequal to self"; //$NON-NLS-1$
         } else if (c.compareTo(cEqual)!=0) {
-            content="'"+c+"' unequal to '"+cEqual+"'";
+            content="'"+c+"' unequal to '"+ //$NON-NLS-1$ //$NON-NLS-2$
+                cEqual+"'"; //$NON-NLS-1$
         } else if (cEqual.compareTo(c)!=0) {
-            content="'"+cEqual+"' unequal to '"+c+"'";
+            content="'"+cEqual+"' unequal to '"+ //$NON-NLS-1$ //$NON-NLS-2$
+                c+"'"; //$NON-NLS-1$
         } else if (cEqual==c) {
-            content="'"+cEqual+"' same as '"+c+"'";
+            content="'"+cEqual+"' same as '"+ //$NON-NLS-1$ //$NON-NLS-2$
+                c+"'"; //$NON-NLS-1$
         } else if (c.compareTo(cGreater)>=0) {
-            content="'"+c+"' no less than '"+cGreater+"'";
+            content="'"+c+"' no less than '"+ //$NON-NLS-1$ //$NON-NLS-2$
+                cGreater+"'"; //$NON-NLS-1$
         } else if (cEqual.compareTo(cGreater)>=0) {
-            content="'"+cEqual+"' no less than '"+cGreater+"'";
+            content="'"+cEqual+"' no less than '"+ //$NON-NLS-1$ //$NON-NLS-2$
+                cGreater+"'"; //$NON-NLS-1$
         } else if (cGreater.compareTo(c)<=0) {
-            content="'"+cGreater+"' no more than '"+c+"'";
+            content="'"+cGreater+ //$NON-NLS-1$
+                "' no more than '"+c+"'"; //$NON-NLS-1$ //$NON-NLS-2$
         } else if (cGreater.compareTo(cEqual)<=0) {
-            content="'"+cGreater+"' no more than '"+cEqual+"'";
+            content="'"+cGreater+ //$NON-NLS-1$
+                "' no more than '"+cEqual+"'"; //$NON-NLS-1$ //$NON-NLS-2$
         } else {
             try {
                 c.compareTo(null);
-                content="null argument did not fail";
+                content="null argument did not fail"; //$NON-NLS-1$
             } catch (NullPointerException ex) {
                 if ((nullMessage!=null) &&
                     !nullMessage.equals(ex.getMessage())) {
-                    content="expected message '"+nullMessage+
-                        "' does not match actual '"+ex.getMessage()+"'";
+                    content="expected message '"+nullMessage+ //$NON-NLS-1$
+                        "' does not match actual '"+ //$NON-NLS-1$
+                        ex.getMessage()+"'"; //$NON-NLS-1$
                 }
             }
         }
@@ -78,7 +87,7 @@ public final class ComparableAssert
             return;
         }
         if (message!=null) {
-            content=message+" "+content;
+            content=message+" "+content; //$NON-NLS-1$
         }
         fail(content);
     }

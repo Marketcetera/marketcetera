@@ -30,28 +30,29 @@ public class TestCaseBase
      */
 
     protected static final String DIR_ROOT=
-        "src"+File.separator+"test"+File.separator+"sample_data";
+        "src"+File.separator+"test"+ //$NON-NLS-1$ //$NON-NLS-2$
+        File.separator+"sample_data"; //$NON-NLS-1$
 
     /**
      * The root directory for target files.
      */
 
     protected static final String DIR_TARGET=
-        "target";
+        "target"; //$NON-NLS-1$
 
     /**
      * The root directory for class files.
      */
 
     protected static final String DIR_CLASSES=
-        DIR_TARGET+File.separator+"classes";
+        DIR_TARGET+File.separator+"classes"; //$NON-NLS-1$
 
     /**
      * The root directory for test class files.
      */
 
     protected static final String DIR_TEST_CLASSES=
-        DIR_TARGET+File.separator+"test-classes";
+        DIR_TARGET+File.separator+"test-classes"; //$NON-NLS-1$
 
 
     // INSTANCE DATA.
@@ -172,7 +173,7 @@ public class TestCaseBase
         try {
             event=getAppender().getEvents().getLast();
         } catch (NoSuchElementException ex) {
-            fail("List is empty");
+            fail("List is empty"); //$NON-NLS-1$
         }
         assertEvent(event,level,logger,message,location);
     }

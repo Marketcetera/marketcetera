@@ -44,18 +44,21 @@ public final class CollectionAssert
         }
         String content=null;
         if (expected==null) {
-            content="expected array is null but actual is not";
+            content="expected array is null but actual is not"; //$NON-NLS-1$
         } else if (actual==null) {
-            content="actual array is null but expected is not";
+            content="actual array is null but expected is not"; //$NON-NLS-1$
         } else if (expected.getClass()!=actual.getClass()) {
-            content="expected array class is "+expected.getClass().getName()+
-                " but actual array class is "+actual.getClass().getName();
+            content="expected array class is "+ //$NON-NLS-1$
+                expected.getClass().getName()+
+                " but actual array class is "+ //$NON-NLS-1$
+                actual.getClass().getName();
         } else {
             Bag expectedBag=new HashBag(Arrays.asList(expected));
             Bag actualBag=new HashBag(Arrays.asList(actual));
             for (Object e:expectedBag) {
                 if (!actualBag.remove(e,1)) {
-                    content="actual is missing '"+e+"'";
+                    content="actual is missing '"+ //$NON-NLS-1$
+                        e+"'"; //$NON-NLS-1$
                     break;
                 }
             }
@@ -63,12 +66,13 @@ public final class CollectionAssert
                 if (actualBag.size()==0) {
                     return;
                 }
-                content="actual contains extra elements such as "+
+                content=
+                    "actual contains extra elements such as "+ //$NON-NLS-1$
                     actualBag.iterator().next();
             }
         }
         if (message!=null) {
-            content=message+" "+content;
+            content=message+" "+content; //$NON-NLS-1$
         }
         fail(content);
     }
