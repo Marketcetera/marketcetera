@@ -1,18 +1,24 @@
 package org.marketcetera.ors;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.ors.ws.ClientSession;
-import org.marketcetera.quickfix.IQuickFIXSender;
+import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.SessionId;
 
 /**
- * A sender of replies to clients.
+ * A manager of the set of connected users (active sessions). It also
+ * routes ORS replies to ORS clients.
  *
  * @author tlerios@marketcetera.com
  * @since $Release$
@@ -21,97 +27,271 @@ import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class UserManager
 {
 
     // INSTANCE DATA.
 
     private final Map<SessionId,ClientSession> mSessionIDMap;
-    private final Set<ClientSession> mSuperSessions;
-    private final Map<UserID,Set<ClientSession>> mNSUserIDMap;
+    private final Map<UserID,Set<ClientSession>> mUserIDMap;
+    private final Set<UserID> mRUserIDs;
+    private final Set<UserID> mSUserIDs;
 
 
     // CONSTRUCTORS.
 
+    /**
+     * Creates a new user manager.
+     */
+
     public UserManager()
     {
         mSessionIDMap=new ConcurrentHashMap<SessionId,ClientSession>();
-        mSuperSessions=new CopyOnWriteArraySet<ClientSession>();
-        mNSUserIDMap=new ConcurrentHashMap<UserID,Set<ClientSession>>();
+        mUserIDMap=new ConcurrentHashMap<UserID,Set<ClientSession>>();
+        mRUserIDs=new CopyOnWriteArraySet<UserID>();
+        mSUserIDs=new CopyOnWriteArraySet<UserID>();
     }
 
 
     // INSTANCE METHODS.
+
+    /**
+     * Returns the receiver's map of session IDs to client
+     * sessions. Sessions remain in this map for as long as a session
+     * is active.
+     *
+     * @return The map.
+     */
 
     private Map<SessionId,ClientSession> getSessionIDMap()
     {
         return mSessionIDMap;
     }
 
-    private Set<ClientSession> getSuperSessions()
+    /**
+     * Returns the receiver's map of user IDs to (one or more)
+     * sessions. Individual sessions are removed when they become
+     * inactive; map entries remain in this map for as long as at
+     * least one session is active for a user.
+     *
+     * @return The map.
+     */
+
+    private Map<UserID,Set<ClientSession>> getUserIDMap()
     {
-        return mSuperSessions;
+        return mUserIDMap;
     }
 
-    private Map<UserID,Set<ClientSession>> getNSUserIDMap()
+    /**
+     * Returns the receiver's set of non-superuser user IDs. A user
+     * belongs in this set for as long as they are a non-superuser
+     * with one or more active sessions.
+     *
+     * @return The set.
+     */
+
+    private Set<UserID> getRUserIDs()
     {
-        return mNSUserIDMap;
+        return mRUserIDs;
     }
+
+    /**
+     * Returns the receiver's set of superuser user IDs. A user
+     * belongs in this set for as long as they are a superuser with
+     * one or more active sessions.
+     *
+     * @return The set.
+     */
+
+    private Set<UserID> getSUserIDs()
+    {
+        return mSUserIDs;
+    }
+
+    /**
+     * Updates the receiver's data structures to reflect the current
+     * user definitions in the database.
+     */
+
+    public synchronized void sync()
+    {
+        Set<UserID> allUserIDs=new HashSet<UserID>();
+        allUserIDs.addAll(getSUserIDs());
+        allUserIDs.addAll(getRUserIDs());
+        for (UserID userID:allUserIDs) {
+            // Assume user is nonexistent/inactive.
+            SimpleUser user=null;
+            try {
+                user=new SingleSimpleUserQuery(userID.getValue()).fetch();
+            } catch (PersistenceException ex) {
+                // Ignored: user remains null.
+            }
+            if ((user!=null) && (!user.isActive())) {
+                user=null;
+            }
+            getSUserIDs().remove(userID);
+            getRUserIDs().remove(userID);
+
+            // User is active: add back to the correct set.
+
+            if (user!=null) {
+                if (user.isSuperuser()) {
+                    getSUserIDs().add(userID);
+                } else {
+                    getRUserIDs().add(userID);
+                }
+                continue;
+            }
+
+            // User is nonexistent/inactive: remove all their sessions.
+
+            Set<ClientSession> sessions=getUserIDMap().get(userID);
+            for (ClientSession s:sessions) {
+                getSessionIDMap().remove(s.getSessionId());
+            }
+            getUserIDMap().remove(userID);
+        }
+        logStatus();
+    }
+
+    /**
+     * Adds the given session to the receiver.
+     *
+     * @param session The session.
+     */
 
     public synchronized void addSession
         (ClientSession session)
     {
         getSessionIDMap().put(session.getSessionId(),session);
-        if (session.getUser().isSuperuser()) {
-            getSuperSessions().add(session);
-        } else {
-            UserID id=session.getUser().getUserID();
-            Set<ClientSession> sessions=getNSUserIDMap().get(id);
-            if (sessions==null) {
-                sessions=new CopyOnWriteArraySet<ClientSession>();
-                getNSUserIDMap().put(id,sessions);
-            }
-            sessions.add(session);
+        SimpleUser user=session.getUser();
+        UserID userID=user.getUserID();
+        Set<ClientSession> sessions=getUserIDMap().get(userID);
+        if (sessions==null) {
+            sessions=new CopyOnWriteArraySet<ClientSession>();
+            getUserIDMap().put(userID,sessions);
         }
+        sessions.add(session);
+        if (user.isSuperuser()) {
+            // Remove from non-superusers, in case user record changed.
+            getRUserIDs().remove(userID);
+            // Add to superusers.
+            getSUserIDs().add(userID);
+        } else {
+            // Add to non-superusers.
+            getRUserIDs().add(userID);
+            // Remove from superusers, in case user record changed.
+            getSUserIDs().remove(userID);
+        }
+        logStatus();
     }      
+
+    /**
+     * Removes the given session from the receiver.
+     *
+     * @param session The session.
+     */
 
     public synchronized void removedSession
         (ClientSession session)
     {
         getSessionIDMap().remove(session.getSessionId());
-        getSuperSessions().remove(session);
-        UserID id=session.getUser().getUserID();
-        Set<ClientSession> sessions=getNSUserIDMap().get(id);
-        if (sessions==null) {
-            return;
-        }
-        sessions.remove(sessions);
+        UserID userID=session.getUser().getUserID();
+        Set<ClientSession> sessions=getUserIDMap().get(userID);
+        sessions.remove(session);
         if (sessions.size()==0) {
-            getNSUserIDMap().remove(id);
+            getUserIDMap().remove(userID);
+            getSUserIDs().remove(userID);
+            getRUserIDs().remove(userID);
         }
+        logStatus();
     }      
 
-    public UserID getActorID
-        (SessionId id)
+    /**
+     * Returns the ID of the user associated with the given session ID.
+     *
+     * @param sessionId The session ID.
+     *
+     * @return The user ID. It may be null if the session has expired.
+     */
+
+    public UserID getSessionUserID
+        (SessionId sessionId)
     {
-        return getSessionIDMap().get(id).getUser().getUserID();
+        ClientSession session=getSessionIDMap().get(sessionId);
+        if (session==null) {
+            return null;
+        }
+        return session.getUser().getUserID();
     }
 
+    /**
+     * Sends the given message to the appropriate sessions managed by
+     * the receiver.
+     *
+     * @param msg The message.
+     */
+
     public void convertAndSend
-        (TradeMessage message,
-         UserID viewer)
+        (TradeMessage msg)
     {
-        if (viewer!=null) {
-            Set<ClientSession> sessions=getNSUserIDMap().get(viewer);
+        
+        // Sessions for non-superuser viewer (if the viewer is a
+        // superuser, they get the message via the next section
+        // below).
+
+        UserID viewerID=null;
+        if (msg instanceof ReportBase) {
+            viewerID=((ReportBase)msg).getViewerID();
+        }
+        if ((viewerID!=null) && getRUserIDs().contains(viewerID)) {
+            Set<ClientSession> sessions=getUserIDMap().get(viewerID);
             if (sessions!=null) {
                 for (ClientSession s:sessions) {
-                    s.getReplyTopic().convertAndSend(message);
+                    s.getReplyTopic().convertAndSend(msg);
                 }
             }
         }
-        for (ClientSession s:getSuperSessions()) {
-            s.getReplyTopic().convertAndSend(message);
+
+        // Sessions for all superuser viewers.
+
+        for (UserID userID:getSUserIDs()) {
+            Set<ClientSession> sessions=getUserIDMap().get(userID);
+            if (sessions!=null) {
+                for (ClientSession s:sessions) {
+                    s.getReplyTopic().convertAndSend(msg);
+                }
+            }
+        }
+    }
+
+    /**
+     * Logs the receiver's status.
+     */
+
+    public void logStatus()
+    {
+        SLF4JLoggerProxy.debug(this,"Active sessions"); //$NON-NLS-1$
+        for (ClientSession e:getSessionIDMap().values()) {
+            SLF4JLoggerProxy.debug(this," {}",e); //$NON-NLS-1$
+        }
+        SLF4JLoggerProxy.debug(this,"User ID map"); //$NON-NLS-1$
+        for (Map.Entry<UserID,Set<ClientSession>> e:
+             getUserIDMap().entrySet()) {
+            SLF4JLoggerProxy.debug
+                (this," User ID: {}",e.getKey()); //$NON-NLS-1$
+            for (ClientSession s:e.getValue()) {
+                SLF4JLoggerProxy.debug(this,"  {}",s); //$NON-NLS-1$
+            }
+        }
+        SLF4JLoggerProxy.debug(this,"Non-superusers"); //$NON-NLS-1$
+        for (UserID e:getRUserIDs()) {
+            SLF4JLoggerProxy.debug(this," {}",e); //$NON-NLS-1$
+        }
+        SLF4JLoggerProxy.debug(this,"Superusers"); //$NON-NLS-1$
+        for (UserID e:getSUserIDs()) {
+            SLF4JLoggerProxy.debug(this," {}",e); //$NON-NLS-1$
         }
     }
 }

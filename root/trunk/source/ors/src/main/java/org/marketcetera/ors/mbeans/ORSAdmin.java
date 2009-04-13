@@ -3,6 +3,7 @@ package org.marketcetera.ors.mbeans;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.ors.UserManager;
 import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.quickfix.IQuickFIXSender;
@@ -21,21 +22,25 @@ import quickfix.field.*;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ORSAdmin implements ORSAdminMBean {
     private Brokers brokers;
     protected IQuickFIXSender quickFIXSender;
     private IDFactory idFactory;
+    private UserManager userManager;
 
     public ORSAdmin(Brokers brokers,
                     IQuickFIXSender qfSender,
-                    IDFactory idFactory)
+                    IDFactory idFactory,
+                    UserManager userManager)
             throws NoMoreIDsException, ClassNotFoundException {
         this.brokers = brokers;
         quickFIXSender = qfSender;
         this.idFactory = idFactory;
+        this.userManager = userManager;
     }
 
+    @Override
     public void sendPasswordReset(String broker, String oldPassword, String newPassword) {
         Broker b=brokers.getBroker(new BrokerID(broker));
         SLF4JLoggerProxy.debug(this, "Trade session halted, resetting password"); //$NON-NLS-1$
@@ -56,6 +61,12 @@ public class ORSAdmin implements ORSAdminMBean {
         } catch (SessionNotFound sessionNotFound) {
             sessionNotFound.printStackTrace();
         }
+    }
+
+    @Override
+    public void syncSessions()
+    {
+        userManager.sync();
     }
 
     private String getNextID() {

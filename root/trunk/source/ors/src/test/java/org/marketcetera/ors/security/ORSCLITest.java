@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ORSCLITest extends PersistTestBase {
     private static final String ENCODING = "UTF-8"; //$NON-NLS-1$
     private static ORSAdminCLI instance;

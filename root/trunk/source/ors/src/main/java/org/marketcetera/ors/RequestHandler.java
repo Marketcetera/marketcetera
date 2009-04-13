@@ -70,7 +70,7 @@ import quickfix.field.Text;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class RequestHandler 
     implements ReceiveOnlyHandler<OrderEnvelope>
 {
@@ -267,7 +267,7 @@ public class RequestHandler
         Message qMsg=null;
         try {
             qMsg=FIXConverter.toQMessage
-                (getMsgFactory(),FIXVersion.FIX_SYSTEM,(Order)msg);
+                (getMsgFactory(),FIXVersion.FIX_SYSTEM,msg);
         } catch (I18NException ex2) {
             Messages.RH_REJ_CONVERSION_FAILED.warn(this,ex2,msg);
         }
@@ -418,20 +418,20 @@ public class RequestHandler
                 throw new I18NException(Messages.RH_NULL_MESSAGE_ENVELOPE);
             }
 
-            // Reject invalid sessions.
-
-            actorID=getUserManager().getActorID(msgEnv.getSessionId());
-            if (actorID==null) {
-                throw new I18NException
-                    (new I18NBoundMessage1P
-                     (Messages.RH_SESSION_EXPIRED,msgEnv.getSessionId()));
-            }
-
             // Reject null messages.
 
             msg=msgEnv.getOrder();
             if (msg==null) {
                 throw new I18NException(Messages.RH_NULL_MESSAGE);
+            }
+
+            // Reject invalid sessions.
+
+            actorID=getUserManager().getSessionUserID(msgEnv.getSessionId());
+            if (actorID==null) {
+                throw new I18NException
+                    (new I18NBoundMessage1P
+                     (Messages.RH_SESSION_EXPIRED,msgEnv.getSessionId()));
             }
 
             // Reject messages of unsupported types.
@@ -469,6 +469,7 @@ public class RequestHandler
             } catch (I18NException ex) {
                 throw new I18NException(ex,Messages.RH_CONVERSION_FAILED);
             }
+            getPersister().addOutgoingOrder(qMsg,actorID);
             b.logMessage(qMsg);
 
             // Ensure broker is available.
@@ -508,7 +509,6 @@ public class RequestHandler
 
             // Send message to QuickFIX/J.
 
-            getPersister().addActorID(qMsg,actorID);
             try {
                 getSender().sendToTarget(qMsg,b.getSessionID());
             } catch (SessionNotFound ex) {
@@ -549,10 +549,12 @@ public class RequestHandler
 
         // Convert reply to FIX Agnostic messsage.
 
+        Principals principals=getPersister().getPrincipals(qMsgReply);
         TradeMessage reply=null;
         try {
             reply=FIXConverter.fromQMessage
-                (qMsgReply,Originator.Server,bID,actorID,null); // TODO(MT): set viewer.
+                (qMsgReply,Originator.Server,bID,
+                 principals.getActorID(),principals.getViewerID());
             if (reply==null) {
                 Messages.RH_REPORT_TYPE_UNSUPPORTED.warn(this,qMsgReply);
             }
@@ -569,8 +571,8 @@ public class RequestHandler
 
         // Persist and send reply.
         
-        UserID viewerID=getPersister().persistReply(reply);
+        getPersister().persistReply(reply);
         Messages.RH_SENDING_REPLY.info(this,reply);
-        getUserManager().convertAndSend(reply,viewerID);
+        getUserManager().convertAndSend(reply);
 	}
 }

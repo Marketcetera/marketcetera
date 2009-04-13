@@ -33,7 +33,7 @@ import java.util.HashSet;
  */
 
 @org.junit.Ignore
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     public QuickFIXApplicationTest(String inName, FIXVersion version) {
         super(inName, version);

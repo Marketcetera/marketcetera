@@ -26,7 +26,7 @@ import java.util.HashSet;
  * @version $Id$
  */
 @org.junit.Ignore
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class RequestHandlerTest
     extends FIXVersionedTestCase
 {
@@ -79,7 +79,7 @@ public class RequestHandlerTest
     }
 
     /** Bug #416 - make sure sending time changes between messages */
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"}) //$NON-NLS-1$
+    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public void testSendingTimeChanges() throws Exception {
         /*
         RequestHandler handler = new MyRequestHandler();
@@ -226,7 +226,7 @@ public class RequestHandlerTest
      * cancel report
      * @throws Exception
      */
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public void testHandleEvents() throws Exception
     {
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
@@ -308,7 +308,7 @@ public class RequestHandlerTest
     }
 
     /** brain-dead: make sure that incoming orders just get placed on the sink */
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public void testHandleFIXMessages() throws Exception
     {
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();

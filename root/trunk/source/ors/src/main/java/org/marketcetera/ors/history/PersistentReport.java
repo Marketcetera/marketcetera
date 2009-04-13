@@ -241,7 +241,7 @@ class PersistentReport extends EntityBase {
     }
 
     @Transient
-    private BrokerID getBrokerID() {
+    BrokerID getBrokerID() {
         return mBrokerID;
     }
 
