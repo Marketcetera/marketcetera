@@ -22,7 +22,7 @@ public class MemoryAppender
 
     // INSTANCE DATA.
 
-    private PatternLayout mLayout=new PatternLayout("%C");
+    private PatternLayout mLayout=new PatternLayout("%C"); //$NON-NLS-1$
     private LinkedList<LoggingEvent> mEvents=new LinkedList<LoggingEvent>();
 
 

@@ -43,13 +43,14 @@ public final class SerializableAssert
             if (ObjectUtils.equals(o,oNew)) {
                 return;
             }
-            content="expected object is '"+o+"' actual is '"+oNew+"'";
+            content="expected object is '"+o+ //$NON-NLS-1$
+                "' actual is '"+oNew+"'"; //$NON-NLS-1$ //$NON-NLS-2$
         } catch (SerializationException ex) {
-            content="de/serialization failed";
+            content="de/serialization failed"; //$NON-NLS-1$
             cause=ex;
         }
         if (message!=null) {
-            content=message+" "+content;
+            content=message+" "+content; //$NON-NLS-1$
         }
         AssertionError error=new AssertionError(content);
         if (cause!=null) {

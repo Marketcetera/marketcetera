@@ -41,16 +41,19 @@ public final class RegExAssert
         }
         String content=null;
         if (pattern==null) {
-            content="pattern is null and does not match '"+string+"'";
+            content="pattern is null and does not match '"+ //$NON-NLS-1$
+                string+"'"; //$NON-NLS-1$
         } else if (string==null) {
-            content="pattern '"+pattern+"' does not match null";
+            content="pattern '"+pattern+ //$NON-NLS-1$
+                "' does not match null"; //$NON-NLS-1$
         } else if (Pattern.matches(pattern,string)) {
             return;
         } else {
-            content="pattern '"+pattern+"' does not match '"+string+"'";
+            content="pattern '"+pattern+ //$NON-NLS-1$
+                "' does not match '"+string+"'"; //$NON-NLS-1$ //$NON-NLS-2$
         }
         if (message!=null) {
-            content=message+" "+content;
+            content=message+" "+content; //$NON-NLS-1$
         }
         fail(content);
     }

@@ -29,7 +29,7 @@ public final class UnicodeData
      */
 
     public static final String SPACE=
-        " ";
+        " "; //$NON-NLS-1$
 
     /**
      * The space character, as a character array.
@@ -93,7 +93,7 @@ public final class UnicodeData
      */
 
     public static final String HELLO_EN=
-        "Hello";
+        "Hello"; //$NON-NLS-1$
 
     /**
      * "Hello" in English, as a character array.
@@ -182,7 +182,7 @@ public final class UnicodeData
      */
 
     public static final String LANGUAGE_NO=
-        "Spr\u00E5k";
+        "Spr\u00E5k"; //$NON-NLS-1$
 
     /**
      * "Language" in Norwegian, as a character array.
@@ -273,7 +273,7 @@ public final class UnicodeData
      */
 
     public static final String HELLO_GR=
-        "\u0393\u0395\u0399\u0391 \u03A3\u039F\u03A5";
+        "\u0393\u0395\u0399\u0391 \u03A3\u039F\u03A5"; //$NON-NLS-1$
 
     /**
      * "HELLO" in Greek, as a character array.
@@ -381,7 +381,7 @@ public final class UnicodeData
      */
 
     public static final String HOUSE_AR=
-        "\u0645\u0646\u0632\u0644";
+        "\u0645\u0646\u0632\u0644"; //$NON-NLS-1$
 
     /**
      * "house" in Arabic, as a character array.
@@ -464,7 +464,7 @@ public final class UnicodeData
      */
 
     public static final String GOODBYE_JA=
-        "\u3055\u3088\u3046\u306A\u3089";
+        "\u3055\u3088\u3046\u306A\u3089"; //$NON-NLS-1$
 
     /**
      * "goodbye" in Japanese, as a character array.
@@ -553,7 +553,7 @@ public final class UnicodeData
      */
 
     public static final String GOATS_LNB=
-        "\uD800\uDC88 \uD800\uDC89";
+        "\uD800\uDC88 \uD800\uDC89"; //$NON-NLS-1$
 
     /**
      * The Linear B goat ideograms, as a character array.
@@ -631,7 +631,7 @@ public final class UnicodeData
      */
 
     public static final String G_CLEF_MSC=
-        "\uD834\uDD1E";
+        "\uD834\uDD1E"; //$NON-NLS-1$
 
     /**
      * The G-clef, as a character array.
@@ -816,7 +816,7 @@ public final class UnicodeData
      */
 
     public static final String INVALID=
-        "\uD800";
+        "\uD800"; //$NON-NLS-1$
 
     /**
      * An invalid string, comprising an isolated 16-bit surrogate, as
@@ -895,7 +895,7 @@ public final class UnicodeData
             }
             out.close();
         } catch (IOException ex) {
-            fail("Cannot merge arrays");
+            fail("Cannot merge arrays"); //$NON-NLS-1$
         }
         return out.toByteArray();
     }
@@ -943,7 +943,7 @@ public final class UnicodeData
             }
             out.close();
         } catch (IOException ex) {
-            fail("Cannot merge arrays");
+            fail("Cannot merge arrays"); //$NON-NLS-1$
         }
         return out.toCharArray();
     }

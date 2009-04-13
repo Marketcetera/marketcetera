@@ -41,39 +41,46 @@ public final class EqualityAssert
     {
         String content=null;
         if (!o.equals(o)) {
-            content="'"+o+"' unequal to self";
+            content="'"+o+"' unequal to self"; //$NON-NLS-1$ //$NON-NLS-2$
         } else if (!o.equals(oEqual)) {
-            content="'"+o+"' unequal to '"+oEqual+"'";
+            content="'"+o+"' unequal to '"+ //$NON-NLS-1$ //$NON-NLS-2$
+                oEqual+"'"; //$NON-NLS-1$
         } else if (!oEqual.equals(o)) {
-            content="'"+oEqual+"' unequal to '"+o+"'";
+            content="'"+oEqual+"' unequal to '"+ //$NON-NLS-1$ //$NON-NLS-2$
+                o+"'"; //$NON-NLS-1$
         } else if (oEqual==o) {
-            content="'"+oEqual+"' same as '"+o+"'";
+            content="'"+oEqual+"' same as '"+ //$NON-NLS-1$ //$NON-NLS-2$
+                o+"'"; //$NON-NLS-1$
         } else if (osUnequal!=null) {
             for (Object oUnequal:osUnequal) {
                 if (o.equals(oUnequal)) {
-                    content="'"+o+"' equal to '"+oUnequal+"'";
+                    content="'"+o+"' equal to '"+ //$NON-NLS-1$ //$NON-NLS-2$
+                        oUnequal+"'"; //$NON-NLS-1$ 
                     break;
                 }
                 if ((oUnequal!=null) && (oUnequal.equals(o))) {
-                    content="'"+oUnequal+"' equal to '"+o+"'";
+                    content="'"+oUnequal+ //$NON-NLS-1$ 
+                        "' equal to '"+o+"'"; //$NON-NLS-1$ //$NON-NLS-2$
                     break;
                 }
             }
         }
         if (content==null) {
             if (o.equals(null)) {
-                content="'"+o+"' equal to null";
+                content="'"+o+"' equal to null"; //$NON-NLS-1$ //$NON-NLS-2$
             } else if (o.equals(NumberUtils.INTEGER_ZERO)) {
-                content="'"+o+"' equal to zero";
+                content="'"+o+"' equal to zero"; //$NON-NLS-1$ //$NON-NLS-2$
             } else if (o.hashCode()!=oEqual.hashCode()) {
-                content="'"+o+"' hash code unequal to copy's '"+oEqual+"'";
+                content="'"+o+ //$NON-NLS-1$
+                    "' hash code unequal to copy's '"+ //$NON-NLS-1$
+                    oEqual+"'"; //$NON-NLS-1$
             }
         }
         if (content==null) {
             return;
         }
         if (message!=null) {
-            content=message+" "+content;
+            content=message+" "+content; //$NON-NLS-1$
         }
         fail(content);
     }
