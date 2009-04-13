@@ -1,5 +1,6 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.*;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -45,20 +46,51 @@ public class ReportHistoryTest extends ReportsTestBase {
             String orderID = idPrefix + i;
             position = position.add(BigDecimal.ONE);
             createAndSaveER(orderID, origOrderID,
-                    symbol,Side.Buy, position);
+                            symbol,Side.Buy, position);
             origOrderID = orderID;
         }
+        sServices.save(createCancelReject(sExtraUserID));
+        BigDecimal extraPosition = position.add(BigDecimal.ONE);
+        createAndSaveER(idPrefix + 10, null,
+                        symbol,Side.Buy, extraPosition, sExtraUserID);
+        BigDecimal actorPosition=extraPosition.add(position);
         sleepForSignificantTime();
         Date after = new Date();
-        //Now retrieve them
-        assertEquals(20, sServices.getReportsSince(before).length);
-        assertEquals(0, sServices.getReportsSince(after).length);
-        //Now select position
-        assertBigDecimalEquals(position, getPosition(after, symbol));
-        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, symbol));
-        //Test positions
-        assertThat(getPositions(after), allOf(isOfSize(1),
-                hasEntry(sym(symbol), position.setScale(SCALE))));
-        assertThat(getPositions(before), isOfSize(0));
+
+        assertEquals(20,sServices.getReportsSince(sViewer,before).length);
+        assertEquals(22,sServices.getReportsSince(sActor,before).length);
+        assertEquals(2,sServices.getReportsSince(sExtraUser,before).length);
+
+        assertEquals(0,sServices.getReportsSince(sViewer,after).length);
+        assertEquals(0,sServices.getReportsSince(sActor,after).length);
+        assertEquals(0,sServices.getReportsSince(sExtraUser,after).length);
+
+        assertBigDecimalEquals
+            (position,getPosition(after,symbol));
+        assertBigDecimalEquals
+            (actorPosition,getPosition(after,symbol,sActor));
+        assertBigDecimalEquals
+            (extraPosition,getPosition(after,symbol,sExtraUser));
+
+        assertBigDecimalEquals
+            (BigDecimal.ZERO,getPosition(before,symbol));
+        assertBigDecimalEquals
+            (BigDecimal.ZERO,getPosition(before,symbol,sActor));
+        assertBigDecimalEquals
+            (BigDecimal.ZERO,getPosition(before,symbol,sExtraUser));
+
+        assertThat(getPositions(after),
+                   allOf(isOfSize(1),
+                         hasEntry(sym(symbol),position.setScale(SCALE))));
+        assertThat(getPositions(after,sActor),
+                   allOf(isOfSize(1),
+                         hasEntry(sym(symbol),actorPosition.setScale(SCALE))));
+        assertThat(getPositions(after,sExtraUser),
+                   allOf(isOfSize(1),
+                         hasEntry(sym(symbol),extraPosition.setScale(SCALE))));
+
+        assertThat(getPositions(before),isOfSize(0));
+        assertThat(getPositions(before,sActor),isOfSize(0));
+        assertThat(getPositions(before,sExtraUser),isOfSize(0));
     }
 }

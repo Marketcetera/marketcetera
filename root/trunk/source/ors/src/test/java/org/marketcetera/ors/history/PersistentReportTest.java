@@ -1,10 +1,12 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.ors.Principals;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.event.HasFIXMessage;
 import org.junit.Test;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
@@ -28,11 +30,44 @@ import quickfix.field.SendingTime;
  */
 public class PersistentReportTest extends ReportsTestBase {
     /**
+     * Verify empty broker/actor/viewer.
+     *
+     * @throws Exception if there were errors
+     */
+    @Test
+    public void emptyBrokerActorViewer()
+        throws Exception
+    {
+        PersistentReport report=new PersistentReport
+            (createCancelReject(null,null,null));
+        assertNull(report.getBrokerID());
+        assertNull(report.getActor());
+        assertNull(report.getActorID());
+        assertNull(report.getViewer());
+        assertNull(report.getViewerID());
+
+        report=new PersistentReport
+            (createCancelReject(BROKER,sActorID,null));
+        assertEquals(BROKER,report.getBrokerID());
+        assertEquals(sActor.getId(),report.getActor().getId());
+        assertEquals(sActorID,report.getActorID());
+        assertNull(report.getViewer());
+        assertNull(report.getViewerID());
+
+        report=new PersistentReport
+            (createCancelReject());
+        assertEquals(BROKER,report.getBrokerID());
+        assertEquals(sActor.getId(),report.getActor().getId());
+        assertEquals(sActorID,report.getActorID());
+        assertEquals(sViewer.getId(),report.getViewer().getId());
+        assertEquals(sViewerID,report.getViewerID());
+    }
+
+    /**
      * Verify that the cancel reject report is saved and retrieved correctly.
      *
      * @throws Exception if there were errors
      */
-
     @Test
     public void rejectSaveAndRetrieve() throws Exception {
         //Create order cancel reject, save and retrieve it.
@@ -46,6 +81,13 @@ public class PersistentReportTest extends ReportsTestBase {
         assertEquals(1, reports.size());
         OrderCancelReject retrieved = (OrderCancelReject) reports.get(0).toReport();
         assertReportEquals(reject,  retrieved);
+
+        //Principals.
+        assertSame(Principals.UNKNOWN,
+                   PersistentReport.getPrincipals(new OrderID("nonexistent")));
+        Principals p=PersistentReport.getPrincipals(reject.getOrderID());
+        assertEquals(sActorID,p.getActorID());
+        assertEquals(sViewerID,p.getViewerID());
     }
 
     /**
@@ -55,49 +97,24 @@ public class PersistentReportTest extends ReportsTestBase {
      */
     @Test
     public void execReportSaveAndRetrieve() throws Exception {
-        //Create order cancel reject, save and retrieve it.
-        ExecutionReport reject = createExecReport("o1", null, "blue", Side.Buy,
+        //Create exec report, save and retrieve it.
+        ExecutionReport report = createExecReport("o1", null, "blue", Side.Buy,
                 OrderStatus.New, BigDecimal.ONE, BigDecimal.ONE,
                 BigDecimal.ONE, BigDecimal.ONE);
-        assertNull(reject.getReportID());
-        PersistentReport.save(reject);
-        assertNotNull(reject.getReportID());
+        assertNull(report.getReportID());
+        PersistentReport.save(report);
+        assertNotNull(report.getReportID());
         MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
         assertEquals(1, query.fetchCount());
         List<PersistentReport> reports = query.fetch();
         assertEquals(1, reports.size());
         ExecutionReport retrieved = (ExecutionReport) reports.get(0).toReport();
-        assertReportEquals(reject,  retrieved);
-    }
+        assertReportEquals(report,  retrieved);
 
-    /**
-     * Verifies that we get a db constraint failure if brokerID is
-     * null.
-     *
-     * @throws Exception if there were errors
-     */
-    @Test
-    public void nullBrokerFailure() throws Exception {
-        //null broker in cancel reject
-        nonNullCVCheck("brokerID", new Callable<Object>(){
-            public Object call() throws Exception {
-                PersistentReport.save(createCancelReject(null));
-                return null;
-            }
-        });
-        //null broker in exec report
-        nonNullCVCheck("brokerID", new Callable<Object>(){
-            public Object call() throws Exception {
-                PersistentReport.save(createExecReport("o1",null, "i",
-                        Side.Buy, OrderStatus.DoneForDay, BigDecimal.ONE,
-                        BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, null));
-                return null;
-            }
-        });
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-        //Verify we've got nothing persisted
-        assertEquals(0, query.fetchCount());
-        assertEquals(0, query.fetch().size());
+        //Principals.
+        Principals p=PersistentReport.getPrincipals(report.getOrderID());
+        assertEquals(sActorID,p.getActorID());
+        assertEquals(sViewerID,p.getViewerID());
     }
 
     /**
@@ -226,6 +243,36 @@ public class PersistentReportTest extends ReportsTestBase {
         //Retrieve no reports
         query.setSendingTimeAfterFilter(time5);
         assertEquals(0, query.fetchCount());
+        assertRetrievedReports(query.fetch());
+    }
+
+    /**
+     * Tests viewer
+     * {@link MultiPersistentReportQuery#getViewerFilter() filter}
+     *
+     * @throws Exception if there were errors.
+     */
+    @Test
+    public void viewerFiltering()
+        throws Exception
+    {
+        OrderCancelReject r1=
+            createCancelReject();
+        PersistentReport.save(r1);
+        OrderCancelReject r2=
+            createCancelReject(BROKER,sActorID,null);
+        PersistentReport.save(r2);
+        OrderCancelReject r3=
+            createCancelReject(BROKER,sActorID,sExtraUserID);
+        PersistentReport.save(r3);
+
+        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
+        assertRetrievedReports(query.fetch(),r1,r2,r3);
+        query.setViewerFilter(sViewer);
+        assertRetrievedReports(query.fetch(),r1);
+        query.setViewerFilter(sExtraUser);
+        assertRetrievedReports(query.fetch(),r3);
+        query.setViewerFilter(sActor);
         assertRetrievedReports(query.fetch());
     }
 

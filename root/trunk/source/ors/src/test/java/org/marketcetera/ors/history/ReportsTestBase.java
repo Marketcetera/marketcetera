@@ -39,7 +39,7 @@ import java.io.File;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ReportsTestBase extends TestCaseBase {
     @BeforeClass
     public static void springSetup()
@@ -47,13 +47,30 @@ public class ReportsTestBase extends TestCaseBase {
         PersistTestBase.springSetup(getSpringFiles());
         sMessageFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
         sServices = new ReportHistoryServices();
-        sUser=new SimpleUser();
-        sUser.setName("admin");
-        sUser.setPassword("pass".toCharArray());
-        sUser.setActive(true);
-        sUser.setSuperuser(true);
-        sUser.save();
-        sUserID=new UserID(sUser.getId());
+
+        sActor=new SimpleUser();
+        sActor.setName("actor");
+        sActor.setPassword("pass".toCharArray());
+        sActor.setActive(true);
+        sActor.setSuperuser(true);
+        sActor.save();
+        sActorID=new UserID(sActor.getId());
+
+        sViewer=new SimpleUser();
+        sViewer.setName("viewer");
+        sViewer.setPassword("pass2".toCharArray());
+        sViewer.setActive(true);
+        sViewer.setSuperuser(false);
+        sViewer.save();
+        sViewerID=new UserID(sViewer.getId());
+
+        sExtraUser=new SimpleUser();
+        sExtraUser.setName("extra");
+        sExtraUser.setPassword("pass2".toCharArray());
+        sExtraUser.setActive(true);
+        sExtraUser.setSuperuser(false);
+        sExtraUser.save();
+        sExtraUserID=new UserID(sExtraUser.getId());
     }
 
     @AfterClass
@@ -81,16 +98,27 @@ public class ReportsTestBase extends TestCaseBase {
 
     static OrderCancelReject createCancelReject()
             throws MessageCreationException {
-        return createCancelReject(BROKER);
+        return createCancelReject(sViewerID);
     }
-    static OrderCancelReject createCancelReject(BrokerID inBrokerID)
+    static OrderCancelReject createCancelReject(UserID inViewerID)
+            throws MessageCreationException {
+        return createCancelReject(BROKER,inViewerID);
+    }
+    static OrderCancelReject createCancelReject(BrokerID inBrokerID,
+                                                UserID inViewerID)
+            throws MessageCreationException {
+        return createCancelReject(inBrokerID,sActorID,inViewerID);
+    }
+    static OrderCancelReject createCancelReject(BrokerID inBrokerID,
+                                                UserID inActorID,
+                                                UserID inViewerID)
             throws MessageCreationException {
         Message msg = sMessageFactory.newOrderCancelReject();
         msg.setField(new ClOrdID("rejord1"));
         msg.setField(new OrigClOrdID("rejorigord1"));
         setSendingTime(msg);
         return Factory.getInstance().createOrderCancelReject
-            (msg, inBrokerID, Originator.Server, sUserID, sUserID);
+            (msg, inBrokerID, Originator.Server, inActorID, inViewerID);
     }
 
     static ExecutionReport createExecReport(String inOrderID,
@@ -104,7 +132,7 @@ public class ReportsTestBase extends TestCaseBase {
             throws Exception {
         return createExecReport(inOrderID, inOrigOrderID, inSymbol,
                 inSide, inOrderStatus, inCumQuantity, inAvgPrice,
-                inLastQty, inLastPrice, BROKER);
+                inLastQty, inLastPrice, sViewerID);
     }
     static ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
@@ -114,7 +142,38 @@ public class ReportsTestBase extends TestCaseBase {
                                             BigDecimal inAvgPrice,
                                             BigDecimal inLastQty,
                                             BigDecimal inLastPrice,
-                                            BrokerID inBrokerID)
+                                            UserID inViewerID)
+            throws Exception {
+        return createExecReport(inOrderID, inOrigOrderID, inSymbol,
+                inSide, inOrderStatus, inCumQuantity, inAvgPrice,
+                inLastQty, inLastPrice, BROKER, inViewerID);
+    }
+    static ExecutionReport createExecReport(String inOrderID,
+                                            String inOrigOrderID,
+                                            String inSymbol, Side inSide,
+                                            OrderStatus inOrderStatus,
+                                            BigDecimal inCumQuantity,
+                                            BigDecimal inAvgPrice,
+                                            BigDecimal inLastQty,
+                                            BigDecimal inLastPrice,
+                                            BrokerID inBrokerID,
+                                            UserID inViewerID)
+            throws Exception {
+        return createExecReport(inOrderID, inOrigOrderID, inSymbol,
+                inSide, inOrderStatus, inCumQuantity, inAvgPrice,
+                inLastQty, inLastPrice, inBrokerID, sActorID, inViewerID);
+    }
+    static ExecutionReport createExecReport(String inOrderID,
+                                            String inOrigOrderID,
+                                            String inSymbol, Side inSide,
+                                            OrderStatus inOrderStatus,
+                                            BigDecimal inCumQuantity,
+                                            BigDecimal inAvgPrice,
+                                            BigDecimal inLastQty,
+                                            BigDecimal inLastPrice,
+                                            BrokerID inBrokerID,
+                                            UserID inActorID,
+                                            UserID inViewerID)
             throws Exception {
         Message msg = sMessageFactory.newExecutionReport("ord1", inOrderID,
                 "exec1", inOrderStatus.getFIXValue(), inSide.getFIXValue(),
@@ -126,7 +185,7 @@ public class ReportsTestBase extends TestCaseBase {
         }
         setSendingTime(msg);
         return Factory.getInstance().createExecutionReport
-            (msg, inBrokerID, Originator.Server, sUserID, sUserID);
+            (msg, inBrokerID, Originator.Server, inActorID, inViewerID);
     }
 
     private static void setSendingTime(Message inMsg) {
@@ -210,22 +269,39 @@ public class ReportsTestBase extends TestCaseBase {
 
     protected static BigDecimal getPosition(Date inDate, String inSymbol)
             throws Exception {
-        return sServices.getPositionAsOf(inDate, new MSymbol(inSymbol));
+        return getPosition(inDate, inSymbol, sViewer);
+    }
+    protected static BigDecimal getPosition(Date inDate, String inSymbol, SimpleUser inViewer)
+            throws Exception {
+        return sServices.getPositionAsOf(inViewer, inDate, new MSymbol(inSymbol));
     }
 
     protected static Map<MSymbol,BigDecimal> getPositions(Date inDate)
             throws Exception {
-        return sServices.getPositionsAsOf(inDate);
+        return getPositions(inDate, sViewer);
+    }
+    protected static Map<MSymbol,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
+            throws Exception {
+        return sServices.getPositionsAsOf(inViewer, inDate);
     }
 
     protected static ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
                                             String inSymbol, Side inSide,
                                             BigDecimal inCumQty) throws Exception {
+        return createAndSaveER(inOrderID, inOrigOrderID, inSymbol,
+                               inSide, inCumQty, sViewerID);
+    }
+
+    protected static ExecutionReport createAndSaveER(String inOrderID,
+                                            String inOrigOrderID,
+                                            String inSymbol, Side inSide,
+                                            BigDecimal inCumQty,
+                                            UserID inViewerID) throws Exception {
         sleepForSignificantTime();
         ExecutionReport report = createExecReport(inOrderID, inOrigOrderID,
                 inSymbol, inSide, OrderStatus.PartiallyFilled, inCumQty,
-                BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN);
+                BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, inViewerID);
         sServices.save(report);
         sleepForSignificantTime();
         return report;
@@ -257,9 +333,13 @@ public class ReportsTestBase extends TestCaseBase {
         }
     }
 
-    private static final BrokerID BROKER = new BrokerID("TestBroker");
-    private static SimpleUser sUser;
-    private static UserID sUserID;
+    protected static final BrokerID BROKER = new BrokerID("TestBroker");
+    protected static SimpleUser sActor;
+    protected static UserID sActorID;
+    protected static SimpleUser sViewer;
+    protected static UserID sViewerID;
+    protected static SimpleUser sExtraUser;
+    protected static UserID sExtraUserID;
     private static FIXMessageFactory sMessageFactory;
     protected static ReportHistoryServices sServices;
     protected static final int SCALE = ExecutionReportSummary.DECIMAL_SCALE;
