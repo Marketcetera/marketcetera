@@ -230,12 +230,14 @@ respectively.</p>
 </tr>
 </table></li>
 
-<li><p>The length of a WS session, in seconds. An expired session is
-automatically invalidated (thus preventing all future WS calls from
-completing) after a given time interval of inactivity, defined as no
-WS calls (JMS-based communication doesn't count as activity). That is
-usually <code>1800</code> (one hour), or <code>-1</code> (a sentinel
-value that disables session expiration).</p>
+<li><p>The time interval, in seconds, during which the ORS must
+receive a heartbeat from ORS Client (who sends one heartbeat every 5
+seconds), or else the client's session is unilaterally terminated by
+the ORS. This automatic termination prevents all future WS calls from
+completing, results in rejection of all subsequent orders delivered
+via JMS, and the ORS Client receives no further messages from the
+ORS. That is usually <code>300</code> (5 minutes), or <code>-1</code>
+(a sentinel value that disables session termination).</p>
 
 <table border="1">
 <tr>
