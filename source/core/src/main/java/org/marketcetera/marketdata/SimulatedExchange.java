@@ -674,10 +674,10 @@ public final class SimulatedExchange
      * manages traffic for the corresponding <code>OrderBook</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: BogusFeed.java 10390 2009-03-07 04:53:17Z colin $
+     * @version $Id$
      * @since 0.6.0
      */
-    @ClassVersion("$Id: BogusFeed.java 10390 2009-03-07 04:53:17Z colin $")
+    @ClassVersion("$Id$")
     private static class OrderBookWrapper
     {
         /**
@@ -856,10 +856,10 @@ public final class SimulatedExchange
      * Matches bids and offers to produce trades.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: BogusFeed.java 10390 2009-03-07 04:53:17Z colin $
+     * @version $Id$
      * @since 0.6.0
      */
-    @ClassVersion("$Id: BogusFeed.java 10390 2009-03-07 04:53:17Z colin $")
+    @ClassVersion("$Id$")
     private static class OrderBookSettler
     {
         /**

@@ -211,8 +211,8 @@ public class ReplyPersister
      * @param msg The message.
      *
      * @return The principals. Any of its properties may be null if
-     * the associated principal cannot be determined. That includes
-     * the special case of a {@link #Principals.UNKNOWN} return value.
+     * the associated principal cannot be determined; that includes
+     * the special case of returning {@link Principals#UNKNOWN}.
      */
 
     public synchronized Principals getPrincipals

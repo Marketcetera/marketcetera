@@ -1,13 +1,11 @@
 package org.marketcetera.client.jms;
 
-import java.io.File;
 import javax.jms.ConnectionFactory;
 import org.junit.Test;
 import org.marketcetera.client.MockServer;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.test.TestCaseBase;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import quickfix.Message;
 
