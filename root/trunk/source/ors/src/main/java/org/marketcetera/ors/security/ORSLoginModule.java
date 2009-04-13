@@ -31,7 +31,7 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ORSLoginModule implements LoginModule {
 
     public void initialize(Subject subject,

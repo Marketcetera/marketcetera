@@ -2,7 +2,6 @@ package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ApplicationBase;
 import static org.marketcetera.ors.security.Messages.*;
-import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage1P;
@@ -14,7 +13,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import java.io.File;
@@ -33,7 +31,7 @@ import java.util.Arrays;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ORSAdminCLI
     extends ApplicationBase {
     private AbstractApplicationContext context;
@@ -46,7 +44,7 @@ public class ORSAdminCLI
      */
     public ORSAdminCLI(PrintStream out, PrintStream err) {
         PropertyConfigurator.configureAndWatch
-            (CONF_DIR+"log4j"+File.separator+"cli.properties",
+            (CONF_DIR+"log4j"+File.separator+"cli.properties", //$NON-NLS-1$ //$NON-NLS-2$
              LOGGER_WATCH_DELAY);
         this.out = out;
         this.err = err;
@@ -305,7 +303,7 @@ public class ORSAdminCLI
     {
         MultiSimpleUserQuery q = MultiSimpleUserQuery.all();
         q.setActiveFilter(active);
-        q.setEntityOrder(q.BY_NAME);
+        q.setEntityOrder(MultiSimpleUserQuery.BY_NAME);
         if(nameFilter != null) {
             q.setNameFilter(new StringFilter(nameFilter));
         }
@@ -320,7 +318,7 @@ public class ORSAdminCLI
             }
             out.print(u.getName());
             if (flags.length()>0) {
-                out.print(" [");
+                out.print(" ["); //$NON-NLS-1$
                 out.print(flags.toString());
                 out.print(']');
             }
