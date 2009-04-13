@@ -288,27 +288,27 @@ public abstract class MultipleEntityQuery
     }
 
     /**
-     * Adds the filter, if its not null, to the supplied queryString.
+     * Adds the filter, if it's not null, to the supplied queryString.
      * A where expression is added to the supplied query string for
      * the filter. The filter value is added as a parameter to the query
      * for execution.
      *
      * @param queryString The query string
      * @param attributeName the name of the entity's attribute
-     * @param filter the filter, if the supplied value is null,
-     * this method does nothing.
+     * @param attributeValue the desired value of the entity's
+     * attribute; if the supplied value is null, this method does nothing.
      *
      * @return the supplied query string instance.
      */
     protected final StringBuilder addFilterIfNotNull(StringBuilder queryString,
                                             String attributeName,
-                                            Boolean filter) {
-        if(filter != null) {
+                                            Object attributeValue) {
+        if(attributeValue != null) {
             String filterParameter = attributeName + FILTER_SUFFIX;
             andWhereExpression(queryString, getEntityAlias(), DOT,
                     attributeName, S, EQUALS, S, PARAMETER_PREFIX,
                     filterParameter);
-            setParameter(filterParameter,filter);
+            setParameter(filterParameter,attributeValue);
         }
         return queryString;
     }
