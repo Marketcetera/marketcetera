@@ -58,13 +58,13 @@ public class SessionManager<T>
      */
 
     @ClassVersion("$Id$")
-    class Reaper
+    final class Reaper
         extends Thread
     {
 
         // INSTANCE DATA.
 
-        private long mReaperSleep;
+        private long mScanInterval;
 
 
         // CONSTRUCTORS.
@@ -77,7 +77,8 @@ public class SessionManager<T>
         {
             super(Thread.currentThread().getThreadGroup(),
                   Messages.REAPER_THREAD_NAME.getText());
-            mReaperSleep=Math.min
+            setDaemon(true);
+            mScanInterval=Math.min
                 (MAX_REAPER_SLEEP,(long)(getLifespan()*0.05));
         }
 
@@ -87,9 +88,9 @@ public class SessionManager<T>
          * @return The interval.
          */
 
-        private long getReaperSleep()
+        private long getScanInterval()
         {
-            return mReaperSleep;
+            return mScanInterval;
         }
 
 
@@ -117,7 +118,7 @@ public class SessionManager<T>
                     }
                 }
                 try {
-                    Thread.sleep(getReaperSleep());
+                    Thread.sleep(getScanInterval());
                 } catch (InterruptedException ex) {
                     Messages.REAPER_TERMINATED.info(this,ex,getServerId());
                     return;
