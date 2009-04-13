@@ -28,8 +28,38 @@ import quickfix.field.*;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ExecReportSummaryTest extends ReportsTestBase {
+    /**
+     * Verify empty actor/viewer.
+     *
+     * @throws Exception if there were errors
+     */
+    @Test
+    public void emptyViewer()
+        throws Exception
+    {
+        PersistentReport.save
+            (createExecReport
+             ("o1",null,"sym",Side.Buy,OrderStatus.PartiallyFilled,
+              BigDecimal.TEN,BigDecimal.TEN,BigDecimal.ONE,BigDecimal.ONE,
+              BROKER,null,null));
+        PersistentReport.save
+            (createExecReport
+             ("o1",null,"sym",Side.Buy,OrderStatus.PartiallyFilled,
+              BigDecimal.TEN,BigDecimal.TEN,BigDecimal.ONE,BigDecimal.ONE));
+
+        MultiExecReportSummary query=MultiExecReportSummary.all();
+        query.setEntityOrder(MultiExecReportSummary.BY_ID);
+        List<ExecutionReportSummary> summary=query.fetch();
+        assertEquals(2,summary.size());
+
+        assertNull(summary.get(0).getViewer());
+        assertNull(summary.get(0).getViewerID());
+        assertEquals(sViewer.getName(),summary.get(1).getViewer().getName());
+        assertEquals(sViewerID,summary.get(1).getViewerID());
+    }
+
     /**
      * Verifies no summaries are saved for cancel rejects.
      *
@@ -292,6 +322,7 @@ public class ExecReportSummaryTest extends ReportsTestBase {
         assertEquals(inOrigOrderID, inSummary.getOrigOrderID());
         assertReportEquals(inReport.toReport(),
                 inSummary.getReport().toReport());
+        assertEquals(inReport.getViewerID(),inSummary.getViewerID());
         assertEquals(inRootID, inSummary.getRootID());
         PersistTestBase.assertCalendarEquals(inSendingTime,
                 inSummary.getSendingTime(), TemporalType.TIMESTAMP);

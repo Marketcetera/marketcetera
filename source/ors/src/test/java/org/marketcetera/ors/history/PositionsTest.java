@@ -33,14 +33,13 @@ public class PositionsTest extends ReportsTestBase {
         createBackgroundNoise();
         BigDecimal value = new BigDecimal("135.79");
         Date before = new Date();
-        createAndSaveER("o1", null, TEST_SYMBOL, Side.Buy, value);
+        createAndSaveER("o1", null, TEST_SYMBOL, Side.Buy, value, sExtraUserID);
         Date after = new Date();
-        assertBigDecimalEquals(value, getPosition(after, TEST_SYMBOL));
-        assertThat(getPositions(after), allOf(isOfSize(3),
-                hasEntry(sym(TEST_SYMBOL), value.setScale(SCALE)),
-                hasAandB()));
-        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, TEST_SYMBOL));
-        assertThat(getPositions(before), allOf(isOfSize(2), hasAandB()));
+        assertBigDecimalEquals(value, getPosition(after, TEST_SYMBOL, sExtraUser));
+        assertThat(getPositions(after, sExtraUser), allOf(isOfSize(1),
+                hasEntry(sym(TEST_SYMBOL), value.setScale(SCALE))));
+        assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, TEST_SYMBOL, sExtraUser));
+        assertThat(getPositions(before, sExtraUser), allOf(isOfSize(0)));
     }
 
     @Test

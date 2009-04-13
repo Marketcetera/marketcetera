@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")  //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MessagesTest {
     @Test
     public void messagesMatch() throws Exception {
