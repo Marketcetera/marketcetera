@@ -18,7 +18,7 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class DBAuthenticator
     implements Authenticator
 {

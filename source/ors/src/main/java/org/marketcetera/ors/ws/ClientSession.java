@@ -15,7 +15,7 @@ import org.springframework.jms.core.JmsOperations;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ClientSession
 {
 
@@ -28,6 +28,16 @@ public class ClientSession
 
     // CONSTRUCTOR.
 
+    /**
+     * Creates a new session which retains the given session ID, the
+     * given user associated with the session, and the given topic for
+     * reply delivery.
+     *
+     * @param sessionId The session ID.
+     * @param user The user.
+     * @param replyTopic The topic.
+     */
+    
     public ClientSession
         (SessionId sessionId,
          SimpleUser user,
@@ -41,18 +51,45 @@ public class ClientSession
 
     // INSTANCE METHODS.
 
+    /**
+     * Returns the receiver's session ID.
+     *
+     * @return The session ID.
+     */
+    
     public SessionId getSessionId()
     {
         return mSessionId;
     }
 
+    /**
+     * Returns the receiver's user.
+     *
+     * @return The user.
+     */
+    
     public SimpleUser getUser()
     {
         return mUser;
     }
 
+    /**
+     * Returns the receiver's reply topic.
+     *
+     * @return The topic.
+     */
+    
     public JmsOperations getReplyTopic()
     {
         return mReplyTopic;
+    }
+
+    // Object.
+
+    @Override
+    public String toString()
+    {
+        return Messages.CLIENT_SESSION_STRING.getText
+            (getSessionId(),getUser().getUserID());
     }
 }

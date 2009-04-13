@@ -7,7 +7,6 @@ import org.marketcetera.ors.UserManager;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.UserID;
 import org.marketcetera.util.except.I18NRuntimeException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -26,7 +25,7 @@ import org.springframework.jms.core.JmsOperations;
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ClientSessionFactory
     implements SessionFactory<ClientSession>
 {
@@ -39,12 +38,46 @@ public class ClientSessionFactory
 
     // CONSTRUCTORS.
 
+    /**
+     * Creates a new session factory which uses the given JMS manager
+     * to create reply topics, and which notifies the given user
+     * manager when sessions are added/removed.
+     *
+     * @param jmsManager The JMS manager.
+     * @param userManager The user manager.
+     */
+
     public ClientSessionFactory
         (JmsManager jmsManager,
          UserManager userManager)
     {
         mJmsManager=jmsManager;
         mUserManager=userManager;
+    }
+
+
+    // INSTANCE METHODS.
+
+    /**
+     * Returns the receiver's JMS manager.
+     *
+     * @return The manager.
+     */
+
+    private JmsManager getJmsManager()
+    {
+        return mJmsManager;
+    }
+
+    /**
+     * Returns the receiver's user manager.
+     *
+     * @return The manager.
+     */
+
+    private UserManager getUserManager()
+    {
+        return mUserManager;
     }
 
 
@@ -60,7 +93,7 @@ public class ClientSessionFactory
         SimpleUser dbUser;
         String topicName=JmsUtils.getReplyTopicName(id);
         try {
-            jmsOps=mJmsManager.getOutgoingJmsFactory().createJmsTemplateX
+            jmsOps=getJmsManager().getOutgoingJmsFactory().createJmsTemplateX
                 (topicName,true);
         } catch (JAXBException ex) {
             throw new I18NRuntimeException
@@ -75,13 +108,13 @@ public class ClientSessionFactory
                  (Messages.CANNOT_RETRIEVE_USER,user));
         }
         ClientSession session=new ClientSession(id,dbUser,jmsOps);
-        mUserManager.addSession(session);
+        getUserManager().addSession(session);
         return session;
     }
 
     @Override
     public void removedSession(ClientSession session)
     {
-        mUserManager.removedSession(session);
+        getUserManager().removedSession(session);
     }
 }
