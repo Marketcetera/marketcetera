@@ -540,7 +540,7 @@
             <dependency>
               <groupId>ant-contrib</groupId>
               <artifactId>ant-contrib</artifactId>
-              <version>1.0b2</version>
+              <version>[1.0b2]</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -634,12 +634,12 @@
             <dependency>
               <groupId>com.sun.xml.bind</groupId>
               <artifactId>jaxb-xjc</artifactId>
-              <version>${mvn.xjc.version}</version>
+              <version>[${mvn.xjc.version}]</version>
             </dependency>
             <dependency>
               <groupId>com.sun.xml.bind</groupId>
               <artifactId>jaxb-impl</artifactId>
-              <version>${mvn.xjc.version}</version>
+              <version>[${mvn.xjc.version}]</version>
             </dependency>
           </dependencies>
         </plugin>
