@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The principals associated with a trade report.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.5.0
  * @version $Id$
  */
 

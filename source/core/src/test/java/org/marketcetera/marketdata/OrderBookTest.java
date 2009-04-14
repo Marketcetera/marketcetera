@@ -587,7 +587,7 @@ public class OrderBookTest
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     private static class QuantityTupleList<E extends QuoteEvent>
     {

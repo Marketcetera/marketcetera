@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlValue;
  * Instances of this class uniquely identify a user (trader).
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.5.0
  * @version $Id$
  */
 @XmlAccessorType(XmlAccessType.FIELD)

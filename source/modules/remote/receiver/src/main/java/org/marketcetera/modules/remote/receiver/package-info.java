@@ -31,6 +31,6 @@
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 package org.marketcetera.modules.remote.receiver;

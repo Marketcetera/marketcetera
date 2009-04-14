@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ContextCLTestFactoryBase extends ModuleFactory

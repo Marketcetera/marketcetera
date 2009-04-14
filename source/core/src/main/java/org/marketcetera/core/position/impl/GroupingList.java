@@ -39,7 +39,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 public class GroupingList<E> extends TransformedList<E, EventList<E>> {
@@ -298,7 +298,7 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
      * 
      * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     private class GroupList extends AbstractEventList<E> implements Comparable<GroupList> {

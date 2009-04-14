@@ -33,7 +33,7 @@ import ca.odell.glazedlists.util.concurrent.Lock;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 public final class PositionEngineImpl implements PositionEngine {
@@ -43,7 +43,7 @@ public final class PositionEngineImpl implements PositionEngine {
      * 
      * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     private final static class TradeGroupMatcher implements GroupMatcher<Trade> {
@@ -80,7 +80,7 @@ public final class PositionEngineImpl implements PositionEngine {
      * 
      * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     private final static class TradeGroupMatcherFactory implements
@@ -98,7 +98,7 @@ public final class PositionEngineImpl implements PositionEngine {
      * 
      * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     private final class PositionFunction implements AdvancedFunction<EventList<Trade>, PositionRow> {
@@ -138,7 +138,7 @@ public final class PositionEngineImpl implements PositionEngine {
      * 
      * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     private final static class GroupingMatcher implements GroupMatcher<PositionRow> {
@@ -176,7 +176,7 @@ public final class PositionEngineImpl implements PositionEngine {
      * 
      * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     private final static class GroupingMatcherFactory implements
@@ -200,7 +200,7 @@ public final class PositionEngineImpl implements PositionEngine {
      * 
      * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     private final static class SummarizeFunction implements

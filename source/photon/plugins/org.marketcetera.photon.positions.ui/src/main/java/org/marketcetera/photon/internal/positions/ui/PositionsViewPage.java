@@ -38,7 +38,7 @@ import ca.odell.glazedlists.util.concurrent.ReadWriteLock;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 public abstract class PositionsViewPage extends Page implements IColumnProvider {

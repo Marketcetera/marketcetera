@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 class EmitterModule extends Module

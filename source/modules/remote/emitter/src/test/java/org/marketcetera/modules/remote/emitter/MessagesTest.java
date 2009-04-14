@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  * Keys for internationalized messages used in this package.  
  *
  * @author anshul@marketcetera.com
- * @since $Release$
+ * @since 1.5.0
  * @version $Id$
  */
 public class MessagesTest extends TestCaseBase {

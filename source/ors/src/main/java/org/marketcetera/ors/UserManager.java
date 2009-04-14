@@ -21,7 +21,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * routes ORS replies to ORS clients.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.5.0
  * @version $Id$
  */
 

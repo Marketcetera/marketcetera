@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 public class MessagesTest {
