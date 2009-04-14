@@ -11,7 +11,7 @@ import org.marketcetera.photon.commons.ui.table.TableSupportTest;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses( { TableSupportTest.class })

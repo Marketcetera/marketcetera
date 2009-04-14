@@ -21,7 +21,7 @@ import org.marketcetera.util.test.TestCaseBase;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>> extends
 		TestCaseBase {

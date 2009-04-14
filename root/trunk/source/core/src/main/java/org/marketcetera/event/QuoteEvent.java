@@ -211,7 +211,7 @@ public abstract class QuoteEvent
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     public final static class PriceAndSizeComparator

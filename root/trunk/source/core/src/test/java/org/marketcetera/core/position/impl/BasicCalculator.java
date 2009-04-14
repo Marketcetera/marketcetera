@@ -17,7 +17,7 @@ import org.marketcetera.core.position.Trade;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 public class BasicCalculator implements PositionMetricsCalculator {
 

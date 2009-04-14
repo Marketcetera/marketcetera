@@ -32,7 +32,7 @@ import ca.odell.glazedlists.swt.TableComparatorChooser;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 public final class TreeComparatorChooser<E> extends AbstractTableComparatorChooser<E> {

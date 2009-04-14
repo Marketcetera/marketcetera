@@ -405,7 +405,7 @@ public class EventBaseTest
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     public static class MessageIDComparator
         implements Comparator<EventBase>

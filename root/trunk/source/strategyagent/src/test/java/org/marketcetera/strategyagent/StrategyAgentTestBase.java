@@ -34,7 +34,7 @@ import java.lang.management.ManagementFactory;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 public class StrategyAgentTestBase extends TestCaseBase {

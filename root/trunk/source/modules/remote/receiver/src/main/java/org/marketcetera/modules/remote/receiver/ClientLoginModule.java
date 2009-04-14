@@ -28,7 +28,7 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ClientLoginModule implements LoginModule {

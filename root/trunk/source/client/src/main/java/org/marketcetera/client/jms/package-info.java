@@ -34,7 +34,7 @@
  * wrappers.</p>
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.5.0
  * @version $Id$
  */
 

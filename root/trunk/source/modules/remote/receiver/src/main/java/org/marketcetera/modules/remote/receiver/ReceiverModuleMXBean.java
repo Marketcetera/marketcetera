@@ -10,7 +10,7 @@ import org.marketcetera.event.LogEvent;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 @DisplayName("Management Interface for Remote Receiver module")

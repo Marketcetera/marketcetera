@@ -13,7 +13,7 @@ import org.springframework.jms.core.JmsOperations;
  * A mock session factory.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.5.0
  * @version $Id$
  */
 

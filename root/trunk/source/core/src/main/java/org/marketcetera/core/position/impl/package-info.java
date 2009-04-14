@@ -12,7 +12,7 @@
  * 
  * @author will@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 package org.marketcetera.core.position.impl;
 

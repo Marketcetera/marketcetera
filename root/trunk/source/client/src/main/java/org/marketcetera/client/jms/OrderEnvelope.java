@@ -17,7 +17,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * over JMS as part of an existing Web Services session.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.5.0
  * @version $Id$
  */
 

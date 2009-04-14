@@ -60,7 +60,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 public final class SimulatedExchange
@@ -633,7 +633,7 @@ public final class SimulatedExchange
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     public static final class Token
@@ -1004,7 +1004,7 @@ public final class SimulatedExchange
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     private static class FilteringSubscriber
@@ -1134,7 +1134,7 @@ public final class SimulatedExchange
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 1.5.0
      */
     @ClassVersion("$Id$")
     private static enum Status

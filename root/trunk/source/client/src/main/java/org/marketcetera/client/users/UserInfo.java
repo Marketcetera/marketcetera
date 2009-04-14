@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The web service representation of a user's information.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.5.0
  * @version $Id$
  */
 

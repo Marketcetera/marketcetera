@@ -9,7 +9,7 @@ import org.marketcetera.util.log.*;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 public interface Messages {
