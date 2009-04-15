@@ -1,6 +1,6 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import org.marketcetera.photon.model.marketdata.MDTopOfBook;
+import org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.inject.ImplementedBy;
@@ -16,5 +16,5 @@ import com.google.inject.ImplementedBy;
  */
 @ClassVersion("$Id$")
 @ImplementedBy(TopOfBookManager.class)
-public interface ITopOfBookManager extends IDataFlowManager<MDTopOfBook, TopOfBookKey> {
+public interface ITopOfBookManager extends IDataFlowManager<MDTopOfBookImpl, TopOfBookKey> {
 }

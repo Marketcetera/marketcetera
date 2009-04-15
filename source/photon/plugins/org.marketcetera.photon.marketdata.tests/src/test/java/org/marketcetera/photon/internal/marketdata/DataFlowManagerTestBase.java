@@ -29,7 +29,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	/**
 	 * @return the test fixture
 	 */
-	protected abstract IDataFlowManager<T, K> createFixture(ModuleManager moduleManager);
+	protected abstract IDataFlowManager<? extends T, K> createFixture(ModuleManager moduleManager);
 
 	/**
 	 * @return a key
@@ -76,13 +76,13 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	 */
 	protected abstract void validateRequest(K key, MarketDataRequest request);
 
-	private IDataFlowManager<T, K> mFixture;
-	private K mKey1;
-	private T mItem1;
-	private K mKey2;
-	private T mItem2;
-	private MockMarketDataModule mMockMarketDataModule;
-	private K mKey3;
+	protected IDataFlowManager<? extends T, K> mFixture;
+	protected K mKey1;
+	protected T mItem1;
+	protected K mKey2;
+	protected T mItem2;
+	protected MockMarketDataModule mMockMarketDataModule;
+	protected K mKey3;
 
 	@Before
 	public void before() {
@@ -232,6 +232,12 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
+				mFixture.getItem(null);
+			}
+		};
+		new ExpectedFailure<IllegalArgumentException>(null) {
+			@Override
+			protected void run() throws Exception {
 				mFixture.startFlow(null);
 			}
 		};
@@ -253,7 +259,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 				.getData();
 	}
 
-	private void emit(Object object) {
+	protected void emit(Object object) {
 		mMockMarketDataModule.emitData(object);
 	}
 }

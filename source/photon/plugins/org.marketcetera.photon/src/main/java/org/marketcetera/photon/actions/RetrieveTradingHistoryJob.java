@@ -1,5 +1,6 @@
 package org.marketcetera.photon.actions;
 
+import java.util.Date;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +49,7 @@ public class RetrieveTradingHistoryJob extends Job {
 			if (time != null) {
 				TradeReportsHistory tradeReportsHistory = PhotonPlugin.getDefault()
 						.getTradeReportsHistory();
+				final Date lastOccurrence = time.getLastOccurrence();
 				try {
 					tradeReportsHistory.resetMessages(new Callable<ReportBase[]>() {
 
@@ -64,7 +66,7 @@ public class RetrieveTradingHistoryJob extends Job {
 								return new ReportBase[0];
 							}
 							try {
-								return client.getReportsSince(time.getLastOccurrence());
+								return client.getReportsSince(lastOccurrence);
 							} catch (ConnectionException e) {
 								Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this, e);
 								return new ReportBase[0];
@@ -80,6 +82,7 @@ public class RetrieveTradingHistoryJob extends Job {
 						throw new RuntimeException(e);
 					}
 				}
+				PhotonPlugin.getDefault().setSessionStartTime(lastOccurrence);
 			}
 		}
 		return Status.OK_STATUS;

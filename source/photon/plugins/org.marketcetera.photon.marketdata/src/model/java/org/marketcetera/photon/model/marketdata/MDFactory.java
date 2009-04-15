@@ -43,6 +43,15 @@ public interface MDFactory extends EFactory {
 	MDTopOfBook createMDTopOfBook();
 
 	/**
+	 * Returns a new object of class '<em>Marketstat</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Marketstat</em>'.
+	 * @generated
+	 */
+	MDMarketstat createMDMarketstat();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

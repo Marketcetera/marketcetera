@@ -23,8 +23,8 @@ public class PositionMetricsImplTest {
 
     @Test
     public void testConstructor() throws Exception {
-        assertPNL(new PositionMetricsImpl(), "0", "0", null, null, "0", null, null);
-        assertPNL(new PositionMetricsImpl(convert("-10")), "-10", "-10", null, null, "0", null, null);
+        assertPositionMetrics(new PositionMetricsImpl(), "0", "0", null, null, null, null, null);
+        assertPositionMetrics(new PositionMetricsImpl(convert("-10")), "-10", "-10", null, null, null, null, null);
         String incomingPosition = "17";
         String position = "10";
         String positional = "15";
@@ -32,7 +32,7 @@ public class PositionMetricsImplTest {
         String realized = "11";
         String unrealized = "14";
         String total = "20";
-        assertPNL(createMetrics(incomingPosition, position, positional, trading, realized, unrealized, total),
+        assertPositionMetrics(createMetrics(incomingPosition, position, positional, trading, realized, unrealized, total),
                 incomingPosition, position, positional, trading, realized, unrealized, total);
         incomingPosition = "-16.9";
         position = "10.8";
@@ -41,7 +41,7 @@ public class PositionMetricsImplTest {
         realized = "11.3";
         unrealized = "14.55";
         total = "20.02";
-        assertPNL(createMetrics(incomingPosition, position, positional, trading, realized, unrealized, total),
+        assertPositionMetrics(createMetrics(incomingPosition, position, positional, trading, realized, unrealized, total),
                 incomingPosition, position, positional, trading, realized, unrealized, total);
         new ExpectedFailure<IllegalArgumentException>(null) {
 
@@ -57,13 +57,6 @@ public class PositionMetricsImplTest {
                 createMetrics("0", null, "0", "0", "0", "0", "0");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
-
-            @Override
-            protected void run() throws Exception {
-                createMetrics("0", "0", "0", "0", null, "0", "0");
-            }
-        };
     }
 
     public static PositionMetrics createMetrics(String incomingPosition, String position, String positional,
@@ -72,7 +65,7 @@ public class PositionMetricsImplTest {
                 convert(trading), convert(realized), convert(unrealized), convert(total));
     }
 
-    public static void assertPNL(PositionMetrics pnl, String incomingPosition, String position,
+    public static void assertPositionMetrics(PositionMetrics pnl, String incomingPosition, String position,
             String positional, String trading, String realized, String unrealized, String total) {
         assertBigDecimal(incomingPosition, pnl.getIncomingPosition());
         assertBigDecimal(position, pnl.getPosition());

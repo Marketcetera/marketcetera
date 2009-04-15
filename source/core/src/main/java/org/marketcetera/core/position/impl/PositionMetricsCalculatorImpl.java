@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 
+import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -21,28 +22,35 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public final class PositionMetricsCalculatorImpl implements PositionMetricsCalculator {
 
-    private BigDecimal mPosition;
-    private BigDecimal realizedPL = BigDecimal.ZERO;
+    private final BigDecimal mIncomingPosition;
     private final CostElement mPositionCost = new CostElement();
     private final CostElement tradingCost = new CostElement();
     private final CostElement mUnrealizedCost = new CostElement();
     private final LinkedList<PositionElement> mPositionElements = new LinkedList<PositionElement>();
+    private final boolean mClosingPriceAvailable;
     private BigDecimal mLastTradePrice;
+    private BigDecimal mPosition;
+    private BigDecimal mRealizedPL = BigDecimal.ZERO;
 
     /**
      * Constructor.
      * 
      * @param incomingPosition
-     *            the incoming position that will be used to calculate position PL, null if unknown
+     *            the incoming position that will be used to calculate position PL
      * @param closingPrice
-     *            the closing price that will be used to calculate position PL, null if unknown
+     *            the closing price that will be used to calculate position PL
+     * @throws IllegalArgumentException if incomingPosition is null
      */
     public PositionMetricsCalculatorImpl(final BigDecimal incomingPosition, BigDecimal closingPrice) {
-        mPosition = incomingPosition == null ? BigDecimal.ZERO : incomingPosition;
-        closingPrice = closingPrice == null ? BigDecimal.ZERO : closingPrice;
-        mPositionCost.add(mPosition, closingPrice);
-        mUnrealizedCost.add(mPosition, closingPrice);
-        mPositionElements.add(new PositionElement(mPosition, closingPrice));
+        Validate.notNull(incomingPosition);
+        mIncomingPosition = incomingPosition;
+        mPosition = incomingPosition;
+        mClosingPriceAvailable = closingPrice != null;
+        if (mClosingPriceAvailable) {
+            mPositionCost.add(mPosition, closingPrice);
+            mUnrealizedCost.add(mPosition, closingPrice);
+            mPositionElements.add(new PositionElement(mPosition, closingPrice));
+        }
     }
 
     @Override
@@ -67,45 +75,48 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
      */
     private void processTrade(final BigDecimal quantity, final BigDecimal price) {
         mPosition = mPosition.add(quantity);
-        tradingCost.add(quantity, price);
-        // determine the sides, +1 for long and -1 for short
-        int holdingSide = mUnrealizedCost.signum();
-        int tradingSide = quantity.signum();
-        BigDecimal remaining = quantity;
-        // if sides are different
-        if (tradingSide * holdingSide == -1) {
-            // close positions
-            while (!mPositionElements.isEmpty()) {
-                // get the oldest open position
-                PositionElement toClose = mPositionElements.peek();
-                // add the remaining trade quantity
-                BigDecimal leftover = toClose.quantity.add(remaining);
-                int leftoverSide = leftover.signum();
-                // if there is leftover on the open position
-                if (leftoverSide == holdingSide) {
-                    // the trade only partially closed this position
-                    processClose(remaining, toClose.price, price);
-                    toClose.quantity = leftover;
-                    // trade has been completely processed
-                    return;
-                } else {
-                    // the trade completely closed this position
-                    processClose(toClose.quantity.negate(), toClose.price, price);
-                    mPositionElements.remove();
-                    remaining = leftover;
-                    // if leftover is zero
-                    if (leftoverSide == 0) {
+        // only bother with PNL if the closing price is available
+        if (mClosingPriceAvailable) {
+            tradingCost.add(quantity, price);
+            // determine the sides, +1 for long and -1 for short
+            int holdingSide = mUnrealizedCost.signum();
+            int tradingSide = quantity.signum();
+            BigDecimal remaining = quantity;
+            // if sides are different
+            if (tradingSide * holdingSide == -1) {
+                // close positions
+                while (!mPositionElements.isEmpty()) {
+                    // get the oldest open position
+                    PositionElement toClose = mPositionElements.peek();
+                    // add the remaining trade quantity
+                    BigDecimal leftover = toClose.quantity.add(remaining);
+                    int leftoverSide = leftover.signum();
+                    // if there is leftover on the open position
+                    if (leftoverSide == holdingSide) {
+                        // the trade only partially closed this position
+                        processClose(remaining, toClose.price, price);
+                        toClose.quantity = leftover;
                         // trade has been completely processed
                         return;
+                    } else {
+                        // the trade completely closed this position
+                        processClose(toClose.quantity.negate(), toClose.price, price);
+                        mPositionElements.remove();
+                        remaining = leftover;
+                        // if leftover is zero
+                        if (leftoverSide == 0) {
+                            // trade has been completely processed
+                            return;
+                        }
                     }
                 }
             }
-        }
-        // if non-zero remaining quantity
-        if (remaining.signum() != 0) {
-            // create new position
-            mPositionElements.add(new PositionElement(remaining, price));
-            mUnrealizedCost.add(remaining, price);
+            // if non-zero remaining quantity
+            if (remaining.signum() != 0) {
+                // create new position
+                mPositionElements.add(new PositionElement(remaining, price));
+                mUnrealizedCost.add(remaining, price);
+            }
         }
 
     }
@@ -126,22 +137,26 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         // subtract closePrice from openPrice since quantity has opposite sign
         // more readable may be:
         // quantity.negate().multiply(closePrice.subtract(openPrice))
-        realizedPL = realizedPL.add(quantity.multiply(openPrice.subtract(closePrice)));
+        mRealizedPL = mRealizedPL.add(quantity.multiply(openPrice.subtract(closePrice)));
         mUnrealizedCost.add(quantity, openPrice);
     }
 
     private PositionMetrics createPositionMetrics() {
         BigDecimal unrealizedPL = null;
+        BigDecimal realizedPL = null;
         BigDecimal tradingPL = null;
         BigDecimal positionPL = null;
         BigDecimal totalPL = null;
-        if (mLastTradePrice != null) {
-            positionPL = mPositionCost.getPL(mLastTradePrice);
-            unrealizedPL = mUnrealizedCost.getPL(mLastTradePrice);
-            tradingPL = tradingCost.getPL(mLastTradePrice);
-            totalPL = realizedPL.add(unrealizedPL);
+        if (mClosingPriceAvailable) {
+            realizedPL = mRealizedPL;
+            if (mLastTradePrice != null) {
+                positionPL = mPositionCost.getPL(mLastTradePrice);
+                unrealizedPL = mUnrealizedCost.getPL(mLastTradePrice);
+                tradingPL = tradingCost.getPL(mLastTradePrice);
+                totalPL = realizedPL.add(unrealizedPL);
+            }
         }
-        PositionMetricsImpl positionMetrics = new PositionMetricsImpl(mPositionCost.quantity,
+        PositionMetricsImpl positionMetrics = new PositionMetricsImpl(mIncomingPosition,
                 mPosition, positionPL, tradingPL, realizedPL, unrealizedPL, totalPL);
         // Theoretically, both ways of calculating total PL should give the same results
         assert mLastTradePrice == null || totalPL.compareTo(positionPL.add(tradingPL)) == 0 : positionMetrics;

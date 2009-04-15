@@ -85,6 +85,7 @@ public class ReconnectServerJob extends UIJob {
 						// already closed
 					}
 					ServerStatusIndicator.setDisconnected();
+					PhotonPlugin.getDefault().setSessionStartTime(null);
 
 					// connect
 					try {

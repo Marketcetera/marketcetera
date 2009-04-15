@@ -304,16 +304,16 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	private void busyRun(Runnable runnable) {
-	    BusyIndicator.showWhile(getViewSite().getShell().getDisplay(), runnable);
-    }
+		BusyIndicator.showWhile(getViewSite().getShell().getDisplay(), runnable);
+	}
 
 	private void remove(final MarketDataViewItem item) {
 		busyRun(new Runnable() {
 			@Override
 			public void run() {
-				item.dispose();
 				mItemMap.remove(item.getSymbol());
 				mItems.remove(item);
+				item.dispose();
 			}
 		});
 	}

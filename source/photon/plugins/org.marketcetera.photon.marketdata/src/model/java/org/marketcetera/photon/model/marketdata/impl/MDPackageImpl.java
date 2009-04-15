@@ -8,6 +8,7 @@ import org.marketcetera.photon.model.marketdata.MDFactory;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDPackage;
+import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -39,6 +40,13 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 	 * @generated
 	 */
 	private EClass mdTopOfBookEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass mdMarketstatEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -205,6 +213,51 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getMDMarketstat() {
+		return mdMarketstatEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMDMarketstat_ClosePrice() {
+		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMDMarketstat_CloseDate() {
+		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMDMarketstat_PreviousClosePrice() {
+		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMDMarketstat_PreviousCloseDate() {
+		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public MDFactory getMDFactory() {
 		return (MDFactory) getEFactoryInstance();
 	}
@@ -240,6 +293,12 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 		createEAttribute(mdTopOfBookEClass, MD_TOP_OF_BOOK__BID_PRICE);
 		createEAttribute(mdTopOfBookEClass, MD_TOP_OF_BOOK__ASK_SIZE);
 		createEAttribute(mdTopOfBookEClass, MD_TOP_OF_BOOK__ASK_PRICE);
+
+		mdMarketstatEClass = createEClass(MD_MARKETSTAT);
+		createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__CLOSE_PRICE);
+		createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__CLOSE_DATE);
+		createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE);
+		createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__PREVIOUS_CLOSE_DATE);
 	}
 
 	/**
@@ -272,6 +331,7 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 		// Add supertypes to classes
 		mdLatestTickEClass.getESuperTypes().add(this.getMDItem());
 		mdTopOfBookEClass.getESuperTypes().add(this.getMDItem());
+		mdMarketstatEClass.getESuperTypes().add(this.getMDItem());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(mdItemEClass, MDItem.class,
@@ -310,6 +370,25 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 				getMDTopOfBook_AskPrice(),
 				ecorePackage.getEBigDecimal(),
 				"askPrice", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+
+		initEClass(mdMarketstatEClass, MDMarketstat.class,
+				"MDMarketstat", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+		initEAttribute(
+				getMDMarketstat_ClosePrice(),
+				ecorePackage.getEBigDecimal(),
+				"closePrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(
+				getMDMarketstat_CloseDate(),
+				ecorePackage.getEDate(),
+				"closeDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(
+				getMDMarketstat_PreviousClosePrice(),
+				ecorePackage.getEBigDecimal(),
+				"previousClosePrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(
+				getMDMarketstat_PreviousCloseDate(),
+				ecorePackage.getEDate(),
+				"previousCloseDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);

@@ -14,7 +14,8 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleNotFoundException;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.model.marketdata.MDItem;
+import org.marketcetera.photon.model.marketdata.impl.MDItemImpl;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -33,7 +34,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implements
+public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? super T>> implements
 		IDataFlowManager<T, K> {
 
 	private final ModuleManager mModuleManager;
@@ -41,12 +42,19 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 	private final Map<K, T> mItems = new HashMap<K, T>();
 	private ModuleURN mSourceModule;
 
-	protected DataFlowManager(ModuleManager marketDataManager) {
-		mModuleManager = marketDataManager;
+	/**
+	 * Constructor.
+	 * 
+	 * @param moduleManager
+	 *            the module manager
+	 */
+	protected DataFlowManager(ModuleManager moduleManager) {
+		mModuleManager = moduleManager;
 	}
 
 	@Override
 	public final synchronized T getItem(K key) {
+		Validate.notNull(key);
 		T item;
 		if (!mItems.containsKey(key)) {
 			item = createItem(key);
@@ -79,6 +87,7 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 	}
 
 	private void startModule(ModuleURN module) {
+		assert module != null;
 		try {
 			if (!mModuleManager.getModuleInfo(module).getState().isStarted()) {
 				mModuleManager.start(module);
@@ -101,6 +110,7 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 	}
 
 	private void stopModule(ModuleURN module) {
+		assert module != null;
 		try {
 			if (mModuleManager.getModuleInfo(module).getState().isStarted()) {
 				mModuleManager.stop(module);
@@ -227,26 +237,46 @@ public abstract class DataFlowManager<T extends MDItem, K extends Key<T>> implem
 		 * @param data
 		 *            the unexpected data
 		 */
-		protected void reportUnexpectedData(Object data) {
-			Messages.DATA_FLOW_MANAGER_UNEXPECTED_DATA.warn(DataFlowManager.this, data, getRequest());
+		protected final void reportUnexpectedData(Object data) {
+			Messages.DATA_FLOW_MANAGER_UNEXPECTED_DATA.warn(DataFlowManager.this, data,
+					getRequest());
 		}
 
 		/**
 		 * Utility method to validates that a {@link SymbolExchangeEvent} has the expected symbol.
 		 * 
-		 * @param symbol
+		 * @param expected
 		 *            the expected symbol
 		 * @param event
 		 *            the incoming event
 		 * @return true if the symbols match, false otherwise
+		 * @throws IllegalArgumentException
+		 *             if any parameter is null
 		 */
-		protected boolean validateSymbol(String symbol, SymbolExchangeEvent event) {
-			final String newSymbol = event.getSymbol().getFullSymbol();
-			if (symbol.equals(newSymbol)) {
+		protected final boolean validateSymbol(String expected, SymbolExchangeEvent event) {
+			Validate.noNullElements(new Object[] { expected, event });
+			return validateSymbol(expected, event.getSymbol());
+		}
+
+		/**
+		 * Utility method to validates that a received event symbol against an expected one.
+		 * 
+		 * @param expected
+		 *            the expected symbol
+		 * @param symbol
+		 *            the symbol on the event
+		 * @return true if the symbols match, false otherwise
+		 * @throws IllegalArgumentException
+		 *             if expected is null
+		 */
+		protected final boolean validateSymbol(String expected, MSymbol symbol) {
+			Validate.notNull(expected);
+			final String newSymbol = symbol == null ? null : symbol.getFullSymbol();
+			if (expected.equals(newSymbol)) {
 				return true;
 			} else {
 				Messages.DATA_FLOW_MANAGER_EVENT_SYMBOL_MISMATCH.warn(DataFlowManager.this,
-						newSymbol, symbol);
+						newSymbol, expected);
 				return false;
 			}
 		}

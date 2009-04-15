@@ -54,7 +54,7 @@ public interface PositionMetrics {
      * Returns the P&L value of the positions closed during the current day. A positive value
      * indicates a profit and a negative value indicates a loss.
      * 
-     * @return the realized P&L, should never be null
+     * @return the realized P&L, null if unknown
      */
     BigDecimal getRealizedPL();
 

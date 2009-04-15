@@ -2,6 +2,7 @@ package org.marketcetera.photon.marketdata;
 
 import org.marketcetera.photon.internal.marketdata.MarketData;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
+import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -11,7 +12,7 @@ import com.google.inject.ImplementedBy;
 
 /**
  * Interface for accessing common market data.
- *
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.5.0
@@ -51,4 +52,20 @@ public interface IMarketData {
 	 *             occurs
 	 */
 	IMarketDataReference<MDTopOfBook> getTopOfBook(String symbol);
+
+	/**
+	 * Returns a reference to the market statistic data for the given symbol. If the data does not
+	 * exist, it will be created and wired up. The {@link IMarketDataReference#dispose() dispose}
+	 * method should be called when the data is no longer needed.
+	 * 
+	 * @param symbol
+	 *            the symbol
+	 * @return a reference to the data
+	 * @throws IllegalArgumentException
+	 *             if symbol is null
+	 * @throws IllegalStateException
+	 *             if the module framework is in an unexpected state, or if an unrecoverable error
+	 *             occurs
+	 */
+	IMarketDataReference<MDMarketstat> getMarketstat(String symbol);
 }

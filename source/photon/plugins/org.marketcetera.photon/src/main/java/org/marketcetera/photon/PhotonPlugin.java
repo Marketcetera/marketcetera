@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.Date;
 import java.util.logging.LogManager;
 
 import org.apache.log4j.BasicConfigurator;
@@ -115,7 +116,9 @@ public class PhotonPlugin
 	
 	private BrokerManager mBrokerManager;
 
-    private PositionEngine mPositionEngine;
+	private PositionEngine mPositionEngine;
+	
+	private SessionStartTimeProvider mSessionStartTimeProvider = new SessionStartTimeProvider();
 
 	/**
 	 * The constructor.
@@ -148,7 +151,9 @@ public class PhotonPlugin
 
 		initMessageFactory();
 		initTradeReportsHistory();
-		mPositionEngine = PositionEngineFactory.createFromReportHolders(mTradeReportsHistory.getAllMessagesList(), new ClientPositionSupport(), new PhotonPositionMarketData(MarketDataManager.getCurrent().getMarketData()));
+		mPositionEngine = PositionEngineFactory.createFromReportHolders(mTradeReportsHistory
+				.getAllMessagesList(), new ClientPositionSupport(), new PhotonPositionMarketData(
+				MarketDataManager.getCurrent().getMarketData(), mSessionStartTimeProvider));
 		context.registerService(PositionEngine.class.getName(), mPositionEngine, null);
 		initPhotonController();
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
@@ -544,5 +549,27 @@ public class PhotonPlugin
 				return Status.OK_STATUS;
 			}
 		}.schedule();
+	}
+	
+	/**
+	 * Returns an object that provides the currently effective session start time. Unlike the
+	 * PhotonPreferences.TRADING_HISTORY_START_TIME preference value which is just a time of day,
+	 * this value is the exact date object that was used during the last connection to the server.
+	 * 
+	 * @return the session start time provider
+	 */
+	public ISessionStartTimeProvider getSessionStartTimeProvider() {
+		return mSessionStartTimeProvider;
+	}
+	
+	/**
+	 * Sets the session start time.
+	 * 
+	 * @see PhotonPlugin#getSessionStartTimeProvider()
+	 * 
+	 * @param newSessionStartTime the new session start time
+	 */
+	public void setSessionStartTime(Date newSessionStartTime) {
+		mSessionStartTimeProvider.setSessionStartTime(newSessionStartTime);
 	}
 }

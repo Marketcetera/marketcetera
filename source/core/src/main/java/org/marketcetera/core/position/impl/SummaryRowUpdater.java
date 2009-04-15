@@ -97,13 +97,12 @@ public class SummaryRowUpdater {
     }
 
     private PositionMetrics add(PositionMetrics current, PositionMetrics augend) {
-        // by contract, incoming position, position, and realizedPL on the row should not be null
-        BigDecimal incomingPosition = current.getIncomingPosition().add(
-                augend.getIncomingPosition());
-        BigDecimal position = current.getPosition().add(augend.getPosition());
+        BigDecimal incomingPosition = add(current.getIncomingPosition(), augend
+                .getIncomingPosition());
+        BigDecimal position = add(current.getPosition(), augend.getPosition());
         BigDecimal positionPL = add(current.getPositionPL(), augend.getPositionPL());
         BigDecimal tradingPL = add(current.getTradingPL(), augend.getTradingPL());
-        BigDecimal realizedPL = current.getRealizedPL().add(augend.getRealizedPL());
+        BigDecimal realizedPL = add(current.getRealizedPL(), augend.getRealizedPL());
         BigDecimal unrealizedPL = add(current.getUnrealizedPL(), augend.getUnrealizedPL());
         BigDecimal totalPL = add(current.getTotalPL(), augend.getTotalPL());
         return new PositionMetricsImpl(incomingPosition, position, positionPL, tradingPL,
