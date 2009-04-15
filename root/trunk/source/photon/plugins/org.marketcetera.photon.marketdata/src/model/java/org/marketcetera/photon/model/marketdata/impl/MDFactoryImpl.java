@@ -60,6 +60,8 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
 			return createMDLatestTick();
 		case MDPackage.MD_TOP_OF_BOOK:
 			return createMDTopOfBook();
+		case MDPackage.MD_MARKETSTAT:
+			return createMDMarketstat();
 		default:
 			throw new IllegalArgumentException(
 					"The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -84,6 +86,16 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
 	public MDTopOfBook createMDTopOfBook() {
 		MDTopOfBookImpl mdTopOfBook = new MDTopOfBookImpl();
 		return mdTopOfBook;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public MDMarketstat createMDMarketstat() {
+		MDMarketstatImpl mdMarketstat = new MDMarketstatImpl();
+		return mdMarketstat;
 	}
 
 	/**

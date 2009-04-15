@@ -30,7 +30,7 @@ public class SummaryRowUpdaterTest {
         createAndAssert(list, "0", "0", "0", "0", "0", "0", "0");
 
         list.add(new PositionRowImpl(null, null, null, BigDecimal.ZERO));
-        createAndAssert(list, "0", "0", null, null, "0", null, null);
+        createAndAssert(list, "0", "0", null, null, null, null, null);
 
         list = new BasicEventList<PositionRow>();
         list.add(new PositionRowImpl("ABC", "SYZ", "123", PositionMetricsImplTest.createMetrics(
@@ -68,11 +68,11 @@ public class SummaryRowUpdaterTest {
         // add a position
         PositionRowImpl microsoft = new PositionRowImpl("MSFT", "Account", "Yoram", BigDecimal.ZERO);
         list.add(microsoft);
-        assertSummary(fixture, summary, "0", "0", null, null, "0", null, null);
+        assertSummary(fixture, summary, "0", "0", null, null, null, null, null);
         // start over with a position already in the list
         fixture.dispose();
         fixture = new SummaryRowUpdater(summary);
-        assertSummary(fixture, summary, "0", "0", null, null, "0", null, null);
+        assertSummary(fixture, summary, "0", "0", null, null, null, null, null);
         // update position
         microsoft.setPositionMetrics(PositionMetricsImplTest.createMetrics("0", "5", "-4", "3",
                 "2", "1", "7"));
@@ -121,7 +121,7 @@ public class SummaryRowUpdaterTest {
             String incomingPosition, String position, String positional, String trading,
             String realized, String unrealized, String total) {
         assertThat(fixture.getSummary(), sameInstance(summary));
-        PositionMetricsImplTest.assertPNL(summary.getPositionMetrics(), incomingPosition, position,
+        PositionMetricsImplTest.assertPositionMetrics(summary.getPositionMetrics(), incomingPosition, position,
                 positional, trading, realized, unrealized, total);
     }
 

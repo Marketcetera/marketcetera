@@ -62,18 +62,43 @@ public interface MarketDataSupport {
     void removeSymbolChangeListener(String symbol, SymbolChangeListener listener);
 
     /**
-     * Interface to notify listeners of changes.
+     * Interface to notify listeners of changes. Instead of implementing this interface, extend
+     * {@link SymbolChangeListenerBase}.
      */
     @ClassVersion("$Id$")
     public interface SymbolChangeListener {
 
         /**
-         * Callback for change notification.
+         * Callback for trade notification.
          * 
          * @param event
          *            event describing the change
          */
-        void symbolChanged(SymbolChangeEvent event);
+        void symbolTraded(SymbolChangeEvent event);
+
+        /**
+         * Callback for close price changes.
+         * 
+         * @param event
+         *            event describing the change
+         */
+        void closePriceChanged(SymbolChangeEvent event);
+    }
+
+    /**
+     * No-op implementation of {@link SymbolChangeListener}. Subclasses can extend callbacks they
+     * care about.
+     */
+    @ClassVersion("$Id$")
+    public abstract class SymbolChangeListenerBase implements SymbolChangeListener {
+
+        @Override
+        public void closePriceChanged(SymbolChangeEvent event) {
+        }
+
+        @Override
+        public void symbolTraded(SymbolChangeEvent event) {
+        }
     }
 
     /**

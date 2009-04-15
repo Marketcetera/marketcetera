@@ -193,6 +193,70 @@ public interface MDPackage extends EPackage {
 	int MD_TOP_OF_BOOK_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 4;
 
 	/**
+	 * The meta object id for the '{@link org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl <em>Marketstat</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl
+	 * @see org.marketcetera.photon.model.marketdata.impl.MDPackageImpl#getMDMarketstat()
+	 * @generated
+	 */
+	int MD_MARKETSTAT = 3;
+
+	/**
+	 * The feature id for the '<em><b>Symbol</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_MARKETSTAT__SYMBOL = MD_ITEM__SYMBOL;
+
+	/**
+	 * The feature id for the '<em><b>Close Price</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_MARKETSTAT__CLOSE_PRICE = MD_ITEM_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Close Date</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_MARKETSTAT__CLOSE_DATE = MD_ITEM_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Previous Close Price</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE = MD_ITEM_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Previous Close Date</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_MARKETSTAT__PREVIOUS_CLOSE_DATE = MD_ITEM_FEATURE_COUNT + 3;
+
+	/**
+	 * The number of structural features of the '<em>Marketstat</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_MARKETSTAT_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 4;
+
+	/**
 	 * Returns the meta object for class '{@link org.marketcetera.photon.model.marketdata.MDItem <em>Item</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -298,6 +362,60 @@ public interface MDPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getMDTopOfBook_AskPrice();
+
+	/**
+	 * Returns the meta object for class '{@link org.marketcetera.photon.model.marketdata.MDMarketstat <em>Marketstat</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Marketstat</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDMarketstat
+	 * @generated
+	 */
+	EClass getMDMarketstat();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getClosePrice <em>Close Price</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Close Price</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getClosePrice()
+	 * @see #getMDMarketstat()
+	 * @generated
+	 */
+	EAttribute getMDMarketstat_ClosePrice();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getCloseDate <em>Close Date</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Close Date</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getCloseDate()
+	 * @see #getMDMarketstat()
+	 * @generated
+	 */
+	EAttribute getMDMarketstat_CloseDate();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousClosePrice <em>Previous Close Price</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Previous Close Price</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousClosePrice()
+	 * @see #getMDMarketstat()
+	 * @generated
+	 */
+	EAttribute getMDMarketstat_PreviousClosePrice();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Previous Close Date</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate()
+	 * @see #getMDMarketstat()
+	 * @generated
+	 */
+	EAttribute getMDMarketstat_PreviousCloseDate();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -406,6 +524,50 @@ public interface MDPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute MD_TOP_OF_BOOK__ASK_PRICE = eINSTANCE.getMDTopOfBook_AskPrice();
+
+		/**
+		 * The meta object literal for the '{@link org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl <em>Marketstat</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl
+		 * @see org.marketcetera.photon.model.marketdata.impl.MDPackageImpl#getMDMarketstat()
+		 * @generated
+		 */
+		EClass MD_MARKETSTAT = eINSTANCE.getMDMarketstat();
+
+		/**
+		 * The meta object literal for the '<em><b>Close Price</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MD_MARKETSTAT__CLOSE_PRICE = eINSTANCE.getMDMarketstat_ClosePrice();
+
+		/**
+		 * The meta object literal for the '<em><b>Close Date</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MD_MARKETSTAT__CLOSE_DATE = eINSTANCE.getMDMarketstat_CloseDate();
+
+		/**
+		 * The meta object literal for the '<em><b>Previous Close Price</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE = eINSTANCE
+				.getMDMarketstat_PreviousClosePrice();
+
+		/**
+		 * The meta object literal for the '<em><b>Previous Close Date</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MD_MARKETSTAT__PREVIOUS_CLOSE_DATE = eINSTANCE
+				.getMDMarketstat_PreviousCloseDate();
 
 	}
 

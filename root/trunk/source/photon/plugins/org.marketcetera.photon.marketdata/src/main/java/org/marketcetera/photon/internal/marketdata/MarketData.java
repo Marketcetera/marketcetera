@@ -8,6 +8,7 @@ import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
+import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -34,6 +35,7 @@ public class MarketData implements IMarketData {
 	private final Multiset<Key<? extends MDItem>> mReferences = HashMultiset.create();
 	private final ILatestTickManager mLatestTickManager;
 	private final ITopOfBookManager mTopOfBookManager;
+	private final IMarketstatManager mMarketstatManager;
 
 	/**
 	 * Constructor.
@@ -42,14 +44,17 @@ public class MarketData implements IMarketData {
 	 *            the manager for latest tick requests
 	 * @param topOfBookManager
 	 *            the manager for top of book requests
+	 * @param marketstatManager
+	 *            the manager for statistic requests
 	 * @throws IllegalArgumentException
 	 *             if any parameter is null
 	 */
 	@Inject
-	public MarketData(ILatestTickManager latestTickManager, ITopOfBookManager topOfBookManager) {
-		Validate.noNullElements(new Object[] { latestTickManager, topOfBookManager });
+	public MarketData(ILatestTickManager latestTickManager, ITopOfBookManager topOfBookManager, IMarketstatManager marketstatManager) {
+		Validate.noNullElements(new Object[] { latestTickManager, topOfBookManager, marketstatManager });
 		mLatestTickManager = latestTickManager;
 		mTopOfBookManager = topOfBookManager;
+		mMarketstatManager = marketstatManager;
 	}
 
 	/**
@@ -63,6 +68,7 @@ public class MarketData implements IMarketData {
 	public void setSourceModule(ModuleURN module) {
 		setLatestTickSourceModule(module);
 		setTopOfBookSourceModule(module);
+		setMarketstatSourceModule(module);
 	}
 
 	/**
@@ -89,6 +95,18 @@ public class MarketData implements IMarketData {
 		mTopOfBookManager.setSourceModule(module);
 	}
 
+	/**
+	 * Sets the source for the market statistic data.
+	 * 
+	 * @param module
+	 *            the source module
+	 * @throws IllegalArgumentException
+	 *             if module is null
+	 */
+	public void setMarketstatSourceModule(ModuleURN module) {
+		mMarketstatManager.setSourceModule(module);
+	}
+
 	@Override
 	public synchronized IMarketDataReference<MDLatestTick> getLatestTick(String symbol) {
 		Validate.notNull(symbol);
@@ -107,18 +125,28 @@ public class MarketData implements IMarketData {
 		}
 	}
 
+	@Override
+	public IMarketDataReference<MDMarketstat> getMarketstat(String symbol) {
+		Validate.notNull(symbol);
+		synchronized (mMarketstatManager) {
+			return new Reference<MDMarketstat, MarketstatKey>(mMarketstatManager, new MarketstatKey(
+					symbol));
+		}
+	}
+
 	/**
 	 * A reference to a market data item.
 	 */
 	@ClassVersion("$Id$")
 	private class Reference<T extends MDItem, K extends Key<T>> implements IMarketDataReference<T> {
 
-		private final IDataFlowManager<T, K> mManager;
+		private final IDataFlowManager<? extends T, K> mManager;
 		private final T mItem;
 		private final K mKey;
 		private AtomicBoolean mDisposed = new AtomicBoolean();
 
-		public Reference(IDataFlowManager<T, K> manager, K key) {
+		public Reference(IDataFlowManager<? extends T, K> manager, K key) {
+			assert manager != null && key != null;
 			mManager = manager;
 			if (!mReferences.contains(key)) {
 				mManager.startFlow(key);

@@ -14,6 +14,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
+import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
 import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
@@ -27,66 +28,66 @@ import org.marketcetera.trade.MSymbol;
  */
 public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick, LatestTickKey> {
 
-    @Override
-    protected IDataFlowManager<MDLatestTick, LatestTickKey> createFixture(
-            ModuleManager moduleManager) {
-        return new LatestTickManager(moduleManager);
-    }
+	@Override
+	protected IDataFlowManager<MDLatestTickImpl, LatestTickKey> createFixture(
+			ModuleManager moduleManager) {
+		return new LatestTickManager(moduleManager);
+	}
 
-    @Override
-    protected LatestTickKey createKey1() {
-        return new LatestTickKey("IBM");
-    }
+	@Override
+	protected LatestTickKey createKey1() {
+		return new LatestTickKey("IBM");
+	}
 
-    @Override
-    protected LatestTickKey createKey2() {
-        return new LatestTickKey("METC");
-    }
+	@Override
+	protected LatestTickKey createKey2() {
+		return new LatestTickKey("METC");
+	}
 
-    @Override
-    protected LatestTickKey createKey3() {
-        return new LatestTickKey("JAVA");
-    }
+	@Override
+	protected LatestTickKey createKey3() {
+		return new LatestTickKey("JAVA");
+	}
 
-    @Override
-    protected void validateInitialConditions(MDLatestTick item, LatestTickKey key) {
-        assertThat(item.getSymbol(), is(key.getSymbol()));
-        assertThat(item.getPrice(), nullValue());
-    }
+	@Override
+	protected void validateInitialConditions(MDLatestTick item, LatestTickKey key) {
+		assertThat(item.getSymbol(), is(key.getSymbol()));
+		assertThat(item.getPrice(), nullValue());
+	}
 
-    @Override
-    protected Object createEvent1(LatestTickKey key) {
-        return createEvent(key.getSymbol(), 1, 6);
-    }
+	@Override
+	protected Object createEvent1(LatestTickKey key) {
+		return createEvent(key.getSymbol(), 1, 6);
+	}
 
-    @Override
-    protected Object createEvent2(LatestTickKey key) {
-        return createEvent(key.getSymbol(), 10, 7);
-    }
+	@Override
+	protected Object createEvent2(LatestTickKey key) {
+		return createEvent(key.getSymbol(), 10, 7);
+	}
 
-    @Override
-    protected void validateState1(MDLatestTick item) {
-        assertThat(item.getPrice(), comparesEqualTo(1));
-        assertThat(item.getSize(), comparesEqualTo(6));
-    }
+	@Override
+	protected void validateState1(MDLatestTick item) {
+		assertThat(item.getPrice(), comparesEqualTo(1));
+		assertThat(item.getSize(), comparesEqualTo(6));
+	}
 
-    @Override
-    protected void validateState2(MDLatestTick item) {
-        assertThat(item.getPrice(), comparesEqualTo(10));
-        assertThat(item.getSize(), comparesEqualTo(7));
-    }
+	@Override
+	protected void validateState2(MDLatestTick item) {
+		assertThat(item.getPrice(), comparesEqualTo(10));
+		assertThat(item.getSize(), comparesEqualTo(7));
+	}
 
-    private Object createEvent(String symbol, int price, int size) {
-        return new TradeEvent(1L, System.currentTimeMillis(), new MSymbol(symbol), "Q", new BigDecimal(price),
-                new BigDecimal(size));
-    }
+	private Object createEvent(String symbol, int price, int size) {
+		return new TradeEvent(1L, System.currentTimeMillis(), new MSymbol(symbol), "Q",
+				new BigDecimal(price), new BigDecimal(size));
+	}
 
-    @Override
-    protected void validateRequest(LatestTickKey key, MarketDataRequest request) {
-        assertThat(request.getContent().size(), is(1));
-        assertThat(request.getContent(), hasItem(Content.LATEST_TICK));
-        assertThat(request.getSymbols().length, is(1));
-        assertThat(request.getSymbols(), hasItemInArray(key.getSymbol()));
-    }
+	@Override
+	protected void validateRequest(LatestTickKey key, MarketDataRequest request) {
+		assertThat(request.getContent().size(), is(1));
+		assertThat(request.getContent(), hasItem(Content.LATEST_TICK));
+		assertThat(request.getSymbols().length, is(1));
+		assertThat(request.getSymbols(), hasItemInArray(key.getSymbol()));
+	}
 
 }

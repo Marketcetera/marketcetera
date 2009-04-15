@@ -44,7 +44,7 @@ class PositionMetricsImpl implements PositionMetrics {
      *             if incoming position is null
      */
     PositionMetricsImpl(BigDecimal incomingPosition) {
-        this(incomingPosition, incomingPosition, null, null, BigDecimal.ZERO, null, null);
+        this(incomingPosition, incomingPosition, null, null, null, null, null);
     }
 
     /**
@@ -55,21 +55,21 @@ class PositionMetricsImpl implements PositionMetrics {
      * @param position
      *            the position, cannot be null
      * @param positionPL
-     *            the position P&L value
+     *            the position P&L value, null if unknown
      * @param tradingPL
-     *            the trading P&L value
+     *            the trading P&L value, null if unknown
      * @param realizedPL
-     *            the realized P&L value, cannot be null
+     *            the realized P&L value, null if unknown
      * @param unrealizedPL
-     *            the unrealized P&L value
+     *            the unrealized P&L value, null if unknown
      * @param totalPL
-     *            the total P&L value
+     *            the total P&L value, null if unknown
      * @throws IllegalArgumentException
-     *             if incoming position, position or realizedPL is null
+     *             if incoming position or position is null
      */
     PositionMetricsImpl(BigDecimal incomingPosition, BigDecimal position, BigDecimal positionPL,
             BigDecimal tradingPL, BigDecimal realizedPL, BigDecimal unrealizedPL, BigDecimal totalPL) {
-        Validate.noNullElements(new Object[] { incomingPosition, position, realizedPL });
+        Validate.noNullElements(new Object[] { incomingPosition, position });
         this.mIncomingPosition = incomingPosition;
         this.mPosition = position;
         this.mPositionPL = positionPL;
