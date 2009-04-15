@@ -144,7 +144,7 @@ class RubyStrategy < Strategy
       set_property("onBid",
                    bid.toString())
   end
-  def on_statistics(statistics)
+  def on_marketstat(statistics)
     shouldFail = get_parameter("shouldFailOnStatistics")
     if(shouldFail != nil) 
         10 / 0

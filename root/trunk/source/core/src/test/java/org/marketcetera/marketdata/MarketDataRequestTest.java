@@ -15,7 +15,7 @@ import static org.marketcetera.marketdata.MarketDataRequest.TYPE_KEY;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.STATISTICS;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.MARKET_STAT;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOTAL_VIEW;
 import static org.marketcetera.marketdata.MarketDataRequest.Type.SNAPSHOT;
@@ -58,9 +58,9 @@ public class MarketDataRequestTest
     private static final String[][] symbolArrays = new String[][] { {}, { ""," " }, { "METC" }, { "GOOG","ORCL" } };
     private static final String[] providers = new String[] { null, "", "invalid-provider", "bogus" };
     private static final String[] exchanges = new String[] { null, "", "invalid-exchange", "Q" };
-    private static final Content[] contents = new Content[] { null, TOP_OF_BOOK, STATISTICS, LATEST_TICK, OPEN_BOOK, TOTAL_VIEW, LEVEL_2 };
+    private static final Content[] contents = new Content[] { null, TOP_OF_BOOK, MARKET_STAT, LATEST_TICK, OPEN_BOOK, TOTAL_VIEW, LEVEL_2 };
     private static final Content[][] contentArrays = new Content[][] { {}, { null }, { TOP_OF_BOOK }, { LATEST_TICK, OPEN_BOOK }, { null, LEVEL_2 } };
-    private static final String[][] contentStringArrays = new String[][] { {}, { null }, { "" }, { null, "", LATEST_TICK.toString() }, { TOP_OF_BOOK.toString() }, { OPEN_BOOK.toString(), STATISTICS.toString().toLowerCase() }, { "invalid-content" } };
+    private static final String[][] contentStringArrays = new String[][] { {}, { null }, { "" }, { null, "", LATEST_TICK.toString() }, { TOP_OF_BOOK.toString() }, { OPEN_BOOK.toString(), MARKET_STAT.toString().toLowerCase() }, { "invalid-content" } };
     private static final Type[] types = new Type[] { null, SNAPSHOT, SUBSCRIPTION };
     // alternate representation of values
     private static final String[] contentStrings = new String[] { null, "", "not-a-content", "TOP_OF_BOOK", "level_2", "StATisTicS" };
@@ -110,7 +110,7 @@ public class MarketDataRequestTest
         String provider = "provider";
         String exchange = "exchange";
         Type type = SNAPSHOT;
-        Content content = STATISTICS;
+        Content content = MARKET_STAT;
         for(int keyCounter=0;keyCounter<keyCount;keyCounter++) {
             String requestString = String.format("%s=%s:%s=%s:%s=%s:%s=%s:%s=%s",
                                                  symbolKeys[keyCounter],

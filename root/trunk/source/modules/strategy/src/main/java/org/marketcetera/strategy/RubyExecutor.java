@@ -104,8 +104,8 @@ class RubyExecutor
                         "on_ask"); //$NON-NLS-1$
         methodNames.put("onBid", //$NON-NLS-1$
                         "on_bid"); //$NON-NLS-1$
-        methodNames.put("onStatistics", //$NON-NLS-1$
-                        "on_statistics"); //$NON-NLS-1$
+        methodNames.put("onMarketstat", //$NON-NLS-1$
+                        "on_marketstat"); //$NON-NLS-1$
         methodNames.put("onCancelReject", //$NON-NLS-1$
                         "on_cancel_reject"); //$NON-NLS-1$
         methodNames.put("onExecutionReport", //$NON-NLS-1$

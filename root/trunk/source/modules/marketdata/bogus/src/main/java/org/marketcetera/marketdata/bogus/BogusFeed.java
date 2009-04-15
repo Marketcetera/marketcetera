@@ -3,7 +3,7 @@ package org.marketcetera.marketdata.bogus;
 import static org.marketcetera.marketdata.Capability.LATEST_TICK;
 import static org.marketcetera.marketdata.Capability.LEVEL_2;
 import static org.marketcetera.marketdata.Capability.OPEN_BOOK;
-import static org.marketcetera.marketdata.Capability.STATISTICS;
+import static org.marketcetera.marketdata.Capability.MARKET_STAT;
 import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.Capability.TOTAL_VIEW;
 
@@ -233,7 +233,7 @@ public class BogusFeed
     /**
      * capabilities for BogusFeed - note that these are not dynamic as Bogus requires no provisioning
      */
-    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,STATISTICS));
+    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT));
     /**
      * indicates if the feed has been logged in to
      */
@@ -369,7 +369,7 @@ public class BogusFeed
                                 doLatestTick(symbol,
                                              request.getExchange());
                                 break;
-                            case STATISTICS :
+                            case MARKET_STAT :
                                 doStatistics(symbol,
                                              request.getExchange());
                                 break;

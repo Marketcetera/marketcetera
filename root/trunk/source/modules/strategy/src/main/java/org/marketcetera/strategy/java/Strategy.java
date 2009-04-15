@@ -4,7 +4,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.SymbolStatisticEvent;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
@@ -43,10 +43,10 @@ public class Strategy
     {
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.RunningStrategy#onStatistics(org.marketcetera.event.SymbolStatisticEvent)
+     * @see org.marketcetera.strategy.RunningStrategy#onMarketstat(org.marketcetera.event.MarketstatEvent)
      */
     @Override
-    public void onStatistics(SymbolStatisticEvent inStatistics)
+    public void onMarketstat(MarketstatEvent inStatistics)
     {
     }
     /*

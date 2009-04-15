@@ -39,7 +39,7 @@ class __TEMPLATE_CLASS_NAME__ < Strategy
     ##########################################################
     # Executed when the strategy receives a statistics event #
     ##########################################################
-    def on_statistics(statistics)
+    def on_marketstat(statistics)
       
     end
     

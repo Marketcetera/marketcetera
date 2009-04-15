@@ -9,7 +9,7 @@ import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
-import org.marketcetera.event.SymbolStatisticEvent;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.strategy.AbstractRunningStrategy;
@@ -56,12 +56,12 @@ public class Strategy
         on_bid(inBid);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.RunningStrategy#onStatistics(org.marketcetera.event.SymbolStatisticEvent)
+     * @see org.marketcetera.strategy.RunningStrategy#onMarketstat(org.marketcetera.event.MarketstatEvent)
      */
     @Override
-    public void onStatistics(SymbolStatisticEvent inStatistics)
+    public void onMarketstat(MarketstatEvent inStatistics)
     {
-        on_statistics(inStatistics);
+        on_marketstat(inStatistics);
     }
     /*
      * (non-Javadoc)
@@ -145,11 +145,11 @@ public class Strategy
     {
     }
     /**
-     * Invoked when the <code>Strategy</code> receives a {@link SymbolStatisticEvent}.
+     * Invoked when the <code>Strategy</code> receives a {@link MarketstatEvent}.
      * 
-     * @param inStatistics a <code>SymbolStatisticEvent</code> value
+     * @param inStatistics a <code>MarketstatEvent</code> value
      */
-    protected void on_statistics(SymbolStatisticEvent inStatistics)
+    protected void on_marketstat(MarketstatEvent inStatistics)
     {
     }
     /**

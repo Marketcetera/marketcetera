@@ -804,7 +804,7 @@ public class MarketDataRequest
         /**
          * Statistics for the symbol, as available
          */
-        STATISTICS,
+        MARKET_STAT,
         /**
          * NASDAQ TotalView data
          */

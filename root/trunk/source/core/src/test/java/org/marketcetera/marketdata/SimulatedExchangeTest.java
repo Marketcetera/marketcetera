@@ -29,7 +29,7 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.QuantityTuple;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
-import org.marketcetera.event.SymbolStatisticEvent;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
@@ -920,11 +920,11 @@ public class SimulatedExchangeTest
     /**
      * Verifies symbol statistical data.
      *
-     * @param inStatistics a <code>SymbolStatisticEvent</code> value containing the actual value
+     * @param inStatistics a <code>MarketstatEvent</code> value containing the actual value
      * @param inSymbol an <code>MSymbol</code> value containing the expected symbol
      * @throws Exception if an error occurs
      */
-    private void verifyStatistics(SymbolStatisticEvent inStatistics,
+    private void verifyStatistics(MarketstatEvent inStatistics,
                                   MSymbol inSymbol)
         throws Exception
     {
@@ -936,6 +936,12 @@ public class SimulatedExchangeTest
         assertNotNull(inStatistics.getVolume());
         assertNotNull(inStatistics.getCloseDate());
         assertNotNull(inStatistics.getPreviousCloseDate());
+        assertNotNull(inStatistics.getHighTime());
+        assertNotNull(inStatistics.getLowTime());
+        assertNotNull(inStatistics.getOpenExchange());
+        assertNotNull(inStatistics.getCloseExchange());
+        assertNotNull(inStatistics.getHighExchange());
+        assertNotNull(inStatistics.getLowExchange());
    }
     /**
      * Verifies that the given exchange and symbol will produce the expected snapshots. 
