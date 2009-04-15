@@ -6,7 +6,7 @@ import org.marketcetera.trade.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.SymbolStatisticEvent;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -205,7 +205,7 @@ public class JavaStrategy
     }
     
     @Override
-    public void onStatistics(SymbolStatisticEvent statistics)
+    public void onMarketstat(MarketstatEvent statistics)
     {
         String shouldFail = getParameter("shouldFailOnStatistics");
         if(shouldFail != null) {

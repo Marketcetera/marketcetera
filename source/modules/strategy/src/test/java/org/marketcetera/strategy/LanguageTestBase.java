@@ -2736,7 +2736,7 @@ public abstract class LanguageTestBase
         verifyStrategyReady(strategyURN);
     }
     /**
-     * Tests the ability for a strategy to request and receive {@link org.marketcetera.marketdata.MarketDataRequest.Content#STATISTICS} data.
+     * Tests the ability for a strategy to request and receive {@link org.marketcetera.marketdata.MarketDataRequest.Content#MARKET_STAT} data.
      *
      * @throws Exception if an error occurs
      */
@@ -2748,7 +2748,7 @@ public abstract class LanguageTestBase
         verifyPropertyNull("onStatistics");
         Properties parameters = new Properties();
         parameters.setProperty("content",
-                               "STATISTICS");
+                               "MARKET_STAT");
         getMarketData(BogusFeedModuleFactory.IDENTIFIER,
                       "GOOG,YHOO,MSFT,METC",
                       false,

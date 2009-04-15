@@ -1,6 +1,7 @@
 package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertEquals;
+import static org.marketcetera.marketdata.DateUtils.*;
 import static org.marketcetera.marketdata.Messages.INVALID_DATE;
 
 import java.text.DateFormat;
@@ -8,6 +9,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
@@ -92,8 +95,8 @@ public class DateUtilsTest
                             throws Exception
                         {
                             DateUtils.stringToDate(String.format("%s%s",
-                                                                                   dateString,
-                                                                                   tzString));
+                                                                 dateString,
+                                                                 tzString));
                         }
                     };
                     // date & time
@@ -102,8 +105,8 @@ public class DateUtilsTest
                             throws Exception
                         {
                             DateUtils.stringToDate(String.format("%sT%s",
-                                                                                   dateString,
-                                                                                   timeString));
+                                                                 dateString,
+                                                                 timeString));
                         }
                     };
                     // date, time, & tz
@@ -112,9 +115,9 @@ public class DateUtilsTest
                             throws Exception
                         {
                             DateUtils.stringToDate(String.format("%sT%s%s",
-                                                                                   dateString,
-                                                                                   timeString,
-                                                                                   tzString));
+                                                                 dateString,
+                                                                 timeString,
+                                                                 tzString));
                         }
                     };
                 }
@@ -133,17 +136,17 @@ public class DateUtilsTest
                     DateUtils.stringToDate(dateString);
                     // date & tz
                     DateUtils.stringToDate(String.format("%s%s",
-                                                                           dateString,
-                                                                           tzString));
+                                                         dateString,
+                                                         tzString));
                     // date & time
                     DateUtils.stringToDate(String.format("%sT%s",
-                                                                           dateString,
-                                                                           timeString));
+                                                         dateString,
+                                                         timeString));
                     // date, time, & tz
                     DateUtils.stringToDate(String.format("%sT%s%s",
-                                                                           dateString,
-                                                                           timeString,
-                                                                           tzString));
+                                                         dateString,
+                                                         timeString,
+                                                         tzString));
                 }
             }
         }
@@ -160,6 +163,32 @@ public class DateUtilsTest
         doDateTest("19880319T0000",
                    "19880319T000000000Z",
                    "Friday, March 18, 1988 7:00:00 PM EST");
+    }
+    /**
+     * Tests that specifying a particular format returns the expected result.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void specificFormats()
+        throws Exception
+    {
+        DateTimeFormatter[] formats = new DateTimeFormatter[] { MILLIS_WITH_TZ,MILLIS,SECONDS_WITH_TZ,SECONDS,MINUTES_WITH_TZ,MINUTES,DAYS_WITH_TZ,DAYS };
+        new ExpectedFailure<NullPointerException>(null) {
+            protected void run()
+                throws Exception
+            {
+                DateUtils.dateToString(new Date(),
+                                       null);
+            }
+        };
+        // take a date and make sure it comes out correctly when asking for a specific format
+        Date testDate = new Date();
+        for(DateTimeFormatter format : formats) {
+            assertEquals(format.print(new DateTime(testDate)),
+                         DateUtils.dateToString(testDate,
+                                                format));
+        }
     }
     /**
      * Verifies the given ISO 8601 date is parsed correctly.

@@ -24,7 +24,7 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.HasSymbol;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
-import org.marketcetera.event.SymbolStatisticEvent;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.MSymbol;
@@ -156,10 +156,10 @@ public final class SimulatedExchange
      * unrelated random data.
      * 
      * @param inSymbol an <code>MSymbol</code> value
-     * @return a <code>SymbolStatisticEvent</code> value
+     * @return a <code>MarketstatEvent</code> value
      */
     @Override
-    public SymbolStatisticEvent getStatistics(MSymbol inSymbol)
+    public MarketstatEvent getStatistics(MSymbol inSymbol)
     {
         if(inSymbol == null) {
             throw new NullPointerException();
@@ -198,7 +198,7 @@ public final class SimulatedExchange
         // calculate low price (the min of current, open, and close - 0.00-4.99 inclusive)
         BigDecimal lowPrice = currentValue.min(openPrice).min(closePrice).subtract(randomDecimalDifference(5).abs());
         // ready to return the data
-        return new SymbolStatisticEvent(inSymbol,
+        return new MarketstatEvent(inSymbol,
                                         new Date(currentTime),
                                         openPrice,
                                         highPrice,
@@ -207,7 +207,13 @@ public final class SimulatedExchange
                                         previousClosePrice,
                                         randomInteger(100000),
                                         new Date(currentTime-(1000*60*60*8)),
-                                        new Date(currentTime-(1000*60*60*24)));
+                                        new Date(currentTime-(1000*60*60*24)),
+                                        new Date(currentTime-(1000*60*60*4)),
+                                        new Date(currentTime-(1000*60*60*4)),
+                                        getCode(),
+                                        getCode(),
+                                        getCode(),
+                                        getCode());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.Exchange#getStatistics(org.marketcetera.trade.MSymbol, org.marketcetera.core.publisher.ISubscriber)
@@ -781,7 +787,7 @@ public final class SimulatedExchange
                     lastDepthOfBook = newDepthOfBook;
                 }
             }
-            if(inEvent instanceof SymbolStatisticEvent) {
+            if(inEvent instanceof MarketstatEvent) {
                 // statistics are always published
                 publisher.publish(inEvent);
             }
@@ -1106,7 +1112,7 @@ public final class SimulatedExchange
                 case STREAM :
                     return inData instanceof SymbolExchangeEvent;
                 case STATISTICS :
-                    return inData instanceof SymbolStatisticEvent;
+                    return inData instanceof MarketstatEvent;
                 default :
                     throw new UnsupportedOperationException();
             }

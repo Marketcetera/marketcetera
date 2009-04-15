@@ -37,7 +37,7 @@ public enum Capability
     /**
      * the market data feed is able to return statistical data
      */
-    STATISTICS,
+    MARKET_STAT,
     /**
      * the market data feed is able to return the latest trade
      */

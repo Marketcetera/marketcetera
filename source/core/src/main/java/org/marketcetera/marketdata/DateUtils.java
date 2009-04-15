@@ -22,7 +22,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 public class DateUtils
 {
     private static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,
-                                                                                                   4).toFormatter();
+                                                                                            4).toFormatter();
     private static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
     private static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
     private static final DateTimeFormatter T = new DateTimeFormatterBuilder().appendLiteral('T').toFormatter();
@@ -35,29 +35,53 @@ public class DateUtils
                                                                                                     2,
                                                                                                     4).toFormatter();
     /**
+     * date format to millisecond precision with timezone: <code>yyyyMMdd'T'HHmmssSSSZ</code>
+     */
+    public static final DateTimeFormatter MILLIS_WITH_TZ = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(MILLI).append(TZ).toFormatter().withZone(DateTimeZone.UTC);
+    /**
+     * date format to millisecond precision without timezone: <code>yyyyMMdd'T'HHmmssSSS</code>
+     */
+    public static final DateTimeFormatter MILLIS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(MILLI).toFormatter().withZone(DateTimeZone.UTC);
+    /**
+     * date format to second precision with timezone: <code>yyyyMMdd'T'HHmmssZ</code>
+     */
+    public static final DateTimeFormatter SECONDS_WITH_TZ = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(TZ).toFormatter().withZone(DateTimeZone.UTC);
+    /**
+     * date format to second precision without timezone: <code>yyyyMMdd'T'HHmmss</code>
+     */
+    public static final DateTimeFormatter SECONDS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).toFormatter().withZone(DateTimeZone.UTC);
+    /**
+     * date format to minute precision with timezone: <code>yyyyMMdd'T'HHmmZ</code>
+     */
+    public static final DateTimeFormatter MINUTES_WITH_TZ = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(TZ).toFormatter().withZone(DateTimeZone.UTC);
+    /**
+     * date format to minute precision without timezone: <code>yyyyMMdd'T'HHmm</code>
+     */
+    public static final DateTimeFormatter MINUTES =  new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).toFormatter().withZone(DateTimeZone.UTC);
+    /**
+     * date format to day-of-month precision with timezone: <code>yyyyMMddZ</code>
+     */
+    public static final DateTimeFormatter DAYS_WITH_TZ = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(TZ).toFormatter().withZone(DateTimeZone.UTC);
+    /**
+     * date format to day-of-month precision without timezone: <code>yyyyMMdd</code>
+     */
+    public static final DateTimeFormatter DAYS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter().withZone(DateTimeZone.UTC);
+    /**
      * valid date formats
      */
     private static final DateTimeFormatter[] DATE_FORMATS = new DateTimeFormatter[] {
-      // yyyyMMdd'T'HHmmssSSSZ
-      new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(MILLI).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
-      // yyyyMMdd'T'HHmmssSSS
-      new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(MILLI).toFormatter().withZone(DateTimeZone.UTC),
-      // yyyyMMdd'T'HHmmssZ
-      new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
-      // yyyyMMdd'T'HHmmss
-      new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).toFormatter().withZone(DateTimeZone.UTC),
-      // yyyyMMdd'T'HHmmZ
-      new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
-      // yyyyMMdd'T'HHmm
-      new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).toFormatter().withZone(DateTimeZone.UTC),
-      // yyyyMMddZ
-      new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(TZ).toFormatter().withZone(DateTimeZone.UTC),
-      // yyyyMMdd
-      new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter().withZone(DateTimeZone.UTC) };
+      MILLIS_WITH_TZ,
+      MILLIS,
+      SECONDS_WITH_TZ,
+      SECONDS,
+      MINUTES_WITH_TZ,
+      MINUTES,
+      DAYS_WITH_TZ,
+      DAYS };
     /**
      * default date pattern
      */
-    private static final DateTimeFormatter DEFAULT_FORMAT = DATE_FORMATS[0];
+    private static final DateTimeFormatter DEFAULT_FORMAT = MILLIS_WITH_TZ;
     /**
      * Converts the given <code>Date</code> value to a <code>String</code> representation usable with
      * {@link MarketDataRequest} objects.
@@ -73,7 +97,21 @@ public class DateUtils
      */
     public static String dateToString(Date inDate)
     {
-        return DEFAULT_FORMAT.print(new DateTime(inDate));
+        return dateToString(inDate,
+                            DEFAULT_FORMAT);
+    }
+    /**
+     * Converts the given <code>Date</code> value to a <code>String</code> representation in the given format usable with
+     * {@link MarketDataRequest} objects.
+     * 
+     * @param inDate a <code>Date</code> value
+     * @param inFormat a <code>DateTimeFormatter</code> value
+     * @return a <code>String</code> value
+     */
+    public static String dateToString(Date inDate,
+                                      DateTimeFormatter inFormat)
+    {
+        return inFormat.print(new DateTime(inDate));
     }
     /**
      * Parses the given <code>String</code> to a <code>Date</code> value.

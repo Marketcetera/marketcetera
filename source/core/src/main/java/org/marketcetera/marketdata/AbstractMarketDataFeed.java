@@ -598,6 +598,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             thrownException = e;
             Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.error(this,
                                                                    e);
+            Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                                                   e);
             return false;
         } finally {
             afterDoExecute(inToken, 
