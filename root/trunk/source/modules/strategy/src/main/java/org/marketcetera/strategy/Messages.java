@@ -68,7 +68,7 @@ public interface Messages
                                                                         "invalid_notification"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_LOG = new I18NMessage1P(LOGGER,
                                                                "invalid_log"); //$NON-NLS-1$
-    static final I18NMessage1P CALLBACK_ERROR = new I18NMessage1P(LOGGER,
+    static final I18NMessage2P CALLBACK_ERROR = new I18NMessage2P(LOGGER,
                                                                   "callback_error"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_MESSAGE = new I18NMessage1P(LOGGER,
                                                                    "invalid_message"); //$NON-NLS-1$

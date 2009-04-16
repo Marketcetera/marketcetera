@@ -88,4 +88,11 @@ interface Strategy
      * @return a <code>String</code> value
      */
     public String getDefaultNamespace();
+    /**
+     * Returns the executor used to execute this strategy, if one has been assigned.
+     *
+     * @return an <code>Executor</code> value or null depending on the progress of the
+     *  strategy in its lifecycle
+     */
+    public Executor getExecutor();
 }

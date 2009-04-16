@@ -1109,10 +1109,18 @@ public abstract class AbstractRunningStrategy
             try {
                 runningStrategy.onCallback(data);
             } catch (Exception e) {
-                StrategyModule.log(LogEvent.warn(CALLBACK_ERROR,
-                                                 e,
-                                                 String.valueOf(strategy)),
-                                   strategy);
+                if(strategy.getExecutor() != null) {
+                    StrategyModule.log(LogEvent.warn(CALLBACK_ERROR,
+                                                     String.valueOf(strategy),
+                                                     strategy.getExecutor().interpretRuntimeException(e)),
+                                       strategy);
+                } else {
+                    StrategyModule.log(LogEvent.warn(CALLBACK_ERROR,
+                                                     e,
+                                                     String.valueOf(strategy),
+                                                     e.getLocalizedMessage()),
+                                       strategy);
+                }
             }
         }
     }

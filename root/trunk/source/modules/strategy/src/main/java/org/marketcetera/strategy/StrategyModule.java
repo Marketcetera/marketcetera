@@ -1,36 +1,5 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Messages.BEAN_ATTRIBUTE_CHANGED;
-import static org.marketcetera.strategy.Messages.CANNOT_CREATE_CONNECTION;
-import static org.marketcetera.strategy.Messages.CANNOT_INITIALIZE_CLIENT;
-import static org.marketcetera.strategy.Messages.CANNOT_SEND_EVENT_TO_CEP;
-import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
-import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
-import static org.marketcetera.strategy.Messages.EMPTY_INSTANCE_ERROR;
-import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
-import static org.marketcetera.strategy.Messages.EXECUTION_REPORT_REQUEST_FAILED;
-import static org.marketcetera.strategy.Messages.FAILED_TO_START;
-import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
-import static org.marketcetera.strategy.Messages.INVALID_CEP_REQUEST;
-import static org.marketcetera.strategy.Messages.INVALID_COMBINED_DATA_REQUEST;
-import static org.marketcetera.strategy.Messages.INVALID_EVENT;
-import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
-import static org.marketcetera.strategy.Messages.INVALID_LOG;
-import static org.marketcetera.strategy.Messages.INVALID_MARKET_DATA_REQUEST;
-import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
-import static org.marketcetera.strategy.Messages.INVALID_NOTIFICATION;
-import static org.marketcetera.strategy.Messages.INVALID_ORDER;
-import static org.marketcetera.strategy.Messages.INVALID_TRADE_SUGGESTION;
-import static org.marketcetera.strategy.Messages.MARKET_DATA_REQUEST_FAILED;
-import static org.marketcetera.strategy.Messages.NO_DATA_HANDLE;
-import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
-import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
-import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
-import static org.marketcetera.strategy.Messages.SEND_MESSAGE_FAILED;
-import static org.marketcetera.strategy.Messages.STATUS_CHANGED;
-import static org.marketcetera.strategy.Messages.STOP_ERROR;
-import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
-import static org.marketcetera.strategy.Messages.UNABLE_TO_CANCEL_DATA_REQUEST;
 import static org.marketcetera.strategy.Status.UNSTARTED;
 
 import java.io.File;
@@ -58,7 +27,6 @@ import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientModuleFactory;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -96,6 +64,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
 
@@ -111,7 +80,7 @@ import quickfix.Message;
 @ClassVersion("$Id$")
 final class StrategyModule
         extends Module
-        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider, StrategyMXBean, InboundServicesProvider, NotificationEmitter
+        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider, StrategyMXBean, InboundServicesProvider, NotificationEmitter, Messages
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
@@ -745,39 +714,39 @@ final class StrategyModule
         String message = inEvent.getMessage();
         if(Level.DEBUG.equals(inEvent.getLevel())) {
             if(exception == null) {
-                SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                                       message);
+                MESSAGE_1P.debug(Strategy.STRATEGY_MESSAGES,
+                                 message);
             } else {
-                SLF4JLoggerProxy.debug(Strategy.STRATEGY_MESSAGES,
-                                       exception,
-                                       message);
+                MESSAGE_1P.debug(Strategy.STRATEGY_MESSAGES,
+                                 exception,
+                                 message);
             }
         } else if(Level.INFO.equals(inEvent.getLevel())) {
             if(exception == null) {
-                SLF4JLoggerProxy.info(Strategy.STRATEGY_MESSAGES,
-                                      message);
+                MESSAGE_1P.info(Strategy.STRATEGY_MESSAGES,
+                                message);
             } else {
-                SLF4JLoggerProxy.info(Strategy.STRATEGY_MESSAGES,
-                                      exception,
-                                      message);
+                MESSAGE_1P.info(Strategy.STRATEGY_MESSAGES,
+                                exception,
+                                message);
             }
         } else if(Level.WARN.equals(inEvent.getLevel())) {
             if(exception == null) {
-                SLF4JLoggerProxy.warn(Strategy.STRATEGY_MESSAGES,
-                                      message);
+                MESSAGE_1P.warn(Strategy.STRATEGY_MESSAGES,
+                                message);
             } else {
-                SLF4JLoggerProxy.warn(Strategy.STRATEGY_MESSAGES,
-                                      exception,
-                                      message);
+                MESSAGE_1P.warn(Strategy.STRATEGY_MESSAGES,
+                                exception,
+                                message);
             }
         } else if(Level.ERROR.equals(inEvent.getLevel())) {
             if(exception == null) {
-                SLF4JLoggerProxy.error(Strategy.STRATEGY_MESSAGES,
-                                       message);
+                MESSAGE_1P.error(Strategy.STRATEGY_MESSAGES,
+                                 message);
             } else {
-                SLF4JLoggerProxy.error(Strategy.STRATEGY_MESSAGES,
-                                       exception,
-                                       message);
+                MESSAGE_1P.error(Strategy.STRATEGY_MESSAGES,
+                                 exception,
+                                 message);
             }
         }
     }
