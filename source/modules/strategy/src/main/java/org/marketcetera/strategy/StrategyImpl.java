@@ -270,6 +270,14 @@ class StrategyImpl
         return defaultNamespace;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Strategy#getExecutor()
+     */
+    @Override
+    public final Executor getExecutor()
+    {
+        return executor;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -338,15 +346,6 @@ class StrategyImpl
     final File getSource()
     {
         return source;
-    }
-    /**
-     * Get the executor value.
-     *
-     * @return an <code>Executor</code> value
-     */
-    final Executor getExecutor()
-    {
-        return executor;
     }
     /**
      * Get the runningStrategy value.
