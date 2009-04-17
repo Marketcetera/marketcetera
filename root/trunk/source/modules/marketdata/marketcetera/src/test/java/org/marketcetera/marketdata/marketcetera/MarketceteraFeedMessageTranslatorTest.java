@@ -3,7 +3,6 @@ package org.marketcetera.marketdata.marketcetera;
 import static org.junit.Assert.assertEquals;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
-import static org.marketcetera.marketdata.MarketDataRequest.Type.SUBSCRIPTION;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,7 +11,6 @@ import java.util.Set;
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
-import org.marketcetera.marketdata.MarketDataRequest.Type;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXVersion;
 
@@ -62,7 +60,6 @@ public class MarketceteraFeedMessageTranslatorTest
     protected void verifyResponse(Message inActualResponse,
                                   String inExpectedExchange,
                                   Content[] inExpectedContent,
-                                  Type inExpectedType,
                                   String[] inExpectedSymbols)
             throws Exception
     {
@@ -90,7 +87,7 @@ public class MarketceteraFeedMessageTranslatorTest
             }
         }
         // check subscription type
-        assertEquals(inExpectedType.equals(SUBSCRIPTION) ? SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES : SubscriptionRequestType.SNAPSHOT,
+        assertEquals(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES,
                      inActualResponse.getChar(SubscriptionRequestType.FIELD));
     }
 }

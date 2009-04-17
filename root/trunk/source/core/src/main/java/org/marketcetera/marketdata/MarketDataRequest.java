@@ -3,14 +3,6 @@ package org.marketcetera.marketdata;
 import static org.marketcetera.core.Util.KEY_VALUE_DELIMITER;
 import static org.marketcetera.core.Util.KEY_VALUE_SEPARATOR;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
-import static org.marketcetera.marketdata.MarketDataRequest.Type.SUBSCRIPTION;
-import static org.marketcetera.marketdata.Messages.INVALID_CONTENT;
-import static org.marketcetera.marketdata.Messages.INVALID_REQUEST;
-import static org.marketcetera.marketdata.Messages.INVALID_SYMBOLS;
-import static org.marketcetera.marketdata.Messages.INVALID_TYPE;
-import static org.marketcetera.marketdata.Messages.MISSING_CONTENT;
-import static org.marketcetera.marketdata.Messages.MISSING_SYMBOLS;
-import static org.marketcetera.marketdata.Messages.MISSING_TYPE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,7 +35,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class MarketDataRequest
-    implements Serializable
+    implements Serializable, Messages
 {
     /**
      * the delimiter used to distinguish between symbols in the string representation of the symbol collection
@@ -66,10 +58,6 @@ public class MarketDataRequest
      */
     public static final String EXCHANGE_KEY = "exchange"; //$NON-NLS-1$
     /**
-     * the key used to identify the type in the string representation of the market data request
-     */
-    public static final String TYPE_KEY = "type"; //$NON-NLS-1$
-    /**
      * Creates a <code>MarketDataRequest</code>.
      * 
      * <p>The <code>String</code> parameter should be a set of key/value pairs delimited
@@ -79,7 +67,6 @@ public class MarketDataRequest
      *   <li>{@link #SYMBOLS_KEY} - the symbols for which to request market data</li>
      *   <li>{@link #PROVIDER_KEY} - the provider from which to request market data</li>
      *   <li>{@link #CONTENT_KEY} - the content of the market data</li>
-     *   <li>{@link #TYPE_KEY} - the type of market data request</li>
      *   <li>{@link #EXCHANGE_KEY} - the exchange for which to request market data</li>
      * </ul>
      * 
@@ -116,9 +103,6 @@ public class MarketDataRequest
             if(sanitizedProps.containsKey(CONTENT_KEY)) {
                 request.withContent(sanitizedProps.get(CONTENT_KEY).split(SYMBOL_DELIMITER));
             }
-            if(sanitizedProps.containsKey(TYPE_KEY)) {
-                request.setType(Type.valueOf(sanitizedProps.get(TYPE_KEY).toUpperCase()));
-            }
             if(sanitizedProps.containsKey(EXCHANGE_KEY)) {
                 request.setExchange(sanitizedProps.get(EXCHANGE_KEY));
             }
@@ -146,8 +130,6 @@ public class MarketDataRequest
         if(inRequest == null) {
             throw new NullPointerException();
         }
-        validateType(inRequest,
-                     inRequest.type);
         validateExchange(inRequest,
                          inRequest.exchange);
         validateSymbols(inRequest,
@@ -312,42 +294,6 @@ public class MarketDataRequest
         return this;
     }
     /**
-     * Adds the given type to the market data request. 
-     *
-     * <p>The given value must not be null or of zero-length and must correspond to
-     * a valid {@link Type}.  Case is not considered.
-     * 
-     * <p>This attribute is required and no default is provided.
-     * 
-     * @param inType a <code>Type</code> value
-     * @return a <code>MarketDataRequest</code> value
-     * @throws IllegalArgumentException if the specified type results in an invalid request
-     */
-    public MarketDataRequest ofType(String inType)
-    {
-        try {
-            return ofType(Type.valueOf(inType.toUpperCase()));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_TYPE,
-                                                                      inType).getText(),
-                                               e);
-        }
-    }
-    /**
-     * Adds the given type to the market data request. 
-     *
-     * <p>The given value must not be null.  This attribute is required and no default is provided.
-     * 
-     * @param inType a <code>Type</code> value
-     * @return a <code>MarketDataRequest</code> value
-     * @throws IllegalArgumentException if the specified type results in an invalid request
-     */
-    public MarketDataRequest ofType(Type inType)
-    {
-        setType(inType);
-        return this;
-    }
-    /**
      * Get the symbols value.
      * 
      * @return a <code>String[]</code> value
@@ -403,15 +349,6 @@ public class MarketDataRequest
         results.removeAll(Arrays.asList(inCapabilities));
         return results.isEmpty();
     }
-    /**
-     * Get the type value.
-     * 
-     * @return a <code>Type</code> value
-     */
-    public Type getType()
-    {
-        return type;
-    }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -424,7 +361,6 @@ public class MarketDataRequest
         result = prime * result + ((exchange == null) ? 0 : exchange.hashCode());
         result = prime * result + ((provider == null) ? 0 : provider.hashCode());
         result = prime * result + ((symbols == null) ? 0 : symbols.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -460,11 +396,6 @@ public class MarketDataRequest
                 return false;
         } else if (!symbols.equals(other.symbols))
             return false;
-        if (type == null) {
-            if (other.type != null)
-                return false;
-        } else if (!type.equals(other.type))
-            return false;
         return true;
     }
     /**
@@ -486,20 +417,6 @@ public class MarketDataRequest
                 throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_SYMBOLS,
                                                                           Arrays.toString(inSymbols)).getText());
             }
-        }
-    }
-    /**
-     * Verifies that the given <code>Type</code> is valid.
-     *
-     * @param inRequest a <code>MarketDataRequest</code> value
-     * @param inType a <code>Type</code> value
-     * @throws IllegalArgumentException if the given <code>Type</code> is not valid
-     */
-    private static void validateType(MarketDataRequest inRequest,
-                                     Type inType)
-    {
-        if(inType == null) {
-            throw new IllegalArgumentException(MISSING_TYPE.getText());
         }
     }
     /**
@@ -621,20 +538,6 @@ public class MarketDataRequest
         return true;
     }
     /**
-     * Sets the type value.
-     *
-     * <p>The given value must not be null.  This attribute is required and no default is provided.
-     * 
-     * @param a <code>Type</code> value
-     * @throws IllegalArgumentException if the specified type results in an invalid request
-     */
-    private void setType(Type inType)
-    {
-        validateType(this,
-                     inType);
-        type = Type.valueOf(inType.toString());
-    }
-    /**
      * Sets the symbols.
      *
      * <p>The given symbols must be non-null and non-empty.
@@ -745,13 +648,6 @@ public class MarketDataRequest
                                                                                                         "")); //$NON-NLS-1$
             delimiterNeeded = true;
         }
-        if(type != null) {
-            if(delimiterNeeded) {
-               output.append(KEY_VALUE_DELIMITER);
-            }
-            output.append(TYPE_KEY).append(KEY_VALUE_SEPARATOR).append(type);
-            delimiterNeeded = true;
-        }
         if(exchange != null &&
            !exchange.isEmpty()) {
             if(delimiterNeeded) {
@@ -778,10 +674,6 @@ public class MarketDataRequest
      * the request content
      */
     private final Set<Content> content = new LinkedHashSet<Content>();
-    /**
-     * the request type
-     */
-    private Type type = SUBSCRIPTION;
     /**
      * The content types for market data requests.
      * 
@@ -817,24 +709,6 @@ public class MarketDataRequest
          * latest trade
          */
         LATEST_TICK
-    }
-    /**
-     * The request types for market data requests.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since 1.5.0
-     */
-    public static enum Type
-    {
-        /**
-         * request for a single data-point with no updates
-         */
-        SNAPSHOT,
-        /**
-         * request for a stream of updates as they become available until cancelled
-         */
-        SUBSCRIPTION
     }
     private static final long serialVersionUID = 1L;
 }
