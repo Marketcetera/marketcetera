@@ -11,7 +11,6 @@ import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
-import org.marketcetera.marketdata.MarketDataRequest.Type;
 
 /* $License$ */
 
@@ -48,7 +47,6 @@ public class BogusFeedMessageTranslatorTest
     protected void verifyResponse(MarketDataRequest inActualResponse,
                                   String inExpectedExchange,
                                   Content[] inExpectedContent,
-                                  Type inExpectedType,
                                   String[] inExpectedSymbols)
             throws Exception
     {
@@ -56,8 +54,6 @@ public class BogusFeedMessageTranslatorTest
                 inActualResponse.getExchange());
         assertArrayEquals(inExpectedContent,
                           inActualResponse.getContent().toArray(new Content[inActualResponse.getContent().size()]));
-        assertEquals(inExpectedType,
-                     inActualResponse.getType());
         assertArrayEquals(inExpectedSymbols,
                           inActualResponse.getSymbols());
     }

@@ -7,6 +7,7 @@ import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -16,10 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
-import org.marketcetera.marketdata.MarketDataRequest.Type;
 import org.marketcetera.module.ExpectedFailure;
-
-import java.util.Arrays;
 
 /* $License$ */
 
@@ -39,14 +37,12 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
      * @param inActualResponse a <code>ResponseType</code> value
      * @param inExpectedExchange a <code>String</code> value
      * @param inExpectedContent a <code>Content[]</code> value
-     * @param inExpectedType a <code>Type</code> value
      * @param inExpectedSymbols a <code>String[]</code> value
      * @throws Exception if an error occurs
      */
     protected abstract void verifyResponse(ResponseType inActualResponse,
                                            String inExpectedExchange,
                                            Content[] inExpectedContent,
-                                           Type inExpectedType,
                                            String[] inExpectedSymbols)
         throws Exception;
     /**
@@ -158,27 +154,24 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
         contents.add(Arrays.asList(new Content[] { TOP_OF_BOOK,LATEST_TICK,OPEN_BOOK } ));
         contents.add(Arrays.asList(new Content[] { TOP_OF_BOOK,LATEST_TICK,OPEN_BOOK,LEVEL_2 } ));
         for(List<Content> content : contents) {
-            for(Type type : Type.values()) {
-                final MarketDataRequest request = MarketDataRequest.newRequest().withSymbols(inSecurityList).withContent(content.toArray(new Content[content.size()])).ofType(type);
-                if(inExchange != null &&
-                   !inExchange.isEmpty()) {
-                    request.fromExchange(inExchange);
-                }
-                if(supports(new HashSet<Content>(content))) {
-                    verifyResponse(translator.fromDataRequest(request),
-                                   inExchange,
-                                   content.toArray(new Content[content.size()]),
-                                   type,
-                                   inSecurityList);
-                } else {
-                    new ExpectedFailure<CoreException>(UNSUPPORTED_REQUEST) {
-                        protected void run()
-                            throws Exception
-                        {
-                            translator.fromDataRequest(request);
-                        }
-                    };
-                }
+            final MarketDataRequest request = MarketDataRequest.newRequest().withSymbols(inSecurityList).withContent(content.toArray(new Content[content.size()]));
+            if(inExchange != null &&
+               !inExchange.isEmpty()) {
+                request.fromExchange(inExchange);
+            }
+            if(supports(new HashSet<Content>(content))) {
+                verifyResponse(translator.fromDataRequest(request),
+                               inExchange,
+                               content.toArray(new Content[content.size()]),
+                               inSecurityList);
+            } else {
+                new ExpectedFailure<CoreException>(UNSUPPORTED_REQUEST) {
+                    protected void run()
+                        throws Exception
+                    {
+                        translator.fromDataRequest(request);
+                    }
+                };
             }
         }
     }

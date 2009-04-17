@@ -1,32 +1,9 @@
 package org.marketcetera.marketdata;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.marketcetera.marketdata.MarketDataRequest.CONTENT_KEY;
-import static org.marketcetera.marketdata.MarketDataRequest.EXCHANGE_KEY;
-import static org.marketcetera.marketdata.MarketDataRequest.PROVIDER_KEY;
-import static org.marketcetera.marketdata.MarketDataRequest.SYMBOLS_KEY;
-import static org.marketcetera.marketdata.MarketDataRequest.SYMBOL_DELIMITER;
-import static org.marketcetera.marketdata.MarketDataRequest.TYPE_KEY;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.MARKET_STAT;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.TOTAL_VIEW;
-import static org.marketcetera.marketdata.MarketDataRequest.Type.SNAPSHOT;
-import static org.marketcetera.marketdata.MarketDataRequest.Type.SUBSCRIPTION;
-import static org.marketcetera.marketdata.Messages.INVALID_CONTENT;
-import static org.marketcetera.marketdata.Messages.INVALID_REQUEST;
-import static org.marketcetera.marketdata.Messages.INVALID_SYMBOLS;
-import static org.marketcetera.marketdata.Messages.INVALID_TYPE;
-import static org.marketcetera.marketdata.Messages.MISSING_CONTENT;
-import static org.marketcetera.marketdata.Messages.MISSING_SYMBOLS;
-import static org.marketcetera.marketdata.Messages.MISSING_TYPE;
+import static org.junit.Assert.*;
+import static org.marketcetera.marketdata.MarketDataRequest.*;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.*;
+import static org.marketcetera.marketdata.Messages.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +16,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.Util;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
-import org.marketcetera.marketdata.MarketDataRequest.Type;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -61,19 +37,15 @@ public class MarketDataRequestTest
     private static final Content[] contents = new Content[] { null, TOP_OF_BOOK, MARKET_STAT, LATEST_TICK, OPEN_BOOK, TOTAL_VIEW, LEVEL_2 };
     private static final Content[][] contentArrays = new Content[][] { {}, { null }, { TOP_OF_BOOK }, { LATEST_TICK, OPEN_BOOK }, { null, LEVEL_2 } };
     private static final String[][] contentStringArrays = new String[][] { {}, { null }, { "" }, { null, "", LATEST_TICK.toString() }, { TOP_OF_BOOK.toString() }, { OPEN_BOOK.toString(), MARKET_STAT.toString().toLowerCase() }, { "invalid-content" } };
-    private static final Type[] types = new Type[] { null, SNAPSHOT, SUBSCRIPTION };
     // alternate representation of values
     private static final String[] contentStrings = new String[] { null, "", "not-a-content", "TOP_OF_BOOK", "level_2", "StATisTicS" };
-    private static final String[] typeStrings = new String[] { null, "", "snapshot", "SNAPSHOT", "SuBsCripTioN" };
     // variations of keys
     private static final int keyCount = 4;
     private static final String[] symbolKeys = new String[] { "symbols", "SYMBOLS", "SyMbOlS", MarketDataRequest.SYMBOLS_KEY };
     private static final String[] providerKeys = new String[] { "provider", "PROVIDER", "PrOvIdEr", MarketDataRequest.PROVIDER_KEY };
     private static final String[] exchangeKeys = new String[] { "exchange", "EXCHANGE", "ExChAnGe", MarketDataRequest.EXCHANGE_KEY };
     private static final String[] contentKeys = new String[] { "content", "CONTENT", "CoNtEnT", MarketDataRequest.CONTENT_KEY };
-    private static final String[] typeKeys = new String[] { "type", "TYPE", "TyPe", MarketDataRequest.TYPE_KEY };
     private static final Set<String> ALL_CONTENTS = new HashSet<String>();
-    private static final Set<String> ALL_TYPES = new HashSet<String>();
     /**
      * Initialization that needs to be run once for all tests.
      */
@@ -82,9 +54,6 @@ public class MarketDataRequestTest
     {
         for(Content content : Content.values()) {
             ALL_CONTENTS.add(content.toString());
-        }
-        for(Type type : Type.values()) {
-            ALL_TYPES.add(type.toString());
         }
     }
     /**
@@ -104,15 +73,12 @@ public class MarketDataRequestTest
                      exchangeKeys.length);
         assertEquals(keyCount,
                      contentKeys.length);
-        assertEquals(keyCount,
-                     typeKeys.length);
         String symbols = "METC";
         String provider = "provider";
         String exchange = "exchange";
-        Type type = SNAPSHOT;
         Content content = MARKET_STAT;
         for(int keyCounter=0;keyCounter<keyCount;keyCounter++) {
-            String requestString = String.format("%s=%s:%s=%s:%s=%s:%s=%s:%s=%s",
+            String requestString = String.format("%s=%s:%s=%s:%s=%s:%s=%s",
                                                  symbolKeys[keyCounter],
                                                  symbols,
                                                  providerKeys[keyCounter],
@@ -120,14 +86,11 @@ public class MarketDataRequestTest
                                                  exchangeKeys[keyCounter],
                                                  exchange,
                                                  contentKeys[keyCounter],
-                                                 content,
-                                                 typeKeys[keyCounter],
-                                                 type);
+                                                 content);
             verifyRequest(MarketDataRequest.newRequestFromString(requestString),
                           provider,
                           exchange,
                           content,
-                          type,
                           symbols);
         }
     }
@@ -158,124 +121,48 @@ public class MarketDataRequestTest
             for(int providersCounter=0;providersCounter<providers.length;providersCounter++) {
                 for(int symbolsCounter=0;symbolsCounter<symbols.length;symbolsCounter++) {
                     for(int exchangesCounter=0;exchangesCounter<exchanges.length;exchangesCounter++) {
-                        for(int typesCounter=0;typesCounter<types.length;typesCounter++) {
-                            SLF4JLoggerProxy.debug(this,
-                                                   String.format("%d:%d:%d:%d:%d",
-                                                                 contentsCounter,
-                                                                 providersCounter,
-                                                                 symbolsCounter,
-                                                                 exchangesCounter,
-                                                                 typesCounter));
-                            final String requestString = marketDataRequestStringFromComponents(providers[providersCounter],
-                                                                                               exchanges[exchangesCounter],
-                                                                                               contents[contentsCounter],
-                                                                                               types[typesCounter],
-                                                                                               symbols[symbolsCounter]);
-                            // catch-all for a totally empty request
-                            if(requestString.isEmpty()) {
-                                new ExpectedFailure<IllegalArgumentException>(INVALID_REQUEST.getText()) {
-                                    protected void run()
-                                        throws Exception
-                                    {
-                                        MarketDataRequest.newRequestFromString(requestString);
-                                    }
-                                };
-                                continue;
-                            }
-                            // symbols error conditions
-                            if(isEmptyList(symbols[symbolsCounter])) {
-                                new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
-                                    protected void run()
-                                        throws Exception
-                                    {
-                                        MarketDataRequest.newRequestFromString(requestString);
-                                    }
-                                };
-                                continue;
-                            }
-                            MarketDataRequest request = MarketDataRequest.newRequestFromString(requestString);
-                            verifyRequest(request,
-                                          providers[providersCounter],
-                                          exchanges[exchangesCounter],
-                                          contentsCounter == 0 ? TOP_OF_BOOK : contents[contentsCounter],
-                                          typesCounter == 0 ? SUBSCRIPTION : types[typesCounter],
-                                          symbols[symbolsCounter]);
+                        SLF4JLoggerProxy.debug(this,
+                                               String.format("%d:%d:%d:%d",
+                                                             contentsCounter,
+                                                             providersCounter,
+                                                             symbolsCounter,
+                                                             exchangesCounter));
+                        final String requestString = marketDataRequestStringFromComponents(providers[providersCounter],
+                                                                                           exchanges[exchangesCounter],
+                                                                                           contents[contentsCounter],
+                                                                                           symbols[symbolsCounter]);
+                        // catch-all for a totally empty request
+                        if(requestString.isEmpty()) {
+                            new ExpectedFailure<IllegalArgumentException>(INVALID_REQUEST.getText()) {
+                                protected void run()
+                                    throws Exception
+                                {
+                                    MarketDataRequest.newRequestFromString(requestString);
+                                }
+                            };
+                            continue;
                         }
+                        // symbols error conditions
+                        if(isEmptyList(symbols[symbolsCounter])) {
+                            new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
+                                protected void run()
+                                    throws Exception
+                                {
+                                    MarketDataRequest.newRequestFromString(requestString);
+                                }
+                            };
+                            continue;
+                        }
+                        MarketDataRequest request = MarketDataRequest.newRequestFromString(requestString);
+                        verifyRequest(request,
+                                      providers[providersCounter],
+                                      exchanges[exchangesCounter],
+                                      contentsCounter == 0 ? TOP_OF_BOOK : contents[contentsCounter],
+                                      symbols[symbolsCounter]);
                     }
                 }
             }
         }
-    }
-    /**
-     * Tests {@link MarketDataRequest#ofType(Type)} and {@link MarketDataRequest#ofType(String)}.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void type()
-        throws Exception
-    {
-        final String symbols = "METC";
-        final String provider = "provider";
-        // test strings version of ofType
-        for(int typeCounter=0;typeCounter<typeStrings.length;typeCounter++) {
-            final String typeString = typeStrings[typeCounter];
-            if(typeString == null ||
-               typeString.isEmpty() ||
-               !ALL_TYPES.contains(typeString.toUpperCase())) {
-                new ExpectedFailure<IllegalArgumentException>(INVALID_TYPE.getText(typeString)) {
-                    protected void run()
-                        throws Exception
-                    {
-                        MarketDataRequest.newRequest().fromProvider(provider).withSymbols(symbols).ofType(typeString);                    
-                    }
-                };
-            } else {
-                MarketDataRequest request = MarketDataRequest.newRequest().fromProvider(provider).withSymbols(symbols).ofType(typeString); 
-                verifyRequest(request,
-                              provider,
-                              null,
-                              TOP_OF_BOOK,
-                              Type.valueOf(typeString.toUpperCase()),
-                              symbols);
-            }
-        }
-        // test enum version of ofType
-        for(int typeCounter=0;typeCounter<types.length;typeCounter++) {
-            final Type type = types[typeCounter];
-            if(type == null) {
-                new ExpectedFailure<IllegalArgumentException>(MISSING_TYPE.getText()) {
-                    protected void run()
-                        throws Exception
-                    {
-                        MarketDataRequest.newRequest().fromProvider(provider).withSymbols(symbols).ofType(type);                    
-                    }
-                };
-            } else {
-                MarketDataRequest request = MarketDataRequest.newRequest().fromProvider(provider).withSymbols(symbols).ofType(type); 
-                verifyRequest(request,
-                              provider,
-                              null,
-                              TOP_OF_BOOK,
-                              type,
-                              symbols);
-            }
-        }
-        // test that changing the source doesn't change the held value
-        Type type = SUBSCRIPTION;
-        MarketDataRequest request = MarketDataRequest.newRequest().ofType(type);
-        assertEquals(SUBSCRIPTION,
-                     request.getType());
-        type = SNAPSHOT;
-        assertEquals(SUBSCRIPTION,
-                     request.getType());
-        // test that changing the destination doesn't change the held value
-        type = request.getType();
-        assertEquals(SUBSCRIPTION,
-                     type);
-        type = SNAPSHOT;
-        assertEquals(SUBSCRIPTION,
-                     request.getType());
     }
     /**
      * Tests {@link MarketDataRequest#withContent(Content)} and {@link MarketDataRequest#withContent(String)}.
@@ -317,7 +204,6 @@ public class MarketDataRequestTest
                           provider,
                           null,
                           Content.valueOf(contentString.toUpperCase()),
-                          SUBSCRIPTION,
                           symbols);
         }
         // test enum version of withContent
@@ -337,7 +223,6 @@ public class MarketDataRequestTest
                               provider,
                               null,
                               content,
-                              SUBSCRIPTION,
                               symbols);
             }
         }
@@ -371,7 +256,6 @@ public class MarketDataRequestTest
                           provider,
                           null,
                           content,
-                          SUBSCRIPTION,
                           symbols);
         }
         // test multiple string version of withContent
@@ -415,7 +299,6 @@ public class MarketDataRequestTest
                           provider,
                           null,
                           expectedContents.toArray(new Content[expectedContents.size()]),
-                          SUBSCRIPTION,
                           symbols);
         }
         // test that changing the source doesn't change the held value
@@ -462,7 +345,6 @@ public class MarketDataRequestTest
                               provider,
                               null,
                               TOP_OF_BOOK,
-                              SUBSCRIPTION,
                               symbolArrayToString(symbolArray));
             }
         }
@@ -491,7 +373,6 @@ public class MarketDataRequestTest
                               provider,
                               null,
                               TOP_OF_BOOK,
-                              SUBSCRIPTION,
                               symbol);
             }
         }
@@ -539,7 +420,6 @@ public class MarketDataRequestTest
                           provider,
                           null,
                           TOP_OF_BOOK,
-                          SUBSCRIPTION,
                           symbol);
         }
         // test that changing the source doesn't change the held value
@@ -574,7 +454,6 @@ public class MarketDataRequestTest
                           provider,
                           exchanges[exchangeCounter],
                           TOP_OF_BOOK,
-                          SUBSCRIPTION,
                           symbol);
         }
         // test that changing the source doesn't change the held value
@@ -612,8 +491,6 @@ public class MarketDataRequestTest
         assertNull(request.getExchange());
         assertEquals(new LinkedHashSet<Content>(Arrays.asList(TOP_OF_BOOK)),
                      request.getContent());
-        assertEquals(SUBSCRIPTION,
-                     request.getType());
         new ExpectedFailure<NullPointerException>(null) {
             protected void run()
                 throws Exception
@@ -634,7 +511,6 @@ public class MarketDataRequestTest
         // test multiple contents
         for(Content[] content : contentArrays) {
             final StringBuilder requestString = new StringBuilder().append(marketDataRequestStringFromComponents("provider",
-                                                                                                                 null,
                                                                                                                  null,
                                                                                                                  null,
                                                                                                                  "METC"));
@@ -663,7 +539,6 @@ public class MarketDataRequestTest
                               "provider",
                               null,
                               expectedContents.toArray(new Content[expectedContents.size()]),
-                              SUBSCRIPTION,
                               "METC");
             } else {
                 new ExpectedFailure<IllegalArgumentException>(INVALID_CONTENT.getText(null)) {
@@ -678,7 +553,6 @@ public class MarketDataRequestTest
         // test multiple strings
         for(String[] content : contentStringArrays) {
             final StringBuilder requestString = new StringBuilder().append(marketDataRequestStringFromComponents("provider",
-                                                                                                                 null,
                                                                                                                  null,
                                                                                                                  null,
                                                                                                                  "METC"));
@@ -713,7 +587,6 @@ public class MarketDataRequestTest
                               "provider",
                               null,
                               expectedContents.toArray(new Content[expectedContents.size()]),
-                              SUBSCRIPTION,
                               "METC");
             } else {
                 new ExpectedFailure<IllegalArgumentException>(INVALID_CONTENT.getText(invalidContent)) {
@@ -756,7 +629,6 @@ public class MarketDataRequestTest
      * @param inProvider a <code>String</code> value containing a <code>Provider</code> or <code>null</code>
      * @param inExchange a <code>String</code> value containing an <code>Exchange</code> or <code>null</code>
      * @param inContent a <code>Content</code> value or <code>null</code>
-     * @param inType a <code>Type</code> value or <code>null</code>
      * @param inSymbols a <code>String</code> value containing a symbol or symbols delimited by 
      *  {@link MarketDataRequest#SYMBOL_DELIMITER} or <code>null</code>
      * @return a <code>String</code> value
@@ -764,7 +636,6 @@ public class MarketDataRequestTest
     private static String marketDataRequestStringFromComponents(String inProvider,
                                                                 String inExchange,
                                                                 Content inContent,
-                                                                Type inType,
                                                                 String inSymbols)
         throws Exception
     {
@@ -791,13 +662,6 @@ public class MarketDataRequestTest
             request.append(CONTENT_KEY).append(Util.KEY_VALUE_SEPARATOR).append(inContent);
             delimiterNeeded = true;
         }
-        if(inType != null) {
-            if(delimiterNeeded) {
-                request.append(Util.KEY_VALUE_DELIMITER);
-            }
-            request.append(TYPE_KEY).append(Util.KEY_VALUE_SEPARATOR).append(inType);
-            delimiterNeeded = true;
-        }
         if(inSymbols != null &&
            !inSymbols.isEmpty()) {
             if(delimiterNeeded) {
@@ -820,7 +684,6 @@ public class MarketDataRequestTest
      * @param inProvider a <code>String</code> value containing the expected <code>Provider</code>
      * @param inExchange a <code>String</code> value containing the expected <code>Exchange</code>
      * @param inContent a <code>Content[]</code> value containing the expected <code>Content</code>
-     * @param inType a <code>Type</code> value containing the expected <code>Type</code>
      * @param inSymbols a <code>String[]</code> value containing the expected <code>Symbol</code> values
      * @throws Exception if an error occurs
      */
@@ -828,7 +691,6 @@ public class MarketDataRequestTest
                                       String inProvider,
                                       String inExchange,
                                       Content[] inContent,
-                                      Type inType,
                                       String inSymbols)
         throws Exception
     {
@@ -867,16 +729,6 @@ public class MarketDataRequestTest
                     content.clear();
                 }
             };
-        }
-        // test type
-        Type type = inActualRequest.getType();
-        assertEquals(inType,
-                     type);
-        if(type != null) {
-            type = Type.values()[(inType.ordinal() + 1) % Type.values().length];
-            assertFalse(type.equals(inType));
-            assertEquals(inType,
-                         inActualRequest.getType());
         }
         // test symbols
         String[] expectedSymbols = inSymbols.split(MarketDataRequest.SYMBOL_DELIMITER);
@@ -930,7 +782,6 @@ public class MarketDataRequestTest
      * @param inProvider a <code>String</code> value containing the expected <code>Provider</code>
      * @param inExchange a <code>String</code> value containing the expected <code>Exchange</code>
      * @param inContent a <code>Content</code> value containing the expected <code>Content</code>
-     * @param inType a <code>Type</code> value containing the expected <code>Type</code>
      * @param inSymbols a <code>String[]</code> value containing the expected <code>Symbol</code> values
      * @throws Exception if an error occurs
      */
@@ -938,7 +789,6 @@ public class MarketDataRequestTest
                                       String inProvider,
                                       String inExchange,
                                       Content inContent,
-                                      Type inType,
                                       String inSymbols)
         throws Exception
     {
@@ -946,7 +796,6 @@ public class MarketDataRequestTest
                       inProvider,
                       inExchange,
                       new Content[] { inContent },
-                      inType,
                       inSymbols);
     }
     /**
