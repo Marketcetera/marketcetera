@@ -35,6 +35,8 @@ import com.google.common.collect.SetMultimap;
  * Implements MarketDataSupport for the position engine in Photon. Market data is provided by the
  * common marketdata infrastructure in {@link IMarketData}.
  * 
+ * TODO: Cache cleanup when listeners are removed
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.5.0
@@ -176,6 +178,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	private void fireIfChanged(final String symbol, BigDecimal newPrice,
 			final ConcurrentMap<String, BigDecimal> cache,
 			final boolean trueForSymbolTradeFalseForClosePrice) {
+		// TODO: consider removing items instead of NULL 
 		BigDecimal oldPrice = cache.put(symbol, newPrice == null ? NULL : newPrice);
 		if (oldPrice == NULL) {
 			oldPrice = null;

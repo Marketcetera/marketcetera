@@ -35,11 +35,11 @@ import ca.odell.glazedlists.util.concurrent.Lock;
  * @author michael.lossos@softwaregoodness.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id$")
 public class FillsView extends AbstractFIXMessagesView {
-	private static final String VALUE_ATTRIBUTE = "value";
-	private static final String GROUPING_ATTRIBUTE = "grouping";
-	private static final String FILTER_TAG = "filter";
+	private static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
+	private static final String GROUPING_ATTRIBUTE = "grouping"; //$NON-NLS-1$
+	private static final String FILTER_TAG = "filter"; //$NON-NLS-1$
 	public static final String ID = "org.marketcetera.photon.views.FillsView"; //$NON-NLS-1$
 	private FilterList<ReportHolder> mFilteredList;
 	private Map<Grouping, String> mFilters;

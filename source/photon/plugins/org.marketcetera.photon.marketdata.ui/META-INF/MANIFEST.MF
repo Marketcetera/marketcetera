@@ -11,6 +11,12 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.databinding,
  org.marketcetera.photon.marketdata,
  org.marketcetera.photon.module.ui,
- org.marketcetera.client
+ org.marketcetera.client,
+ org.eclipse.emf.common,
+ org.eclipse.emf.ecore,
+ org.marketcetera.photon.commons.ui,
+ org.eclipse.core.expressions,
+ org.eclipse.emf.databinding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Export-Package: org.marketcetera.photon.marketdata.ui

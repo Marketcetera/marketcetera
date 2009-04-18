@@ -79,7 +79,7 @@ import quickfix.field.Symbol;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id$")
 public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		IColumnProvider, Messages {
 

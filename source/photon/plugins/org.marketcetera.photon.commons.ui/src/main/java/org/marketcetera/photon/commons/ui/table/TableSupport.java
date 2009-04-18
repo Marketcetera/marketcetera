@@ -29,8 +29,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Utility class that provides configurable common functionality for a JFace
- * {@link TableViewer}.
+ * Utility class that provides configurable common functionality for a JFace {@link TableViewer}.
  * <p>
  * Features:
  * <ul>
@@ -83,7 +82,6 @@ public class TableSupport {
 		mTableViewer = new TableViewer(table);
 
 		final ColumnComparator comparator = new ColumnComparator();
-		mTableViewer.setComparator(comparator);
 
 		SelectionListener listener = new SelectionAdapter() {
 			@Override
@@ -111,32 +109,36 @@ public class TableSupport {
 		for (int i = 0; i < descriptors.length; i++) {
 			ColumnConfiguration descriptor = descriptors[i];
 			TableColumn c = new TableColumn(table, descriptor.getStyle());
-			if (mConfiguration.isHeaderVisible()) {
+			if (mConfiguration.isHeaderVisible() && descriptor.getHeading() != null) {
 				c.setText(descriptor.getHeading());
 			}
 			c.setResizable(descriptor.isResizable());
 			c.setMoveable(descriptor.isMovable());
-			c.addSelectionListener(listener);
+			if (descriptor.isSortable()) {
+				c.addSelectionListener(listener);
+			}
 			layout.setColumnData(c, descriptor.getLayoutData());
 			beanProperties[i] = descriptor.getBeanProperty();
 			new TableViewerColumn(mTableViewer, c);
 		}
-		mTableViewer.getTable().setHeaderVisible(
-				mConfiguration.isHeaderVisible());
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		mTableViewer.setContentProvider(contentProvider);
-		final IObservableMap[] columnMaps;
-		if (mConfiguration.isDynamicColumns()) {
-			columnMaps = BeansObservables.observeMaps(contentProvider
-					.getKnownElements(), mConfiguration.getItemClass(),
-					beanProperties);
-		} else {
-			columnMaps = PojoObservables.observeMaps(contentProvider
-					.getKnownElements(), mConfiguration.getItemClass(),
-					beanProperties);
+		mTableViewer.getTable().setHeaderVisible(mConfiguration.isHeaderVisible());
+
+		// if no class was provided, don't set up comparator, content, or label providers, assume
+		// the users of this class will handle manually
+		if (mConfiguration.getItemClass() != null) {
+			mTableViewer.setComparator(comparator);
+			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+			mTableViewer.setContentProvider(contentProvider);
+			final IObservableMap[] columnMaps;
+			if (mConfiguration.isDynamicColumns()) {
+				columnMaps = BeansObservables.observeMaps(contentProvider.getKnownElements(),
+						mConfiguration.getItemClass(), beanProperties);
+			} else {
+				columnMaps = PojoObservables.observeMaps(contentProvider.getKnownElements(),
+						mConfiguration.getItemClass(), beanProperties);
+			}
+			mTableViewer.setLabelProvider(new ObservableMapLabelProvider(columnMaps));
 		}
-		mTableViewer
-				.setLabelProvider(new ObservableMapLabelProvider(columnMaps));
 
 		mControlCreated = true;
 	}
@@ -149,19 +151,22 @@ public class TableSupport {
 	 * Returns the {@link TableViewer} managed by this object.
 	 * 
 	 * @return the TableViewer managed by this object
+	 * @throws IllegalStateException
+	 *             if createTable has not been called
 	 */
 	public TableViewer getTableViewer() {
-		if (!mControlCreated)
-			throw new IllegalStateException();
+		if (!mControlCreated) throw new IllegalStateException();
 		return mTableViewer;
 	}
 
 	/**
 	 * Focuses on the table managed by this object.
+	 * 
+	 * @throws IllegalStateException
+	 *             if createTable has not been called
 	 */
 	public void setFocus() {
-		if (!mControlCreated)
-			throw new IllegalStateException();
+		if (!mControlCreated) throw new IllegalStateException();
 		mTableViewer.getTable().setFocus();
 	}
 
@@ -201,8 +206,7 @@ public class TableSupport {
 		@SuppressWarnings("unchecked")
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (mIndex == -1)
-				return 0;
+			if (mIndex == -1) return 0;
 			ColumnConfiguration descriptor = mConfiguration.getColumns()[mIndex];
 			Object item1 = getColumnObject(e1);
 			Object item2 = getColumnObject(e2);
@@ -227,9 +231,8 @@ public class TableSupport {
 		}
 
 		private Object getColumnObject(Object row) {
-			PropertyDescriptor property = getPropertyDescriptor(mConfiguration
-					.getItemClass(), mConfiguration.getColumns()[mIndex]
-					.getBeanProperty());
+			PropertyDescriptor property = getPropertyDescriptor(mConfiguration.getItemClass(),
+					mConfiguration.getColumns()[mIndex].getBeanProperty());
 			try {
 				return property.getReadMethod().invoke(row);
 			} catch (Exception e) {
@@ -237,8 +240,7 @@ public class TableSupport {
 			}
 		}
 
-		private PropertyDescriptor getPropertyDescriptor(Class<?> beanClass,
-				String propertyName) {
+		private PropertyDescriptor getPropertyDescriptor(Class<?> beanClass, String propertyName) {
 			BeanInfo beanInfo;
 			try {
 				beanInfo = Introspector.getBeanInfo(beanClass);
@@ -246,8 +248,7 @@ public class TableSupport {
 				// cannot introspect, give up
 				throw new IllegalArgumentException(beanClass.getName(), e);
 			}
-			PropertyDescriptor[] propertyDescriptors = beanInfo
-					.getPropertyDescriptors();
+			PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
 			for (int i = 0; i < propertyDescriptors.length; i++) {
 				PropertyDescriptor descriptor = propertyDescriptors[i];
 				if (descriptor.getName().equals(propertyName)) {
