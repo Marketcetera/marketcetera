@@ -3,9 +3,11 @@ package org.marketcetera.photon.internal.marketdata;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
+import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
@@ -36,6 +38,7 @@ public class MarketData implements IMarketData {
 	private final ILatestTickManager mLatestTickManager;
 	private final ITopOfBookManager mTopOfBookManager;
 	private final IMarketstatManager mMarketstatManager;
+	private final IDepthOfBookManager mDepthOfBookManager;
 
 	/**
 	 * Constructor.
@@ -46,15 +49,18 @@ public class MarketData implements IMarketData {
 	 *            the manager for top of book requests
 	 * @param marketstatManager
 	 *            the manager for statistic requests
+	 * @param depthOfBookManager
+	 *            the manager for market depth requests
 	 * @throws IllegalArgumentException
 	 *             if any parameter is null
 	 */
 	@Inject
-	public MarketData(ILatestTickManager latestTickManager, ITopOfBookManager topOfBookManager, IMarketstatManager marketstatManager) {
-		Validate.noNullElements(new Object[] { latestTickManager, topOfBookManager, marketstatManager });
+	public MarketData(ILatestTickManager latestTickManager, ITopOfBookManager topOfBookManager, IMarketstatManager marketstatManager, IDepthOfBookManager depthOfBookManager) {
+		Validate.noNullElements(new Object[] { latestTickManager, topOfBookManager, marketstatManager, depthOfBookManager });
 		mLatestTickManager = latestTickManager;
 		mTopOfBookManager = topOfBookManager;
 		mMarketstatManager = marketstatManager;
+		mDepthOfBookManager = depthOfBookManager;
 	}
 
 	/**
@@ -69,6 +75,7 @@ public class MarketData implements IMarketData {
 		setLatestTickSourceModule(module);
 		setTopOfBookSourceModule(module);
 		setMarketstatSourceModule(module);
+		setDepthOfBookSourceModule(module);
 	}
 
 	/**
@@ -107,6 +114,18 @@ public class MarketData implements IMarketData {
 		mMarketstatManager.setSourceModule(module);
 	}
 
+	/**
+	 * Sets the source for the market depth data.
+	 * 
+	 * @param module
+	 *            the source module
+	 * @throws IllegalArgumentException
+	 *             if module is null
+	 */
+	public void setDepthOfBookSourceModule(ModuleURN module) {
+		mDepthOfBookManager.setSourceModule(module);
+	}
+
 	@Override
 	public synchronized IMarketDataReference<MDLatestTick> getLatestTick(String symbol) {
 		Validate.notNull(symbol);
@@ -131,6 +150,16 @@ public class MarketData implements IMarketData {
 		synchronized (mMarketstatManager) {
 			return new Reference<MDMarketstat, MarketstatKey>(mMarketstatManager, new MarketstatKey(
 					symbol));
+		}
+	}
+	
+	@Override
+	public IMarketDataReference<MDDepthOfBook> getDepthOfBook(String symbol, Content product) {
+		Validate.noNullElements(new Object[] {symbol, product});
+		Validate.isTrue(DepthOfBookKey.VALID_PRODUCTS.contains(product));
+		synchronized (mDepthOfBookManager) {
+			return new Reference<MDDepthOfBook, DepthOfBookKey>(mDepthOfBookManager, new DepthOfBookKey(
+					symbol, product));
 		}
 	}
 

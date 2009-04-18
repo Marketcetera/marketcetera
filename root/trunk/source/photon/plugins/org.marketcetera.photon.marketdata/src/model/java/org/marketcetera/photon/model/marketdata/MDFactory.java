@@ -52,6 +52,24 @@ public interface MDFactory extends EFactory {
 	MDMarketstat createMDMarketstat();
 
 	/**
+	 * Returns a new object of class '<em>Depth Of Book</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Depth Of Book</em>'.
+	 * @generated
+	 */
+	MDDepthOfBook createMDDepthOfBook();
+
+	/**
+	 * Returns a new object of class '<em>Quote</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Quote</em>'.
+	 * @generated
+	 */
+	MDQuote createMDQuote();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

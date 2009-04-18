@@ -5,10 +5,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Platform;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
@@ -206,6 +208,18 @@ public final class MarketDataManager {
 	public FeedStatus getActiveFeedStatus() {
 		MarketDataFeed feed = mActiveFeed;
 		return feed == null ? FeedStatus.OFFLINE : feed.getStatus();
+	}
+
+    /**
+	 * Returns the capabilities supported by the active market data feed.
+	 * 
+	 * @return the supported capabilities, will not be null but may be empty set if there is no
+	 *         active feed (or it has no capabilities)
+	 */
+	public Set<Capability> getActiveFeedCapabilities() {
+		Set<Capability> emptySet = Collections.emptySet();
+		MarketDataFeed feed = mActiveFeed;
+		return feed == null ? emptySet : feed.getCapabilities();
 	}
 
 }

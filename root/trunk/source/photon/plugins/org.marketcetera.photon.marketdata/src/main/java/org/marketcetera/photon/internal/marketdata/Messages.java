@@ -64,6 +64,9 @@ public interface Messages {
 	
 	static final I18NMessage2P DATA_FLOW_MANAGER_UNEXPECTED_DATA = new I18NMessage2P(LOGGER,
 			"data_flow_manager.unexpected_data"); //$NON-NLS-1$
+	static final I18NMessage2P DATA_FLOW_MANAGER_UNEXPECTED_MESSAGE_ID = new I18NMessage2P(LOGGER,
+			"data_flow_manager.unexpected_message_id"); //$NON-NLS-1$
 	static I18NMessage2P DATA_FLOW_MANAGER_EVENT_SYMBOL_MISMATCH = new I18NMessage2P(LOGGER,
 			"data_flow_manager.event_symbol_mismatch"); //$NON-NLS-1$
+
 }

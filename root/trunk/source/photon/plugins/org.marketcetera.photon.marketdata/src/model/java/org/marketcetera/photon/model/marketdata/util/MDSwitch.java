@@ -107,6 +107,19 @@ public class MDSwitch<T> {
 			if (result == null) result = defaultCase(theEObject);
 			return result;
 		}
+		case MDPackage.MD_DEPTH_OF_BOOK: {
+			MDDepthOfBook mdDepthOfBook = (MDDepthOfBook) theEObject;
+			T result = caseMDDepthOfBook(mdDepthOfBook);
+			if (result == null) result = caseMDItem(mdDepthOfBook);
+			if (result == null) result = defaultCase(theEObject);
+			return result;
+		}
+		case MDPackage.MD_QUOTE: {
+			MDQuote mdQuote = (MDQuote) theEObject;
+			T result = caseMDQuote(mdQuote);
+			if (result == null) result = defaultCase(theEObject);
+			return result;
+		}
 		default:
 			return defaultCase(theEObject);
 		}
@@ -169,6 +182,36 @@ public class MDSwitch<T> {
 	 * @generated
 	 */
 	public T caseMDMarketstat(MDMarketstat object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Depth Of Book</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Depth Of Book</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseMDDepthOfBook(MDDepthOfBook object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Quote</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Quote</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseMDQuote(MDQuote object) {
 		return null;
 	}
 

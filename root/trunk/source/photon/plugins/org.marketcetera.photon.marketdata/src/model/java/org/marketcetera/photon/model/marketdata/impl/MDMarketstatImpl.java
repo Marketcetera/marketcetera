@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -29,6 +30,7 @@ import org.marketcetera.photon.model.marketdata.MDMarketstat;
  *
  * @generated
  */
+@ClassVersion("$Id$")
 public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 	/**
 	 * The default value of the '{@link #getClosePrice() <em>Close Price</em>}' attribute.

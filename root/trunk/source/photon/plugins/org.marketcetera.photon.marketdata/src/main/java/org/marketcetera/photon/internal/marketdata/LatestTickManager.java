@@ -29,6 +29,8 @@ public class LatestTickManager extends DataFlowManager<MDLatestTickImpl, LatestT
 	 * 
 	 * @param moduleManager
 	 *            the module manager
+	 * @throws IllegalArgumentException
+	 *             if moduleManager is null
 	 */
 	@Inject
 	public LatestTickManager(ModuleManager moduleManager) {
@@ -44,7 +46,8 @@ public class LatestTickManager extends DataFlowManager<MDLatestTickImpl, LatestT
 	}
 
 	@Override
-	protected void resetItem(MDLatestTickImpl item) {
+	protected void resetItem(LatestTickKey key, MDLatestTickImpl item) {
+		assert key != null;
 		assert item != null;
 		item.setPrice(null);
 		item.setSize(null);

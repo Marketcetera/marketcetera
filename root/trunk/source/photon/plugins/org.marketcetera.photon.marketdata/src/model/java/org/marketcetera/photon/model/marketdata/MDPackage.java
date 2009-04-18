@@ -2,7 +2,9 @@ package org.marketcetera.photon.model.marketdata;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -257,6 +259,126 @@ public interface MDPackage extends EPackage {
 	int MD_MARKETSTAT_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 4;
 
 	/**
+	 * The meta object id for the '{@link org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl <em>Depth Of Book</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl
+	 * @see org.marketcetera.photon.model.marketdata.impl.MDPackageImpl#getMDDepthOfBook()
+	 * @generated
+	 */
+	int MD_DEPTH_OF_BOOK = 4;
+
+	/**
+	 * The feature id for the '<em><b>Symbol</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_DEPTH_OF_BOOK__SYMBOL = MD_ITEM__SYMBOL;
+
+	/**
+	 * The feature id for the '<em><b>Product</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_DEPTH_OF_BOOK__PRODUCT = MD_ITEM_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Bids</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_DEPTH_OF_BOOK__BIDS = MD_ITEM_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Asks</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_DEPTH_OF_BOOK__ASKS = MD_ITEM_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of structural features of the '<em>Depth Of Book</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_DEPTH_OF_BOOK_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 3;
+
+	/**
+	 * The meta object id for the '{@link org.marketcetera.photon.model.marketdata.impl.MDQuoteImpl <em>Quote</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.marketcetera.photon.model.marketdata.impl.MDQuoteImpl
+	 * @see org.marketcetera.photon.model.marketdata.impl.MDPackageImpl#getMDQuote()
+	 * @generated
+	 */
+	int MD_QUOTE = 5;
+
+	/**
+	 * The feature id for the '<em><b>Price</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_QUOTE__PRICE = 0;
+
+	/**
+	 * The feature id for the '<em><b>Size</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_QUOTE__SIZE = 1;
+
+	/**
+	 * The feature id for the '<em><b>Source</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_QUOTE__SOURCE = 2;
+
+	/**
+	 * The feature id for the '<em><b>Time</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_QUOTE__TIME = 3;
+
+	/**
+	 * The number of structural features of the '<em>Quote</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MD_QUOTE_FEATURE_COUNT = 4;
+
+	/**
+	 * The meta object id for the '<em>Depth Of Book Product</em>' data type.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.marketcetera.marketdata.MarketDataRequest.Content
+	 * @see org.marketcetera.photon.model.marketdata.impl.MDPackageImpl#getDepthOfBookProduct()
+	 * @generated
+	 */
+	int DEPTH_OF_BOOK_PRODUCT = 6;
+
+	/**
 	 * Returns the meta object for class '{@link org.marketcetera.photon.model.marketdata.MDItem <em>Item</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -418,6 +540,114 @@ public interface MDPackage extends EPackage {
 	EAttribute getMDMarketstat_PreviousCloseDate();
 
 	/**
+	 * Returns the meta object for class '{@link org.marketcetera.photon.model.marketdata.MDDepthOfBook <em>Depth Of Book</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Depth Of Book</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDDepthOfBook
+	 * @generated
+	 */
+	EClass getMDDepthOfBook();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDDepthOfBook#getProduct <em>Product</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Product</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDDepthOfBook#getProduct()
+	 * @see #getMDDepthOfBook()
+	 * @generated
+	 */
+	EAttribute getMDDepthOfBook_Product();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.marketcetera.photon.model.marketdata.MDDepthOfBook#getBids <em>Bids</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Bids</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDDepthOfBook#getBids()
+	 * @see #getMDDepthOfBook()
+	 * @generated
+	 */
+	EReference getMDDepthOfBook_Bids();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.marketcetera.photon.model.marketdata.MDDepthOfBook#getAsks <em>Asks</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Asks</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDDepthOfBook#getAsks()
+	 * @see #getMDDepthOfBook()
+	 * @generated
+	 */
+	EReference getMDDepthOfBook_Asks();
+
+	/**
+	 * Returns the meta object for class '{@link org.marketcetera.photon.model.marketdata.MDQuote <em>Quote</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Quote</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDQuote
+	 * @generated
+	 */
+	EClass getMDQuote();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDQuote#getPrice <em>Price</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Price</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDQuote#getPrice()
+	 * @see #getMDQuote()
+	 * @generated
+	 */
+	EAttribute getMDQuote_Price();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDQuote#getSize <em>Size</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Size</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDQuote#getSize()
+	 * @see #getMDQuote()
+	 * @generated
+	 */
+	EAttribute getMDQuote_Size();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDQuote#getSource <em>Source</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Source</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDQuote#getSource()
+	 * @see #getMDQuote()
+	 * @generated
+	 */
+	EAttribute getMDQuote_Source();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDQuote#getTime <em>Time</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Time</em>'.
+	 * @see org.marketcetera.photon.model.marketdata.MDQuote#getTime()
+	 * @see #getMDQuote()
+	 * @generated
+	 */
+	EAttribute getMDQuote_Time();
+
+	/**
+	 * Returns the meta object for data type '{@link org.marketcetera.marketdata.MarketDataRequest.Content <em>Depth Of Book Product</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for data type '<em>Depth Of Book Product</em>'.
+	 * @see org.marketcetera.marketdata.MarketDataRequest.Content
+	 * @model instanceClass="org.marketcetera.marketdata.MarketDataRequest.Content"
+	 * @generated
+	 */
+	EDataType getDepthOfBookProduct();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -568,6 +798,92 @@ public interface MDPackage extends EPackage {
 		 */
 		EAttribute MD_MARKETSTAT__PREVIOUS_CLOSE_DATE = eINSTANCE
 				.getMDMarketstat_PreviousCloseDate();
+
+		/**
+		 * The meta object literal for the '{@link org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl <em>Depth Of Book</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl
+		 * @see org.marketcetera.photon.model.marketdata.impl.MDPackageImpl#getMDDepthOfBook()
+		 * @generated
+		 */
+		EClass MD_DEPTH_OF_BOOK = eINSTANCE.getMDDepthOfBook();
+
+		/**
+		 * The meta object literal for the '<em><b>Product</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MD_DEPTH_OF_BOOK__PRODUCT = eINSTANCE.getMDDepthOfBook_Product();
+
+		/**
+		 * The meta object literal for the '<em><b>Bids</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference MD_DEPTH_OF_BOOK__BIDS = eINSTANCE.getMDDepthOfBook_Bids();
+
+		/**
+		 * The meta object literal for the '<em><b>Asks</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference MD_DEPTH_OF_BOOK__ASKS = eINSTANCE.getMDDepthOfBook_Asks();
+
+		/**
+		 * The meta object literal for the '{@link org.marketcetera.photon.model.marketdata.impl.MDQuoteImpl <em>Quote</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.marketcetera.photon.model.marketdata.impl.MDQuoteImpl
+		 * @see org.marketcetera.photon.model.marketdata.impl.MDPackageImpl#getMDQuote()
+		 * @generated
+		 */
+		EClass MD_QUOTE = eINSTANCE.getMDQuote();
+
+		/**
+		 * The meta object literal for the '<em><b>Price</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MD_QUOTE__PRICE = eINSTANCE.getMDQuote_Price();
+
+		/**
+		 * The meta object literal for the '<em><b>Size</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MD_QUOTE__SIZE = eINSTANCE.getMDQuote_Size();
+
+		/**
+		 * The meta object literal for the '<em><b>Source</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MD_QUOTE__SOURCE = eINSTANCE.getMDQuote_Source();
+
+		/**
+		 * The meta object literal for the '<em><b>Time</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MD_QUOTE__TIME = eINSTANCE.getMDQuote_Time();
+
+		/**
+		 * The meta object literal for the '<em>Depth Of Book Product</em>' data type.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.marketcetera.marketdata.MarketDataRequest.Content
+		 * @see org.marketcetera.photon.model.marketdata.impl.MDPackageImpl#getDepthOfBookProduct()
+		 * @generated
+		 */
+		EDataType DEPTH_OF_BOOK_PRODUCT = eINSTANCE.getDepthOfBookProduct();
 
 	}
 

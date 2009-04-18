@@ -2,8 +2,12 @@ package org.marketcetera.photon.marketdata.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.marketcetera.photon.internal.marketdata.DepthOfBookKeyTest;
 import org.marketcetera.photon.internal.marketdata.KeyTest;
+import org.marketcetera.photon.internal.marketdata.LatestTickKeyTest;
 import org.marketcetera.photon.internal.marketdata.MarketDataTest;
+import org.marketcetera.photon.internal.marketdata.MarketstatKeyTest;
+import org.marketcetera.photon.internal.marketdata.TopOfBookKeyTest;
 import org.marketcetera.photon.marketdata.MessagesTest;
 
 /* $License$ */
@@ -19,6 +23,10 @@ import org.marketcetera.photon.marketdata.MessagesTest;
 @Suite.SuiteClasses({
 	MessagesTest.class,
 	KeyTest.class,
+	LatestTickKeyTest.class,
+	TopOfBookKeyTest.class,
+	MarketstatKeyTest.class,
+	DepthOfBookKeyTest.class,
 	MarketDataTest.class
 })
 public class HeadlessSuite {

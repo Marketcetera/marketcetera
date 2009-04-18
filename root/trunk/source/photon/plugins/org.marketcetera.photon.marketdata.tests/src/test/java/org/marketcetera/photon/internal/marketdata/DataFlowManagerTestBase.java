@@ -1,9 +1,14 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleManager;
@@ -12,6 +17,7 @@ import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory;
 import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory.MockMarketDataModule;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.module.ModuleSupport;
+import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.test.TestCaseBase;
 
 /* $License$ */
@@ -83,6 +89,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	protected T mItem2;
 	protected MockMarketDataModule mMockMarketDataModule;
 	protected K mKey3;
+	protected AtomicInteger mMessageIds = new AtomicInteger();
 
 	@Before
 	public void before() {
@@ -104,10 +111,20 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	@After
 	public void after() {
 		if (mFixture != null) {
-			mFixture.stopFlow(mKey1);
-			mFixture.stopFlow(mKey2);
-			mFixture.stopFlow(mKey3);
+			if (mKey1 != null) mFixture.stopFlow(mKey1);
+			if (mKey2 != null) mFixture.stopFlow(mKey2);
+			if (mKey3 != null) mFixture.stopFlow(mKey3);
 		}
+	}
+	
+	@Test
+	public void testNullModuleManager() throws Exception {
+		new ExpectedFailure<IllegalArgumentException>(null) {
+			@Override
+			protected void run() throws Exception {
+				createFixture(null);
+			}
+		};
 	}
 
 	@Test
@@ -142,10 +159,12 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 
 		// stop flow
 		mFixture.stopFlow(mKey1);
+		// data should be reset
+		validateInitialConditions(mItem1, mKey1);
 		// emit first event
 		emit(createEvent1(mKey1));
 		// item should not have changed
-		validateState2(mItem1);
+		validateInitialConditions(mItem1, mKey1);
 
 		// start again
 		mFixture.startFlow(mKey1);
@@ -254,12 +273,22 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		validateRequest(key, request);
 	}
 
-	private MarketDataRequest getLastRequest() {
+	protected MarketDataRequest getLastRequest() {
 		return (MarketDataRequest) mMockMarketDataModule.getLastRequest()
 				.getData();
 	}
 
 	protected void emit(Object object) {
 		mMockMarketDataModule.emitData(object);
+	}
+
+	protected AskEvent createAskEvent(String symbol, String exchange, int price, int size) {
+		return new AskEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new MSymbol(symbol), exchange,
+				new BigDecimal(price), new BigDecimal(size));
+	}
+
+	protected BidEvent createBidEvent(String symbol, String exchange, int price, int size) {
+		return new BidEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new MSymbol(symbol), exchange,
+				new BigDecimal(price), new BigDecimal(size));
 	}
 }

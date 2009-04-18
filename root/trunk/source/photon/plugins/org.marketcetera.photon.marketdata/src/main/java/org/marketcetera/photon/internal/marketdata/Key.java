@@ -40,25 +40,51 @@ public abstract class Key<T extends MDItem> {
 	}
 
 	@Override
-	public int hashCode() {
-		// getClass() is included since distinct subclasses are not equal
-		return new HashCodeBuilder().append(getClass()).append(mSymbol).toHashCode();
+	public final int hashCode() {
+		HashCodeBuilder builder = new HashCodeBuilder().append(getClass()).append(mSymbol);
+		enhanceHashCode(builder);
+		return builder.toHashCode();
 	}
 
 	/**
-	 * Subclasses may override this, but must start with:
-	 * <p>
-	 * <code>if (!super.equals(obj)) return false;</code>
+	 * Subclasses can override to enhance the builder used to generate the hash code. If they do,
+	 * they must also override {@link #refineEquals(Key)} to ensure that the hash code is consistent
+	 * with equals.
 	 * 
-	 * @see Object#equals(Object)
+	 * @param builder
+	 *            builder to enhance
 	 */
+	protected void enhanceHashCode(final HashCodeBuilder builder) {
+		// no-op
+	}
+
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		Key<?> other = (Key<?>) obj;
-		return new EqualsBuilder().append(mSymbol, other.mSymbol).isEquals();
+		// once the classes are equal, we can safely cast to Key<T>
+		Key<?> otherKey = (Key<?>) obj;
+		EqualsBuilder builder = new EqualsBuilder().append(mSymbol, otherKey.mSymbol);
+		refineEquals(builder, otherKey);
+		return builder.isEquals();
+	}
+
+	/**
+	 * Subclasses can override to refine the builder used to establish equality.
+	 * 
+	 * This class guarantees that when this method is called, the <code>this</code> object has the
+	 * same class as the <code>otherKey</code> object, i.e.
+	 * <p>
+	 * <code>getClass() == otherKey.getClass()</code>
+	 * 
+	 * @param builder
+	 *            builder to enhance
+	 * @param otherKey
+	 *            the other key to compare with
+	 */
+	protected void refineEquals(EqualsBuilder builder, Key<?> otherKey) {
+		// no-op
 	}
 
 	@Override
