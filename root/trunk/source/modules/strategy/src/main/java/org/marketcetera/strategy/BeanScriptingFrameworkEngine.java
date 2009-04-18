@@ -63,6 +63,11 @@ class BeanScriptingFrameworkEngine
         try {
             synchronized(scriptManager) {
                 if(scriptEngine == null) {
+                    String classpath = System.getProperty(Strategy.CLASSPATH_PROPERTYNAME);
+                    SLF4JLoggerProxy.debug(this,
+                                           "Setting classpath to {}", //$NON-NLS-1$
+                                           classpath);
+                    scriptManager.setClassPath(classpath);
                     scriptEngine = scriptManager.loadScriptingEngine(languageString);
                     SLF4JLoggerProxy.debug(this,
                                            "Initializing engine..."); //$NON-NLS-1$

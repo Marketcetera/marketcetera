@@ -1,8 +1,9 @@
 package org.marketcetera.strategy;
 
-
 import java.io.File;
 
+import org.junit.Test;
+import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
 
@@ -57,6 +58,32 @@ public class RubyLanguageTest
     public static final File COMBINED_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                           "combined_request.rb");
     public static final String COMBINED_STRATEGY_NAME = "CombinedRequest";
+    public static final File REQUIRES_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                          "require.rb");
+    public static final String REQUIRES_STRATEGY_NAME = "Require";
+    /**
+     * Verifies that a Ruby strategy that requires another Ruby strategy works.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void requires()
+        throws Exception
+    {
+        StrategyCoordinates strategy = getRequiresStrategy();
+        verifyNullProperties();
+        // and the right classpath
+        ModuleURN strategyURN = createStrategy(strategy.getName(),
+                                               getLanguage(),
+                                               strategy.getFile(),
+                                               null,
+                                               null,
+                                               null);
+        doSuccessfulStartTestNoVerification(strategyURN);
+        verifyPropertyNonNull("onStart");
+        stopStrategy(strategyURN);
+        verifyPropertyNonNull("onStop");
+    }
     /*
      * (non-Javadoc)
      * 
@@ -194,5 +221,15 @@ public class RubyLanguageTest
     {
         return StrategyCoordinates.get(RubyLanguageTest.COMBINED_STRATEGY,
                                        RubyLanguageTest.COMBINED_STRATEGY_NAME);
+    }
+    /**
+     * Gets a strategy which requires other strategies.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    private StrategyCoordinates getRequiresStrategy()
+    {
+        return StrategyCoordinates.get(REQUIRES_STRATEGY,
+                                       REQUIRES_STRATEGY_NAME);
     }
 }
