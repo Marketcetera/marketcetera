@@ -1,6 +1,9 @@
 package org.marketcetera.util.ws.stateless;
 
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.AppId;
@@ -131,6 +134,13 @@ public class StatelessClient
         JaxWsProxyFactoryBean f=new JaxWsProxyFactoryBean();
         f.setServiceClass(iface);
         f.setAddress(getConnectionUrl(iface));
-        return (T)(f.create());
+        T service=(T)(f.create());
+        HTTPConduit http=(HTTPConduit)
+            ClientProxy.getClient(service).getConduit();
+        HTTPClientPolicy httpClientPolicy=new HTTPClientPolicy();
+        httpClientPolicy.setConnectionTimeout(0);
+        httpClientPolicy.setReceiveTimeout(0);
+        http.setClient(httpClientPolicy);
+        return service;
     }
 }

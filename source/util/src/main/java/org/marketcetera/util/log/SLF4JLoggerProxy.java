@@ -152,12 +152,39 @@ public final class SLF4JLoggerProxy
          String message,
          Object[] params)
     {
+        return log(logger,proxy,level,null,message,params);
+    }
+
+    /**
+     * Attempts to log the given parameterized message and throwable
+     * using the given logger at the given level and via the given
+     * logging proxy. Logging takes place only of the logger is
+     * location-aware.
+     * 
+     * @param logger The logger.
+     * @param proxy The proxy.
+     * @param level The level.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     *
+     * @return True if logging takes place.
+     */
+
+    private static boolean log
+        (Logger logger,
+         String proxy,
+         int level,
+         Throwable throwable,
+         String message,
+         Object[] params)
+    {
         if (!(logger instanceof LocationAwareLogger)) {
             return false;
         }
         ((LocationAwareLogger)logger).log
             (null,proxy,level,MessageFormatter.arrayFormat
-             (message,params),null);
+             (message,params),throwable);
         return true;
     }
 
@@ -343,6 +370,37 @@ public final class SLF4JLoggerProxy
 
     /**
      * Logs the given parameterized message and throwable under the
+     * given logging category at the error level via the given logging
+     * proxy.
+     * 
+     * @param proxy The proxy.
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    static void errorProxy
+        (String proxy,
+         Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isErrorEnabled()) {
+            return;
+        }
+        if (log(logger,proxy,LocationAwareLogger.ERROR_INT,
+                throwable,message,params)) {
+            return;
+        }
+        logger.error(MessageFormatter.arrayFormat
+                     (message,params),throwable);
+    }
+
+    /**
+     * Logs the given parameterized message and throwable under the
      * given logging category at the error level.
      * 
      * @param category The category.
@@ -357,12 +415,7 @@ public final class SLF4JLoggerProxy
          String message,
          Object... params)
     {
-        Logger logger=getLogger(category);
-        if (!logger.isErrorEnabled()) {
-            return;
-        }
-        errorProxy(SELF_PROXY,category,message,params);
-        errorProxy(SELF_PROXY,category,throwable);
+        errorProxy(SELF_PROXY,category,throwable,message,params);
     }
 
     /**
@@ -547,6 +600,37 @@ public final class SLF4JLoggerProxy
 
     /**
      * Logs the given parameterized message and throwable under the
+     * given logging category at the warning level via the given
+     * logging proxy.
+     * 
+     * @param proxy The proxy.
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    static void warnProxy
+        (String proxy,
+         Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isWarnEnabled()) {
+            return;
+        }
+        if (log(logger,proxy,LocationAwareLogger.WARN_INT,
+                throwable,message,params)) {
+            return;
+        }
+        logger.warn(MessageFormatter.arrayFormat
+                    (message,params),throwable);
+    }
+
+    /**
+     * Logs the given parameterized message and throwable under the
      * given logging category at the warning level.
      * 
      * @param category The category.
@@ -561,12 +645,7 @@ public final class SLF4JLoggerProxy
          String message,
          Object... params)
     {
-        Logger logger=getLogger(category);
-        if (!logger.isWarnEnabled()) {
-            return;
-        }
-        warnProxy(SELF_PROXY,category,message,params);
-        warnProxy(SELF_PROXY,category,throwable);
+        warnProxy(SELF_PROXY,category,throwable,message,params);
     }
 
     /**
@@ -753,6 +832,37 @@ public final class SLF4JLoggerProxy
 
     /**
      * Logs the given parameterized message and throwable under the
+     * given logging category at the informational level via the given
+     * logging proxy.
+     * 
+     * @param proxy The proxy.
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    static void infoProxy
+        (String proxy,
+         Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isInfoEnabled()) {
+            return;
+        }
+        if (log(logger,proxy,LocationAwareLogger.INFO_INT,
+                throwable,message,params)) {
+            return;
+        }
+        logger.info(MessageFormatter.arrayFormat
+                    (message,params),throwable);
+    }
+
+    /**
+     * Logs the given parameterized message and throwable under the
      * given logging category at the informational level.
      * 
      * @param category The category.
@@ -767,12 +877,7 @@ public final class SLF4JLoggerProxy
          String message,
          Object... params)
     {
-        Logger logger=getLogger(category);
-        if (!logger.isInfoEnabled()) {
-            return;
-        }
-        infoProxy(SELF_PROXY,category,message,params);
-        infoProxy(SELF_PROXY,category,throwable);
+        infoProxy(SELF_PROXY,category,throwable,message,params);
     }
 
     /**
@@ -957,6 +1062,37 @@ public final class SLF4JLoggerProxy
 
     /**
      * Logs the given parameterized message and throwable under the
+     * given logging category at the debugging level via the given
+     * logging proxy.
+     * 
+     * @param proxy The proxy.
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    static void debugProxy
+        (String proxy,
+         Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+        if (log(logger,proxy,LocationAwareLogger.DEBUG_INT,
+                throwable,message,params)) {
+            return;
+        }
+        logger.debug(MessageFormatter.arrayFormat
+                     (message,params),throwable);
+    }
+
+    /**
+     * Logs the given parameterized message and throwable under the
      * given logging category at the debugging level.
      * 
      * @param category The category.
@@ -971,12 +1107,7 @@ public final class SLF4JLoggerProxy
          String message,
          Object... params)
     {
-        Logger logger=getLogger(category);
-        if (!logger.isDebugEnabled()) {
-            return;
-        }
-        debugProxy(SELF_PROXY,category,message,params);
-        debugProxy(SELF_PROXY,category,throwable);
+        debugProxy(SELF_PROXY,category,throwable,message,params);
     }
     
     /**
@@ -1161,6 +1292,37 @@ public final class SLF4JLoggerProxy
 
     /**
      * Logs the given parameterized message and throwable under the
+     * given logging category at the tracing level via the given
+     * logging proxy.
+     * 
+     * @param proxy The proxy.
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    static void traceProxy
+        (String proxy,
+         Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
+        if (log(logger,proxy,LocationAwareLogger.TRACE_INT,
+                throwable,message,params)) {
+            return;
+        }
+        logger.trace(MessageFormatter.arrayFormat
+                     (message,params),throwable);
+    }
+
+    /**
+     * Logs the given parameterized message and throwable under the
      * given logging category at the tracing level.
      * 
      * @param category The category.
@@ -1175,14 +1337,9 @@ public final class SLF4JLoggerProxy
          String message,
          Object... params)
     {
-        Logger logger=getLogger(category);
-        if (!logger.isTraceEnabled()) {
-            return;
-        }
-        traceProxy(SELF_PROXY,category,message,params);
-        traceProxy(SELF_PROXY,category,throwable);
+        traceProxy(SELF_PROXY,category,throwable,message,params);
     }
-    
+
 
     // CONSTRUCTORS.
 

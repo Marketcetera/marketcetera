@@ -85,14 +85,8 @@ public class TSLF4JLoggerProxyTest
             (Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
         SLF4JLoggerProxy.error
             (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
-        Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
-        assertEvent
-            (events.next(),Level.ERROR,TEST_CATEGORY,
-             TEST_MESSAGE+" a",TEST_LOCATION);
-        assertEvent
-            (events.next(),Level.ERROR,TEST_CATEGORY,
-             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
-        assertFalse(events.hasNext());
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,TEST_MESSAGE+" a",TEST_LOCATION);
         getAppender().clear();
 
         assertFalse
@@ -126,14 +120,8 @@ public class TSLF4JLoggerProxyTest
             (Level.WARN,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
         SLF4JLoggerProxy.warn
             (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
-        events=getAppender().getEvents().iterator();
-        assertEvent
-            (events.next(),Level.WARN,TEST_CATEGORY,
-             TEST_MESSAGE+" a",TEST_LOCATION);
-        assertEvent
-            (events.next(),Level.WARN,TEST_CATEGORY,
-             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
-        assertFalse(events.hasNext());
+        assertSingleEvent
+            (Level.WARN,TEST_CATEGORY,TEST_MESSAGE+" a",TEST_LOCATION);
         getAppender().clear();
 
         assertFalse
@@ -167,14 +155,8 @@ public class TSLF4JLoggerProxyTest
             (Level.INFO,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
         SLF4JLoggerProxy.info
             (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
-        events=getAppender().getEvents().iterator();
-        assertEvent
-            (events.next(),Level.INFO,TEST_CATEGORY,
-             TEST_MESSAGE+" a",TEST_LOCATION);
-        assertEvent
-            (events.next(),Level.INFO,TEST_CATEGORY,
-             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
-        assertFalse(events.hasNext());
+        assertSingleEvent
+            (Level.INFO,TEST_CATEGORY,TEST_MESSAGE+" a",TEST_LOCATION);
         getAppender().clear();
 
         assertFalse
@@ -208,14 +190,8 @@ public class TSLF4JLoggerProxyTest
             (Level.DEBUG,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
         SLF4JLoggerProxy.debug
             (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
-        events=getAppender().getEvents().iterator();
-        assertEvent
-            (events.next(),Level.DEBUG,TEST_CATEGORY,
-             TEST_MESSAGE+" a",TEST_LOCATION);
-        assertEvent
-            (events.next(),Level.DEBUG,TEST_CATEGORY,
-             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
-        assertFalse(events.hasNext());
+        assertSingleEvent
+            (Level.DEBUG,TEST_CATEGORY,TEST_MESSAGE+" a",TEST_LOCATION);
         getAppender().clear();
 
         assertFalse
@@ -249,14 +225,8 @@ public class TSLF4JLoggerProxyTest
             (Level.TRACE,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
         SLF4JLoggerProxy.trace
             (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
-        events=getAppender().getEvents().iterator();
-        assertEvent
-            (events.next(),Level.TRACE,TEST_CATEGORY,
-             TEST_MESSAGE+" a",TEST_LOCATION);
-        assertEvent
-            (events.next(),Level.TRACE,TEST_CATEGORY,
-             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
-        assertFalse(events.hasNext());
+        assertSingleEvent
+            (Level.TRACE,TEST_CATEGORY,TEST_MESSAGE+" a",TEST_LOCATION);
         getAppender().clear();
     }
 }
