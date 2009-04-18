@@ -29,6 +29,8 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 	 * 
 	 * @param moduleManager
 	 *            the module manager
+	 * @throws IllegalArgumentException
+	 *             if moduleManager is null
 	 */
 	@Inject
 	public TopOfBookManager(ModuleManager moduleManager) {
@@ -44,7 +46,8 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 	}
 
 	@Override
-	protected void resetItem(MDTopOfBookImpl item) {
+	protected void resetItem(TopOfBookKey key, MDTopOfBookImpl item) {
+		assert key != null;
 		assert item != null;
 		item.setAskPrice(null);
 		item.setAskSize(null);

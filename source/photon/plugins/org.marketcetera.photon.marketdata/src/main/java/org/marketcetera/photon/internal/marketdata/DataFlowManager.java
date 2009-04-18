@@ -47,8 +47,11 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 	 * 
 	 * @param moduleManager
 	 *            the module manager
+	 * @throws IllegalArgumentException
+	 *             if moduleManager is null
 	 */
 	protected DataFlowManager(ModuleManager moduleManager) {
+		Validate.notNull(moduleManager);
 		mModuleManager = moduleManager;
 	}
 
@@ -76,8 +79,8 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 			}
 		}
 		mSourceModule = module;
-		for (T item : mItems.values()) {
-			resetItem(item);
+		for (Map.Entry<K, T> entry : mItems.entrySet()) {
+			resetItem(entry.getKey(), entry.getValue());
 		}
 		if (module != null) {
 			for (ModuleURN subscriber : mSubscribers.values()) {
@@ -169,6 +172,7 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 	@Override
 	public final synchronized void stopFlow(K key) {
 		Validate.notNull(key);
+		resetItem(key, getItem(key));
 		ModuleURN subscriberURN = mSubscribers.remove(key);
 		if (subscriberURN == null) {
 			return;
@@ -205,10 +209,12 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 	 * Hook for subclasses to reset data items to their initial state since the source module is
 	 * changing.
 	 * 
+	 * @param key
+	 *            the item key
 	 * @param item
 	 *            the item to reset
 	 */
-	abstract protected void resetItem(T item);
+	abstract protected void resetItem(K key, T item);
 
 	/**
 	 * Hook for subclasses to provide a custom subscriber to handle market data. The internal
@@ -232,13 +238,24 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 		}
 
 		/**
-		 * Convenience method for subclasses that encounter unexpected data
+		 * Convenience method for subclasses that encounter unexpected data.
 		 * 
 		 * @param data
 		 *            the unexpected data
 		 */
 		protected final void reportUnexpectedData(Object data) {
 			Messages.DATA_FLOW_MANAGER_UNEXPECTED_DATA.warn(DataFlowManager.this, data,
+					getRequest());
+		}
+		
+		/**
+		 * Convenience method for subclasses that encounter data with an unexpected id.
+		 * 
+		 * @param data
+		 *            the unexpected data
+		 */
+		protected final void reportUnexpectedMessageId(Object data) {
+			Messages.DATA_FLOW_MANAGER_UNEXPECTED_MESSAGE_ID.warn(DataFlowManager.this, data,
 					getRequest());
 		}
 

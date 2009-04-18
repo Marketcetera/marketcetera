@@ -10,13 +10,16 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
+import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
+import org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDItemImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl;
@@ -37,13 +40,15 @@ public class MarketDataTest {
 	private ILatestTickManager mMockLatestTickManager;
 	private ITopOfBookManager mMockTopOfBookManager;
 	private IMarketstatManager mMockMarketstatManager;
+	private IDepthOfBookManager mMockDepthOfBookManager;
 
 	@Before
 	public void before() {
 		mMockLatestTickManager = mock(ILatestTickManager.class);
 		mMockTopOfBookManager = mock(ITopOfBookManager.class);
 		mMockMarketstatManager = mock(IMarketstatManager.class);
-		mFixture = new MarketData(mMockLatestTickManager, mMockTopOfBookManager, mMockMarketstatManager);
+		mMockDepthOfBookManager = mock(IDepthOfBookManager.class);
+		mFixture = new MarketData(mMockLatestTickManager, mMockTopOfBookManager, mMockMarketstatManager, mMockDepthOfBookManager);
 	}
 	
 	@Test
@@ -51,19 +56,25 @@ public class MarketDataTest {
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
-				new MarketData(null, mMockTopOfBookManager, mMockMarketstatManager);
+				new MarketData(null, mMockTopOfBookManager, mMockMarketstatManager, mMockDepthOfBookManager);
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
-				new MarketData(mMockLatestTickManager, null, mMockMarketstatManager);
+				new MarketData(mMockLatestTickManager, null, mMockMarketstatManager, mMockDepthOfBookManager);
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
-				new MarketData(mMockLatestTickManager, mMockTopOfBookManager, null);
+				new MarketData(mMockLatestTickManager, mMockTopOfBookManager, null, mMockDepthOfBookManager);
+			}
+		};
+		new ExpectedFailure<IllegalArgumentException>(null) {
+			@Override
+			protected void run() throws Exception {
+				new MarketData(mMockLatestTickManager, mMockTopOfBookManager, mMockMarketstatManager, null);
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>(null) {
@@ -82,6 +93,24 @@ public class MarketDataTest {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getMarketstat(null);
+			}
+		};
+		new ExpectedFailure<IllegalArgumentException>(null) {
+			@Override
+			protected void run() throws Exception {
+				mFixture.getDepthOfBook(null, Content.TOTAL_VIEW);
+			}
+		};
+		new ExpectedFailure<IllegalArgumentException>(null) {
+			@Override
+			protected void run() throws Exception {
+				mFixture.getDepthOfBook("ABC", null);
+			}
+		};
+		new ExpectedFailure<IllegalArgumentException>(null) {
+			@Override
+			protected void run() throws Exception {
+				mFixture.getDepthOfBook("ABC", Content.MARKET_STAT);
 			}
 		};
 	}
@@ -158,6 +187,32 @@ public class MarketDataTest {
 		};
 	}
 
+	/**
+	 * Test market depth statistic reference counting.
+	 */
+	@Test
+	public void testDepthOfBook() {
+		new ReferenceCountTestTemplate<MDDepthOfBookImpl, DepthOfBookKey, IDepthOfBookManager>(new DepthOfBookKey("GOOG", Content.LEVEL_2), new DepthOfBookKey("GOOG", Content.OPEN_BOOK), mMockDepthOfBookManager) {
+
+			@Override
+			MDDepthOfBookImpl createItem(DepthOfBookKey key) {
+				MDDepthOfBookImpl item = new MDDepthOfBookImpl();
+				item.setSymbol(key.getSymbol());
+				item.setProduct(key.getProduct());
+				return item;
+			}
+
+			@Override
+			IMarketDataReference<MDDepthOfBook> getReferenceAndValidate(DepthOfBookKey key) {
+				IMarketDataReference<MDDepthOfBook> ref = mFixture.getDepthOfBook(key.getSymbol(), key.getProduct());
+				assertThat(ref.get().getSymbol(), is(key.getSymbol()));
+				assertThat(ref.get().getProduct(), is(key.getProduct()));
+				return ref;
+			}
+			
+		};
+	}
+
 	@Test
 	public void testSetSourceModule() throws Exception {
 		ModuleURN moduleURN = new ModuleURN("abc:abc:abc:abc");
@@ -165,21 +220,31 @@ public class MarketDataTest {
 		verify(mMockLatestTickManager).setSourceModule(moduleURN);
 		verify(mMockTopOfBookManager).setSourceModule(moduleURN);
 		verify(mMockMarketstatManager).setSourceModule(moduleURN);
+		verify(mMockDepthOfBookManager).setSourceModule(moduleURN);
 		moduleURN = new ModuleURN("abc:abc:abc:abc1");
 		mFixture.setLatestTickSourceModule(moduleURN);
 		verify(mMockLatestTickManager).setSourceModule(moduleURN);
 		verify(mMockTopOfBookManager, never()).setSourceModule(moduleURN);
 		verify(mMockMarketstatManager, never()).setSourceModule(moduleURN);
+		verify(mMockDepthOfBookManager, never()).setSourceModule(moduleURN);
 		moduleURN = new ModuleURN("abc:abc:abc:abc2");
 		mFixture.setTopOfBookSourceModule(moduleURN);
 		verify(mMockLatestTickManager, never()).setSourceModule(moduleURN);
 		verify(mMockTopOfBookManager).setSourceModule(moduleURN);
 		verify(mMockMarketstatManager, never()).setSourceModule(moduleURN);
+		verify(mMockDepthOfBookManager, never()).setSourceModule(moduleURN);
 		moduleURN = new ModuleURN("abc:abc:abc:abc3");
 		mFixture.setMarketstatSourceModule(moduleURN);
 		verify(mMockLatestTickManager, never()).setSourceModule(moduleURN);
 		verify(mMockTopOfBookManager, never()).setSourceModule(moduleURN);
 		verify(mMockMarketstatManager).setSourceModule(moduleURN);
+		verify(mMockDepthOfBookManager, never()).setSourceModule(moduleURN);
+		moduleURN = new ModuleURN("abc:abc:abc:abc4");
+		mFixture.setDepthOfBookSourceModule(moduleURN);
+		verify(mMockLatestTickManager, never()).setSourceModule(moduleURN);
+		verify(mMockTopOfBookManager, never()).setSourceModule(moduleURN);
+		verify(mMockMarketstatManager, never()).setSourceModule(moduleURN);
+		verify(mMockDepthOfBookManager).setSourceModule(moduleURN);
 	}
 	
 	private abstract class ReferenceCountTestTemplate<T extends MDItemImpl, K extends Key<? super T>, M extends IDataFlowManager<T, K>> {

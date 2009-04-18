@@ -30,6 +30,8 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 	 * 
 	 * @param moduleManager
 	 *            the module manager
+	 * @throws IllegalArgumentException
+	 *             if moduleManager is null
 	 */
 	@Inject
 	public MarketstatManager(ModuleManager moduleManager) {
@@ -45,7 +47,8 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 	}
 
 	@Override
-	protected void resetItem(MDMarketstatImpl item) {
+	protected void resetItem(MarketstatKey key, MDMarketstatImpl item) {
+		assert key != null;
 		assert item != null;
 		item.setCloseDate(null);
 		item.setClosePrice(null);

@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import java.util.Date;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>Symbol Statistic</b></em>'.
@@ -23,6 +25,7 @@ import java.util.Date;
  * @model
  * @generated
  */
+@ClassVersion("$Id$")
 public interface MDMarketstat extends MDItem {
 	/**
 	 * Returns the value of the '<em><b>Close Price</b></em>' attribute.

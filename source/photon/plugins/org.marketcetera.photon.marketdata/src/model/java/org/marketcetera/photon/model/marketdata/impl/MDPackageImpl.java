@@ -2,13 +2,18 @@ package org.marketcetera.photon.model.marketdata.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.photon.model.marketdata.MDFactory;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
-import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
+import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
+import org.marketcetera.photon.model.marketdata.MDPackage;
+import org.marketcetera.photon.model.marketdata.MDQuote;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -47,6 +52,27 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 	 * @generated
 	 */
 	private EClass mdMarketstatEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass mdDepthOfBookEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass mdQuoteEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EDataType depthOfBookProductEDataType = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -258,6 +284,96 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getMDDepthOfBook() {
+		return mdDepthOfBookEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMDDepthOfBook_Product() {
+		return (EAttribute) mdDepthOfBookEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getMDDepthOfBook_Bids() {
+		return (EReference) mdDepthOfBookEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getMDDepthOfBook_Asks() {
+		return (EReference) mdDepthOfBookEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getMDQuote() {
+		return mdQuoteEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMDQuote_Price() {
+		return (EAttribute) mdQuoteEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMDQuote_Size() {
+		return (EAttribute) mdQuoteEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMDQuote_Source() {
+		return (EAttribute) mdQuoteEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMDQuote_Time() {
+		return (EAttribute) mdQuoteEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EDataType getDepthOfBookProduct() {
+		return depthOfBookProductEDataType;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public MDFactory getMDFactory() {
 		return (MDFactory) getEFactoryInstance();
 	}
@@ -299,6 +415,20 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 		createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__CLOSE_DATE);
 		createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE);
 		createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__PREVIOUS_CLOSE_DATE);
+
+		mdDepthOfBookEClass = createEClass(MD_DEPTH_OF_BOOK);
+		createEAttribute(mdDepthOfBookEClass, MD_DEPTH_OF_BOOK__PRODUCT);
+		createEReference(mdDepthOfBookEClass, MD_DEPTH_OF_BOOK__BIDS);
+		createEReference(mdDepthOfBookEClass, MD_DEPTH_OF_BOOK__ASKS);
+
+		mdQuoteEClass = createEClass(MD_QUOTE);
+		createEAttribute(mdQuoteEClass, MD_QUOTE__PRICE);
+		createEAttribute(mdQuoteEClass, MD_QUOTE__SIZE);
+		createEAttribute(mdQuoteEClass, MD_QUOTE__SOURCE);
+		createEAttribute(mdQuoteEClass, MD_QUOTE__TIME);
+
+		// Create data types
+		depthOfBookProductEDataType = createEDataType(DEPTH_OF_BOOK_PRODUCT);
 	}
 
 	/**
@@ -332,6 +462,7 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 		mdLatestTickEClass.getESuperTypes().add(this.getMDItem());
 		mdTopOfBookEClass.getESuperTypes().add(this.getMDItem());
 		mdMarketstatEClass.getESuperTypes().add(this.getMDItem());
+		mdDepthOfBookEClass.getESuperTypes().add(this.getMDItem());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(mdItemEClass, MDItem.class,
@@ -389,6 +520,46 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 				getMDMarketstat_PreviousCloseDate(),
 				ecorePackage.getEDate(),
 				"previousCloseDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+
+		initEClass(mdDepthOfBookEClass, MDDepthOfBook.class,
+				"MDDepthOfBook", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+		initEAttribute(
+				getMDDepthOfBook_Product(),
+				this.getDepthOfBookProduct(),
+				"product", null, 0, 1, MDDepthOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(
+				getMDDepthOfBook_Bids(),
+				this.getMDQuote(),
+				null,
+				"bids", null, 0, -1, MDDepthOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(
+				getMDDepthOfBook_Asks(),
+				this.getMDQuote(),
+				null,
+				"asks", null, 0, -1, MDDepthOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+
+		initEClass(mdQuoteEClass, MDQuote.class,
+				"MDQuote", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+		initEAttribute(
+				getMDQuote_Price(),
+				ecorePackage.getEBigDecimal(),
+				"price", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(
+				getMDQuote_Size(),
+				ecorePackage.getEBigDecimal(),
+				"size", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(
+				getMDQuote_Source(),
+				ecorePackage.getEString(),
+				"source", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(
+				getMDQuote_Time(),
+				ecorePackage.getELong(),
+				"time", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+
+		// Initialize data types
+		initEDataType(depthOfBookProductEDataType, Content.class,
+				"DepthOfBookProduct", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);

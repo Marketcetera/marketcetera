@@ -1,6 +1,8 @@
 package org.marketcetera.photon.marketdata;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -130,6 +132,13 @@ public class MarketDataFeedTest {
 		MockMarketDataModuleFactory.sInstance.setStatus("AVAILABLE");
 		assertEquals(FeedStatus.AVAILABLE, fixture.getStatus());
 		MockMarketDataModuleFactory.sInstance.setStatus(null);
+	}
+	
+	@Test
+	public void testFeedCapabilities() throws Exception {
+		ModuleURN providerURN = new ModuleURN("metc:mdata:mock");
+		MarketDataFeed fixture = new MarketDataFeed(providerURN);
+		assertThat(fixture.getCapabilities(), is(MockMarketDataModuleFactory.sInstance.getCapabilities()));
 	}
 	
 	@Test

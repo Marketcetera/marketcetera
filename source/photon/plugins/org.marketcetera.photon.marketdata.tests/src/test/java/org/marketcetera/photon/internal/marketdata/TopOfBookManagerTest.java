@@ -7,16 +7,11 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
 
-import java.math.BigDecimal;
-
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl;
-import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
 
@@ -61,12 +56,12 @@ public class TopOfBookManagerTest extends DataFlowManagerTestBase<MDTopOfBook, T
 
 	@Override
 	protected Object createEvent1(TopOfBookKey key) {
-		return createAskEvent(key.getSymbol(), 34, 500);
+		return createAskEvent(key.getSymbol(), "Q", 34, 500);
 	}
 
 	@Override
 	protected Object createEvent2(TopOfBookKey key) {
-		return createBidEvent(key.getSymbol(), 6, 30);
+		return createBidEvent(key.getSymbol(), "Q", 6, 30);
 	}
 
 	@Override
@@ -79,16 +74,6 @@ public class TopOfBookManagerTest extends DataFlowManagerTestBase<MDTopOfBook, T
 	protected void validateState2(MDTopOfBook item) {
 		assertThat(item.getBidPrice(), comparesEqualTo(6));
 		assertThat(item.getBidSize(), comparesEqualTo(30));
-	}
-
-	private Object createAskEvent(String symbol, int price, int size) {
-		return new AskEvent(1L, System.currentTimeMillis(), new MSymbol(symbol), "Q",
-				new BigDecimal(price), new BigDecimal(size));
-	}
-
-	private Object createBidEvent(String symbol, int price, int size) {
-		return new BidEvent(1L, System.currentTimeMillis(), new MSymbol(symbol), "Q",
-				new BigDecimal(price), new BigDecimal(size));
 	}
 
 	@Override

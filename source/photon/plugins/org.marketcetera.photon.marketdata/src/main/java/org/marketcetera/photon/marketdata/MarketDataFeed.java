@@ -3,9 +3,11 @@ package org.marketcetera.photon.marketdata;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EventListener;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Set;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.InstanceNotFoundException;
@@ -19,6 +21,7 @@ import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.module.MXBeanOperationException;
 import org.marketcetera.module.ModuleManager;
@@ -54,6 +57,7 @@ public final class MarketDataFeed {
 	private final ModuleURN mInstanceURN;
 	private final AbstractMarketDataModuleMXBean mMBeanProxy;
 	private final String mDescription;
+	private final Set<Capability> mCapabilities;
 
 	/**
 	 * Contructor. An exception will be thrown if the supplied URN is invalid or
@@ -87,6 +91,7 @@ public final class MarketDataFeed {
 				throw new I18NException(Messages.MARKET_DATA_FEED_INVALID_INTERFACE);
 			mMBeanProxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
 					AbstractMarketDataModuleMXBean.class, true);
+			mCapabilities = Collections.unmodifiableSet(mMBeanProxy.getCapabilities());
 			((NotificationEmitter) mMBeanProxy).addNotificationListener(
 					mFeedStatusNotificationListener, sFeedStatusFilter, null);
 		} catch (MXBeanOperationException e) {
@@ -144,11 +149,21 @@ public final class MarketDataFeed {
 			return FeedStatus.UNKNOWN;
 		}
 	}
-	
+
+	/**
+	 * Returns the feed's capabilities.
+	 * 
+	 * @return the feed capabilities
+	 */
+	Set<Capability> getCapabilities() {
+		return mCapabilities;
+	}
+
 	/**
 	 * Attempt to reconnect the feed.
 	 * 
-	 * @throws UnsupportedOperationException if the feed does not support this behavior
+	 * @throws UnsupportedOperationException
+	 *             if the feed does not support this behavior
 	 */
 	void reconnect() {
 		mMBeanProxy.reconnect();

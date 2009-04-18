@@ -87,6 +87,16 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseMDDepthOfBook(MDDepthOfBook object) {
+			return createMDDepthOfBookAdapter();
+		}
+
+		@Override
+		public Adapter caseMDQuote(MDQuote object) {
+			return createMDQuoteAdapter();
+		}
+
+		@Override
 		public Adapter defaultCase(EObject object) {
 			return createEObjectAdapter();
 		}
@@ -158,6 +168,34 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createMDMarketstatAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.marketcetera.photon.model.marketdata.MDDepthOfBook <em>Depth Of Book</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.marketcetera.photon.model.marketdata.MDDepthOfBook
+	 * @generated
+	 */
+	public Adapter createMDDepthOfBookAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.marketcetera.photon.model.marketdata.MDQuote <em>Quote</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.marketcetera.photon.model.marketdata.MDQuote
+	 * @generated
+	 */
+	public Adapter createMDQuoteAdapter() {
 		return null;
 	}
 
