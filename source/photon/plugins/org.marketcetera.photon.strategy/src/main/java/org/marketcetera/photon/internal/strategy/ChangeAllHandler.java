@@ -13,14 +13,13 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Handler that changes the state of all registered {@link Strategy} objects. It must be configured
- * through plug-in extension to specify the state. The state must be specified
- * after the class name, e.g.
+ * through plug-in extension to specify the state. The state must be specified after the class name,
+ * e.g.
  * <p>
  * <code>class="org.marketcetera.photon.internal.strategy.ChangeAllHandler:STOPPED"</code>
  * <p>
- * See
- * {@link IExecutableExtension#setInitializationData(IConfigurationElement, String, Object)}
- * for more information about parameterizing an extension.
+ * See {@link IExecutableExtension#setInitializationData(IConfigurationElement, String, Object)} for
+ * more information about parameterizing an extension.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -32,11 +31,13 @@ public class ChangeAllHandler extends ChangeStrategyHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Collection<Strategy> strategies = new ArrayList<Strategy>();
-		for(Object obj : StrategyManager.getCurrent().getStrategies()) {
+		for (Object obj : StrategyManager.getCurrent().getStrategies()) {
 			if (obj instanceof Strategy) {
 				Strategy strategy = (Strategy) obj;
-				validateState(strategy);
-				strategies.add(strategy);
+				// only change strategies that are eligible
+				if (strategy.getState() != getNewState()) {
+					strategies.add(strategy);
+				}
 			}
 		}
 		changeState(strategies);

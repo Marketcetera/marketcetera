@@ -516,6 +516,7 @@ public final class StrategyManager {
 	}
 
 	private String encode(String string) {
+		if (string == null) return null;
 		try {
 			return new BigInteger(string.getBytes("UTF-8")).toString(Character.MAX_RADIX); //$NON-NLS-1$
 		} catch (UnsupportedEncodingException e) {
@@ -525,6 +526,7 @@ public final class StrategyManager {
 	}
 
 	private String decode(String string) {
+		if (string == null) return null;
 		try {
 			return new String(new BigInteger(string, Character.MAX_RADIX).toByteArray(), "UTF-8"); //$NON-NLS-1$
 		} catch (UnsupportedEncodingException e) {

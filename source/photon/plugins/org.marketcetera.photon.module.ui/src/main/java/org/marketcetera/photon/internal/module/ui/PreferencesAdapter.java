@@ -92,8 +92,8 @@ public class PreferencesAdapter {
 	private void visit(Preferences rootNode, IVisitor visitor) {
 		try {
 			for (String providerType : rootNode.childrenNames()) {
-				// cheat for now - exclude mdata since there is custom UI
-				if (providerType.equals("mdata")) { //$NON-NLS-1$
+				// cheat for now - exclude mdata and remote since there is custom UI
+				if (providerType.equals("mdata") || providerType.equals("remote")) { //$NON-NLS-1$
 					continue;
 				}
 				Preferences providerTypeNode = rootNode.node(providerType);

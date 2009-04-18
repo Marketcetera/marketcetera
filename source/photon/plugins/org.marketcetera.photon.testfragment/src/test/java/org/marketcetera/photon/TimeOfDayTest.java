@@ -63,6 +63,14 @@ public class TimeOfDayTest {
 		assertEquals(1, fixture.getHour(pst));
 		assertEquals(2, fixture.getMinute(pst));
 		assertEquals(3, fixture.getSecond(pst));
+		fixture = TimeOfDay.create(13, 25, 34, pst);
+		assertEquals(13, fixture.getHour(pst));
+		assertEquals(25, fixture.getMinute(pst));
+		assertEquals(34, fixture.getSecond(pst));
+		fixture = TimeOfDay.create(0, 0, 0, pst);
+		assertEquals(0, fixture.getHour(pst));
+		assertEquals(0, fixture.getMinute(pst));
+		assertEquals(0, fixture.getSecond(pst));
 		TimeZone nst = TimeZone.getTimeZone("CNT");
 		fixture = TimeOfDay.create(1, 2, 3, pst);
 		assertEquals(5, fixture.getHour(nst));

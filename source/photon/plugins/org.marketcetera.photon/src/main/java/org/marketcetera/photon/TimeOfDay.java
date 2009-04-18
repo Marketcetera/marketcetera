@@ -102,12 +102,13 @@ public class TimeOfDay {
 	}
 	
 	/**
-	 * Returns the hour in the provided time zone.
+	 * Returns the hour in the provided time zone. This returns the hour from 0 to 23 (military
+	 * time).
 	 * 
 	 * @return the hour in the provided time zone
 	 */
 	public int getHour(TimeZone timeZone) {
-		return getCalendar(timeZone).get(Calendar.HOUR);
+		return getCalendar(timeZone).get(Calendar.HOUR_OF_DAY);
 	}
 
 	/**
