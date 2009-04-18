@@ -19,8 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
 public final class ColumnConfiguration {
 
 	/**
-	 * Returns a configuration for a movable, resizable column with the
-	 * following default values:
+	 * Returns a configuration for a movable, resizable column with the following default values:
 	 * <ul>
 	 * <li>Column weight: 10</code></li>
 	 * </ul>
@@ -37,12 +36,12 @@ public final class ColumnConfiguration {
 	 * @return the default configuration for a hidden column
 	 */
 	public static ColumnConfiguration hidden() {
-		return new ColumnConfiguration().layoutData(new ColumnPixelData(0,
-				false, false));
+		return new ColumnConfiguration().layoutData(new ColumnPixelData(0, false, false));
 	}
 
 	private int mColumnStyle = SWT.LEFT;
 	private boolean mMovable = true;
+	private boolean mSortable = true;
 	private String mHeading;
 	private String mBeanProperty;
 	private ColumnLayoutData mLayoutData = new ColumnWeightData(10);
@@ -105,10 +104,21 @@ public final class ColumnConfiguration {
 	}
 
 	/**
-	 * Configures the comparator for objects in this column. If no comparator is
-	 * specified, {@link TableSupport} will attempt to cast the objects to
-	 * {@link Comparable}. If the case fails, the objects will be compared by
-	 * the results of their {@link #toString()} method.
+	 * Configures whether the column should be sortable.
+	 * 
+	 * @param sortable
+	 *            whether the column should be sortable
+	 * @return the current configuration for method chaining
+	 */
+	public ColumnConfiguration sortable(boolean sortable) {
+		mSortable = sortable;
+		return this;
+	}
+
+	/**
+	 * Configures the comparator for objects in this column. If no comparator is specified,
+	 * {@link TableSupport} will attempt to cast the objects to {@link Comparable}. If the case
+	 * fails, the objects will be compared by the results of their {@link #toString()} method.
 	 * 
 	 * @param comparator
 	 *            the comparator
@@ -141,6 +151,10 @@ public final class ColumnConfiguration {
 
 	boolean isMovable() {
 		return mMovable;
+	}
+
+	boolean isSortable() {
+		return mSortable;
 	}
 
 	Comparator<?> getComparator() {

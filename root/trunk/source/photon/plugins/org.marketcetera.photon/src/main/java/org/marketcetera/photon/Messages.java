@@ -6,7 +6,6 @@ import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessage3P;
-import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessage5P;
 import org.marketcetera.util.log.I18NMessageProvider;
 
@@ -156,14 +155,6 @@ public interface Messages
                                                                                          "check_for_updates_action_description"); //$NON-NLS-1$
     public static I18NMessage0P CHECK_FOR_UPDATES_JOB_ACTION = new I18NMessage0P(LOGGER,
                                                                                  "check_for_updates_job_action"); //$NON-NLS-1$
-    public static I18NMessage0P OPTION_MARKET_DATA_COMMAND_ACTION = new I18NMessage0P(LOGGER,
-                                                                                      "option_market_data_command_action"); //$NON-NLS-1$
-    public static I18NMessage0P OPTION_MARKET_DATA_COMMAND_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
-                                                                                                  "option_market_data_command_action_description"); //$NON-NLS-1$
-    public static I18NMessage0P OPTION_MARKET_DATA_SYMBOL_ACTION = new I18NMessage0P(LOGGER,
-                                                                                     "option_market_data_symbol_action"); //$NON-NLS-1$
-    public static I18NMessage0P OPTION_MARKET_DATA_SYMBOL_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
-                                                                                                 "option_market_data_symbol_action_description"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_SEND_ORDER = new I18NMessage0P(LOGGER,
                                                                       "cannot_send_order"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_CANCEL_ORDER = new I18NMessage0P(LOGGER,
@@ -385,28 +376,12 @@ public interface Messages
                                                                 "ready_label"); //$NON-NLS-1$
     public static I18NMessage1P CANNOT_CONNECT_TO_URL = new I18NMessage1P(LOGGER,
                                                                           "cannot_connect_to_url"); //$NON-NLS-1$
-    public static I18NMessage0P SHOW_SYMBOL_NEW_VIEW_LABEL = new I18NMessage0P(LOGGER,
-                                                                               "show_symbol_new_view_label"); //$NON-NLS-1$
-    public static I18NMessage0P SHOW_SYMBOL_NEW_VIEW_TOOLTIPS = new I18NMessage0P(LOGGER,
-                                                                                  "show_symbol_new_view_tooltips"); //$NON-NLS-1$
-    public static I18NMessage1P NULL_VIEW = new I18NMessage1P(LOGGER,
-                                                              "null_view"); //$NON-NLS-1$
-    public static I18NMessage0P NULL_TARGET = new I18NMessage0P(LOGGER,
-                                                                "null_target"); //$NON-NLS-1$
-    public static I18NMessage4P VIEW_DOES_NOT_ACCEPT_SYMBOLS = new I18NMessage4P(LOGGER,
-                                                                                 "view_does_not_accept_symbols"); //$NON-NLS-1$
     public static I18NMessage1P DUPLICATE_SYMBOL = new I18NMessage1P(LOGGER,
                                                                      "duplicate_symbol"); //$NON-NLS-1$
-    public static I18NMessage1P CANNOT_UNSUBSCRIBE_NO_RECORD = new I18NMessage1P(LOGGER,
-                                                                                 "cannot_unsubscribe_no_record"); //$NON-NLS-1$
     public static I18NMessage0P ENABLED_LABEL = new I18NMessage0P(LOGGER,
                                                                   "enabled_label"); //$NON-NLS-1$
     public static I18NMessage1P CANNOT_FIND_CUSTOM_FIELD = new I18NMessage1P(LOGGER,
                                                                              "cannot_find_custom_field"); //$NON-NLS-1$
-    public static I18NMessage0P SHOW_SYMBOL_LABEL = new I18NMessage0P(LOGGER,
-                                                                      "show_symbol_label"); //$NON-NLS-1$
-    public static I18NMessage0P SHOW_SYMBOL_TOOLTIPS = new I18NMessage0P(LOGGER,
-                                                                         "show_symbol_tooltips"); //$NON-NLS-1$
     public static I18NMessage0P FULL_MESSAGE_LABEL = new I18NMessage0P(LOGGER,
                                                                        "full_message_label"); //$NON-NLS-1$
     public static I18NMessage0P COPY_MESSAGE_LABEL = new I18NMessage0P(LOGGER,
@@ -543,4 +518,17 @@ public interface Messages
 			"fills_view.unknown_filter_value"); //$NON-NLS-1$
 	public static I18NMessage1P USER_NAME_SERVICE_LOOKUP_FAILED = new I18NMessage1P(LOGGER,
 			"user_name_service.lookup_failed"); //$NON-NLS-1$
+
+	public static I18NMessage0P MARKET_DEPTH_LEVEL_2_LABEL = new I18NMessage0P(LOGGER,
+			"market_depth.level_2.label"); //$NON-NLS-1$
+	public static I18NMessage0P MARKET_DEPTH_LEVEL_2_MNEMONIC = new I18NMessage0P(LOGGER,
+			"market_depth.level_2.mnemonic"); //$NON-NLS-1$
+	public static I18NMessage0P MARKET_DEPTH_TOTAL_VIEW_LABEL = new I18NMessage0P(LOGGER,
+			"market_depth.total_view.label"); //$NON-NLS-1$
+	public static I18NMessage0P MARKET_DEPTH_TOTAL_VIEW_MNEMONIC = new I18NMessage0P(LOGGER,
+			"market_depth.total_view.mnemonic"); //$NON-NLS-1$
+	public static I18NMessage0P MARKET_DEPTH_OPEN_BOOK_LABEL = new I18NMessage0P(LOGGER,
+			"market_depth.open_book.label"); //$NON-NLS-1$
+	public static I18NMessage0P MARKET_DEPTH_OPEN_BOOK_MNEMONIC = new I18NMessage0P(LOGGER,
+			"market_depth.open_book.mnemonic"); //$NON-NLS-1$
 }

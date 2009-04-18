@@ -137,6 +137,13 @@
                relationship="bottom"
                relative="org.marketcetera.photon.views.MarketDataView">
          </view>
+         <view
+               id="org.marketcetera.photon.marketdata.MarketDepthView"
+               minimized="false"
+               relationship="stack"
+               relative="org.marketcetera.photon.views.MarketDataView"
+               visible="false">
+         </view>
       </perspectiveExtension>
       <perspectiveExtension targetID="org.marketcetera.photon.OptionPerspective">
          <perspectiveShortcut

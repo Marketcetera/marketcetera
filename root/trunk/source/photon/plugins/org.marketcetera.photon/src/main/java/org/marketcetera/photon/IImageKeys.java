@@ -36,8 +36,6 @@ public interface IImageKeys {
 	public static final String PLUS_TICK = "icons/silk/arrow_up.png"; //$NON-NLS-1$
 	public static final String ZERO_PLUS_TICK = "icons/silk/arrow_zero_up.png"; //$NON-NLS-1$
 	public static final String ADD_SYMBOL = "icons/silk/add.png"; //$NON-NLS-1$
-	public static final String SHOW_SYMBOL = "icons/silk/shape_square_go.png"; //$NON-NLS-1$
-	public static final String SHOW_SYMBOL_NEW_WINDOW = "icons/silk/shape_square_add.png"; //$NON-NLS-1$
 	public static final String DELETE_ITEM = "icons/silk/cancel.png"; //$NON-NLS-1$
 	public static final String DELETE_ALL = "icons/silk/exclamation.png"; //$NON-NLS-1$
 	public static final String SEND_ITEM = "icons/silk/accept.png"; //$NON-NLS-1$

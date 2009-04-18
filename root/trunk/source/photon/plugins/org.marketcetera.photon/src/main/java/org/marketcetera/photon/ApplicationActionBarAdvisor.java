@@ -24,7 +24,6 @@ import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.marketcetera.photon.actions.CancelAllOpenOrdersAction;
 import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
-import org.marketcetera.photon.actions.SelectOptionMarketDataCommandAction;
 import org.marketcetera.photon.actions.WebHelpAction;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -116,8 +115,6 @@ public class ApplicationActionBarAdvisor
 
 	private CancelAllOpenOrdersAction cancelAllOpenOrdersAction;
 
-	private IWorkbenchAction selectOptionMarketDataCommandAction;
-
 	private CommandContributionItemParameter reconnectServerParameter;
 	
 	private CommandContributionItemParameter reconnectMarketDataParameter;
@@ -189,12 +186,8 @@ public class ApplicationActionBarAdvisor
 		reconnectMarketDataParameter.icon = PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_QUOTE_FEED);
 		reconnectMarketDataParameter.mnemonic = Messages.APPLICATION_ACTION_BAR_ADVISOR_RECONNECT_MARKETDATA_MNEMONIC.getText();
 		cancelAllOpenOrdersAction = new CancelAllOpenOrdersAction(); register(cancelAllOpenOrdersAction);
-		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
 		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);
-		
-		//viewSecurityAction = new ViewSecurityAction(window);
 		focusCommandAction = new FocusCommandAction(window);  register(focusCommandAction);
-		selectOptionMarketDataCommandAction = new SelectOptionMarketDataCommandAction(window); register(selectOptionMarketDataCommandAction);
 	}
 
 	/**
@@ -244,7 +237,6 @@ public class ApplicationActionBarAdvisor
 		menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_WindowMenuName.getText(),
 				IWorkbenchActionConstants.M_WINDOW);
-		//menu.add(viewSecurityAction);
 		menu.add(new Separator());
 		MenuManager perspectiveMenu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_OpenPerspectiveMenuName.getText(),
@@ -309,8 +301,6 @@ public class ApplicationActionBarAdvisor
 		IToolBarManager toolBar = new ToolBarManager(SWT.FLAT | SWT.TRAIL);
 		coolBar.add(new ToolBarContributionItem(toolBar,"standard")); //$NON-NLS-1$
 
-		//ActionContributionItem viewSecurityCI = new ActionContributionItem(viewSecurityAction);
-		//toolBar.add(viewSecurityCI);
 		ActionContributionItem focusCommandCI = new ActionContributionItem(focusCommandAction);
 		toolBar.add(focusCommandCI);
 		toolBar.add(new CommandContributionItem(reconnectServerParameter));

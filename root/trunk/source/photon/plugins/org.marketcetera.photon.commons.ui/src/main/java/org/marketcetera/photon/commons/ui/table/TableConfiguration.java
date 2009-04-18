@@ -19,7 +19,6 @@ public final class TableConfiguration {
 	 * <ul>
 	 * <li>Table Style: <code>SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
 			| SWT.BORDER</code></li>
-	 * <li>Table Item Class: {@link Object}</li>
 	 * </ul>
 	 * 
 	 * @return the default configuration
@@ -31,7 +30,7 @@ public final class TableConfiguration {
 	private int mTableStyle = SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
 			| SWT.BORDER;
 	private ColumnConfiguration[] mColumns = new ColumnConfiguration[0];
-	private Class<?> mItemClass = Object.class;
+	private Class<?> mItemClass;
 	private boolean mDynamicColumns;
 	private boolean mHeaderVisible;
 
