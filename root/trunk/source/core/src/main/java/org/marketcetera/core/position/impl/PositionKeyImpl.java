@@ -1,5 +1,8 @@
 package org.marketcetera.core.position.impl;
 
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
+
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -18,6 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PositionKeyImpl implements PositionKey {
 
     private final String mSymbol;
@@ -41,6 +45,17 @@ public class PositionKeyImpl implements PositionKey {
         mSymbol = symbol;
         mAccount = account;
         mTraderId = traderId;
+    }
+
+    /**
+     * Creates a new ID. This empty constructor is intended for use
+     * by JAXB.
+     */
+
+    protected PositionKeyImpl() {
+        mSymbol = null;
+        mAccount = null;
+        mTraderId = null;
     }
 
     @Override
