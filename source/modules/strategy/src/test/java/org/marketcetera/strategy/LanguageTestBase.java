@@ -11,13 +11,9 @@ import static org.marketcetera.event.LogEvent.Level.DEBUG;
 import static org.marketcetera.event.LogEvent.Level.ERROR;
 import static org.marketcetera.event.LogEvent.Level.INFO;
 import static org.marketcetera.event.LogEvent.Level.WARN;
-import static org.marketcetera.event.TestMessages.MESSAGE_1P;
 import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
 import static org.marketcetera.strategy.Language.JAVA;
-import static org.marketcetera.strategy.Messages.FAILED_TO_START;
-import static org.marketcetera.strategy.Messages.INVALID_LOG;
-import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
 import static org.marketcetera.strategy.Status.FAILED;
 import static org.marketcetera.strategy.Status.RUNNING;
 import static org.marketcetera.strategy.Status.STARTING;
@@ -1151,8 +1147,8 @@ public abstract class LanguageTestBase
                                                               null);
         int index = 0;
         while (index++ < 500) {
-            moduleManager.start(strategyModule);
-            moduleManager.stop(strategyModule);
+            startStrategy(strategyModule);
+            stopStrategy(strategyModule);
         }
     }
     /**
@@ -1176,8 +1172,8 @@ public abstract class LanguageTestBase
                                                                   null,
                                                                   null,
                                                                   null);
-            moduleManager.start(strategyModule);
-            moduleManager.stop(strategyModule);
+            startStrategy(strategyModule);
+            stopStrategy(strategyModule);
             moduleManager.deleteModule(strategyModule);
         }
     }

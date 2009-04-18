@@ -14,12 +14,16 @@ import org.marketcetera.core.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-interface Strategy
+public interface Strategy
 {
     /**
      * logger category which collects strategy messages
      */
     public static final String STRATEGY_MESSAGES = org.marketcetera.core.Messages.USER_MSG_CATEGORY;
+    /**
+     * environment property name used to indicate the classpath to use to compile/execute scripts
+     */
+    public static final String CLASSPATH_PROPERTYNAME = "strategy.classpath";
     /**
      * Sends data received from an external source to a strategy.
      *

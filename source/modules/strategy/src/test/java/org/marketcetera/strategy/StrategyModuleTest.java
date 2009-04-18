@@ -16,14 +16,6 @@ import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORREC
 import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE;
 import static org.marketcetera.strategy.Language.RUBY;
-import static org.marketcetera.strategy.Messages.EMPTY_INSTANCE_ERROR;
-import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
-import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
-import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
-import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
-import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
-import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
-import static org.marketcetera.strategy.Messages.STRATEGY_STILL_RUNNING;
 import static org.marketcetera.strategy.Status.RUNNING;
 import static org.marketcetera.strategy.Status.STARTING;
 import static org.marketcetera.strategy.Status.STOPPED;

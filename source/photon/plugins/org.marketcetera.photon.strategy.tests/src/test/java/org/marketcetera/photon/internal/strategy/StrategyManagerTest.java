@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -254,4 +255,8 @@ public class StrategyManagerTest {
 		assertThat(fixture.getStrategies().size(), is(0));
 	}
 
+	@Test
+	public void verifyStrategyClasspath() throws Exception {
+	    assertNotNull(System.getProperty(org.marketcetera.strategy.Strategy.CLASSPATH_PROPERTYNAME));
+	}
 }

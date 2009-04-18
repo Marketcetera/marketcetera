@@ -102,6 +102,7 @@ import quickfix.field.TransactTime;
  */
 public class StrategyTestBase
     extends ModuleTestBase
+    implements Messages
 {
     public static final File SAMPLE_STRATEGY_DIR = new File("src" + File.separator + "test" + File.separator + "sample_data",
                                                             "inputs");
@@ -1053,6 +1054,8 @@ public class StrategyTestBase
     public static void once()
         throws Exception
     {
+        System.setProperty(org.marketcetera.strategy.Strategy.CLASSPATH_PROPERTYNAME,
+                           StrategyTestBase.SAMPLE_STRATEGY_DIR.getCanonicalPath());
         positions.putAll(generatePositions(new String[] { "METC", "GOOG", "YHOO", "ORCL", "AAPL", "JAVA", "MSFT" } ));
     }
     /**

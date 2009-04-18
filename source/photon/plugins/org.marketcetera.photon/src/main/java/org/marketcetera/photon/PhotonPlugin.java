@@ -54,6 +54,7 @@ import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.strategy.Strategy;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.RubyCore;
 
@@ -271,6 +272,11 @@ public class PhotonPlugin
 			if (!newProject.exists()) {
 					newProject.create(description, new SubProgressMonitor(monitor, 1));
 			}
+	        // this is the full path of the "ActiveScripts" directory - pass this in by default to Ruby scripts in order to pick up
+	        //  any other scripts in the same dir for "requires" directives
+	        String determineClasspath = ResourcesPlugin.getWorkspace().getRoot().getProject(DEFAULT_PROJECT_NAME).getLocation().toString();
+	        System.setProperty(Strategy.CLASSPATH_PROPERTYNAME,
+	                           determineClasspath);
 			if (!newProject.isOpen()){
 				newProject.open(monitor);
 			}
