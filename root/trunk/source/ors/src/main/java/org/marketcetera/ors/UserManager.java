@@ -14,6 +14,7 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.tags.SessionId;
 
 /**
@@ -37,6 +38,7 @@ public class UserManager
     private final Map<UserID,Set<ClientSession>> mUserIDMap;
     private final Set<UserID> mRUserIDs;
     private final Set<UserID> mSUserIDs;
+    private SessionManager<ClientSession> mSessionManager;
 
 
     // CONSTRUCTORS.
@@ -110,6 +112,29 @@ public class UserManager
     }
 
     /**
+     * Sets the receiver's session manager to the given one.
+     *
+     * @param sessionManager The manager.
+     */
+
+    void setSessionManager
+        (SessionManager<ClientSession> sessionManager)
+    {
+        mSessionManager=sessionManager;
+    }
+
+    /**
+     * Returns the receiver's session manager.
+     *
+     * @return The manager.
+     */
+
+    public SessionManager<ClientSession> getSessionManager()
+    {
+        return mSessionManager;
+    }
+
+    /**
      * Updates the receiver's data structures to reflect the current
      * user definitions in the database.
      */
@@ -148,9 +173,10 @@ public class UserManager
 
             Set<ClientSession> sessions=getUserIDMap().get(userID);
             for (ClientSession s:sessions) {
-                getSessionIDMap().remove(s.getSessionId());
+                // This will generate a call to
+                // removedSession((ClientSession).
+                getSessionManager().remove(s.getSessionId());
             }
-            getUserIDMap().remove(userID);
         }
         logStatus();
     }
@@ -185,7 +211,7 @@ public class UserManager
             getSUserIDs().remove(userID);
         }
         logStatus();
-    }      
+    }
 
     /**
      * Removes the given session from the receiver.

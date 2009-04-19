@@ -57,6 +57,7 @@ create table execreports (
     sendingTime datetime not null,
     side integer not null,
     symbol varchar(255) not null,
+    account varchar(255),
     report_id bigint not null,
     primary key (id),
     index idx_report_id (report_id),

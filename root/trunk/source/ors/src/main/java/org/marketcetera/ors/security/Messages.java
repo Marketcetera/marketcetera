@@ -27,8 +27,6 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "cannot_set_password"); //$NON-NLS-1$
     static final I18NMessage0P EMPTY_PASSWORD =
             new I18NMessage0P(LOGGER, "empty_password"); //$NON-NLS-1$
-    static final I18NMessage0P PASSWORD_NOT_SET =
-            new I18NMessage0P(LOGGER, "password_not_set"); //$NON-NLS-1$
     static final I18NMessage0P INVALID_PASSWORD =
             new I18NMessage0P(LOGGER, "invalid_password"); //$NON-NLS-1$
     static final I18NMessage0P PROMPT_USERNAME =

@@ -126,7 +126,7 @@ public class SimpleUser extends NDEntityBase {
         if(getName() == null) {
             throw new ValidationException(UNSPECIFIED_NAME_ATTRIBUTE);
         }
-        if(getHashedPassword() != null) {
+        if(isPasswordSet()) {
             throw new ValidationException(
                     new I18NBoundMessage1P(CANNOT_SET_PASSWORD,getName()));
         }
@@ -155,20 +155,22 @@ public class SimpleUser extends NDEntityBase {
     }
 
     /**
-     * Verifies if the supplied password matches the configured password
-     * for the user.
+     * Verifies if the supplied password matches the configured
+     * password for the user. If no password is presently configured,
+     * validation succeeds regardless of the supplied password.
      *
      * @param password the password to test.
      *
-     * @throws ValidationException If an empty password value was specified, or
-     * if a password hasn't yet been configured for the user, or the specified
-     * password doesn't match the currently configured user password.
+     * @throws ValidationException If a password is presently
+     * configured and either an empty password value was specified, or
+     * the specified password doesn't match the currently configured
+     * user password.
      */
     public void validatePassword(char[] password) throws ValidationException {
-        validatePasswordValue(password);
-        if(null == getHashedPassword()) {
-            throw new ValidationException(PASSWORD_NOT_SET);
+        if(!isPasswordSet()) {
+            return;
         }
+        validatePasswordValue(password);
         if(!getHashedPassword().equals(hash(getName().toCharArray(),password))) {
             throw new ValidationException(INVALID_PASSWORD);
         }

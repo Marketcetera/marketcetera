@@ -81,13 +81,13 @@ public class ReportHistoryTest extends ReportsTestBase {
 
         assertThat(getPositions(after),
                    allOf(isOfSize(1),
-                         hasEntry(sym(symbol),position.setScale(SCALE))));
+                         hasEntry(pos(symbol),position.setScale(SCALE))));
         assertThat(getPositions(after,sActor),
                    allOf(isOfSize(1),
-                         hasEntry(sym(symbol),actorPosition.setScale(SCALE))));
+                         hasEntry(pos(symbol),actorPosition.setScale(SCALE))));
         assertThat(getPositions(after,sExtraUser),
                    allOf(isOfSize(1),
-                         hasEntry(sym(symbol),extraPosition.setScale(SCALE))));
+                         hasEntry(pos(symbol),extraPosition.setScale(SCALE))));
 
         assertThat(getPositions(before),isOfSize(0));
         assertThat(getPositions(before,sActor),isOfSize(0));
