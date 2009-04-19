@@ -4,6 +4,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.*;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.core.position.PositionKey;
 
 import java.util.Date;
 import java.util.Map;
@@ -138,7 +139,7 @@ public interface Client {
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
-    public Map<MSymbol, BigDecimal> getPositionsAsOf(Date inDate)
+    public Map<PositionKey, BigDecimal> getPositionsAsOf(Date inDate)
             throws ConnectionException;
 
     /**
@@ -197,16 +198,47 @@ public interface Client {
         (BrokerStatusListener listener);
 
     /**
+     * Adds a server connection status listener, which receives all
+     * the server connection status changes.
+     *
+     * <p>If the same listener is added more than once, it will receive
+     * notifications as many times as it has been added.</p>
+     *
+     * <p>The listeners are notified in the reverse order of their
+     * addition.</p>
+     *
+     * @param listener The listener which should be supplied the
+     * server connection status changes.
+     */
+    public void addServerStatusListener
+        (ServerStatusListener listener);
+
+    /**
+     * Removes a server connection status listener that was previously
+     * added via {@link
+     * #addServerStatusListener(ServerStatusListener)}.
+     *
+     * <p>If the listener was added more than once, only its most
+     * recently added instance will be removed.</p>
+     *
+     * @param listener The listener which should stop receiving server
+     * connection status changes.
+     */
+    public void removeServerStatusListener
+        (ServerStatusListener listener);
+
+    /**
      * Adds an exception listener. The exception listeners are notified
      * whenever the client encounters connectivity issues when communicating
      * with the server.
      * <p>
      * The listeners are notified only when connectivity issues are
      * encountered when sending or receiving messages, ie. when any of
-     * the <code>send*()</code> methods are invoked and when the
+     * the <code>send*()</code> methods are invoked, or when the
      * client receives a message and encounters errors processing it
      * before delivering it to {@link ReportListener} or {@link
-     * BrokerStatusListener}.
+     * BrokerStatusListener}, or when client heartbeats cannot reach
+     * the server.
      * <p>
      * If the same listener is added more than once, it will receive
      * notifications as many times as it's been added.
@@ -316,4 +348,11 @@ public interface Client {
      * false otherwise.
      */
     boolean isCredentialsMatch(String inUsername, char[] inPassword);
+
+    /**
+     * Returns true if client has a live connection to the server.
+     *
+     * @return true, if the connection to the server is alive.
+     */
+    boolean isServerAlive();
 }

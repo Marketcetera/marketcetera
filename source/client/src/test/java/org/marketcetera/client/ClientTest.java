@@ -343,22 +343,25 @@ public class ClientTest {
     public void heartbeats()
         throws Exception
     {
-        ClientImpl.setHeartbeatInterval(2000);
-        initClient();
-        int count=MockServiceImpl.sHeartBeatCount;
+        initClient(SHORT_INTERVAL);
+        assertTrue(getClient().isServerAlive());
+        int count=sServer.getServiceImpl().getHeartbeatCount();
         while (true) {
             // Keep trying, in case the heartbeat thread is
             // experiencing starvation.
-            Thread.sleep(3000);
-            if (MockServiceImpl.sHeartBeatCount>count) {
+            Thread.sleep(SHORT_INTERVAL*2);
+            assertTrue(getClient().isServerAlive());
+            if (sServer.getServiceImpl().getHeartbeatCount()>count) {
                 break;
             }
         }
 
-        count=MockServiceImpl.sHeartBeatCount;
+        count=sServer.getServiceImpl().getHeartbeatCount();
         closeClient();
-        Thread.sleep(5000);
-        assertTrue(MockServiceImpl.sHeartBeatCount<=count+1);
+        assertFalse(getClient().isServerAlive());
+        Thread.sleep(SHORT_INTERVAL*3);
+        assertTrue(sServer.getServiceImpl().getHeartbeatCount()<=count+1);
+        assertFalse(getClient().isServerAlive());
     }
 
     @Test
@@ -563,37 +566,70 @@ public class ClientTest {
     @Test
     public void statusListening() throws Exception {
         initClient();
-        //Create our own status listener
-        StatusReplyListener chitChat = new StatusReplyListener();
+        //Create our own broker status listener
+        BrokerStatusReplyListener chitChat = new BrokerStatusReplyListener();
         //Add it to the client
         getClient().addBrokerStatusListener(chitChat);
         try {
-            BrokerStatus status = triggerStatus();
+            BrokerStatus status = triggerBrokerStatus();
             //Verify our listener got it.
             BrokerStatus receivedStatus = chitChat.getStatus();
-            assertTrue(receivedStatus instanceof BrokerStatus);
             assertEquals(status.toString(), receivedStatus.toString());
             //Now set our reply listener to fail
             chitChat.setFail(true);
             //Trigger receipt of the status and verify that the main
             //test listener got it. This verifies that exceptions from
             //listener do not impact notifications to other listeners.
-            status = triggerStatus();
+            status = triggerBrokerStatus();
             //Verify our listener got it.
             receivedStatus = chitChat.getStatus();
-            assertTrue(receivedStatus instanceof BrokerStatus);
             assertEquals(status.toString(), receivedStatus.toString());
 
             //Now remove our listener.
             getClient().removeBrokerStatusListener(chitChat);
             chitChat.clear();
             assertNull(chitChat.peekStatus());
-            //Send another order
-            triggerStatus();
+            //Send another status
+            triggerBrokerStatus();
             //Verify our listener didn't get it
             assertNull(chitChat.peekStatus());
         } finally {
             getClient().removeBrokerStatusListener(chitChat);
+        }
+    }
+
+    @Test
+    public void serverListening() throws Exception {
+        initClient(LONG_INTERVAL);
+        //Create our own server status listener
+        ServerStatusReplyListener chitChat = new ServerStatusReplyListener();
+        //Add it to the client
+        getClient().addServerStatusListener(chitChat);
+        try {
+            boolean status = triggerServerStatus();
+            //Verify our listener got it.
+            boolean receivedStatus = chitChat.getStatus();
+            assertEquals(status, receivedStatus);
+            //Now set our reply listener to fail
+            chitChat.setFail(true);
+            //Trigger receipt of the status and verify that the main
+            //test listener got it. This verifies that exceptions from
+            //listener do not impact notifications to other listeners.
+            status = triggerServerStatus();
+            //Verify our listener got it.
+            receivedStatus = chitChat.getStatus();
+            assertEquals(status, receivedStatus);
+
+            //Now remove our listener.
+            getClient().removeServerStatusListener(chitChat);
+            chitChat.clear();
+            assertNull(chitChat.peekStatus());
+            //Send another status
+            triggerServerStatus();
+            //Verify our listener didn't get it
+            assertNull(chitChat.peekStatus());
+        } finally {
+            getClient().removeServerStatusListener(chitChat);
         }
     }
 
@@ -617,6 +653,11 @@ public class ClientTest {
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
                 client.addBrokerStatusListener(null);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.addServerStatusListener(null);
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
@@ -681,6 +722,11 @@ public class ClientTest {
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
+                client.removeServerStatusListener(null);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
                 client.removeBrokerStatusListener(null);
             }
         };
@@ -732,7 +778,7 @@ public class ClientTest {
         return report;
     }
 
-    private BrokerStatus triggerStatus() throws Exception {
+    private BrokerStatus triggerBrokerStatus() throws Exception {
         //Clean up any dirty state from previous failures
         clearAll();
         //Create a status for the mock server to send back
@@ -742,9 +788,23 @@ public class ClientTest {
         //Send the status
         sServer.getStatusSender().convertAndSend(status);
         //Verify received status
-        BrokerStatus receivedStatus = mStatusReplies.getStatus();
-        assertTrue(receivedStatus instanceof BrokerStatus);
+        BrokerStatus receivedStatus = mBrokerStatusReplies.getStatus();
         assertEquals(status.toString(),receivedStatus.toString());
+        return status;
+    }
+
+    private boolean triggerServerStatus() throws Exception {
+        //Clean up any dirty state from previous failures
+        clearAll();
+        //Alter the server's status.
+        boolean status = sServer.getServiceImpl().toggleServerStatus();
+        //Sleep until the client issues the next hearbeat (and either
+        //succeeds or fails to do so, and thus captures the server's
+        //status).
+        Thread.sleep(SHORT_INTERVAL*2);
+        //Verify received status
+        boolean receivedStatus = mServerStatusReplies.getStatus();
+        assertEquals(status,receivedStatus);
         return status;
     }
 
@@ -1031,7 +1091,8 @@ public class ClientTest {
     private void clearAll() {
         mListener.clear();
         mReplies.clear();
-        mStatusReplies.clear();
+        mBrokerStatusReplies.clear();
+        mServerStatusReplies.clear();
         if (sServer != null) {
             sServer.getHandler().clear();
         }
@@ -1043,20 +1104,26 @@ public class ClientTest {
         }
         return mClient;
     }
-    private void initClient()
+    private void initClient(long heartbeatInterval)
             throws ConnectionException, ClientInitException {
         Date currentTime = new Date();
         ClientParameters parameters = new ClientParameters(DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+        ClientImpl.setHeartbeatInterval(heartbeatInterval);
         ClientManager.init(parameters);
         mClient = ClientManager.getInstance();
         mClient.addExceptionListener(mListener);
         mClient.addReportListener(mReplies);
-        mClient.addBrokerStatusListener(mStatusReplies);
+        mClient.addBrokerStatusListener(mBrokerStatusReplies);
+        mClient.addServerStatusListener(mServerStatusReplies);
         assertCPEquals(parameters, mClient.getParameters());
         assertNotNull(mClient.getLastConnectTime());
         assertTrue(mClient.getLastConnectTime().compareTo(currentTime) >= 0);
+    }
+    private void initClient()
+            throws ConnectionException, ClientInitException {
+        initClient(60000);
     }
 
     private static void initServer() {
@@ -1066,8 +1133,10 @@ public class ClientTest {
     }
     private final ErrorListener mListener = new ErrorListener();
     private final ReplyListener mReplies = new ReplyListener();
-    private final StatusReplyListener mStatusReplies =
-        new StatusReplyListener();
+    private final BrokerStatusReplyListener mBrokerStatusReplies =
+        new BrokerStatusReplyListener();
+    private final ServerStatusReplyListener mServerStatusReplies =
+        new ServerStatusReplyListener();
     private static MockServer sServer;
     private Client mClient;
     private static final AtomicLong sCounter = new AtomicLong();
@@ -1130,7 +1199,7 @@ public class ClientTest {
         private BlockingQueue<ReportBase> mReports =
                 new LinkedBlockingQueue<ReportBase>();
     }
-    private static class StatusReplyListener
+    private static class BrokerStatusReplyListener
         implements BrokerStatusListener {
 
         public void receiveBrokerStatus(BrokerStatus inStatus) {
@@ -1159,6 +1228,37 @@ public class ClientTest {
         private BlockingQueue<BrokerStatus> mStatus =
                 new LinkedBlockingQueue<BrokerStatus>();
     }
+    private static class ServerStatusReplyListener
+        implements ServerStatusListener {
+
+        public void receiveServerStatus(boolean inStatus) {
+            //Use add() instead of put() as these need to be non-blocking.
+            mStatus.add(inStatus);
+            if (mFail) {
+                throw new IllegalArgumentException("Test Failure");
+            }
+        }
+
+        public Boolean getStatus() throws InterruptedException {
+            //Use take as we should block until a message is available.
+            return mStatus.take();
+        }
+        public Boolean peekStatus() {
+            return mStatus.peek();
+        }
+        public void setFail(boolean isFail) {
+            mFail = isFail;
+        }
+        public void clear() {
+            mStatus.clear();
+            mFail = false;
+        }
+        private boolean mFail = false;
+        private BlockingQueue<Boolean> mStatus =
+                new LinkedBlockingQueue<Boolean>();
+    }
 
     private static final String DEFAULT_CREDENTIAL = "name";
+    private static final long SHORT_INTERVAL = 2000;
+    private static final long LONG_INTERVAL = 60000;
 }
