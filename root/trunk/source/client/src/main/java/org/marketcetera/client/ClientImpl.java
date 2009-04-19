@@ -1,5 +1,6 @@
 package org.marketcetera.client;
 
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.log.*;
@@ -110,11 +111,32 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     @Override
+    public void addServerStatusListener
+        (ServerStatusListener listener)
+    {
+        failIfClosed();
+        synchronized (mServerStatusListeners) {
+            mServerStatusListeners.addFirst(listener);
+        }
+    }
+
+    @Override
+    public void removeServerStatusListener
+        (ServerStatusListener listener)
+    {
+        failIfClosed();
+        synchronized (mServerStatusListeners) {
+            mServerStatusListeners.removeFirstOccurrence(listener);
+        }
+    }
+
+    @Override
     public ReportBase[] getReportsSince
         (Date inDate)
         throws ConnectionException
     {
         failIfClosed();
+        failIfDisconnected();
         try {
             ReportBaseImpl[] reports = mService.getReportsSince(getServiceContext(),inDate);
             return reports == null ? new ReportBase[0] : reports;
@@ -130,6 +152,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         throws ConnectionException
     {
         failIfClosed();
+        failIfDisconnected();
         try {
             return mService.getPositionAsOf
                 (getServiceContext(),inDate,inSymbol);
@@ -139,11 +162,12 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     @Override
-    public Map<MSymbol, BigDecimal> getPositionsAsOf
+    public Map<PositionKey, BigDecimal> getPositionsAsOf
         (Date inDate)
         throws ConnectionException
     {
         failIfClosed();
+        failIfDisconnected();
         try {
             return mService.getPositionsAsOf
                 (getServiceContext(),inDate).getMap();
@@ -157,6 +181,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         throws ConnectionException
     {
         failIfClosed();
+        failIfDisconnected();
         try {
             return mService.getBrokersStatus(getServiceContext());
         } catch (RemoteException ex) {
@@ -178,6 +203,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                     return result;
                 }
             }
+            failIfDisconnected();
             try {
                 result=mService.getUserInfo(getServiceContext(),id);
             } catch (RemoteException ex) {
@@ -253,6 +279,13 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                 ObjectUtils.equals(mParameters.getUsername(), inUsername) &&
                 Arrays.equals(mParameters.getPassword(), inPassword);
     }
+
+    @Override
+    public boolean isServerAlive()
+    {
+        return ((!mClosed) && mServerAlive);
+    }
+
 
     /**
      * Creates an instance given the parameters and connects to the server.
@@ -345,6 +378,23 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
     }
 
+    void notifyServerStatus(boolean status) {
+        SLF4JLoggerProxy.debug
+            (TRAFFIC,"Received Server Status:{}",status); //$NON-NLS-1$
+        synchronized (mServerStatusListeners) {
+            for (ServerStatusListener listener:
+                     mServerStatusListeners) {
+                try {
+                    listener.receiveServerStatus(status);
+                } catch (Throwable t) {
+                    Messages.LOG_ERROR_RECEIVE_SERVER_STATUS.warn(this, t,
+                            status);
+                    ExceptUtils.interrupt(t);
+                }
+            }
+        }
+    }
+
     // javax.jms.ExceptionListener.
 
     @Override
@@ -375,6 +425,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
      * @throws RemoteException if there were communication errors.
      */
     String getNextServerID() throws RemoteException {
+        failIfDisconnected();
         return mService.getNextOrderID(getServiceContext());
     }
 
@@ -438,16 +489,26 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                     SLF4JLoggerProxy.debug
                         (HEARTBEATS,"Stopped (interrupted)"); //$NON-NLS-1$
                     markExit();
+                    setServerAlive(false);
                     return;
                 }
                 if (isMarked()) {
                     SLF4JLoggerProxy.debug
                         (HEARTBEATS,"Stopped (marked)"); //$NON-NLS-1$
+                    setServerAlive(false);
                     return;
                 }
                 try {
                     mService.heartbeat(getServiceContext());
-                } catch (RemoteException ex) {
+                    setServerAlive(true);
+                } catch (Throwable ex) {
+                    setServerAlive(false);
+                    if (ExceptUtils.isInterruptException(ex)) {
+                        SLF4JLoggerProxy.debug
+                            (HEARTBEATS,"Stopped (interrupted)"); //$NON-NLS-1$
+                        markExit();
+                        return;
+                    }
                     SLF4JLoggerProxy.debug
                         (HEARTBEATS,"Failed",ex); //$NON-NLS-1$
                     exceptionThrown(new ConnectionException
@@ -456,6 +517,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                 if (isMarked()) {
                     SLF4JLoggerProxy.debug
                         (HEARTBEATS,"Stopped (marked)"); //$NON-NLS-1$
+                    setServerAlive(false);
                     return;
                 }
             }
@@ -467,6 +529,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         if (mContext == null) {
             return;
         }
+        setServerAlive(false);
         try {
             if (mBrokerStatusListener!=null) {
                 mBrokerStatusListener.destroy();
@@ -577,6 +640,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                 (new BrokerStatusReceiver(),Service.BROKER_STATUS_TOPIC,true);
             mToServer = jmsMgr.getOutgoingJmsFactory().createJmsTemplateX
                 (Service.REQUEST_QUEUE,false);
+            setServerAlive(true);            
 
             ClientIDFactory idFactory = new ClientIDFactory(
                     mParameters.getIDPrefix(), this);
@@ -604,6 +668,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             if (mToServer == null) {
                 throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
             }
+            failIfDisconnected();
             mToServer.convertAndSend
                 (new OrderEnvelope(inOrder,getSessionId()));
         } catch (Exception e) {
@@ -630,6 +695,19 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
     }
 
+    /**
+     * Asserts that the client's connection to the server is alive;
+     * fails otherwise.
+     *
+     * @throws IllegalStateException if the server connection is dead.
+     */
+    private void failIfDisconnected() throws IllegalStateException {
+        if(!isServerAlive()) {
+            throw new IllegalStateException
+                (Messages.SERVER_CONNECTION_DEAD.getText());
+        }
+    }
+
     private ClientContext getServiceContext()
     {
         return mServiceClient.getContext();
@@ -652,16 +730,34 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         mParameters = inParameters;
     }
 
+    /**
+     * Sets the server connection status. If the status changed, the
+     * registered callbacks are invoked.
+     *
+     * @param serverAlive True means the server connection is alive.
+     */
+    private void setServerAlive(boolean serverAlive)
+    {
+        if (mServerAlive==serverAlive) {
+            return;
+        }
+        mServerAlive=serverAlive;
+        notifyServerStatus(isServerAlive());
+    }
+
     private volatile AbstractApplicationContext mContext;
     private volatile SimpleMessageListenerContainer mTradeMessageListener;
     private volatile SimpleMessageListenerContainer mBrokerStatusListener;
     private volatile JmsOperations mToServer;
     private volatile ClientParameters mParameters;
     private volatile boolean mClosed = false;
+    private volatile boolean mServerAlive = false;
     private final Deque<ReportListener> mReportListeners =
             new LinkedList<ReportListener>();
     private final Deque<BrokerStatusListener> mBrokerStatusListeners=
         new LinkedList<BrokerStatusListener>();
+    private final Deque<ServerStatusListener> mServerStatusListeners=
+        new LinkedList<ServerStatusListener>();
     private final Deque<ExceptionListener> mExceptionListeners =
             new LinkedList<ExceptionListener>();
     private Date mLastConnectTime;

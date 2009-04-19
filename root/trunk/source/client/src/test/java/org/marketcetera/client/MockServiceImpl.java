@@ -6,6 +6,8 @@ import java.util.*;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.MessageCreationException;
@@ -84,10 +86,10 @@ public class MockServiceImpl
         return new BigDecimal(date.getTime());
     }
 
-    private MapWrapper<MSymbol,BigDecimal> getPositionsAsOfImpl
+    private MapWrapper<PositionKey,BigDecimal> getPositionsAsOfImpl
         (Date date)
     {
-        return new MapWrapper<MSymbol, BigDecimal>(POSITIONS);
+        return new MapWrapper<PositionKey, BigDecimal>(POSITIONS);
     }
 
     private String getNextOrderIDImpl()
@@ -95,6 +97,16 @@ public class MockServiceImpl
         return ID_PREFIX +(mNextOrderID++);
     }
 
+    boolean toggleServerStatus()
+    {
+        mHeartbeatSuccess=!mHeartbeatSuccess;
+        return mHeartbeatSuccess;
+    }
+
+    int getHeartbeatCount()
+    {
+        return mHeartbeatCount;
+    }
 
     // Service.
 
@@ -168,15 +180,15 @@ public class MockServiceImpl
     }
 
     @Override
-    public MapWrapper<MSymbol,BigDecimal> getPositionsAsOf
+    public MapWrapper<PositionKey,BigDecimal> getPositionsAsOf
         (ClientContext context,
          final Date date)
         throws RemoteException
     {
-        return (new RemoteCaller<Object,MapWrapper<MSymbol,BigDecimal>>
+        return (new RemoteCaller<Object,MapWrapper<PositionKey,BigDecimal>>
                 (getSessionManager()) {
             @Override
-            protected MapWrapper<MSymbol,BigDecimal> call
+            protected MapWrapper<PositionKey,BigDecimal> call
                 (ClientContext context,
                  SessionHolder<Object> sessionHolder)
             {
@@ -205,21 +217,29 @@ public class MockServiceImpl
         (ClientContext context)
         throws RemoteException
     {
-        sHeartBeatCount++;
+        if (!mHeartbeatSuccess) {
+            throw new IllegalStateException();
+        }
+        mHeartbeatCount++;
     }
 
     static final String ID_PREFIX = "MyID";
 
     // Mocking interface.
 
+    private int mHeartbeatCount = 0;
+    private boolean mHeartbeatSuccess = true;
+
     static ReportBaseImpl[] sReports = null;
     static boolean sActive = true;
-    static int sHeartBeatCount;
-    static final Map<MSymbol, BigDecimal> POSITIONS;
+    static final Map<PositionKey, BigDecimal> POSITIONS;
     static {
-        Map<MSymbol, BigDecimal> positions = new HashMap<MSymbol, BigDecimal>();
-        positions.put(new MSymbol("A"), BigDecimal.TEN);
-        positions.put(new MSymbol("B"), BigDecimal.ONE.negate());
+        Map<PositionKey, BigDecimal> positions =
+            new HashMap<PositionKey, BigDecimal>();
+        positions.put(new PositionKeyImpl("A","acme","bob"),
+                      BigDecimal.TEN);
+        positions.put(new PositionKeyImpl("B","wally","sue"),
+                      BigDecimal.ONE.negate());
         POSITIONS = Collections.unmodifiableMap(positions);
     }
 }

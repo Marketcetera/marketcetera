@@ -100,14 +100,19 @@ public class MockServer {
             (new MockSessionFactory(jmsMgr,mHandler));
         mServer=new Server<Object>
             (new MockAuthenticator(),sessionManager);
-        mServiceInterface = mServer.publish
-            (new MockServiceImpl(sessionManager),Service.class);
+        mServiceImpl = new MockServiceImpl(sessionManager);
+        mServiceInterface = mServer.publish(mServiceImpl,Service.class);
     }
     public void close() {
         mOrderEnvelopeListener.destroy();
         mContext.close();
         mServiceInterface.stop();
         mServer.stop();
+    }
+
+    MockServiceImpl getServiceImpl()
+    {
+        return mServiceImpl;
     }
 
     public ClassPathXmlApplicationContext getContext() {
@@ -219,6 +224,7 @@ public class MockServer {
     private final ClassPathXmlApplicationContext mContext;
     private Server<?> mServer;
     private ServiceInterface mServiceInterface;
+    private MockServiceImpl mServiceImpl;
     private MockMessageHandler mHandler;
     private SimpleMessageListenerContainer mOrderEnvelopeListener;
     private JmsTemplate mStatusSender;
