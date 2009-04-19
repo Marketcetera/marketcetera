@@ -7,7 +7,6 @@ import org.marketcetera.persist.NDEntityTestBase;
 import org.marketcetera.persist.ValidationException;
 import static org.marketcetera.persist.Messages.*;
 import static org.marketcetera.ors.security.Messages.EMPTY_PASSWORD;
-import static org.marketcetera.ors.security.Messages.PASSWORD_NOT_SET;
 import static org.marketcetera.ors.security.Messages.INVALID_PASSWORD;
 import static org.marketcetera.ors.security.Messages.CANNOT_SET_PASSWORD;
 import org.marketcetera.ors.OrderRoutingSystem;
@@ -149,6 +148,10 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
     @Test
     public void validateAndChangePassword() throws Exception {
         SimpleUser u = new SimpleUser();
+        //any password validates until a non-empty password is set
+        u.validatePassword(null);
+        u.validatePassword("".toCharArray()); //$NON-NLS-1$
+        u.validatePassword(randomString().toCharArray());
         //run tests on an unsaved user
         char [] pass = doValidateChangePassTests(u);
         u.save();
@@ -170,16 +173,17 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
     }
 
     private char[] doValidateChangePassTests(SimpleUser u) throws ValidationException {
-        //an empty password value is invalid no matter what
+        final String pass = randomString();
+        u.setName(randomString());
+        //any password validates because changing a name resets the password
+        u.validatePassword(null);
+        u.validatePassword("".toCharArray()); //$NON-NLS-1$
+        u.validatePassword(pass.toCharArray());
+
+        u.setPassword(pass.toCharArray());
+        //an empty password value is invalid
         assertPasswordValidateFailure(u, null, EMPTY_PASSWORD);
         assertPasswordValidateFailure(u, "".toCharArray(), EMPTY_PASSWORD); //$NON-NLS-1$
-        u.setName(randomString());
-        final String pass = randomString();
-        //cannot validate or change password when its not set.
-        assertPasswordValidateFailure(u, pass.toCharArray(), PASSWORD_NOT_SET);
-        assertChangePasswordFailure(u, randomString().toCharArray(),
-                randomString().toCharArray(), PASSWORD_NOT_SET);
-        u.setPassword(pass.toCharArray());
         //cannot validate or change password when supplying an incorrect password
         assertPasswordValidateFailure(u, randomString().toCharArray(),
                 INVALID_PASSWORD);
@@ -195,6 +199,13 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         //verify that change password succeeds with proper old/new passwords
         final char[] newPass = randomString().toCharArray();
         u.changePassword(pass.toCharArray(), newPass);
+        //verify that it validates for good measure
+        u.validatePassword(newPass);
+        //changing the name clears the password...
+        u.setName(randomString());
+        //... making it possible to set the new password while
+        //supplying anything for the old password.
+        u.changePassword(randomString().toCharArray(), newPass);
         //verify that it validates for good measure
         u.validatePassword(newPass);
         return newPass;

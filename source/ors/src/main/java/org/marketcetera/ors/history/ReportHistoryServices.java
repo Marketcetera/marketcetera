@@ -12,6 +12,7 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.position.PositionKey;
 
 /* $License$ */
 /**
@@ -85,21 +86,21 @@ public class ReportHistoryServices {
             (inUser,inDate,inSymbol);
     }
     /**
-     * Returns the positions of all the symbol based on all reports
-     * received for them before the supplied date, and which are
-     * visible to the given user.
+     * Returns the aggregate position of each (symbol,account,actor)
+     * tuple based on all reports received for each tuple on or before
+     * the supplied date, and which are visible to the given user.
      *
      * @param inUser the user making the query. Cannot be null.
-     * @param inDate the date to compare with all the reports. Only the reports
-     * that were received prior to this date will be used in this calculation.
-     * Cannot be null.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
      *
-     * @return the symbol positions.
+     * @return the position map.
      *
-     * @throws PersistenceException if there were errors retrieving the symbol
-     * position
+     * @throws PersistenceException if there were errors retrieving the
+     * position map.
      */
-    public Map<MSymbol, BigDecimal> getPositionsAsOf
+    public Map<PositionKey, BigDecimal> getPositionsAsOf
         (SimpleUser inUser,
          Date inDate)
         throws PersistenceException

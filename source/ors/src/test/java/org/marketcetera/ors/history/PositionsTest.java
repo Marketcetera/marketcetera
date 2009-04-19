@@ -1,8 +1,10 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.UserID;
 import org.junit.Test;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -37,7 +39,7 @@ public class PositionsTest extends ReportsTestBase {
         Date after = new Date();
         assertBigDecimalEquals(value, getPosition(after, TEST_SYMBOL, sExtraUser));
         assertThat(getPositions(after, sExtraUser), allOf(isOfSize(1),
-                hasEntry(sym(TEST_SYMBOL), value.setScale(SCALE))));
+                hasEntry(pos(TEST_SYMBOL), value.setScale(SCALE))));
         assertBigDecimalEquals(BigDecimal.ZERO, getPosition(before, TEST_SYMBOL, sExtraUser));
         assertThat(getPositions(before, sExtraUser), allOf(isOfSize(0)));
     }
@@ -89,7 +91,7 @@ public class PositionsTest extends ReportsTestBase {
         //verify the long position 
         assertBigDecimalEquals(value, getPosition(after1, TEST_SYMBOL));
         assertThat(getPositions(after1), allOf(isOfSize(3),
-                hasEntry(sym(TEST_SYMBOL), value.setScale(SCALE)),
+                hasEntry(pos(TEST_SYMBOL), value.setScale(SCALE)),
                 hasAandB()));
         //verify that the final position zeros out and disappears
         assertBigDecimalEquals(BigDecimal.ZERO, getPosition(after2, TEST_SYMBOL));
@@ -116,25 +118,109 @@ public class PositionsTest extends ReportsTestBase {
         assertBigDecimalEquals(position,
                 getPosition(after1, "A"));
         assertThat(getPositions(after1), allOf(isOfSize(1),
-                hasEntry(sym("A"), position.setScale(SCALE))));
+                hasEntry(pos("A"), position.setScale(SCALE))));
 
         position = POSITION_BUY_A.subtract(POSITION_SELL_A);
         assertBigDecimalEquals(position,
                 getPosition(after2, "A"));
         assertThat(getPositions(after2), allOf(isOfSize(1),
-                hasEntry(sym("A"), position.setScale(SCALE))));
+                hasEntry(pos("A"), position.setScale(SCALE))));
 
         position = POSITION_BUY_A.subtract(POSITION_SELL_A).
                 subtract(POSITION_SELL_SHORT_A);
         assertBigDecimalEquals(position, getPosition(after3, "A"));
         assertThat(getPositions(after3), allOf(isOfSize(1),
-                hasEntry(sym("A"), position.setScale(SCALE))));
+                hasEntry(pos("A"), position.setScale(SCALE))));
 
         position = FINAL_POSITION_A;
         assertBigDecimalEquals(position,
                 getPosition(after4, "A"));
         assertThat(getPositions(after4), allOf(isOfSize(1),
-                hasEntry(sym("A"), position.setScale(SCALE))));
+                hasEntry(pos("A"), position.setScale(SCALE))));
+    }
+
+    @Test
+    public void chainReportsBuyAndSellMultiAccountsActors()
+        throws Exception
+    {
+        String oAccount=ACCOUNT+"a";
+
+        BigDecimal one=BigDecimal.ONE;
+        BigDecimal two=one.add(new BigDecimal(1));
+        BigDecimal three=two.add(new BigDecimal(1));
+        BigDecimal four=three.add(new BigDecimal(1));
+        BigDecimal five=four.add(new BigDecimal(1));
+
+        createChainReportsForBuyA
+            ("1a",ACCOUNT,sViewerID,sViewerID,one);
+        createChainReportsForBuyA
+            ("1b",ACCOUNT,sViewerID,sViewerID,one);
+
+        createChainReportsForBuyA
+            ("2a",ACCOUNT,sExtraUserID,sViewerID,one);
+        createChainReportsForBuyA
+            ("2b",ACCOUNT,sExtraUserID,sViewerID,two);
+
+        createChainReportsForBuyA
+            ("3a",oAccount,sViewerID,sViewerID,one);
+        createChainReportsForBuyA
+            ("3b",oAccount,sViewerID,sViewerID,three);
+
+        createChainReportsForBuyA
+            ("4a",oAccount,null,sViewerID,one);
+        createChainReportsForBuyA
+            ("4b",oAccount,null,sViewerID,four);
+
+        createChainReportsForSellB1
+            ("1a",null,sViewerID,sExtraUserID,four);
+        createChainReportsForSellB1
+            ("1b",null,sViewerID,sExtraUserID,one);
+
+        createChainReportsForSellB1
+            ("2a",ACCOUNT,sExtraUserID,sExtraUserID,three);
+        createChainReportsForSellB1
+            ("2b",ACCOUNT,sExtraUserID,sExtraUserID,one);
+
+        createChainReportsForSellB1
+            ("3a",null,null,sExtraUserID,two);
+        createChainReportsForSellB1
+            ("3b",null,null,sExtraUserID,one);
+
+        createChainReportsForSellB1
+            ("4a",oAccount,null,sExtraUserID,one);
+        createChainReportsForSellB1
+            ("4b",oAccount,null,sExtraUserID,one);
+
+        Date after = new Date();
+
+        assertThat(getPositions(after),
+                   allOf(isOfSize(4),
+                         hasEntry(pos("A",ACCOUNT,sViewer.getName()),
+                                  two.setScale(SCALE)),
+                         hasEntry(pos("A",ACCOUNT,sExtraUser.getName()),
+                                  three.setScale(SCALE)),
+                         hasEntry(pos("A",oAccount,sViewer.getName()),
+                                  four.setScale(SCALE)),
+                         hasEntry(pos("A",oAccount,null),
+                                  five.setScale(SCALE))));
+        assertThat(getPositions(after,sActor),
+                   allOf(isOfSize(8),
+                         hasEntry(pos("A",ACCOUNT,sViewer.getName()),
+                                  two.setScale(SCALE)),
+                         hasEntry(pos("A",ACCOUNT,sExtraUser.getName()),
+                                  three.setScale(SCALE)),
+                         hasEntry(pos("A",oAccount,sViewer.getName()),
+                                  four.setScale(SCALE)),
+                         hasEntry(pos("A",oAccount,null),
+                                  five.setScale(SCALE)),
+                         hasEntry(pos("B",null,sViewer.getName()),
+                                  five.negate().setScale(SCALE)),
+                         hasEntry(pos("B",ACCOUNT,sExtraUser.getName()),
+                                  four.negate().setScale(SCALE)),
+                         hasEntry(pos("B",null,null),
+                                  three.negate().setScale(SCALE)),
+                         hasEntry(pos("B",oAccount,null),
+                                  two.negate().setScale(SCALE))));
     }
 
     @Test
@@ -164,8 +250,8 @@ public class PositionsTest extends ReportsTestBase {
         assertBigDecimalEquals(positionA, getPosition(after1, "A"));
         assertBigDecimalEquals(positionB, getPosition(after1, "B"));
         assertThat(getPositions(after1), allOf(isOfSize(2),
-                hasEntry(sym("A"), positionA.setScale(SCALE)),
-                hasEntry(sym("B"), positionB.setScale(SCALE))));
+                hasEntry(pos("A"), positionA.setScale(SCALE)),
+                hasEntry(pos("B"), positionB.setScale(SCALE))));
 
         positionA = POSITION_BUY_A.subtract(POSITION_SELL_A);
         positionB = POSITION_SELL_B1.negate().
@@ -174,8 +260,8 @@ public class PositionsTest extends ReportsTestBase {
                 getPosition(after2, "A"));
         assertBigDecimalEquals(positionB, getPosition(after2, "B"));
         assertThat(getPositions(after2), allOf(isOfSize(2),
-                hasEntry(sym("A"), positionA.setScale(SCALE)),
-                hasEntry(sym("B"), positionB.setScale(SCALE))));
+                hasEntry(pos("A"), positionA.setScale(SCALE)),
+                hasEntry(pos("B"), positionB.setScale(SCALE))));
 
         positionA = POSITION_BUY_A.subtract(POSITION_SELL_A).
                 subtract(POSITION_SELL_SHORT_A);
@@ -184,8 +270,8 @@ public class PositionsTest extends ReportsTestBase {
         assertBigDecimalEquals(positionA, getPosition(after3, "A"));
         assertBigDecimalEquals(positionB, getPosition(after3, "B"));
         assertThat(getPositions(after3), allOf(isOfSize(2),
-                hasEntry(sym("A"), positionA.setScale(SCALE)),
-                hasEntry(sym("B"), positionB.setScale(SCALE))));
+                hasEntry(pos("A"), positionA.setScale(SCALE)),
+                hasEntry(pos("B"), positionB.setScale(SCALE))));
 
         positionA = FINAL_POSITION_A;
         positionB = POSITION_SELL_B1.negate().
@@ -196,16 +282,16 @@ public class PositionsTest extends ReportsTestBase {
         assertBigDecimalEquals(positionB,
                 getPosition(after4, "B"));
         assertThat(getPositions(after4), allOf(isOfSize(2),
-                hasEntry(sym("A"), positionA.setScale(SCALE)),
-                hasEntry(sym("B"), positionB.setScale(SCALE))));
+                hasEntry(pos("A"), positionA.setScale(SCALE)),
+                hasEntry(pos("B"), positionB.setScale(SCALE))));
 
         positionA = FINAL_POSITION_A;
         positionB = FINAL_POSITION_B;
         assertBigDecimalEquals(positionA, getPosition(after5, "A"));
         assertBigDecimalEquals(positionB, getPosition(after5, "B"));
         assertThat(getPositions(after5), allOf(isOfSize(2),
-                hasEntry(sym("A"), positionA.setScale(SCALE)),
-                hasEntry(sym("B"), positionB.setScale(SCALE))));
+                hasEntry(pos("A"), positionA.setScale(SCALE)),
+                hasEntry(pos("B"), positionB.setScale(SCALE))));
     }
 
     private void verifyShortPosition(BigDecimal inValue,
@@ -214,25 +300,38 @@ public class PositionsTest extends ReportsTestBase {
         assertBigDecimalEquals(inValue.negate(),
                 getPosition(inAfter, TEST_SYMBOL));
         assertThat(getPositions(inAfter), allOf(isOfSize(3),
-                hasEntry(sym(TEST_SYMBOL), inValue.negate().setScale(SCALE)),
+                hasEntry(pos(TEST_SYMBOL), inValue.negate().setScale(SCALE)),
                 hasAandB()));
         assertBigDecimalEquals(BigDecimal.ZERO,
                 getPosition(inBefore, TEST_SYMBOL));
         assertThat(getPositions(inBefore), allOf(isOfSize(2), hasAandB()));
     }
 
-    private static Matcher<Map<MSymbol, BigDecimal>> hasAandB() {
-        return allOf(hasEntry(sym("A"), FINAL_POSITION_A.setScale(SCALE)),
-                hasEntry(sym("B"), FINAL_POSITION_B.setScale(SCALE)));
+    private static Matcher<Map<PositionKey, BigDecimal>> hasAandB() {
+        return allOf(hasEntry(pos("A"), FINAL_POSITION_A.setScale(SCALE)),
+                hasEntry(pos("B"), FINAL_POSITION_B.setScale(SCALE)));
     }
 
-    private List<ExecutionReport> createChainReportsForBuyA() throws Exception {
+    private List<ExecutionReport> createChainReportsForBuyA()
+        throws Exception
+    {
+        return createChainReportsForBuyA
+            ("",ACCOUNT,sActorID,sViewerID,POSITION_BUY_A);
+    }
+    private List<ExecutionReport> createChainReportsForBuyA
+        (String prefix,
+         String inAccount,
+         UserID inActorID,
+         UserID inViewerID,
+         BigDecimal finalPosition)
+        throws Exception
+    {
         //A simple chain of buy orders for A
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
-        reports.add(createAndSaveER("a1", null, "A", Side.Buy, BigDecimal.ONE));
-        reports.add(createAndSaveER("a2", "a1", "A", Side.Buy, BigDecimal.TEN));
-        reports.add(createAndSaveER("a3", "a2", "A", Side.Buy, POSITION_SELL_SHORTE_A));
-        reports.add(createAndSaveER("a4", "a3", "A", Side.Buy, POSITION_BUY_A));
+        reports.add(createAndSaveER(prefix+"a1", null, "A", Side.Buy, BigDecimal.ONE, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"a2", prefix+"a1", "A", Side.Buy, BigDecimal.TEN, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"a3", prefix+"a2", "A", Side.Buy, POSITION_SELL_SHORTE_A, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"a4", prefix+"a3", "A", Side.Buy, finalPosition, inAccount, inActorID, inViewerID));
         return reports;
     }
     private List<ExecutionReport> createChainReportsForSellA() throws Exception {
@@ -257,10 +356,21 @@ public class PositionsTest extends ReportsTestBase {
         return reports;
     }
     private List<ExecutionReport> createChainReportsForSellB1() throws Exception {
+        return createChainReportsForSellB1
+            ("",ACCOUNT,sActorID,sViewerID,POSITION_SELL_B1);
+    }
+    private List<ExecutionReport> createChainReportsForSellB1
+        (String prefix,
+         String inAccount,
+         UserID inActorID,
+         UserID inViewerID,
+         BigDecimal finalPosition)
+        throws Exception
+    {
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
-        reports.add(createAndSaveER("b1", null, "B", Side.Sell, BigDecimal.ONE));
-        reports.add(createAndSaveER("b2", "b1", "B", Side.Sell, BigDecimal.TEN));
-        reports.add(createAndSaveER("b3", "b2", "B", Side.Sell, POSITION_SELL_B1));
+        reports.add(createAndSaveER(prefix+"b1", null, "B", Side.Sell, BigDecimal.ONE, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"b2", prefix+"b1", "B", Side.Sell, BigDecimal.TEN, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"b3", prefix+"b2", "B", Side.Sell, finalPosition, inAccount, inActorID, inViewerID));
         return reports;
     }
     private List<ExecutionReport> createChainReportsForSellB2() throws Exception {

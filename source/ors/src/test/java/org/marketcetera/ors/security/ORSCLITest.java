@@ -305,6 +305,9 @@ public class ORSCLITest extends PersistTestBase {
         //list active users
         runCLI("-u","admin","-p",password,"--listUsers","-a"," y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         matchOut("^\\s*admin \\[s\\]\\s*$"); //$NON-NLS-1$
+        //Try changing admin's password but with an incorrect current password supplied
+        runCLI(I18NException.class,"-u","admin","-p","wrong","--changePassword","-w","ugh"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+        matchOut("^$"); //$NON-NLS-1$
         //Try changing admin's password
         runCLI("-u","admin","-p",password,"--changePassword","-w","ugh"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         matchOut("[\\p{L}\\s]*'admin'[\\p{L}\\s]*"); //$NON-NLS-1$

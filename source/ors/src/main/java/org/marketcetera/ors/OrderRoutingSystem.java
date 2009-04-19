@@ -151,6 +151,7 @@ public class OrderRoutingSystem
               SessionManager.INFINITE_SESSION_LIFESPAN)?
              SessionManager.INFINITE_SESSION_LIFESPAN:
              (cfg.getServerSessionLife()*1000));
+        userManager.setSessionManager(sessionManager);
         Server<ClientSession> server=new Server<ClientSession>
             (cfg.getServerHost(),cfg.getServerPort(),
              new DBAuthenticator(),sessionManager);

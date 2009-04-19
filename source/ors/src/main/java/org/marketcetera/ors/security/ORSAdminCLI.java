@@ -171,8 +171,8 @@ public class ORSAdminCLI
         } else if (commandLine.hasOption(CMD_CHANGE_PASS)) {
             //The order of these statements is important as it
             //determines the order in which the user is prompted
-            //First we want to validate the login password
-            //and then we'd want to prompt for the new password
+            //First we want to get the login password
+            //and then we want to prompt for the new password
             //if one wasn't supplied on the command line
 
             //Get the login password
@@ -188,7 +188,7 @@ public class ORSAdminCLI
             }
             //Only authorize if changing password for a different user
             if(commandLine.hasOption(OPT_OPERATED_USER) &&
-                    !userName.equals(opUser)) {
+               !userName.equals(opUser)) {
                 authorize(Authorization.CHANGE_PASSWORD,userName,password);
             }
             changePassword(userName, opUser, password, opPass);
@@ -256,7 +256,7 @@ public class ORSAdminCLI
      * Changes the user password.
      *
      * @param userName the user name of the user running the command
-     * @param opUser the name of the user who's password needs to be reset.
+     * @param opUser the name of the user whose password needs to be reset.
      * Can be null. If null, the password of the user running the command
      * is changed
      * @param password the password supplied by the user running the command
@@ -270,7 +270,7 @@ public class ORSAdminCLI
                                 String opPass)
         throws I18NException {
         SimpleUser u = null;
-        if(opUser != null) {
+        if(opUser != null && !opUser.equals(userName)) {
             u = fetchUser(opUser);
             //go through set name to reset the password as we do not have
             //the original password

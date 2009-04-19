@@ -1,5 +1,7 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.persist.PersistTestBase;
@@ -175,11 +177,30 @@ public class ReportsTestBase extends TestCaseBase {
                                             UserID inActorID,
                                             UserID inViewerID)
             throws Exception {
+        return createExecReport
+            (inOrderID, inOrigOrderID, inSymbol,
+             inSide, inOrderStatus, inCumQuantity, inAvgPrice,
+             inLastQty, inLastPrice, inBrokerID, ACCOUNT,
+             inActorID, inViewerID);
+    }
+    static ExecutionReport createExecReport(String inOrderID,
+                                            String inOrigOrderID,
+                                            String inSymbol, Side inSide,
+                                            OrderStatus inOrderStatus,
+                                            BigDecimal inCumQuantity,
+                                            BigDecimal inAvgPrice,
+                                            BigDecimal inLastQty,
+                                            BigDecimal inLastPrice,
+                                            BrokerID inBrokerID,
+                                            String inAccount,
+                                            UserID inActorID,
+                                            UserID inViewerID)
+            throws Exception {
         Message msg = sMessageFactory.newExecutionReport("ord1", inOrderID,
                 "exec1", inOrderStatus.getFIXValue(), inSide.getFIXValue(),
                 new BigDecimal("23.234"), new BigDecimal("343.343"),
                 inLastQty, inLastPrice, inCumQuantity, inAvgPrice,
-                new MSymbol(inSymbol), "account");
+                new MSymbol(inSymbol), inAccount);
         if (inOrigOrderID != null) {
             msg.setField(new OrigClOrdID(inOrigOrderID));
         }
@@ -276,11 +297,11 @@ public class ReportsTestBase extends TestCaseBase {
         return sServices.getPositionAsOf(inViewer, inDate, new MSymbol(inSymbol));
     }
 
-    protected static Map<MSymbol,BigDecimal> getPositions(Date inDate)
+    protected static Map<PositionKey,BigDecimal> getPositions(Date inDate)
             throws Exception {
         return getPositions(inDate, sViewer);
     }
-    protected static Map<MSymbol,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
+    protected static Map<PositionKey,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
             throws Exception {
         return sServices.getPositionsAsOf(inViewer, inDate);
     }
@@ -298,17 +319,42 @@ public class ReportsTestBase extends TestCaseBase {
                                             String inSymbol, Side inSide,
                                             BigDecimal inCumQty,
                                             UserID inViewerID) throws Exception {
+        return createAndSaveER(inOrderID,inOrigOrderID,inSymbol,inSide,
+                               inCumQty,sActorID,inViewerID);
+    }
+
+    protected static ExecutionReport createAndSaveER(String inOrderID,
+                                            String inOrigOrderID,
+                                            String inSymbol, Side inSide,
+                                            BigDecimal inCumQty,
+                                            UserID inActorID,
+                                            UserID inViewerID) throws Exception {
+        return createAndSaveER(inOrderID,inOrigOrderID,inSymbol,inSide,
+                               inCumQty, ACCOUNT, inActorID,inViewerID);
+    }
+
+    protected static ExecutionReport createAndSaveER(String inOrderID,
+                                            String inOrigOrderID,
+                                            String inSymbol, Side inSide,
+                                            BigDecimal inCumQty,
+                                            String inAccount,
+                                            UserID inActorID,
+                                            UserID inViewerID) throws Exception {
         sleepForSignificantTime();
         ExecutionReport report = createExecReport(inOrderID, inOrigOrderID,
                 inSymbol, inSide, OrderStatus.PartiallyFilled, inCumQty,
-                BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, inViewerID);
+                BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN,
+                BROKER, inAccount, inActorID, inViewerID);
         sServices.save(report);
         sleepForSignificantTime();
         return report;
     }
 
-    protected static MSymbol sym(String inSymbol) {
-        return new MSymbol(inSymbol);
+    protected static PositionKey pos(String inSymbol) {
+        return pos(inSymbol,ACCOUNT,sActor.getName());
+    }
+    protected static PositionKey pos(String inSymbol, String inAccount, String inActor) {
+        return new PositionKeyImpl(inSymbol,inAccount,inActor);
     }
 
     protected static Matcher<Map> isOfSize(int inLength) {
@@ -334,6 +380,7 @@ public class ReportsTestBase extends TestCaseBase {
     }
 
     protected static final BrokerID BROKER = new BrokerID("TestBroker");
+    protected static final String ACCOUNT = "account";
     protected static SimpleUser sActor;
     protected static UserID sActorID;
     protected static SimpleUser sViewer;

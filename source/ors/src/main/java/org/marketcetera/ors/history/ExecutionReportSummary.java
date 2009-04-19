@@ -1,5 +1,7 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.*;
@@ -42,6 +44,8 @@ import java.util.HashMap;
     @SqlResultSetMapping(name = "allPositions",
             columns = {
                 @ColumnResult(name = "symbol"),
+                @ColumnResult(name = "account"),
+                @ColumnResult(name = "actor"),
                 @ColumnResult(name = "position")
                     })
         })
@@ -57,13 +61,15 @@ import java.util.HashMap;
             "(select max(s.id) from execreports s where s.rootID = e.rootID)",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "allPositions",query = "select " +
-            "e.symbol as symbol, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "e.symbol as symbol, e.account as account, u.name as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
             "from execreports e " +
+            "join reports r on (e.report_id=r.id) " +
+            "left join ors_users u on (r.actor_id=u.id)" +
             "where e.sendingTime <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
             "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
-            "group by e.symbol having position <> 0",
+            "group by symbol, account, actor having position <> 0",
             resultSetMapping = "allPositions")
         })
 
@@ -115,32 +121,33 @@ class ExecutionReportSummary extends EntityBase {
 
     }
     /**
-     * Gets the current aggregate positions for all the symbols based
-     * on execution reports received before the supplied time, and
-     * which are visible to the given user.
+     * Returns the aggregate position of each (symbol,account,actor)
+     * tuple based on all reports received for each tuple on or before
+     * the supplied date, and which are visible to the given user.
      *
      * <p> Buy trades result in positive positions. All other kinds of
      * trades result in negative positions.
      *
      * @param inUser the user making the query. Cannot be null.
-     * @param inDate the time. execution reports with sending time values less
-     * than this time are included in this calculation.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
      *
-     * @return the aggregate position for the symbol.
+     * @return the position map.
      *
      * @throws PersistenceException if there were errors retrieving the
-     * position.
+     * position map.
      */
-    static Map<MSymbol, BigDecimal> getPositionsAsOf
+    static Map<PositionKey, BigDecimal> getPositionsAsOf
         (final SimpleUser inUser,
          final Date inDate)
         throws PersistenceException
     {
-        return executeRemote(new Transaction<Map<MSymbol, BigDecimal>>() {
+        return executeRemote(new Transaction<Map<PositionKey, BigDecimal>>() {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Map<MSymbol, BigDecimal> execute(EntityManager em,
+            public Map<PositionKey, BigDecimal> execute(EntityManager em,
                                                     PersistContext context) {
                 Query query = em.createNamedQuery(
                         "allPositions");  //$NON-NLS-1$
@@ -149,16 +156,19 @@ class ExecutionReportSummary extends EntityBase {
                 query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
                 query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
                         TemporalType.TIMESTAMP);
-                HashMap<MSymbol, BigDecimal> map =
-                        new HashMap<MSymbol, BigDecimal>();
+                HashMap<PositionKey, BigDecimal> map =
+                        new HashMap<PositionKey, BigDecimal>();
                 List<?> list = query.getResultList();
                 Object[] columns;
                 for(Object o: list) {
                     columns = (Object[]) o;
-                    //2 columns
+                    //4 columns
                     if(columns.length > 1) {
-                        //first one is the symbol, second one is the position
-                        map.put(new MSymbol((String)columns[0]), (BigDecimal) columns[1]);
+                        //first one is the symbol
+                        //second one is the account
+                        //third one is the actor name
+                        //fourth one is  the position
+                        map.put(new PositionKeyImpl((String)columns[0],(String)columns[1],(String)columns[2]), (BigDecimal) columns[3]);
                     }
                 }
                 return map;
@@ -180,6 +190,7 @@ class ExecutionReportSummary extends EntityBase {
         mOrigOrderID = inReport.getOriginalOrderID();
         MSymbol symbol = inReport.getSymbol();
         mSymbol = symbol == null? null: symbol.getFullSymbol();
+        mAccount = inReport.getAccount();
         mSide = inReport.getSide();
         mCumQuantity = inReport.getCumulativeQuantity();
         mAvgPrice = inReport.getAveragePrice();
@@ -282,6 +293,14 @@ class ExecutionReportSummary extends EntityBase {
         mSymbol = inSymbol;
     }
 
+    String getAccount() {
+        return mAccount;
+    }
+
+    private void setAccount(String inAccount) {
+        mAccount = inAccount;
+    }
+
     @Column(nullable = false)
     Side getSide() {
         return mSide;
@@ -372,6 +391,7 @@ class ExecutionReportSummary extends EntityBase {
     private OrderID mOrderID;
     private OrderID mOrigOrderID;
     private String mSymbol;
+    private String mAccount;
     private Side mSide;
     private BigDecimal mCumQuantity;
     private BigDecimal mAvgPrice;

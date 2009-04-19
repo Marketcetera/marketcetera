@@ -7,6 +7,7 @@ import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
@@ -146,12 +147,12 @@ public class ServiceImpl
             (session.getUser(),date,symbol);
     }
 
-    private MapWrapper<MSymbol,BigDecimal> getPositionsAsOfImpl
+    private MapWrapper<PositionKey,BigDecimal> getPositionsAsOfImpl
         (ClientSession session,
          Date date)
         throws PersistenceException
     {
-        return new MapWrapper<MSymbol, BigDecimal>(
+        return new MapWrapper<PositionKey, BigDecimal>(
                 getHistoryServices().getPositionsAsOf(session.getUser(),date));
     }
 
@@ -238,15 +239,16 @@ public class ServiceImpl
     }
 
     @Override
-    public MapWrapper<MSymbol,BigDecimal> getPositionsAsOf
+    public MapWrapper<PositionKey,BigDecimal> getPositionsAsOf
         (ClientContext context,
          final Date date)
         throws RemoteException
     {
-        return (new RemoteCaller<ClientSession,MapWrapper<MSymbol, BigDecimal>>
+        return (new RemoteCaller<ClientSession,MapWrapper<PositionKey,
+                                                          BigDecimal>>
                 (getSessionManager()) {
             @Override
-            protected MapWrapper<MSymbol, BigDecimal> call
+            protected MapWrapper<PositionKey,BigDecimal> call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
                 throws PersistenceException
@@ -284,8 +286,8 @@ public class ServiceImpl
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
             {
-                // The RemoteRunner takes care of marking the session
-                // as active.
+                // The enclosing RemoteRunner takes care of marking
+                // the session as active.
                 SLF4JLoggerProxy.debug
                     (this,"Received heartbeat for: {}", //$NON-NLS-1$
                      context.getSessionId());
