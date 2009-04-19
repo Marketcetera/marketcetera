@@ -156,18 +156,21 @@ public class SimpleUser extends NDEntityBase {
 
     /**
      * Verifies if the supplied password matches the configured
-     * password for the user. If no password is presently configured,
-     * validation succeeds regardless of the supplied password.
+     * password for the user. If no nonempty password is presently
+     * configured, validation succeeds regardless of the supplied
+     * password; this provides a back-door to address forgotten
+     * password problems, wherein an admin can modify the database
+     * directly and empty out the present password.
      *
      * @param password the password to test.
      *
-     * @throws ValidationException If a password is presently
+     * @throws ValidationException If a nonempty password is presently
      * configured and either an empty password value was specified, or
      * the specified password doesn't match the currently configured
      * user password.
      */
     public void validatePassword(char[] password) throws ValidationException {
-        if(!isPasswordSet()) {
+        if(getHashedPassword() == null || getHashedPassword().length() == 0) {
             return;
         }
         validatePasswordValue(password);
