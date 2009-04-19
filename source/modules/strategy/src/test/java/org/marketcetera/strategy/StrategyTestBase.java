@@ -45,10 +45,12 @@ import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
+import org.marketcetera.client.ServerStatusListener;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.BigDecimalUtils;
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.LogEvent;
@@ -594,6 +596,14 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addServerStatusListener(org.marketcetera.client.ServerStatusListener)
+         */
+        @Override
+        public void addServerStatusListener(ServerStatusListener inArg0)
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.client.Client#close()
          */
         @Override
@@ -659,7 +669,7 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#getPositionsAsOf(java.util.Date)
          */
         @Override
-        public Map<MSymbol, BigDecimal> getPositionsAsOf(Date inDate)
+        public Map<PositionKey, BigDecimal> getPositionsAsOf(Date inDate)
                 throws ConnectionException
         {
             throw new UnsupportedOperationException("This API is unsupported");
@@ -716,6 +726,14 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#removeServerStatusListener(org.marketcetera.client.ServerStatusListener)
+         */
+        @Override
+        public void removeServerStatusListener(ServerStatusListener inArg0)
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderSingle)
          */
         @Override
@@ -749,6 +767,7 @@ public class StrategyTestBase
         public void sendOrderRaw(FIXOrder inArg0)
                 throws ConnectionException, OrderValidationException
         {
+            throw new UnsupportedOperationException();
         }
 
         /* (non-Javadoc)
@@ -756,7 +775,13 @@ public class StrategyTestBase
          */
         @Override
         public boolean isCredentialsMatch(String inUsername, char[] inPassword) {
-            return false;
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isServerAlive()
+        {
+            throw new UnsupportedOperationException();
         }
     }
     /**
