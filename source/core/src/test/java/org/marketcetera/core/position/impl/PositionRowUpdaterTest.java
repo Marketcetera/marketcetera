@@ -81,7 +81,7 @@ public class PositionRowUpdaterTest {
 		// after a tick, everything is good to go
 		tick("2");
 		assertPosition(mFixture.getPosition(), "110", "50", "10", "0", "60", "60");
-		// set closing price ot null
+		// set closing price to null
 		setClosePrice(null);
 		// nothing valid anymore
 		assertPosition(mFixture.getPosition(), "110", null, null, null, null, null);
