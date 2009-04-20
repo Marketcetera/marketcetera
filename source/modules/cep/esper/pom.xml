@@ -29,7 +29,7 @@
 
     <!-- Compile. -->
     <dependency>
-      <groupId>com.espertech</groupId>
+      <groupId>esper</groupId>
       <artifactId>esper</artifactId>
     </dependency>
     <dependency>
