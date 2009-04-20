@@ -62,6 +62,12 @@ public interface MarketDataSupport {
     void removeSymbolChangeListener(String symbol, SymbolChangeListener listener);
 
     /**
+     * Disposes the provider and releases all resources. The provider will no longer be used after
+     * this is called.
+     */
+    void dispose();
+
+    /**
      * Interface to notify listeners of changes. Instead of implementing this interface, extend
      * {@link SymbolChangeListenerBase}.
      */

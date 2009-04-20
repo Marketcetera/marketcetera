@@ -1,17 +1,24 @@
 package org.marketcetera.photon.internal.positions.ui;
 
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 /* $License$ */
 
 /**
  * The activator class controls the plug-in life cycle.
- *
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.5.0
@@ -23,9 +30,9 @@ public class Activator extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "org.marketcetera.photon.positions.ui"; //$NON-NLS-1$
 
 	// The shared instance
-	private static Activator plugin;
+	private static Activator sPlugin;
 
-	private ServiceTracker positionEngineTracker;
+	private IObservableValue mPositionEngine = new WritableValue(new SyncRealm(), null, PositionEngine.class);
 
 	private ServiceTracker positionLabelTracker;
 
@@ -36,19 +43,45 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	@Override
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
 		super.start(context);
-		positionEngineTracker = new ServiceTracker(context, PositionEngine.class.getName(), null);
-		positionEngineTracker.open();
-		positionLabelTracker = new ServiceTracker(context, IPositionLabelProvider.class.getName(), null);
+		ServiceListener sl = new ServiceListener() {
+			public void serviceChanged(ServiceEvent ev) {
+				ServiceReference sr = ev.getServiceReference();
+				PositionEngine engine = (PositionEngine) context.getService(sr);
+				switch (ev.getType()) {
+				case ServiceEvent.REGISTERED: {
+					mPositionEngine.setValue(engine);
+				}
+					break;
+				case ServiceEvent.UNREGISTERING: {
+					mPositionEngine.setValue(null);
+				}
+					break;
+				}
+			}
+		};
+
+		String filter = "(objectclass=" + PositionEngine.class.getName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+		try {
+			context.addServiceListener(sl, filter);
+			ServiceReference[] srl = context.getServiceReferences(null, filter);
+			for (int i = 0; srl != null && i < srl.length; i++) {
+				sl.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, srl[i]));
+			}
+		} catch (InvalidSyntaxException e) {
+			// the filter is hardcoded above, syntax should be valid
+			throw new AssertionError(e);
+		}
+		positionLabelTracker = new ServiceTracker(context, IPositionLabelProvider.class.getName(),
+				null);
 		positionLabelTracker.open();
-		plugin = this;
+		sPlugin = this;
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		positionEngineTracker.close();
+		sPlugin = null;
 		positionLabelTracker.close();
 		super.stop(context);
 	}
@@ -59,16 +92,16 @@ public class Activator extends AbstractUIPlugin {
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
-		return plugin;
+		return sPlugin;
 	}
 
 	/**
-	 * Returns the position engine service.
+	 * Returns an observable reference to the position engine service.
 	 * 
-	 * @return the position engine service, or null if none exists.
+	 * @return the position engine observable, will not be null
 	 */
-	public PositionEngine getPositionEngine() {
-		return (PositionEngine) positionEngineTracker.getService();
+	public IObservableValue getPositionEngine() {
+		return mPositionEngine;
 	}
 
 	/**
@@ -78,6 +111,26 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public IPositionLabelProvider getPositionLabelProvider() {
 		return (IPositionLabelProvider) positionLabelTracker.getService();
+	}
+	
+	/**
+	 * Simple realm that synchronizes access to the observable.
+	 */
+	@ClassVersion("$Id$")
+	private class SyncRealm extends Realm {
+
+		@Override
+		public boolean isCurrent() {
+			return true;
+		}
+		
+		@Override
+		protected void syncExec(Runnable runnable) {
+			synchronized (mPositionEngine) {
+				super.syncExec(runnable);
+			}
+		}
+		
 	}
 
 }

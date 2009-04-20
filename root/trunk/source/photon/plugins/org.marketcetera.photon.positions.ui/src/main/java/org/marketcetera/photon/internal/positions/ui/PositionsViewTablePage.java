@@ -107,6 +107,7 @@ public class PositionsViewTablePage extends PositionsViewPage {
 		}
 	}
 
+	private final PositionTableFormat mTableFormat = new PositionTableFormat();
 	private EventTableViewer<PositionRow> mViewer;
 	private Table mTable;
 	private TableComparatorChooser<PositionRow> mChooser;
@@ -133,7 +134,7 @@ public class PositionsViewTablePage extends PositionsViewPage {
 		mTable.setLayoutData("dock center, hmin 100, wmin 100"); //$NON-NLS-1$
 		EventList<PositionRow> positions = getPositions();
 		SortedList<PositionRow> sorted = new SortedList<PositionRow>(positions, null);
-		mViewer = new EventTableViewer<PositionRow>(sorted, mTable, new PositionTableFormat(),
+		mViewer = new EventTableViewer<PositionRow>(sorted, mTable, mTableFormat ,
 				new PositionRowConfigurer());
 		mChooser = TableComparatorChooser.install(mViewer, sorted, false);
 		// make unrealized PL a bit wider
@@ -167,7 +168,7 @@ public class PositionsViewTablePage extends PositionsViewPage {
 
 	@Override
 	protected PositionData getPositionData() {
-		PositionEngine engine = Activator.getDefault().getPositionEngine();
+		PositionEngine engine = (PositionEngine) Activator.getDefault().getPositionEngine().getValue();
 		return engine.getFlatData();
 	}
 
@@ -178,13 +179,12 @@ public class PositionsViewTablePage extends PositionsViewPage {
 			@Override
 			public void getFilterStrings(List<String> baseList, PositionRow element) {
 				// search symbol, account, and traderId (columns 0, 1, and 2)
+				// Note that ideally, this would exclude the string if the column is hidden (column
+				// width 0). However, the table can only be queried on the UI thread and this is
+				// called whenever the underlying list changes (on different background threads).
 				for (int i = 0; i <= 2; i++) {
-					TableColumn column = mTable.getColumn(i);
-					if (column.getWidth() > 0) {
-						// use the column text instead of the row element value since it may be
-						// decorated
-						baseList.add(column.getText());
-					}
+					// use the formatter since the value may be decorated (e.g. trader name instead of id)
+					baseList.add((String) mTableFormat.getColumnValue(element, i));
 				}
 			}
 		};

@@ -1,16 +1,17 @@
 package org.marketcetera.photon.internal.positions.ui;
 
 import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
 
 import net.miginfocom.swt.MigLayout;
 
+import org.apache.commons.lang.Validate;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.IValueChangeListener;
+import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
@@ -45,7 +46,19 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Real-time Positions and P&L view.
+ * Real-time Positions and P&L view. The page book view has three pages that can be shown:
+ * <ul>
+ * <li>{@link UnavailablePage} - default page shown when position data is not available.</li>
+ * <li>{@link PositionsViewTablePage} - flat, table based P&amp;L data.</li>
+ * <li>{@link PositionsViewTreePage} - tree based page allowing data to be grouped hierarchically.</li>
+ * </ul>
+ * 
+ * This view does not care about the actual active workbench part. So fake parts are used to control
+ * the switching of pages. For example, to switch to the flat page, you call
+ * {@link #partActivated(IWorkbenchPart)}, passing {@link PositionsPart#FLAT} as the parameter.
+ * <p>
+ * This view serializes it's state, which includes the last viewed page (flat or hierarchical) and
+ * last selected grouping on the hierarchical page.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -60,13 +73,9 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 	 * 
 	 * This technique was inspired by
 	 * org.eclipse.pde.internal.ui.views.dependencies.DependenciesView.
-	 * 
-	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
-	 * @since 1.5.0
 	 */
 	@ClassVersion("$Id$")
-	static enum PositionsPart implements IWorkbenchPart {
+	private static enum PositionsPart implements IWorkbenchPart {
 
 		/**
 		 * Flat table UI.
@@ -132,25 +141,13 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 	public static final class ChangePageHandler extends AbstractHandler implements IHandler,
 			IExecutableExtension {
 
-		private PositionsPart part;
+		private PositionsPart mPart;
 
 		@Override
 		public Object execute(ExecutionEvent event) throws ExecutionException {
 			PositionsView view = (PositionsView) HandlerUtil.getActivePart(event);
-			if (view != null) {
-				switch (part) {
-				case HIERARCHICAL:
-					view.grouping = view.lastGrouping;
-					view.partActivated(part);
-					break;
-				case FLAT:
-					if (view.grouping != null) view.lastGrouping = view.grouping;
-					view.grouping = null;
-					// dispose the last tree page if it exists to free up resources
-					view.partClosed(PositionsPart.HIERARCHICAL);
-					view.partActivated(part);
-					break;
-				}
+			if (view != null && view.mPositionEngine.getValue() != null) {
+				view.showPart(mPart);
 			}
 			return null;
 		}
@@ -158,7 +155,7 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 		@Override
 		public void setInitializationData(IConfigurationElement config, String propertyName,
 				Object data) throws CoreException {
-			part = PositionsPart.valueOf((String) data);
+			mPart = PositionsPart.valueOf((String) data);
 		}
 	}
 
@@ -188,57 +185,92 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 		}
 	}
 
-	private static final String DEFAULT_PART_KEY = "defaultPart"; //$NON-NLS-1$
-	private static final String GROUPING_KEY_1 = "grouping1"; //$NON-NLS-1$
-	private static final String GROUPING_KEY_2 = "grouping2"; //$NON-NLS-1$
+	/*
+	 * memento keys for serialization
+	 */
+	private static final String LAST_PART_KEY = "defaultPart"; //$NON-NLS-1$
+	private static final String LAST_GROUPING_KEY_1 = "grouping1"; //$NON-NLS-1$
+	private static final String LAST_GROUPING_KEY_2 = "grouping2"; //$NON-NLS-1$
 
-	private final EnumMap<PositionsPart, IPageBookViewPage> mPartsToPages = new EnumMap<PositionsPart, IPageBookViewPage>(
-			PositionsPart.class);
-	private final Map<IPageBookViewPage, PositionsPart> mPagesToParts = new HashMap<IPageBookViewPage, PositionsPart>();
-	private PositionsPart defaultPart = PositionsPart.FLAT;
-	private Grouping[] grouping = null;
-	private Grouping[] lastGrouping = new Grouping[] { Grouping.Symbol, Grouping.Account };
-	private String filterText = ""; //$NON-NLS-1$
+	/*
+	 * remembers user choices
+	 */
+	private PositionsPart mLastPart = PositionsPart.FLAT;
+	private Grouping[] mLastGrouping = new Grouping[] { Grouping.Symbol, Grouping.Account };
+
+	private final IObservableValue mPositionEngine = Activator.getDefault().getPositionEngine();
+	private Grouping[] mGrouping = null;
+	private String mFilterText = ""; //$NON-NLS-1$
 	private IMemento mMemento;
 	private MenuManager mMenuManager;
+	private IValueChangeListener mEngineListener;
 
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
 		mMemento = memento;
+		// restore saved state, if any
 		if (memento != null) {
 			try {
-				String part = memento.getString(DEFAULT_PART_KEY);
+				String part = memento.getString(LAST_PART_KEY);
 				if (part != null) {
-					defaultPart = PositionsPart.valueOf(part);
+					mLastPart = PositionsPart.valueOf(part);
 				}
 			} catch (IllegalArgumentException e) {
 				Messages.POSITIONS_VIEW_STATE_RESTORE_FAILURE.error(this, e);
 			}
 			try {
-				String one = memento.getString(GROUPING_KEY_1);
-				String two = memento.getString(GROUPING_KEY_2);
+				String one = memento.getString(LAST_GROUPING_KEY_1);
+				String two = memento.getString(LAST_GROUPING_KEY_2);
 				if (one != null && two != null) {
-					lastGrouping = new Grouping[] { Grouping.valueOf(one), Grouping.valueOf(two) };
+					mLastGrouping = new Grouping[] { Grouping.valueOf(one), Grouping.valueOf(two) };
 				}
 			} catch (IllegalArgumentException e) {
 				Messages.POSITIONS_VIEW_STATE_RESTORE_FAILURE.error(this, e);
 			}
-			if (defaultPart == PositionsPart.HIERARCHICAL) {
-				grouping = lastGrouping;
-			}
 		}
+		// both pages share a context menu
 		mMenuManager = new MenuManager();
 		site.registerContextMenu(mMenuManager, getSelectionProvider());
+
+		// a listener that activates/deactivates the page when the position engine
+		// appears/disappears
+		mEngineListener = new IValueChangeListener() {
+			@Override
+			public void handleValueChange(ValueChangeEvent event) {
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						if (mPositionEngine.getValue() == null) {
+							mGrouping = null;
+							partClosed(getCurrentContributingPart());
+						} else {
+							showPart(mLastPart);
+						}
+					}
+				});
+				
+			}
+		};
+		mPositionEngine.addValueChangeListener(mEngineListener);
 	}
 
 	@Override
 	public void saveState(IMemento memento) {
-		memento.putString(DEFAULT_PART_KEY, mPagesToParts.get(getCurrentPage()).toString());
-		Grouping[] savedGrouping = grouping != null ? grouping : lastGrouping;
-		memento.putString(GROUPING_KEY_1, savedGrouping[0].name());
-		memento.putString(GROUPING_KEY_2, savedGrouping[1].name());
-		getCurrentPage().saveState(memento);
+		memento.putString(LAST_PART_KEY, mLastPart.name());
+		memento.putString(LAST_GROUPING_KEY_1, mLastGrouping[0].name());
+		memento.putString(LAST_GROUPING_KEY_2, mLastGrouping[1].name());
+		// allow individual pages to save state too
+		PageRec page = getPageRec(PositionsPart.FLAT);
+		if (page != null) ((PositionsViewPage) page.page).saveState(memento);
+		page = getPageRec(PositionsPart.HIERARCHICAL);
+		if (page != null) ((PositionsViewPage) page.page).saveState(memento);
+	}
+
+	@Override
+	public void dispose() {
+		// cleanup listener
+		mPositionEngine.removeValueChangeListener(mEngineListener);
+		super.dispose();
 	}
 
 	@Override
@@ -248,51 +280,32 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 	}
 
 	@Override
-	public PositionsViewPage getCurrentPage() {
-		return (PositionsViewPage) super.getCurrentPage();
-	}
-
-	@Override
 	public Control getColumnWidget() {
-		return getCurrentPage().getColumnWidget();
+		IPage currentPage = getCurrentPage();
+		if (currentPage instanceof PositionsViewPage) {
+			return ((PositionsViewPage) currentPage).getColumnWidget();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	protected IWorkbenchPart getBootstrapPart() {
-		return defaultPart;
+		// only can bootstrap if the engine is available
+		return mPositionEngine.getValue() == null ? null : mLastPart;
 	}
 
 	@Override
 	protected IPage createDefaultPage(PageBook book) {
-		return createPage(PositionsPart.FLAT);
+		UnavailablePage unavailablePage = new UnavailablePage();
+		unavailablePage.createControl(book);
+		return unavailablePage;
 	}
 
 	@Override
 	protected PageRec doCreatePage(IWorkbenchPart part) {
-		IPageBookViewPage page = mPartsToPages.get(part);
-		if (page == null && !mPartsToPages.containsKey(part)) {
-			page = createPage((PositionsPart) part);
-		}
-		if (page != null) {
-			return new PageRec(part, page);
-		}
-		return null;
-	}
-
-	@Override
-	protected void doDestroyPage(IWorkbenchPart part, PageRec pageRecord) {
-		IPage page = pageRecord.page;
-		page.dispose();
-		pageRecord.dispose();
-
-		// empty cross-reference cache
-		mPartsToPages.remove(part);
-		mPagesToParts.remove(page);
-	}
-
-	private IPageBookViewPage createPage(final PositionsPart part) {
 		final IPageBookViewPage page;
-		switch (part) {
+		switch ((PositionsPart) part) {
 		case FLAT:
 			page = new PositionsViewTablePage(this, mMemento);
 			break;
@@ -305,16 +318,23 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 
 		initPage(page);
 		page.createControl(getPageBook());
-		mPartsToPages.put(part, page);
-		mPagesToParts.put(page, part);
-		return page;
+		return new PageRec(part, page);
+	}
+
+	@Override
+	protected void doDestroyPage(IWorkbenchPart part, PageRec pageRecord) {
+		IPage page = pageRecord.page;
+		page.dispose();
+		pageRecord.dispose();
 	}
 
 	@Override
 	protected void showPageRec(PageRec pageRec) {
 		super.showPageRec(pageRec);
-		installContextMenu();
-		getCurrentPage().setFilterText(getFilterText());
+		if (!(pageRec.page instanceof UnavailablePage)) {
+			installContextMenu();
+			((PositionsViewPage) pageRec.page).setFilterText(getFilterText());
+		}
 	}
 
 	/**
@@ -328,33 +348,73 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 	}
 
 	private void setFilterText(String filterText) {
-		this.filterText = filterText;
-		getCurrentPage().setFilterText(filterText);
+		mFilterText = filterText;
+		((PositionsViewPage) getCurrentPage()).setFilterText(filterText);
 	}
 
 	/**
 	 * @return the current filter text
 	 */
 	String getFilterText() {
-		return filterText;
+		return mFilterText;
 	}
 
 	/**
 	 * @return the current grouping
 	 */
 	Grouping[] getGrouping() {
-		return grouping;
+		return mGrouping;
 	}
 
 	/**
-	 * Sets the view grouping.
+	 * Shows the specified part.
+	 * 
+	 * @param part
+	 *            the part
+	 */
+	void showPart(PositionsPart part) {
+		switch (part) {
+		case HIERARCHICAL:
+			showHierarchicalPage();
+			break;
+		case FLAT:
+			showFlatPage();
+			break;
+		default:
+			throw new AssertionError();
+		}
+	}
+
+	/**
+	 * Shows the flat page.
+	 */
+	void showFlatPage() {
+		mGrouping = null;
+		mLastPart = PositionsPart.FLAT;
+		partClosed(PositionsPart.HIERARCHICAL);
+		partActivated(PositionsPart.FLAT);
+	}
+
+	/**
+	 * Shows the hierarchical page with the the default grouping.
+	 */
+	void showHierarchicalPage() {
+		showHierarchicalPage(mLastGrouping);
+	}
+
+	/**
+	 * Shows the hierarchical page with the provided grouping.
 	 * 
 	 * @param grouping
-	 *            the new grouping
+	 *            the grouping
 	 */
-	void setGrouping(Grouping[] grouping) {
-		if (!Arrays.equals(this.grouping, grouping)) {
-			this.grouping = grouping;
+	void showHierarchicalPage(Grouping[] grouping) {
+		Validate.noNullElements(grouping);
+		Validate.isTrue(grouping.length == 2);
+		if (!Arrays.equals(mGrouping, grouping)) {
+			mLastPart = PositionsPart.HIERARCHICAL;
+			mGrouping = grouping;
+			mLastGrouping = grouping;
 			// dispose the last tree page if it exists to free up resources
 			partClosed(PositionsPart.HIERARCHICAL);
 			partActivated(PositionsPart.HIERARCHICAL);

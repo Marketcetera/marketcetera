@@ -82,9 +82,13 @@ public class GroupingContributionItem extends CompoundContributionItem {
 					return new Listener() {
 						@Override
 						public void handleEvent(Event event) {
+							if (Activator.getDefault().getPositionEngine().getValue() == null) {
+								event.doit = false;
+								return;
+							}
 							MenuItem item = (MenuItem) event.widget;
 							if (item.getSelection() && view != null) {
-								view.setGrouping(grouping);
+								view.showHierarchicalPage(grouping);
 							}
 						}
 					};

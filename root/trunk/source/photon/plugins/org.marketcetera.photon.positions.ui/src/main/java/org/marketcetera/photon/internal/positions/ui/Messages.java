@@ -63,6 +63,8 @@ public interface Messages {
 			"grouping_contribution_item.symbol_label"); //$NON-NLS-1$
 	static final I18NMessage0P GROUPING_CONTRIBUTION_ITEM_TRADER_LABEL = new I18NMessage0P(LOGGER,
 			"grouping_contribution_item.trader_label"); //$NON-NLS-1$
+	static final I18NMessage0P UNAVAILABLE_PAGE_DESCRIPTION = new I18NMessage0P(LOGGER,
+			"unavailable_page.description"); //$NON-NLS-1$
 
 	/*
 	 * Log messages

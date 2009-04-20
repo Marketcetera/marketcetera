@@ -16,6 +16,15 @@ import org.marketcetera.module.ExpectedFailure;
 
 import ca.odell.glazedlists.BasicEventList;
 
+/* $License$ */
+
+/**
+ * Test {@link PositionRowUpdater}.
+ * 
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
 public class PositionRowUpdaterTest {
 
 	private static final String SYMBOL = "METC";
@@ -72,6 +81,10 @@ public class PositionRowUpdaterTest {
 		// after a tick, everything is good to go
 		tick("2");
 		assertPosition(mFixture.getPosition(), "110", "50", "10", "0", "60", "60");
+		// set closing price ot null
+		setClosePrice(null);
+		// nothing valid anymore
+		assertPosition(mFixture.getPosition(), "110", null, null, null, null, null);
 	}
 
 	private void tick(String price) {
@@ -79,7 +92,8 @@ public class PositionRowUpdaterTest {
 	}
 
 	private void setClosePrice(String closePrice) {
-		mListener.closePriceChanged(new SymbolChangeEvent(this, new BigDecimal(closePrice)));
+		mListener.closePriceChanged(new SymbolChangeEvent(this, closePrice == null ? null
+				: new BigDecimal(closePrice)));
 	}
 
 	@Test
@@ -131,6 +145,10 @@ public class PositionRowUpdaterTest {
 			if (listener == mListener) {
 				mListener = null;
 			}
+		}
+
+		@Override
+		public void dispose() {
 		}
 
 	}
