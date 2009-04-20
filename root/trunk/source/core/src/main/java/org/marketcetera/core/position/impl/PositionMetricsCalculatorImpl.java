@@ -159,7 +159,8 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         PositionMetricsImpl positionMetrics = new PositionMetricsImpl(mIncomingPosition,
                 mPosition, positionPL, tradingPL, realizedPL, unrealizedPL, totalPL);
         // Theoretically, both ways of calculating total PL should give the same results
-        assert mLastTradePrice == null || totalPL.compareTo(positionPL.add(tradingPL)) == 0 : positionMetrics;
+        assert !mClosingPriceAvailable || mLastTradePrice == null
+                || totalPL.compareTo(positionPL.add(tradingPL)) == 0 : positionMetrics;
         if (SLF4JLoggerProxy.isDebugEnabled(this)) {
             if (mLastTradePrice != null && totalPL.compareTo(positionPL.add(tradingPL)) != 0) {
                 SLF4JLoggerProxy.debug(this, MessageFormat.format(
