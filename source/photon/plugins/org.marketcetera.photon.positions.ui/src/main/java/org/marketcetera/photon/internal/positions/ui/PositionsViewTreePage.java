@@ -201,7 +201,7 @@ public class PositionsViewTreePage extends PositionsViewPage {
 
 	@Override
 	protected PositionData getPositionData() {
-		PositionEngine engine = Activator.getDefault().getPositionEngine();
+		PositionEngine engine = (PositionEngine) Activator.getDefault().getPositionEngine().getValue();
 		return engine.getGroupedData(getView().getGrouping());
 	}
 

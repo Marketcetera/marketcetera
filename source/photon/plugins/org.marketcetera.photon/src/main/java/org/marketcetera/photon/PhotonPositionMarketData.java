@@ -229,6 +229,13 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 		}
 		return null;
 	}
+	
+	@Override
+	public synchronized void dispose() {
+		for (Map.Entry<String, SymbolChangeListener> entry : mListeners.entries()) {
+			removeSymbolChangeListener(entry.getKey(), entry.getValue());
+		}
+	}
 
 	private class LatestTickAdapter extends AdapterImpl {
 

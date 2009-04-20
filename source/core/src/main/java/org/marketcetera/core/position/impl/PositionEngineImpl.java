@@ -332,5 +332,6 @@ public final class PositionEngineImpl implements PositionEngine {
         mFlat.dispose();
         mGrouped.dispose();
         mSorted.dispose();
+        mMarketDataSupport.dispose();
     }
 }

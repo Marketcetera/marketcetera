@@ -58,8 +58,7 @@ public class ReconnectServerJob extends UIJob {
 	@Override
 	public IStatus runInUIThread(IProgressMonitor monitor) {
 		// load connection properties
-		ScopedPreferenceStore prefs = PhotonPlugin.getDefault()
-				.getPreferenceStore();
+		ScopedPreferenceStore prefs = PhotonPlugin.getDefault().getPreferenceStore();
 		String url = prefs.getString(PhotonPreferences.JMS_URL);
 		String hostname = prefs.getString(PhotonPreferences.WEB_SERVICE_HOST);
 		int port = prefs.getInt(PhotonPreferences.WEB_SERVICE_PORT);
@@ -76,8 +75,12 @@ public class ReconnectServerJob extends UIJob {
 			IRunnableWithProgress op = new IRunnableWithProgress() {
 
 				@Override
-				public void run(IProgressMonitor monitor)
-						throws InvocationTargetException, InterruptedException {
+				public void run(IProgressMonitor monitor) throws InvocationTargetException,
+						InterruptedException {
+					// invalidate position engine, it will be recreated if trading history is
+					// retrieved
+					PhotonPlugin.getDefault().disposePositionEngine();
+
 					// close previous connection if it exists
 					try {
 						ClientManager.getInstance().close();

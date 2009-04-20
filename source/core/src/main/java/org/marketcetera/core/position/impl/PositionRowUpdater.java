@@ -15,6 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.util.concurrent.Lock;
 
 /* $License$ */
 
@@ -104,19 +105,31 @@ public final class PositionRowUpdater {
 
     private void tick(BigDecimal tick) {
         mLastTradePrice = tick;
-        mPositionRow.setPositionMetrics(mCalculator.tick(tick));
+        Lock lock = mTrades.getReadWriteLock().writeLock();
+        lock.lock();
+        try {
+            mPositionRow.setPositionMetrics(mCalculator.tick(tick));
+        } finally {
+            lock.unlock();
+        }
     }
 
     private void closePriceChanged(BigDecimal newPrice) {
         BigDecimal oldPrice = mClosePrice;
         // since change close price requires a full recalculation, only do it if necessary
-        if (oldPrice == null) {
-            if (newPrice == null) return;
-        } else if (oldPrice.compareTo(newPrice) == 0) {
+        if (oldPrice == null && newPrice == null) {
+            return;
+        } else if (oldPrice != null && newPrice != null && oldPrice.compareTo(newPrice) == 0) {
             return;
         }
         mClosePrice = newPrice;
-        mPositionRow.setPositionMetrics(recalculate());
+        Lock lock = mTrades.getReadWriteLock().writeLock();
+        lock.lock();
+        try {
+            mPositionRow.setPositionMetrics(recalculate());
+        } finally {
+            lock.unlock();
+        }
     }
 
     private void listChanged(ListEvent<Trade> listChanges) {

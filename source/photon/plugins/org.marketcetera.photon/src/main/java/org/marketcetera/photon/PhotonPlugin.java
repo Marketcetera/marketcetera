@@ -36,7 +36,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.position.PositionEngine;
-import org.marketcetera.core.position.PositionEngineFactory;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
@@ -56,6 +55,7 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.Strategy;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.rubypeople.rdt.core.RubyCore;
 
 import quickfix.FieldNotFound;
@@ -121,6 +121,8 @@ public class PhotonPlugin
 	
 	private SessionStartTimeProvider mSessionStartTimeProvider = new SessionStartTimeProvider();
 
+    private ServiceRegistration mPositionEngineService;
+
 	/**
 	 * The constructor.
 	 */
@@ -152,10 +154,7 @@ public class PhotonPlugin
 
 		initMessageFactory();
 		initTradeReportsHistory();
-		mPositionEngine = PositionEngineFactory.createFromReportHolders(mTradeReportsHistory
-				.getAllMessagesList(), new ClientPositionSupport(), new PhotonPositionMarketData(
-				MarketDataManager.getCurrent().getMarketData(), mSessionStartTimeProvider));
-		context.registerService(PositionEngine.class.getName(), mPositionEngine, null);
+		
 		initPhotonController();
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 	}
@@ -577,5 +576,29 @@ public class PhotonPlugin
 	 */
 	public void setSessionStartTime(Date newSessionStartTime) {
 		mSessionStartTimeProvider.setSessionStartTime(newSessionStartTime);
+	}
+	
+	/**
+	 * Registers the position engine as an OSGi service.
+	 * 
+	 * @param engine position engine to register
+	 */
+	public synchronized void registerPositionEngine(PositionEngine engine) {
+		mPositionEngine = engine;
+		mPositionEngineService = getBundleContext().registerService(PositionEngine.class.getName(), engine, null);
+	}
+	
+	/**
+	 * Disposes the registered position engine server if one exists.
+	 */
+	public synchronized void disposePositionEngine() {
+		if (mPositionEngine != null) {
+			mPositionEngine.dispose();
+			mPositionEngine = null;
+		}
+		if (mPositionEngineService != null) {
+			mPositionEngineService.unregister();
+			mPositionEngineService = null;
+		}
 	}
 }
