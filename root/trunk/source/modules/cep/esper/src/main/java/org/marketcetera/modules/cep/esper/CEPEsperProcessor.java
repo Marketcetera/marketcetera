@@ -167,7 +167,7 @@ public class CEPEsperProcessor extends Module
     @Override
     public long getNumEventsReceived() {
         if(getState().isStarted()) {
-            return mService.getEPRuntime().getNumEventsEvaluated();
+            return mService.getEPRuntime().getNumEventsReceived();
         }
         throw new IllegalStateException(Messages.ERROR_MODULE_NOT_STARTED.getText());
     }
@@ -218,12 +218,12 @@ public class CEPEsperProcessor extends Module
 
             for (Pair<String, Class<?>> stringClassPair : CEPDataTypes.REQUEST_PRECANNED_TYPES) {
                 if (stringClassPair.getFirstMember().equals(CEPDataTypes.MAP)) {
-                    configuration.addEventType(CEPDataTypes.MAP, new Properties());
+                    configuration.addEventTypeAlias(CEPDataTypes.MAP, new Properties());
                 } else {
-                    configuration.addEventType(stringClassPair.getFirstMember(), stringClassPair.getSecondMember());
+                    configuration.addEventTypeAlias(stringClassPair.getFirstMember(), stringClassPair.getSecondMember());
                 }
             }
-            configuration.addEventType(CEPDataTypes.TIME_CARRIER, TimestampCarrier.class);
+            configuration.addEventTypeAlias(CEPDataTypes.TIME_CARRIER, TimestampCarrier.class);
 
             mService = EPServiceProviderManager.getProvider(
                     getURN().instanceName(), configuration);
