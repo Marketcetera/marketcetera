@@ -6,9 +6,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collections;
+
 import org.junit.Test;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.notifications.INotification.Severity;
@@ -19,6 +22,7 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.mockito.ArgumentMatcher;
+
 
 /**
  * Test {@link BrokerNotificationListener}.
@@ -38,6 +42,7 @@ public class BrokerNotificationListenerTest {
 
 		BrokerStatus status = new BrokerStatus("abc",
 				new BrokerID("abc"), true);
+		stub(mockClient.getBrokersStatus()).toReturn(new BrokersStatus(Collections.singletonList((status))));
 		BrokerNotificationListener fixture = new BrokerNotificationListener(mockClient);
 		fixture.receiveBrokerStatus(status);
 

@@ -2,6 +2,7 @@ package org.marketcetera.messagehistory;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
@@ -40,8 +41,8 @@ public class ReportHolder
      */
     public ReportHolder(ReportBase inReport, OrderID inGroupID){
         this.mReport = inReport;
-        // A unique reference number must be used instead of mReport.getReportID()
-        // since some "fake" reports are created by this package with null ids.
+        // A unique reference number must be used instead of mReport.getReportID() since some "fake"
+        // reports are created by this package with null ids (e.g. average price list).
         this.mMessageReference = sCounter.incrementAndGet();
         this.mGroupID = inGroupID;
     }
@@ -107,6 +108,15 @@ public class ReportHolder
         ReportHolder other = (ReportHolder) obj;
         return mMessageReference == other.mMessageReference;
     }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("report", mReport) //$NON-NLS-1$
+                .append("groupId", mGroupID) //$NON-NLS-1$
+                .append("messageReferenceNumber", mMessageReference) //$NON-NLS-1$
+                .toString();
+    }
+
     private final ReportBase mReport;
     private final long mMessageReference;
     private static AtomicLong sCounter = new AtomicLong();

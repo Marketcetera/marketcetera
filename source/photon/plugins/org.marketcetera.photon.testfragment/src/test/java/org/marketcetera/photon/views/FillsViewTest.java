@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.messagehistory.TradeReportsHistoryTest;
 import org.marketcetera.photon.OrderManagerTest;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
 import org.marketcetera.photon.messagehistory.FIXStringMatcher;
@@ -302,6 +303,8 @@ public class FillsViewTest
 		if (account != null) report.set(new Account(account));
 		report.set(new OrdStatus(OrdStatus.FILLED));
 		report.set(new LastShares(BigDecimal.TEN));
-		return Factory.getInstance().createExecutionReport(report, null, Originator.Server, null, traderId == null ? null : new UserID(Long.valueOf(traderId)));
+		return TradeReportsHistoryTest.assignReportID(Factory.getInstance().createExecutionReport(
+				report, null, Originator.Server, null,
+				traderId == null ? null : new UserID(Long.valueOf(traderId))));
 	}
 }

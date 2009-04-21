@@ -54,7 +54,8 @@ public class OrderStatusTest extends FIXCharEnumTestBase<OrderStatus> {
                 new Pair<OrderStatus, Character>(Calculated, OrdStatus.CALCULATED),
                 new Pair<OrderStatus, Character>(Expired, OrdStatus.EXPIRED),
                 new Pair<OrderStatus, Character>(AcceptedForBidding, OrdStatus.ACCEPTED_FOR_BIDDING),
-                new Pair<OrderStatus, Character>(PendingReplace, OrdStatus.PENDING_REPLACE)
+                new Pair<OrderStatus, Character>(PendingReplace, OrdStatus.PENDING_REPLACE),
+                new Pair<OrderStatus, Character>(Replaced, OrdStatus.REPLACED)
         );
     }
 }
