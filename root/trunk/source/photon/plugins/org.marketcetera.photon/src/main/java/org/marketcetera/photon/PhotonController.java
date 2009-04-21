@@ -15,7 +15,9 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.messagehistory.MessageVisitor;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.trade.BrokerID;
@@ -31,12 +33,10 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.ExecID;
 import quickfix.field.OrigClOrdID;
 
 /* $License$ */
@@ -185,37 +185,44 @@ public class PhotonController
 	}
 	
 	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
-		cancelOneOrderByClOrdID(clOrdID, null);
-	}
-	public void cancelOneOrderByClOrdID(String clOrdID, String textField) throws NoMoreIDsException {
 		OrderID orderid = new OrderID(clOrdID);
-		ReportBase latestExecutionReport = fixMessageHistory.getLatestExecutionReport(orderid);
-		Message latestMessage;
-		if (latestExecutionReport == null){
-			latestMessage = fixMessageHistory.getLatestMessage(orderid);
-			if (latestExecutionReport == null){
-				internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
-				return;
+		ExecutionReport report = getReportForCancel(orderid);
+		if (report != null) {
+			if (internalMainLogger.isDebugEnabled()) {
+				internalMainLogger
+						.debug("Exec id for cancel execution report:" + report.getExecutionID()); //$NON-NLS-1$
 			}
-		} else if (latestExecutionReport instanceof HasFIXMessage) {
-			latestMessage = ((HasFIXMessage) latestExecutionReport).getMessage();
+			sendOrder(Factory.getInstance().createOrderCancel(report));
 		} else {
 			internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
 			return;
 		}
-		
-		try { 
-			if(internalMainLogger.isDebugEnabled()) {
-				internalMainLogger.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD));  //$NON-NLS-1$
-			} 
-		} catch (FieldNotFound ignored) {	}
-		try {
-			ExecutionReport report = Factory.getInstance().createExecutionReport(
-					latestMessage, latestExecutionReport.getBrokerID(), Originator.Server, null, null); // TODO(MT): use ID of currently logged-in user?
-			sendOrder(Factory.getInstance().createOrderCancel(report));
-		} catch (MessageCreationException e) {
-			internalMainLogger.error(CANNOT_SEND_CANCEL_FOR_REASON.getText(clOrdID,
-					latestMessage.toString()),e);
+	}
+
+	private ExecutionReport getReportForCancel(OrderID orderid) {
+		ReportHolder firstReportHolder = fixMessageHistory.getFirstReport(orderid);
+		ExecutionReport report;
+		if (firstReportHolder != null) {
+			report = (ExecutionReport) firstReportHolder.getReport();
+		} else {
+			report = fixMessageHistory.getLatestExecutionReport(orderid);
+		}
+		return report;
+	}
+	
+	public void replaceOrder(ExecutionReport report) throws FieldNotFound {
+		ExecutionReport originalReport = getReportForCancel(report.getOrderID());
+		if (originalReport != null) {
+			Message originalMessage = ((HasFIXMessage) originalReport).getMessage();
+			Message cancelReplaceMessage = PhotonPlugin.getDefault().getMessageFactory()
+					.newCancelReplaceFromMessage(originalMessage);
+			IOrderTicketController controller = PhotonPlugin.getDefault().getOrderTicketController(
+					originalMessage);
+			if (controller != null) {
+				controller.setOrderMessage(cancelReplaceMessage);
+				controller.setBrokerId(originalReport.getBrokerID() == null ? null : originalReport
+						.getBrokerID().getValue());
+			}
 		}
 	}
 
@@ -244,7 +251,7 @@ public class PhotonController
 				.getText(), clOrdIdsToCancel.size());
 		for (String clOrdId : clOrdIdsToCancel) {
 			try {
-				cancelOneOrderByClOrdID(clOrdId, "PANIC"); //$NON-NLS-1$
+				cancelOneOrderByClOrdID(clOrdId);
 				if (internalMainLogger.isDebugEnabled()) {
 					internalMainLogger.debug("cancelling order for " + clOrdId);} //$NON-NLS-1$
 				monitor.worked(1);

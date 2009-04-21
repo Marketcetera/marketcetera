@@ -26,6 +26,7 @@ public enum OrderStatus {
     Filled(quickfix.field.OrdStatus.FILLED),
     DoneForDay(quickfix.field.OrdStatus.DONE_FOR_DAY),
     Canceled(quickfix.field.OrdStatus.CANCELED),
+    Replaced(quickfix.field.OrdStatus.REPLACED),
     PendingCancel(quickfix.field.OrdStatus.PENDING_CANCEL),
     Stopped(quickfix.field.OrdStatus.STOPPED),
     Rejected(quickfix.field.OrdStatus.REJECTED),

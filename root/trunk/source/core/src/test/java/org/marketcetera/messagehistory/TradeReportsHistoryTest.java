@@ -1,5 +1,6 @@
 package org.marketcetera.messagehistory;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
@@ -7,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Vector;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicLong;
 
 import junit.framework.Test;
 
@@ -20,6 +22,7 @@ import org.marketcetera.trade.ExecutionReportImpl;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
@@ -280,77 +283,45 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
     public void testOrderCancelReject() throws Exception {
         TradeReportsHistory history = createMessageHistory();
-        {
-            Message executionReportForOrder1 = msgFactory
-                    .newExecutionReport(
-                            "1001", "1", "2001", OrdStatus.NEW, Side.BUY, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                            new BigDecimal(1000), new BigDecimal(789), null,
-                            null, BigDecimal.ZERO, BigDecimal.ZERO,
-                            new MSymbol("ASDF"), null); //$NON-NLS-1$
-            history.addIncomingMessage(createBrokerReport(executionReportForOrder1));
-
-            assertEquals(
-                    OrderStatus.New,
-                    ((ExecutionReport) history
-                            .getLatestExecutionReport(new org.marketcetera.trade.OrderID(
-                                    "1"))).getOrderStatus()); //$NON-NLS-1$
-
-            Message cancelReject = msgFactory
-                    .createMessage(MsgType.ORDER_CANCEL_REJECT);
-            cancelReject.setField(new OrderID("1001")); //$NON-NLS-1$
-            cancelReject.setField(new ClOrdID("2")); //$NON-NLS-1$
-            cancelReject.setField(new OrigClOrdID("1")); //$NON-NLS-1$
-            cancelReject.setField(new OrdStatus(OrdStatus.FILLED));
-            cancelReject.setField(new CxlRejResponseTo(
-                    CxlRejResponseTo.ORDER_CANCEL_REQUEST));
-            history.addIncomingMessage(Factory.getInstance()
-                    .createOrderCancelReject(cancelReject,
-                            new BrokerID("ABC"), Originator.Broker,
-                            null, null));
-
-            assertEquals(
-                    OrderStatus.Filled,
-                    ((ExecutionReport) history
-                            .getLatestExecutionReport(new org.marketcetera.trade.OrderID(
-                                    "1"))).getOrderStatus()); //$NON-NLS-1$
-        }
-
-        {
-            Message executionReportForOrder2 = msgFactory
-                    .newExecutionReport(
-                            "1002", "2", "2002", OrdStatus.NEW, Side.BUY, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                            new BigDecimal(1000), new BigDecimal(789), null,
-                            null, BigDecimal.ZERO, BigDecimal.ZERO,
-                            new MSymbol("ASDF"), null); //$NON-NLS-1$
-            history.addIncomingMessage(createServerReport(executionReportForOrder2));
-
-            assertEquals(
-                    OrderStatus.New,
-                    ((ExecutionReport) history
-                            .getLatestExecutionReport(new org.marketcetera.trade.OrderID(
-                                    "1"))).getOrderStatus()); //$NON-NLS-1$
-
-            Message cancelReject = msgFactory
-                    .createMessage(MsgType.ORDER_CANCEL_REJECT);
-            cancelReject.setField(new OrderID("1001")); //$NON-NLS-1$
-            cancelReject.setField(new ClOrdID("2")); //$NON-NLS-1$
-            cancelReject.setField(new OrigClOrdID("1")); //$NON-NLS-1$
-            // Don't set ord-status
-            cancelReject.setField(new CxlRejResponseTo(
-                    CxlRejResponseTo.ORDER_CANCEL_REQUEST));
-            history.addIncomingMessage(Factory.getInstance()
-                    .createOrderCancelReject(cancelReject,
-                            new BrokerID("ABC"), Originator.Broker,
-                            null, null));
-
-            assertEquals(
-                    OrderStatus.New,
-                    ((ExecutionReport) history
-                            .getLatestExecutionReport(new org.marketcetera.trade.OrderID(
-                                    "1"))).getOrderStatus()); //$NON-NLS-1$
-        }
+        simulateOrderSingle(history, "1", Side.BUY, "10", "ASDF", "1");
+        simulateCancelReject(history, "2", "1");
+        // should still be new
+        assertEquals(OrderStatus.New, history.getOpenOrdersList().get(0).getReport()
+                .getOrderStatus());
     }
-    
+
+    public void testOrderCancel() throws Exception {
+        TradeReportsHistory history = createMessageHistory();
+        simulateOrderSingle(history, "1", Side.BUY, "10", "ASDF", "1");
+        simulateCancel(history, "2", "1");
+        assertThat(history.getOpenOrdersList().size(), is(0));
+    }
+
+    public void testOutOfOrderSingle() throws Exception {
+        TradeReportsHistory history = createMessageHistory();
+        simulateOutOfOrderOrderSingle(history, "1", Side.BUY, "10", "ASDF", "1");
+        assertEquals(OrderStatus.New, history.getOpenOrdersList().get(0).getReport()
+                .getOrderStatus());
+    }
+
+    public void testOrderReject() throws Exception {
+        TradeReportsHistory history = createMessageHistory();
+        simulateOrderReject(history, "1", Side.BUY, "10", "ASDF", "1");
+        assertThat(history.getOpenOrdersList().size(), is(0));
+    }
+
+    public void testQuickPendingReplace() throws Exception {
+        TradeReportsHistory history = createMessageHistory();
+        history.addIncomingMessage(createServerReport(createMessage(OrdStatus.PENDING_NEW, "1",
+                Side.BUY, "10", "ASDF", "1")));
+        history.addIncomingMessage(createServerReport(addOrigOrdId(createMessage(
+                OrdStatus.PENDING_REPLACE, "2", Side.BUY, "10", "ASDF", "2"), "1")));
+        history.addIncomingMessage(createBrokerReport(createMessage(OrdStatus.NEW, "1", Side.BUY,
+                "10", "ASDF", "1")));
+        assertEquals(OrderStatus.PendingReplace, history.getOpenOrdersList().get(0).getReport()
+                .getOrderStatus());
+    }
+
     public void testReplaceRejected() throws Exception {
         TradeReportsHistory history = createMessageHistory();
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
@@ -380,19 +351,13 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         cancelReject.setField(new OrdStatus(OrdStatus.NEW));
         cancelReject.setField(new CxlRejResponseTo(
                 CxlRejResponseTo.ORDER_CANCEL_REQUEST));
-        history.addIncomingMessage(Factory.getInstance()
-                .createOrderCancelReject(cancelReject, new BrokerID("bogus"),
-                Originator.Broker, null, null));
+        history.addIncomingMessage(createBrokerReject(cancelReject));
+        
+        ExecutionReportImpl openOrder = (ExecutionReportImpl) history.getOpenOrdersList().get(0).getReport();
 
-        assertEquals(OrderStatus.New, ((ExecutionReport) history
-                .getLatestExecutionReport(new org.marketcetera.trade.OrderID(
-                        "1"))).getOrderStatus());
-        assertEquals(new BigDecimal(1000), ((ExecutionReport) history
-                .getLatestExecutionReport(new org.marketcetera.trade.OrderID(
-                        "1"))).getOrderQuantity());
-        assertEquals(new BigDecimal(789), ((ExecutionReportImpl) history
-                .getLatestExecutionReport(new org.marketcetera.trade.OrderID(
-                        "1"))).getMessage().getDecimal(Price.FIELD));
+        assertEquals(OrderStatus.New, openOrder.getOrderStatus());
+        assertEquals(new BigDecimal(1000), openOrder.getOrderQuantity());
+        assertEquals(new BigDecimal(789), openOrder.getMessage().getDecimal(Price.FIELD));
 
     }
 
@@ -804,11 +769,10 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
-        history.addIncomingMessage(Factory.getInstance().createOrderCancelReject(msgFactory
+        history.addIncomingMessage(createBrokerReject(msgFactory
                 .newOrderCancelReject(new OrderID("1001"), new ClOrdID("1"),
                         new OrigClOrdID("1"), "ABC", new CxlRejReason(
-                                CxlRejReason.TOO_LATE_TO_CANCEL)),
-                new BrokerID("1"), Originator.Broker, null, null));
+                                CxlRejReason.TOO_LATE_TO_CANCEL))));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
@@ -852,11 +816,10 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
-        history.addIncomingMessage(Factory.getInstance().createOrderCancelReject(msgFactory
+        history.addIncomingMessage(createBrokerReject(msgFactory
                 .newOrderCancelReject(new OrderID("1001"), new ClOrdID("1"),
                         new OrigClOrdID("1"), "ABC", new CxlRejReason(
-                                CxlRejReason.TOO_LATE_TO_CANCEL)),
-                new BrokerID("1"), Originator.Broker, null, null));
+                                CxlRejReason.TOO_LATE_TO_CANCEL))));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
@@ -1024,6 +987,78 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 sameInstance(report3));
     }
     
+    public void testOpenOrderSurvivesReplaceReject() throws Exception {
+        TradeReportsHistory history = createMessageHistory();
+        simulateOrderSingle(history, "1", Side.BUY, "10", "GIB", "1");
+        simulateReplace(history, "2", "1", Side.BUY, "10", "GIB", "3");
+        simulateReplaceReject(history, "3", "1", Side.BUY, "11", "GIB", "1");
+        EventList<ReportHolder> openOrdersList = history.getOpenOrdersList();
+        assertThat(openOrdersList.size(), is(1));
+        ReportBase openOrder = openOrdersList.get(0).getReport();
+        assertThat(openOrder.getOrderStatus(), is(OrderStatus.Replaced));
+        assertThat(openOrder.getOrderID().getValue(), is("2"));
+    }
+    
+    private void simulateOrderSingle(TradeReportsHistory history, String orderId, char side, String quantity, String symbol, String price) throws Exception {
+        history.addIncomingMessage(createServerReport(createMessage(OrdStatus.PENDING_NEW, orderId, side, quantity, symbol, price)));
+        history.addIncomingMessage(createBrokerReport(createMessage(OrdStatus.NEW, orderId, side, quantity, symbol, price)));
+    }
+    
+    private void simulateOutOfOrderOrderSingle(TradeReportsHistory history, String orderId, char side, String quantity, String symbol, String price) throws Exception {
+        history.addIncomingMessage(createBrokerReport(createMessage(OrdStatus.NEW, orderId, side, quantity, symbol, price)));
+        history.addIncomingMessage(createServerReport(createMessage(OrdStatus.PENDING_NEW, orderId, side, quantity, symbol, price)));
+    }
+
+    private void simulateOrderReject(TradeReportsHistory history, String orderId, char side, String quantity, String symbol, String price) throws Exception {
+        history.addIncomingMessage(createServerReport(createMessage(OrdStatus.PENDING_NEW, orderId, side, quantity, symbol, price)));
+        history.addIncomingMessage(createBrokerReport(createMessage(OrdStatus.REJECTED, orderId, side, quantity, symbol, price)));
+    }
+
+    private void simulateReplace(TradeReportsHistory history, String orderId, String origOrdId, char side, String quantity, String symbol, String price) throws Exception {
+        history.addIncomingMessage(createServerReport(addOrigOrdId(createMessage(OrdStatus.PENDING_REPLACE, orderId, side, quantity, symbol, price), origOrdId)));
+        history.addIncomingMessage(createBrokerReport(addOrigOrdId(createMessage(OrdStatus.REPLACED, orderId, side, quantity, symbol, price), origOrdId)));
+    }
+
+    private void simulateReplaceReject(TradeReportsHistory history, String orderId, String origOrdId, char side, String quantity, String symbol, String price) throws Exception {
+        history.addIncomingMessage(createServerReport(addOrigOrdId(createMessage(OrdStatus.PENDING_REPLACE, orderId, side, quantity, symbol, price), origOrdId)));
+        history.addIncomingMessage(createBrokerReject(createCancelReject(orderId, origOrdId)));
+    }
+
+    private void simulateCancelReject(TradeReportsHistory history, String orderId, String origOrdId) throws Exception {
+        history.addIncomingMessage(createServerReport(addOrigOrdId(createSimpleMessage(OrdStatus.PENDING_CANCEL, orderId), origOrdId)));
+        history.addIncomingMessage(createBrokerReject(createCancelReject(orderId, origOrdId)));
+    }
+
+    private void simulateCancel(TradeReportsHistory history, String orderId, String origOrdId) throws Exception {
+        history.addIncomingMessage(createServerReport(addOrigOrdId(createSimpleMessage(OrdStatus.PENDING_CANCEL, orderId), origOrdId)));
+        history.addIncomingMessage(createBrokerReport(addOrigOrdId(createSimpleMessage(OrdStatus.CANCELED, orderId), origOrdId)));
+    }
+
+    private Message createMessage(char type, String orderId, char side, String quantity, String symbol,
+            String price) throws FieldNotFound {
+        return msgFactory.newExecutionReport("brokerOrderId", orderId, "execId",
+                type, side, new BigDecimal(quantity), new BigDecimal(price), BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol(symbol), null);
+    }
+
+    private Message createSimpleMessage(char type, String orderId) throws FieldNotFound {
+        Message cancel = msgFactory.newExecutionReportEmpty();
+        cancel.setField(new OrderID("brokerOrderId"));
+        cancel.setField(new ClOrdID(orderId));
+        cancel.setField(new ExecID("execId"));
+        cancel.setField(new OrdStatus(type));
+        return cancel;
+    }
+
+    private Message createCancelReject(String orderId, String origOrdId) {
+        return msgFactory.newOrderCancelReject(new OrderID("orderId"), new ClOrdID(orderId), new OrigClOrdID(origOrdId), "", new CxlRejReason());
+    }
+
+    private Message addOrigOrdId(Message message, String origOrdId) {
+        message.setField(new OrigClOrdID(origOrdId));
+        return message;
+    }
+
     private Message getTestableExecutionReport(String orderId) throws FieldNotFound {
         return msgFactory.newExecutionReport("456", orderId, "987", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
                         new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal("12.3"), new MSymbol("IBM"), null);
@@ -1033,16 +1068,30 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         return getTestableExecutionReport("clordid");
     }
 
-    private ExecutionReport createServerReport(Message message)
+    public static ExecutionReport createServerReport(Message message)
             throws MessageCreationException {
-        return Factory.getInstance().createExecutionReport(message,
-                new BrokerID("bogus"), Originator.Server, null, null);
+        return assignReportID(Factory.getInstance().createExecutionReport(message,
+                new BrokerID("bogus"), Originator.Server, null, null));
     }
-    
-    private ExecutionReport createBrokerReport(Message message)
+
+    public static OrderCancelReject createBrokerReject(Message message)
             throws MessageCreationException {
-        return Factory.getInstance().createExecutionReport(message,
-                new BrokerID("bogus"), Originator.Broker, null, null);
-}
+        return assignReportID(Factory.getInstance().createOrderCancelReject(message,
+                new BrokerID("bogus"), Originator.Broker, null, null));
+    }
+
+    public static ExecutionReport createBrokerReport(Message message)
+            throws MessageCreationException {
+        return assignReportID(Factory.getInstance().createExecutionReport(message,
+                new BrokerID("bogus"), Originator.Broker, null, null));
+    }
+
+    public static <T extends ReportBase> T assignReportID(T report) {
+        ReportBaseImpl impl = (ReportBaseImpl) report;
+        ReportBaseImpl.assignReportID(impl, new ReportID(sCounter.incrementAndGet()));
+        return report;
+    }
+
+    private static final AtomicLong sCounter = new AtomicLong();
 
 }

@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.messagehistory.TradeReportsHistoryTest;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
@@ -88,9 +89,7 @@ public class OrderManagerTest extends TestCase {
 		messages[0] = getTestableExecutionReport();
 		messages[1] = getTestableExecutionReport();
 		for (Message aMessage : messages) {
-			photonController.receiveExecutionReport(
-					Factory.getInstance().createExecutionReport(aMessage, 
-							new BrokerID("bro"), Originator.Server, null, null));
+			photonController.receiveExecutionReport(createReport(aMessage));
 		}
 		EventList<ReportHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(2, historyList.size());
@@ -235,13 +234,12 @@ public class OrderManagerTest extends TestCase {
 		TypesTestBase.assertOrderCancel((OrderCancel)photonController.getLastOrder(), 
 				TypesTestBase.NOT_NULL, new OrderID(myClOrdID), 
 				org.marketcetera.trade.Side.Buy, new MSymbol("QWER"), null, 
-				orderQty, "456", null, new BrokerID("null"), null);
+				orderQty, "456", null, new BrokerID("bogus"), null);
 	}
 	
 	public static ExecutionReport createReport(Message message)
 			throws MessageCreationException {
-		return Factory.getInstance().createExecutionReport(message,
-				new BrokerID("null"), Originator.Server, null, null);
+		return TradeReportsHistoryTest.createServerReport(message);
 	}
 
 }
