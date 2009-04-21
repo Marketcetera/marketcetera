@@ -71,6 +71,11 @@ while (@ARGV) {
 
 	print OUT 'java.exe '.$commonArgs.
 		' -Dorg.marketcetera.appDir=%METC_HOME%\\%APPLICATION_DIR%^'.$sep;
+
+	if ($artifact eq "strategyagent") {
+            print OUT ' -Dstrategy.classpath=%METC_HOME%\\%APPLICATION_DIR%\\src^'.$sep;
+	}
+
 	print OUT ' -cp "%THE_CLASSPATH%"^'.$sep;
 	print OUT ' '.$class.' %*'.$sep.$sep;
 
@@ -113,6 +118,11 @@ while (@ARGV) {
 
 	print OUT 'exec java '.$commonArgs.
 		' -Dorg.marketcetera.appDir=${METC_HOME}/${APPLICATION_DIR}\\'.$sep;
+
+	if ($artifact eq "strategyagent") {
+            print OUT ' -Dstrategy.classpath=${METC_HOME}/${APPLICATION_DIR}/src\\'.$sep;
+	}
+
 	print OUT ' -cp "${THE_CLASSPATH}"\\'.$sep;
 	print OUT ' '.$class.' $*'.$sep;
 	close(OUT);

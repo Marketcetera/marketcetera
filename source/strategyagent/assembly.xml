@@ -47,6 +47,10 @@
       <directory>src/main/sample_data/modules/conf</directory>
       <outputDirectory>modules/conf</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>src/main/sample_data/src</directory>
+      <outputDirectory>src</outputDirectory>
+    </fileSet>
   </fileSets>
   <files>
     <file>
