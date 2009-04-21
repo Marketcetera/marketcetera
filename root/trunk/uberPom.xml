@@ -673,6 +673,13 @@
      -  </repository>
      -->
     <repository>
+      <id>central</id>
+      <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
       <id>java.net</id>
       <url>http://download.java.net/maven/2</url>
       <snapshots>
