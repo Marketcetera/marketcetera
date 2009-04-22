@@ -27,7 +27,8 @@ import org.marketcetera.util.misc.ClassVersion;
 public class ServerOrderProcessor implements OrderProcessor {
 
     /**
-     * The maximum time, in ms, to wait until delivery of sent orders
+     * The maximum time, in ms, to wait without receiving any
+     * acknowledgements from the ORS until delivery of all sent orders
      * is acknowledged by the ORS.
      */
 
@@ -91,31 +92,41 @@ public class ServerOrderProcessor implements OrderProcessor {
 
     @Override
     public void done() {
-        if (ClientManager.isInitialized()) {
-            // Wait until a certain timeout for the ORS to acknowledge
-            // receipt of orders sent. If we don't wait, because
-            // orders are sent via JMS which is asynchronous, we might
-            // close the client (a synchronous operation which results
-            // in invalidating the ORS session) before the ORS has a
-            // chance to see the orders we sent.
-            long end=System.currentTimeMillis()+MAXIMUM_DELIVERY_WAIT;
-            while (mOrdersOutstanding.get()!=0) {
-                if (System.currentTimeMillis()>end) {
-                    break;
-                }
-                try {
-                    // A short delay is used here so that we don't
-                    // delay exiting for too long after all orders
-                    // have been sent.
-                    Thread.sleep(500);
-                } catch (InterruptedException ex) {
-                    break;
-                }
-            }
+        if (!ClientManager.isInitialized()) {
+            return;
+        }
+
+        // Wait until a certain timeout for the ORS to acknowledge
+        // receipt of orders sent. If we don't wait, because orders
+        // are sent via JMS which is asynchronous, we might close the
+        // client (a synchronous operation which results in
+        // invalidating the ORS session) before the ORS has a chance
+        // to see the orders we sent.
+        long end=System.currentTimeMillis()+MAXIMUM_DELIVERY_WAIT;
+        int lastOrdersOutstanding=mOrdersOutstanding.get();
+        while (lastOrdersOutstanding!=0) {
             try {
-                ClientManager.getInstance().close();
-            } catch (ClientInitException ignore) {
+                // A short delay is used here so that we don't delay
+                // exiting for too long after all orders have been
+                // sent.
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                break;
             }
+            long now=System.currentTimeMillis();
+            int ordersOutstanding=mOrdersOutstanding.get();
+            if (ordersOutstanding<lastOrdersOutstanding) {
+                // Extend the timeout if at least one order has been
+                // processed.
+                end=now+MAXIMUM_DELIVERY_WAIT;
+                lastOrdersOutstanding=ordersOutstanding;
+            } else if (now>end) {
+                break;
+            }
+        }
+        try {
+            ClientManager.getInstance().close();
+        } catch (ClientInitException ignore) {
         }
     }
 }
