@@ -164,7 +164,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    new OrderBook(symbol));
         verifyBook(symbol,
                    bids,
@@ -186,7 +186,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // create an ask
         AskEvent ask1 = EventBaseTest.generateAskEvent(symbol,
@@ -196,7 +196,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // create a new ask of lesser worth (higher price)
         AskEvent ask2 = EventBaseTest.generateAskEvent(symbol,
@@ -207,7 +207,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // create a new ask of greater worth (lower price)
         AskEvent ask3 = EventBaseTest.generateAskEvent(symbol,
@@ -218,7 +218,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // add a bid
         BidEvent bid1 = EventBaseTest.generateBidEvent(symbol,
@@ -228,7 +228,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // create a new bid of lesser worth (lower price)
         BidEvent bid2 = EventBaseTest.generateBidEvent(symbol,
@@ -239,7 +239,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // create a new bid of greater worth (higher price)
         BidEvent bid3 = EventBaseTest.generateBidEvent(symbol,
@@ -250,7 +250,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
     }
     /**
@@ -265,7 +265,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // add an ask
         AskEvent ask1 = EventBaseTest.generateAskEvent(symbol,
@@ -275,7 +275,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         BidEvent bid1 = EventBaseTest.generateBidEvent(symbol,
                                                        exchange);
@@ -284,7 +284,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // delete each event in turn
         AskEvent ask1Killer = AskEvent.deleteEvent(ask1);
@@ -293,7 +293,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         BidEvent bid1Killer = BidEvent.deleteEvent(bid1);
         bids.clear();
@@ -301,7 +301,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // try to delete from empty book (matching bid/ask doesn't exist)
         book.process(ask1Killer);
@@ -309,7 +309,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // add the bid and ask back
         book.process(ask1);
@@ -319,7 +319,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // change the ask
         AskEvent askChange = AskEvent.changeEvent(ask1,
@@ -331,7 +331,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // change the bid
         BidEvent bidChange = BidEvent.changeEvent(bid1,
@@ -343,7 +343,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         // create changes for non-existent events
         AskEvent unusedAsk = EventBaseTest.generateAskEvent(symbol,
@@ -354,7 +354,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
         BidEvent unusedBid = EventBaseTest.generateBidEvent(symbol,
                                                             exchange);
@@ -364,7 +364,7 @@ public class OrderBookTest
         verifyBook(symbol,
                    bids,
                    asks,
-                   10,
+                   OrderBook.UNLIMITED_DEPTH,
                    book);
     }
     /**
