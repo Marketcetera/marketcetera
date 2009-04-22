@@ -235,6 +235,9 @@ public class Main {
      */
     static void run(String[] inArgs, Main inMain){
         inMain.printMessage(LOG_APP_COPYRIGHT.getText());
+        inMain.printMessage(LOG_APP_VERSION_BUILD.getText(
+                ApplicationVersion.getVersion(),
+                ApplicationVersion.getBuildNumber()));
         if (inMain.processArguments(inArgs)) {
             try {
                 inMain.doProcessing();
