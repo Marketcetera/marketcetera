@@ -1,14 +1,19 @@
 package org.marketcetera.orderloader;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.trade.Order;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.FIXOrder;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
-import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.ReportListener;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -20,6 +25,40 @@ import org.marketcetera.client.ConnectionException;
  */
 @ClassVersion("$Id$")
 public class ServerOrderProcessor implements OrderProcessor {
+
+    /**
+     * The maximum time, in ms, to wait until delivery of sent orders
+     * is acknowledged by the ORS.
+     */
+
+    public static final long MAXIMUM_DELIVERY_WAIT=60000;
+
+    private AtomicInteger mOrdersOutstanding;
+
+    /**
+     * Counts ORS acknowledgements.
+     */
+
+    private class CounterListener
+        implements ReportListener
+    {
+        @Override
+        public void receiveExecutionReport(ExecutionReport inReport)
+        {
+            if (inReport.getOriginator()==Originator.Server) {
+                mOrdersOutstanding.getAndDecrement();
+            }
+        }
+
+        @Override
+        public void receiveCancelReject(OrderCancelReject inReport)
+        {
+            if (inReport.getOriginator()==Originator.Server) {
+                mOrdersOutstanding.getAndDecrement();
+            }
+        }
+    }
+
     /**
      * Creates an instance.
      *
@@ -32,7 +71,9 @@ public class ServerOrderProcessor implements OrderProcessor {
      */
     public ServerOrderProcessor(ClientParameters inParameter)
             throws ClientInitException, ConnectionException {
+        mOrdersOutstanding=new AtomicInteger();
         ClientManager.init(inParameter);
+        ClientManager.getInstance().addReportListener(new CounterListener());
     }
 
     @Override
@@ -45,11 +86,32 @@ public class ServerOrderProcessor implements OrderProcessor {
             throw new OrderParsingException(new I18NBoundMessage1P(
                     Messages.UNEXPECTED_ORDER_TYPE, inOrder));
         }
+        mOrdersOutstanding.getAndIncrement();
     }
 
     @Override
     public void done() {
         if (ClientManager.isInitialized()) {
+            // Wait until a certain timeout for the ORS to acknowledge
+            // receipt of orders sent. If we don't wait, because
+            // orders are sent via JMS which is asynchronous, we might
+            // close the client (a synchronous operation which results
+            // in invalidating the ORS session) before the ORS has a
+            // chance to see the orders we sent.
+            long end=System.currentTimeMillis()+MAXIMUM_DELIVERY_WAIT;
+            while (mOrdersOutstanding.get()!=0) {
+                if (System.currentTimeMillis()>end) {
+                    break;
+                }
+                try {
+                    // A short delay is used here so that we don't
+                    // delay exiting for too long after all orders
+                    // have been sent.
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    break;
+                }
+            }
             try {
                 ClientManager.getInstance().close();
             } catch (ClientInitException ignore) {
