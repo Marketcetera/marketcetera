@@ -65,6 +65,35 @@
      name="useJmx"
      value="true"/>
     <property
+     name="destinationPolicy">
+      <bean
+       class="org.apache.activemq.broker.region.policy.PolicyMap">
+        <property
+         name="policyEntries">
+          <list>
+            <bean
+             class="org.apache.activemq.broker.region.policy.PolicyEntry">
+              <property
+               name="queue"
+               value="*"/>
+              <property
+               name="producerFlowControl"
+               value="false"/>
+            </bean>
+            <bean
+             class="org.apache.activemq.broker.region.policy.PolicyEntry">
+              <property
+               name="topic"
+               value="*"/>
+              <property
+               name="producerFlowControl"
+               value="false"/>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>    
+    <property
      name="transportConnectorURIs">
       <list>
         <value>${metc.jms.broker.url}</value>
