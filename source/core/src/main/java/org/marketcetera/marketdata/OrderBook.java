@@ -1,8 +1,5 @@
 package org.marketcetera.marketdata;
 
-import static org.marketcetera.marketdata.Messages.ORDER_BOOK_DEPTH_MUST_BE_POSITIVE;
-import static org.marketcetera.marketdata.Messages.SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,24 +36,17 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * via {@link #process(QuoteEvent)}.  It is important that the events so added
  * all be unique according to the event's natural ordering.
  * 
- * <p>A book may be specified with a depth limit or unlimited depth.  A book
- * with unlimited depth will continue to grow as new events are added to the book.
- * The book may decrease in size if events are added that remove existing events.
- * A limited book, on the other hand, will never exceed the specified number of
- * entries on either side of the book.  Naturally, a limited book may contain
- * fewer than the specified maximum.  The maximum depth limit is imposed separately
- * for either side of the book, i.e. a book limited to a depth of ten may have
- * as many as ten asks and ten bids.  When an event is added to a limited book
- * that is already at its maximum, the <em>oldest</em> event on the appropriate side of the
- * book is removed.  It is important to note that the event removed may in fact be the
- * best event (lowest bid or highest ask) if it is the oldest.
- *
+ * <p>{@link QuoteEvent} objects all have an <code>Action</code> attribute.
+ * The <code>Action</code> attribute dictates whether the event is inserted
+ * into the book, or changes or deletes an existing order.
+ * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 0.6.0
  */
 @ClassVersion("$Id$")
 public class OrderBook
+    implements Messages
 {
     /**
      * indicates the order book has no maximum depth
@@ -69,34 +59,15 @@ public class OrderBook
     /**
      * Create a new OrderBook instance a reasonable maximum depth.
      *
-     * <p>The resulting <code>OrderBook</code> will have a maximum depth
-     * of {@link #DEFAULT_DEPTH}.
+     * <p>The resulting <code>OrderBook</code> will have an
+     * unlimited maximum depth.
      * 
      * @param inSymbol a <code>MSymbol</code> instance
      */
     public OrderBook(MSymbol inSymbol)
     {
         this(inSymbol,
-             DEFAULT_DEPTH);
-    }
-    /**
-     * Create a new OrderBook instance.
-     *
-     * @param inSymbol a <code>MSymbol</code> instance
-     * @param inMaxDepth an <code>int</code> instance
-     * @throws IllegalArgumentException if the given depth is invalid
-     */
-    public OrderBook(MSymbol inSymbol,
-                     int inMaxDepth)
-    {
-        if(inSymbol == null) {
-            throw new NullPointerException();
-        }
-        validateMaximumBookDepth(inMaxDepth);
-        mSymbol = inSymbol;
-        mAskBook = new BookCollection<AskEvent>(inMaxDepth);
-        mBidBook = new BookCollection<BidEvent>(inMaxDepth);
-        mMaxDepth = inMaxDepth;
+             UNLIMITED_DEPTH);
     }
     /**
      * Checks the given depth to see if it is a valid maximum book depth.
@@ -345,6 +316,28 @@ public class OrderBook
         }
 
         return finalBook.toString();
+    }
+    /**
+     * Create a new OrderBook instance.
+     * 
+     * <p>An <code>OrderBook</code> with a maximum depth will 
+     * never grow larger than the specified depth. 
+     *
+     * @param inSymbol a <code>MSymbol</code> instance
+     * @param inMaxDepth an <code>int</code> instance
+     * @throws IllegalArgumentException if the given depth is invalid
+     */
+    OrderBook(MSymbol inSymbol,
+              int inMaxDepth)
+    {
+        if(inSymbol == null) {
+            throw new NullPointerException();
+        }
+        validateMaximumBookDepth(inMaxDepth);
+        mSymbol = inSymbol;
+        mAskBook = new BookCollection<AskEvent>(inMaxDepth);
+        mBidBook = new BookCollection<BidEvent>(inMaxDepth);
+        mMaxDepth = inMaxDepth;
     }
     /**
      * Returns a string padded on the right with the given character to the given size.
