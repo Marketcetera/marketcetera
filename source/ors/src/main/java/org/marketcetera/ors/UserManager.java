@@ -14,6 +14,7 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.tags.SessionId;
 
@@ -34,7 +35,6 @@ public class UserManager
 
     // INSTANCE DATA.
 
-    private final Map<SessionId,ClientSession> mSessionIDMap;
     private final Map<UserID,Set<ClientSession>> mUserIDMap;
     private final Set<UserID> mRUserIDs;
     private final Set<UserID> mSUserIDs;
@@ -49,7 +49,6 @@ public class UserManager
 
     public UserManager()
     {
-        mSessionIDMap=new ConcurrentHashMap<SessionId,ClientSession>();
         mUserIDMap=new ConcurrentHashMap<UserID,Set<ClientSession>>();
         mRUserIDs=new CopyOnWriteArraySet<UserID>();
         mSUserIDs=new CopyOnWriteArraySet<UserID>();
@@ -57,19 +56,6 @@ public class UserManager
 
 
     // INSTANCE METHODS.
-
-    /**
-     * Returns the receiver's map of session IDs to client
-     * sessions. Sessions remain in this map for as long as a session
-     * is active.
-     *
-     * @return The map.
-     */
-
-    private Map<SessionId,ClientSession> getSessionIDMap()
-    {
-        return mSessionIDMap;
-    }
 
     /**
      * Returns the receiver's map of user IDs to (one or more)
@@ -190,7 +176,6 @@ public class UserManager
     public synchronized void addSession
         (ClientSession session)
     {
-        getSessionIDMap().put(session.getSessionId(),session);
         SimpleUser user=session.getUser();
         UserID userID=user.getUserID();
         Set<ClientSession> sessions=getUserIDMap().get(userID);
@@ -222,7 +207,6 @@ public class UserManager
     public synchronized void removedSession
         (ClientSession session)
     {
-        getSessionIDMap().remove(session.getSessionId());
         UserID userID=session.getUser().getUserID();
         Set<ClientSession> sessions=getUserIDMap().get(userID);
         sessions.remove(session);
@@ -245,11 +229,11 @@ public class UserManager
     public UserID getSessionUserID
         (SessionId sessionId)
     {
-        ClientSession session=getSessionIDMap().get(sessionId);
-        if (session==null) {
+        SessionHolder<ClientSession> holder=getSessionManager().get(sessionId);
+        if (holder==null) {
             return null;
         }
-        return session.getUser().getUserID();
+        return holder.getSession().getUser().getUserID();
     }
 
     /**
@@ -298,10 +282,6 @@ public class UserManager
 
     public void logStatus()
     {
-        SLF4JLoggerProxy.debug(this,"Active sessions"); //$NON-NLS-1$
-        for (ClientSession e:getSessionIDMap().values()) {
-            SLF4JLoggerProxy.debug(this," {}",e); //$NON-NLS-1$
-        }
         SLF4JLoggerProxy.debug(this,"User ID map"); //$NON-NLS-1$
         for (Map.Entry<UserID,Set<ClientSession>> e:
              getUserIDMap().entrySet()) {
