@@ -74,5 +74,33 @@ public class MultiThreadedTestBase {
 		checkFailure();
 		assertTrue(condition);
 	}
+	
+	/**
+	 * Convenience thread that reports any exceptions thrown by a runnable.
+	 */
+	protected abstract class ReportingThread extends Thread {
+
+		public ReportingThread() {
+			super();
+		}
+
+		public ReportingThread(String name) {
+			super(name);
+		}
+
+		@Override
+		public final void run() {
+			try {
+				runWithReporting();
+			} catch (Exception e) {
+				setFailure(e);
+			}
+		}
+
+		/**
+		 * Hook for subclass code to run. Any thrown exception will be reported.
+		 */
+		protected abstract void runWithReporting() throws Exception;
+	}
 
 }

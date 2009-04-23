@@ -120,35 +120,36 @@ public class TradeReportsHistory {
         synchronized (mQueuedReports) {
             mQueueMessages = true;
         }
-        // acquire write lock to prevent all access to lists in the pipeline
-        mWriteLock.lock();
         try {
-            // clear the list and supporting data structures
-            mAllMessages.clear();
-            mUniqueReportIds.clear();
-            mOriginalOrderACKs.clear();
-            mOrderIDToGroupMap.clear();
+            // acquire write lock to clear the lists
+            mWriteLock.lock();
+            try {
+                // clear the list and supporting data structures
+                mAllMessages.clear();
+                mUniqueReportIds.clear();
+                mOriginalOrderACKs.clear();
+                mOrderIDToGroupMap.clear();
+            } finally {
+                mWriteLock.unlock();
+            }
             // retrieve new reports and add them
             ReportBase[] reports = new ReportBase[0];
             reports = reportsRetriever.call();
             for (ReportBase report : reports) {
+                // this call gets the write lock
                 internalAddIncomingMessage(report);
             }
         } finally {
-            try {
-                // flush the queue
-                synchronized (mQueuedReports) {
-                    try {
-                        for (ReportBase report : mQueuedReports) {
-                            internalAddIncomingMessage(report);
-                        }
-                    } finally {
-                        mQueueMessages = false;
-                        mQueuedReports.clear();
+            // flush the queue
+            synchronized (mQueuedReports) {
+                try {
+                    for (ReportBase report : mQueuedReports) {
+                        internalAddIncomingMessage(report);
                     }
+                } finally {
+                    mQueueMessages = false;
+                    mQueuedReports.clear();
                 }
-            } finally {
-                mWriteLock.unlock();
             }
         }
     }

@@ -1,6 +1,9 @@
 package org.marketcetera.core.position.impl;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.MarketDataSupport;
@@ -34,6 +37,10 @@ public final class PositionRowUpdater {
     private final PositionRowImpl mPositionRow;
     private final MarketDataSupport mMarketDataSupport;
     private final SymbolChangeListener mSymbolChangeListener;
+    private final ExecutorService mTickExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService mClosingPriceExecutor = Executors.newSingleThreadExecutor();
+    private volatile Future<?> mTickFuture;
+    private volatile Future<?> mClosingPriceFuture;
     private volatile PositionMetricsCalculator mCalculator;
     private volatile BigDecimal mClosePrice;
     private volatile BigDecimal mLastTradePrice;
@@ -61,7 +68,7 @@ public final class PositionRowUpdater {
      */
     public PositionRowUpdater(PositionRowImpl positionRow, EventList<Trade> trades,
             MarketDataSupport marketData) {
-        Validate.noNullElements(new Object[] {positionRow, trades, marketData});
+        Validate.noNullElements(new Object[] { positionRow, trades, marketData });
         mPositionRow = positionRow;
         this.mTrades = trades;
         this.mMarketDataSupport = marketData;
@@ -79,7 +86,7 @@ public final class PositionRowUpdater {
             public void symbolTraded(SymbolChangeEvent event) {
                 tick(event.getNewPrice());
             }
-            
+
             @Override
             public void closePriceChanged(SymbolChangeEvent event) {
                 PositionRowUpdater.this.closePriceChanged(event.getNewPrice());
@@ -100,18 +107,26 @@ public final class PositionRowUpdater {
      */
     public void dispose() {
         mTrades.removeListEventListener(mListChangeListener);
-        mMarketDataSupport.removeSymbolChangeListener(mPositionRow.getSymbol(), mSymbolChangeListener);
+        mMarketDataSupport.removeSymbolChangeListener(mPositionRow.getSymbol(),
+                mSymbolChangeListener);
     }
 
     private void tick(BigDecimal tick) {
         mLastTradePrice = tick;
-        Lock lock = mTrades.getReadWriteLock().writeLock();
-        lock.lock();
-        try {
-            mPositionRow.setPositionMetrics(mCalculator.tick(tick));
-        } finally {
-            lock.unlock();
-        }
+        // since this needs a lock, spawn a new thread to update the tick when the lock is available
+        if (mTickFuture != null && !mTickFuture.isDone()) return;
+        mTickFuture = mTickExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                Lock lock = mTrades.getReadWriteLock().writeLock();
+                lock.lock();
+                try {
+                    mPositionRow.setPositionMetrics(mCalculator.tick(mLastTradePrice));
+                } finally {
+                    lock.unlock();
+                }
+            }
+        });
     }
 
     private void closePriceChanged(BigDecimal newPrice) {
@@ -123,13 +138,20 @@ public final class PositionRowUpdater {
             return;
         }
         mClosePrice = newPrice;
-        Lock lock = mTrades.getReadWriteLock().writeLock();
-        lock.lock();
-        try {
-            mPositionRow.setPositionMetrics(recalculate());
-        } finally {
-            lock.unlock();
-        }
+        // since this needs a lock, spawn a new thread to update the tick when the lock is available
+        if (mClosingPriceFuture != null && !mClosingPriceFuture.isDone()) return;
+        mClosingPriceFuture = mClosingPriceExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                Lock lock = mTrades.getReadWriteLock().writeLock();
+                lock.lock();
+                try {
+                    mPositionRow.setPositionMetrics(recalculate());
+                } finally {
+                    lock.unlock();
+                }
+            }
+        });
     }
 
     private void listChanged(ListEvent<Trade> listChanges) {

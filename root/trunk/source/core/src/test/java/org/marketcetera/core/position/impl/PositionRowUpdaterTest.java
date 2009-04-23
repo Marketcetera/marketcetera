@@ -76,14 +76,17 @@ public class PositionRowUpdaterTest {
 		assertPosition(mFixture.getPosition(), "110", null, null, null, null, null);
 		// set closing price
 		setClosePrice("1.50");
+		Thread.sleep(500);
 		// now realizedPL is valid
 		assertPosition(mFixture.getPosition(), "110", null, null, "0", null, null);
 		// after a tick, everything is good to go
 		tick("2");
+		Thread.sleep(500);
 		assertPosition(mFixture.getPosition(), "110", "50", "10", "0", "60", "60");
 		// set closing price to null
 		setClosePrice(null);
 		// nothing valid anymore
+		Thread.sleep(500);
 		assertPosition(mFixture.getPosition(), "110", null, null, null, null, null);
 	}
 
@@ -100,6 +103,7 @@ public class PositionRowUpdaterTest {
 	public void testTradesOutOfOrder() throws Exception {
 		setClosePrice("3");
 		tick("5");
+		Thread.sleep(500);
 		mTrades.add(createTrade("-100", "5"));
 		// closes incoming position for 5
 		assertPosition(mFixture.getPosition(), "0", "200", "0", "200", "0", "200");
