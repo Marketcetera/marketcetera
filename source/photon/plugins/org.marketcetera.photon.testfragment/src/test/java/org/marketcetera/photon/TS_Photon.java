@@ -107,6 +107,7 @@ public class TS_Photon {
 		suite.addTest(new JUnit4TestAdapter(TimeOfDayTest.class));
 		
 		suite.addTest(new JUnit4TestAdapter(PhotonPositionMarketDataTest.class));
+		suite.addTest(new JUnit4TestAdapter(PhotonPositionMarketDataConcurrencyTest.class));
 
 		return suite;
 	}

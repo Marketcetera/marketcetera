@@ -12,10 +12,10 @@ import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ConnectionException;
+import org.marketcetera.core.position.ImmutablePositionSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionEngineFactory;
 import org.marketcetera.messagehistory.TradeReportsHistory;
-import org.marketcetera.photon.ClientPositionSupport;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonPositionMarketData;
@@ -78,9 +78,12 @@ public class RetrieveTradingHistoryJob extends Job {
 							}
 						}
 					});
-					PositionEngine engine = PositionEngineFactory.createFromReportHolders(tradeReportsHistory
-							.getAllMessagesList(), new ClientPositionSupport(), new PhotonPositionMarketData(
-							MarketDataManager.getCurrent().getMarketData(), PhotonPlugin.getDefault().getSessionStartTimeProvider()));
+					PositionEngine engine = PositionEngineFactory.createFromReportHolders(
+							tradeReportsHistory.getAllMessagesList(), new ImmutablePositionSupport(
+									ClientManager.getInstance().getPositionsAsOf(lastOccurrence)),
+							new PhotonPositionMarketData(MarketDataManager.getCurrent()
+									.getMarketData(), PhotonPlugin.getDefault()
+									.getSessionStartTimeProvider()));
 					PhotonPlugin.getDefault().registerPositionEngine(engine);
 				} catch (Exception e) {
 					if (e instanceof RuntimeException) {

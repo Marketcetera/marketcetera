@@ -27,9 +27,18 @@ import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDFactory;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
-import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
+import org.marketcetera.photon.model.marketdata.MDPackage;
 
+/* $License$ */
+
+/**
+ * Test {@link PhotonPositionMarketData}.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
 public class PhotonPositionMarketDataTest {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
@@ -302,6 +311,25 @@ public class PhotonPositionMarketDataTest {
 		changeLatestTick(mMETCTick, 151);
 		verify(mockListener, never()).symbolTraded(argThat(hasNewPrice(13)));
 		verify(mockListener2).symbolTraded(argThat(hasNewPrice(151)));
+	}
+
+	@Test
+	public void testDispose() throws Exception {
+		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
+		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
+		mFixture.addSymbolChangeListener("IBM", mockListener);
+		mFixture.addSymbolChangeListener("METC", mockListener2);
+		changeLatestTick(mIBMTick, 12);
+		changeLatestTick(mMETCTick, 150);
+		assertThat(mFixture.getLastTradePrice("IBM"), comparesEqualTo(12));
+		assertThat(mFixture.getLastTradePrice("METC"), comparesEqualTo(150));
+		mFixture.dispose();
+		changeLatestTick(mIBMTick, 15);
+		changeLatestTick(mMETCTick, 151);
+		verify(mockListener, never()).symbolTraded(argThat(hasNewPrice(15)));
+		verify(mockListener2, never()).symbolTraded(argThat(hasNewPrice(151)));
+		assertThat(mFixture.getLastTradePrice("IBM"), nullValue());
+		assertThat(mFixture.getLastTradePrice("METC"), nullValue());
 	}
 
 	private void changeLatestTick(MDLatestTick tick, int newValue) {
