@@ -19,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
 @ClassVersion("$Id$")
 public abstract class CancelOrderActionBase extends ActionDelegate {
