@@ -14,7 +14,7 @@ include_class "org.marketcetera.marketdata.MarketDataRequest"
 class ProcessData < Strategy
     SYMBOLS = "AMZN,JAVA" # Depends on MD - can be other symbols
     MARKET_DATA_PROVIDER = "marketcetera" # Can also be activ, bogus, opentick
-    CEP_QUERY = ["select t.symbol as symbol, t.price * t.size as position from trade t"]
+    CEP_QUERY = ["select t.symbolAsString as symbol, t.price * t.size as position from trade t"]
     CEP_PROVIDER = "esper"
 
     ##########################################
