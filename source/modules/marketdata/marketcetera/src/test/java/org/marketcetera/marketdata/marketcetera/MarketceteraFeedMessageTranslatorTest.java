@@ -11,6 +11,7 @@ import java.util.Set;
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXVersion;
 
@@ -34,7 +35,7 @@ import quickfix.field.Symbol;
  * @since 1.5.0
  */
 public class MarketceteraFeedMessageTranslatorTest
-        extends MarketDataMessageTranslatorTestBase<Message>
+        extends MarketDataMessageTranslatorTestBase<MarketceteraFeed.Request>
 {
     private static final FIXVersion DEFAULT_MESSAGE_FACTORY = FIXVersion.FIX44;
     /* (non-Javadoc)
@@ -49,7 +50,7 @@ public class MarketceteraFeedMessageTranslatorTest
      * @see org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase#getTranslator()
      */
     @Override
-    protected DataRequestTranslator<Message> getTranslator()
+    protected DataRequestTranslator<Request> getTranslator()
     {
         return MarketceteraFeedMessageTranslator.getInstance();
     }
@@ -57,17 +58,18 @@ public class MarketceteraFeedMessageTranslatorTest
      * @see org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase#verifyResponse(java.lang.Object, java.lang.String, org.marketcetera.marketdata.MarketDataRequest.Content, org.marketcetera.marketdata.MarketDataRequest.Type, java.lang.String[])
      */
     @Override
-    protected void verifyResponse(Message inActualResponse,
+    protected void verifyResponse(Request inActualResponse,
                                   String inExpectedExchange,
                                   Content[] inExpectedContent,
                                   String[] inExpectedSymbols)
             throws Exception
     {
+        Message theMessage = inActualResponse.getMessage();
         for(int i=0;i<inExpectedSymbols.length;i++) {
             // check symbol
-            final Group symbolGroup =  DEFAULT_MESSAGE_FACTORY.getMessageFactory().createGroup(MsgType.MARKET_DATA_REQUEST,
-                                                                                               NoRelatedSym.FIELD);
-            inActualResponse.getGroup(i+1,
+            final Group symbolGroup = DEFAULT_MESSAGE_FACTORY.getMessageFactory().createGroup(MsgType.MARKET_DATA_REQUEST,
+                                                                                              NoRelatedSym.FIELD);
+            theMessage.getGroup(i+1,
                                       symbolGroup);
             assertEquals(inExpectedSymbols[i],
                          symbolGroup.getString(Symbol.FIELD));
@@ -88,6 +90,6 @@ public class MarketceteraFeedMessageTranslatorTest
         }
         // check subscription type
         assertEquals(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES,
-                     inActualResponse.getChar(SubscriptionRequestType.FIELD));
+                     theMessage.getChar(SubscriptionRequestType.FIELD));
     }
 }

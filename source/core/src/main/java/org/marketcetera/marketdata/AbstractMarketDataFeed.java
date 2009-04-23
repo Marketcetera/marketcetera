@@ -505,7 +505,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         } else {
             try {
                 E eventTranslator = getEventTranslator();
-                List<EventBase> events = eventTranslator.toEvent(inData);
+                List<EventBase> events = eventTranslator.toEvent(inData,
+                                                                 inHandle);
                 // events returned may contain aggregate events, which further need to be decomposed
                 // create a list of actual events
                 List<EventBase> actualEvents = new ArrayList<EventBase>();

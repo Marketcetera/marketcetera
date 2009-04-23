@@ -28,7 +28,7 @@ import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.quickfix.AbstractMessageTranslator;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -40,7 +40,6 @@ import quickfix.Application;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
 import quickfix.FileLogFactory;
-import quickfix.Group;
 import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
 import quickfix.Initiator;
@@ -66,6 +65,9 @@ import quickfix.field.Symbol;
 import quickfix.field.TestMessageIndicator;
 import quickfix.fix44.MessageFactory;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
+
 /* $License$ */
 
 /**
@@ -76,13 +78,13 @@ import quickfix.fix44.MessageFactory;
  * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MarketceteraFeed 
     extends AbstractMarketDataFeed<MarketceteraFeedToken,
                                    MarketceteraFeedCredentials,
                                    MarketceteraFeedMessageTranslator,
                                    MarketceteraFeedEventTranslator,
-                                   Message,
+                                   MarketceteraFeed.Request,
                                    MarketceteraFeed> 
     implements Application, Messages 
 {
@@ -112,9 +114,7 @@ public class MarketceteraFeed
 			try {
 			    marketDepth = query.getInt(MarketDepth.FIELD); 
 			} catch (FieldNotFound fnf) {
-	            SLF4JLoggerProxy.debug(this,
-                                       "The query {} did not have a market depth field, but this is not a serious problem.", //$NON-NLS-1$
-                                       query);
+			    // do nothing, this is OK, not every query has to have a depth
 			}
 			String reqID = addReqID(query);
 			sendMessage(query);
@@ -344,10 +344,7 @@ public class MarketceteraFeed
 			                                                                  message.getHeader().getString(MsgType.FIELD));
 			reqID = message.getString(correlationField.getTag());
 		} catch (FieldNotFound fnf) {
-            SLF4JLoggerProxy.debug(this,
-                                   fnf,
-                                   "The message {} received from the application framework did not contain the field \"reqid\".  This is not a serious problem", //$NON-NLS-1$
-                                   message);
+		    // not every message needs to have reqID, this is OK
 		}
 		if (reqID != null && reqID.length() > 0) {
 			synchronized (pendingRequests) {
@@ -399,11 +396,14 @@ public class MarketceteraFeed
         } catch (FieldNotFound e) {
             symbol = UNKNOWN_SYMBOL;
         }
+        Set<String> handles = getHandlesForSymbol(symbol);
         SLF4JLoggerProxy.debug(this,
-                               "MarketceteraFeed received response for handle {}", //$NON-NLS-1$
-                               symbol);
-	    dataReceived(symbol, 
-	                 refresh);
+                               "MarketceteraFeed received response for handle(s): {}", //$NON-NLS-1$
+                               handles);
+        for(String handle : handles) {
+            dataReceived(handle,
+                         refresh);
+        }
 	}
 	private MarketceteraFeed(String inProviderName) 
 	    throws URISyntaxException, CoreException
@@ -450,34 +450,29 @@ public class MarketceteraFeed
     protected void doCancel(String inHandle)
     {
         SLF4JLoggerProxy.debug(this,
-                               "Marketcetera feed cancelling subscriptions for handle {}", //$NON-NLS-1$
+                               "Marketcetera feed canceling subscriptions for handle {}", //$NON-NLS-1$
                                inHandle);
-        List<FIXCorrelationFieldSubscription> subscriptions = removeSubscriptions(inHandle);
+        Request request = removeRequest(inHandle);
+        FIXCorrelationFieldSubscription subscription = request.getSubscription();
+        Message message = messageFactory.create("",  //$NON-NLS-1$
+                                                subscription.getSubscribeMsgType());
+        StringField correlationID = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, 
+                                                                       subscription.getSubscribeMsgType());
+        correlationID.setValue(subscription.toString());
         SLF4JLoggerProxy.debug(this,
-                               "Marketcetera feed found {} subscription(s) for handle {}", //$NON-NLS-1$
-                               subscriptions.size(),
-                               inHandle);
-        for(FIXCorrelationFieldSubscription subscription : subscriptions) {
-            Message message = messageFactory.create("",  //$NON-NLS-1$
-                                                    subscription.getSubscribeMsgType());
-            StringField correlationID = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, 
-                                                                           subscription.getSubscribeMsgType());
-            correlationID.setValue(subscription.toString());
-            SLF4JLoggerProxy.debug(this,
-                                   "Marketcetera feed sending cancel request for {}", //$NON-NLS-1$
-                                   correlationID);
-            message.setField(correlationID);
-            message.setField(new SubscriptionRequestType(SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
-            message.setField(new NoRelatedSym(0));
-            message.setField(new NoMDEntryTypes(0));
-            if (subscription.getMarketDepth() != null) {
-                message.setField(new MarketDepth(subscription.getMarketDepth()));
-            }
-            try {
-                sendMessage(message);
-            } catch (SessionNotFound e) {
-                throw new IllegalArgumentException(e);
-            }
+                               "Marketcetera feed sending cancel request for {}", //$NON-NLS-1$
+                               correlationID);
+        message.setField(correlationID);
+        message.setField(new SubscriptionRequestType(SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
+        message.setField(new NoRelatedSym(0));
+        message.setField(new NoMDEntryTypes(0));
+        if (subscription.getMarketDepth() != null) {
+            message.setField(new MarketDepth(subscription.getMarketDepth()));
+        }
+        try {
+            sendMessage(message);
+        } catch (SessionNotFound e) {
+            throw new IllegalArgumentException(e);
         }
     }
     /* (non-Javadoc)
@@ -504,55 +499,58 @@ public class MarketceteraFeed
     {
         stop();
     }
-    private final Map<String,List<FIXCorrelationFieldSubscription>> mSubscriptionsBySymbol = new HashMap<String,List<FIXCorrelationFieldSubscription>>();    
     /**
-     * Associates the given request handles with the given subscription object.
+     * Associates the given request handles with the given request object.
      * 
-     * @param inSub a <code>FIXCorrelationFieldSubscription</code> value
-     * @param inHandles a <code>List&lt;String&gt;</code> value
+     * @param inRequest a <code>Request</code> value
      */
-    private void addSubscription(FIXCorrelationFieldSubscription inSub,
-                                 List<String> inHandles)
+    private synchronized static void addRequest(Request inRequest)
     {
-        synchronized(mSubscriptionsBySymbol) {
-            for(String handle : inHandles) {
-                List<FIXCorrelationFieldSubscription> subs = mSubscriptionsBySymbol.get(handle);
-                if(subs == null) {
-                    subs = new ArrayList<FIXCorrelationFieldSubscription>();
-                    mSubscriptionsBySymbol.put(handle, 
-                                               subs);
-                }
-                SLF4JLoggerProxy.debug(this,
-                                       "MarketceteraFeed associating subscription {} to symbol {}", //$NON-NLS-1$
-                                       inSub.getCorrelationFieldValue(),
-                                       handle);
-                subs.add(inSub);
-            }
+        requestsByHandle.put(inRequest.getIdAsString(),
+                             inRequest);
+        for(String symbol : inRequest.getRequest().getSymbols()) {
+            handlesBySymbol.put(symbol,
+                                inRequest.getIdAsString());
         }
     }
     /**
-     * the default list returned representing no subscriptions
+     * Returns the handles associated with the given symbol, if any.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @return a <code>Set&lt;String&gt;</code> value
      */
-    private static final List<FIXCorrelationFieldSubscription> EMPTY_SUBSCRIPTION_LIST = new ArrayList<FIXCorrelationFieldSubscription>();
+    private synchronized static Set<String> getHandlesForSymbol(String inSymbol)
+    {
+        Set<String> handles = handlesBySymbol.get(inSymbol);
+        if(handles != null) {
+            return handles;
+        }
+        return Collections.emptySet();
+    }
+    /**
+     * Returns the <code>Request</code> associated with the given handle.
+     *
+     * @param inHandle a <code>String</code> value
+     * @return a <code>Request</code> value or null
+     */
+    synchronized static Request getRequestByHandle(String inHandle)
+    {
+        return requestsByHandle.get(inHandle);
+    }
     /**
      * Removes all subscriptions for the given handle.
      * 
      * @param inHandle a <code>String</code> value
-     * @return a <code>List&lt;FIXCorrelationFieldSubscription&gt;</code> value
+     * @return a <code>Request</code> value
      */
-    private List<FIXCorrelationFieldSubscription> removeSubscriptions(String inHandle)
+    private synchronized Request removeRequest(String inHandle)
     {
-        List<FIXCorrelationFieldSubscription> listToReturn;
-        synchronized(mSubscriptionsBySymbol) {
-            List<FIXCorrelationFieldSubscription> subs = mSubscriptionsBySymbol.get(inHandle);
-            if(subs == null) {
-                return EMPTY_SUBSCRIPTION_LIST;
-            } else {
-                listToReturn = new ArrayList<FIXCorrelationFieldSubscription>(subs);
-                subs.clear();
-            }
-            return listToReturn;
+        Request request = requestsByHandle.remove(inHandle);
+        for(String symbol : request.getRequest().getSymbols()) {
+            Set<String> handles = handlesBySymbol.get(symbol);
+            handles.remove(inHandle);
         }
+        return request;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(org.marketcetera.marketdata.MarketDataFeedTokenSpec)
@@ -593,27 +591,123 @@ public class MarketceteraFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doMarketDataRequest(java.lang.Object)
      */
     @Override
-    protected List<String> doMarketDataRequest(Message inData)
+    protected List<String> doMarketDataRequest(Request inData)
             throws FeedException
     {
         try {
+            inData.setSubscription(doQuery(inData.getMessage()));
+            addRequest(inData);
             SLF4JLoggerProxy.debug(this,
-                                   "MarketceteraFeed received market data request {}", //$NON-NLS-1$
-                                   inData);
-            List<String> handles = new ArrayList<String>();
-            List<Group> groups = AbstractMessageTranslator.getGroups(inData);
-            for(Group group : groups) {
-                MSymbol symbol = AbstractMessageTranslator.getSymbol(group);
-                handles.add(symbol.getFullSymbol());
-            }
-            addSubscription(doQuery(inData),
-                            handles);
-            SLF4JLoggerProxy.debug(this,
-                                   "MarketceteraFeed posted query and received handle(s) {}", //$NON-NLS-1$
-                                   Arrays.toString(handles.toArray()));
-            return handles;
+                                   "MarketceteraFeed posted query for {} and associated the request with handle {}", //$NON-NLS-1$
+                                   inData.getRequest().getSymbols(),
+                                   inData.getIdAsString());
+            return Arrays.asList(new String[] { inData.getIdAsString() } );
         } catch (Exception e) {
             throw new FeedException(e);
+        }
+    }
+    /**
+     * active requests by handle
+     */
+    private static final Map<String,Request> requestsByHandle = new HashMap<String,Request>();
+    /**
+     * handles by associated symbol
+     */
+    private static final SetMultimap<String,String> handlesBySymbol = HashMultimap.create();
+    /**
+     * Represents a request made to the marketcetera adapter.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    static final class Request
+    {
+        /**
+         * the FIX message actually sent to the marketcetera feed
+         */
+        private final Message message;
+        /**
+         * the underlying request submitted to the adapter
+         */
+        private final MarketDataRequest request;
+        /**
+         * the unique identifier for this request
+         */
+        private final long id;
+        /**
+         * the subscription token returned from the submit call
+         */
+        private FIXCorrelationFieldSubscription subscription;
+        /**
+         * Create a new Request instance.
+         *
+         * @param inId a <code>long</code> value
+         * @param inMessage a <code>Message</code> value
+         * @param inRequest a <code>MarketDataRequest</code> value
+         */
+        Request(long inId,
+                Message inMessage,
+                MarketDataRequest inRequest)
+        {
+            id = inId;
+            message = inMessage;
+            request = inRequest;
+        }
+        /**
+         * Get the id value.
+         *
+         * @return a <code>long</code> value
+         */
+        long getId()
+        {
+            return id;
+        }
+        /**
+         * Gets the id as a <code>String</code>.
+         *
+         * @return a <code>String</code> value
+         */
+        String getIdAsString()
+        {
+            return Long.toHexString(getId());
+        }
+        /**
+         * Get the messages value.
+         *
+         * @return a <code>Message</code> value
+         */
+        Message getMessage()
+        {
+            return message;
+        }
+        /**
+         * Get the request value.
+         *
+         * @return a <code>MarketDataRequest</code> value
+         */
+        MarketDataRequest getRequest()
+        {
+            return request;
+        }
+        /**
+         * Get the subscription value.
+         *
+         * @return a <code>FIXCorrelationFieldSubscription</code> value or null
+         */
+        FIXCorrelationFieldSubscription getSubscription()
+        {
+            return subscription;
+        }
+        /**
+         * Sets the subscription value.
+         *
+         * @param a <code>FIXCorrelationFieldSubscription</code> value
+         */
+        private void setSubscription(FIXCorrelationFieldSubscription inSubscription)
+        {
+            subscription = inSubscription;
         }
     }
 }

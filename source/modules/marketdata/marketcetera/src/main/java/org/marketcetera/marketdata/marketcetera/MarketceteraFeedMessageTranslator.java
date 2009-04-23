@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -28,7 +29,7 @@ import quickfix.field.SubscriptionRequestType;
  * @since 0.5.0
  */
 public class MarketceteraFeedMessageTranslator
-    implements DataRequestTranslator<Message>
+    implements DataRequestTranslator<Request>
 {
     /**
      * default FIX message factory to use to construct messages
@@ -46,7 +47,7 @@ public class MarketceteraFeedMessageTranslator
      * @see org.marketcetera.marketdata.DataRequestTranslator#translate(org.marketcetera.marketdata.DataRequest)
      */
     @Override
-    public Message fromDataRequest(MarketDataRequest inRequest)
+    public Request fromDataRequest(MarketDataRequest inRequest)
             throws CoreException
     {
         if(inRequest.validateWithCapabilities(TOP_OF_BOOK,LATEST_TICK)) {
@@ -76,23 +77,24 @@ public class MarketceteraFeedMessageTranslator
      * @param inRequest a <code>MarketDataRequest</code> value
      * @return a <code>Message</code> value
      */
-    private static Message fixMessageFromMarketDataRequest(MarketDataRequest inRequest)
+    private static Request fixMessageFromMarketDataRequest(MarketDataRequest inRequest)
     {
         List<MSymbol> symbolList = new ArrayList<MSymbol>();
         for(String symbol : inRequest.getSymbols()) {
             symbolList.add(new MSymbol(symbol));
         }
+        long id = counter.incrementAndGet();
         // generate the message using the current FIXMessageFactory
         // sets symbols
-        Message message = DEFAULT_MESSAGE_FACTORY.getMessageFactory().newMarketDataRequest(Long.toString(counter.incrementAndGet()), 
+        Message message = DEFAULT_MESSAGE_FACTORY.getMessageFactory().newMarketDataRequest(Long.toString(id), 
                                                                                            symbolList,
                                                                                            inRequest.getExchange());
         // set the update type indicator
         message.setChar(SubscriptionRequestType.FIELD, 
                         SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
-        // TODO eventually, when MarketceteraFeed supports requests of content other than TOP_OF_BOOK, we'll have to
-        //  figure out a way to encode the content request in the returned message
-        return message;
+        return new Request(id,
+                           message,
+                           inRequest);
     }
     
 }
