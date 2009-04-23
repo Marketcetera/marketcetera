@@ -4,8 +4,6 @@ import static org.marketcetera.marketdata.Messages.BEAN_ATTRIBUTE_CHANGED;
 import static org.marketcetera.marketdata.Messages.FEED_STATUS_CHANGED;
 
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,9 +15,9 @@ import javax.management.NotificationEmitter;
 import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IFeedComponentListener;
+import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.module.DataEmitter;
@@ -33,6 +31,10 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 /* $License$ */
 
@@ -88,14 +90,18 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
      */
     @Override
     public final void cancel(DataFlowID inFlowID,
-                             RequestID inRequestID)
+                             final RequestID inRequestID)
     {
-        synchronized(tokens) {
-            T token = tokens.remove(inRequestID);
-            assert(token != null);
-            requests.remove(token);
-            token.cancel();
-        }
+        requestLock.executeWrite(new Runnable() {
+            @Override
+            public void run()
+            {
+                T token = requests.inverse().remove(inRequestID);
+                if(token != null) {
+                    token.cancel();
+                }
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
@@ -133,28 +139,34 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                     return inData instanceof EventBase;
                 }
                 @Override
-                public void publishTo(Object inEvent)
+                public void publishTo(final Object inEvent)
                 {
-                    synchronized(tokens) {
-                        if(inEvent instanceof EventBase) {
-                            EventBase event = (EventBase)inEvent;
-                            Object token = event.getSource();
-                            RequestID requestID = requests.get(token);
-                            event.setSource(requestID);
-                        }
+                    if(inEvent instanceof EventBase) {
+                        requestLock.executeRead(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                EventBase event = (EventBase)inEvent;
+                                Object token = event.getSource();
+                                RequestID requestID = requests.get(token);
+                                event.setSource(requestID);
+                            }
+                        });
                     }
                     inSupport.send(inEvent);
                 }
             };
             MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(request,
                                                                                      subscriber);
-            synchronized(tokens) {
-                T token = feed.execute(spec);
-                tokens.put(inSupport.getRequestID(),
-                           token);
-                requests.put(token,
-                             inSupport.getRequestID());
-            }
+            final T token = feed.execute(spec);
+            requestLock.executeWrite(new Runnable() {
+                @Override
+                public void run()
+                {
+                    requests.put(token,
+                                 inSupport.getRequestID());
+                }
+            });
         } catch (Exception e) {
             throw new IllegalRequestParameterValue(instanceURN,
                                                    requestPayload,
@@ -311,8 +323,11 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
     /**
      * tracks the tokens of active data requests
      */
-    private final Map<RequestID,T> tokens = new HashMap<RequestID,T>();
-    private final Map<T,RequestID> requests = new HashMap<T,RequestID>();
+    private final BiMap<T,RequestID> requests = HashBiMap.create();
+    /**
+     * lock used for {@link #requests} access
+     */
+    private final LockHelper requestLock = new LockHelper();
     /**
      * provides JMX notification services
      */
