@@ -23,7 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class MarketstatEvent
         extends EventBase
-        implements Messages
+        implements Messages, HasSymbol
 {
     /**
      * Create a new MarketstatEvent instance.
