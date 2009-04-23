@@ -15,6 +15,7 @@ import org.marketcetera.trade.OrderStatus;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -61,10 +62,9 @@ import java.util.HashMap;
             "(select max(s.id) from execreports s where s.rootID = e.rootID)",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "allPositions",query = "select " +
-            "e.symbol as symbol, e.account as account, u.name as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "e.symbol as symbol, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
             "from execreports e " +
             "join reports r on (e.report_id=r.id) " +
-            "left join ors_users u on (r.actor_id=u.id)" +
             "where e.sendingTime <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
@@ -166,9 +166,14 @@ class ExecutionReportSummary extends EntityBase {
                     if(columns.length > 1) {
                         //first one is the symbol
                         //second one is the account
-                        //third one is the actor name
-                        //fourth one is  the position
-                        map.put(new PositionKeyImpl((String)columns[0],(String)columns[1],(String)columns[2]), (BigDecimal) columns[3]);
+                        //third one is the actor ID
+                        //fourth one is the position
+                        map.put(new PositionKeyImpl
+                                ((String)columns[0],
+                                 (String)columns[1],
+                                 ((columns[2]==null)?null:
+                                  ((BigInteger)columns[2]).toString())),
+                                 (BigDecimal)columns[3]);
                     }
                 }
                 return map;

@@ -351,7 +351,10 @@ public class ReportsTestBase extends TestCaseBase {
     }
 
     protected static PositionKey pos(String inSymbol) {
-        return pos(inSymbol,ACCOUNT,sActor.getName());
+        return pos(inSymbol,ACCOUNT,sActorID);
+    }
+    protected static PositionKey pos(String inSymbol, String inAccount, UserID inActor) {
+        return new PositionKeyImpl(inSymbol,inAccount,Long.toString(inActor.getValue()));
     }
     protected static PositionKey pos(String inSymbol, String inAccount, String inActor) {
         return new PositionKeyImpl(inSymbol,inAccount,inActor);
