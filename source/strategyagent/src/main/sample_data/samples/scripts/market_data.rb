@@ -5,6 +5,7 @@
 #
 #   
 include_class "org.marketcetera.strategy.ruby.Strategy"
+include_class "org.marketcetera.marketdata.MarketDataRequest"
 
 #######################################
 # Strategy that receives marketdata   #
@@ -20,7 +21,8 @@ class MarketData < Strategy
     #  and other initialization tasks.       #
     ##########################################
     def on_start
-      request_market_data(SYMBOLS,MARKET_DATA_PROVIDER)
+      request = MarketDataRequest.newRequest().withSymbols(SYMBOLS).fromProvider(MARKET_DATA_PROVIDER)
+      request_market_data(request)
     end
 
     ####################################################

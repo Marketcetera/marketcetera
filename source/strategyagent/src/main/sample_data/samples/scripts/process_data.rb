@@ -6,6 +6,7 @@
 #
 'require java'
 include_class "org.marketcetera.strategy.ruby.Strategy"
+include_class "org.marketcetera.marketdata.MarketDataRequest"
 
 ##################################################
 # Strategy that processes market data via CEP    #
@@ -23,7 +24,8 @@ class ProcessData < Strategy
     #  and other initialization tasks.       #
     ##########################################
     def on_start
-      request_processed_market_data(SYMBOLS, MARKET_DATA_PROVIDER, CEP_QUERY.to_java(:string), CEP_PROVIDER)
+      request = MarketDataRequest.newRequest().withSymbols(SYMBOLS).fromProvider(MARKET_DATA_PROVIDER)      
+      request_processed_market_data(request, CEP_QUERY.to_java(:string), CEP_PROVIDER)
     end
 
 
