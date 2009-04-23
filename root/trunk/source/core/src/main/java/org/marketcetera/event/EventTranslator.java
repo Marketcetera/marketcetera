@@ -22,12 +22,15 @@ public interface EventTranslator
      * subclass of <code>EventBase</code>.
      *
      * @param inData an <code>Object</code> value
+     * @param inHandle a <code>String</code> value containing the handle indicating the request to which
+     *   the response applies
      * @return a <code>List&lt;EventBase&gt;</code> value
      * @throws UnsupportedEventException if the object cannot be translated to an object
      *   of type <code>EventBase</code>
      * @throws CoreException if another error occurs
      */
-    public List<EventBase> toEvent(Object inData)
+    public List<EventBase> toEvent(Object inData,
+                                   String inHandle)
         throws CoreException;
     /**
      * Translates from <code>EventBase</code> format to a format specified by the implementer.

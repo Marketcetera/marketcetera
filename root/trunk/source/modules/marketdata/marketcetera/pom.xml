@@ -32,6 +32,10 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+    </dependency>
     
     <!-- Runtime. -->
     <dependency>

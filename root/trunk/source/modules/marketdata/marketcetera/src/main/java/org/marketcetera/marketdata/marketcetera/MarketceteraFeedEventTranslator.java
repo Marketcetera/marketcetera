@@ -3,6 +3,7 @@ package org.marketcetera.marketdata.marketcetera;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.ClassVersion;
@@ -13,6 +14,8 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.EventTranslator;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.UnsupportedEventException;
+import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
@@ -52,7 +55,8 @@ public class MarketceteraFeedEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
-    public List<EventBase> toEvent(Object inData) 
+    public List<EventBase> toEvent(Object inData,
+                                   String inHandle) 
         throws CoreException
     {
         if(!(inData instanceof MarketDataSnapshotFullRefresh)) {
@@ -64,6 +68,16 @@ public class MarketceteraFeedEventTranslator
         List<EventBase> events = new ArrayList<EventBase>();
         try {
             int entries = refresh.getInt(NoMDEntries.FIELD);
+            // marketcetera feed returns bid/ask/trade for every query (each entry corresponds to one of these).
+            // we have to decide which data to convert to events and pass along.  we know the symbol and the handle.
+            // the handle is sufficient to determine what content was requested with the original request.
+            Request request = MarketceteraFeed.getRequestByHandle(inHandle);
+            if(request == null) {
+                // this could happen if the request were canceled (and removed from the collection) but the feed
+                //  is still sending updates.  just bail out, no worries, the feed will stop soon.
+                return events;
+            }
+            Set<Content> requestedContent = request.getRequest().getContent();
             for(int i=1;i<=entries;i++) {
                 Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
                 refresh.getGroup(i, 
@@ -81,31 +95,37 @@ public class MarketceteraFeedEventTranslator
                 char type = group.getChar(MDEntryType.FIELD);
                 switch(type){
                     case MDEntryType.BID :
-                        BidEvent bid = new BidEvent(System.nanoTime(),
-                                                    System.currentTimeMillis(),
-                                                    new MSymbol(symbol),
-                                                    exchange,
-                                                    new BigDecimal(price),
-                                                    new BigDecimal(size));
-                        events.add(bid);
+                        if(requestedContent.contains(Content.TOP_OF_BOOK)) {
+                            BidEvent bid = new BidEvent(System.nanoTime(),
+                                                        System.currentTimeMillis(),
+                                                        new MSymbol(symbol),
+                                                        exchange,
+                                                        new BigDecimal(price),
+                                                        new BigDecimal(size));
+                            events.add(bid);
+                        }
                         break;
                     case MDEntryType.OFFER :
-                        AskEvent ask = new AskEvent(System.nanoTime(),
-                                                    System.currentTimeMillis(),
-                                                    new MSymbol(symbol),
-                                                    exchange,
-                                                    new BigDecimal(price),
-                                                    new BigDecimal(size));
-                        events.add(ask);
+                        if(requestedContent.contains(Content.TOP_OF_BOOK)) {
+                            AskEvent ask = new AskEvent(System.nanoTime(),
+                                                        System.currentTimeMillis(),
+                                                        new MSymbol(symbol),
+                                                        exchange,
+                                                        new BigDecimal(price),
+                                                        new BigDecimal(size));
+                            events.add(ask);
+                        }
                         break;
                     case MDEntryType.TRADE:
-                        TradeEvent trade = new TradeEvent(System.nanoTime(),
-                                                          System.currentTimeMillis(),
-                                                          new MSymbol(symbol),
-                                                          exchange,
-                                                          new BigDecimal(price),
-                                                          new BigDecimal(size));
-                        events.add(trade);
+                        if(requestedContent.contains(Content.LATEST_TICK)) {
+                            TradeEvent trade = new TradeEvent(System.nanoTime(),
+                                                              System.currentTimeMillis(),
+                                                              new MSymbol(symbol),
+                                                              exchange,
+                                                              new BigDecimal(price),
+                                                              new BigDecimal(size));
+                            events.add(trade);
+                        }
                         break;
                     default:
                         throw new UnsupportedEventException(new I18NBoundMessage1P(UNKNOWN_MESSAGE_ENTRY_TYPE,
