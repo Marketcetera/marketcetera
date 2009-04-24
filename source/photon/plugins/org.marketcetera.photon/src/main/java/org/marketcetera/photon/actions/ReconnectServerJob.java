@@ -2,6 +2,7 @@ package org.marketcetera.photon.actions;
 
 import java.beans.ExceptionListener;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -19,6 +20,7 @@ import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.ServerStatusListener;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
@@ -29,6 +31,8 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonPreferences;
 import org.marketcetera.photon.ui.LoginDialog;
 import org.marketcetera.photon.ui.ServerStatusIndicator;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -99,7 +103,7 @@ public class ReconnectServerJob extends UIJob {
 						throw new InvocationTargetException(e);
 					}
 
-					Client client;
+					final Client client;
 					try {
 						client = ClientManager.getInstance();
 					} catch (ClientInitException e) {
@@ -111,12 +115,41 @@ public class ReconnectServerJob extends UIJob {
 					ServerStatusIndicator.setConnected();
 
 					// add listeners
+					final AtomicBoolean isDisconnected = new AtomicBoolean();
 					client.addExceptionListener(new ExceptionListener() {
 						@Override
 						public void exceptionThrown(Exception e) {
-							PhotonPlugin.getMainConsoleLogger().error(
-									Messages.CLIENT_EXCEPTION.getText(), e);
-							ServerStatusIndicator.setError();
+							// When disconnected, client sends continual notifications, so we want
+							// to avoid cluttering the console.  This is assuming that only heartbeat exceptions
+							// have org.marketcetera.client.Messages.ERROR_REMOTE_EXECUTION as the message
+							if (isDisconnected.compareAndSet(false, true)
+									|| getMessage(e) != org.marketcetera.client.Messages.ERROR_REMOTE_EXECUTION) {
+								PhotonPlugin.getMainConsoleLogger().error(
+										Messages.CLIENT_EXCEPTION.getText(), e);
+								ServerStatusIndicator.setError();
+							}
+						}
+
+						private I18NMessage getMessage(Exception e) {
+							if (e instanceof ConnectionException) {
+								I18NBoundMessage bound = ((ConnectionException) e)
+										.getI18NBoundMessage();
+								if (bound != null) {
+									return bound.getMessage();
+								}
+							}
+							return null;
+						}
+					});
+					client.addServerStatusListener(new ServerStatusListener() {
+						@Override
+						public void receiveServerStatus(boolean status) {
+							if (status && isDisconnected.compareAndSet(true, false)) {
+								// FIXME: If the server is truly connected again, we should set the light
+								// back to green. However, this would be misleading now since execution 
+								// reports are still not being received.
+								// ServerStatusIndicator.setConnected();
+							}
 						}
 					});
 					client.addReportListener(PhotonPlugin.getDefault()
