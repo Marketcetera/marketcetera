@@ -116,36 +116,45 @@ public final class MarketDataManager {
 		if (!mReconnecting.compareAndSet(false, true)) {
 			return;
 		}
-		synchronized (this) {
-			final MarketDataFeed oldFeed = mActiveFeed;
-			mActiveFeed = mFeeds.get(providerId);
-			if (mActiveFeed == null && oldFeed == null) {
-				return;
-			}
-			try {
-				if (!mModuleManager.getModuleInfo(mActiveFeed.getURN()).getState().isStarted()) {
-					mModuleManager.start(mActiveFeed.getURN());
-				} else if (mActiveFeed.getStatus() != FeedStatus.AVAILABLE) {
-					mActiveFeed.reconnect();
+		try {
+			synchronized (this) {
+				final MarketDataFeed oldFeed = mActiveFeed;
+				mActiveFeed = mFeeds.get(providerId);
+				if (mActiveFeed == null && oldFeed == null) {
+					// mReconnecting is reset in the finally block
+					return;
 				}
-			} catch (ModuleException e) {
-				// TODO: May be better to propagate the exception so there can be dialog boxes, etc
-				Messages.MARKET_DATA_MANAGER_FEED_START_FAILED.error(USER_MSG_CATEGORY, mActiveFeed.getName());
-			} catch (UnsupportedOperationException e) {
-				// TODO: May be better to propagate the exception so there can be dialog boxes, etc
-				Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED.error(USER_MSG_CATEGORY, e, mActiveFeed
-						.getName());
+				if (mActiveFeed != null) {
+					try {
+						if (!mModuleManager.getModuleInfo(mActiveFeed.getURN()).getState()
+								.isStarted()) {
+							mModuleManager.start(mActiveFeed.getURN());
+						} else {
+							mActiveFeed.reconnect();
+						}
+					} catch (ModuleException e) {
+						// TODO: May be better to propagate the exception so there can be dialog boxes, etc
+						Messages.MARKET_DATA_MANAGER_FEED_START_FAILED.error(USER_MSG_CATEGORY,
+								mActiveFeed.getName());
+					} catch (UnsupportedOperationException e) {
+						// TODO: May be better to propagate the exception so there can be dialog boxes, etc
+						Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED.error(USER_MSG_CATEGORY,
+								e, mActiveFeed.getName());
+					}
+				}
+				mMarketData.setSourceModule(mActiveFeed.getURN());
+				final FeedStatusEvent event;
+				final FeedStatus oldStatus = oldFeed == null ? FeedStatus.OFFLINE : oldFeed
+						.getStatus();
+				if (mActiveFeed == null) {
+					event = oldFeed.createFeedStatusEvent(oldStatus, FeedStatus.OFFLINE);
+				} else {
+					event = mActiveFeed.createFeedStatusEvent(oldStatus, mActiveFeed.getStatus());
+				}
+				notifyListeners(event);
 			}
-			mMarketData.setSourceModule(mActiveFeed.getURN());
-			final FeedStatusEvent event;
-			if (mActiveFeed == null) {
-				event = oldFeed.createFeedStatusEvent(oldFeed.getStatus(), FeedStatus.OFFLINE);
-			} else {
-				event = mActiveFeed.createFeedStatusEvent(FeedStatus.OFFLINE, mActiveFeed
-						.getStatus());
-			}
+		} finally {
 			mReconnecting.set(false);
-			notifyListeners(event);
 		}
 	}
 

@@ -22,6 +22,8 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.internal.ide.IDEInternalWorkbenchImages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.model.WorkbenchAdapterBuilder;
+import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.photon.ui.EquityPerspectiveFactory;
 import org.osgi.framework.Bundle;
 
@@ -92,6 +94,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
 	@Override
 	public void postShutdown() {
+		stopClient();
 		try {
 			// todo: Eclipse's IDEWorkbenchAdvisor.disconnectFromWorkspace uses
 			// a progress monitor in a IRunnableWithProgress during the final save.
@@ -101,6 +104,14 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 			org.marketcetera.photon.PhotonPlugin.getMainConsoleLogger().warn(
 					"Failed to save workspace during workbench shutdown. Cause: " //$NON-NLS-1$
 							+ anyException.getMessage(), anyException);
+		}
+	}
+	
+	private void stopClient() {
+		try {
+			ClientManager.getInstance().close();
+		} catch (ClientInitException e) {
+			// already closed
 		}
 	}
 

@@ -19,8 +19,6 @@ import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.internal.layout.ITrimManager;
 import org.eclipse.ui.internal.layout.IWindowTrim;
 import org.eclipse.ui.internal.progress.ProgressManager;
-import org.marketcetera.client.ClientInitException;
-import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.photon.actions.ReconnectServerJob;
@@ -118,14 +116,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 		new ReconnectServerJob().schedule();
 	}
 
-	private void stopClient() {
-		try {
-			ClientManager.getInstance().close();
-		} catch (ClientInitException e) {
-			// already closed
-		}
-	}
-
 	@Override
 	public void createWindowContents(Shell shell) {
 		super.createWindowContents(shell);
@@ -136,11 +126,4 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 		IWindowTrim beforeMe = trimManager.getTrim("org.eclipse.jface.action.StatusLineManager"); //$NON-NLS-1$
 		trimManager.addTrim(SWT.BOTTOM, trim, beforeMe);
 	}
-
-	@Override
-	public boolean preWindowShellClose() {
-		stopClient();
-		return true;
-	}
-
 }
