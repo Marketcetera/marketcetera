@@ -500,8 +500,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         MarketDataHandle mdHandle = compose(inHandle);
         T token = mHandleHolder.getToken(mdHandle);
         if(token == null) {
-            Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.warn(this,
-                                                                inData);
+            Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.debug(this,
+                                                                 inData);
         } else {
             try {
                 E eventTranslator = getEventTranslator();
@@ -525,7 +525,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                     token.publish(event);
                 }
             } catch (Exception e) {
-                Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.warn(this, e, inData);
+                Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.warn(this,
+                                                                    e,
+                                                                    inData);
             }
         }
     }
