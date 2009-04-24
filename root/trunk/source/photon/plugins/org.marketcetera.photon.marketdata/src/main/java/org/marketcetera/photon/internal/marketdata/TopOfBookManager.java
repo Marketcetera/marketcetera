@@ -1,8 +1,11 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import java.util.EnumSet;
+
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
@@ -34,7 +37,7 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 	 */
 	@Inject
 	public TopOfBookManager(ModuleManager moduleManager) {
-		super(moduleManager);
+		super(moduleManager, EnumSet.of(Capability.TOP_OF_BOOK));
 	}
 
 	@Override

@@ -2,10 +2,12 @@ package org.marketcetera.photon.internal.marketdata;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDQuote;
@@ -31,6 +33,31 @@ import com.google.inject.Inject;
 public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, DepthOfBookKey>
 		implements IDepthOfBookManager {
 
+	/**
+	 * Creates instances of this class.
+	 */
+	@ClassVersion("$Id$")
+	public static class FactoryImpl implements Factory {
+
+		private final ModuleManager mModuleManager;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param moduleManager
+		 *            the module manager
+		 */
+		@Inject
+		public FactoryImpl(ModuleManager moduleManager) {
+			mModuleManager = moduleManager;
+		}
+
+		@Override
+		public IDepthOfBookManager create(Set<Capability> capabilities) {
+			return new DepthOfBookManager(mModuleManager, capabilities);
+		}
+	}
+
 	private final Map<Long, MDQuoteImpl> mIdMap = Maps.newHashMap();
 	private final QuoteEventToMDQuote mFunction = new QuoteEventToMDQuote();
 
@@ -39,12 +66,13 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 	 * 
 	 * @param moduleManager
 	 *            the module manager
+	 * @param requiredCapabilities
+	 *            the capabilities this manager requires, cannot be empty
 	 * @throws IllegalArgumentException
 	 *             if moduleManager is null
 	 */
-	@Inject
-	public DepthOfBookManager(ModuleManager moduleManager) {
-		super(moduleManager);
+	public DepthOfBookManager(ModuleManager moduleManager, Set<Capability> requiredCapabilities) {
+		super(moduleManager, requiredCapabilities);
 	}
 
 	@Override

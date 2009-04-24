@@ -1,11 +1,14 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import java.util.EnumSet;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
-import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.marketdata.IMarketData;
+import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDItem;
@@ -15,6 +18,7 @@ import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
 import com.google.inject.Inject;
 
@@ -38,7 +42,10 @@ public class MarketData implements IMarketData {
 	private final ILatestTickManager mLatestTickManager;
 	private final ITopOfBookManager mTopOfBookManager;
 	private final IMarketstatManager mMarketstatManager;
-	private final IDepthOfBookManager mDepthOfBookManager;
+	private final IDepthOfBookManager mLevel2Manager;
+	private final IDepthOfBookManager mTotalViewManager;
+	private final IDepthOfBookManager mOpenBookManager;
+	private final Map<Content, IDepthOfBookManager> mContentToDepthManager;
 
 	/**
 	 * Constructor.
@@ -49,81 +56,117 @@ public class MarketData implements IMarketData {
 	 *            the manager for top of book requests
 	 * @param marketstatManager
 	 *            the manager for statistic requests
-	 * @param depthOfBookManager
-	 *            the manager for market depth requests
+	 * @param depthOfBookManagerFactory
+	 *            the factory for creating market depth managers
 	 * @throws IllegalArgumentException
-	 *             if any parameter is null
+	 *             if any parameter is null, or if the depth of book factory returns null for a
+	 *             needed capability set
 	 */
 	@Inject
-	public MarketData(ILatestTickManager latestTickManager, ITopOfBookManager topOfBookManager, IMarketstatManager marketstatManager, IDepthOfBookManager depthOfBookManager) {
-		Validate.noNullElements(new Object[] { latestTickManager, topOfBookManager, marketstatManager, depthOfBookManager });
+	public MarketData(ILatestTickManager latestTickManager, ITopOfBookManager topOfBookManager,
+			IMarketstatManager marketstatManager,
+			IDepthOfBookManager.Factory depthOfBookManagerFactory) {
+		Validate.noNullElements(new Object[] { latestTickManager, topOfBookManager,
+				marketstatManager, depthOfBookManagerFactory });
 		mLatestTickManager = latestTickManager;
 		mTopOfBookManager = topOfBookManager;
 		mMarketstatManager = marketstatManager;
-		mDepthOfBookManager = depthOfBookManager;
+		mLevel2Manager = depthOfBookManagerFactory.create(EnumSet.of(Capability.LEVEL_2));
+		mTotalViewManager = depthOfBookManagerFactory.create(EnumSet.of(Capability.TOTAL_VIEW));
+		mOpenBookManager = depthOfBookManagerFactory.create(EnumSet.of(Capability.OPEN_BOOK));
+		Validate
+				.noNullElements(new Object[] { mLevel2Manager, mTotalViewManager, mOpenBookManager });
+		mContentToDepthManager = ImmutableMap.of(Content.LEVEL_2, mLevel2Manager,
+				Content.TOTAL_VIEW, mTotalViewManager, Content.OPEN_BOOK, mOpenBookManager);
 	}
 
 	/**
 	 * Sets the source for all data.
 	 * 
-	 * @param module
-	 *            the source module
+	 * @param feed
+	 *            the source feed
 	 * @throws IllegalArgumentException
-	 *             if module is null
+	 *             if feed is null
 	 */
-	public void setSourceModule(ModuleURN module) {
-		setLatestTickSourceModule(module);
-		setTopOfBookSourceModule(module);
-		setMarketstatSourceModule(module);
-		setDepthOfBookSourceModule(module);
+	public void setSourceFeed(IMarketDataFeed feed) {
+		setLatestTickSourceModule(feed);
+		setTopOfBookSourceModule(feed);
+		setMarketstatSourceModule(feed);
+		setLevel2SourceModule(feed);
+		setTotalViewSourceModule(feed);
+		setOpenBookSourceModule(feed);
 	}
 
 	/**
 	 * Sets the source for the latest tick data.
 	 * 
-	 * @param module
-	 *            the source module
+	 * @param feed
+	 *            the source feed
 	 * @throws IllegalArgumentException
-	 *             if module is null
+	 *             if feed is null
 	 */
-	public void setLatestTickSourceModule(ModuleURN module) {
-		mLatestTickManager.setSourceModule(module);
+	public void setLatestTickSourceModule(IMarketDataFeed feed) {
+		mLatestTickManager.setSourceFeed(feed);
 	}
 
 	/**
 	 * Sets the source for the top of book data.
 	 * 
-	 * @param module
-	 *            the source module
+	 * @param feed
+	 *            the source feed
 	 * @throws IllegalArgumentException
-	 *             if module is null
+	 *             if feed is null
 	 */
-	public void setTopOfBookSourceModule(ModuleURN module) {
-		mTopOfBookManager.setSourceModule(module);
+	public void setTopOfBookSourceModule(IMarketDataFeed feed) {
+		mTopOfBookManager.setSourceFeed(feed);
 	}
 
 	/**
 	 * Sets the source for the market statistic data.
 	 * 
-	 * @param module
-	 *            the source module
+	 * @param feed
+	 *            the source feed
 	 * @throws IllegalArgumentException
-	 *             if module is null
+	 *             if feed is null
 	 */
-	public void setMarketstatSourceModule(ModuleURN module) {
-		mMarketstatManager.setSourceModule(module);
+	public void setMarketstatSourceModule(IMarketDataFeed feed) {
+		mMarketstatManager.setSourceFeed(feed);
 	}
 
 	/**
-	 * Sets the source for the market depth data.
+	 * Sets the source for the Level 2 data.
 	 * 
-	 * @param module
-	 *            the source module
+	 * @param feed
+	 *            the source feed
 	 * @throws IllegalArgumentException
-	 *             if module is null
+	 *             if feed is null
 	 */
-	public void setDepthOfBookSourceModule(ModuleURN module) {
-		mDepthOfBookManager.setSourceModule(module);
+	public void setLevel2SourceModule(IMarketDataFeed feed) {
+		mLevel2Manager.setSourceFeed(feed);
+	}
+
+	/**
+	 * Sets the source for the TotalView data.
+	 * 
+	 * @param feed
+	 *            the source feed
+	 * @throws IllegalArgumentException
+	 *             if feed is null
+	 */
+	public void setTotalViewSourceModule(IMarketDataFeed feed) {
+		mTotalViewManager.setSourceFeed(feed);
+	}
+
+	/**
+	 * Sets the source for the OpenBook data.
+	 * 
+	 * @param feed
+	 *            the source feed
+	 * @throws IllegalArgumentException
+	 *             if feed is null
+	 */
+	public void setOpenBookSourceModule(IMarketDataFeed feed) {
+		mOpenBookManager.setSourceFeed(feed);
 	}
 
 	@Override
@@ -148,18 +191,19 @@ public class MarketData implements IMarketData {
 	public IMarketDataReference<MDMarketstat> getMarketstat(String symbol) {
 		Validate.notNull(symbol);
 		synchronized (mMarketstatManager) {
-			return new Reference<MDMarketstat, MarketstatKey>(mMarketstatManager, new MarketstatKey(
-					symbol));
+			return new Reference<MDMarketstat, MarketstatKey>(mMarketstatManager,
+					new MarketstatKey(symbol));
 		}
 	}
-	
+
 	@Override
 	public IMarketDataReference<MDDepthOfBook> getDepthOfBook(String symbol, Content product) {
-		Validate.noNullElements(new Object[] {symbol, product});
+		Validate.noNullElements(new Object[] { symbol, product });
 		Validate.isTrue(DepthOfBookKey.VALID_PRODUCTS.contains(product));
-		synchronized (mDepthOfBookManager) {
-			return new Reference<MDDepthOfBook, DepthOfBookKey>(mDepthOfBookManager, new DepthOfBookKey(
-					symbol, product));
+		IDepthOfBookManager manager = mContentToDepthManager.get(product);
+		synchronized (manager) {
+			return new Reference<MDDepthOfBook, DepthOfBookKey>(manager, new DepthOfBookKey(symbol,
+					product));
 		}
 	}
 

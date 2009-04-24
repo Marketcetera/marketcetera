@@ -1,20 +1,20 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.model.marketdata.impl.MDItemImpl;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * A data flow manager is responsible for managing data flows from market data modules to
+ * A data flow manager is responsible for managing data flows from market data feeds to
  * {@link MarketDataReceiverModule} instances.
  * 
  * It produces live data item (via {@link #getItem(Key)}) that are dynamically updated as data
  * arrives.
  * 
- * It is also responsible for stopping and restarting data flows when the market data source module
- * changes (see {@link #setSourceModule(ModuleURN)}).
+ * It is also responsible for stopping and restarting data flows when the market data source feed
+ * changes (see {@link #setSourceFeed(IMarketDataFeed)}).
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -40,23 +40,23 @@ public interface IDataFlowManager<T extends MDItemImpl, K extends Key<? super T>
 	T getItem(K key);
 
 	/**
-	 * Sets the module that will provide the market data. Until this is called, data items returned
+	 * Sets the feed that will provide the market data. Until this is called, data items returned
 	 * from {@link #getItem(Key)} will not have any data.
 	 * 
-	 * If this is called after data flows are started, it will rewire them to the new source module.
+	 * If this is called after data flows are started, it will rewire them to the new feed.
 	 * 
-	 * Setting the source module to null will reset all data items to their intial state (with null
+	 * Setting the feed to null will reset all data items to their intial state (with null
 	 * data).
 	 * 
-	 * Successive calls with the same source module is a no-op.
+	 * Successive calls with the same source feed is a no-op.
 	 * 
-	 * @param module
-	 *            the instance URN of the market data module, can be null
+	 * @param feed
+	 *            the market data feed, can be null
 	 * @throws IllegalStateException
 	 *             if the module framework is in an unexpected state, or if an unrecoverable error
 	 *             occurs
 	 */
-	void setSourceModule(ModuleURN module);
+	void setSourceFeed(IMarketDataFeed feed);
 
 	/**
 	 * Starts the data flow for the given key.

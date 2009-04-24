@@ -142,7 +142,7 @@ public final class MarketDataManager {
 								e, mActiveFeed.getName());
 					}
 				}
-				mMarketData.setSourceModule(mActiveFeed.getURN());
+				mMarketData.setSourceFeed(mActiveFeed);
 				final FeedStatusEvent event;
 				final FeedStatus oldStatus = oldFeed == null ? FeedStatus.OFFLINE : oldFeed
 						.getStatus();

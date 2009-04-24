@@ -3,7 +3,7 @@ package org.marketcetera.photon.marketdata;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.EventListener;
 import java.util.EventObject;
 import java.util.List;
@@ -19,6 +19,7 @@ import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
+import org.apache.commons.lang.Validate;
 import org.eclipse.core.runtime.ListenerList;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.marketdata.Capability;
@@ -42,7 +43,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public final class MarketDataFeed {
+public final class MarketDataFeed implements IMarketDataFeed {
 
 	static final String MARKET_DATA_PROVIDER_TYPE = "mdata"; //$NON-NLS-1$
 	private static final String FEED_STATUS_ATTRIBUTE = "FeedStatus"; //$NON-NLS-1$
@@ -57,7 +58,6 @@ public final class MarketDataFeed {
 	private final ModuleURN mInstanceURN;
 	private final AbstractMarketDataModuleMXBean mMBeanProxy;
 	private final String mDescription;
-	private final Set<Capability> mCapabilities;
 
 	/**
 	 * Contructor. An exception will be thrown if the supplied URN is invalid or
@@ -91,7 +91,6 @@ public final class MarketDataFeed {
 				throw new I18NException(Messages.MARKET_DATA_FEED_INVALID_INTERFACE);
 			mMBeanProxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
 					AbstractMarketDataModuleMXBean.class, true);
-			mCapabilities = Collections.unmodifiableSet(mMBeanProxy.getCapabilities());
 			((NotificationEmitter) mMBeanProxy).addNotificationListener(
 					mFeedStatusNotificationListener, sFeedStatusFilter, null);
 		} catch (MXBeanOperationException e) {
@@ -107,11 +106,7 @@ public final class MarketDataFeed {
 		}
 	}
 
-	/**
-	 * Returns the singleton instance URN for the feed provider.
-	 * 
-	 * @return the singleton instance URN
-	 */
+	@Override
 	public ModuleURN getURN() {
 		return mInstanceURN;
 	}
@@ -125,11 +120,7 @@ public final class MarketDataFeed {
 		return mInstanceURN.parent().toString();
 	}
 
-	/**
-	 * Returns a human readable name for the feed.
-	 * 
-	 * @return human readable name for the feed
-	 */
+	@Override
 	public String getName() {
 		return mDescription;
 	}
@@ -150,13 +141,16 @@ public final class MarketDataFeed {
 		}
 	}
 
-	/**
-	 * Returns the feed's capabilities.
-	 * 
-	 * @return the feed capabilities
-	 */
-	Set<Capability> getCapabilities() {
-		return mCapabilities;
+	@Override
+	public Set<Capability> getCapabilities() {
+		try {
+			Set<Capability> capabilities = mMBeanProxy.getCapabilities();
+			Validate.noNullElements(capabilities);
+			return capabilities;
+		} catch (Exception e) {
+			Messages.MARKET_DATA_FEED_FAILED_TO_DETERMINE_CAPABILITY.error(this, e, mInstanceURN);
+			return EnumSet.of(Capability.UNKNOWN);
+		}
 	}
 
 	/**

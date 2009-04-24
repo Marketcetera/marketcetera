@@ -4,6 +4,7 @@ import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage3P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -44,6 +45,8 @@ public interface Messages {
 			LOGGER, "market_data_feed.invalid_interface"); //$NON-NLS-1$
 	static final I18NMessage1P MARKET_DATA_FEED_INVALID_STATUS_NOTIFICATION = new I18NMessage1P(
 			LOGGER, "market_data_feed.invalid_status_notification"); //$NON-NLS-1$
+	static final I18NMessage1P MARKET_DATA_FEED_FAILED_TO_DETERMINE_CAPABILITY = new I18NMessage1P(
+			LOGGER, "market_data_feed.failed_to_determine_capability"); //$NON-NLS-1$
 	
 	static final I18NMessage1P MARKET_DATA_MANAGER_IGNORING_PROVIDER = new I18NMessage1P(
 			LOGGER, "market_data_manager.ignoring_provider"); //$NON-NLS-1$
@@ -66,7 +69,9 @@ public interface Messages {
 			"data_flow_manager.unexpected_data"); //$NON-NLS-1$
 	static final I18NMessage2P DATA_FLOW_MANAGER_UNEXPECTED_MESSAGE_ID = new I18NMessage2P(LOGGER,
 			"data_flow_manager.unexpected_message_id"); //$NON-NLS-1$
-	static I18NMessage2P DATA_FLOW_MANAGER_EVENT_SYMBOL_MISMATCH = new I18NMessage2P(LOGGER,
+	static final I18NMessage2P DATA_FLOW_MANAGER_EVENT_SYMBOL_MISMATCH = new I18NMessage2P(LOGGER,
 			"data_flow_manager.event_symbol_mismatch"); //$NON-NLS-1$
+	static final I18NMessage3P DATA_FLOW_MANAGER_CAPABILITY_UNSUPPORTED = new I18NMessage3P(LOGGER,
+			"data_flow_manager.capability_unsupported"); //$NON-NLS-1$
 
 }

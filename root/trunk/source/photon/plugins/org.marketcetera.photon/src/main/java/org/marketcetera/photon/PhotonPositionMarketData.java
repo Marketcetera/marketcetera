@@ -245,13 +245,14 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	@Override
 	public void dispose() {
 		if (mDisposed.compareAndSet(false, true)) {
+			Set<Map.Entry<String, SymbolChangeListener>> entries;
 			synchronized (mListeners) {
 				// make a copy since we will be modifying mListeners
-				Set<Map.Entry<String, SymbolChangeListener>> entries = Sets.newHashSet(mListeners
+				entries = Sets.newHashSet(mListeners
 						.entries());
-				for (Map.Entry<String, SymbolChangeListener> entry : entries) {
-					removeSymbolChangeListener(entry.getKey(), entry.getValue());
-				}
+			}
+			for (Map.Entry<String, SymbolChangeListener> entry : entries) {
+				removeSymbolChangeListener(entry.getKey(), entry.getValue());
 			}
 		}
 	}
