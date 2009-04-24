@@ -2,8 +2,10 @@ package org.marketcetera.photon.internal.marketdata;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.EnumSet;
 
 import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
@@ -35,7 +37,7 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 	 */
 	@Inject
 	public MarketstatManager(ModuleManager moduleManager) {
-		super(moduleManager);
+		super(moduleManager, EnumSet.of(Capability.MARKET_STAT));
 	}
 
 	@Override

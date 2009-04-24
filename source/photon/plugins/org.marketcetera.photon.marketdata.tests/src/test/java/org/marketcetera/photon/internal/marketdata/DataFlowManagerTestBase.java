@@ -1,6 +1,10 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.stub;
+
 import java.math.BigDecimal;
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Level;
@@ -9,15 +13,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory;
 import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory.MockMarketDataModule;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.trade.MSymbol;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.test.TestCaseBase;
 
 /* $License$ */
@@ -66,6 +74,11 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	 * @return another event to send
 	 */
 	protected abstract Object createEvent2(K key);
+	
+	/**
+	 * @return capabilities that this feed supports
+	 */
+	protected abstract EnumSet<Capability> getSupportedCapabilities();
 
 	/**
 	 * Verify item received event returned by {@link #createEvent1(Key)}
@@ -90,15 +103,17 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	protected MockMarketDataModule mMockMarketDataModule;
 	protected K mKey3;
 	protected AtomicInteger mMessageIds = new AtomicInteger();
+	protected IMarketDataFeed mMockModuleFeed;
 
 	@Before
-	public void before() {
+	public void before() throws Exception {
 		MarketDataManager.getCurrent().reconnectFeed(
 				MockMarketDataModuleFactory.PROVIDER_URN.toString());
 		mMockMarketDataModule = MockMarketDataModuleFactory.sInstance;
 		mMockMarketDataModule.setStatus("AVAILABLE");
 		mFixture = createFixture(ModuleSupport.getModuleManager());
-		mFixture.setSourceModule(MockMarketDataModuleFactory.INSTANCE_URN);
+		mMockModuleFeed = createMockModuleFeed(getSupportedCapabilities());
+		mFixture.setSourceFeed(mMockModuleFeed);
 		mKey1 = createKey1();
 		mItem1 = mFixture.getItem(mKey1);
 		validateInitialConditions(mItem1, mKey1);
@@ -106,6 +121,17 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		mItem2 = mFixture.getItem(mKey2);
 		validateInitialConditions(mItem2, mKey2);
 		mKey3 = createKey3();
+	}
+
+	private IMarketDataFeed createMockModuleFeed(EnumSet<Capability> capabilities) throws I18NException {
+		return createMockFeed(MockMarketDataModuleFactory.INSTANCE_URN, capabilities);
+	}
+
+	private IMarketDataFeed createMockFeed(ModuleURN urn, EnumSet<Capability> capabilities) throws I18NException {
+		IMarketDataFeed mock = mock(IMarketDataFeed.class);
+		stub(mock.getURN()).toReturn(urn);
+		stub(mock.getCapabilities()).toReturn(capabilities);
+		return mock;
 	}
 
 	@After
@@ -187,7 +213,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		validateState2(mItem1);
 
 		// null out the source
-		mFixture.setSourceModule(null);
+		mFixture.setSourceFeed(null);
 		// item should have been reset
 		validateInitialConditions(mItem1, mKey1);
 		// emit first event
@@ -196,7 +222,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		validateInitialConditions(mItem1, mKey1);
 
 		// set the source back
-		mFixture.setSourceModule(MockMarketDataModuleFactory.INSTANCE_URN);
+		mFixture.setSourceFeed(mMockModuleFeed);
 		// item should still be reset
 		validateInitialConditions(mItem1, mKey1);
 		// emit first event again
@@ -266,6 +292,44 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 				mFixture.stopFlow(null);
 			}
 		};
+	}
+	
+	@Test
+	public void testFeedDoesNotRequestUnsupportedData() throws Exception {
+		EnumSet<Capability> supported = getSupportedCapabilities();
+		EnumSet<Capability> unsupported = EnumSet.complementOf(supported);
+		unsupported.remove(Capability.UNKNOWN);
+		// start flow
+		mFixture.startFlow(mKey1);
+
+		for (Capability capability : unsupported) {
+			mFixture.setSourceFeed(mMockModuleFeed);
+			// item should still be reset
+			validateInitialConditions(mItem1, mKey1);
+			// emit second event
+			emit(createEvent2(mKey1));
+			// item should have changed
+			validateState2(mItem1);
+			// set unsupported source, bogus urn is okay since the feed should never be contacted
+			mFixture.setSourceFeed(createMockFeed(new ModuleURN("abc:abc:abc:abc"), EnumSet.of(capability)));
+			// item should have been reset
+			validateInitialConditions(mItem1, mKey1);
+			// emit first event
+			emit(createEvent1(mKey1));
+			// item should not have changed
+			validateInitialConditions(mItem1, mKey1);
+		}
+		// make sure a feed with some unsupported capabilities works
+		mFixture.setSourceFeed(createMockModuleFeed(EnumSet.complementOf(EnumSet.of(Capability.UNKNOWN))));
+		// item should still be reset
+		validateInitialConditions(mItem1, mKey1);
+		// emit first event again
+		emit(createEvent1(mKey1));
+		// should get it this time
+		validateState1(mItem1);
+
+		// finish
+		mFixture.stopFlow(mKey1);
 	}
 
 	private void validateRequest(K key) {

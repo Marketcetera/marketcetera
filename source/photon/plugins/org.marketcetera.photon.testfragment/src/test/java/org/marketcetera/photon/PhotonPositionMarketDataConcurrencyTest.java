@@ -8,9 +8,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.position.MarketDataSupport.SymbolChangeEvent;
@@ -220,10 +217,11 @@ public class PhotonPositionMarketDataConcurrencyTest extends MultiThreadedTestBa
 
 	@Before
 	public void before() {
-		BasicConfigurator.configure();
-		Logger.getLogger("LatestTicksThread").setLevel(Level.TRACE);
-		Logger.getLogger("MarketstatsThread").setLevel(Level.TRACE);
-		Logger.getLogger("ListenerThread").setLevel(Level.TRACE);
+		// TODO: Once we upgrade to Eclipse 3.5, we can have logging in Photon unit tests 
+		// BasicConfigurator.configure();
+		// Logger.getLogger("LatestTicksThread").setLevel(Level.TRACE);
+		// Logger.getLogger("MarketstatsThread").setLevel(Level.TRACE);
+		// Logger.getLogger("ListenerThread").setLevel(Level.TRACE);
 		mMockMarketData = mock(IMarketData.class);
 		mSessionStartTime = new SessionStartTimeProvider();
 		mFixture = new PhotonPositionMarketData(mMockMarketData, mSessionStartTime);

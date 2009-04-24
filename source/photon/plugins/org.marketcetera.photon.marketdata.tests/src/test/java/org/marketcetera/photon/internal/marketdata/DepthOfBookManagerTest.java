@@ -8,12 +8,14 @@ import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqu
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.junit.Test;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
@@ -35,7 +37,7 @@ public class DepthOfBookManagerTest extends DataFlowManagerTestBase<MDDepthOfBoo
 	@Override
 	protected IDataFlowManager<MDDepthOfBookImpl, DepthOfBookKey> createFixture(
 			ModuleManager moduleManager) {
-		return new DepthOfBookManager(moduleManager);
+		return new DepthOfBookManager(moduleManager, getSupportedCapabilities());
 	}
 
 	@Override
@@ -51,6 +53,11 @@ public class DepthOfBookManagerTest extends DataFlowManagerTestBase<MDDepthOfBoo
 	@Override
 	protected DepthOfBookKey createKey3() {
 		return new DepthOfBookKey("JAVA", Content.TOTAL_VIEW);
+	}
+
+	@Override
+	protected EnumSet<Capability> getSupportedCapabilities() {
+		return EnumSet.of(Capability.LEVEL_2, Capability.OPEN_BOOK, Capability.TOTAL_VIEW);
 	}
 
 	@Override

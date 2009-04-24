@@ -8,8 +8,10 @@ import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
 
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
@@ -47,6 +49,11 @@ public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick,
 	@Override
 	protected LatestTickKey createKey3() {
 		return new LatestTickKey("JAVA");
+	}
+
+	@Override
+	protected EnumSet<Capability> getSupportedCapabilities() {
+		return EnumSet.of(Capability.LATEST_TICK);
 	}
 
 	@Override

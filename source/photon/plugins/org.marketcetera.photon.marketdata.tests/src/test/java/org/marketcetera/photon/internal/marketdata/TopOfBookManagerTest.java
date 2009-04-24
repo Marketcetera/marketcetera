@@ -7,6 +7,9 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
 
+import java.util.EnumSet;
+
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
@@ -43,6 +46,11 @@ public class TopOfBookManagerTest extends DataFlowManagerTestBase<MDTopOfBook, T
 	@Override
 	protected TopOfBookKey createKey3() {
 		return new TopOfBookKey("GIB");
+	}
+
+	@Override
+	protected EnumSet<Capability> getSupportedCapabilities() {
+		return EnumSet.of(Capability.TOP_OF_BOOK);
 	}
 
 	@Override

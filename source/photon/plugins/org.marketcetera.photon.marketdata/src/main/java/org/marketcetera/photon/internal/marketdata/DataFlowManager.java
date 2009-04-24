@@ -1,10 +1,14 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.module.DataFlowException;
 import org.marketcetera.module.InvalidURNException;
 import org.marketcetera.module.MXBeanOperationException;
@@ -14,6 +18,7 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleNotFoundException;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.model.marketdata.impl.MDItemImpl;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
@@ -40,6 +45,7 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 	private final ModuleManager mModuleManager;
 	private final Map<K, ModuleURN> mSubscribers = new HashMap<K, ModuleURN>();
 	private final Map<K, T> mItems = new HashMap<K, T>();
+	private final Set<Capability> mRequiredCapabilities;
 	private ModuleURN mSourceModule;
 
 	/**
@@ -47,12 +53,17 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 	 * 
 	 * @param moduleManager
 	 *            the module manager
+	 * @param requiredCapabilities
+	 *            the capabilities this manager requires, cannot be empty
 	 * @throws IllegalArgumentException
-	 *             if moduleManager is null
+	 *             if either parameter is null, or if requiredCapabilities is empty
 	 */
-	protected DataFlowManager(ModuleManager moduleManager) {
-		Validate.notNull(moduleManager);
+	protected DataFlowManager(ModuleManager moduleManager, Set<Capability> requiredCapabilities) {
+		Validate.noNullElements(new Object[] { moduleManager, requiredCapabilities });
 		mModuleManager = moduleManager;
+		// would like Sets.immutableEnumSet(requiredCapabilities) which may be in google
+		// collections someday
+		mRequiredCapabilities = Collections.unmodifiableSet(EnumSet.copyOf(requiredCapabilities));
 	}
 
 	@Override
@@ -69,7 +80,8 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 	}
 
 	@Override
-	public final synchronized void setSourceModule(ModuleURN module) {
+	public final synchronized void setSourceFeed(IMarketDataFeed feed) {
+		ModuleURN module = feed == null ? null : feed.getURN();
 		if (mSourceModule == module) {
 			return;
 		}
@@ -78,14 +90,23 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 				stopModule(subscriber);
 			}
 		}
-		mSourceModule = module;
 		for (Map.Entry<K, T> entry : mItems.entrySet()) {
 			resetItem(entry.getKey(), entry.getValue());
 		}
-		if (module != null) {
+		if (feed == null) {
+			mSourceModule = null;
+			return;
+		}
+		Set<Capability> capabilities = feed.getCapabilities();
+		if (capabilities.containsAll(mRequiredCapabilities)) {
+			mSourceModule = module;
 			for (ModuleURN subscriber : mSubscribers.values()) {
 				startModule(subscriber);
 			}
+		} else {
+			mSourceModule = null;
+			Messages.DATA_FLOW_MANAGER_CAPABILITY_UNSUPPORTED.info(this, feed.getName(),
+					capabilities, mRequiredCapabilities);
 		}
 	}
 
@@ -247,7 +268,7 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 			Messages.DATA_FLOW_MANAGER_UNEXPECTED_DATA.warn(DataFlowManager.this, data,
 					getRequest());
 		}
-		
+
 		/**
 		 * Convenience method for subclasses that encounter data with an unexpected id.
 		 * 

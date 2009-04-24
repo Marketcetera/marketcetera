@@ -8,11 +8,16 @@ import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.photon.internal.marketdata.IDepthOfBookManager.Factory;
+import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDItem;
@@ -24,6 +29,8 @@ import org.marketcetera.photon.model.marketdata.impl.MDItemImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl;
+
+import com.google.common.collect.ImmutableSet;
 
 /* $License$ */
 
@@ -40,41 +47,78 @@ public class MarketDataTest {
 	private ILatestTickManager mMockLatestTickManager;
 	private ITopOfBookManager mMockTopOfBookManager;
 	private IMarketstatManager mMockMarketstatManager;
-	private IDepthOfBookManager mMockDepthOfBookManager;
+	private IDepthOfBookManager mMockLevel2Manager;
+	private IDepthOfBookManager mMockTotalViewManager;
+	private IDepthOfBookManager mMockOpenBookManager;
+	private Factory mDepthOfBookFactory;
 
 	@Before
 	public void before() {
 		mMockLatestTickManager = mock(ILatestTickManager.class);
 		mMockTopOfBookManager = mock(ITopOfBookManager.class);
 		mMockMarketstatManager = mock(IMarketstatManager.class);
-		mMockDepthOfBookManager = mock(IDepthOfBookManager.class);
-		mFixture = new MarketData(mMockLatestTickManager, mMockTopOfBookManager, mMockMarketstatManager, mMockDepthOfBookManager);
+		mMockLevel2Manager = mock(IDepthOfBookManager.class);
+		mMockTotalViewManager = mock(IDepthOfBookManager.class);
+		mMockOpenBookManager = mock(IDepthOfBookManager.class);
+		mDepthOfBookFactory = new IDepthOfBookManager.Factory() {
+			@Override
+			public IDepthOfBookManager create(Set<Capability> capabilities) {
+				switch (capabilities.iterator().next()) {
+				case LEVEL_2:
+					return mMockLevel2Manager;
+				case TOTAL_VIEW:
+					return mMockTotalViewManager;
+				case OPEN_BOOK:
+					return mMockOpenBookManager;
+				default:
+					throw new AssertionError();
+				}
+			}
+		};
+		mFixture = new MarketData(mMockLatestTickManager, mMockTopOfBookManager,
+				mMockMarketstatManager, mDepthOfBookFactory);
 	}
-	
+
 	@Test
 	public void testNulls() throws Exception {
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
-				new MarketData(null, mMockTopOfBookManager, mMockMarketstatManager, mMockDepthOfBookManager);
+				new MarketData(null, mMockTopOfBookManager, mMockMarketstatManager,
+						mDepthOfBookFactory);
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
-				new MarketData(mMockLatestTickManager, null, mMockMarketstatManager, mMockDepthOfBookManager);
+				new MarketData(mMockLatestTickManager, null, mMockMarketstatManager,
+						mDepthOfBookFactory);
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
-				new MarketData(mMockLatestTickManager, mMockTopOfBookManager, null, mMockDepthOfBookManager);
+				new MarketData(mMockLatestTickManager, mMockTopOfBookManager, null,
+						mDepthOfBookFactory);
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
-				new MarketData(mMockLatestTickManager, mMockTopOfBookManager, mMockMarketstatManager, null);
+				new MarketData(mMockLatestTickManager, mMockTopOfBookManager,
+						mMockMarketstatManager, null);
+			}
+		};
+		new ExpectedFailure<IllegalArgumentException>(null) {
+			@Override
+			protected void run() throws Exception {
+				new MarketData(mMockLatestTickManager, mMockTopOfBookManager,
+						mMockMarketstatManager, new IDepthOfBookManager.Factory() {
+							@Override
+							public IDepthOfBookManager create(Set<Capability> capabilities) {
+								return null;
+							}
+						});
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>(null) {
@@ -120,7 +164,8 @@ public class MarketDataTest {
 	 */
 	@Test
 	public void testGetLatestTick() {
-		new ReferenceCountTestTemplate<MDLatestTickImpl, LatestTickKey, ILatestTickManager>(new LatestTickKey("IBM"), new LatestTickKey("METC"), mMockLatestTickManager) {
+		new ReferenceCountTestTemplate<MDLatestTickImpl, LatestTickKey, ILatestTickManager>(
+				new LatestTickKey("IBM"), new LatestTickKey("METC"), mMockLatestTickManager) {
 
 			@Override
 			MDLatestTickImpl createItem(LatestTickKey key) {
@@ -135,7 +180,7 @@ public class MarketDataTest {
 				assertThat(ref.get().getSymbol(), is(key.getSymbol()));
 				return ref;
 			}
-			
+
 		};
 	}
 
@@ -144,7 +189,8 @@ public class MarketDataTest {
 	 */
 	@Test
 	public void testTopOfBook() {
-		new ReferenceCountTestTemplate<MDTopOfBookImpl, TopOfBookKey, ITopOfBookManager>(new TopOfBookKey("IBM"), new TopOfBookKey("METC"), mMockTopOfBookManager) {
+		new ReferenceCountTestTemplate<MDTopOfBookImpl, TopOfBookKey, ITopOfBookManager>(
+				new TopOfBookKey("IBM"), new TopOfBookKey("METC"), mMockTopOfBookManager) {
 
 			@Override
 			MDTopOfBookImpl createItem(TopOfBookKey key) {
@@ -159,7 +205,7 @@ public class MarketDataTest {
 				assertThat(ref.get().getSymbol(), is(key.getSymbol()));
 				return ref;
 			}
-			
+
 		};
 	}
 
@@ -168,7 +214,8 @@ public class MarketDataTest {
 	 */
 	@Test
 	public void testMarketstat() {
-		new ReferenceCountTestTemplate<MDMarketstatImpl, MarketstatKey, IMarketstatManager>(new MarketstatKey("GOOG"), new MarketstatKey("XYZ"), mMockMarketstatManager) {
+		new ReferenceCountTestTemplate<MDMarketstatImpl, MarketstatKey, IMarketstatManager>(
+				new MarketstatKey("GOOG"), new MarketstatKey("XYZ"), mMockMarketstatManager) {
 
 			@Override
 			MDMarketstatImpl createItem(MarketstatKey key) {
@@ -183,90 +230,97 @@ public class MarketDataTest {
 				assertThat(ref.get().getSymbol(), is(key.getSymbol()));
 				return ref;
 			}
-			
+
 		};
 	}
 
 	/**
-	 * Test market depth statistic reference counting.
+	 * Test Level 2 reference counting.
 	 */
 	@Test
-	public void testDepthOfBook() {
-		new ReferenceCountTestTemplate<MDDepthOfBookImpl, DepthOfBookKey, IDepthOfBookManager>(new DepthOfBookKey("GOOG", Content.LEVEL_2), new DepthOfBookKey("GOOG", Content.OPEN_BOOK), mMockDepthOfBookManager) {
-
-			@Override
-			MDDepthOfBookImpl createItem(DepthOfBookKey key) {
-				MDDepthOfBookImpl item = new MDDepthOfBookImpl();
-				item.setSymbol(key.getSymbol());
-				item.setProduct(key.getProduct());
-				return item;
-			}
-
-			@Override
-			IMarketDataReference<MDDepthOfBook> getReferenceAndValidate(DepthOfBookKey key) {
-				IMarketDataReference<MDDepthOfBook> ref = mFixture.getDepthOfBook(key.getSymbol(), key.getProduct());
-				assertThat(ref.get().getSymbol(), is(key.getSymbol()));
-				assertThat(ref.get().getProduct(), is(key.getProduct()));
-				return ref;
-			}
-			
-		};
+	public void testLevel2() {
+		new DepthOfBookReferenceCountTestTemplate(Content.LEVEL_2, mMockLevel2Manager);
 	}
 
+	/**
+	 * Test TotalView reference counting.
+	 */
+	@Test
+	public void testTotalView() {
+		new DepthOfBookReferenceCountTestTemplate(Content.TOTAL_VIEW, mMockTotalViewManager);
+	}
+
+	/**
+	 * Test OpenBook reference counting.
+	 */
+	@Test
+	public void testOpenBook() {
+		new DepthOfBookReferenceCountTestTemplate(Content.OPEN_BOOK, mMockOpenBookManager);
+	}
+
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testSetSourceModule() throws Exception {
-		ModuleURN moduleURN = new ModuleURN("abc:abc:abc:abc");
-		mFixture.setSourceModule(moduleURN);
-		verify(mMockLatestTickManager).setSourceModule(moduleURN);
-		verify(mMockTopOfBookManager).setSourceModule(moduleURN);
-		verify(mMockMarketstatManager).setSourceModule(moduleURN);
-		verify(mMockDepthOfBookManager).setSourceModule(moduleURN);
-		moduleURN = new ModuleURN("abc:abc:abc:abc1");
-		mFixture.setLatestTickSourceModule(moduleURN);
-		verify(mMockLatestTickManager).setSourceModule(moduleURN);
-		verify(mMockTopOfBookManager, never()).setSourceModule(moduleURN);
-		verify(mMockMarketstatManager, never()).setSourceModule(moduleURN);
-		verify(mMockDepthOfBookManager, never()).setSourceModule(moduleURN);
-		moduleURN = new ModuleURN("abc:abc:abc:abc2");
-		mFixture.setTopOfBookSourceModule(moduleURN);
-		verify(mMockLatestTickManager, never()).setSourceModule(moduleURN);
-		verify(mMockTopOfBookManager).setSourceModule(moduleURN);
-		verify(mMockMarketstatManager, never()).setSourceModule(moduleURN);
-		verify(mMockDepthOfBookManager, never()).setSourceModule(moduleURN);
-		moduleURN = new ModuleURN("abc:abc:abc:abc3");
-		mFixture.setMarketstatSourceModule(moduleURN);
-		verify(mMockLatestTickManager, never()).setSourceModule(moduleURN);
-		verify(mMockTopOfBookManager, never()).setSourceModule(moduleURN);
-		verify(mMockMarketstatManager).setSourceModule(moduleURN);
-		verify(mMockDepthOfBookManager, never()).setSourceModule(moduleURN);
-		moduleURN = new ModuleURN("abc:abc:abc:abc4");
-		mFixture.setDepthOfBookSourceModule(moduleURN);
-		verify(mMockLatestTickManager, never()).setSourceModule(moduleURN);
-		verify(mMockTopOfBookManager, never()).setSourceModule(moduleURN);
-		verify(mMockMarketstatManager, never()).setSourceModule(moduleURN);
-		verify(mMockDepthOfBookManager).setSourceModule(moduleURN);
+		 ImmutableSet<IDataFlowManager<? extends MDItemImpl, ? extends Key<? extends MDItem>>> managers = ImmutableSet
+				.of(mMockLatestTickManager, mMockTopOfBookManager, mMockMarketstatManager,
+						mMockLevel2Manager, mMockTotalViewManager, mMockOpenBookManager);
+		IMarketDataFeed mockFeed = mock(IMarketDataFeed.class);
+		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc"));
+		mFixture.setSourceFeed(mockFeed);
+		for (IDataFlowManager<?, ?> manager : managers) {
+			verify(manager).setSourceFeed(mockFeed);
+		}
+		mockFeed = mock(IMarketDataFeed.class);
+		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc1"));
+		mFixture.setLatestTickSourceModule(mockFeed);
+		verifyOnlyOneSourceModuleSet(managers, mockFeed, mMockLatestTickManager);
+		mockFeed = mock(IMarketDataFeed.class);
+		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc2"));
+		mFixture.setTopOfBookSourceModule(mockFeed);
+		verifyOnlyOneSourceModuleSet(managers, mockFeed, mMockTopOfBookManager);
+		mockFeed = mock(IMarketDataFeed.class);
+		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc3"));
+		mFixture.setMarketstatSourceModule(mockFeed);
+		verifyOnlyOneSourceModuleSet(managers, mockFeed, mMockMarketstatManager);
+		mockFeed = mock(IMarketDataFeed.class);
+		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc4"));
+		mFixture.setLevel2SourceModule(mockFeed);
+		verifyOnlyOneSourceModuleSet(managers, mockFeed, mMockLevel2Manager);
 	}
-	
+
+	private void verifyOnlyOneSourceModuleSet(
+			ImmutableSet<IDataFlowManager<? extends MDItemImpl, ? extends Key<? extends MDItem>>> managers,
+			IMarketDataFeed mockFeed, IDataFlowManager<?, ?> m) {
+		for (IDataFlowManager<?, ?> manager : managers) {
+			if (manager == m)
+				verify(manager).setSourceFeed(mockFeed);
+			else
+				verify(manager, never()).setSourceFeed(mockFeed);
+		}
+	}
+
 	private abstract class ReferenceCountTestTemplate<T extends MDItemImpl, K extends Key<? super T>, M extends IDataFlowManager<T, K>> {
-		
+
 		private K mKey2;
 		private K mKey1;
 		private M mManager;
+
 		public ReferenceCountTestTemplate(K key1, K key2, M manager) {
 			mKey1 = key1;
 			mKey2 = key2;
 			mManager = manager;
 			run();
 		}
+
 		abstract T createItem(K key);
-		
+
 		abstract IMarketDataReference<? extends MDItem> getReferenceAndValidate(K key);
-		
+
 		private void run() {
-			T mockIBMTick = createItem(mKey1);
-			T mockMETCTick = createItem(mKey2);
-			stub(mManager.getItem(mKey1)).toReturn(mockIBMTick);
-			stub(mManager.getItem(mKey2)).toReturn(mockMETCTick);
+			T mockTick1 = createItem(mKey1);
+			T mockTick2 = createItem(mKey2);
+			stub(mManager.getItem(mKey1)).toReturn(mockTick1);
+			stub(mManager.getItem(mKey2)).toReturn(mockTick2);
 			// get a reference
 			IMarketDataReference<? extends MDItem> ref1 = getReferenceAndValidate(mKey1);
 			// start flow should have been called
@@ -290,5 +344,31 @@ public class MarketDataTest {
 			verify(mManager, times(2)).stopFlow(mKey1);
 			verify(mManager).stopFlow(mKey2);
 		}
+	}
+	
+	private class DepthOfBookReferenceCountTestTemplate extends
+			ReferenceCountTestTemplate<MDDepthOfBookImpl, DepthOfBookKey, IDepthOfBookManager> {
+
+		public DepthOfBookReferenceCountTestTemplate(Content content, IDepthOfBookManager manager) {
+			super(new DepthOfBookKey("GOOG", content), new DepthOfBookKey("IBM", content), manager);
+		}
+
+		@Override
+		MDDepthOfBookImpl createItem(DepthOfBookKey key) {
+			MDDepthOfBookImpl item = new MDDepthOfBookImpl();
+			item.setSymbol(key.getSymbol());
+			item.setProduct(key.getProduct());
+			return item;
+		}
+
+		@Override
+		IMarketDataReference<MDDepthOfBook> getReferenceAndValidate(DepthOfBookKey key) {
+			IMarketDataReference<MDDepthOfBook> ref = mFixture.getDepthOfBook(key.getSymbol(), key
+					.getProduct());
+			assertThat(ref.get().getSymbol(), is(key.getSymbol()));
+			assertThat(ref.get().getProduct(), is(key.getProduct()));
+			return ref;
+		}
+
 	}
 }

@@ -1,8 +1,10 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
 
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
@@ -34,7 +36,7 @@ public class LatestTickManager extends DataFlowManager<MDLatestTickImpl, LatestT
 	 */
 	@Inject
 	public LatestTickManager(ModuleManager moduleManager) {
-		super(moduleManager);
+		super(moduleManager, EnumSet.of(Capability.LATEST_TICK));
 	}
 
 	@Override

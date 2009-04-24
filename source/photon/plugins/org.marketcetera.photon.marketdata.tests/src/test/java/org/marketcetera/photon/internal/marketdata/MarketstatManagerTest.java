@@ -9,9 +9,11 @@ import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqu
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.EnumSet;
 
 import org.junit.Test;
 import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
@@ -52,6 +54,11 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 	@Override
 	protected MarketstatKey createKey3() {
 		return new MarketstatKey("GIB");
+	}
+
+	@Override
+	protected EnumSet<Capability> getSupportedCapabilities() {
+		return EnumSet.of(Capability.MARKET_STAT);
 	}
 
 	@Override
