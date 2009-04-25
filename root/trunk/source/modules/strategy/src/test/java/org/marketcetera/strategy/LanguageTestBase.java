@@ -1540,13 +1540,17 @@ public abstract class LanguageTestBase
         // add symbol
         AbstractRunningStrategy.setProperty("symbol",
                                             "METC");
-        expectedOrder.setSymbol(new MSymbol("METC"));     
+        expectedOrder.setSymbol(new MSymbol("METC"));   
         doOrderTest(strategy,
                     new OrderSingle[] { expectedOrder },
                     cumulativeOrders);
         // now do another couple of runs to test the order tracking feature
         OrderSingle expectedOrder2 = Factory.getInstance().createOrderSingle();
         AbstractRunningStrategy.getProperties().clear();
+        AbstractRunningStrategy.setProperty("orderType",
+                                            OrderType.Market.name());
+        AbstractRunningStrategy.setProperty("quantity",
+                                            "10000");
         AbstractRunningStrategy.setProperty("account",
                                             "some other account");
         expectedOrder2.setAccount("some other account");
@@ -1559,6 +1563,8 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("side",
                                             Side.SellShort.name());
         expectedOrder2.setSide(Side.SellShort);
+        expectedOrder2.setOrderType(OrderType.Market);
+        expectedOrder2.setQuantity(new BigDecimal("10000"));
         cumulativeOrders.add(expectedOrder2);
         doOrderTest(strategy,
                     new OrderSingle[] { expectedOrder2 },
@@ -1566,6 +1572,10 @@ public abstract class LanguageTestBase
         // three time's a charm
         OrderSingle expectedOrder3 = Factory.getInstance().createOrderSingle();
         AbstractRunningStrategy.getProperties().clear();
+        AbstractRunningStrategy.setProperty("orderType",
+                                            OrderType.Market.name());
+        AbstractRunningStrategy.setProperty("quantity",
+                                            "10000");
         AbstractRunningStrategy.setProperty("account",
                                             "still another account");
         expectedOrder3.setAccount("still another account");
@@ -1578,6 +1588,8 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("side",
                                             Side.Sell.name());
         expectedOrder3.setSide(Side.Sell);
+        expectedOrder3.setOrderType(OrderType.Market);
+        expectedOrder3.setQuantity(new BigDecimal("10000"));
         cumulativeOrders.add(expectedOrder3);
         doOrderTest(strategy,
                     new OrderSingle[] { expectedOrder3 },
@@ -1641,6 +1653,18 @@ public abstract class LanguageTestBase
         runningStrategy.onTrade(tradeEvent);
         assertEquals("0",
                      AbstractRunningStrategy.getProperty("ordersCanceled"));
+        AbstractRunningStrategy.setProperty("price",
+                                            "1000");
+        AbstractRunningStrategy.setProperty("quantity",
+                                            "500");
+        AbstractRunningStrategy.setProperty("side",
+                                            Side.Sell.toString());
+        AbstractRunningStrategy.setProperty("symbol",
+                                            "METC");
+        AbstractRunningStrategy.setProperty("orderType",
+                                            OrderType.Market.name());
+        AbstractRunningStrategy.setProperty("quantity",
+                                            "10000");
         // create an order to cancel
         runningStrategy.onAsk(askEvent);
         // trigger cancel
@@ -1690,6 +1714,9 @@ public abstract class LanguageTestBase
         // add symbol
         AbstractRunningStrategy.setProperty("symbol",
                                             "METC");
+        // add type
+        AbstractRunningStrategy.setProperty("orderType",
+                                            OrderType.Market.name());
         // try to cancel an order with a null orderID
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
                                             outputURN);
@@ -1781,6 +1808,9 @@ public abstract class LanguageTestBase
         // add time-in-force
         AbstractRunningStrategy.setProperty("timeInForce",
                                             TimeInForce.Day.toString());
+        // add type
+        AbstractRunningStrategy.setProperty("orderType",
+                                            OrderType.Market.name());
         // create a strategy to use as our test vehicle
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
                                             outputURN);
@@ -3293,6 +3323,10 @@ public abstract class LanguageTestBase
                                             Side.Sell.toString());
         AbstractRunningStrategy.setProperty("symbol",
                                             "METC");
+        AbstractRunningStrategy.setProperty("orderType",
+                                            OrderType.Market.name());
+        AbstractRunningStrategy.setProperty("quantity",
+                                            "10000");
         // generate expected order
         List<ExecutionReport> expectedExecutionReports = new ArrayList<ExecutionReport>();
         StrategyImpl runningStrategy = getRunningStrategy(theStrategy);
@@ -3306,6 +3340,8 @@ public abstract class LanguageTestBase
             expectedOrder.setQuantity(new BigDecimal("500"));
             expectedOrder.setSide(Side.Sell);
             expectedOrder.setSymbol(new MSymbol("METC"));
+            expectedOrder.setOrderType(OrderType.Market);
+            expectedOrder.setQuantity(new BigDecimal(10000));
             String orderIDString = AbstractRunningStrategy.getProperty("orderID");
             if(orderIDString != null) {
                 orderID = new OrderID(orderIDString);

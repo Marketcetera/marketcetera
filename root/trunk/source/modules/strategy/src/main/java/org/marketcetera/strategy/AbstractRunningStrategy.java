@@ -13,6 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.marketcetera.client.OrderValidationException;
+import org.marketcetera.client.Validations;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.EventBase;
@@ -513,6 +515,15 @@ public abstract class AbstractRunningStrategy
         if(inOrder == null ||
            inOrder.getOrderID() == null) {
             StrategyModule.log(LogEvent.warn(INVALID_ORDER,
+                                             String.valueOf(strategy)),
+                               strategy);
+            return null;
+        }
+        try {
+            Validations.validate(inOrder);
+        } catch (OrderValidationException e) {
+            StrategyModule.log(LogEvent.warn(ORDER_VALIDATION_FAILED,
+                                             e,
                                              String.valueOf(strategy)),
                                strategy);
             return null;
