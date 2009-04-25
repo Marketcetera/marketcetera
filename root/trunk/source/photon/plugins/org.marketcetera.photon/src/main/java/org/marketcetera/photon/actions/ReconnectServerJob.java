@@ -112,22 +112,17 @@ public class ReconnectServerJob extends UIJob {
 						assert false;
 						throw new InvocationTargetException(e);
 					}
-					ServerStatusIndicator.setConnected();
 
 					// add listeners
-					final AtomicBoolean isDisconnected = new AtomicBoolean();
 					client.addExceptionListener(new ExceptionListener() {
 						@Override
 						public void exceptionThrown(Exception e) {
 							// When disconnected, client sends continual notifications, so we want
-							// to avoid cluttering the console.  This is assuming that only heartbeat exceptions
-							// have org.marketcetera.client.Messages.ERROR_REMOTE_EXECUTION as the message
-							if (isDisconnected.compareAndSet(false, true)
-									|| getMessage(e) != org.marketcetera.client.Messages.ERROR_REMOTE_EXECUTION) {
+							// to avoid cluttering the console.
+							if (getMessage(e) != org.marketcetera.client.Messages.ERROR_HEARTBEAT_FAILED) {
 								PhotonPlugin.getMainConsoleLogger().error(
-										Messages.CLIENT_EXCEPTION.getText(), e);
-								ServerStatusIndicator.setError();
-							}
+                                                                          Messages.CLIENT_EXCEPTION.getText(), e);
+                            }
 						}
 
 						private I18NMessage getMessage(Exception e) {
@@ -141,22 +136,16 @@ public class ReconnectServerJob extends UIJob {
 							return null;
 						}
 					});
-					client.addServerStatusListener(new ServerStatusListener() {
-						@Override
-						public void receiveServerStatus(boolean status) {
-							if (status && isDisconnected.compareAndSet(true, false)) {
-								// FIXME: If the server is truly connected again, we should set the light
-								// back to green. However, this would be misleading now since execution 
-								// reports are still not being received.
-								// ServerStatusIndicator.setConnected();
-							}
-						}
-					});
+                    ServerNotificationListener serverNotificationListener=
+                        new ServerNotificationListener();
+                    // simulate initial connection notification that
+                    // we missed because it was issued during
+                    // initialization, above.
+                    serverNotificationListener.receiveServerStatus(true);
+					client.addServerStatusListener(serverNotificationListener);
 					client.addReportListener(PhotonPlugin.getDefault()
 							.getPhotonController());
-					client
-							.addBrokerStatusListener(new BrokerNotificationListener(
-									client));
+					client.addBrokerStatusListener(new BrokerNotificationListener(client));
 					try {
 						asyncUpdateBrokers(client.getBrokersStatus());
 					} catch (ConnectionException e) {
@@ -240,6 +229,28 @@ public class ReconnectServerJob extends UIJob {
 			} catch (Exception e) {
 				Messages.BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED.error(this,
 						e, status);
+			}
+		}
+	}
+
+	@ClassVersion("$Id$")
+	static final class ServerNotificationListener implements ServerStatusListener {
+
+		@Override
+		public void receiveServerStatus(boolean status) {
+			try {
+                String text;
+                if (status) {
+                    ServerStatusIndicator.setConnected();
+                    text=Messages.SERVER_NOTIFICATION_SERVER_ALIVE.getText();
+                } else {
+                    ServerStatusIndicator.setDisconnected();
+                    text=Messages.SERVER_NOTIFICATION_SERVER_DEAD.getText();
+                }
+                NotificationManager.getNotificationManager().publish
+                    (Notification.high(text,text,getClass().getName()));
+			} catch (Exception e) {
+				Messages.SERVER_NOTIFICATION_SERVER_ERROR_OCCURRED.error(this,e);
 			}
 		}
 	}
