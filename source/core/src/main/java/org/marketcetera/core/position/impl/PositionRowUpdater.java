@@ -37,8 +37,7 @@ public final class PositionRowUpdater {
     private final PositionRowImpl mPositionRow;
     private final MarketDataSupport mMarketDataSupport;
     private final SymbolChangeListener mSymbolChangeListener;
-    private final ExecutorService mTickExecutor = Executors.newSingleThreadExecutor();
-    private final ExecutorService mClosingPriceExecutor = Executors.newSingleThreadExecutor();
+    private static final ExecutorService sMarketDataUpdateExecutor = Executors.newSingleThreadExecutor();
     private volatile Future<?> mTickFuture;
     private volatile Future<?> mClosingPriceFuture;
     private volatile PositionMetricsCalculator mCalculator;
@@ -115,7 +114,7 @@ public final class PositionRowUpdater {
         mLastTradePrice = tick;
         // since this needs a lock, spawn a new thread to update the tick when the lock is available
         if (mTickFuture != null && !mTickFuture.isDone()) return;
-        mTickFuture = mTickExecutor.submit(new Runnable() {
+        mTickFuture = sMarketDataUpdateExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 Lock lock = mTrades.getReadWriteLock().writeLock();
@@ -140,7 +139,7 @@ public final class PositionRowUpdater {
         mClosePrice = newPrice;
         // since this needs a lock, spawn a new thread to update the tick when the lock is available
         if (mClosingPriceFuture != null && !mClosingPriceFuture.isDone()) return;
-        mClosingPriceFuture = mClosingPriceExecutor.submit(new Runnable() {
+        mClosingPriceFuture = sMarketDataUpdateExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 Lock lock = mTrades.getReadWriteLock().writeLock();
