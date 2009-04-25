@@ -17,7 +17,7 @@ import com.google.common.collect.Sets;
  * Key for depth of book data.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: LatestTickKey.java 10492 2009-04-14 00:11:35Z klim $
+ * @version $Id$
  * @since 1.5.0
  */
 @ClassVersion("$Id$")

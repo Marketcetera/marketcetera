@@ -29,7 +29,7 @@ import org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl;
  * Test {@link LatestTickManager}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: LatestTickManagerTest.java 10495 2009-04-15 21:37:09Z will $
+ * @version $Id$
  * @since 1.5.0
  */
 public class DepthOfBookManagerTest extends DataFlowManagerTestBase<MDDepthOfBook, DepthOfBookKey> {

@@ -8,7 +8,7 @@ package org.marketcetera.photon.internal.marketdata;
  * Test {@link LatestTickKey}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: KeyTest.java 10492 2009-04-14 00:11:35Z klim $
+ * @version $Id$
  * @since 1.5.0
  */
 public class LatestTickKeyTest extends KeyTestBase {
