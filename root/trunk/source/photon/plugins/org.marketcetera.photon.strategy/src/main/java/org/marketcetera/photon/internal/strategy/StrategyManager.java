@@ -14,6 +14,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.management.JMX;
 import javax.management.MBeanServerConnection;
@@ -25,8 +26,13 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -47,6 +53,11 @@ import org.marketcetera.strategy.StrategyModuleFactory;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 
 /* $License$ */
 
@@ -153,22 +164,51 @@ public final class StrategyManager {
 
 	private final ModuleManager mModuleManager = ModuleSupport.getModuleManager();
 
-	private final Map<RemoteStrategyAgent, RemoteAgentManager> mRemoteAgentManagers =
-			new HashMap<RemoteStrategyAgent, RemoteAgentManager>();
+	private final Map<RemoteStrategyAgent, RemoteAgentManager> mRemoteAgentManagers = new HashMap<RemoteStrategyAgent, RemoteAgentManager>();
 
 	/**
 	 * The singleton remote agent
 	 */
 	private RemoteStrategyAgent mRemoteAgent;
 
-	private final WritableList mStrategies =
-			WritableList.withElementType(AbstractStrategyConnection.class);
+	private final WritableList mStrategies = WritableList
+			.withElementType(AbstractStrategyConnection.class);
+
+	private final SetMultimap<IFile, Strategy> mTrackedFiles = Multimaps
+			.synchronizedSetMultimap(HashMultimap.<IFile, Strategy> create());
+
+	private final IResourceDeltaVisitor mResourceDeltaVisitor = new IResourceDeltaVisitor() {
+
+		@Override
+		public boolean visit(IResourceDelta delta) throws CoreException {
+			if (delta.getResource() instanceof IFile && delta.getKind() == IResourceDelta.REMOVED) {
+				Set<Strategy> strategies = ImmutableSet.copyOf(mTrackedFiles.get((IFile) delta.getResource()));
+				for (Strategy strategy : strategies) {
+					removeStrategy(strategy);
+				}
+				return false;
+			}
+			return true;
+		}
+	};
 
 	/**
 	 * This object should only be constructed by {@link Activator}.
 	 */
 	StrategyManager() {
 		restoreState();
+		// we track resource changes so we can unregister strategies when there files
+		// are deleted
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
+			@Override
+			public void resourceChanged(IResourceChangeEvent event) {
+				try {
+					event.getDelta().accept(mResourceDeltaVisitor);
+				} catch (CoreException e) {
+					SLF4JLoggerProxy.error(StrategyManager.this, e);
+				}
+			}
+		}, IResourceChangeEvent.POST_CHANGE);
 	}
 
 	/**
@@ -244,8 +284,8 @@ public final class StrategyManager {
 	public void setParameters(Strategy strategy, Properties parameters) {
 		try {
 			ObjectName objectName = strategy.getURN().toObjectName();
-			StrategyMXBean proxy =
-					JMX.newMXBeanProxy(mMBeanServer, objectName, StrategyMXBean.class);
+			StrategyMXBean proxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
+					StrategyMXBean.class);
 			proxy.setParameters(Util.propertiesToString(parameters));
 			strategy.setParameters(parameters);
 			saveState();
@@ -268,8 +308,8 @@ public final class StrategyManager {
 	public void setRouteToServer(Strategy strategy, boolean routeToServer) {
 		try {
 			ObjectName objectName = strategy.getURN().toObjectName();
-			StrategyMXBean proxy =
-					JMX.newMXBeanProxy(mMBeanServer, objectName, StrategyMXBean.class);
+			StrategyMXBean proxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
+					StrategyMXBean.class);
 			proxy.setIsRountingOrdersToORS(routeToServer);
 			strategy.setRouteToServer(routeToServer);
 			saveState();
@@ -301,13 +341,13 @@ public final class StrategyManager {
 	private void internalRegisterStrategy(IFile file, String className, String displayName,
 			boolean routeToServer, Properties parameters) {
 		try {
-			ModuleURN urn =
-					mModuleManager.createModule(StrategyModuleFactory.PROVIDER_URN, null,
-							className, Language.RUBY, file.getLocation().toFile(), parameters,
-							routeToServer, SinkModuleFactory.INSTANCE_URN);
-			AbstractStrategyConnection strategy =
-					new Strategy(displayName, urn, file, className, routeToServer, parameters);
+			ModuleURN urn = mModuleManager.createModule(StrategyModuleFactory.PROVIDER_URN, null,
+					className, Language.RUBY, file.getLocation().toFile(), parameters,
+					routeToServer, SinkModuleFactory.INSTANCE_URN);
+			Strategy strategy = new Strategy(displayName, urn, file, className, routeToServer,
+					parameters);
 			mStrategies.add(strategy);
+			mTrackedFiles.put(file, strategy);
 		} catch (ModuleException e) {
 			PhotonPlugin.getMainConsoleLogger().error(e.getLocalizedMessage());
 			ExceptUtils.swallow(e);
@@ -332,9 +372,8 @@ public final class StrategyManager {
 
 	public void enableRemoteAgent() {
 		if (mRemoteAgent == null) {
-			mRemoteAgent =
-					new RemoteStrategyAgent(Messages.STRATEGY_MANAGER_REMOTE_AGENT_DISPLAY_NAME
-							.getText());
+			mRemoteAgent = new RemoteStrategyAgent(
+					Messages.STRATEGY_MANAGER_REMOTE_AGENT_DISPLAY_NAME.getText());
 			try {
 				mRemoteAgentManagers.put(mRemoteAgent, new RemoteAgentManager(mModuleManager,
 						mMBeanServer, mRemoteAgent, REMOTE_INSTANCE_NAME));
@@ -417,6 +456,7 @@ public final class StrategyManager {
 			}
 			mModuleManager.deleteModule(urn);
 			mStrategies.remove(strategy);
+			mTrackedFiles.remove(strategy.getFile(), strategy);
 			saveState();
 		} catch (ModuleException e) {
 			PhotonPlugin.getMainConsoleLogger().error(e.getLocalizedMessage());
@@ -475,9 +515,8 @@ public final class StrategyManager {
 					IResource resource = root.findMember(new Path(script));
 					if (resource instanceof IFile) {
 						String className = strategyMem.getString(CLASS_NAME_ATTRIBUTE);
-						boolean routeToServer =
-								strategyMem.getBoolean(ROUTE_TO_SERVER_ATTRIBUTE) == Boolean.TRUE ? true
-										: false;
+						boolean routeToServer = strategyMem.getBoolean(ROUTE_TO_SERVER_ATTRIBUTE) == Boolean.TRUE ? true
+								: false;
 						Properties properties = new Properties();
 						for (IMemento propertyMem : strategyMem.getChildren(PROPERTY_TAG)) {
 							String key = propertyMem.getString(KEY_ATTRIBUTE);

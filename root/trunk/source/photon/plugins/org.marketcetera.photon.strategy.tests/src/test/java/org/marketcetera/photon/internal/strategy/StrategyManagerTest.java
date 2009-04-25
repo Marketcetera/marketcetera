@@ -68,70 +68,69 @@ public class StrategyManagerTest {
 		protected void testWhileRunning(Strategy strategy, StrategyMXBean bean) throws Exception {
 			// do nothing in the template, subclasses can override
 		}
+	}
 
-		private Strategy registerAndAssert(String classname, String displayname, String filename,
-				boolean routeToServer) throws Exception {
-			IFile file = createTemplateStrategy(filename, classname);
-			int size = fixture.getStrategies().size();
-			fixture.registerStrategy(file, classname, displayname, routeToServer);
-			assertThat(fixture.getStrategies().size(), is(size + 1));
-			// assuming strategies are appended to the end of the list...
-			Strategy strategy = (Strategy) fixture.getStrategies().get(size);
-			assertThat(strategy.getFile().getName(), is(filename));
-			assertThat(strategy.getFile(), sameInstance(file));
-			assertThat(strategy.getClassName(), is(classname));
-			assertThat(strategy.getDisplayName(), is(displayname));
-			assertThat(strategy.getRouteToServer(), is(routeToServer));
-			return strategy;
-		}
+	private Strategy registerAndAssert(String classname, String displayname, String filename,
+			boolean routeToServer) throws Exception {
+		IFile file = createTemplateStrategy(filename, classname);
+		int size = fixture.getStrategies().size();
+		fixture.registerStrategy(file, classname, displayname, routeToServer);
+		assertThat(fixture.getStrategies().size(), is(size + 1));
+		// assuming strategies are appended to the end of the list...
+		Strategy strategy = (Strategy) fixture.getStrategies().get(size);
+		assertThat(strategy.getFile().getName(), is(filename));
+		assertThat(strategy.getFile(), sameInstance(file));
+		assertThat(strategy.getClassName(), is(classname));
+		assertThat(strategy.getDisplayName(), is(displayname));
+		assertThat(strategy.getRouteToServer(), is(routeToServer));
+		return strategy;
+	}
 
-		private StrategyMXBean startAndAssert(Strategy strategy) throws Exception {
-			fixture.start(strategy);
-			assertThat(moduleManager.getModuleInfo(strategy.getURN()).getState(),
-					is(ModuleState.STARTED));
-			final StrategyMXBean bean = JMX.newMXBeanProxy(mBeanConnection, strategy.getURN()
-					.toObjectName(), StrategyMXBean.class);
-			// give time for strategy to compile/start since it is run in a separate thread
-			SWTTestUtil.conditionalDelayUnchecked(5, TimeUnit.SECONDS, new Callable<Boolean>() {
+	private StrategyMXBean startAndAssert(Strategy strategy) throws Exception {
+		fixture.start(strategy);
+		assertThat(moduleManager.getModuleInfo(strategy.getURN()).getState(),
+				is(ModuleState.STARTED));
+		final StrategyMXBean bean = JMX.newMXBeanProxy(mBeanConnection, strategy.getURN()
+				.toObjectName(), StrategyMXBean.class);
+		// give time for strategy to compile/start since it is run in a separate thread
+		SWTTestUtil.conditionalDelayUnchecked(5, TimeUnit.SECONDS, new Callable<Boolean>() {
 
-				@Override
-				public Boolean call() throws Exception {
-					return bean.getStatus().equals("RUNNING");
-				}
-			});
-			return bean;
-		}
-
-		private void stopAndAssert(Strategy strategy, final StrategyMXBean bean) throws Exception {
-			bean.interrupt();
-			// give time for strategy to stop since it is run in a separate thread
-			SWTTestUtil.conditionalDelayUnchecked(5, TimeUnit.SECONDS, new Callable<Boolean>() {
-			
-				@Override
-				public Boolean call() throws Exception {
-					return bean.getStatus().equals("STOPPED");
-				}
-			});
-			fixture.stop(strategy);
-			assertThat(moduleManager.getModuleInfo(strategy.getURN()).getState(),
-					is(ModuleState.STOPPED));
-		}
-
-		private void removeAndAssert(Strategy strategy) throws Exception {
-			fixture.removeStrategy(strategy);
-			for (Object object : fixture.getStrategies()) {
-				assertThat(object, not(sameInstance((Object) strategy)));
+			@Override
+			public Boolean call() throws Exception {
+				return bean.getStatus().equals("RUNNING");
 			}
-		}
+		});
+		return bean;
+	}
 
-		private IFile createTemplateStrategy(String filename, String classname) throws Exception {
-			InputStream stream = new RubyStrategyTemplate().createNewScript(classname);
-			IFile file = project.getFile(filename);
-			file.create(stream, true, null);
-			stream.close();
-			return file;
-		}
+	private void stopAndAssert(Strategy strategy, final StrategyMXBean bean) throws Exception {
+		bean.interrupt();
+		// give time for strategy to stop since it is run in a separate thread
+		SWTTestUtil.conditionalDelayUnchecked(5, TimeUnit.SECONDS, new Callable<Boolean>() {
+		
+			@Override
+			public Boolean call() throws Exception {
+				return bean.getStatus().equals("STOPPED");
+			}
+		});
+		fixture.stop(strategy);
+		assertThat(moduleManager.getModuleInfo(strategy.getURN()).getState(),
+				is(ModuleState.STOPPED));
+	}
 
+	private void removeAndAssert(Strategy strategy) throws Exception {
+		fixture.removeStrategy(strategy);
+		for (Object object : fixture.getStrategies()) {
+			assertThat(object, not(sameInstance((Object) strategy)));
+		}
+	}
+
+	private IFile createTemplateStrategy(String filename, String classname) throws Exception {
+		InputStream stream = new RubyStrategyTemplate().createNewScript(classname);
+		IFile file = project.getFile(filename);
+		file.create(stream, true, null);
+		stream.close();
+		return file;
 	}
 
 	@Before
@@ -257,6 +256,34 @@ public class StrategyManagerTest {
 
 	@Test
 	public void verifyStrategyClasspath() throws Exception {
-	    assertNotNull(System.getProperty(org.marketcetera.strategy.Strategy.CLASSPATH_PROPERTYNAME));
+		assertNotNull(System.getProperty(org.marketcetera.strategy.Strategy.CLASSPATH_PROPERTYNAME));
+	}
+	
+	@Test
+	public void verifyStrategyFileDeletion() throws Exception {
+		String filename = "to_delete.test";
+		registerAndAssert("ToDelete", "ToDelete", filename, false);
+		project.getFile(filename).delete(true, null);
+		// strategy should have been unregistered and removed
+		assertThat(fixture.getStrategies().size(), is(0));
+	}
+	
+	@Test
+	public void verifyMultipleStrategyDeletion() throws Exception {
+		String filename = "to_delete.test";
+		Strategy s = registerAndAssert("ToDelete", "ToDelete1", filename, false);
+		fixture.registerStrategy(s.getFile(), "ToDelete", "ToDelete2", false);
+		project.getFile(filename).delete(true, null);
+		// strategy should have been unregistered and removed
+		assertThat(fixture.getStrategies().size(), is(0));
+	}
+	
+	@Test
+	public void verifyProjectDeletion() throws Exception {
+		registerAndAssert("ToDelete", "ToDelete", "to_delete1.test", false);
+		registerAndAssert("ToDelete", "ToDelete", "to_delete2.test", false);
+		project.delete(true, null);
+		// strategy should have been unregistered and removed
+		assertThat(fixture.getStrategies().size(), is(0));
 	}
 }
