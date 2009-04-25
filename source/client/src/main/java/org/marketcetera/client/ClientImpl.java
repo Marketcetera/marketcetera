@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.beans.ExceptionListener;
 
 import javax.jms.JMSException;
+import javax.xml.bind.JAXBException;
 
 /* $License$ */
 /**
@@ -512,7 +513,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                     SLF4JLoggerProxy.debug
                         (HEARTBEATS,"Failed",ex); //$NON-NLS-1$
                     exceptionThrown(new ConnectionException
-                                    (ex,Messages.ERROR_REMOTE_EXECUTION));
+                                    (ex,Messages.ERROR_HEARTBEAT_FAILED));
                 }
                 if (isMarked()) {
                     SLF4JLoggerProxy.debug
@@ -529,51 +530,41 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         if (mContext == null) {
             return;
         }
+        // Close the heartbeat generator first so that it won't
+        // re-create a JMS connection during subsequent shutdown. In
+        // fact, the generator will normally shut down the JMS
+        // connection before it terminates.
+        if (mHeart!=null) {
+            mHeart.markExit();
+            mHeart.interrupt();
+            try {
+                mHeart.join();
+            } catch (InterruptedException ex) {
+                SLF4JLoggerProxy.debug
+                    (this,"Error when joining with heartbeat thread",ex); //$NON-NLS-1$
+                ExceptUtils.interrupt(ex);
+            }
+        }
         setServerAlive(false);
         try {
-            if (mBrokerStatusListener!=null) {
-                mBrokerStatusListener.destroy();
+            if (mServiceClient!=null) {
+                mServiceClient.logout();
             }
         } catch (Exception ex) {
             SLF4JLoggerProxy.debug
-                (this,"Error when closing broker status listener",ex); //$NON-NLS-1$
+                (this,"Error when closing web service client",ex); //$NON-NLS-1$
             ExceptUtils.interrupt(ex);
         } finally {
             try {
-                if (mTradeMessageListener!=null) {
-                    mTradeMessageListener.destroy();
+                if (mContext!=null) {
+                    mContext.close();
                 }
             } catch (Exception ex) {
                 SLF4JLoggerProxy.debug
-                    (this,"Error when closing trade message listener",ex); //$NON-NLS-1$
+                    (this,"Error when closing context",ex); //$NON-NLS-1$
                 ExceptUtils.interrupt(ex);
             } finally {
-                if (mHeart!=null) {
-                    mHeart.markExit();
-                    mHeart.interrupt();
-                }
-                try {
-                    if (mServiceClient!=null) {
-                        mServiceClient.logout();
-                    }
-                } catch (Exception ex) {
-                    SLF4JLoggerProxy.debug
-                        (this,"Error when closing web service client",ex); //$NON-NLS-1$
-                    ExceptUtils.interrupt(ex);
-                } finally {
-                    try {
-                        if (mContext!=null) {
-                            mContext.close();
-                        }
-                    } catch (Exception ex) {
-                        SLF4JLoggerProxy.debug
-                            (this,"Error when closing context",ex); //$NON-NLS-1$
-                        ExceptUtils.interrupt(ex);
-                    } finally {
-                        mToServer = null;
-                        setContext(null);
-                    }
-                }
+                setContext(null);
             }
         }
     }
@@ -625,22 +616,16 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             mServiceClient.login(mParameters.getUsername(),
                                  mParameters.getPassword());
             mService = mServiceClient.getService(Service.class);
-            mHeart = new Heart();
-            mHeart.start();
 
-            JmsManager jmsMgr=new JmsManager
+            mJmsMgr=new JmsManager
                 (cfg.getIncomingConnectionFactory(),
                  cfg.getOutgoingConnectionFactory(),this);
-            mTradeMessageListener =
-                jmsMgr.getIncomingJmsFactory().registerHandlerTMX
-                (new TradeMessageReceiver(),
-                 JmsUtils.getReplyTopicName(getSessionId()),true);
-            mBrokerStatusListener =
-                jmsMgr.getIncomingJmsFactory().registerHandlerBSX
-                (new BrokerStatusReceiver(),Service.BROKER_STATUS_TOPIC,true);
-            mToServer = jmsMgr.getOutgoingJmsFactory().createJmsTemplateX
-                (Service.REQUEST_QUEUE,false);
-            setServerAlive(true);            
+            startJms();
+            mServerAlive=true;
+            notifyServerStatus(true);
+
+            mHeart = new Heart();
+            mHeart.start();
 
             ClientIDFactory idFactory = new ClientIDFactory(
                     mParameters.getIDPrefix(), this);
@@ -730,6 +715,51 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         mParameters = inParameters;
     }
 
+    private void stopJms()
+    {
+        if (mToServer==null) {
+            return;
+        }
+        try {
+            if (mTradeMessageListener!=null) {
+                mTradeMessageListener.destroy();
+            }
+        } catch (Exception ex) {
+            SLF4JLoggerProxy.debug
+                (this,"Error when closing trade message listener",ex); //$NON-NLS-1$
+            ExceptUtils.interrupt(ex);
+        } finally {
+            try {
+                if (mBrokerStatusListener!=null) {
+                    mBrokerStatusListener.destroy();
+                }
+            } catch (Exception ex) {
+                SLF4JLoggerProxy.debug
+                    (this,"Error when closing broker status listener",ex); //$NON-NLS-1$
+                ExceptUtils.interrupt(ex);
+            } finally {
+                mToServer = null;
+            }
+        }
+    }
+
+    private void startJms()
+        throws JAXBException
+    {
+        if (mToServer!=null) {
+            return;
+        } 
+        mTradeMessageListener =
+            mJmsMgr.getIncomingJmsFactory().registerHandlerTMX
+            (new TradeMessageReceiver(),
+             JmsUtils.getReplyTopicName(getSessionId()),true);
+        mBrokerStatusListener =
+            mJmsMgr.getIncomingJmsFactory().registerHandlerBSX
+            (new BrokerStatusReceiver(),Service.BROKER_STATUS_TOPIC,true);
+        mToServer=mJmsMgr.getOutgoingJmsFactory().createJmsTemplateX
+            (Service.REQUEST_QUEUE,false);
+   }
+
     /**
      * Sets the server connection status. If the status changed, the
      * registered callbacks are invoked.
@@ -741,11 +771,23 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         if (mServerAlive==serverAlive) {
             return;
         }
+        if (serverAlive) {
+            try {
+                startJms();
+            } catch (JAXBException ex) {
+                exceptionThrown(new ConnectionException
+                                (ex,Messages.ERROR_CREATING_JMS_CONNECTION));
+                return;
+            }
+        } else {
+            stopJms();
+        }
         mServerAlive=serverAlive;
         notifyServerStatus(isServerAlive());
     }
 
     private volatile AbstractApplicationContext mContext;
+    private volatile JmsManager mJmsMgr;
     private volatile SimpleMessageListenerContainer mTradeMessageListener;
     private volatile SimpleMessageListenerContainer mBrokerStatusListener;
     private volatile JmsOperations mToServer;
