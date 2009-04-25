@@ -3,10 +3,10 @@ package org.marketcetera.marketdata;
 import static org.junit.Assert.*;
 import static org.marketcetera.marketdata.MarketDataRequest.*;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.*;
-import static org.marketcetera.marketdata.Messages.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,9 +15,18 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.Util;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.EventBase;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 /* $License$ */
 
@@ -29,6 +38,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * @since 1.0.0
  */
 public class MarketDataRequestTest
+    implements Messages
 {
     private static final String[] symbols = new String[] { null, "", " ", "METC", "GOOG,ORCL" };
     private static final String[][] symbolArrays = new String[][] { {}, { ""," " }, { "METC" }, { "GOOG","ORCL" } };
@@ -596,6 +606,57 @@ public class MarketDataRequestTest
                         MarketDataRequest.newRequestFromString(requestString.toString());
                     }
                 };
+            }
+        }
+    }
+    /**
+     * Tests that {@link MarketDataRequest.Content#isRelevantTo(Class)} works as expected.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void eventRelevance()
+        throws Exception
+    {
+        new ExpectedFailure<NullPointerException>(null) {
+            protected void run()
+                throws Exception
+            {
+                TOP_OF_BOOK.isRelevantTo(null);
+            }
+        };
+        Set<Class<? extends EventBase>> eventTypes = new HashSet<Class<? extends EventBase>>();
+        eventTypes.add(AskEvent.class);
+        eventTypes.add(BidEvent.class);
+        eventTypes.add(MarketstatEvent.class);
+        eventTypes.add(TradeEvent.class);
+        eventTypes.add(LogEvent.class);
+        Multimap<Content,Class<? extends EventBase>> relevantTypes = HashMultimap.create();
+        relevantTypes.put(TOP_OF_BOOK,
+                          BidEvent.class);
+        relevantTypes.put(TOP_OF_BOOK,
+                          AskEvent.class);
+        relevantTypes.put(OPEN_BOOK,
+                          BidEvent.class);
+        relevantTypes.put(OPEN_BOOK,
+                          AskEvent.class);
+        relevantTypes.put(TOTAL_VIEW,
+                          BidEvent.class);
+        relevantTypes.put(TOTAL_VIEW,
+                          AskEvent.class);
+        relevantTypes.put(LEVEL_2,
+                          BidEvent.class);
+        relevantTypes.put(LEVEL_2,
+                          AskEvent.class);
+        relevantTypes.put(LATEST_TICK,
+                          TradeEvent.class);
+        relevantTypes.put(MARKET_STAT,
+                          MarketstatEvent.class);
+        Set<Content> contents = EnumSet.allOf(Content.class);
+        for(Content content : contents) {
+            for(Class<? extends EventBase> eventType : eventTypes) {
+                assertEquals(relevantTypes.get(content).contains(eventType),
+                             content.isRelevantTo(eventType));
             }
         }
     }
