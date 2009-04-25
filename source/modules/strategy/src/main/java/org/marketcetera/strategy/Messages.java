@@ -78,6 +78,8 @@ public interface Messages
                                                                          "invalid_strategy_name"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_ORDER = new I18NMessage1P(LOGGER,
                                                                 "invalid_order"); //$NON-NLS-1$
+    static final I18NMessage1P ORDER_VALIDATION_FAILED = new I18NMessage1P(LOGGER,
+                                                                           "order_validation_failed"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_CANCEL = new I18NMessage1P(LOGGER,
                                                                   "invalid_cancel"); //$NON-NLS-1$
     static final I18NMessage2P INVALID_ORDERID = new I18NMessage2P(LOGGER,
