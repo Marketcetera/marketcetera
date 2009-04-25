@@ -17,6 +17,10 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.core.Util;
+import org.marketcetera.event.EventBase;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -708,7 +712,38 @@ public class MarketDataRequest
         /**
          * latest trade
          */
-        LATEST_TICK
+        LATEST_TICK;
+        /**
+         * Determines if this content is relevant to the given event class.
+         * 
+         * <p>In this context, relevance is defined as whether an event of
+         * the given class would be appropriate for this type of content.
+         * For example, a <code>TradeEvent</code> would not be relevant
+         * to {@link #TOP_OF_BOOK} but would be relevant to {@link #LATEST_TICK}. 
+         *
+         * @param inEventClass a <code>? extends EventBase</code> value
+         * @return a <code>boolean</code> value
+         * @throws UnsupportedOperationException if the given class is not covered by the logic in this class
+         */
+        public boolean isRelevantTo(Class<? extends EventBase> inEventClass)
+        {
+            switch(this) {
+                case TOP_OF_BOOK :
+                    return QuoteEvent.class.isAssignableFrom(inEventClass);
+                case OPEN_BOOK :
+                    return QuoteEvent.class.isAssignableFrom(inEventClass);
+                case MARKET_STAT :
+                    return (inEventClass.equals(MarketstatEvent.class));
+                case TOTAL_VIEW :
+                    return QuoteEvent.class.isAssignableFrom(inEventClass);
+                case LEVEL_2 :
+                    return QuoteEvent.class.isAssignableFrom(inEventClass);
+                case LATEST_TICK :
+                    return (inEventClass.equals(TradeEvent.class));
+                default :
+                    throw new UnsupportedOperationException();
+            }
+        }
     }
     private static final long serialVersionUID = 1L;
 }
