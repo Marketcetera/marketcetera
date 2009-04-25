@@ -26,7 +26,7 @@ import com.google.inject.Inject;
  * Manages market depth flows.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: DepthOfBookManager.java 10495 2009-04-15 21:37:09Z will $
+ * @version $Id$
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
