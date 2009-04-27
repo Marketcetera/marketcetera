@@ -70,8 +70,8 @@ public class LatestTickManager extends DataFlowManager<MDLatestTickImpl, LatestT
 
 			@Override
 			public void receiveData(Object inData) {
-				synchronized (LatestTickManager.this) {
-					MDLatestTickImpl item = getItem(key);
+				final MDLatestTickImpl item = getItem(key);
+				synchronized (item) {
 					if (inData instanceof TradeEvent) {
 						TradeEvent data = (TradeEvent) inData;
 						if (!validateSymbol(symbol, data)) {

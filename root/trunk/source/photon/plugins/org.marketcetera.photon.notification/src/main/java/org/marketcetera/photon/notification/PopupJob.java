@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.util.misc.ClassVersion;
@@ -74,6 +75,7 @@ public class PopupJob extends AbstractNotificationJob {
 	public void showPopup(final INotification notification,
 			final IProgressMonitor monitor) {
 		mPopup = null;
+		if (!PlatformUI.isWorkbenchRunning()) return;
 		mDisplay.syncExec(new Runnable() {
 			@Override
 			public void run() {

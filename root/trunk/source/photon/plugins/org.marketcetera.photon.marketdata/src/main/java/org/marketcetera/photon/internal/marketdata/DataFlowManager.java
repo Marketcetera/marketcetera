@@ -23,6 +23,9 @@ import org.marketcetera.photon.model.marketdata.impl.MDItemImpl;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.google.common.base.Function;
+import com.google.common.collect.MapMaker;
+
 /* $License$ */
 
 /**
@@ -44,7 +47,12 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 
 	private final ModuleManager mModuleManager;
 	private final Map<K, ModuleURN> mSubscribers = new HashMap<K, ModuleURN>();
-	private final Map<K, T> mItems = new HashMap<K, T>();
+	private final Map<K, T> mItems = new MapMaker().makeComputingMap(new Function<K, T>() {
+		@Override
+		public T apply(K from) {
+			return createItem(from);
+		}
+	});
 	private final Set<Capability> mRequiredCapabilities;
 	private ModuleURN mSourceModule;
 
@@ -67,16 +75,9 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 	}
 
 	@Override
-	public final synchronized T getItem(K key) {
+	public final T getItem(K key) {
 		Validate.notNull(key);
-		T item;
-		if (!mItems.containsKey(key)) {
-			item = createItem(key);
-			mItems.put(key, item);
-		} else {
-			item = mItems.get(key);
-		}
-		return item;
+		return mItems.get(key);
 	}
 
 	@Override
@@ -91,7 +92,7 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 			}
 		}
 		for (Map.Entry<K, T> entry : mItems.entrySet()) {
-			resetItem(entry.getKey(), entry.getValue());
+			resetItemWithLock(entry.getKey(), entry.getValue());
 		}
 		if (feed == null) {
 			mSourceModule = null;
@@ -193,7 +194,7 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 	@Override
 	public final synchronized void stopFlow(K key) {
 		Validate.notNull(key);
-		resetItem(key, getItem(key));
+		resetItemWithLock(key, getItem(key));
 		ModuleURN subscriberURN = mSubscribers.remove(key);
 		if (subscriberURN == null) {
 			return;
@@ -216,6 +217,12 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 			throw new IllegalStateException(e);
 		}
 	}
+	
+	private void resetItemWithLock(K key, T item) {
+		synchronized (item) {
+			resetItem(key, item);
+		}
+	}
 
 	/**
 	 * Hook for subclasses to create and initialize the data item for a given key.
@@ -228,7 +235,7 @@ public abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? supe
 
 	/**
 	 * Hook for subclasses to reset data items to their initial state since the source module is
-	 * changing.
+	 * changing.  This method is called when the item's lock is being held.
 	 * 
 	 * @param key
 	 *            the item key

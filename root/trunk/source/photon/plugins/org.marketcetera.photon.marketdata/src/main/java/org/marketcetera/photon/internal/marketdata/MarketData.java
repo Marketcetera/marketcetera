@@ -35,6 +35,13 @@ import com.google.inject.Inject;
 public class MarketData implements IMarketData {
 
 	/*
+	 * This class is the central manager of market data. Individual sub-managers are used for each 
+	 * data type, but all requests come through this class. Market data is returned in the form
+	 * of a reference that can be disposed when no longer needed.  This allow data flows to be
+	 * shared so at most one is active for any given data key.
+	 */
+	
+	/*
 	 * Thread safety is provided by synchronizing access to the individual managers.
 	 */
 
@@ -170,7 +177,7 @@ public class MarketData implements IMarketData {
 	}
 
 	@Override
-	public synchronized IMarketDataReference<MDLatestTick> getLatestTick(String symbol) {
+	public IMarketDataReference<MDLatestTick> getLatestTick(String symbol) {
 		Validate.notNull(symbol);
 		synchronized (mLatestTickManager) {
 			return new Reference<MDLatestTick, LatestTickKey>(mLatestTickManager,
@@ -179,7 +186,7 @@ public class MarketData implements IMarketData {
 	}
 
 	@Override
-	public synchronized IMarketDataReference<MDTopOfBook> getTopOfBook(String symbol) {
+	public IMarketDataReference<MDTopOfBook> getTopOfBook(String symbol) {
 		Validate.notNull(symbol);
 		synchronized (mTopOfBookManager) {
 			return new Reference<MDTopOfBook, TopOfBookKey>(mTopOfBookManager, new TopOfBookKey(
