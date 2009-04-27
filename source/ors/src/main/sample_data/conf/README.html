@@ -72,7 +72,9 @@ imports some of the same Spring files as <code>server.xml</code>.</p>
 
 <p>Strictly speaking, this partitioning into multiple files and
 overall organizational method is arbitrary, and the end-user may
-change it at their own discretion.</p>
+change it at their own discretion; that said, a change in organization
+is discouraged because it may complicate migration to later version of
+the ORS.</p>
 
 <p>In addition, via <code>properties.xml</code> imported
 from <code>server.xml</code> (as well as from <code>cli.xml</code>),
@@ -82,7 +84,7 @@ and <code>user.properties</code>. These files define certain
 name-value pairs, which then the Spring configuration files may
 reference using the <code>${name}</code> syntax. It is also possible
 for the values of other name-value pairs in these files to refer to
-such names using the same <code>${name}</code> syntax. This tecnique
+such names using the same <code>${name}</code> syntax. This technique
 centralizes certain preferences that appear within multiple Spring
 configuration beans, such as the ORS's host name, easing the task of
 changing it.</p>
@@ -116,7 +118,9 @@ properties from <code>default.properties</code> as the end-user makes
 further refinements to their installation, while retaining an easy way
 to revert to the original defaults: just delete the overriding line
 from <code>user.properties</code>, and the line in
-<code>default.properties</code> will kick back in.</p>
+<code>default.properties</code> will kick back in. Moreover, migration
+to new ORS versions is easier as site-specific customizations are
+limited to a single file, <code>user.properties</code>.</p>
 
 
 <hr/><a name="architecture"/>
@@ -187,11 +191,6 @@ the broker's message), and then routed to the ORS Clients.</p></li>
 
 </ol>
 
-<p>At present, all ORS Clients receive all messages sent by the ORS
-(whether immediate acks originating in the ORS, or broker messages);
-that is, response traffic is not associated with any specific ORS
-Client request.</p>
-
 <p>The above is a rough outline of the ORS message flow. There are a
 number of special cases and refinements (such as the generation of
 rejections) that are beyond the scope of regular use and are not
@@ -237,7 +236,7 @@ the ORS. This automatic termination prevents all future WS calls from
 completing, results in rejection of all subsequent orders delivered
 via JMS, and the ORS Client receives no further messages from the
 ORS. That is usually <code>300</code> (5 minutes), or <code>-1</code>
-(a sentinel value that disables session termination).</p>
+(a sentinel value that disables unilateral session termination).</p>
 
 <table border="1">
 <tr>
@@ -1078,6 +1077,19 @@ should also be changed to <code>DEBUG</code> (the default for both is
 </tr>
 </table>
 
+<p>Another handy logging category reveals currently active sessions:
+if you want the ORS to report all active sessions whenever a change is
+made to them (or whenever
+the <a href="#JMX"><code>syncSessions()</code> JMX call</a> is made),
+change to <code>DEBUG</code> the category</p>
+
+<table border="1">
+<tr>
+<td>Category</td>
+<td><code>log4j.logger.org.marketcetera.ors.UserManager</code></td>
+</tr>
+</table>
+
 
 <hr/><a name="jmx"/>
 <h2>JMX</h2>
@@ -1087,9 +1099,20 @@ incl. its embedded components which support
 JMX: <a href="http://www.quickfixj.org/confluence/display/qfj/JMX+Instrumentation">QuickFIX/J</a>,
 <a href="http://activemq.apache.org/jmx.html">ActiveMQ</a> (the JMS
 implementation), <a href="http://www.mchange.com/projects/c3p0/index.html#jmx_configuration_and_management">C3P0</a>
-(the database connection pool), etc. The ORS itself provides a single
-operation via JMX, namely
-<code>sendPasswordReset()</code>, which changes the password used with
-a particular broker.</p>
+(the database connection pool), etc. The ORS itself provides two
+operations via JMX, namely:</p>
+
+<ol>
+
+<li><p><code>sendPasswordReset()</code>, which changes the password used
+with a particular broker.</p></li>
+
+<li><p><code>syncSessions()</code>, which re-reads the contents of the
+database and updates the current ORS sessions accordingly
+(i.e. removing sessions for deleted users, or adding/removing delivery
+rules for sessions whose associated user experienced a change in their
+superuser status).</p></li>
+
+</ol>
 
 </body>
