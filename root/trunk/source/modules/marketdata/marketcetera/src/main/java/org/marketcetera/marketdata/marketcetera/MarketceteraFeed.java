@@ -5,7 +5,6 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -99,7 +98,7 @@ public class MarketceteraFeed
     /**
      * static capabilities for this data feed
      */
-    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(Capability.TOP_OF_BOOK));
+    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(Capability.TOP_OF_BOOK,Capability.LATEST_TICK));
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataFeed#getCapabilities()
      */
