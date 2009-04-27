@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -26,15 +27,16 @@ import org.marketcetera.event.BookEntryTuple;
 import org.marketcetera.event.DepthOfBook;
 import org.marketcetera.event.DepthOfBookTest;
 import org.marketcetera.event.EventBase;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuantityTuple;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
-import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.MSymbol;
+import org.marketcetera.util.test.TestCaseBase;
 
 /* $License$ */
 
@@ -46,6 +48,7 @@ import org.marketcetera.trade.MSymbol;
  * @since 1.5.0
  */
 public class SimulatedExchangeTest
+    extends TestCaseBase
 {
     private SimulatedExchange exchange;
     private final MSymbol metc = new MSymbol("METC");
@@ -847,6 +850,39 @@ public class SimulatedExchangeTest
         //  makes this test effective enough.
         assertTrue(top1.getAsk().getPrice().subtract(top2.getAsk().getPrice()).abs().intValue() < 3);
         assertTrue(top1.getAsk().getPrice().subtract(top3.getAsk().getPrice()).abs().intValue() < 3);
+    }
+    /**
+     * Tests that the exchange data structures are protected against concurrent access violations.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void concurrency()
+        throws Exception
+    {
+        try {
+            TestCaseBase.setLevel(SimulatedExchange.class.getName(),
+                                  Level.WARN);
+            // start the exchange in random mode
+            exchange.start();
+            // execute a number of data requests, making sure that the requests span a few tick executions
+            long startTime = System.currentTimeMillis();
+            long currentTime = System.currentTimeMillis();
+            int counter = 0;
+            while(currentTime-startTime < 10000) {
+                MSymbol symbol = new MSymbol(String.format("symbol-%d",
+                                                           counter++));
+                exchange.getStatistics(symbol);
+                exchange.getDepthOfBook(symbol);
+                exchange.getLatestTick(symbol);
+                exchange.getTopOfBook(symbol);
+                currentTime = System.currentTimeMillis();
+            }
+            assertNoEvents();
+        } finally {
+            TestCaseBase.setLevel(SimulatedExchange.class.getName(),
+                                  Level.INFO);
+        }
     }
     /**
      * Verifies the given actual subscriptions against the expected results. 
