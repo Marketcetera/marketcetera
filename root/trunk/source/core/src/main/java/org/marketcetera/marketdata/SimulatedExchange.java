@@ -22,9 +22,9 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DepthOfBook;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.HasSymbol;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
-import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.MSymbol;
@@ -560,10 +560,12 @@ public final class SimulatedExchange
             try {
                 // we are committed to completing this tick, but don't let another one start until we're done
                 readyForTick.set(false);
+                List<OrderBookWrapper> allBooks;
                 synchronized(books) {
-                    for(OrderBookWrapper book : books.values()) {
-                        doRandomBookTick(book);
-                    }
+                    allBooks = new ArrayList<OrderBookWrapper>(books.values());
+                }
+                for(OrderBookWrapper book : allBooks) {
+                    doRandomBookTick(book);
                 }
             } finally {
                 // indicate that we're ready for the next tick
