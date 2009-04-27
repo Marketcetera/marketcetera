@@ -73,8 +73,8 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 
 			@Override
 			public void receiveData(Object inData) {
-				synchronized (TopOfBookManager.this) {
-					MDTopOfBookImpl item = getItem(key);
+				final MDTopOfBookImpl item = getItem(key);
+				synchronized (item) {
 					if (inData instanceof SymbolExchangeEvent
 							&& !validateSymbol(symbol, (SymbolExchangeEvent) inData)) {
 						return;

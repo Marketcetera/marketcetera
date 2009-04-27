@@ -108,14 +108,15 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 
 			@Override
 			public void receiveData(Object inData) {
-				synchronized (DepthOfBookManager.this) {
-					if (inData instanceof QuoteEvent) {
-						QuoteEvent data = (QuoteEvent) inData;
-						MSymbol msymbol = data.getSymbol();
-						if (!validateSymbol(symbol, msymbol)) {
-							return;
-						}
-						MDDepthOfBookImpl item = getItem(key);
+
+				if (inData instanceof QuoteEvent) {
+					QuoteEvent data = (QuoteEvent) inData;
+					MSymbol msymbol = data.getSymbol();
+					if (!validateSymbol(symbol, msymbol)) {
+						return;
+					}
+					final MDDepthOfBookImpl item = getItem(key);
+					synchronized (item) {
 						List<MDQuote> list;
 						if (data instanceof BidEvent) {
 							list = item.getBids();
@@ -161,9 +162,9 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 							reportUnexpectedData(data);
 							return;
 						}
-					} else {
-						reportUnexpectedData(inData);
 					}
+				} else {
+					reportUnexpectedData(inData);
 				}
 			}
 		};

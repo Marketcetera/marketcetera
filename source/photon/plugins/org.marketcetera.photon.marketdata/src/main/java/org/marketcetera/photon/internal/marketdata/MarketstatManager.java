@@ -73,8 +73,8 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 
 			@Override
 			public void receiveData(Object inData) {
-				synchronized (MarketstatManager.this) {
-					MDMarketstatImpl item = getItem(key);
+				final MDMarketstatImpl item = getItem(key);
+				synchronized (item) {
 					if (inData instanceof MarketstatEvent) {
 						MarketstatEvent data = (MarketstatEvent) inData;
 						if (!validateSymbol(symbol, data.getSymbol())) {
