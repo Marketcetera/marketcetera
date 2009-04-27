@@ -58,7 +58,7 @@ public class MarketceteraFeedModuleTest
     @Override
     protected Capability[] getExpectedCapabilities()
     {
-        return new Capability[] { Capability.TOP_OF_BOOK };
+        return new Capability[] { Capability.TOP_OF_BOOK, Capability.LATEST_TICK };
     }
     // TODO these tests are shimmed in until I can figure out how to simulate data in data feeds
     @Test
