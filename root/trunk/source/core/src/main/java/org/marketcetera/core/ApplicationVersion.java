@@ -78,6 +78,6 @@ public class ApplicationVersion {
     private ApplicationVersion() {
     }
 
-    static final String DEFAULT_VERSION = "No Version";   //$NON-NLS-1$
+    public static final String DEFAULT_VERSION = "No Version";   //$NON-NLS-1$
     static final String DEFAULT_BUILD = "No Build";   //$NON-NLS-1$
 }
