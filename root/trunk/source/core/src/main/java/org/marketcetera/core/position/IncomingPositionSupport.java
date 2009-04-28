@@ -1,6 +1,7 @@
 package org.marketcetera.core.position;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -29,4 +30,15 @@ public interface IncomingPositionSupport {
      * @return the size of the incoming position, cannot be null
      */
     BigDecimal getIncomingPositionFor(PositionKey key);
+    
+    /**
+     * Returns all incoming positions, keyed by symbol, account, traderId tuple.
+     * 
+     * The returned values should be the size of the incoming positions at the time the method is
+     * called. Implementations are assumed to have an understanding of the time period that defines
+     * the incoming position.
+     * 
+     * @return the incoming positions, cannot be null
+     */
+    Map<? extends PositionKey, BigDecimal> getIncomingPositions();
 }

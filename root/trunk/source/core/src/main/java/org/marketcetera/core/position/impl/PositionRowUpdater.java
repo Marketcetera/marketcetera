@@ -18,7 +18,6 @@ import org.marketcetera.util.misc.ClassVersion;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.util.concurrent.Lock;
 
 /* $License$ */
 
@@ -33,7 +32,7 @@ import ca.odell.glazedlists.util.concurrent.Lock;
 public final class PositionRowUpdater {
 
     private final ListEventListener<Trade> mListChangeListener;
-    private final EventList<Trade> mTrades;
+    private EventList<Trade> mTrades;
     private final PositionRowImpl mPositionRow;
     private final MarketDataSupport mMarketDataSupport;
     private final SymbolChangeListener mSymbolChangeListener;
@@ -61,16 +60,15 @@ public final class PositionRowUpdater {
      * @param positionRow
      *            the position to update
      * @param trades
-     *            event list of trades that make up the position
+     *            event list of trades that make up the position, may be null
      * @param marketData
      *            the market data provider
      */
     public PositionRowUpdater(PositionRowImpl positionRow, EventList<Trade> trades,
             MarketDataSupport marketData) {
-        Validate.noNullElements(new Object[] { positionRow, trades, marketData });
+        Validate.noNullElements(new Object[] { positionRow, marketData });
         mPositionRow = positionRow;
-        this.mTrades = trades;
-        this.mMarketDataSupport = marketData;
+        mMarketDataSupport = marketData;
 
         mListChangeListener = new ListEventListener<Trade>() {
 
@@ -91,13 +89,30 @@ public final class PositionRowUpdater {
                 PositionRowUpdater.this.closePriceChanged(event.getNewPrice());
             }
         };
-        mPositionRow.setPositionMetrics(recalculate());
-        connect();
+        mMarketDataSupport.addSymbolChangeListener(mPositionRow.getSymbol(), mSymbolChangeListener);
+        if (trades != null) {
+            connect(trades);
+        } else {
+            mPositionRow.setPositionMetrics(recalculate());
+        }
     }
 
-    private void connect() {
-        mMarketDataSupport.addSymbolChangeListener(mPositionRow.getSymbol(), mSymbolChangeListener);
+    /**
+     * Connects this class to a list of trades. This can only be called on instances that were
+     * created with a null trades lists. And it can only be called once.
+     * 
+     * @param trades
+     *            the dynamically updated list of trades
+     * @throws IllegalStateException
+     *             if this object is already connected to list of trades
+     */
+    public void connect(EventList<Trade> trades) {
+        if (mTrades != null) {
+            throw new IllegalStateException();
+        }
+        mTrades = trades;
         mTrades.addListEventListener(mListChangeListener);
+        mPositionRow.setPositionMetrics(recalculate());
     }
 
     /**
@@ -105,25 +120,21 @@ public final class PositionRowUpdater {
      * no longer be used.
      */
     public void dispose() {
-        mTrades.removeListEventListener(mListChangeListener);
+        if (mTrades != null) {
+            mTrades.removeListEventListener(mListChangeListener);
+        }
         mMarketDataSupport.removeSymbolChangeListener(mPositionRow.getSymbol(),
                 mSymbolChangeListener);
     }
 
     private void tick(BigDecimal tick) {
         mLastTradePrice = tick;
-        // since this needs a lock, spawn a new thread to update the tick when the lock is available
+        // since this modifies the position and will need a lock, spawn a new thread to perform the update
         if (mTickFuture != null && !mTickFuture.isDone()) return;
         mTickFuture = sMarketDataUpdateExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                Lock lock = mTrades.getReadWriteLock().writeLock();
-                lock.lock();
-                try {
-                    mPositionRow.setPositionMetrics(mCalculator.tick(mLastTradePrice));
-                } finally {
-                    lock.unlock();
-                }
+                mPositionRow.setPositionMetrics(mCalculator.tick(mLastTradePrice));
             }
         });
     }
@@ -137,18 +148,12 @@ public final class PositionRowUpdater {
             return;
         }
         mClosePrice = newPrice;
-        // since this needs a lock, spawn a new thread to update the tick when the lock is available
+        // since this modifies the position and will need a lock, spawn a new thread to perform the update
         if (mClosingPriceFuture != null && !mClosingPriceFuture.isDone()) return;
         mClosingPriceFuture = sMarketDataUpdateExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                Lock lock = mTrades.getReadWriteLock().writeLock();
-                lock.lock();
-                try {
-                    mPositionRow.setPositionMetrics(recalculate());
-                } finally {
-                    lock.unlock();
-                }
+                mPositionRow.setPositionMetrics(recalculate());
             }
         });
     }
@@ -171,8 +176,10 @@ public final class PositionRowUpdater {
         mCalculator = new PositionMetricsCalculatorImpl(mPositionRow.getPositionMetrics()
                 .getIncomingPosition(), mClosePrice);
         PositionMetrics metrics = mCalculator.tick(mLastTradePrice);
-        for (Trade trade : mTrades) {
-            metrics = mCalculator.trade(trade);
+        if (mTrades != null) {
+            for (Trade trade : mTrades) {
+                metrics = mCalculator.trade(trade);
+            }
         }
         return metrics;
     }

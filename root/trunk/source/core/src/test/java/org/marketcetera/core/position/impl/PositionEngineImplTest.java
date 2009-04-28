@@ -3,15 +3,15 @@ package org.marketcetera.core.position.impl;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.position.Grouping;
-import org.marketcetera.core.position.IncomingPositionSupport;
+import org.marketcetera.core.position.ImmutablePositionSupport;
 import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionEngineFactory;
@@ -26,6 +26,9 @@ import org.marketcetera.trade.Side;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -47,15 +50,17 @@ public class PositionEngineImplTest {
         @Override
         public void run() {
             initReports();
-            IncomingPositionSupport incomingPositionSupport = mock(IncomingPositionSupport.class);
-            stub(incomingPositionSupport.getIncomingPositionFor((PositionKey) anyObject()))
-                    .toReturn(BigDecimal.ZERO);
             PositionEngine engine = PositionEngineFactory.createFromReportHolders(reports,
-                    incomingPositionSupport, mock(MarketDataSupport.class));
+                    new ImmutablePositionSupport(getIncomingPositions()),
+                    mock(MarketDataSupport.class));
             EventList<PositionRow> positions = getPositionData(engine);
             positions.addListEventListener(new ExpectedListChanges<PositionRow>("Positions",
                     getExpectedPositionListChanges()));
             validatePositions(positions);
+        }
+
+        protected Map<? extends PositionKey, BigDecimal> getIncomingPositions() {
+            return Maps.newHashMap();
         }
 
         protected EventList<PositionRow> getPositionData(PositionEngine engine) {
@@ -263,6 +268,7 @@ public class PositionEngineImplTest {
     }
 
     @Test
+    @Ignore // clearing not currently supported
     public void clear() {
         new PositionEngineTestTemplate() {
 
@@ -288,6 +294,7 @@ public class PositionEngineImplTest {
     }
 
     @Test
+    @Ignore // clearing not currently supported
     public void complexClear() {
         new PositionEngineTestTemplate() {
 
@@ -502,6 +509,32 @@ public class PositionEngineImplTest {
                 return new int[] { ListEvent.UPDATE, 1, ListEvent.UPDATE, 0 };
             }
 
+        }.run();
+    }
+
+    @Test
+    public void incomingPosition() {
+        new PositionEngineTestTemplate() {
+
+            @Override
+            protected int[] getExpectedPositionListChanges() {
+                return new int[] { ListEvent.UPDATE, 0 };
+            }
+
+            @Override
+            protected Map<? extends PositionKey, BigDecimal> getIncomingPositions() {
+                return ImmutableMap.of(new PositionKeyImpl("METC", "personal", "1"),
+                        new BigDecimal("100"));
+            }
+            
+            @Override
+            protected void validatePositions(EventList<PositionRow> positions) {
+                assertThat(positions.size(), is(1));
+                assertPosition(positions.get(0), "METC", "personal", "1", "100");
+                addTrade("METC", "personal", Side.Buy, "1000", "1");
+                assertThat(positions.size(), is(1));
+                assertPosition(positions.get(0), "METC", "personal", "1", "1100");
+            }
         }.run();
     }
 }
