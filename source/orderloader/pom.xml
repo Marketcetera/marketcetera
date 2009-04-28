@@ -70,17 +70,17 @@
     <resources>
       <resource>
         <directory>src/main/resources</directory>
-        <includes>
-          <include>META-INF/metc_version.properties</include>
-        </includes>
-        <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
         <excludes>
           <exclude>META-INF/metc_version.properties</exclude>
         </excludes>
         <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>META-INF/metc_version.properties</include>
+        </includes>
+        <filtering>true</filtering>
       </resource>
     </resources>
   </build>
@@ -101,7 +101,7 @@
                 <argument>-m</argument>
                 <argument>FIX.4.2</argument>
                 <argument>-b</argument>
-                <argument>metc</argument>
+                <argument>broker1</argument>
                 <argument>src/test/sample_data/inputs/smallMarketFIX.csv</argument>
               </arguments>
               <classpathScope>test</classpathScope>
