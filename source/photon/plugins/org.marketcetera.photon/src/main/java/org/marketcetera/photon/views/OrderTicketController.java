@@ -128,7 +128,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 
     /**
      * Set the order message associated with this order ticket.
-     * @param the new order message
+     * @param order the new order message
      */
     public void setOrderMessage(Message order) {
         orderTicketModel.setOrderMessage(order);

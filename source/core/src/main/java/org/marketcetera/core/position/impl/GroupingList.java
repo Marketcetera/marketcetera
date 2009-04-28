@@ -24,18 +24,19 @@ import ca.odell.glazedlists.matchers.Matcher;
 /**
  * Replacement for {@link ca.odell.glazedlists.GroupingList} that provides event notifications for
  * the groups.
- * 
+ * <p>
  * A grouping list is initialized with a {@link GroupMatcherFactory}, which it uses to create a
  * unique {@link GroupMatcher} to define a group. The groups are ordered by the natural ordering of
  * the GroupMatchers.
- * 
+ * <p>
  * Each element in the grouping list is itself an event list. These children group lists preserve
  * the ordering of their respective elements in the source list.
- * 
+ * <p>
  * This class depends on internal classes in the glazed lists library so changing/upgrading the
  * library should be done with care.
- * 
- * @see http://www.nabble.com/GroupList-notification-td21879305.html
+ * <p>
+ * See <a href="http://www.nabble.com/GroupList-notification-td21879305.html">http://www.nabble.com/
+ * GroupList-notification-td21879305.html</a>
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$

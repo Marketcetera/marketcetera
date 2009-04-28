@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * This class may be subclassed to override
  * <ul>
- * <li>{@link #format(Object)} - to customize formatting of data</li>
+ * <li>{@link #format(Object, Object)} - to customize formatting of data</li>
  * </ul>
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>

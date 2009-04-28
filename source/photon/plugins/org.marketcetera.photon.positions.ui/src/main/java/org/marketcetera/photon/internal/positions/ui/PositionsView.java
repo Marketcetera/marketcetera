@@ -55,7 +55,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * This view does not care about the actual active workbench part. So fake parts are used to control
  * the switching of pages. For example, to switch to the flat page, you call
- * {@link #partActivated(IWorkbenchPart)}, passing {@link PositionsPart#FLAT} as the parameter.
+ * {@link #partActivated(IWorkbenchPart)}, passing PositionsPart.FLAT as the parameter.
  * <p>
  * This view serializes it's state, which includes the last viewed page (flat or hierarchical) and
  * last selected grouping on the hierarchical page.

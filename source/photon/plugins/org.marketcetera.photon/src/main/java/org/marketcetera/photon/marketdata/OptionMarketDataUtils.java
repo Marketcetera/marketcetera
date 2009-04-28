@@ -80,9 +80,8 @@ public class OptionMarketDataUtils
 	 * Given an option root, returns a list of all the month/strike/call-put
 	 * combos related to that option root.
 	 * 
-	 * @param optionRoot
-	 * @param subscribe
-	 * @return
+	 * @param optionRoot the option root
+	 * @return a message
 	 */
 	public static Message newOptionRootQuery(String optionRoot) {
 		Assert.isNotNull(optionRoot, "Parameter optionRoot cannot be null."); //$NON-NLS-1$

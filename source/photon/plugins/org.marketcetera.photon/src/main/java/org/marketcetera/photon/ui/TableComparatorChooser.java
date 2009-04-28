@@ -66,7 +66,8 @@ public final class TableComparatorChooser<E> extends AbstractTableComparatorChoo
      * Installs a new TableComparatorChooser that responds to clicks
      * on the specified table and uses them to sort the specified list.
      *
-     * @param eventTableViewer the table viewer for the table to be sorted
+     * @param table the table to be sorted
+     * @param format the table format to be used
      * @param sortedList the sorted list to update.
      * @param multipleColumnSort <code>true</code> to sort by multiple columns
      *      at a time, or <code>false</code> to sort by a single column. Although

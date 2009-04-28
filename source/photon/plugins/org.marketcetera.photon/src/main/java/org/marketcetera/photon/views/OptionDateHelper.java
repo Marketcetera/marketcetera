@@ -96,10 +96,9 @@ public class OptionDateHelper
 	}
 
 	/**
-	 * 
-	 * @param expirationMonth the month in human readable numbers (that is 1=JAN)
-	 * @param expirationYear
-	 * @return
+	 * @param expirationMonthNumber the month in human readable numbers (that is 1=JAN)
+	 * @param expirationYear they year
+	 * @return the formatted string
 	 */
 	public String formatMaturityMonthYear(int expirationMonthNumber,
 			int expirationYear) {
@@ -108,10 +107,10 @@ public class OptionDateHelper
 	}
 
 	/**
-	 * 
-	 * @param expirationMonth the month in human readable numbers (that is 1=JAN)
-	 * @param expirationYear
-	 * @return
+	 * @param expirationDayNumber the day
+	 * @param expirationMonthNumber the month in human readable numbers (that is 1=JAN)
+	 * @param expirationYear they year
+	 * @return the formatted string
 	 */
 	public String formatMaturityDate(int expirationDayNumber, int expirationMonthNumber,
 			int expirationYear) {

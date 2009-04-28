@@ -22,7 +22,7 @@ import edu.emory.mathcs.backport.java.util.Arrays;
  * Menu contribution that provides radio buttons to control the tree grouping of
  * {@link PositionsView}.
  * 
- * @see PositionsView#setGrouping(Grouping[])
+ * @see PositionsView#showHierarchicalPage(Grouping[])
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$

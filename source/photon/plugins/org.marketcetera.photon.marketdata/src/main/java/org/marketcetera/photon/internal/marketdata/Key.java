@@ -48,8 +48,8 @@ public abstract class Key<T extends MDItem> {
 
 	/**
 	 * Subclasses can override to enhance the builder used to generate the hash code. If they do,
-	 * they must also override {@link #refineEquals(Key)} to ensure that the hash code is consistent
-	 * with equals.
+	 * they must also override {@link #refineEquals(EqualsBuilder, Key)} to ensure that the hash
+	 * code is consistent with equals.
 	 * 
 	 * @param builder
 	 *            builder to enhance

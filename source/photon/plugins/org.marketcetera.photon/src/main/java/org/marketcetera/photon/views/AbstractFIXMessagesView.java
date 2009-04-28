@@ -241,7 +241,7 @@ public abstract class AbstractFIXMessagesView
      *
      * @param inFixField an <code>int</code> value containing the FIX field against which to match
      * @param inValue a <code>String</code> value containing the value to match against the table rows
-     * @return a {@link ca.odell.glazedlists.matchers.Matcher}<{@link MessageHolder}> value
+     * @return a {@link ca.odell.glazedlists.matchers.Matcher}<{@link ReportHolder}> value
      */
     protected ca.odell.glazedlists.matchers.Matcher<ReportHolder> createStringMatcher(int inFixField,
                                                                                        String inValue)

@@ -39,7 +39,7 @@ public interface PositionEngine {
 
     /**
      * Returns position data in flat, tabular form. Clients must call
-     * {@link PositionDataBase#dispose()} when they are finished using the data.
+     * {@link PositionData#dispose()} when they are finished using the data.
      * 
      * @return the position data
      */
@@ -51,7 +51,7 @@ public interface PositionEngine {
      * <code>getGroupedData(Grouping.Symbol, Grouping.Account)</code> will return data that is first
      * grouped by symbol, then subdivided by account.
      * <p>
-     * Clients must call {@link PositionDataBase#dispose()} when they are finished using the data.
+     * Clients must call {@link PositionData#dispose()} when they are finished using the data.
      * 
      * @param groupings
      *            the position key elements to be used in the grouping
