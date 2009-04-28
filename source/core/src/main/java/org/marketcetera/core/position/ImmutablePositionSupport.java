@@ -37,4 +37,9 @@ public class ImmutablePositionSupport implements IncomingPositionSupport {
         return position != null ? position : BigDecimal.ZERO;
     }
 
+    @Override
+    public ImmutableMap<? extends PositionKey, BigDecimal> getIncomingPositions() {
+        return mPositions;
+    }
+
 }
