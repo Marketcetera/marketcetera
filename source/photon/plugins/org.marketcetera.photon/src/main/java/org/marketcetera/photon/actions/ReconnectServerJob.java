@@ -2,7 +2,6 @@ package org.marketcetera.photon.actions;
 
 import java.beans.ExceptionListener;
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -85,70 +84,63 @@ public class ReconnectServerJob extends UIJob {
 					// retrieved
 					PhotonPlugin.getDefault().disposePositionEngine();
 
-					// close previous connection if it exists
-					try {
-						ClientManager.getInstance().close();
-					} catch (ClientInitException e) {
-						// already closed
-					}
 					ServerStatusIndicator.setDisconnected();
 					PhotonPlugin.getDefault().setSessionStartTime(null);
 
 					// connect
 					try {
-						ClientManager.init(parameters);
-					} catch (ConnectionException e) {
-						throw new InvocationTargetException(e);
-					} catch (ClientInitException e) {
-						throw new InvocationTargetException(e);
-					}
-
-					final Client client;
-					try {
-						client = ClientManager.getInstance();
-					} catch (ClientInitException e) {
-						// should not happen since ClientManager.init returned
-						// successfully
-						assert false;
-						throw new InvocationTargetException(e);
-					}
-
-					// add listeners
-					client.addExceptionListener(new ExceptionListener() {
-						@Override
-						public void exceptionThrown(Exception e) {
-							// When disconnected, client sends continual notifications, so we want
-							// to avoid cluttering the console.
-							if (getMessage(e) != org.marketcetera.client.Messages.ERROR_HEARTBEAT_FAILED) {
-								PhotonPlugin.getMainConsoleLogger().error(
-                                                                          Messages.CLIENT_EXCEPTION.getText(), e);
-                            }
-						}
-
-						private I18NMessage getMessage(Exception e) {
-							if (e instanceof ConnectionException) {
-								I18NBoundMessage bound = ((ConnectionException) e)
-										.getI18NBoundMessage();
-								if (bound != null) {
-									return bound.getMessage();
+						Client client;
+						// if already initialized, reconnect
+						if (ClientManager.isInitialized()) {
+							ClientManager.getInstance().reconnect(parameters);
+							client = ClientManager.getInstance();
+						} else {
+							// first time initialization
+							ClientManager.init(parameters);							
+							client = ClientManager.getInstance();
+							// add listeners
+							client.addExceptionListener(new ExceptionListener() {
+								@Override
+								public void exceptionThrown(Exception e) {
+									// When disconnected, client sends continual notifications, so we want
+									// to avoid cluttering the console.
+									if (getMessage(e) != org.marketcetera.client.Messages.ERROR_HEARTBEAT_FAILED) {
+										PhotonPlugin.getMainConsoleLogger().error(
+		                                                                          Messages.CLIENT_EXCEPTION.getText(), e);
+									}
 								}
-							}
-							return null;
+
+								private I18NMessage getMessage(Exception e) {
+									if (e instanceof ConnectionException) {
+										I18NBoundMessage bound = ((ConnectionException) e)
+												.getI18NBoundMessage();
+										if (bound != null) {
+											return bound.getMessage();
+										}
+									}
+									return null;
+								}
+							});
+							ServerNotificationListener serverNotificationListener=
+							    new ServerNotificationListener();
+							// simulate initial connection notification that
+							// we missed because it was issued during
+							// initialization, above.
+							serverNotificationListener.receiveServerStatus(true);
+							client.addServerStatusListener(serverNotificationListener);
+							client.addReportListener(PhotonPlugin.getDefault()
+									.getPhotonController());
+							client.addBrokerStatusListener(new BrokerNotificationListener(client));
 						}
-					});
-                    ServerNotificationListener serverNotificationListener=
-                        new ServerNotificationListener();
-                    // simulate initial connection notification that
-                    // we missed because it was issued during
-                    // initialization, above.
-                    serverNotificationListener.receiveServerStatus(true);
-					client.addServerStatusListener(serverNotificationListener);
-					client.addReportListener(PhotonPlugin.getDefault()
-							.getPhotonController());
-					client.addBrokerStatusListener(new BrokerNotificationListener(client));
-					try {
-						asyncUpdateBrokers(client.getBrokersStatus());
+						//Refresh Broker Status
+						try {
+							asyncUpdateBrokers(client.getBrokersStatus());
+						} catch (ConnectionException e) {
+							throw new InvocationTargetException(e);
+						}
 					} catch (ConnectionException e) {
+						throw new InvocationTargetException(e);
+					} catch (ClientInitException e) {
 						throw new InvocationTargetException(e);
 					}
 				}
