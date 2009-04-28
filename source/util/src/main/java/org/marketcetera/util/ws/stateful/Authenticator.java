@@ -1,5 +1,6 @@
 package org.marketcetera.util.ws.stateful;
 
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 
@@ -26,10 +27,14 @@ public interface Authenticator
      * @param password The password.
      *
      * @return True if the given credentials are acceptable.
+     *
+     * @throws I18NException Thrown if the authenticator encounters an
+     * error while checking the credentials.
      */
 
     boolean shouldAllow
         (StatelessClientContext context,
          String user,
-         char[] password);
+         char[] password)
+        throws I18NException;
 }

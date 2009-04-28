@@ -1,5 +1,6 @@
 package org.marketcetera.ors;
 
+import org.marketcetera.client.ClientVersion;
 import org.marketcetera.client.Service;
 import org.marketcetera.ors.config.SpringConfig;
 import org.marketcetera.util.test.TestCaseBase;
@@ -46,7 +47,9 @@ public class ORSTestBase
         mORSClient=new Client
             (SpringConfig.getSingleton().getServerHost(),
              SpringConfig.getSingleton().getServerPort(),
-             new AppId("testClient"));
+             new AppId("testClient"+
+                       ClientVersion.APP_ID_VERSION_SEPARATOR+
+                       ClientVersion.APP_ID_VERSION));
         mORSClient.login(mORS.getAuth().getUser(),mORS.getAuth().getPassword());
         mORSService=getORSClient().getService(Service.class);
     }

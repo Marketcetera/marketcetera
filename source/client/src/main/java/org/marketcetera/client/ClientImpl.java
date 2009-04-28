@@ -6,7 +6,6 @@ import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.log.*;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.ws.stateful.ClientContext;
-import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.trade.*;
@@ -612,7 +611,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
 
             mServiceClient = new org.marketcetera.util.ws.stateful.Client
                 (mParameters.getHostname(), mParameters.getPort(),
-                        new AppId("Client"));  //$NON-NLS-1$
+                 ClientVersion.APP_ID);
             mServiceClient.login(mParameters.getUsername(),
                                  mParameters.getPassword());
             mService = mServiceClient.getService(Service.class);

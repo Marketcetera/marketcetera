@@ -3,6 +3,7 @@ package org.marketcetera.ors.ws;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage3P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -38,6 +39,8 @@ public interface Messages
      * The messages.
      */
 
+    static final I18NMessage3P VERSION_MISMATCH=
+        new I18NMessage3P(LOGGER,"version_mismatch"); //$NON-NLS-1$
     static final I18NMessage1P BAD_CREDENTIALS=
         new I18NMessage1P(LOGGER,"bad_credentials"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_CREATE_REPLY_TOPIC=
