@@ -22,6 +22,7 @@
         <pathelement location="${plugins.dir}/org.marketcetera.photon/src/main/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.commons.ui/src"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.marketdata/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.marketdata/src/model/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.marketdata.ui/src/main/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.module/src/main/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.module.ui/src/main/java"/>
