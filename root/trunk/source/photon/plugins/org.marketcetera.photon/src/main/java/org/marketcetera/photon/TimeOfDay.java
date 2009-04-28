@@ -151,7 +151,7 @@ public class TimeOfDay {
 	 * It is guaranteed that the {@link Date} object returned will be less than
 	 * or equal to any system time computed after this method returns.
 	 * 
-	 * @return
+	 * @return the last occurrence
 	 */
 	public Date getLastOccurrence() {
 		Calendar now = Calendar.getInstance(UTC);

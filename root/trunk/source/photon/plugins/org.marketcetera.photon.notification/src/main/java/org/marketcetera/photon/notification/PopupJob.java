@@ -47,12 +47,8 @@ public class PopupJob extends AbstractNotificationJob {
 	private volatile Window mPopup;
 
 	/**
-	 * Constructor. Will throw an unchecked exception if <code>queue</code> or
-	 * <code>display</code> is null.
+	 * Constructor. Will throw an unchecked exception if <code>display</code> is null.
 	 * 
-	 * @param queue
-	 *            the queue from which to retrieve notifications, must be
-	 *            non-null and thread safe
 	 * @param display
 	 *            display to use for UI, cannot be null
 	 */
@@ -65,7 +61,7 @@ public class PopupJob extends AbstractNotificationJob {
 
 	/**
 	 * This implementation of
-	 * {@link AbstractNotificationJob#showPopup(INotification)} displays the
+	 * {@link AbstractNotificationJob#showPopup(INotification, IProgressMonitor)} displays the
 	 * popup created by {@link #createPopup(INotification)} and determines if a
 	 * sound should be played.
 	 * 

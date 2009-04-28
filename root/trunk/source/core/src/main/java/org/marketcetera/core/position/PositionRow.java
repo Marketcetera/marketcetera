@@ -1,6 +1,7 @@
 package org.marketcetera.core.position;
 
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 import org.marketcetera.util.misc.ClassVersion;
 

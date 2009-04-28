@@ -155,7 +155,7 @@ public abstract class MapEditor
      * Subclasses must implement this method.
      * </p>
      *
-     * @param items the list of items
+     * @param entries the list of items
      * @return the combined string
      * @see #parseString
      */
@@ -469,7 +469,6 @@ public abstract class MapEditor
      *
      * @param stringList the string
      * @return an array of <code>String</code>
-     * @see #createList
      */
     protected abstract EventList<Map.Entry<String, String>> parseString(String stringList);
 

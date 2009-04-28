@@ -63,7 +63,7 @@ public abstract class OrderTicketModel
 	/**
 	 * Get the order message (or cancel/replace message) that is the
 	 * message being edited by the associated order ticket.
-	 * @return
+	 * @return the order message
 	 */
 	public Message getOrderMessage() {
 		return orderMessage;

@@ -120,7 +120,7 @@ public abstract class XSWTView<T> extends ViewPart {
 
 	/**
 	 * Return the {@link DataBindingContext} for this view.
-	 * @return
+	 * @return the DataBindingContext
 	 */
 	public DataBindingContext getDataBindingContext() {
 		return dataBindingContext;
@@ -141,7 +141,7 @@ public abstract class XSWTView<T> extends ViewPart {
 	/**
 	 * Return the XSWT proxy object.
 	 * 
-	 * @return
+	 * @return the XSWT proxy object
 	 */
 	public T getXSWTView() {
 		return xswtView;

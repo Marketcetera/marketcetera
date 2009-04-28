@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * The key elements available for grouping.
  * 
- * @see SummaryPositionRow
+ * @see PositionRow#getGrouping()
  * @see PositionEngine#getGroupedData(Grouping...)
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>

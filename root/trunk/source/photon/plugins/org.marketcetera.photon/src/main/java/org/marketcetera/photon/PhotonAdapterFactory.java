@@ -48,7 +48,7 @@ public class PhotonAdapterFactory
 	/**
 	 * Returns an adapter of the specified class for the specified object.
 	 * Currently the only valid values for adaptableObject are
-	 * {@link MessageHolder}, {@link AccountID}, and {@link MSymbol}.
+	 * {@link ReportHolder}, {@link AccountID}, and {@link MSymbol}.
 	 * Currently the only valid value of adapterType is
 	 * {@link IWorkbenchAdapter}. All others will return null.
 	 * 
@@ -61,7 +61,7 @@ public class PhotonAdapterFactory
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object,
 	 *      java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked") // overrides unparameterized method //$NON-NLS-1$
+	@SuppressWarnings("unchecked") // overrides unparameterized method
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType == IWorkbenchAdapter.class
 				&& adaptableObject instanceof ReportHolder)

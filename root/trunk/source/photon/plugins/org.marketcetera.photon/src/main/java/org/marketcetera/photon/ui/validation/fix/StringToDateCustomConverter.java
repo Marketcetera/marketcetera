@@ -28,7 +28,7 @@ public class StringToDateCustomConverter
 	}
 
 	/**
-	 * @param dateFormatStrings
+	 * @param inDateFormatStrings
 	 *            a date format string of the form specified by
 	 *            SimpleDateFormat. *
 	 * @param forceUppercase
