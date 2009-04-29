@@ -1240,7 +1240,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
     private ExpectedFailure createDeleteFailure(final ModuleURN inUrn,
                                                 Object inExpectedState)
             throws Exception {
-        return new ExpectedFailure<ModuleException>(
+        return new ExpectedFailure<ModuleStateException>(
                 Messages.DELETE_FAILED_MODULE_STATE_INCORRECT, inUrn.toString(),
                 inExpectedState,
                 ModuleState.DELETABLE_STATES.toString()){

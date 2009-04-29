@@ -386,7 +386,7 @@ public class LifecycleTest extends ModuleTestBase {
         assertModuleInfo(moduleURN, ModuleState.STARTED,
                 null, null, false, true, false, false, false);
         //verify that delete fails if the module was started
-        new ExpectedFailure<ModuleException>(
+        new ExpectedFailure<ModuleStateException>(
                 Messages.DELETE_FAILED_MODULE_STATE_INCORRECT,
                 moduleURN.toString(),
                 ModuleState.STARTED,
