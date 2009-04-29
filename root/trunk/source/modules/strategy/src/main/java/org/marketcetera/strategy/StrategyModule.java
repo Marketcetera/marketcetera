@@ -1240,7 +1240,14 @@ final class StrategyModule
                                "Breaking connection to ORS"); //$NON-NLS-1$
         synchronized(dataFlows) {
             if(orsFlow != null) {
-                dataFlowSupport.cancel(orsFlow);
+                try {
+                    dataFlowSupport.cancel(orsFlow);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.debug(StrategyModule.class,
+                                           e,
+                                           "Unable to cancel dataflow {} - continuing", //$NON-NLS-1$
+                                           orsFlow);
+                }
                 dataFlows.remove(orsFlow);
                 orsFlow = null;
             }

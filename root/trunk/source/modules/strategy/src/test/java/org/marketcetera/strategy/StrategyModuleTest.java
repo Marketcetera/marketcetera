@@ -4,24 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.marketcetera.module.Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_NUM;
-import static org.marketcetera.module.Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_TYPE;
-import static org.marketcetera.module.Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT;
-import static org.marketcetera.module.Messages.DUPLICATE_MODULE_URN;
-import static org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE;
-import static org.marketcetera.module.Messages.INVALID_URN_SCHEME;
-import static org.marketcetera.module.Messages.MODULE_NOT_FOUND;
-import static org.marketcetera.module.Messages.MODULE_NOT_RECEIVER;
-import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
-import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
-import static org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE;
+import static org.marketcetera.module.Messages.*;
 import static org.marketcetera.strategy.Language.RUBY;
-import static org.marketcetera.strategy.Status.RUNNING;
-import static org.marketcetera.strategy.Status.STARTING;
-import static org.marketcetera.strategy.Status.STOPPED;
-import static org.marketcetera.strategy.Status.STOPPING;
+import static org.marketcetera.strategy.Status.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -44,6 +33,7 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.IllegalRequestParameterValue;
 import org.marketcetera.module.InvalidURNException;
 import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleNotFoundException;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
@@ -114,6 +104,66 @@ public class StrategyModuleTest
                      moduleManager.getModuleInstances(StrategyModuleFactory.PROVIDER_URN).get(0));
         moduleManager.deleteModule(strategy);
         assertTrue(moduleManager.getModuleInstances(StrategyModuleFactory.PROVIDER_URN).isEmpty());
+    }
+    /**
+     * Tests the case where after an uncompiling strategy is fixed and restarted, it cannot be
+     * stopped if the strategy originally requested orders to be routed to the ORS.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void uncompilingRoutedStrategy()
+        throws Exception
+    {
+        // create a strategy written to a file that does not compile
+        String badStrategy = "include_class \"org.marketcetera.strategy.ruby.Strategy\"\n" +
+                             "include_class \"java.math.BigDecimal\"\n" +
+                             "class MyStrategy < Strategy\n" +
+                             "  TEST = BigDecimal.new(1)\n" +
+                             "end\n";
+        String goodStrategy = "include_class \"org.marketcetera.strategy.ruby.Strategy\"\n" +
+                              "include_class \"java.math.BigDecimal\"\n" +
+                              "class MyStrategy < Strategy\n" +
+                              "  TEST = BigDecimal.new(\"1\")\n" +
+                              "end\n";
+        // start with the bad strategy
+        File strategyFile = File.createTempFile("strategy",
+                                                ".rb");
+        strategyFile.deleteOnExit();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(strategyFile));
+        writer.write(badStrategy);
+        writer.close();
+        final ModuleURN strategyURN = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                                 "MyStategy",
+                                                                 "MyStrategy",
+                                                                 RUBY,
+                                                                 strategyFile,
+                                                                 new Properties(),
+                                                                 true,
+                                                                 outputURN);
+        new ExpectedFailure<ModuleException>(null) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                moduleManager.start(strategyURN);
+            }
+        };
+        verifyStrategyReady(strategyURN);
+        verifyStrategyStatus(strategyURN,
+                             FAILED);
+        // "correct" the strategy
+        writer = new BufferedWriter(new FileWriter(strategyFile));
+        writer.write(goodStrategy);
+        writer.close();
+        // start it again
+        moduleManager.start(strategyURN);
+        verifyStrategyReady(strategyURN);
+        verifyStrategyStatus(strategyURN,
+                             RUNNING);
+        // stop it
+        moduleManager.stop(strategyURN);
+        verifyStrategyStopped(strategyURN);
     }
     /**
      * Tests processing of parameters with strategy module construction.
