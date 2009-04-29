@@ -20,7 +20,7 @@ import java.io.IOException;
  * The property file name is constructed from the module provider name.
  * <code>provider-type_provider-name.properties</code>. The properties files
  * are loaded via the classloader. However, the recommended location for
- * the properties file is <code>&lt;application-home&gt;/conf/modules</code>
+ * the properties file is <code>&lt;application-home&gt;/modules/conf</code>
  * <p>
  * Within the property file, the attribute values are encoded as
  * <code>instance-name.attribute-name=attribute-value</code>.

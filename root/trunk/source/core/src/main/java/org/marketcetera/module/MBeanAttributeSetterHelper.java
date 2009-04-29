@@ -48,10 +48,9 @@ class MBeanAttributeSetterHelper {
      * @param inValue the value of the attribute as a string. The string
      * value is converted to the appropriate type for the attribute.
      *
-     * @throws BeanAttributeSetException if there were errors performing
-     * this operation.
-     * @throws IllegalArgumentException if there were errors converting
-     * the string value to the correct type for the attribute.  
+     * @throws BeanAttributeSetException if there were errors converting
+     * the supplied string value to the correct type for the bean attribute
+     * or if there were MBean errors when performing this operation.
      */
     static void setValue(MBeanServer inServer, ObjectName inName,
                   MBeanAttributeInfo inInfo, String inValue)

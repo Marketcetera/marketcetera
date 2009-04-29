@@ -197,10 +197,14 @@ public final class ModuleManager {
      *
      * @throws ModuleException if a module with the
      * supplied URN cannot be deleted
+     * @throws ModuleStateException if the module is not in the correct
+     * state to be deleted
      * @throws InvalidURNException if the supplied module URN is
      * not a valid URN.
      * @throws ModuleNotFoundException if the module matching
      * the URN was not found.
+     * @throws BeanRegistrationException if unregistration of the module's
+     * MBean failed.
      */
     public void deleteModule(ModuleURN inModuleURN)
             throws ModuleException {
@@ -223,7 +227,7 @@ public final class ModuleManager {
             getModule(inModuleURN);
             //And is in the right state.
             if(!module.getState().canBeDeleted()) {
-                throw new ModuleException(new I18NBoundMessage3P(
+                throw new ModuleStateException(new I18NBoundMessage3P(
                         Messages.DELETE_FAILED_MODULE_STATE_INCORRECT,
                         inModuleURN.toString(),  module.getState(),
                         ModuleState.DELETABLE_STATES.toString()));
@@ -284,6 +288,8 @@ public final class ModuleManager {
      * state to be started.
      * @throws ModuleException if {@link Module#preStart()} threw an exception
      * OR if there were other errors starting the module.
+     * @throws InvalidURNException if the module URN is invalid
+     * @throws ModuleNotFoundException if the module was not found
      */
     public void start(ModuleURN inModuleURN) throws ModuleException {
         startModule(getModule(inModuleURN));
