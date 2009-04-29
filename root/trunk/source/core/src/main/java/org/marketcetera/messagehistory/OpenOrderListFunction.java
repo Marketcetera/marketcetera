@@ -2,7 +2,6 @@ package org.marketcetera.messagehistory;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,31 +35,16 @@ import ca.odell.glazedlists.FunctionList.Function;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class OpenOrderListFunction implements Function<List<ReportHolder>, ReportHolder> {
+final class OpenOrderListFunction implements Function<List<ReportHolder>, ReportHolder> {
 
-    private static final EnumMap<Originator, Integer> sOriginatorOrder;
-
-    static {
-        sOriginatorOrder = new EnumMap<Originator, Integer>(Originator.class);
-        sOriginatorOrder.put(Originator.Broker, 0);
-        sOriginatorOrder.put(Originator.Server, 1);
-    }
-
-    private final Comparator<ReportHolder> mComparator = new Comparator<ReportHolder>() {
+    private static final Comparator<ReportHolder> sComparator = new Comparator<ReportHolder>() {
 
         @Override
         public int compare(ReportHolder o1, ReportHolder o2) {
             ReportBase r1 = o1.getReport();
             ReportBase r2 = o2.getReport();
-            // handle null order ids
-            OrderID id1 = r1.getOrderID();
-            OrderID id2 = r2.getOrderID();
-            // sort by descending order id, broker before server, then descending report id
-            // (sequence number)
-            return new CompareToBuilder().append(id2 == null ? null : id2.getValue(),
-                    id1 == null ? null : id1.getValue()).append(
-                    sOriginatorOrder.get(r1.getOriginator()),
-                    sOriginatorOrder.get(r2.getOriginator())).append(r2.getReportID().longValue(),
+            // sort by descending report id (sequence number)
+            return new CompareToBuilder().append(r2.getReportID().longValue(),
                     r1.getReportID().longValue()).toComparison();
         }
 
@@ -69,12 +53,15 @@ public class OpenOrderListFunction implements Function<List<ReportHolder>, Repor
     @Override
     public ReportHolder evaluate(List<ReportHolder> sourceValue) {
         Set<OrderID> obsolete = new HashSet<OrderID>();
+        // out is a placeholder for a server ack if it is found
+        ReportHolder out = null;
         ReportHolder[] reversedHolders = sourceValue.toArray(new ReportHolder[sourceValue.size()]);
         // sort the list to guarantee the result is correct
-        // NOTE: it may be possible to accomplish the same thing without sorting for better performance
-        Arrays.sort(reversedHolders, mComparator);
-        // this is worst case O(n) if there are tons of OrderCancelRejects, but typically will find
-        // the right report in the first few iterations
+        // NOTE: it may be possible to accomplish the same thing without sorting
+        // for better performance
+        Arrays.sort(reversedHolders, sComparator);
+        // this is worst case O(n) if there are tons of OrderCancelRejects, or the latest execution
+        // report is a server ack, e.g. PENDING_NEW.
         for (int i = 0; i < reversedHolders.length; i++) {
             ReportHolder reportHolder = reversedHolders[i];
             ReportBase report = reportHolder.getReport();
@@ -93,11 +80,30 @@ public class OpenOrderListFunction implements Function<List<ReportHolder>, Repor
                         || ereport.getOrderStatus() == OrderStatus.Rejected) {
                     // order has been filled, canceled, or rejected, whole chain is obsolete
                     return null;
-                } else if (ereport.isCancelable() && !obsolete.contains(orderId)) {
-                    return reportHolder;
+                } else if (ereport.isCancelable()) {
+                    if (out != null) {
+                        // we have a placeholder already, only override it if we find a
+                        // broker report with the same order id, e.g. the NEW for a PENDING_NEW
+                        if (ereport.getOriginator() == Originator.Broker
+                                && out.getReport().getOrderID().equals(orderId)) {
+                            return reportHolder;
+                        }
+                    } else if (!obsolete.contains(orderId)) {
+                        // this is the latest non-obsolete execution report, return it if it
+                        // is from the broker, otherwise set the placeholder and keep iterating
+                        // to find a broker report if one exists
+                        if (ereport.getOriginator() == Originator.Broker) {
+                            return reportHolder;
+                        } else {
+                            out = reportHolder;
+                        }
+                    }
                 }
             }
         }
-        return null;
+        // out can be null, in which case no suitable report was found.
+        // If it is non null, it means the latest report was a server ack and no broker
+        // report of the same id was found.
+        return out;
     }
 }
