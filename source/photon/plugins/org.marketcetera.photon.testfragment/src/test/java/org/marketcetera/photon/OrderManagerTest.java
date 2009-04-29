@@ -234,7 +234,7 @@ public class OrderManagerTest extends TestCase {
 		TypesTestBase.assertOrderCancel((OrderCancel)photonController.getLastOrder(), 
 				TypesTestBase.NOT_NULL, new OrderID(myClOrdID), 
 				org.marketcetera.trade.Side.Buy, new MSymbol("QWER"), null, 
-				orderQty, "456", null, new BrokerID("bogus"), null);
+				orderQty, null, null, new BrokerID("bogus"), null);
 	}
 	
 	public static ExecutionReport createReport(Message message)

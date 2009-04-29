@@ -297,6 +297,14 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         assertThat(history.getOpenOrdersList().size(), is(0));
     }
 
+    public void testReplaceThenCancelWithOutOfOrderIDs() throws Exception {
+        TradeReportsHistory history = createMessageHistory();
+        simulateOrderSingle(history, "7021", Side.BUY, "10", "ASDF", "10");
+        simulateReplace(history, "9002", "7021", Side.BUY, "10", "ASDF", "15");
+        simulateCancel(history, "7022", "9002");
+        assertThat(history.getOpenOrdersList().size(), is(0));
+    }
+
     public void testOutOfOrderSingle() throws Exception {
         TradeReportsHistory history = createMessageHistory();
         simulateOutOfOrderOrderSingle(history, "1", Side.BUY, "10", "ASDF", "1");
@@ -308,18 +316,6 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         TradeReportsHistory history = createMessageHistory();
         simulateOrderReject(history, "1", Side.BUY, "10", "ASDF", "1");
         assertThat(history.getOpenOrdersList().size(), is(0));
-    }
-
-    public void testQuickPendingReplace() throws Exception {
-        TradeReportsHistory history = createMessageHistory();
-        history.addIncomingMessage(createServerReport(createMessage(OrdStatus.PENDING_NEW, "1",
-                Side.BUY, "10", "ASDF", "1")));
-        history.addIncomingMessage(createServerReport(addOrigOrdId(createMessage(
-                OrdStatus.PENDING_REPLACE, "2", Side.BUY, "10", "ASDF", "2"), "1")));
-        history.addIncomingMessage(createBrokerReport(createMessage(OrdStatus.NEW, "1", Side.BUY,
-                "10", "ASDF", "1")));
-        assertEquals(OrderStatus.PendingReplace, history.getOpenOrdersList().get(0).getReport()
-                .getOrderStatus());
     }
 
     public void testReplaceRejected() throws Exception {

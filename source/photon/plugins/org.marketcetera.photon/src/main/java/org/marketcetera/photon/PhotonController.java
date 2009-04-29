@@ -192,7 +192,11 @@ public class PhotonController
 				internalMainLogger
 						.debug("Exec id for cancel execution report:" + report.getExecutionID()); //$NON-NLS-1$
 			}
-			sendOrder(Factory.getInstance().createOrderCancel(report));
+			OrderCancel cancel = Factory.getInstance().createOrderCancel(report);
+			// null out the broker order id since some of our reports have "NONE" which is
+			// an invalid value
+			cancel.setBrokerOrderID(null);
+			sendOrder(cancel);
 		} else {
 			internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
 			return;
@@ -216,6 +220,9 @@ public class PhotonController
 			Message originalMessage = ((HasFIXMessage) originalReport).getMessage();
 			Message cancelReplaceMessage = PhotonPlugin.getDefault().getMessageFactory()
 					.newCancelReplaceFromMessage(originalMessage);
+			// remove the broker order id since some of our reports have "NONE" which is
+			// an invalid value
+			cancelReplaceMessage.removeField(quickfix.field.OrderID.FIELD);
 			IOrderTicketController controller = PhotonPlugin.getDefault().getOrderTicketController(
 					originalMessage);
 			if (controller != null) {
