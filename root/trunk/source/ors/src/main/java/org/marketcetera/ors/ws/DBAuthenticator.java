@@ -1,5 +1,6 @@
 package org.marketcetera.ors.ws;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.ClientVersion;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.ors.security.SimpleUser;
@@ -27,6 +28,28 @@ public class DBAuthenticator
     implements Authenticator
 {
 
+    // CLASS METHODS.
+
+    /**
+     * Checks for compatibility between the given client and server
+     * versions.
+     *
+     * @param clientVersion The client version.
+     * @param serverVersion The server version.
+     *
+     * @return True if the two versions are compatible.
+     */
+
+    static boolean compatibleVersions
+        (String clientVersion,
+         String serverVersion)
+    {
+        // If the server's version is unknown, any client is allowed.
+        return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
+                ObjectUtils.equals(clientVersion,serverVersion));            
+    }
+
+
     // Authenticator.
 
     @Override
@@ -38,7 +61,7 @@ public class DBAuthenticator
     {
         String serverVersion=ApplicationVersion.getVersion();
         String clientVersion=ClientVersion.getVersion(context.getAppId());
-        if (!ClientVersion.compatibleVersions(clientVersion,serverVersion)) {
+        if (!compatibleVersions(clientVersion,serverVersion)) {
             throw new I18NException
                 (new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
                                         clientVersion,serverVersion,user));

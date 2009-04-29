@@ -1,7 +1,5 @@
 package org.marketcetera.client;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.AppId;
 
@@ -73,25 +71,6 @@ public final class ClientVersion
             return null;
         }
         return id.getValue().substring(index);
-    }
-
-    /**
-     * Checks for compatibility between the given client and server
-     * versions.
-     *
-     * @param clientVersion The client version.
-     * @param serverVersion The server version.
-     *
-     * @return True if the two versions are compatible.
-     */
-
-    public static boolean compatibleVersions
-        (String clientVersion,
-         String serverVersion)
-    {
-        // If the server's version is unknown, any client is allowed.
-        return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
-                ObjectUtils.equals(clientVersion,serverVersion));            
     }
 
 

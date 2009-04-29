@@ -1,7 +1,6 @@
 package org.marketcetera.client;
 
 import org.junit.Test;
-import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.util.ws.tags.AppId;
 
@@ -30,18 +29,5 @@ public class ClientVersionTest
                      (new AppId(ClientVersion.APP_ID_VERSION_SEPARATOR+"x")));
         assertEquals(ClientVersion.APP_ID_VERSION,
                      ClientVersion.getVersion(ClientVersion.APP_ID));
-
-        assertFalse(ClientVersion.compatibleVersions
-                    (null,"x"));
-        assertFalse(ClientVersion.compatibleVersions
-                    ("x",null));
-        assertFalse(ClientVersion.compatibleVersions
-                    ("x","y"));
-
-        assertFalse(ApplicationVersion.DEFAULT_VERSION.equals("x"));
-        assertTrue(ClientVersion.compatibleVersions
-                   ("x","x"));
-        assertTrue(ClientVersion.compatibleVersions
-                   ("x",ApplicationVersion.DEFAULT_VERSION));
     }
 }
