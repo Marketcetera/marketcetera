@@ -1,7 +1,12 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.eclipse.core.runtime.Plugin;
 import org.marketcetera.module.ModuleManager;
+import org.marketcetera.photon.internal.marketdata.DataFlowManager.MarketDataExecutor;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.osgi.framework.BundleContext;
@@ -23,6 +28,12 @@ public class Activator extends Plugin {
 	 * The shared instance
 	 */
 	private static Activator sInstance;
+	
+	/**
+	 * The {@link Executor} used by data flow managers to perform market data related operations
+	 * serially in a background thread.
+	 */
+	private ExecutorService mMarketDataExecutor;
 
 	/**
 	 * The {@link MarketDataManager} singleton for this plug-in instance.
@@ -39,6 +50,10 @@ public class Activator extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		sInstance = null;
 		mMarketDataManager = null;
+		if (mMarketDataExecutor != null) {
+			mMarketDataExecutor.shutdownNow();
+			mMarketDataExecutor = null;
+		}
 		super.stop(context);
 	}
 
@@ -64,12 +79,20 @@ public class Activator extends Plugin {
 		}
 		return mMarketDataManager;
 	}
+	
+	private synchronized Executor getMarketDataExecutor() {
+		if (mMarketDataExecutor == null) {
+			mMarketDataExecutor = Executors.newSingleThreadExecutor();
+		}
+		return mMarketDataExecutor;
+	}
 
 	private class Module extends AbstractModule {
 
 		@Override
 		protected void configure() {
 			bind(ModuleManager.class).toInstance(ModuleSupport.getModuleManager());
+			bind(Executor.class).annotatedWith(MarketDataExecutor.class).toInstance(getMarketDataExecutor());
 		}
 
 	}

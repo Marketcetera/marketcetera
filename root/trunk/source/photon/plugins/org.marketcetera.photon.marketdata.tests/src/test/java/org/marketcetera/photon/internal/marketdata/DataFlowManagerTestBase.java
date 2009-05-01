@@ -5,12 +5,14 @@ import static org.mockito.Mockito.stub;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.core.ImmediateExecutorService;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.marketdata.Capability;
@@ -43,7 +45,8 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	/**
 	 * @return the test fixture
 	 */
-	protected abstract IDataFlowManager<? extends T, K> createFixture(ModuleManager moduleManager);
+	protected abstract IDataFlowManager<? extends T, K> createFixture(ModuleManager moduleManager,
+			Executor marketDataExecutor);
 
 	/**
 	 * @return a key
@@ -111,7 +114,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 				MockMarketDataModuleFactory.PROVIDER_URN.toString());
 		mMockMarketDataModule = MockMarketDataModuleFactory.sInstance;
 		mMockMarketDataModule.setStatus("AVAILABLE");
-		mFixture = createFixture(ModuleSupport.getModuleManager());
+		mFixture = createFixture(ModuleSupport.getModuleManager(), new ImmediateExecutorService());
 		mMockModuleFeed = createMockModuleFeed(getSupportedCapabilities());
 		mFixture.setSourceFeed(mMockModuleFeed);
 		mKey1 = createKey1();
@@ -148,7 +151,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
-				createFixture(null);
+				createFixture(null, mock(Executor.class));
 			}
 		};
 	}

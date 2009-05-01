@@ -31,7 +31,7 @@ class PositionRowImpl implements PositionRow {
     private final String mTraderId;
     private final Grouping[] mGrouping;
     private final EventList<PositionRow> mChildren;
-    private PositionMetrics mPositionMetrics;
+    private volatile PositionMetrics mPositionMetrics;
 
     /**
      * Convenience constructor for summary position rows.
@@ -151,7 +151,7 @@ class PositionRowImpl implements PositionRow {
      * @throws IllegalArgumentException
      *             if positionMetrics is null
      */
-    synchronized void setPositionMetrics(PositionMetrics positionMetrics) {
+    void setPositionMetrics(PositionMetrics positionMetrics) {
         Validate.notNull(positionMetrics);
         propertyChangeSupport.firePropertyChange("positionMetrics", //$NON-NLS-1$
                 mPositionMetrics, mPositionMetrics = positionMetrics);

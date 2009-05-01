@@ -258,44 +258,15 @@ public class MarketDataTest {
 		new DepthOfBookReferenceCountTestTemplate(Content.OPEN_BOOK, mMockOpenBookManager);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testSetSourceModule() throws Exception {
-		 ImmutableSet<IDataFlowManager<? extends MDItemImpl, ? extends Key<? extends MDItem>>> managers = ImmutableSet
-				.of(mMockLatestTickManager, mMockTopOfBookManager, mMockMarketstatManager,
-						mMockLevel2Manager, mMockTotalViewManager, mMockOpenBookManager);
 		IMarketDataFeed mockFeed = mock(IMarketDataFeed.class);
 		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc"));
 		mFixture.setSourceFeed(mockFeed);
-		for (IDataFlowManager<?, ?> manager : managers) {
+		for (IDataFlowManager<?, ?> manager : ImmutableSet.<IDataFlowManager<?, ?>> of(
+				mMockLatestTickManager, mMockTopOfBookManager, mMockMarketstatManager,
+				mMockLevel2Manager, mMockTotalViewManager, mMockOpenBookManager)) {
 			verify(manager).setSourceFeed(mockFeed);
-		}
-		mockFeed = mock(IMarketDataFeed.class);
-		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc1"));
-		mFixture.setLatestTickSourceModule(mockFeed);
-		verifyOnlyOneSourceModuleSet(managers, mockFeed, mMockLatestTickManager);
-		mockFeed = mock(IMarketDataFeed.class);
-		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc2"));
-		mFixture.setTopOfBookSourceModule(mockFeed);
-		verifyOnlyOneSourceModuleSet(managers, mockFeed, mMockTopOfBookManager);
-		mockFeed = mock(IMarketDataFeed.class);
-		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc3"));
-		mFixture.setMarketstatSourceModule(mockFeed);
-		verifyOnlyOneSourceModuleSet(managers, mockFeed, mMockMarketstatManager);
-		mockFeed = mock(IMarketDataFeed.class);
-		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc4"));
-		mFixture.setLevel2SourceModule(mockFeed);
-		verifyOnlyOneSourceModuleSet(managers, mockFeed, mMockLevel2Manager);
-	}
-
-	private void verifyOnlyOneSourceModuleSet(
-			ImmutableSet<IDataFlowManager<? extends MDItemImpl, ? extends Key<? extends MDItem>>> managers,
-			IMarketDataFeed mockFeed, IDataFlowManager<?, ?> m) {
-		for (IDataFlowManager<?, ?> manager : managers) {
-			if (manager == m)
-				verify(manager).setSourceFeed(mockFeed);
-			else
-				verify(manager, never()).setSourceFeed(mockFeed);
 		}
 	}
 

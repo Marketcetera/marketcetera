@@ -3,6 +3,8 @@ package org.marketcetera.photon.internal.marketdata;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -17,7 +19,6 @@ import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
 /* $License$ */
@@ -41,24 +42,32 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 
 		private final ModuleManager mModuleManager;
 
+		private final Executor mMarketDataExecutor;
+
 		/**
 		 * Constructor.
 		 * 
 		 * @param moduleManager
 		 *            the module manager
+		 * @param marketDataExecutor
+		 *            an executor for long running module operations that <strong>must</strong>
+		 *            execute tasks sequentially
+		 * 
 		 */
 		@Inject
-		public FactoryImpl(ModuleManager moduleManager) {
+		public FactoryImpl(ModuleManager moduleManager,
+				@MarketDataExecutor Executor marketDataExecutor) {
 			mModuleManager = moduleManager;
+			mMarketDataExecutor = marketDataExecutor;
 		}
 
 		@Override
 		public IDepthOfBookManager create(Set<Capability> capabilities) {
-			return new DepthOfBookManager(mModuleManager, capabilities);
+			return new DepthOfBookManager(mModuleManager, capabilities, mMarketDataExecutor);
 		}
 	}
 
-	private final Map<Long, MDQuoteImpl> mIdMap = Maps.newHashMap();
+	private final Map<Long, MDQuoteImpl> mIdMap = new ConcurrentHashMap<Long, MDQuoteImpl>();
 	private final QuoteEventToMDQuote mFunction = new QuoteEventToMDQuote();
 
 	/**
@@ -68,11 +77,15 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 	 *            the module manager
 	 * @param requiredCapabilities
 	 *            the capabilities this manager requires, cannot be empty
+	 * @param marketDataExecutor
+	 *            an executor for long running module operations that <strong>must</strong> execute
+	 *            tasks sequentially
 	 * @throws IllegalArgumentException
 	 *             if moduleManager is null
 	 */
-	public DepthOfBookManager(ModuleManager moduleManager, Set<Capability> requiredCapabilities) {
-		super(moduleManager, requiredCapabilities);
+	public DepthOfBookManager(ModuleManager moduleManager, Set<Capability> requiredCapabilities,
+			Executor marketDataExecutor) {
+		super(moduleManager, requiredCapabilities, marketDataExecutor);
 	}
 
 	@Override
@@ -88,9 +101,11 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 	protected void resetItem(DepthOfBookKey key, MDDepthOfBookImpl item) {
 		assert key != null;
 		assert item != null;
-		mIdMap.remove(key);
-		item.getBids().clear();
-		item.getAsks().clear();
+		synchronized (item) {
+			mIdMap.remove(key);
+			item.getBids().clear();
+			item.getAsks().clear();
+		}
 	}
 
 	@Override
@@ -108,7 +123,6 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 
 			@Override
 			public void receiveData(Object inData) {
-
 				if (inData instanceof QuoteEvent) {
 					QuoteEvent data = (QuoteEvent) inData;
 					MSymbol msymbol = data.getSymbol();

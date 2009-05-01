@@ -3,7 +3,7 @@ package org.marketcetera.core.position.impl;
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.MarketDataSupport;
@@ -36,9 +36,10 @@ public final class PositionRowUpdater {
     private final PositionRowImpl mPositionRow;
     private final MarketDataSupport mMarketDataSupport;
     private final SymbolChangeListener mSymbolChangeListener;
-    private static final ExecutorService sMarketDataUpdateExecutor = Executors.newSingleThreadExecutor();
-    private volatile Future<?> mTickFuture;
-    private volatile Future<?> mClosingPriceFuture;
+    private static final ExecutorService sMarketDataUpdateExecutor = Executors
+            .newSingleThreadExecutor();
+    private final AtomicBoolean mTickPending = new AtomicBoolean();
+    private final AtomicBoolean mClosingPricePending = new AtomicBoolean();
     private volatile PositionMetricsCalculator mCalculator;
     private volatile BigDecimal mClosePrice;
     private volatile BigDecimal mLastTradePrice;
@@ -129,14 +130,18 @@ public final class PositionRowUpdater {
 
     private void tick(BigDecimal tick) {
         mLastTradePrice = tick;
-        // since this modifies the position and will need a lock, spawn a new thread to perform the update
-        if (mTickFuture != null && !mTickFuture.isDone()) return;
-        mTickFuture = sMarketDataUpdateExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                mPositionRow.setPositionMetrics(mCalculator.tick(mLastTradePrice));
-            }
-        });
+        // Since this modifies the position and will need a lock, the update happens in 
+        // a separate thread.  mTickPending is used to avoid queuing multiple updates
+        // since the runnable always uses the latest value.
+        if (mTickPending.compareAndSet(false, true)) {
+            sMarketDataUpdateExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mTickPending.set(false);
+                    mPositionRow.setPositionMetrics(mCalculator.tick(mLastTradePrice));
+                }
+            });
+        }
     }
 
     private void closePriceChanged(BigDecimal newPrice) {
@@ -148,14 +153,18 @@ public final class PositionRowUpdater {
             return;
         }
         mClosePrice = newPrice;
-        // since this modifies the position and will need a lock, spawn a new thread to perform the update
-        if (mClosingPriceFuture != null && !mClosingPriceFuture.isDone()) return;
-        mClosingPriceFuture = sMarketDataUpdateExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                mPositionRow.setPositionMetrics(recalculate());
-            }
-        });
+        // Since this modifies the position and will need a lock, the update happens in 
+        // a separate thread.  mClosingPricePending is used to avoid queuing multiple updates
+        // since the runnable always uses the latest value.
+        if (mClosingPricePending.compareAndSet(false, true)) {
+            sMarketDataUpdateExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mClosingPricePending.set(false);
+                    mPositionRow.setPositionMetrics(recalculate());
+                }
+            });
+        }
     }
 
     private void listChanged(ListEvent<Trade> listChanges) {

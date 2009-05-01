@@ -41,10 +41,6 @@ public class MarketData implements IMarketData {
 	 * shared so at most one is active for any given data key.
 	 */
 	
-	/*
-	 * Thread safety is provided by synchronizing access to the individual managers.
-	 */
-
 	private final Multiset<Key<? extends MDItem>> mReferences = HashMultiset.create();
 	private final ILatestTickManager mLatestTickManager;
 	private final ITopOfBookManager mTopOfBookManager;
@@ -96,111 +92,33 @@ public class MarketData implements IMarketData {
 	 *             if feed is null
 	 */
 	public void setSourceFeed(IMarketDataFeed feed) {
-		setLatestTickSourceModule(feed);
-		setTopOfBookSourceModule(feed);
-		setMarketstatSourceModule(feed);
-		setLevel2SourceModule(feed);
-		setTotalViewSourceModule(feed);
-		setOpenBookSourceModule(feed);
-	}
-
-	/**
-	 * Sets the source for the latest tick data.
-	 * 
-	 * @param feed
-	 *            the source feed
-	 * @throws IllegalArgumentException
-	 *             if feed is null
-	 */
-	public void setLatestTickSourceModule(IMarketDataFeed feed) {
 		mLatestTickManager.setSourceFeed(feed);
-	}
-
-	/**
-	 * Sets the source for the top of book data.
-	 * 
-	 * @param feed
-	 *            the source feed
-	 * @throws IllegalArgumentException
-	 *             if feed is null
-	 */
-	public void setTopOfBookSourceModule(IMarketDataFeed feed) {
 		mTopOfBookManager.setSourceFeed(feed);
-	}
-
-	/**
-	 * Sets the source for the market statistic data.
-	 * 
-	 * @param feed
-	 *            the source feed
-	 * @throws IllegalArgumentException
-	 *             if feed is null
-	 */
-	public void setMarketstatSourceModule(IMarketDataFeed feed) {
 		mMarketstatManager.setSourceFeed(feed);
-	}
-
-	/**
-	 * Sets the source for the Level 2 data.
-	 * 
-	 * @param feed
-	 *            the source feed
-	 * @throws IllegalArgumentException
-	 *             if feed is null
-	 */
-	public void setLevel2SourceModule(IMarketDataFeed feed) {
 		mLevel2Manager.setSourceFeed(feed);
-	}
-
-	/**
-	 * Sets the source for the TotalView data.
-	 * 
-	 * @param feed
-	 *            the source feed
-	 * @throws IllegalArgumentException
-	 *             if feed is null
-	 */
-	public void setTotalViewSourceModule(IMarketDataFeed feed) {
 		mTotalViewManager.setSourceFeed(feed);
-	}
-
-	/**
-	 * Sets the source for the OpenBook data.
-	 * 
-	 * @param feed
-	 *            the source feed
-	 * @throws IllegalArgumentException
-	 *             if feed is null
-	 */
-	public void setOpenBookSourceModule(IMarketDataFeed feed) {
 		mOpenBookManager.setSourceFeed(feed);
 	}
 
 	@Override
 	public IMarketDataReference<MDLatestTick> getLatestTick(String symbol) {
 		Validate.notNull(symbol);
-		synchronized (mLatestTickManager) {
-			return new Reference<MDLatestTick, LatestTickKey>(mLatestTickManager,
+		return new Reference<MDLatestTick, LatestTickKey>(mLatestTickManager,
 					new LatestTickKey(symbol));
-		}
 	}
 
 	@Override
 	public IMarketDataReference<MDTopOfBook> getTopOfBook(String symbol) {
 		Validate.notNull(symbol);
-		synchronized (mTopOfBookManager) {
-			return new Reference<MDTopOfBook, TopOfBookKey>(mTopOfBookManager, new TopOfBookKey(
+		return new Reference<MDTopOfBook, TopOfBookKey>(mTopOfBookManager, new TopOfBookKey(
 					symbol));
-		}
 	}
 
 	@Override
 	public IMarketDataReference<MDMarketstat> getMarketstat(String symbol) {
 		Validate.notNull(symbol);
-		synchronized (mMarketstatManager) {
-			return new Reference<MDMarketstat, MarketstatKey>(mMarketstatManager,
+		return new Reference<MDMarketstat, MarketstatKey>(mMarketstatManager,
 					new MarketstatKey(symbol));
-		}
 	}
 
 	@Override
@@ -208,10 +126,8 @@ public class MarketData implements IMarketData {
 		Validate.noNullElements(new Object[] { symbol, product });
 		Validate.isTrue(DepthOfBookKey.VALID_PRODUCTS.contains(product));
 		IDepthOfBookManager manager = mContentToDepthManager.get(product);
-		synchronized (manager) {
-			return new Reference<MDDepthOfBook, DepthOfBookKey>(manager, new DepthOfBookKey(symbol,
+		return new Reference<MDDepthOfBook, DepthOfBookKey>(manager, new DepthOfBookKey(symbol,
 					product));
-		}
 	}
 
 	/**
@@ -228,10 +144,12 @@ public class MarketData implements IMarketData {
 		public Reference(IDataFlowManager<? extends T, K> manager, K key) {
 			assert manager != null && key != null;
 			mManager = manager;
-			if (!mReferences.contains(key)) {
-				mManager.startFlow(key);
+			synchronized (mReferences) {
+				if (!mReferences.contains(key)) {
+					mManager.startFlow(key);
+				}
+				mReferences.add(key);
 			}
-			mReferences.add(key);
 			mItem = manager.getItem(key);
 			mKey = key;
 		}
@@ -246,7 +164,7 @@ public class MarketData implements IMarketData {
 			if (mDisposed.getAndSet(true)) {
 				return;
 			}
-			synchronized (mManager) {
+			synchronized (mReferences) {
 				if (!mReferences.remove(mKey)) {
 					// should always be able to remove the reference if not yet disposed
 					throw new AssertionError();

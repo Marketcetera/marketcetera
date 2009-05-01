@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
 
 import java.util.EnumSet;
+import java.util.concurrent.Executor;
 
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -29,8 +30,8 @@ public class TopOfBookManagerTest extends DataFlowManagerTestBase<MDTopOfBook, T
 
 	@Override
 	protected IDataFlowManager<MDTopOfBookImpl, TopOfBookKey> createFixture(
-			ModuleManager moduleManager) {
-		return new TopOfBookManager(moduleManager);
+			ModuleManager moduleManager, Executor marketDataExecutor) {
+		return new TopOfBookManager(moduleManager, marketDataExecutor);
 	}
 
 	@Override

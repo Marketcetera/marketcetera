@@ -1,6 +1,7 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import java.util.EnumSet;
+import java.util.concurrent.Executor;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -32,12 +33,16 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 	 * 
 	 * @param moduleManager
 	 *            the module manager
+	 * @param marketDataExecutor
+	 *            an executor for long running module operations that <strong>must</strong> execute
+	 *            tasks sequentially
 	 * @throws IllegalArgumentException
 	 *             if moduleManager is null
 	 */
 	@Inject
-	public TopOfBookManager(ModuleManager moduleManager) {
-		super(moduleManager, EnumSet.of(Capability.TOP_OF_BOOK));
+	public TopOfBookManager(ModuleManager moduleManager,
+			@MarketDataExecutor Executor marketDataExecutor) {
+		super(moduleManager, EnumSet.of(Capability.TOP_OF_BOOK), marketDataExecutor);
 	}
 
 	@Override
@@ -52,10 +57,12 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 	protected void resetItem(TopOfBookKey key, MDTopOfBookImpl item) {
 		assert key != null;
 		assert item != null;
-		item.setAskPrice(null);
-		item.setAskSize(null);
-		item.setBidPrice(null);
-		item.setBidSize(null);
+		synchronized (item) {
+			item.setAskPrice(null);
+			item.setAskSize(null);
+			item.setBidPrice(null);
+			item.setBidSize(null);
+		}
 	}
 
 	@Override
