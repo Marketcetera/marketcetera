@@ -2,6 +2,7 @@ package org.marketcetera.photon.internal.marketdata;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.concurrent.Executor;
 
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.Capability;
@@ -31,12 +32,16 @@ public class LatestTickManager extends DataFlowManager<MDLatestTickImpl, LatestT
 	 * 
 	 * @param moduleManager
 	 *            the module manager
+	 * @param marketDataExecutor
+	 *            an executor for long running module operations that <strong>must</strong> execute
+	 *            tasks sequentially
 	 * @throws IllegalArgumentException
 	 *             if moduleManager is null
 	 */
 	@Inject
-	public LatestTickManager(ModuleManager moduleManager) {
-		super(moduleManager, EnumSet.of(Capability.LATEST_TICK));
+	public LatestTickManager(ModuleManager moduleManager,
+			@MarketDataExecutor Executor marketDataExecutor) {
+		super(moduleManager, EnumSet.of(Capability.LATEST_TICK), marketDataExecutor);
 	}
 
 	@Override
@@ -51,8 +56,10 @@ public class LatestTickManager extends DataFlowManager<MDLatestTickImpl, LatestT
 	protected void resetItem(LatestTickKey key, MDLatestTickImpl item) {
 		assert key != null;
 		assert item != null;
-		item.setPrice(null);
-		item.setSize(null);
+		synchronized (item) {
+			item.setPrice(null);
+			item.setSize(null);
+		}
 	}
 
 	@Override

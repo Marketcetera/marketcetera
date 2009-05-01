@@ -3,6 +3,7 @@ package org.marketcetera.photon.internal.marketdata;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.concurrent.Executor;
 
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.marketdata.Capability;
@@ -32,12 +33,16 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 	 * 
 	 * @param moduleManager
 	 *            the module manager
+	 * @param marketDataExecutor
+	 *            an executor for long running module operations that <strong>must</strong> execute
+	 *            tasks sequentially
 	 * @throws IllegalArgumentException
 	 *             if moduleManager is null
 	 */
 	@Inject
-	public MarketstatManager(ModuleManager moduleManager) {
-		super(moduleManager, EnumSet.of(Capability.MARKET_STAT));
+	public MarketstatManager(ModuleManager moduleManager,
+			@MarketDataExecutor Executor marketDataExecutor) {
+		super(moduleManager, EnumSet.of(Capability.MARKET_STAT), marketDataExecutor);
 	}
 
 	@Override
@@ -52,10 +57,12 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 	protected void resetItem(MarketstatKey key, MDMarketstatImpl item) {
 		assert key != null;
 		assert item != null;
-		item.setCloseDate(null);
-		item.setClosePrice(null);
-		item.setPreviousCloseDate(null);
-		item.setPreviousClosePrice(null);
+		synchronized (item) {
+			item.setCloseDate(null);
+			item.setClosePrice(null);
+			item.setPreviousCloseDate(null);
+			item.setPreviousClosePrice(null);
+		}
 	}
 
 	@Override

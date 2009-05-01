@@ -9,6 +9,7 @@ import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqu
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.concurrent.Executor;
 
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.Capability;
@@ -32,8 +33,8 @@ public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick,
 
 	@Override
 	protected IDataFlowManager<MDLatestTickImpl, LatestTickKey> createFixture(
-			ModuleManager moduleManager) {
-		return new LatestTickManager(moduleManager);
+			ModuleManager moduleManager, Executor marketDataExecutor) {
+		return new LatestTickManager(moduleManager, marketDataExecutor);
 	}
 
 	@Override

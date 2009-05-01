@@ -45,10 +45,10 @@ public interface IDataFlowManager<T extends MDItemImpl, K extends Key<? super T>
 	 * 
 	 * If this is called after data flows are started, it will rewire them to the new feed.
 	 * 
-	 * Setting the feed to null will reset all data items to their intial state (with null
+	 * Setting the feed to null will reset all data items to their initial state (with null
 	 * data).
 	 * 
-	 * Successive calls with the same source feed is a no-op.
+	 * Successive calls with the same source feed recreates all data flows.
 	 * 
 	 * @param feed
 	 *            the market data feed, can be null

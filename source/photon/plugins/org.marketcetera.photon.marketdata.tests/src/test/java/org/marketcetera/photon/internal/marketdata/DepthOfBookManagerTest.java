@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import org.apache.log4j.Level;
 import org.junit.Test;
@@ -36,8 +37,8 @@ public class DepthOfBookManagerTest extends DataFlowManagerTestBase<MDDepthOfBoo
 
 	@Override
 	protected IDataFlowManager<MDDepthOfBookImpl, DepthOfBookKey> createFixture(
-			ModuleManager moduleManager) {
-		return new DepthOfBookManager(moduleManager, getSupportedCapabilities());
+			ModuleManager moduleManager, Executor marketDataExecutor) {
+		return new DepthOfBookManager(moduleManager, getSupportedCapabilities(), marketDataExecutor);
 	}
 
 	@Override

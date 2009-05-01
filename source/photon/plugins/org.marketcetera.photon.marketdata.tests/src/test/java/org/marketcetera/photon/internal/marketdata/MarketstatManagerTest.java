@@ -10,6 +10,7 @@ import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqu
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.concurrent.Executor;
 
 import org.junit.Test;
 import org.marketcetera.event.MarketstatEvent;
@@ -37,8 +38,8 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 
 	@Override
 	protected IDataFlowManager<MDMarketstatImpl, MarketstatKey> createFixture(
-			ModuleManager moduleManager) {
-		return new MarketstatManager(moduleManager);
+			ModuleManager moduleManager, Executor marketDataExecutor) {
+		return new MarketstatManager(moduleManager, marketDataExecutor);
 	}
 
 	@Override
