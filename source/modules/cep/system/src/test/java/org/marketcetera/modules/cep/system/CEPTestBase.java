@@ -19,10 +19,7 @@ import quickfix.field.Symbol;
 import quickfix.field.Text;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Arrays;
+import java.util.*;
 
 import static junit.framework.Assert.assertSame;
 
@@ -49,6 +46,8 @@ public abstract class CEPTestBase extends ModuleTestBase {
     protected BidEvent bid1, bid2;
     protected AskEvent ask1, ask2;
     protected TradeEvent trade1, trade2;
+    protected LogEvent log1, log2;
+    protected MarketstatEvent mStat1, mStat2;
     protected Suggestion sug1, sug2;
     protected Notification not1, not2;
     protected OrderSingle os1, os2;
@@ -74,6 +73,16 @@ public abstract class CEPTestBase extends ModuleTestBase {
         bid2 = new BidEvent(1, 2, new MSymbol("DELL"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
         trade1 = new TradeEvent(1, 2, new MSymbol("ECHO"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
         trade2 = new TradeEvent(1, 2, new MSymbol("FIGA"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
+        log1 = LogEvent.debug(Messages.PROVIDER_DESCRIPTION);
+        log2 = LogEvent.error(Messages.PROVIDER_DESCRIPTION);
+        mStat1 = new MarketstatEvent(new MSymbol("ABC"),new Date(),
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE, new Date(), new Date(),
+                new Date(), new Date(), "OYSE", "HYSE", "LYSE","CYSE");
+        mStat2 = new MarketstatEvent(new MSymbol("BIDU"),new Date(), 
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE, new Date(), new Date(),
+                new Date(), new Date(), "OYSE", "HYSE", "LYSE","CYSE");
         sug1 = Factory.getInstance().createOrderSingleSuggestion();
         sug1.setIdentifier("acura");
         sug2 = Factory.getInstance().createOrderSingleSuggestion();
@@ -125,7 +134,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
 
         // initialize the mongo array we'll be passing in to all data flows, plus some random other objects
         allSentEvents = Arrays.asList(ask1, ask2, bid1, bid2, trade1, trade2, sug1, sug2, not1, not2, os1, 37, os2, oc1, oc2, or1, or2,
-                                      ocr1, ocr2, fo1, fo2, er1, 42, er2, "pupkin", map1, map2);
+                                      ocr1, ocr2, fo1, fo2, er1, 42, er2, "pupkin", map1, map2, log1, log2, mStat1, mStat2);
 
     }
 
@@ -316,63 +325,77 @@ public abstract class CEPTestBase extends ModuleTestBase {
 
     @Test(timeout=120000)
     public void testExecutionReport() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.REPORT, ExecutionReport.class.getName(), new Object[] {er1, er2});
+        flowTestHelperWrapper(CEPDataTypes.REPORT, ExecutionReport.class.getName(), er1, er2);
     }
 
     // validation inspects Text field
     @Test(timeout=120000)
     public void testOrderCancelReject() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.CANCEL_REJECT, OrderCancelReject.class.getName(), new Object[] {ocr1, ocr2});
+        flowTestHelperWrapper(CEPDataTypes.CANCEL_REJECT, OrderCancelReject.class.getName(), ocr1, ocr2);
     }
 
     // on orders we look at destinations
     @Test(timeout=120000)
     public void testOrderSingle() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.ORDER_SINGLE, OrderSingle.class.getName(), new Object[] {os1, os2});
+        flowTestHelperWrapper(CEPDataTypes.ORDER_SINGLE, OrderSingle.class.getName(), os1, os2);
     }
 
     // on orders we look at dest id
     @Test(timeout=120000)
     public void testOrderCancel() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.ORDER_CANCEL, OrderCancel.class.getName(), new Object[] {oc1, oc2});
+        flowTestHelperWrapper(CEPDataTypes.ORDER_CANCEL, OrderCancel.class.getName(), oc1, oc2);
     }
 
     // on orders we look at dest id
     @Test(timeout=120000)
     public void testOrderReplace() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.ORDER_REPLACE, OrderReplace.class.getName(), new Object[] {or1, or2});
+        flowTestHelperWrapper(CEPDataTypes.ORDER_REPLACE, OrderReplace.class.getName(), or1, or2);
     }
 
     // on orders we look at dest id
     @Test(timeout=120000)
     public void testFIXOrder() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.FIX_ORDER, FIXOrder.class.getName(), new Object[]{fo1, fo2});
+        flowTestHelperWrapper(CEPDataTypes.FIX_ORDER, FIXOrder.class.getName(), fo1, fo2);
     }
 
     // checks on body
     @Test(timeout=120000)
     public void testNotification() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.NOTIFICATION, Notification.class.getName(), new Object[] {not1, not2});
+        flowTestHelperWrapper(CEPDataTypes.NOTIFICATION, Notification.class.getName(), not1, not2);
     }
 
     // checks on identifier
     @Test(timeout=120000)
     public void testSuggestion() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.SUGGEST, Suggestion.class.getName(), new Object[] {sug1, sug2});
+        flowTestHelperWrapper(CEPDataTypes.SUGGEST, Suggestion.class.getName(), sug1, sug2);
     }
 
     @Test(timeout=120000)
     public void testMap() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.MAP, Map.class.getName(), new Object[]{map1, map2});
+        flowTestHelperWrapper(CEPDataTypes.MAP, Map.class.getName(), map1, map2);
     }
 
     @Test(timeout=120000)
     public void testMarketData() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.MARKET_DATA, SymbolExchangeEvent.class.getName(), new Object[] {ask1, ask2, bid1, bid2, trade1, trade2});
+        flowTestHelperWrapper(CEPDataTypes.MARKET_DATA, SymbolExchangeEvent.class.getName(), ask1, ask2, bid1, bid2, trade1, trade2);
+    }
+
+    @Test(timeout=120000)
+    public void testLog() throws Exception {
+        flowTestHelperWrapper(CEPDataTypes.LOG, LogEvent.class.getName(),
+                log1, log2);
+    }
+
+    @Test(timeout=120000)
+    public void testMarketstatEvent() throws Exception {
+        flowTestHelperWrapper(CEPDataTypes.MARKET_STAT,
+                MarketstatEvent.class.getName(), mStat1, mStat2);
     }
 
 
-    protected void flowTestHelperWrapper(String expectedAlias, String expectedClass, Object[] expectedEvents) throws Exception {
+    protected void flowTestHelperWrapper(String expectedAlias,
+                                         String expectedClass,
+                                         Object... expectedEvents) throws Exception {
         flowTestHelper(expectedAlias, expectedEvents);
         flowTestHelper(expectedClass, expectedEvents);
     }

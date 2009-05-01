@@ -20,9 +20,9 @@ class MovingAverages < Strategy
       date = event["date"]
       if close < avg && @wasAbove
         @wasAbove = false
-        puts "Close #{close} crossed below average #{avg} on #{date}"
+        warn "Close #{close} crossed below average #{avg} on #{date}"
       elsif close > avg && (!@wasAbove)
-        puts "Close #{close} crossed above average #{avg} on #{date}"
+        warn "Close #{close} crossed above average #{avg} on #{date}"
         @wasAbove = true;
       end
     end

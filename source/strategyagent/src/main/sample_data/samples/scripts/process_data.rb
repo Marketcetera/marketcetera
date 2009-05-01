@@ -36,6 +36,6 @@ class ProcessData < Strategy
     #  than the other callbacks                                #
     ############################################################
     def on_other(data)
-      puts "Trade " + data.to_s
+      warn "Trade " + data.to_s
     end
 end

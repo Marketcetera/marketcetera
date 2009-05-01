@@ -18,13 +18,13 @@ class HelloWorld < Strategy
     #  and other initialization tasks.       #
     ##########################################
     def on_start
-      puts "Hello World!"
+      warn "Hello World!"
     end
 
     ############################################
     # Executed when the strategy is stopped.   #
     ############################################
     def on_stop
-      puts "Good Bye!"
+      warn "Good Bye!"
     end
 end
