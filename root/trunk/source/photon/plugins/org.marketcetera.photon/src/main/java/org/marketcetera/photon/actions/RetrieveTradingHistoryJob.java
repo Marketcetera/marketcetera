@@ -82,8 +82,7 @@ public class RetrieveTradingHistoryJob extends Job {
 							tradeReportsHistory.getAllMessagesList(), new ImmutablePositionSupport(
 									ClientManager.getInstance().getPositionsAsOf(lastOccurrence)),
 							new PhotonPositionMarketData(MarketDataManager.getCurrent()
-									.getMarketData(), PhotonPlugin.getDefault()
-									.getSessionStartTimeProvider()));
+									.getMarketData()));
 					PhotonPlugin.getDefault().registerPositionEngine(engine);
 				} catch (Exception e) {
 					if (e instanceof RuntimeException) {
