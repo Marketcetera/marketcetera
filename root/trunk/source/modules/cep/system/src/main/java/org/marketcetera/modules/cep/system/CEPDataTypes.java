@@ -2,10 +2,7 @@ package org.marketcetera.modules.cep.system;
 
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.notifications.INotification;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.SymbolExchangeEvent;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.*;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -38,6 +35,8 @@ public class CEPDataTypes {
     public static final String NOTIFICATION = "notif";          //$NON-NLS-1$
     public static final String MAP          = "map";            //$NON-NLS-1$
     public static final String TIME_CARRIER = "timeCarrier";    //$NON-NLS-1$
+    public static final String MARKET_STAT = "marketstat";    //$NON-NLS-1$
+    public static final String LOG = "log";    //$NON-NLS-1$
     public static final String TIME         = "time";           //$NON-NLS-1$
 
     public static List<Pair<String, Class<?>>> REQUEST_PRECANNED_TYPES = Collections.unmodifiableList(Arrays.asList(
@@ -53,6 +52,8 @@ public class CEPDataTypes {
                     new Pair<String, Class<?>>(CEPDataTypes.ORDER_SINGLE, OrderSingle.class),
                     new Pair<String, Class<?>>(CEPDataTypes.SUGGEST, Suggestion.class),
                     new Pair<String, Class<?>>(CEPDataTypes.NOTIFICATION, INotification.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.MARKET_STAT, MarketstatEvent.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.LOG, LogEvent.class),
                     new Pair<String, Class<?>>(CEPDataTypes.MAP, Map.class)));
 
 }

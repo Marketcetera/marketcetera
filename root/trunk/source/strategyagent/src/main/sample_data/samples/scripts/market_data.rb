@@ -29,21 +29,21 @@ class MarketData < Strategy
     # Executed when the strategy receives an ask event #
     ####################################################
     def on_ask(ask)
-      puts "Ask " + ask.to_s
+      warn "Ask " + ask.to_s
     end
 
     ###################################################
     # Executed when the strategy receives a bid event #
     ###################################################
     def on_bid(bid)
-      puts "Bid " + bid.to_s
+      warn "Bid " + bid.to_s
     end
 
     #####################################################
     # Executed when the strategy receives a trade event #
     #####################################################
     def on_trade(trade)
-      puts "Trade " + trade.to_s
+      warn "Trade " + trade.to_s
     end
 
 end

@@ -31,7 +31,7 @@ class OrderSender < Strategy
     def on_start
       request = MarketDataRequest.newRequest().withSymbols(SYMBOLS).fromProvider(MARKET_DATA_PROVIDER)
       @requestID=request_market_data(request)
-      puts "Issued Market Data Request " + @requestID.to_s
+      info "Issued Market Data Request " + @requestID.to_s
       @receivedData = false
     end
 
@@ -44,7 +44,7 @@ class OrderSender < Strategy
       end
       @receivedData = true
 
-      puts "Bid: " + bid.to_s
+      info "Bid: " + bid.to_s
       # Send an order to buy and cancel the request
       order = Factory.instance.createOrderSingle()
       order.setAccount ACCOUNT
@@ -54,13 +54,13 @@ class OrderSender < Strategy
       order.setSide Side::Buy
       order.setSymbol bid.symbol
       order.setTimeInForce TimeInForce::Day
-      puts "Sending Order " + order.to_s
+      warn "Sending Order " + order.to_s
 
       order_id = send_order order
-      puts "Sent Order:"+order_id.to_s
+      warn "Sent Order:"+order_id.to_s
 
       cancel_data_request @requestID
-      puts "Cancelled Market Data Request " + @requestID.to_s
+      info "Cancelled Market Data Request " + @requestID.to_s
     end
 
     ####################################################
@@ -72,7 +72,7 @@ class OrderSender < Strategy
       end
       @receivedData = true
 
-      puts "Ask: " + ask.to_s
+      info "Ask: " + ask.to_s
       # Send an order to sell and cancel the request
       order = Factory.instance.createOrderSingle()
       order.setAccount ACCOUNT
@@ -82,19 +82,19 @@ class OrderSender < Strategy
       order.setSide Side::Sell
       order.setSymbol ask.symbol
       order.setTimeInForce TimeInForce::Day
-      puts "Sending Order " + order.to_s
+      warn "Sending Order " + order.to_s
 
       order_id = send_order order
-      puts "Sent Order:"+order_id.to_s
+      warn "Sent Order:"+order_id.to_s
 
       cancel_data_request @requestID
-      puts "Cancelled Market Data Request " + @requestID.to_s
+      info "Cancelled Market Data Request " + @requestID.to_s
     end
 
     ###########################################################
     # Executed when the strategy receives an execution report #
     ###########################################################
     def on_execution_report(executionReport)
-      puts "Received Execution Report:" + executionReport.to_s
+      warn "Received Execution Report:" + executionReport.to_s
     end
 end
