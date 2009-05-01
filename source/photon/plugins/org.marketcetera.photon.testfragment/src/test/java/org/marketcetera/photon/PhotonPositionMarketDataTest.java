@@ -13,7 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -40,9 +39,6 @@ import org.marketcetera.photon.model.marketdata.MDPackage;
  * @since 1.5.0
  */
 public class PhotonPositionMarketDataTest {
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd");
-	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-
 	private PhotonPositionMarketData mFixture;
 	private IMarketData mMockMarketData;
 	private MDLatestTick mIBMTick;
@@ -53,14 +49,12 @@ public class PhotonPositionMarketDataTest {
 	private MDMarketstat mMETCStat;
 	private IMarketDataReference<MDMarketstat> mMockIBMStatReference;
 	private IMarketDataReference<MDMarketstat> mMockMETCStatReference;
-	private SessionStartTimeProvider mSessionStartTime;
 
 	@SuppressWarnings("unchecked")
 	@Before
 	public void before() {
 		mMockMarketData = mock(IMarketData.class);
-		mSessionStartTime = new SessionStartTimeProvider();
-		mFixture = new PhotonPositionMarketData(mMockMarketData, mSessionStartTime);
+		mFixture = new PhotonPositionMarketData(mMockMarketData);
 		// latest tick stubbing
 		mIBMTick = MDFactory.eINSTANCE.createMDLatestTick();
 		mIBMTick.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, "IBM");
@@ -90,13 +84,7 @@ public class PhotonPositionMarketDataTest {
 		new ExpectedFailure<IllegalArgumentException>(null) {
 			@Override
 			protected void run() throws Exception {
-				new PhotonPositionMarketData(null, mSessionStartTime);
-			}
-		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
-			@Override
-			protected void run() throws Exception {
-				new PhotonPositionMarketData(mMockMarketData, null);
+				new PhotonPositionMarketData(null);
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>(null) {
@@ -213,73 +201,17 @@ public class PhotonPositionMarketDataTest {
 		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
 		mFixture.addSymbolChangeListener("IBM", mockListener);
 		mFixture.addSymbolChangeListener("METC", mockListener2);
-		mSessionStartTime.setSessionStartTime(TIME_FORMAT.parse("2009.04.13 05:00:00"));
-		changeClose(mIBMStat, 20, "2009.04.13");
-		changeClose(mMETCStat, 25, "2009.04.13");
+		changePreviousClose(mIBMStat, 20);
+		changePreviousClose(mMETCStat, 25);
 		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(20)));
 		verify(mockListener2, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(25)));
 		assertThat(mFixture.getClosingPrice("IBM"), comparesEqualTo(20));
 		assertThat(mFixture.getClosingPrice("METC"), comparesEqualTo(25));
-	}
-
-	@Test
-	public void testClosingPriceMatchesSessionStartTime() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener("IBM", mockListener);
-		mSessionStartTime.setSessionStartTime(TIME_FORMAT.parse("2009.04.13 05:00:00"));
-		changeClose(mIBMStat, 10, "2009.04.13");
-		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(10)));
-		assertThat(mFixture.getClosingPrice("IBM"), comparesEqualTo(10));
-		mSessionStartTime.setSessionStartTime(TIME_FORMAT.parse("2009.04.13 05:00:00"));
-		changeClose(mIBMStat, 11, "2009.04.14");
-		changePreviousClose(mIBMStat, 15, "2009.04.13");
-		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(15)));
-		assertThat(mFixture.getClosingPrice("IBM"), comparesEqualTo(15));
-		changeClose(mIBMStat, 11, "2009.04.15");
-		changePreviousClose(mIBMStat, 15, "2009.04.14");
+		changePreviousClose(mIBMStat, null);
+		changePreviousClose(mMETCStat, null);
 		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNullNewPrice()));
-		assertThat(mFixture.getClosingPrice("IBM"), nullValue());
-	}
-
-	@Test
-	public void testNullSessionStartTime() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener("IBM", mockListener);
-		changeClose(mIBMStat, 10, "2009.04.13");
-		changePreviousClose(mIBMStat, 15, "2009.04.12");
-		assertThat(mFixture.getClosingPrice("IBM"), nullValue());
-		mSessionStartTime.setSessionStartTime(TIME_FORMAT.parse("2009.04.13 05:00:00"));
-		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(10)));
-		assertThat(mFixture.getClosingPrice("IBM"), comparesEqualTo(10));
-		mSessionStartTime.setSessionStartTime(null);
-		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNullNewPrice()));
-		assertThat(mFixture.getClosingPrice("IBM"), nullValue());
-	}
-
-	@Test
-	public void testSessionStartTimeNotification() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener("IBM", mockListener);
-		mFixture.addSymbolChangeListener("METC", mockListener2);
-		mSessionStartTime.setSessionStartTime(TIME_FORMAT.parse("2009.04.13 05:00:00"));
-		changeClose(mIBMStat, 10, "2009.04.14");
-		changePreviousClose(mIBMStat, 15, "2009.04.13");
-		changeClose(mMETCStat, 150, "2009.04.14");
-		changePreviousClose(mMETCStat, 160, "2009.04.13");
-		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(15)));
-		assertThat(mFixture.getClosingPrice("IBM"), comparesEqualTo(15));
-		verify(mockListener2, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(160)));
-		assertThat(mFixture.getClosingPrice("METC"), comparesEqualTo(160));
-		mSessionStartTime.setSessionStartTime(TIME_FORMAT.parse("2009.04.14 05:00:00"));
-		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(10)));
-		assertThat(mFixture.getClosingPrice("IBM"), comparesEqualTo(10));
-		verify(mockListener2, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(150)));
-		assertThat(mFixture.getClosingPrice("METC"), comparesEqualTo(150));
-		mSessionStartTime.setSessionStartTime(TIME_FORMAT.parse("2009.04.15 05:00:00"));
-		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNullNewPrice()));
-		assertThat(mFixture.getClosingPrice("IBM"), nullValue());
 		verify(mockListener2, atLeastOnce()).closePriceChanged(argThat(hasNullNewPrice()));
+		assertThat(mFixture.getClosingPrice("IBM"), nullValue());
 		assertThat(mFixture.getClosingPrice("METC"), nullValue());
 	}
 	
@@ -337,16 +269,13 @@ public class PhotonPositionMarketDataTest {
 		tick.eSet(MDPackage.Literals.MD_LATEST_TICK__PRICE, new BigDecimal(newValue));
 	}
 
-	private void changeClose(MDMarketstat stat, int newPrice, String newDate) throws Exception {
+	private void changePreviousClose(MDMarketstat stat, BigDecimal newPrice) throws Exception {
 		// use reflection since setLatestTick isn't API
-		stat.eSet(MDPackage.Literals.MD_MARKETSTAT__CLOSE_PRICE, new BigDecimal(newPrice));
-		stat.eSet(MDPackage.Literals.MD_MARKETSTAT__CLOSE_DATE, DATE_FORMAT.parse(newDate));
+		stat.eSet(MDPackage.Literals.MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE, newPrice);
 	}
 
-	private void changePreviousClose(MDMarketstat stat, int newPrice, String newDate) throws Exception {
-		// use reflection since setLatestTick isn't API
-		stat.eSet(MDPackage.Literals.MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE, new BigDecimal(newPrice));
-		stat.eSet(MDPackage.Literals.MD_MARKETSTAT__PREVIOUS_CLOSE_DATE, DATE_FORMAT.parse(newDate));
+	private void changePreviousClose(MDMarketstat stat, int newPrice) throws Exception {
+		changePreviousClose(stat, new BigDecimal(newPrice));
 	}
 
 	private static Matcher<SymbolChangeEvent> hasNewPrice(final int newPrice) {

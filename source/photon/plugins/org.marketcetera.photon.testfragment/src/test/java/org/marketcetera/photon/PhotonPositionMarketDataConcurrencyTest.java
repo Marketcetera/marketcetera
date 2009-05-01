@@ -213,7 +213,6 @@ public class PhotonPositionMarketDataConcurrencyTest extends MultiThreadedTestBa
 
 	private PhotonPositionMarketData mFixture;
 	private IMarketData mMockMarketData;
-	private SessionStartTimeProvider mSessionStartTime;
 
 	@Before
 	public void before() {
@@ -223,8 +222,7 @@ public class PhotonPositionMarketDataConcurrencyTest extends MultiThreadedTestBa
 		// Logger.getLogger("MarketstatsThread").setLevel(Level.TRACE);
 		// Logger.getLogger("ListenerThread").setLevel(Level.TRACE);
 		mMockMarketData = mock(IMarketData.class);
-		mSessionStartTime = new SessionStartTimeProvider();
-		mFixture = new PhotonPositionMarketData(mMockMarketData, mSessionStartTime);
+		mFixture = new PhotonPositionMarketData(mMockMarketData);
 		stub(mMockMarketData.getLatestTick(anyString())).toAnswer(
 				new Answer<IMarketDataReference<MDLatestTick>>() {
 					@Override

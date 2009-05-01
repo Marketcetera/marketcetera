@@ -1,10 +1,6 @@
 package org.marketcetera.photon;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +9,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.time.DateUtils;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -47,7 +42,6 @@ import com.google.common.collect.Sets;
 public class PhotonPositionMarketData implements MarketDataSupport {
 
 	private final IMarketData mMarketData;
-	private final ISessionStartTimeProvider mSessionStartTimeProvider;
 	private final AtomicBoolean mDisposed = new AtomicBoolean();
 	private final Adapter mLatestTickAdapter = new LatestTickAdapter();
 	private final Adapter mClosingPriceAdapter = new ClosingPriceAdapter();
@@ -83,24 +77,9 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	 * @throws IllegalArgumentException
 	 *             if marketData is null
 	 */
-	public PhotonPositionMarketData(IMarketData marketData,
-			ISessionStartTimeProvider sessionStartTimeProvider) {
-		Validate.noNullElements(new Object[] { marketData, sessionStartTimeProvider });
+	public PhotonPositionMarketData(IMarketData marketData) {
+		Validate.notNull(marketData);
 		mMarketData = marketData;
-		mSessionStartTimeProvider = sessionStartTimeProvider;
-		mSessionStartTimeProvider.addPropertyChangeListener("sessionStartTime", //$NON-NLS-1$
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						// the computed closing price values will likely changed for each symbol
-						synchronized (mListeners) {
-							if (mDisposed.get()) return;
-							for (IMarketDataReference<MDMarketstat> stat : mStatReferences.values()) {
-								fireClosingPriceChange(stat.get());
-							}
-						}
-					}
-				});
 	}
 
 	@Override
@@ -187,7 +166,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	}
 
 	private void fireClosingPriceChange(final MDMarketstat item) {
-		fireIfChanged(item.getSymbol(), computeClosingPrice(item), mClosingPriceCache, false);
+		fireIfChanged(item.getSymbol(), item.getPreviousClosePrice(), mClosingPriceCache, false);
 	}
 
 	private void fireIfChanged(final String symbol, BigDecimal newPrice,
@@ -214,32 +193,6 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 				}
 			}
 		}
-	}
-
-	private BigDecimal computeClosingPrice(MDMarketstat symbolStatistic) {
-		Date sessionStartTime = mSessionStartTimeProvider.getSessionStartTime();
-		if (sessionStartTime == null) {
-			return null;
-		}
-		Calendar sessionStartCalendar = Calendar.getInstance();
-		sessionStartCalendar.setTime(sessionStartTime);
-		Date closeDate = symbolStatistic.getCloseDate();
-		if (closeDate != null) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(closeDate);
-			if (DateUtils.isSameDay(sessionStartCalendar, calendar)) {
-				return symbolStatistic.getClosePrice();
-			}
-		}
-		Date previousCloseDate = symbolStatistic.getPreviousCloseDate();
-		if (previousCloseDate != null) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(previousCloseDate);
-			if (DateUtils.isSameDay(sessionStartCalendar, calendar)) {
-				return symbolStatistic.getPreviousClosePrice();
-			}
-		}
-		return null;
 	}
 
 	@Override
