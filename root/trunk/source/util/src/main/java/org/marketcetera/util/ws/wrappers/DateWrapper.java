@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * certain time zones, including GMT.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 1.5.0
  * @version $Id$
  */
 
