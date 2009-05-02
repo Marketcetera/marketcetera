@@ -7,6 +7,7 @@ import org.marketcetera.util.log.*;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.tags.SessionId;
+import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.trade.*;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -138,7 +139,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         failIfClosed();
         failIfDisconnected();
         try {
-            ReportBaseImpl[] reports = mService.getReportsSince(getServiceContext(),inDate);
+            ReportBaseImpl[] reports = mService.getReportsSince(getServiceContext(),new DateWrapper(inDate));
             return reports == null ? new ReportBase[0] : reports;
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
@@ -155,7 +156,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         failIfDisconnected();
         try {
             return mService.getPositionAsOf
-                (getServiceContext(),inDate,inSymbol);
+                (getServiceContext(),new DateWrapper(inDate),inSymbol);
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
         }
@@ -170,7 +171,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         failIfDisconnected();
         try {
             return mService.getPositionsAsOf
-                (getServiceContext(),inDate).getMap();
+                (getServiceContext(),new DateWrapper(inDate)).getMap();
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
         }

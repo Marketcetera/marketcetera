@@ -16,6 +16,7 @@ import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.ServiceBase;
+import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 
@@ -109,7 +110,7 @@ public interface Service
 
     ReportBaseImpl[] getReportsSince
         (@WebParam(name= "context")ClientContext context,
-         @WebParam(name= "date")Date date)
+         @WebParam(name= "date")DateWrapper date)
         throws RemoteException;
 
     /**
@@ -129,7 +130,7 @@ public interface Service
 
     BigDecimal getPositionAsOf
         (@WebParam(name= "context")ClientContext context,
-         @WebParam(name= "date")Date date,
+         @WebParam(name= "date")DateWrapper date,
          @WebParam(name= "symbol")MSymbol symbol)
         throws RemoteException;
 
@@ -149,7 +150,7 @@ public interface Service
 
     MapWrapper<PositionKey,BigDecimal> getPositionsAsOf
         (@WebParam(name= "context")ClientContext context,
-         @WebParam(name= "date")Date date)
+         @WebParam(name= "date")DateWrapper date)
         throws RemoteException;
 
     /**
