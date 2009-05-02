@@ -22,6 +22,7 @@ import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.util.ws.stateless.StatelessClient;
 import org.marketcetera.util.ws.stateless.StatelessServer;
 import org.marketcetera.util.ws.wrappers.CompSerWrapper;
+import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.LocaleWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -674,6 +675,48 @@ public class TypeTest
          TEST_COL_DT,TEST_LST_DT,TEST_LLST_DT,
          TEST_SET_DT,TEST_HSET_DT,TEST_TSET_DT,
          TEST_MAP_DT,TEST_HMAP_DT,TEST_TMAP_DT);
+
+    // Wrapped date.
+
+    private static final DateWrapper TEST_DW=
+        new DateWrapper(new Date(1));
+    private static final DateWrapper[] TEST_ARR_DW=new DateWrapper[]
+        {new DateWrapper(new Date(1)),
+         new DateWrapper(new Date(2))};
+    private static final List<DateWrapper> TEST_LST_DW=
+        Arrays.asList(TEST_ARR_DW);
+    private static final Collection<DateWrapper> TEST_COL_DW=
+        TEST_LST_DW;
+    private static final LinkedList<DateWrapper> TEST_LLST_DW=
+        toLinkedList(TEST_LST_DW);
+    private static final HashSet<DateWrapper> TEST_HSET_DW=
+        toHashSet(TEST_LST_DW);
+    private static final TreeSet<DateWrapper> TEST_TSET_DW=
+        toTreeSet(TEST_LST_DW);
+    private static final Set<DateWrapper> TEST_SET_DW=
+        TEST_HSET_DW;
+    private static final HashMap<DateWrapper,DateWrapper> TEST_HMAP_DW=
+        toHashMap(TEST_LST_DW);
+    private static final MapWrapper<DateWrapper,DateWrapper>
+        TEST_WHMAP_DW=
+        new MapWrapper<DateWrapper,DateWrapper>(TEST_HMAP_DW);
+    private static final TreeMap<DateWrapper,DateWrapper> TEST_TMAP_DW=
+        toTreeMap(TEST_LST_DW);
+    private static final MapWrapper<DateWrapper,DateWrapper>
+        TEST_WTMAP_DW=
+        new MapWrapper<DateWrapper,DateWrapper>(TEST_TMAP_DW);
+    private static final Map<DateWrapper,DateWrapper> TEST_MAP_DW=
+        TEST_HMAP_DW;
+    private static final MapWrapper<DateWrapper,DateWrapper>
+        TEST_WMAP_DW=
+        new MapWrapper<DateWrapper,DateWrapper>(TEST_MAP_DW);
+    private static final DateWrapperHolder TEST_HLD_DW=
+        new DateWrapperHolder
+        (TEST_DW,
+         TEST_ARR_DW,
+         TEST_COL_DW,TEST_LST_DW,TEST_LLST_DW,
+         TEST_SET_DW,TEST_HSET_DW,TEST_TSET_DW,
+         TEST_MAP_DW,TEST_HMAP_DW,TEST_TMAP_DW);
 
     // Locale.
 
@@ -1337,6 +1380,9 @@ public class TypeTest
                      i.hldEo(client.getContext(),TEST_HLD_EO));
         // Date.
 
+        /*
+         * LIMITATION: Dates fail in certain timezones such as GMT due to
+         * a JAXB bug.
         assertEquals(TEST_DT,
                      i.dt(client.getContext(),TEST_DT));
         assertArrayEquals(TEST_ARR_DT,
@@ -1353,6 +1399,7 @@ public class TypeTest
                         i.setDt(client.getContext(),TEST_HSET_DT));
         assertSetEquals(TEST_TSET_DT,
                         i.setDt(client.getContext(),TEST_TSET_DT));
+        */
         /*
          * LIMITATION: maps of Dates are treated as calendars.
         assertMapEquals(TEST_WMAP_DT,
@@ -1362,8 +1409,39 @@ public class TypeTest
         assertMapEquals(TEST_WTMAP_DT,
                         i.mapDt(client.getContext(),TEST_WTMAP_DT));
         */
+        /*
+         * LIMITATION: Dates fail in certain timezones such as GMT due to
+         * a JAXB bug.
         assertEquals(TEST_HLD_DT,
                      i.hldDt(client.getContext(),TEST_HLD_DT));
+        */
+
+        // Wrapped date.
+
+        assertEquals(TEST_DW,
+                     i.dw(client.getContext(),TEST_DW));
+        assertArrayEquals(TEST_ARR_DW,
+                          i.arrDw(client.getContext(),TEST_ARR_DW));
+        assertColEquals(TEST_COL_DW,
+                        i.colDw(client.getContext(),TEST_COL_DW));
+        assertColEquals(TEST_LST_DW,
+                        i.colDw(client.getContext(),TEST_LST_DW));
+        assertColEquals(TEST_LLST_DW,
+                        i.colDw(client.getContext(),TEST_LLST_DW));
+        assertSetEquals(TEST_SET_DW,
+                        i.setDw(client.getContext(),TEST_SET_DW));
+        assertSetEquals(TEST_HSET_DW,
+                        i.setDw(client.getContext(),TEST_HSET_DW));
+        assertSetEquals(TEST_TSET_DW,
+                        i.setDw(client.getContext(),TEST_TSET_DW));
+        assertMapEquals(TEST_WMAP_DW,
+                        i.mapDw(client.getContext(),TEST_WMAP_DW));
+        assertMapEquals(TEST_WHMAP_DW,
+                        i.mapDw(client.getContext(),TEST_WHMAP_DW));
+        assertMapEquals(TEST_WTMAP_DW,
+                        i.mapDw(client.getContext(),TEST_WTMAP_DW));
+        assertEquals(TEST_HLD_DW,
+                     i.hldDw(client.getContext(),TEST_HLD_DW));
 
         // Locale.
 

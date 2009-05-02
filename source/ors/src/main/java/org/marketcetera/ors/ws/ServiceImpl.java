@@ -25,6 +25,7 @@ import org.marketcetera.util.ws.stateful.RemoteRunner;
 import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 
@@ -202,7 +203,7 @@ public class ServiceImpl
     @Override
     public ReportBaseImpl[] getReportsSince
         (ClientContext context,
-         final Date date)
+         final DateWrapper date)
         throws RemoteException
     {
         return (new RemoteCaller<ClientSession,ReportBaseImpl[]>
@@ -214,14 +215,15 @@ public class ServiceImpl
                 throws ReportPersistenceException,
                        PersistenceException
             {
-                return getReportsSinceImpl(sessionHolder.getSession(),date);
+                return getReportsSinceImpl
+                    (sessionHolder.getSession(),date.getRaw());
             }}).execute(context);
     }
 
     @Override
     public BigDecimal getPositionAsOf
         (ClientContext context,
-         final Date date,
+         final DateWrapper date,
          final MSymbol symbol)
         throws RemoteException
     {
@@ -234,14 +236,14 @@ public class ServiceImpl
                 throws PersistenceException
             {
                 return getPositionAsOfImpl
-                    (sessionHolder.getSession(),date,symbol);
+                    (sessionHolder.getSession(),date.getRaw(),symbol);
             }}).execute(context);
     }
 
     @Override
     public MapWrapper<PositionKey,BigDecimal> getPositionsAsOf
         (ClientContext context,
-         final Date date)
+         final DateWrapper date)
         throws RemoteException
     {
         return (new RemoteCaller<ClientSession,MapWrapper<PositionKey,
@@ -253,7 +255,8 @@ public class ServiceImpl
                  SessionHolder<ClientSession> sessionHolder)
                 throws PersistenceException
             {
-                return getPositionsAsOfImpl(sessionHolder.getSession(),date);
+                return getPositionsAsOfImpl
+                    (sessionHolder.getSession(),date.getRaw());
             }}).execute(context);
     }
 

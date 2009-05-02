@@ -12,6 +12,7 @@ import org.marketcetera.util.ws.stateless.StatelessRemoteCaller;
 import org.marketcetera.util.ws.stateless.StatelessRemoteRunner;
 import org.marketcetera.util.ws.stateless.StatelessServiceBaseImpl;
 import org.marketcetera.util.ws.wrappers.CompSerWrapper;
+import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.LocaleWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -1700,6 +1701,106 @@ public class ServiceImpl
         return new StatelessRemoteCaller<DateHolder>() {
             @Override
             protected DateHolder call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+
+    // Wrapped date.
+
+    @Override
+    public DateWrapper dw
+        (StatelessClientContext context,
+         final DateWrapper arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<DateWrapper>() {
+            @Override
+            protected DateWrapper call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public DateWrapper[] arrDw
+        (StatelessClientContext context,
+         final DateWrapper[] arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<DateWrapper[]>() {
+            @Override
+            protected DateWrapper[] call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public Collection<DateWrapper> colDw
+        (StatelessClientContext context,
+         final Collection<DateWrapper> arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<Collection<DateWrapper>>() {
+            @Override
+            protected Collection<DateWrapper> call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public Set<DateWrapper> setDw
+        (StatelessClientContext context,
+         final Set<DateWrapper> arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<Set<DateWrapper>>() {
+            @Override
+            protected Set<DateWrapper> call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public MapWrapper<DateWrapper,DateWrapper> mapDw
+        (StatelessClientContext context,
+         final MapWrapper<DateWrapper,DateWrapper> arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<MapWrapper<DateWrapper,
+                                                    DateWrapper>>() {
+            @Override
+            protected MapWrapper<DateWrapper,DateWrapper> call
+                (StatelessClientContext context)
+            {
+                return arg;
+            }
+        }.execute(context);
+    }
+
+    @Override
+    public DateWrapperHolder hldDw
+        (StatelessClientContext context,
+         final DateWrapperHolder arg)
+        throws RemoteException
+    {
+        return new StatelessRemoteCaller<DateWrapperHolder>() {
+            @Override
+            protected DateWrapperHolder call
                 (StatelessClientContext context)
             {
                 return arg;

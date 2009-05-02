@@ -98,11 +98,11 @@ public class CompSerWrapperTest
 
         CompSerWrapper<TestComparable> w1=
             new CompSerWrapper<TestComparable>(TEST_COMPARABLE1);
-        CompSerWrapper<TestComparable> w2=
-            new CompSerWrapper<TestComparable>(TEST_COMPARABLE2);
         assertComparable
-            (w1,new CompSerWrapper<TestComparable>(TEST_COMPARABLE1),
-             w2,"Argument is null");
+            (w1,
+             new CompSerWrapper<TestComparable>(TEST_COMPARABLE1),
+             new CompSerWrapper<TestComparable>(TEST_COMPARABLE2),
+             "Argument is null");
 
         try {
             empty.compareTo(w1);

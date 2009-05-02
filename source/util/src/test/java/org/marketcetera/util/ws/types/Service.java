@@ -11,6 +11,7 @@ import javax.jws.WebService;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.stateless.StatelessServiceBase;
 import org.marketcetera.util.ws.wrappers.CompSerWrapper;
+import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.LocaleWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -639,6 +640,39 @@ public interface Service
     DateHolder hldDt
         (StatelessClientContext context,
          DateHolder arg)
+        throws RemoteException;
+
+
+    // Wrapped date.
+
+    DateWrapper dw
+        (StatelessClientContext context,
+         DateWrapper arg)
+        throws RemoteException;
+
+    DateWrapper[] arrDw
+        (StatelessClientContext context,
+         DateWrapper[] arg)
+        throws RemoteException;
+
+    Collection<DateWrapper> colDw
+        (StatelessClientContext context,
+         Collection<DateWrapper> arg)
+        throws RemoteException;
+
+    Set<DateWrapper> setDw
+        (StatelessClientContext context,
+         Set<DateWrapper> arg)
+        throws RemoteException;
+
+    MapWrapper<DateWrapper,DateWrapper> mapDw
+        (StatelessClientContext context,
+         MapWrapper<DateWrapper,DateWrapper> arg)
+        throws RemoteException;
+
+    DateWrapperHolder hldDw
+        (StatelessClientContext context,
+         DateWrapperHolder arg)
         throws RemoteException;
 
 

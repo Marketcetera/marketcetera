@@ -21,6 +21,7 @@ import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
+import org.marketcetera.util.ws.wrappers.DateWrapper;
 
 /**
  * A test service implementation to aid testing of client via {@link
@@ -146,7 +147,7 @@ public class MockServiceImpl
     @Override
     public ReportBaseImpl[] getReportsSince
         (ClientContext context,
-         final Date date)
+         final DateWrapper date)
         throws RemoteException
     {
         return (new RemoteCaller<Object,ReportBaseImpl[]>
@@ -157,14 +158,14 @@ public class MockServiceImpl
                  SessionHolder<Object> sessionHolder)
                 throws MessageCreationException
             {
-                return getReportsSinceImpl(date);
+                return getReportsSinceImpl(date.getRaw());
             }}).execute(context);
     }
 
     @Override
     public BigDecimal getPositionAsOf
         (ClientContext context,
-         final Date date,
+         final DateWrapper date,
          final MSymbol symbol)
         throws RemoteException
     {
@@ -175,14 +176,14 @@ public class MockServiceImpl
                 (ClientContext context,
                  SessionHolder<Object> sessionHolder)
             {
-                return getPositionAsOfImpl(date,symbol);
+                return getPositionAsOfImpl(date.getRaw(),symbol);
             }}).execute(context);
     }
 
     @Override
     public MapWrapper<PositionKey,BigDecimal> getPositionsAsOf
         (ClientContext context,
-         final Date date)
+         final DateWrapper date)
         throws RemoteException
     {
         return (new RemoteCaller<Object,MapWrapper<PositionKey,BigDecimal>>
@@ -192,7 +193,7 @@ public class MockServiceImpl
                 (ClientContext context,
                  SessionHolder<Object> sessionHolder)
             {
-                return getPositionsAsOfImpl(date);
+                return getPositionsAsOfImpl(date.getRaw());
             }}).execute(context);
     }
 

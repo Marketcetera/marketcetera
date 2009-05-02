@@ -9,6 +9,7 @@ import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.SecurityType;
+import org.marketcetera.util.ws.wrappers.DateWrapper;
 
 import static org.junit.Assert.*;
 
@@ -44,14 +45,16 @@ public class ServiceTest
         assertEquals("broker2",b.getId().getValue());
 
         ReportBaseImpl[] rs=s.getReportsSince
-            (getORSClientContext(),new Date());
+            (getORSClientContext(),new DateWrapper(new Date()));
         assertNull(rs);
 
         assertEquals(BigDecimal.ZERO,s.getPositionAsOf
-                     (getORSClientContext(),new Date(),TEST_SYMBOL));
+                     (getORSClientContext(),new DateWrapper(new Date()),
+                      TEST_SYMBOL));
 
         assertTrue(s.getPositionsAsOf
-                     (getORSClientContext(),new Date()).getMap().isEmpty());
+                   (getORSClientContext(),
+                    new DateWrapper(new Date())).getMap().isEmpty());
 
         String id=s.getNextOrderID(getORSClientContext());
         assertNotNull(id);
