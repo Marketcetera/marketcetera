@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Broker 1 configuration: message modifiers.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_broker1_modifiers"
+   class="org.marketcetera.ors.filters.MessageModifierManager">
+    <!-- The message modifiers. -->
+    <property
+     name="messageModifiers">
+      <list>
+        <bean
+         class="org.marketcetera.ors.filters.DefaultMessageModifier">
+          <!-- Modifications to the header fields. -->
+          <property
+           name="headerFields">
+            <map>
+              <!--
+                - Set the 'SenderSubID' (tag 50) of 'Logon' (message type 'A')
+                - messages to 'mySenderSubID'.
+                -->
+              <entry
+               key="50(A)"
+               value="mySenderSubID"/>
+            </map>
+          </property>
+          <!-- Modifications to the body fields. -->
+          <property
+           name="msgFields">
+            <map>
+              <!--
+                - Set the 'Urgency' (tag 61) of all application messages
+                - to '0' (Normal).
+                -->
+              <entry
+               key="61(app)"
+               value="0"/>
+            </map>
+          </property>
+          <!-- Modifications to the trailer fields. -->
+          <property
+           name="trailerFields">
+            <map>
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+</beans>
