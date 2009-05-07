@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>source</artifactId>
+    <version>1.5.0</version>
+  </parent>
+  <artifactId>ors</artifactId>
+  <packaging>jar</packaging>
+
+  <name>ORS</name>
+
+  <dependencies>
+
+    <!-- Compile. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>client</artifactId>
+    </dependency>
+
+    <!-- Compile: log4j is invoked directly, not via slf4j. -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
+    </dependency>
+      
+    <!-- Runtime. -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm-attrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>c3p0</groupId>
+      <artifactId>c3p0</artifactId>
+    </dependency>
+
+    <!-- Testing. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>util-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+    </dependency> 
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>META-INF/metc_version.properties</exclude>
+        </excludes>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>META-INF/metc_version.properties</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    
+    <plugins>
+
+      <!-- Database schema generator. -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>hibernate3-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- In this phase, the persistence.xml file has been copied. -->
+            <phase>process-classes</phase>
+            <goals>
+              <goal>hbm2ddl</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <components>
+            <component>
+              <name>hbm2ddl</name>
+              <implementation>annotationconfiguration</implementation>
+            </component>
+          </components>
+          <componentProperties>
+            <implementation>jpaconfiguration</implementation>
+            <persistenceunit>ors</persistenceunit>
+            <outputfilename>schema.sql</outputfilename>
+            <jdk5>true</jdk5>
+            <drop>true</drop>
+            <create>true</create>
+            <export>false</export>
+            <format>true</format>
+          </componentProperties>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+
+    <!-- Command-line execution of the ORS. -->
+    <profile>
+      <id>execute</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/cmd_exec</value>
+                </systemProperty>
+              </systemProperties>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Command-line execution of the ORS (with DB initialization). -->
+    <profile>
+      <id>executeDBInit</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.ors.DBInit</mainClass>
+              <arguments>
+                <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
+              </arguments>
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/cmd_exec</value>
+                </systemProperty>
+              </systemProperties>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Security administration utility. -->
+    <profile>
+      <id>cli</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.ors.security.ORSAdminCLI</mainClass>
+              <!-- -Dexec.args="-u admin ..." -->
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/cmd_exec</value>
+                </systemProperty>
+              </systemProperties>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Assembly. -->
+    <profile>
+      <id>assembly</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <descriptors>
+                <descriptor>assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <executable>${mvn.perl.path}</executable>
+              <arguments>
+                <argument>../../tools/scripts/createScript.pl</argument>
+                <argument>${project.build.directory}/${project.artifactId}</argument>
+                <argument>ors</argument>
+                <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
+                <argument>${project.build.directory}/${project.artifactId}</argument>
+                <argument>orsadmin</argument>
+                <argument>org.marketcetera.ors.security.ORSAdminCLI</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

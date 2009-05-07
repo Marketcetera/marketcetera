@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Database configuration: vendor selection.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- The database vendor. -->
+  <bean
+   id="metc_db_vendor"
+   class="org.marketcetera.persist.MySQLDBVendor"/>
+
+  <!-- The Java persistence vendor. -->
+  <bean
+   id="metc_jpa_vendor"
+   class="org.marketcetera.persist.HibernateVendor"
+   depends-on="metc_db_vendor"/>
+</beans>

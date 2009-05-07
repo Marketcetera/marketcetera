@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<profilesXml
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/profiles-1.0.0.xsd">
+
+  <profiles>
+    <profile>
+      <id>user.settings</id>
+      <properties>
+        <!-- Optional: local JRuby installation. -->
+        <mvn.jruby.home>C:\jruby1.0.3</mvn.jruby.home>
+        <!-- Optional: local Jython installation. -->
+        <mvn.jython.home>C:\jython2.2.1</mvn.jython.home>
+        <!-- Optional: local Perl installation. -->
+        <mvn.perl.path>C:\Perl\bin\perl.exe</mvn.perl.path>
+        <!-- Optional: custom locale. -->
+        <mvn.jvm.locale.language></mvn.jvm.locale.language>
+        <mvn.jvm.locale.country></mvn.jvm.locale.country>
+        <mvn.jvm.locale.variant></mvn.jvm.locale.variant>
+        <!-- Required for Photon: directory to install RCP target. --> 
+        <mvn.photon.target>C:\photon-target</mvn.photon.target>
+        <!-- Command-line options for the JVM during unit test execution. -->
+        <mvn.test.options>-Xmx512m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
+        <!-- Build Number. -->
+        <mvn.build.number>Development Build</mvn.build.number>
+      </properties>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <!-- Detailed error-checking. -->
+    <activeProfile>safe.compile</activeProfile>
+    <!-- Internationalized tests. -->
+    <!-- <activeProfile>i18n.tests</activeProfile> -->
+  </activeProfiles>
+</profilesXml>

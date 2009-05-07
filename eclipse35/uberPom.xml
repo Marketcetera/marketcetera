@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.marketcetera</groupId>
+  <artifactId>declarations</artifactId>
+  <version>1.5.0</version>
+  <packaging>pom</packaging>
+
+  <name>Declarations</name>
+  <description>Top-Level Declarations</description>
+
+  <properties>
+    <mvn.public.package>org.marketcetera</mvn.public.package>
+    <mvn.javase.version>6</mvn.javase.version>
+    <mvn.javaee.version>5</mvn.javaee.version>
+    <mvn.spring.version>2.5.2</mvn.spring.version>
+    <mvn.cxf.version>2.1.2</mvn.cxf.version>
+    <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
+    <mvn.xjc.version>2.1.7</mvn.xjc.version>
+    <mvn.eclipse.version>3.4.1</mvn.eclipse.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <!-- Compile: local modules. -->
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>client</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>core</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>marketdata-bogus</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>misc</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>strategy</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>util</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>cep-system</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>cep-esper</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>remote-receiver</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>remote-emitter</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+
+      <!-- Compile: QuickFIX/J. -->
+      <dependency>
+        <groupId>quickfixj</groupId>
+        <artifactId>quickfixj-all</artifactId>
+        <version>[1.3.3-bd]</version>
+      </dependency>
+
+      <!-- Compile: other. -->
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        <version>[${mvn.cxf.version}]</version>
+        <exclusions>
+          <!-- Exclude jaxb-xjc: nonessential and confuses photon bundle. -->
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http</artifactId>
+        <version>[${mvn.cxf.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring</artifactId>
+        <version>[${mvn.spring.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>[${mvn.spring.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.skife.kasparov</groupId>
+        <artifactId>csv</artifactId>
+        <version>[1.0]</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.glazedlists</groupId>
+        <artifactId>glazedlists_java15</artifactId>
+        <version>[1.8.0]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>[1.5.3]</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>[1.4]</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-cli</groupId>
+        <artifactId>commons-cli</artifactId>
+        <version>[1.1]</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>[2.4]</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>[3.2.1]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-i18n</artifactId>
+        <version>[20081024]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-csv</artifactId>
+        <version>[20081024]</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>[1.8.0]</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.persistence</groupId>
+        <artifactId>persistence-api</artifactId>
+        <version>[1.0]</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>[2.5]</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>[1.1.2]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>taglibs</groupId>
+        <artifactId>standard</artifactId>
+        <version>[1.1.2]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.ccil.cowan.tagsoup</groupId>
+        <artifactId>tagsoup</artifactId>
+        <version>[1.2]</version>
+      </dependency>
+      <dependency>
+        <groupId>bsf</groupId>
+        <artifactId>bsf</artifactId>
+        <version>[2.4.0]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jruby</groupId>
+        <artifactId>jruby</artifactId>
+        <version>[1.1.3]</version>
+      </dependency>
+      <dependency>
+        <groupId>esper</groupId>
+        <artifactId>esper</artifactId>
+        <version>[2.3.0]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jms_1.1_spec</artifactId>
+        <version>[1.1.1]</version>
+      </dependency>
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>[1.5.1]</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.collections</groupId>
+        <artifactId>google-collections</artifactId>
+        <version>[1.0-rc1]</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google</groupId>
+        <artifactId>guice</artifactId>
+        <version>[20090205]</version>
+      </dependency>
+      <!-- guice is an OSGi bundle and guice-source is an Eclipse ready source package for it. -->
+      <dependency>
+        <groupId>com.google</groupId>
+        <artifactId>guice-source</artifactId>
+        <version>[20090205]</version>
+      </dependency>
+
+      <!-- Runtime. -->
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-pool</artifactId>
+        <version>[5.2.0]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>[${mvn.spring.version}]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>[${mvn.spring.version}]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>[${mvn.spring.version}]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>[${mvn.spring.version}]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>[1.5.3]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>[1.2.13]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-pool</groupId>
+        <artifactId>commons-pool</artifactId>
+        <version>[1.2]</version>
+        <exclusions>
+          <!-- Exclude xerces as it pulls in an older buggy version. -->
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xerces</artifactId>
+          </exclusion>
+          <!-- Exclude xml-apis, standard JRE ones are preferable. -->
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http-jetty</artifactId>
+        <version>[${mvn.cxf.version}]</version>
+        <scope>runtime</scope>
+        <exclusions>
+          <!-- Exclude slf4j-jdk14, let application choose slf4j binding. -->
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jta_1.1_spec</artifactId>
+        <version>[1.1.1]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xbean</groupId>
+        <artifactId>xbean-spring</artifactId>
+        <version>[3.3]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>[5.1.5]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>[1.8.0.10]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>[3.3.2.GA]</version>
+        <scope>runtime</scope>
+        <exclusions>
+          <!-- Exclude cglib variant that conflicts with spring. -->
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib-nodep</artifactId>
+        <version>[2.1_3]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>c3p0</groupId>
+        <artifactId>c3p0</artifactId>
+        <version>[0.9.1.1]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>[2.2.3]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm-attrs</artifactId>
+        <version>[2.2.3]</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!-- Testing: local modules. -->
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>core</artifactId>
+        <version>[${project.version}]</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>util-test</artifactId>
+        <version>[${project.version}]</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>cep-system</artifactId>
+        <version>[${project.version}]</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>client</artifactId>
+        <version>[${project.version}]</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- Testing: other. -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>[${mvn.spring.version}]</version>
+        <scope>test</scope>
+        <exclusions>
+          <!-- Exclude junit: We want to use junit-dep. -->
+          <exclusion>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit-dep</artifactId>
+        <version>[4.5]</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymockclassextension</artifactId>
+        <version>[2.3]</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>[1.5]</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>[1.1]</version>
+        <scope>test</scope>
+      </dependency> 
+    </dependencies>
+  </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>safe.compile</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <showDeprecation>true</showDeprecation>
+              <showWarnings>true</showWarnings>
+              <!--
+                - Path warnings cause maven to fail, hence excluded; see
+                - http://jira.codehaus.org/browse/MCOMPILER-59
+                -->
+              <compilerArgument>-Xlint:-path</compilerArgument>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>i18n.tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>-Duser.language=${mvn.jvm.locale.language} -Duser.country=${mvn.jvm.locale.country} -Duser.variant=${mvn.jvm.locale.variant} ${mvn.test.options}</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+
+    <pluginManagement>
+      <plugins>
+
+        <!-- jar generation. -->
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+
+        <!-- war generation. -->
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>2.1-alpha-1</version>
+        </plugin>
+
+        <!-- bundle generation. -->
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>1.4.3</version>
+        </plugin>
+
+        <!-- mvn dependency:* -->
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.0</version>
+        </plugin>
+
+        <!-- mvn eclipse:* -->
+        <plugin>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <version>20081024</version>
+        </plugin>
+
+        <!-- mvn clean -->
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
+
+        <!-- mvn antrun:* -->
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.3</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.ant</groupId>
+              <artifactId>ant-junit</artifactId>
+              <version>[1.7.1]</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+        <!-- mvn exec:* -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.1</version>
+        </plugin>
+
+        <!-- mvn test -->
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.4.3</version>
+          <configuration>
+            <disableXmlReport>true</disableXmlReport>
+            <forkMode>always</forkMode>
+            <argLine>${mvn.test.options}</argLine>
+          </configuration>
+        </plugin>
+
+        <!-- mvn compile -->
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.0.2</version>
+          <configuration>
+            <source>1.${mvn.javase.version}</source>
+            <target>1.${mvn.javase.version}</target>
+          </configuration>
+        </plugin>
+
+        <!-- mvn javadoc:* -->
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.5</version>
+          <configuration>
+            <links>
+              <link>http://commons.apache.org/cli/api-release/</link>
+              <link>http://commons.apache.org/collections/api-release/</link>
+              <link>http://commons.apache.org/io/api-release/</link>
+              <link>http://commons.apache.org/lang/api-release/</link>
+              <link>http://commons.apache.org/vfs/apidocs/</link>
+              <link>http://java.sun.com/javaee/${mvn.javaee.version}/docs/api/</link>
+              <link>http://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
+              <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
+              <link>http://publicobject.com/glazedlists/glazedlists-1.7.0/api/</link>
+              <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
+              <link>http://www.quickfixj.org/quickfixj/javadoc/</link>
+            </links>
+          </configuration>
+        </plugin>
+
+        <!-- Database schema generator. -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>hibernate3-maven-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
+
+        <!-- mvn assembly:* -->
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <!-- Version 2.2-beta-2 throws NPE under dependency management. -->
+          <version>2.1</version>
+          <configuration>
+            <finalName>${project.artifactId}</finalName>
+            <appendAssemblyId>false</appendAssemblyId>
+          </configuration>
+        </plugin>
+
+        <!--
+          - Explicit dependencies are listed here because maven-jaxb2-plugin
+          - uses jaxb 2.1.5 by default, which is different than the xjc
+          - version included with jdk 1.6 (2.1.3 as of 1.6.0_07) and that
+          - required by org.apache.cxf.cxf-rt-frontend-jaxws (2.1.7 as of
+          - CXF 2.1.2). We match the CXF one because we use CXF at run-time.
+          -->
+        <plugin>
+          <groupId>org.jvnet.jaxb2.maven2</groupId>
+          <artifactId>maven-jaxb2-plugin</artifactId>
+          <version>0.5</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>generate</goal>
+              </goals>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>com.sun.xml.bind</groupId>
+              <artifactId>jaxb-xjc</artifactId>
+              <version>[${mvn.xjc.version}]</version>
+            </dependency>
+            <dependency>
+              <groupId>com.sun.xml.bind</groupId>
+              <artifactId>jaxb-impl</artifactId>
+              <version>[${mvn.xjc.version}]</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <repositories>
+    <!--
+     -  The central repository used to be included here due to a bug
+     -  in Maven 2.0.9. Without this inclusion, Maven used to find
+     -  commons-i18n in the central repo (versions 0.4 and 0.5) and in
+     -  the internal repo (20yymmdd). Since we need 20yymmdd, Maven
+     -  downloaded the pom from the internal repo, but then tried to
+     -  fetch the jar from the central repo, where it does not exist.
+     -  Thus Maven failed to resolve the commons-i18n artifact. The
+     -  workaround was to search central ahead of internal. This odd
+     -  behaviour stopped at some point, prob. due to the order of
+     -  artifact resolution, and then another problem came up where
+     -  esper would have its pom located in the public repo, but then
+     -  its jar would be downloaded from the internal repo (where an
+     -  an older version of esper resided, but not the sought-after
+     -  jar). So builds failed again. That was when the central repo
+     -  was removed from here, and builds worked fine again (and the
+     -  commons-i18n issue did not resurface). This comment was kept in
+     -  place because Maven 2.0.10 and 2.1.0 failed to resolve esper
+     -  correctly when the central repo was placed here, indicating this
+     -  is a still-outstanding Maven issue that might require a future
+     -  workaround.
+     -
+     -  <repository>
+     -    <id>central</id>
+     -    <url>http://repo1.maven.org/maven2</url>
+     -    <snapshots>
+     -      <enabled>false</enabled>
+     -    </snapshots>
+     -  </repository>
+     -->
+    <repository>
+      <id>central</id>
+      <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>internal</id>
+      <url>http://repo.marketcetera.org/maven</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>maven2-repository.dev.java.net</id>
+      <url>http://download.java.net/maven/2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>internal</id>
+      <url>http://repo.marketcetera.org/maven</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <scm>
+    <connection>scm:svn:http://code.marketcetera.org/root/trunk/</connection>
+  </scm>
+</project>

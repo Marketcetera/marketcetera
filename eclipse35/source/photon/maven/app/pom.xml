@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: klim@marketcetera.com
+  - Since: 0.9.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>photon-maven</artifactId>
+    <version>1.5.0</version>
+  </parent>
+  <artifactId>photon-app</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Photon App Components</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>photon-rcptarget</artifactId>
+      <type>pom</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!--
+        -  javadoc generation using Ant because the eclipse jars
+        -  are never expressed anywhere as a maven dependency.
+        -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <tasks>
+            <ant antfile="javadoc.xml" target="javadoc">
+              <property name="javadoc.destdir" value="${project.build.directory}/site/apidocs"/>
+              <property name="javadoc.title" value="Marketcetera Photon ${project.version} API"/>
+              <property name="javadoc.version" value="${project.version}"/>
+              <property name="javaee.version" value="${mvn.javaee.version}"/>
+              <property name="javase.version" value="${mvn.javase.version}"/>
+              <property name="m2.repo" value="${user.home}/.m2/repository"/>
+              <property name="photon.target" value="${mvn.photon.target}"/>
+              <property name="plugins.dir" value="${basedir}/../../plugins"/>
+              <property name="platform.javadoc.link" value="../platform/"/>
+            </ant>
+          </tasks>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
