@@ -1,0 +1,28 @@
+<body>
+<p>
+    Contains unit test classes for testing persistence infrastructure features. Includes
+    base classes that can be used for unit testing entities and queries that are created
+    using the persistence infrastructure.
+</p>
+<p>
+    For unit testing entities, for each entity, create a unit test class that extends
+    {@link org.marketcetera.persist.EntityTestBase} or
+    {@link org.marketcetera.persist.NDEntityTestBase} depending on whether the entity
+    extends {@link org.marketcetera.persist.EntityBase} or
+    {@link org.marketcetera.persist.NDEntityBase}.
+    Implement all the abstract methods in the class and over-ride appropriate methods
+    if your entity has additional attributes. If the entity doesn't declare any
+    additional attributes, you likely do not need to over-ride any methods.
+    See subclasses of these two test base classes for examples.
+    Do add additional unit tests for operations / behavior specific to the entity. ie.
+    features that are implemented by the entity.
+    Make sure that all the attributes of the entity are initialized, including lazy
+    loaded ones and relationship attributes, to ensure that entity is completely tested.
+</p>
+<p>
+    For unit testing many to many relationships between entities, have a unit test
+    that extends {@link org.marketcetera.persist.ManyToManyTestBase} and implement
+    all the abstract methods.
+    See subclasses of this class for examples.
+</p>
+</body>
