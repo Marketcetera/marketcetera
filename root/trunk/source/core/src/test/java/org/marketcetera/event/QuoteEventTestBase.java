@@ -176,6 +176,25 @@ public abstract class QuoteEventTestBase
                                                     size,
                                                     getEventType(),
                                                     DELETE);
+                                        QuoteEvent addEvent = addEvent(event); 
+                                        verifyEvent(addEvent,
+                                                    id,
+                                                    timestamp,
+                                                    symbol,
+                                                    exchange,
+                                                    price,
+                                                    size,
+                                                    getEventType(),
+                                                    ADD);
+                                        verifyEvent(addEvent(addEvent),
+                                                    id,
+                                                    timestamp,
+                                                    symbol,
+                                                    exchange,
+                                                    price,
+                                                    size,
+                                                    getEventType(),
+                                                    ADD);
                                         if(newSize == null) {
                                             new ExpectedFailure<NullPointerException>(null) {
                                                 @Override
@@ -322,6 +341,64 @@ public abstract class QuoteEventTestBase
                     event.getSize(),
                     event.getClass(),
                     DELETE);
+    }
+    public void addEvent()
+        throws Exception
+    {
+        new ExpectedFailure<NullPointerException>(null) {
+            @Override
+            protected void run()
+            throws Exception
+            {
+                QuoteEvent.addEvent(null);
+            }
+        };
+        // add from add
+        QuoteEvent event = constructObject(System.nanoTime(),
+                                           System.currentTimeMillis(),
+                                           new MSymbol("metc"),
+                                           "Q",
+                                           ONE,
+                                           TEN);
+        assertEquals(ADD,
+                     event.getAction());
+        verifyEvent(QuoteEvent.addEvent(event),
+                    event.getMessageId(),
+                    event.getTimeMillis(),
+                    event.getSymbol(),
+                    event.getExchange(),
+                    event.getPrice(),
+                    event.getSize(),
+                    event.getClass(),
+                    ADD);
+        // add from change
+        event = changeEvent(event,
+                            event.getTimeMillis(),
+                            ONE);
+        assertEquals(CHANGE,
+                     event.getAction());
+        verifyEvent(QuoteEvent.addEvent(event),
+                    event.getMessageId(),
+                    event.getTimeMillis(),
+                    event.getSymbol(),
+                    event.getExchange(),
+                    event.getPrice(),
+                    event.getSize(),
+                    event.getClass(),
+                    ADD);
+        // add from delete
+        event = deleteEvent(event);
+        assertEquals(DELETE,
+                     event.getAction());
+        verifyEvent(QuoteEvent.addEvent(event),
+                    event.getMessageId(),
+                    event.getTimeMillis(),
+                    event.getSymbol(),
+                    event.getExchange(),
+                    event.getPrice(),
+                    event.getSize(),
+                    event.getClass(),
+                    ADD);
     }
     /**
      * Tests {@link QuoteEvent.BookPriceComparator}.
@@ -601,6 +678,18 @@ public abstract class QuoteEventTestBase
         throws Exception
     {
         return QuoteEvent.deleteEvent(inEvent);        
+    }
+    /**
+     * Creates an event of {@link Action#ADD} action for the given event. 
+     *
+     * @param inEvent a <code>QuoteEvent</code> value
+     * @return a <code>QuoteEvent</code>
+     * @throws Exception if an error occurs
+     */
+    private QuoteEvent addEvent(QuoteEvent inEvent)
+        throws Exception
+    {
+        return QuoteEvent.addEvent(inEvent);        
     }
     /**
      * Creates an event of {@link Action#CHANGE} action for the given event. 

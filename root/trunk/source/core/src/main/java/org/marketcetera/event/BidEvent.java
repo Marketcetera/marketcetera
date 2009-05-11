@@ -61,6 +61,19 @@ public class BidEvent
                             Action.DELETE);
     }
     /**
+     * Returns a {@link QuoteEvent.Action#ADD} event that is otherwise equal to the
+     * given <code>BidEvent</code>.
+     * 
+     * @param inBid a <code>BidEvent</code> value
+     * @return a <code>BidEvent</code> exactly the same as the given <code>BidEvent</code> of type 
+     * {@link QuoteEvent.Action#ADD}
+     */
+    public static BidEvent addEvent(BidEvent inBid)
+    {
+        return new BidEvent(inBid,
+                            Action.ADD);
+    }
+    /**
      * Returns a {@link QuoteEvent.Action#CHANGE} event that is, but also for the size, otherwise equal to the
      * given <code>BidEvent</code>.
      *

@@ -127,6 +127,27 @@ public abstract class QuoteEvent
         throw new UnsupportedOperationException();
     }
     /**
+     * Creates a <code>QuoteEvent</code> of the same type as the given event
+     * with the same attributes except for the {@link QuoteEvent.Action} which
+     * will always be {@link QuoteEvent.Action#ADD}.
+     *
+     * @param inEvent a <code>QuoteEvent</code> value
+     * @return a <code>QuoteEvent</code> value
+     */
+    public static QuoteEvent addEvent(QuoteEvent inEvent)
+    {
+        if(inEvent == null) {
+            throw new NullPointerException();
+        }
+        if(inEvent instanceof BidEvent) {
+            return BidEvent.addEvent((BidEvent)inEvent);
+        }
+        if(inEvent instanceof AskEvent) {
+            return AskEvent.addEvent((AskEvent)inEvent);
+        }
+        throw new UnsupportedOperationException();
+    }
+    /**
      * Gets a description of the type of event.
      *
      * @return a <code>String</code> value
