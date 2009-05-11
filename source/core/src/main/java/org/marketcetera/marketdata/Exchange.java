@@ -97,18 +97,6 @@ public interface Exchange<T>
     public T getLatestTick(MSymbol inSymbol,
                            ISubscriber inSubscriber);
     /**
-     * Establishes a subscription to all activity for the given symbol.
-     *
-     * <p>The subscription will remain active until canceled via {@link Exchange#cancel(Object)} or
-     * the exchange is stopped via {@link Exchange#stop}.
-     *
-     * @param inSymbol an <code>MSymbol</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
-     * @return a <code>T</code> value representing the subscription
-     */
-    public T getStream(MSymbol inSymbol,
-                       ISubscriber inSubscriber);
-    /**
      * Cancels the subscription represented by the given token.
      * 
      * <p>If the subscription has already been canceled, this call has no effect.
@@ -158,10 +146,6 @@ public interface Exchange<T>
          * the entire order book
          */
         DEPTH_OF_BOOK,
-        /**
-         * bids, asks, and trades as they are added to the book
-         */
-        STREAM,
         /**
          * statistics for a symbol
          */

@@ -18,6 +18,7 @@ import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DepthOfBook;
+import org.marketcetera.event.EventBase;
 import org.marketcetera.event.EventBaseTest;
 import org.marketcetera.event.QuantityTuple;
 import org.marketcetera.event.QuoteEvent;
@@ -556,14 +557,16 @@ public class OrderBookTest
     /**
      * Converts the given {@link QuoteEvent} values to {@link QuantityTuple} values.
      *
-     * @param inEvents a <code>List&lt;? extends QuoteEvent&gt;</code> value
+     * @param inEvents a <code>List&lt;? extends EventBase&gt;</code> value
      * @return a <code>List&lt;QuantityTuple&gt;</code>value
      */
-    public static List<QuantityTuple> convertEvents(List<? extends SymbolExchangeEvent> inEvents)
+    public static List<QuantityTuple> convertEvents(List<? extends EventBase> inEvents)
     {
         List<QuantityTuple> result = new ArrayList<QuantityTuple>();
-        for(SymbolExchangeEvent event : inEvents) {
-            result.add(convertEvent(event));
+        for(EventBase event : inEvents) {
+            if(event instanceof SymbolExchangeEvent) {
+                result.add(convertEvent((SymbolExchangeEvent)event));
+            }
         }
         return result;
     }

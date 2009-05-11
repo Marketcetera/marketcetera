@@ -1,7 +1,5 @@
 package org.marketcetera.marketdata;
 
-import static org.marketcetera.event.QuoteEvent.Action.ADD;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -292,25 +290,6 @@ public final class SimulatedExchange
                                              this); 
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getStream(org.marketcetera.trade.MSymbol, org.marketcetera.core.publisher.ISubscriber)
-     */
-    @Override
-    public Token getStream(MSymbol inSymbol,
-                           ISubscriber inSubscriber)
-    {
-        SLF4JLoggerProxy.debug(SimulatedExchange.class,
-                               "{} received stream subscription request for {}", //$NON-NLS-1$
-                               getCode(),
-                               inSymbol);
-        if(status == Status.RANDOM) {
-            getBookWrapper(inSymbol);
-        }
-        return FilteringSubscriber.subscribe(inSubscriber,
-                                             Type.STREAM,
-                                             inSymbol,
-                                             this); 
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.Exchange#cancel(org.marketcetera.marketdata.Exchange.Token)
      */
     @Override
@@ -354,6 +333,7 @@ public final class SimulatedExchange
             scriptedEvents.addAll(inEvents);
             status = Status.SCRIPTED;
             doScriptedTicks();
+            status = Status.COMPLETE;
         } else {
             STARTING_RANDOM_EXCHANGE.info(SimulatedExchange.class,
                                           getName());
@@ -420,6 +400,15 @@ public final class SimulatedExchange
         return String.format("%s(%s)", //$NON-NLS-1$
                              getName(),
                              getCode());
+    }
+    /**
+     * Get the status value.
+     *
+     * @return a <code>Status</code> value
+     */
+    public Status getStatus()
+    {
+        return status;
     }
     /**
      * Generates a random decimal value in the interval (-(inUpperBound-1).99,+(inUpperBound-1).99).
@@ -538,7 +527,7 @@ public final class SimulatedExchange
             OrderBookWrapper book = books.get(inSymbol);
             if(book == null) {
                 book = addSymbol(inSymbol);
-                if(status != Status.SCRIPTED) {
+                if(!status.isScripted()) {
                     // set some initial data in the book
                     doRandomBookTick(book);
                 }
@@ -705,14 +694,6 @@ public final class SimulatedExchange
          */
         private TradeEvent latestTick;
         /**
-         * the most recent <code>TopOfBook</code> generated on this book
-         */
-        private TopOfBook lastTopOfBook;
-        /**
-         * the most recent depth-of-book calculated
-         */
-        private DepthOfBook lastDepthOfBook;
-        /**
          * Create a new OrderBookWrapper instance.
          *
          * @param inSymbol a <code>MSymbol</code> value
@@ -767,32 +748,7 @@ public final class SimulatedExchange
          */
         private void publish(EventBase inEvent)
         {
-            // publish the event if it's a trade (that's latest tick and stream) or if it's a new quote (stream)
-            if(inEvent instanceof TradeEvent ||
-               (inEvent instanceof QuoteEvent &&
-                ((QuoteEvent)inEvent).getAction() == ADD)) {
-                publisher.publish(inEvent);
-            }
-            // top-of-book subscribers get an update only if the top-of-book changes
-            TopOfBook newTopOfBook = book.getTopOfBook();
-            if(lastTopOfBook == null ||
-               !lastTopOfBook.equals(newTopOfBook)) {
-                publisher.publish(newTopOfBook);
-                lastTopOfBook = newTopOfBook;
-            }
-            // depth-of-book subscribers get an update if the event is a bid or an ask of any kind
-            if(inEvent instanceof QuoteEvent) {
-                DepthOfBook newDepthOfBook = book.getDepthOfBook();
-                if(lastDepthOfBook == null ||
-                   !lastDepthOfBook.equivalent(newDepthOfBook)) {
-                    publisher.publish(newDepthOfBook);
-                    lastDepthOfBook = newDepthOfBook;
-                }
-            }
-            if(inEvent instanceof MarketstatEvent) {
-                // statistics are always published
-                publisher.publish(inEvent);
-            }
+            publisher.publish(inEvent);
         }
         /**
          * Adjust the price of the book and submit new events accordingly.
@@ -1106,13 +1062,11 @@ public final class SimulatedExchange
             // verify the object's type is relevant
             switch(type) {
                 case TOP_OF_BOOK :
-                    return inData instanceof TopOfBook;
+                    return inData instanceof QuoteEvent;
                 case LATEST_TICK :
                     return inData instanceof TradeEvent;
                 case DEPTH_OF_BOOK :
-                    return inData instanceof DepthOfBook;
-                case STREAM :
-                    return inData instanceof SymbolExchangeEvent;
+                    return inData instanceof QuoteEvent;
                 case STATISTICS :
                     return inData instanceof MarketstatEvent;
                 default :
@@ -1123,10 +1077,74 @@ public final class SimulatedExchange
          * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
          */
         @Override
-        public void publishTo(Object inData)
+        public synchronized void publishTo(Object inData)
         {
-            originalSubscriber.publishTo(inData);
+            if(type != Type.TOP_OF_BOOK) {
+                originalSubscriber.publishTo(inData);
+                return;
+            }
+            // top-of-book is a special case.  first, if we get this far, then the
+            //  class of inData *should* be QuoteEvent, but let's not bank on that
+            if(inData instanceof QuoteEvent) {
+                // a QuoteEvent for top-of-book is an opportunity for a new top-of-book state
+                //  for the exchange; an opportunity but *not* a guarantee
+                // first, check to see if there is, in fact, a new top-of-book state for the
+                //  exchange
+                TopOfBook currentState = exchange.getTopOfBook(symbol);
+                try {
+                    // we are guaranteed that this object is non-null, but its components may be null
+                    // check to see if the quote event caused a change in the top-of-book state
+                    if(!currentState.equals(lastKnownState)) {
+                        // *something* has changed in the top-of-book, but we don't know what yet
+                        // by design, top-of-book updates are sent as ADDs except if the quote is to be removed
+                        //  (indicating there is no top-of-book) in which case the action will be DELETE
+                        // also, it's currently not possible for a single quote event to cause a change
+                        //  in both sides of the book, but that doesn't mean it can't happen some time in
+                        //  the future.  it's an easy check to make, so go ahead and check both sides.  note
+                        //  that there's no guarantee that the object published to originalSubscriber is the
+                        //  same object passed to this method, nor is there any kind of multiplicity guarantees
+                        //  (can be one-for-one, many-for-one, none-for-one)
+                        // has the bid changed?
+                        publishCurrentSideIfNecessary(currentState.getBid(),
+                                                      (lastKnownState == null ? null : lastKnownState.getBid()));
+                        // has the ask changed?
+                        publishCurrentSideIfNecessary(currentState.getAsk(),
+                                                      (lastKnownState == null ? null : lastKnownState.getAsk()));
+                    }
+                } finally {
+                    lastKnownState = currentState;
+                }
+            }
         }
+        private void publishCurrentSideIfNecessary(QuoteEvent inCurrentTop,
+                                                   QuoteEvent inLastTop)
+        {
+            if(inCurrentTop == null) {
+                // there is no current top quote, was there one before?
+                if(inLastTop != null) {
+                    // yes, there used to be a top quote, but it should go away now
+                    originalSubscriber.publishTo(QuoteEvent.deleteEvent(inLastTop));
+                } else {
+                    // there didn't used to be a top quote, so don't do anything
+                }
+            } else {
+                // there is a current top quote, compare it to the one that used to be here
+                if(inLastTop == null) {
+                    // there didn't used to be a top quote, just add the new one
+                    originalSubscriber.publishTo(QuoteEvent.addEvent(inCurrentTop));
+                } else {
+                    // there used to be a top quote, check to see if it's different than the current one
+                    // btw, we know that current quote and last known quote are both non-null
+                    if(QuoteEvent.PriceAndSizeComparator.instance.compare(inLastTop,
+                                                                          inCurrentTop) != 0) {
+                        originalSubscriber.publishTo(QuoteEvent.addEvent(inCurrentTop));
+                    } else {
+                        // the current and previous tops are identical, so don't do anything
+                    }
+                }
+            }
+        }
+        private TopOfBook lastKnownState = null;
         /**
          * Gets the <code>Token</code> corresponding to this subscription.
          *
@@ -1145,7 +1163,7 @@ public final class SimulatedExchange
      * @since 1.5.0
      */
     @ClassVersion("$Id$")
-    private static enum Status
+    public static enum Status
     {
         /**
          * exchange is not running
@@ -1158,7 +1176,11 @@ public final class SimulatedExchange
         /**
          * exchange is running using scripted data
          */
-        SCRIPTED;
+        SCRIPTED,
+        /**
+         * exchange is running using scripted data, and has completed its script
+         */
+        COMPLETE;
         /**
          * Indicates if the exchange is running or not.
          *
@@ -1166,7 +1188,16 @@ public final class SimulatedExchange
          */
         private boolean isRunning()
         {
-            return this == RANDOM || this == SCRIPTED;
+            return this == RANDOM || this == SCRIPTED || this == COMPLETE;
+        }
+        /**
+         * Indicates if the exchange is running in scripted mode or not.
+         *
+         * @return a <code>boolean</code> value
+         */
+        private boolean isScripted()
+        {
+            return this == SCRIPTED || this == COMPLETE;
         }
     }
     /**
