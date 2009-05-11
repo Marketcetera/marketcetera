@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main server configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See 'README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <import
+   resource="properties.xml"/>
+  <import
+   resource="messaging/main.xml"/>
+  <import
+   resource="brokers/main.xml"/>
+  <import
+   resource="filters/main.xml"/>
+  <import
+   resource="db/main.xml"/>
+
+  <bean
+   class="org.marketcetera.ors.config.SpringConfig">
+    <!-- The brokers. -->
+    <property
+     name="brokers"
+     ref="metc_brokers"/>
+    <!-- The broker selector. -->
+    <property
+     name="selector"
+     ref="metc_selector"/>
+    <!--
+      - A 'MessageFilter' instance, applied to messages received from all
+      - brokers.
+      -->
+    <property
+     name="supportedMessages"
+     ref="metc_supported_messages"/>
+    <!--
+      - An 'OrderFilter' instance, applied to messages received from all
+      - ORS Clients.
+      -->
+    <property
+     name="allowedOrders"
+     ref="metc_allowed_orders"/>
+    <!-- The WS hostname. -->
+    <property
+     name="serverHost"
+     value="${metc.ws.host}"/>
+    <!-- The WS port. -->
+    <property
+     name="serverPort"
+     value="${metc.ws.port}"/>
+    <!--
+      - The length of a WS session, in seconds; -1 means sessions
+      - never expire.
+      -->
+    <property
+     name="serverSessionLife"
+     value="${metc.ws.session.life}"/>
+    <!-- The connection factory for incoming JMS connections. -->
+    <property
+     name="incomingConnectionFactory"
+     ref="metc_connection_factory_in"/>
+    <!-- The connection factory for outgoing JMS connections. -->
+    <property
+     name="outgoingConnectionFactory"
+     ref="metc_connection_factory_out"/>
+    <!-- The ID generation factory. -->
+    <property
+     name="IDFactory">
+      <bean
+       class="org.marketcetera.core.DatabaseIDFactory">
+        <constructor-arg
+         ref="metc_sql_pool"/>
+      </bean>
+    </property>
+  </bean>
+</beans>

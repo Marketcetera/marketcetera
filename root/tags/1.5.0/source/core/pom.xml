@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>source</artifactId>
+    <version>1.5.0</version>
+  </parent>
+  <artifactId>core</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Core</name>
+
+  <dependencies>
+
+    <!-- Compile. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.skife.kasparov</groupId>
+      <artifactId>csv</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.glazedlists</groupId>
+      <artifactId>glazedlists_java15</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-i18n</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jms_1.1_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+    </dependency>
+
+    <!-- Testing. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>util-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm-attrs</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>c3p0</groupId>
+      <artifactId>c3p0</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <!-- Place tests into a jar for use during testing of other packages. -->
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Configure Eclipse IDE metadata. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
+          <additionalBuildcommands>
+            <buildCommand>
+              <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+              <triggers>auto,full,incremental,</triggers>
+              <arguments>
+                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/copyTestsToPlugin.launch</LaunchConfigHandle>
+              </arguments>
+            </buildCommand>      
+          </additionalBuildcommands>
+        </configuration>
+      </plugin>
+
+      <!-- Database schema generator. -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>hibernate3-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- In this phase, the persistence.xml file has been copied. -->
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>hbm2ddl</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <components>
+            <component>
+              <name>hbm2ddl</name>
+              <implementation>annotationconfiguration</implementation>
+            </component>
+          </components>
+          <componentProperties>
+            <implementation>jpaconfiguration</implementation>
+            <persistenceunit>unit-testing</persistenceunit>
+            <outputfilename>schema.sql</outputfilename>
+            <jdk5>true</jdk5>
+            <drop>false</drop>
+            <create>true</create>
+            <export>false</export>
+            <format>true</format>
+          </componentProperties>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+
+    <!-- Copy generated test jar into photon plugin area. -->
+    <profile>
+      <id>eclipse-folders</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy.core.test.jar</id>
+                <phase>compile</phase>
+                <configuration>
+                  <tasks>
+                    <property name="targetDirTests" value="../photon/plugins/org.marketcetera.core.tests/" />
+                    <copy file="target/core-${project.version}-tests.jar" todir="${targetDirTests}" />
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>  
+    </profile>
+  </profiles>
+</project>

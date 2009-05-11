@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: toli@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>cep</artifactId>
+    <version>1.5.0</version>
+  </parent>
+  <artifactId>cep-system</artifactId>
+  <packaging>jar</packaging>
+
+  <name>CEP System Module</name>
+
+  <build>
+    <plugins>
+
+      <!-- Place tests into a jar for use during testing of other packages. -->
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Configure Eclipse IDE metadata. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
