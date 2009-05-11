@@ -3,7 +3,6 @@ package org.marketcetera.photon.internal.marketdata;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 import org.marketcetera.event.AskEvent;
@@ -11,6 +10,7 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDQuote;
 import org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl;
@@ -19,6 +19,7 @@ import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.base.Function;
+import com.google.common.collect.MapMaker;
 import com.google.inject.Inject;
 
 /* $License$ */
@@ -67,7 +68,13 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 		}
 	}
 
-	private final Map<Long, MDQuoteImpl> mIdMap = new ConcurrentHashMap<Long, MDQuoteImpl>();
+	private final Map<MDDepthOfBookImpl, Map<Object, MDQuoteImpl>> mIdMap = new MapMaker()
+			.makeComputingMap(new Function<MDDepthOfBookImpl, Map<Object, MDQuoteImpl>>() {
+				@Override
+				public Map<Object, MDQuoteImpl> apply(MDDepthOfBookImpl from) {
+					return new MapMaker().makeMap();
+				}
+			});
 	private final QuoteEventToMDQuote mFunction = new QuoteEventToMDQuote();
 
 	/**
@@ -102,7 +109,7 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 		assert key != null;
 		assert item != null;
 		synchronized (item) {
-			mIdMap.remove(key);
+			mIdMap.remove(item);
 			item.getBids().clear();
 			item.getAsks().clear();
 		}
@@ -114,6 +121,7 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 		final String symbol = key.getSymbol();
 		final MarketDataRequest request = MarketDataRequest.newRequest().withSymbols(symbol)
 				.withContent(key.getProduct());
+		final boolean isLevel2 = key.getProduct() == Content.LEVEL_2;
 		return new Subscriber() {
 
 			@Override
@@ -142,44 +150,94 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 							reportUnexpectedData(inData);
 							return;
 						}
+						Map<Object, MDQuoteImpl> map = mIdMap.get(item);
 						switch (data.getAction()) {
 						case ADD:
 							// add new item and map it
+							if (isLevel2) {
+								// for Level 2, updates can come in an ADD event
+								MDQuoteImpl changed = getFromMap(map, data);
+								if (changed != null) {
+									updateItem(data, changed);
+									break;
+								}
+							}
 							MDQuoteImpl added = mFunction.apply(data);
-							mIdMap.put(data.getMessageId(), added);
+							addToMap(map, data, added);
 							list.add(added);
 							break;
 						case CHANGE:
-							MDQuoteImpl changed = mIdMap.get(data.getMessageId());
+							MDQuoteImpl changed = getFromMap(map, data);
 							if (changed == null) {
 								reportUnexpectedMessageId(data);
 							} else {
 								// update item
-								changed.setSource(data.getExchange());
-								changed.setTime(data.getTimeMillis());
-								changed.setSize(data.getSize());
-								changed.setPrice(data.getPrice());
+								updateItem(data, changed);
 							}
 							break;
 						case DELETE:
-							MDQuoteImpl deleted = mIdMap.get(data.getMessageId());
+							MDQuoteImpl deleted = getFromMap(map, data);
 							if (deleted == null) {
 								reportUnexpectedMessageId(data);
 							} else {
 								// remove item
 								list.remove(deleted);
+								removeFromMap(map, data);
 							}
 							break;
 						default:
 							// new action is not expected, but we can ignore it
 							assert false : data.getAction();
 							reportUnexpectedData(data);
-							return;
 						}
 					}
 				} else {
 					reportUnexpectedData(inData);
 				}
+			}
+
+			private void removeFromMap(Map<Object, MDQuoteImpl> map, QuoteEvent data) {
+				if (isLevel2) {
+					// for level 2, the exchange is the key
+					map.remove(encodeLevel2(data));
+				} else {
+					map.remove(data.getMessageId());
+				}
+			}
+
+			private void updateItem(QuoteEvent data, MDQuoteImpl changed) {
+				changed.setSource(data.getExchange());
+				changed.setTime(data.getTimeMillis());
+				changed.setSize(data.getSize());
+				changed.setPrice(data.getPrice());
+			}
+
+			private void addToMap(Map<Object, MDQuoteImpl> map, QuoteEvent data, MDQuoteImpl toAdd) {
+				if (isLevel2) {
+					// for level 2, the exchange is the key
+					map.put(encodeLevel2(data), toAdd);
+				} else {
+					map.put(data.getMessageId(), toAdd);
+				}
+			}
+
+			private MDQuoteImpl getFromMap(Map<Object, MDQuoteImpl> map, QuoteEvent data) {
+				if (isLevel2) {
+					// for level 2, the exchange is the key
+					return map.get(encodeLevel2(data));
+				} else {
+					return map.get(data.getMessageId());
+				}
+			}
+
+			private String encodeLevel2(QuoteEvent data) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(data instanceof BidEvent ? "bid" : "ask"); //$NON-NLS-1$ //$NON-NLS-2$
+				builder.append('-');
+				builder.append(data.getSymbolAsString());
+				builder.append('-');
+				builder.append(data.getExchange());
+				return builder.toString();
 			}
 		};
 	}
