@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -18,9 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.core.Pair;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.BookEntryTuple;
@@ -30,9 +27,10 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuantityTuple;
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.QuoteEvent.Action;
+import org.marketcetera.marketdata.SimulatedExchange.Status;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.MSymbol;
@@ -436,123 +434,340 @@ public class SimulatedExchangeTest
         script.addAll(bids);
         script.addAll(asks);
         // set up the subscriptions
-        final StreamSubscriber stream = new StreamSubscriber();
-        exchange.getStream(metc,
-                           stream);
-        BookSubscriber topOfBook = new BookSubscriber();
+        TopOfBookSubscriber topOfBook = new TopOfBookSubscriber();
         exchange.getTopOfBook(metc,
                               topOfBook);
-        StreamSubscriber tick = new StreamSubscriber();
+        AllEventsSubscriber tick = new AllEventsSubscriber();
         exchange.getLatestTick(metc,
                                tick);
-        BookSubscriber depthOfBook = new BookSubscriber();
+        AllEventsSubscriber depthOfBook = new AllEventsSubscriber();
         exchange.getDepthOfBook(metc,
                                 depthOfBook);
         // start the script
         exchange.start(script);
-        // wait for the script to complete (we can predict that the exchange will send 10 quote adds and 5 trades, 15 events altogether)
+        // wait for the script to complete (we can predict that the exchange will send 10 quote adds which will result in 5 trades and
+        //  10 quote corrections (bid/ask del/chg), 25 events altogether)
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
                     throws Exception
             {
-                return stream.events.size() == 15;
+                return exchange.getStatus() == Status.COMPLETE;
             }
         });
         // verify the results
-        // prepare the expected stream results
-        List<QuantityTuple> expectedStream = new ArrayList<QuantityTuple>();
-        // the first events will be the bids
-        expectedStream.addAll(OrderBookTest.convertEvents(bids));
-        // next will be the asks interleaved with trades as the books are settled after each ask
-        for(AskEvent ask : asks) {
-            expectedStream.add(OrderBookTest.convertEvent(ask));
-            // figure the corresponding trade
-            // remember the asks are smaller than the corresponding bids so we can use the ask size for the trade
-            expectedStream.add(new QuantityTuple(ask.getPrice(),
-                                                 ask.getSize(),
-                                                 TradeEvent.class));
-        }
-        // prepare the expected top-of-book results
+        // this list will hold all the expected events
+        List<QuantityTuple> allExpectedEvents = new ArrayList<QuantityTuple>();
         List<BookEntryTuple> expectedTopOfBook = new ArrayList<BookEntryTuple>();
-        // the top of the book changes with each bid/ask/trade, so we'll have 15 here, too
-        // start with the bids (first five)
+        // the first events will be the bids
         for(BidEvent bid : bids) {
-            expectedTopOfBook.add(new BookEntryTuple(OrderBookTest.convertEvent(bid),
+            QuantityTuple convertedBid = OrderBookTest.convertEvent(bid); 
+            allExpectedEvents.add(convertedBid);
+            expectedTopOfBook.add(new BookEntryTuple(convertedBid,
                                                      null));
         }
-        // the next ten are more complicated
-        // as an ask is added, first you see the (matching) bid and ask, then, as the trade gets resolved,
-        //  the bid shrinks in size and the ask disappears.  when the bid shrinks (in size) to zero, the
-        //  next best bid rises to the top
-        int bidIndex = bids.size()-1;
-        BigDecimal currentBidPrice = bids.get(bidIndex).getPrice();
-        BigDecimal currentBidSize = bids.get(bidIndex).getSize();
-        for(AskEvent ask : asks) {
-            // add ask
-            expectedTopOfBook.add(new BookEntryTuple(new QuantityTuple(currentBidPrice,
-                                                                       currentBidSize,
-                                                                       BidEvent.class),
-                                                     OrderBookTest.convertEvent(ask)));
-            // a trade gets settled (reduces the size of the bid, removes the ask)
-            currentBidSize = currentBidSize.subtract(ask.getSize());
-            if(currentBidSize.equals(BigDecimal.ZERO)) {
-                currentBidPrice = bids.get(--bidIndex).getPrice();
-                currentBidSize = bids.get(bidIndex).getSize();
-            }
-            expectedTopOfBook.add(new BookEntryTuple(new QuantityTuple(currentBidPrice,
-                                                                       currentBidSize,
-                                                                       BidEvent.class),
-                                                     null));
-        }
+        /*
+        bid        | ask
+        -----------+---------
+        100 100.00 |
+        100 101.00 |
+        100 102.00 |
+        100 103.00 |
+        100 104.00 |
+        */
+        // next will be the asks interleaved with trades and corrections as the books are settled after each ask
+        allExpectedEvents.addAll(Arrays.asList(new QuantityTuple[] { 
+            new QuantityTuple(new BigDecimal("104.00"), // 1st of 5 asks
+                              new BigDecimal("50"),
+                              AskEvent.class),
+                              /*
+                              bid        | ask
+                              -----------+-----------
+                              100 104.00 | 104.00 50
+                              100 103.00 | 
+                              100 102.00 | 
+                              100 101.00 | 
+                              100 100.00 |
+                              */
+            new QuantityTuple(new BigDecimal("104.00"), // resulting trade
+                              new BigDecimal("50"),
+                              TradeEvent.class),
+            new QuantityTuple(new BigDecimal("104.00"), // bid correction (change)
+                              new BigDecimal("50"),
+                              BidEvent.class),
+                              /*
+                              bid        | ask
+                              -----------+-----------
+                               50 104.00 | 104.00 50
+                              100 103.00 | 
+                              100 102.00 | 
+                              100 101.00 | 
+                              100 100.00 |
+                              */
+            new QuantityTuple(new BigDecimal("104.00"), // ask correction (delete)
+                              new BigDecimal("50"),
+                              AskEvent.class),
+                              /*
+                              bid        | ask
+                              -----------+-----------
+                               50 104.00 |
+                              100 103.00 | 
+                              100 102.00 | 
+                              100 101.00 | 
+                              100 100.00 |
+                              */
+            new QuantityTuple(new BigDecimal("103.00"), // 2nd of 5 asks
+                              new BigDecimal("50"),
+                              AskEvent.class),
+                              /*
+                              bid        | ask
+                              -----------+-----------
+                               50 104.00 | 103.00 50
+                              100 103.00 | 
+                              100 102.00 | 
+                              100 101.00 | 
+                              100 100.00 |
+                              */
+            new QuantityTuple(new BigDecimal("103.00"), // resulting trade
+                              new BigDecimal("50"),
+                              TradeEvent.class),
+            new QuantityTuple(new BigDecimal("104.00"), // bid correction (delete of fully consumed bid)
+                              new BigDecimal("50"),
+                              BidEvent.class),
+                              /*
+                              bid        | ask
+                              -----------+-----------
+                              100 103.00 | 103.00 50
+                              100 102.00 | 
+                              100 101.00 | 
+                              100 100.00 | 
+                              */
+            new QuantityTuple(new BigDecimal("103.00"), // ask correction (delete of fully consumed ask)
+                              new BigDecimal("50"),
+                              AskEvent.class),
+                              /*
+                              bid        | ask
+                              -----------+-----------
+                              100 103.00 |
+                              100 102.00 | 
+                              100 101.00 | 
+                              100 100.00 | 
+                              */
+            new QuantityTuple(new BigDecimal("102.00"), // 3rd of 5 asks
+                              new BigDecimal("50"),
+                              AskEvent.class),
+                              /*
+                              bid        | ask
+                              -----------+-----------
+                              100 103.00 | 102.00 50
+                              100 102.00 | 
+                              100 101.00 | 
+                              100 100.00 | 
+                              */
+            new QuantityTuple(new BigDecimal("102.00"), // resulting trade
+                              new BigDecimal("50"),
+                              TradeEvent.class),
+            new QuantityTuple(new BigDecimal("103.00"), // bid correction (change of partially consumed bid)
+                              new BigDecimal("50"),
+                              BidEvent.class),
+                              /*
+                              bid        | ask
+                              -----------+-----------
+                               50 103.00 | 102.00 50
+                              100 102.00 | 
+                              100 101.00 | 
+                              100 100.00 | 
+                              */
+            new QuantityTuple(new BigDecimal("102.00"), // ask correction (delete of fully consumed ask)
+                              new BigDecimal("50"),
+                              AskEvent.class),
+                              /*
+                              bid        | ask
+                              -----------+-----------
+                               50 103.00 | 
+                              100 102.00 | 
+                              100 101.00 | 
+                              100 100.00 | 
+                              */
+           new QuantityTuple(new BigDecimal("101.00"), // 4th of 5 asks
+                             new BigDecimal("50"),
+                             AskEvent.class),
+                             /*
+                             bid        | ask
+                             -----------+-----------
+                              50 103.00 | 101.00 50 
+                             100 102.00 | 
+                             100 101.00 | 
+                             100 100.00 | 
+                             */
+           new QuantityTuple(new BigDecimal("101.00"), // resulting trade
+                             new BigDecimal("50"),
+                             TradeEvent.class),
+           new QuantityTuple(new BigDecimal("103.00"), // bid correction (delete of fully consumed bid)
+                             new BigDecimal("50"),
+                             BidEvent.class),
+                             /*
+                             bid        | ask
+                             -----------+-----------
+                             100 102.00 | 101.00 50 
+                             100 101.00 | 
+                             100 100.00 | 
+                             */
+          new QuantityTuple(new BigDecimal("101.00"), // ask correction (delete of fully consumed ask)
+                            new BigDecimal("50"),
+                            AskEvent.class),
+                            /*
+                            bid        | ask
+                            -----------+-----------
+                            100 102.00 | 
+                            100 101.00 | 
+                            100 100.00 | 
+                            */
+          new QuantityTuple(new BigDecimal("100.00"), // 5th of 5 asks
+                            new BigDecimal("50"),
+                            AskEvent.class),
+                            /*
+                            bid        | ask
+                            -----------+-----------
+                            100 102.00 | 100.00 50 
+                            100 101.00 | 
+                            100 100.00 | 
+                            */
+         new QuantityTuple(new BigDecimal("100.00"), // resulting trade
+                           new BigDecimal("50"),
+                           TradeEvent.class),
+         new QuantityTuple(new BigDecimal("102.00"), // bid correction (change of partially consumed bid)
+                           new BigDecimal("50"),
+                           BidEvent.class),
+                           /*
+                           bid        | ask
+                           -----------+-----------
+                            50 102.00 | 100.00 50 
+                           100 101.00 | 
+                           100 100.00 | 
+                           */
+         new QuantityTuple(new BigDecimal("100.00"), // ask correction (delete of fully consumed ask)
+                           new BigDecimal("50"),
+                           AskEvent.class),
+                           /*
+                           bid        | ask
+                           -----------+-----------
+                            50 102.00 | 
+                           100 101.00 | 
+                           100 100.00 | 
+                           */
+        } ));
+        // prepare the expected top-of-book results
+        expectedTopOfBook.addAll(Arrays.asList(new BookEntryTuple[] { 
+            /* 100 104.00 | 104.00 50 */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("100"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+            /* 50 104.00 | 104.00 50 */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("50"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+            /*  50 104.00 | */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("50"),
+                                                 BidEvent.class),
+                               null),
+            /* 50 104.00 | 103.00 50 */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("50"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("103.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+            /* 100 103.00 | 103.00 50 */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                                 new BigDecimal("100"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("103.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+            /* 100 103.00 | */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                                 new BigDecimal("100"),
+                                                 BidEvent.class),
+                               null),
+            /* 100 103.00 | 102.00 50 */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                                 new BigDecimal("100"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("102.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+            /* 50 103.00 | 102.00 50  */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                                 new BigDecimal("50"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("102.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+            /* 50 103.00 | */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                                 new BigDecimal("50"),
+                                                 BidEvent.class),
+                               null),
+            /* 50 103.00 | 101.00 50 */ 
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                                 new BigDecimal("50"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("101.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+            /* 100 102.00 | 101.00 50 */ 
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                                 new BigDecimal("100"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("101.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+            /* 100 102.00 | */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                                 new BigDecimal("100"),
+                                                 BidEvent.class),
+                               null),
+            /* 100 102.00 | 100.00 50 */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                                 new BigDecimal("100"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("100.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+           /* 50 102.00 | 100.00 50 */
+           new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                                new BigDecimal("50"),
+                                                BidEvent.class),
+                              new QuantityTuple(new BigDecimal("100.00"),
+                                                new BigDecimal("50"),
+                                                AskEvent.class)),
+           /* 50 102.00 | */
+           new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                                new BigDecimal("50"),
+                                                BidEvent.class),
+                              null),
+        }));
         // prepare the expected latest tick results
         List<QuantityTuple> expectedLatestTicks = new ArrayList<QuantityTuple>();
-        for(SymbolExchangeEvent event : stream.events) {
-            if(event instanceof TradeEvent) {
-                expectedLatestTicks.add(OrderBookTest.convertEvent(event));
-            }
-        }
         // prepare the expected depth-of-book results
-        List<Pair<List<QuantityTuple>,List<QuantityTuple>>> expectedDepthOfBook = new ArrayList<Pair<List<QuantityTuple>,List<QuantityTuple>>>();
-        // the first set of expected depth-of-books are the bids being added to the book (two things to note about this:
-        //  first, the expecteds need to be in new lists each time because otherwise we just modify the same list each time (thus
-        //  modifying all the expecteds at once), second, the bids are arranged in the initial list above from worst to
-        //  best but they will appear in the book from best to worst, so the new bid needs to be added to the front of the
-        //  list.  this works because of the way the bids were added to the list initially.  a more fool-proof method would
-        //  be to sort the list, but that gets complicated, too)
-        LinkedList<QuantityTuple> bidQuantities = new LinkedList<QuantityTuple>();
-        for(BidEvent bid : bids) {
-            bidQuantities.addFirst(OrderBookTest.convertEvent(bid));
-            List<QuantityTuple> theseBids = new ArrayList<QuantityTuple>(bidQuantities);
-            expectedDepthOfBook.add(new Pair<List<QuantityTuple>,List<QuantityTuple>>(theseBids,
-                                                                                      new ArrayList<QuantityTuple>()));
-        }
-        // bidQuantities now has the complete set of bids in the right order, we'll use that below
-        // next, we start adding the asks (and reflecting the trades)
-        for(AskEvent ask : asks) {
-            // first, add the ask
-            List<QuantityTuple> theseBids = new ArrayList<QuantityTuple>(bidQuantities);
-            // add the book
-            expectedDepthOfBook.add(new Pair<List<QuantityTuple>,List<QuantityTuple>>(theseBids,
-                                                                                      Arrays.asList(new QuantityTuple[] { OrderBookTest.convertEvent(ask) } )));
-            // reflect the settled trade with another book entry
-            QuantityTuple topBid = bidQuantities.removeFirst();
-            // deduct the ask quantity
-            BigDecimal newSize = topBid.getSize().subtract(ask.getSize());
-            // if the bid is not fully consumed, put it back
-            if(!newSize.equals(BigDecimal.ZERO)) {
-                bidQuantities.addFirst(new QuantityTuple(topBid.getPrice(),
-                                                         newSize,
-                                                         topBid.getType()));
+        List<QuantityTuple> expectedDepthOfBook = new ArrayList<QuantityTuple>();
+        for(QuantityTuple tuple : allExpectedEvents) {
+            if(tuple.getType().equals(TradeEvent.class)) {
+                expectedLatestTicks.add(tuple);
+            } else {
+                expectedDepthOfBook.add(tuple);
             }
-            // now add another depth-of-book with the new bids and no asks
-            expectedDepthOfBook.add(new Pair<List<QuantityTuple>,List<QuantityTuple>>(new ArrayList<QuantityTuple>(bidQuantities),
-                                                                                      new ArrayList<QuantityTuple>()));
         }
         // ready to verify results
-        verifySubscriptions(stream.events,
-                            expectedStream,
-                            topOfBook.events,
+        verifySubscriptions(topOfBook.tops,
                             expectedTopOfBook,
                             tick.events,
                             expectedLatestTicks,
@@ -573,14 +788,14 @@ public class SimulatedExchangeTest
         SimulatedExchange exchange2 = new SimulatedExchange("Test exchange 2",
                                                             "TEST2");
         assertFalse(exchange.equals(exchange2));
-        // create two different stream subscribers
-        StreamSubscriber sub1 = new StreamSubscriber();
-        StreamSubscriber sub2 = new StreamSubscriber();
+        // create two different subscribers
+        AllEventsSubscriber sub1 = new AllEventsSubscriber();
+        AllEventsSubscriber sub2 = new AllEventsSubscriber();
         // set up the subscriptions
-        exchange.getStream(metc,
-                           sub1);
-        exchange2.getStream(metc,
-                            sub2);
+        exchange.getTopOfBook(metc,
+                              sub1);
+        exchange2.getTopOfBook(metc,
+                               sub2);
         // create an event targeted to the second exchange
         AskEvent ask2 = new AskEvent(System.nanoTime(),
                                      System.currentTimeMillis(),
@@ -603,10 +818,14 @@ public class SimulatedExchangeTest
         exchange.start(script1);
         exchange2.start(script2);
         // measure the results
-        verifyStream(sub1.events,
-                     OrderBookTest.convertEvents(Arrays.asList(new QuoteEvent[] { bid } )));
-        verifyStream(sub2.events,
-                     OrderBookTest.convertEvents(Arrays.asList(new QuoteEvent[] { ask2 } )));
+        assertEquals(1,
+                     sub1.events.size());
+        assertEquals(bid,
+                     sub1.events.get(0));
+        assertEquals(1,
+                     sub2.events.size());
+        assertEquals(ask2,
+                     sub2.events.get(0));
     }
     /**
      * Tests that an over-filled (according to its max depth) order book gets pruned.
@@ -660,12 +879,12 @@ public class SimulatedExchangeTest
     public void subscriptionCanceling()
         throws Exception
     {
-        final StreamSubscriber stream1 = new StreamSubscriber();
-        final StreamSubscriber stream2 = new StreamSubscriber();
-        Token t1 = exchange.getStream(metc,
-                                      stream1);
-        Token t2 = exchange.getStream(metc,
-                                      stream2);
+        final AllEventsSubscriber stream1 = new AllEventsSubscriber();
+        final AllEventsSubscriber stream2 = new AllEventsSubscriber();
+        Token t1 = exchange.getTopOfBook(metc,
+                                         stream1);
+        Token t2 = exchange.getTopOfBook(metc,
+                                         stream2);
         assertFalse(t1.equals(t2));
         assertFalse(t1.hashCode() == t2.hashCode());
         exchange.start();
@@ -739,13 +958,13 @@ public class SimulatedExchangeTest
     public void subscribeBeforeAndAfterStart()
         throws Exception
     {
-        final StreamSubscriber stream1 = new StreamSubscriber();
-        final StreamSubscriber stream2 = new StreamSubscriber();
-        exchange.getStream(metc,
-                           stream1);
+        final AllEventsSubscriber stream1 = new AllEventsSubscriber();
+        final AllEventsSubscriber stream2 = new AllEventsSubscriber();
+        exchange.getTopOfBook(metc,
+                              stream1);
         exchange.start();
-        exchange.getStream(metc,
-                           stream2);
+        exchange.getTopOfBook(metc,
+                              stream2);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -887,71 +1106,40 @@ public class SimulatedExchangeTest
     /**
      * Verifies the given actual subscriptions against the expected results. 
      *
-     * @param inActualStream
-     * @param inExpectedStream
-     * @param inActualTopOfBook
-     * @param inExpectedTopOfBook
-     * @param inActualTicks
-     * @param inExpectedTicks
-     * @param inActualDepthOfBook
-     * @param inExpectedDepthOfBook
+     * @param inActualTopOfBook a <code>List&lt;TopOfBook&gt;</code> value
+     * @param inExpectedTopOfBook a <code>List&lt;BookEntryTuple&gt;</code> value
+     * @param inActualTicks a <code>List&lt;EventBase&gt;</code> value
+     * @param inExpectedTicks a <code>List&lt;QuantityTuple&gt;</code> value
+     * @param inActualDepthOfBook a <code>List&lt;EventBase&gt;</code> value
+     * @param inExpectedDepthOfBook a <code>List&lt;QuantityTuple&gt;</code> value
      * @throws Exception if an error occurs
      */
-    private void verifySubscriptions(List<SymbolExchangeEvent> inActualStream,
-                                     List<QuantityTuple> inExpectedStream,
-                                     List<AggregateEvent> inActualTopOfBook,
+    private void verifySubscriptions(List<TopOfBook> inActualTopOfBook,
                                      List<BookEntryTuple> inExpectedTopOfBook,
-                                     List<SymbolExchangeEvent> inActualTicks,
+                                     List<EventBase> inActualTicks,
                                      List<QuantityTuple> inExpectedTicks,
-                                     List<AggregateEvent> inActualDepthOfBook,
-                                     List<Pair<List<QuantityTuple>,List<QuantityTuple>>> inExpectedDepthOfBook)
+                                     List<EventBase> inActualDepthOfBook,
+                                     List<QuantityTuple> inExpectedDepthOfBook)
         throws Exception
     {
-        // verifyStream
-        verifyStream(inActualStream,
-                     inExpectedStream);
         // test top-of-book
-        assertEquals(inActualTopOfBook.size(),
-                     inExpectedTopOfBook.size());
-        List<BookEntryTuple> actualTopOfBookTuples = new ArrayList<BookEntryTuple>();
-        for(AggregateEvent event : inActualTopOfBook) {
-            assertTrue(event instanceof TopOfBook);
-            TopOfBook topOfBook = (TopOfBook)event;
-            actualTopOfBookTuples.add(new BookEntryTuple(OrderBookTest.convertEvent(topOfBook.getBid()),
-                                                         OrderBookTest.convertEvent(topOfBook.getAsk())));
+        assertEquals(inExpectedTopOfBook.size(),
+                     inActualTopOfBook.size());
+        List<BookEntryTuple> actualTopOfBook = new ArrayList<BookEntryTuple>();
+        for(TopOfBook event : inActualTopOfBook) {
+            actualTopOfBook.add(new BookEntryTuple(OrderBookTest.convertEvent(event.getBid()),
+                                                   OrderBookTest.convertEvent(event.getAsk())));
         }
         assertEquals(inExpectedTopOfBook,
-                     actualTopOfBookTuples);
+                     actualTopOfBook);
         // test latest-tick
-        assertEquals(OrderBookTest.convertEvents(inActualTicks),
-                     inExpectedTicks);
+        assertEquals(inExpectedTicks,
+                     OrderBookTest.convertEvents(inActualTicks));
         // test depth-of-book
         assertEquals(inExpectedDepthOfBook.size(),
                      inActualDepthOfBook.size());
-        List<Pair<List<QuantityTuple>,List<QuantityTuple>>> actualDepthOfBookTuples = new ArrayList<Pair<List<QuantityTuple>,List<QuantityTuple>>>();
-        for(AggregateEvent event : inActualDepthOfBook) {
-            assertTrue(event instanceof DepthOfBook);
-            DepthOfBook depthOfBook = (DepthOfBook)event;
-            actualDepthOfBookTuples.add(new Pair<List<QuantityTuple>,List<QuantityTuple>>(OrderBookTest.convertEvents(depthOfBook.getBids()),
-                                                                                          OrderBookTest.convertEvents(depthOfBook.getAsks())));
-        }
         assertEquals(inExpectedDepthOfBook,
-                     actualDepthOfBookTuples);
-    }
-    /**
-     * Verifies that the actual stream matches the expected stream.
-     *
-     * @param inActualStream a <code>List&lt;SymbolExchangeEvent&gt;</code> value
-     * @param inExpectedStream a <code>List&lt;QuantityTuple&gt;</code> value
-     * @throws Exception if an error occurs
-     */
-    private void verifyStream(List<SymbolExchangeEvent> inActualStream,
-                              List<QuantityTuple> inExpectedStream)
-        throws Exception
-    {
-        // test stream
-        assertEquals(inExpectedStream,
-                     OrderBookTest.convertEvents(inActualStream));
+                     OrderBookTest.convertEvents(inActualDepthOfBook));
     }
     /**
      * Verifies symbol statistical data.
@@ -1041,27 +1229,28 @@ public class SimulatedExchangeTest
                      inActualExchange.getCode());
     }
     /**
-     * Captures <code>AggregateEvents</code> from a <code>SimulatedExchange</code>.
+     * Subscribes to top-of-book and captures the state of the exchange top every time it changes.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since 1.5.0
      */
-    private static class BookSubscriber
+    private static class TopOfBookSubscriber
         implements ISubscriber
     {
         /**
          * the events received
          */
-        private final List<AggregateEvent> events = new ArrayList<AggregateEvent>();
-
+        private final List<TopOfBook> tops = new ArrayList<TopOfBook>();
+        private AskEvent lastAsk = null;
+        private BidEvent lastBid = null;
         /* (non-Javadoc)
          * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
          */
         @Override
         public boolean isInteresting(Object inData)
         {
-            return true;
+            return inData instanceof QuoteEvent;
         }
         /* (non-Javadoc)
          * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
@@ -1069,40 +1258,18 @@ public class SimulatedExchangeTest
         @Override
         public void publishTo(Object inData)
         {
-            events.add((AggregateEvent)inData);
+            QuoteEvent quote = (QuoteEvent)inData;
+            BidEvent newBid = (quote instanceof BidEvent ? quote.getAction() == Action.DELETE ? null : (BidEvent)quote : lastBid);
+            AskEvent newAsk = (quote instanceof AskEvent ? quote.getAction() == Action.DELETE ? null : (AskEvent)quote : lastAsk);
+            TopOfBook newTop = new TopOfBook(newBid,
+                                             newAsk,
+                                             quote.getTimestampAsDate(),
+                                             quote.getSymbol());
+            tops.add(newTop);
+            lastBid = newBid;
+            lastAsk = newAsk;
         }
     }
-   /**
-    * Captures the stream of events from a <code>SimulatedExchange</code>.
-    *
-    * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-    * @version $Id$
-    * @since 1.5.0
-    */
-   private static class StreamSubscriber
-       implements ISubscriber
-   {
-       /**
-        * the events received
-        */
-       private final List<SymbolExchangeEvent> events = new ArrayList<SymbolExchangeEvent>();
-       /* (non-Javadoc)
-        * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
-        */
-       @Override
-       public boolean isInteresting(Object inData)
-       {
-           return true;
-       }
-       /* (non-Javadoc)
-        * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
-        */
-       @Override
-       public void publishTo(Object inData)
-       {
-           events.add((SymbolExchangeEvent)inData);
-       }
-   }
    /**
     * Captures any events from a <code>SimulatedExchange</code>.
     *

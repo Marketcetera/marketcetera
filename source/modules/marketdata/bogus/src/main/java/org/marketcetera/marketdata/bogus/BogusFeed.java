@@ -360,9 +360,9 @@ public class BogusFeed
                                               request.getExchange());
                                 break;
                             case TOTAL_VIEW :
-                                // TOTAL_VIEW is all traffic from the specified exchange
-                                doStream(symbol,
-                                         request.getExchange());
+                                // TOTAL_VIEW is depth-of-book from the specified exchange
+                                doDepthOfBook(symbol,
+                                              request.getExchange());
                                 break;
                             case LATEST_TICK :
                                 // LATEST_TICK is the most recent trade
@@ -395,21 +395,6 @@ public class BogusFeed
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
                 exchangeTokens.add(exchange.getStatistics(inSymbol,
                                                           subscriber));
-            }
-        }
-        /**
-         * Executes a stream request for the given symbol using the
-         * given exchange code.
-         *
-         * @param inSymbol an <code>MSymbol</code> value
-         * @param inExchangeToUse a <code>String</code> value
-         */
-        private void doStream(MSymbol inSymbol,
-                              String inExchangeToUse)
-        {
-            for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getStream(inSymbol,
-                                                      subscriber));
             }
         }
         /**

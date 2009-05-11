@@ -2,8 +2,8 @@ package org.marketcetera.event;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.MSymbol;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -59,6 +59,19 @@ public class AskEvent
     {
         return new AskEvent(inAsk,
                             Action.DELETE);
+    }
+    /**
+     * Returns a {@link QuoteEvent.Action#ADD} event that is otherwise equal to the
+     * given <code>AskEvent</code>.
+     * 
+     * @param inAsk an <code>AskEvent</code> value
+     * @return an <code>AskEvent</code> exactly the same as the given <code>AskEvent</code> of type 
+     * {@link QuoteEvent.Action#ADD}
+     */
+    public static AskEvent addEvent(AskEvent inAsk)
+    {
+        return new AskEvent(inAsk,
+                            Action.ADD);
     }
     /**
      * Returns a {@link QuoteEvent.Action#CHANGE} event that is, but also for the size, otherwise equal to the
