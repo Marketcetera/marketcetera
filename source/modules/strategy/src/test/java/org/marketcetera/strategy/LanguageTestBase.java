@@ -29,6 +29,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -324,13 +328,23 @@ public abstract class LanguageTestBase
         final Properties parameters = new Properties();
         parameters.setProperty("shouldFailOnStart",
                                "true");
+        final ModuleURN strategyURN = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                                 null,
+                                                                 strategy.getName(),
+                                                                 getLanguage(),
+                                                                 strategy.getFile(),
+                                                                 parameters,
+                                                                 null,
+                                                                 null);
         // failed "onStart" means that the strategy is in error status and will not receive any data
-        ModuleURN strategyURN = createStrategy(strategy.getName(),
-                                               getLanguage(),
-                                               strategy.getFile(),
-                                               parameters,
-                                               null,
-                                               null);
+        new ExpectedFailure<ModuleException>(FAILED_TO_START) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                moduleManager.start(strategyURN);
+            }
+        };
         // "onStart" has completed, but verify that the last statement in the strategy was never executed
         verifyPropertyNull("onStart");
         // verify the status of the strategy
@@ -341,14 +355,14 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("shouldFailOnStop",
                                             "true");
         // runtime error in onStop
-        strategyURN = createStrategy(strategy.getName(),
-                                     getLanguage(),
-                                     strategy.getFile(),
-                                     parameters,
-                                     null,
-                                     null);
-        doSuccessfulStartTest(strategyURN);
-        stopStrategy(strategyURN);
+        ModuleURN strategyURN2 = createStrategy(strategy.getName(),
+                                                getLanguage(),
+                                                strategy.getFile(),
+                                                parameters,
+                                                null,
+                                                null);
+        doSuccessfulStartTest(strategyURN2);
+        stopStrategy(strategyURN2);
         AbstractRunningStrategy.setProperty("shouldFailOnStop",
                                             null);
         // runtime error in each callback
@@ -379,21 +393,35 @@ public abstract class LanguageTestBase
                                "true");
         assertNull(AbstractRunningStrategy.getProperty("loopDone"));
         // need to manually start the strategy because it will be in "STARTING" status for a long long time
-        final ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
-                                                   null,
-                                                   strategy.getName(),
-                                                   getLanguage(),
-                                                   strategy.getFile(),
-                                                   parameters,
-                                                   null,
-                                                   null);
+        final ModuleURN strategyURN = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                                 null,
+                                                                 strategy.getName(),
+                                                                 getLanguage(),
+                                                                 strategy.getFile(),
+                                                                 parameters,
+                                                                 null,
+                                                                 null);
+        // start the strategy in another thread
+        Future<ModuleURN> future = doAsynchronous(new Callable<ModuleURN>() {
+            @Override
+            public ModuleURN call()
+                    throws Exception
+            {
+                moduleManager.start(strategyURN);
+                return strategyURN;
+            }
+        });
         // wait until the strategy enters "STARTING"
         MarketDataFeedTestBase.wait(new Callable<Boolean>(){
             @Override
             public Boolean call()
                     throws Exception
             {
-                return getStatus(strategyURN).equals(STARTING);
+                try {
+                    return getStatus(strategyURN).equals(STARTING);
+                } catch (Exception e) {
+                    return false;
+                }
             }
         });
         // take a little snooze - long enough that the strategy "onStart" will have completed if it was going to
@@ -405,6 +433,7 @@ public abstract class LanguageTestBase
         // tell the loop to stop
         AbstractRunningStrategy.setProperty("shouldStopLoop",
                                             "true");
+        future.get();
         // wait until the strategy has time to complete
         MarketDataFeedTestBase.wait(new Callable<Boolean>(){
             @Override
@@ -416,6 +445,7 @@ public abstract class LanguageTestBase
         });
         // verify that the "onStart" loop completed
         assertNotNull(AbstractRunningStrategy.getProperty("loopDone"));
+        moduleManager.stop(strategyURN);
     }
     /**
      * Tests a strategy with an arbitrarily long onStop.
@@ -437,9 +467,19 @@ public abstract class LanguageTestBase
                                                      parameters,
                                                      null,
                                                      null);
-        // being stop process
+        // begin stop process
         assertNull(AbstractRunningStrategy.getProperty("loopDone"));
-        moduleManager.stop(strategyURN);
+        final List<Throwable> thrownExceptions = new ArrayList<Throwable>();
+        // stop the strategy in another thread
+        Future<ModuleURN> future = doAsynchronous(new Callable<ModuleURN>() {
+            @Override
+            public ModuleURN call()
+                    throws Exception
+            {
+                moduleManager.stop(strategyURN);
+                return strategyURN;
+            }
+        });
         // wait until the strategy enters "STOPPING" status
         MarketDataFeedTestBase.wait(new Callable<Boolean>(){
             @Override
@@ -458,6 +498,7 @@ public abstract class LanguageTestBase
         // tell the loop to stop
         AbstractRunningStrategy.setProperty("shouldStopLoop",
                                             "true");
+        future.get();
         // wait until the strategy has time to complete
         MarketDataFeedTestBase.wait(new Callable<Boolean>(){
             @Override
@@ -469,6 +510,7 @@ public abstract class LanguageTestBase
         });
         // verify that the "onStop" loop completed
         assertNotNull(AbstractRunningStrategy.getProperty("loopDone"));
+        assertTrue(thrownExceptions.isEmpty());
     }
     /**
      * This test makes sure that data cannot be requested or sent after stop has begun.
@@ -502,8 +544,16 @@ public abstract class LanguageTestBase
         verifyPropertyNull("requestID");
         // the stop loop marker is not present
         verifyPropertyNull("loopDone");
-        // trigger begin of stop loop
-        moduleManager.stop(strategyURN);
+        // stop the strategy in another thread
+        Future<ModuleURN> future = doAsynchronous(new Callable<ModuleURN>() {
+            @Override
+            public ModuleURN call()
+                    throws Exception
+            {
+                moduleManager.stop(strategyURN);
+                return strategyURN;
+            }
+        });
         // wait until the strategy enters "STOPPING" status
         MarketDataFeedTestBase.wait(new Callable<Boolean>(){
             @Override
@@ -520,6 +570,7 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("shouldStopLoop",
                                             "true");
         // wait until strategy stops
+        future.get();
         verifyStrategyStopped(strategyURN);
         // make sure the loop completed normally
         verifyPropertyNonNull("loopDone");
@@ -2591,14 +2642,27 @@ public abstract class LanguageTestBase
         verifyPropertyNull("onStartBegins");
         // strategy doesn't exist yet
         // need to manually start the strategy because it will be in "STARTING" status for a long long time (UNSTARTED->COMPILING->STARTING)
-        final ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
-                                                   null,
-                                                   strategy.getName(),
-                                                   getLanguage(),
-                                                   strategy.getFile(),
-                                                   parameters,
-                                                   null,
-                                                   null);
+        final ModuleURN strategyURN = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                                 null,
+                                                                 strategy.getName(),
+                                                                 getLanguage(),
+                                                                 strategy.getFile(),
+                                                                 parameters,
+                                                                 null,
+                                                                 null);
+        final List<Throwable> thrownExceptions = new ArrayList<Throwable>();
+        // start the strategy in another thread
+        Thread helperThread = new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+                try {
+                    moduleManager.start(strategyURN);
+                } catch (ModuleException e) {
+                    thrownExceptions.add(e);
+                }
+            }});
+        helperThread.start();
         // strategy is now somewhere in the journey from UNSTARTED->COMPILING->STARTING.  this change is atomic with respect
         //  to module operations
         // wait until the strategy enters "STARTING"
@@ -2607,8 +2671,12 @@ public abstract class LanguageTestBase
             public Boolean call()
                     throws Exception
             {
-                return getStatus(strategyURN).equals(STARTING) &&
-                       AbstractRunningStrategy.getProperty("onStartBegins") != null;
+                try {
+                    return getStatus(strategyURN).equals(STARTING) &&
+                                     AbstractRunningStrategy.getProperty("onStartBegins") != null;
+                } catch (Exception e) {
+                    return false;
+                }
             }
         });
         // strategy is in STARTING state and will stay there until released by instrumentation that affects the running strategy
@@ -2630,13 +2698,11 @@ public abstract class LanguageTestBase
         };
         verifyStrategyStatus(strategyURN,
                              STARTING);
-        StrategyImpl strategyImpl = getRunningStrategy(strategyURN);
-        // make sure the strategy module still thinks we're starting
-        assertTrue(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
         // try to stop the module (STARTING->STOPPING)
-        new ExpectedFailure<ModuleStateException>(STRATEGY_STILL_RUNNING,
-                                                  strategyImpl.toString(),
-                                                  STARTING) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STOPPED_STATE_INCORRECT,
+                                                  strategyURN.toString(),
+                                                  ExpectedFailure.IGNORE,
+                                                  ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -2644,11 +2710,10 @@ public abstract class LanguageTestBase
                 moduleManager.stop(strategyURN);
             }
         };
-        // module is still started
-        assertTrue(moduleManager.getModuleInfo(strategyURN).getState().isStarted());
         // release the running strategy (or it will keep running beyond the end of the test)
         AbstractRunningStrategy.setProperty("shouldStopLoop",
                                             "true");
+        helperThread.join();
         // strategy is now moving from STARTING->RUNNING
         // wait for the strategy to become ready
         verifyStrategyReady(strategyURN);
@@ -2671,7 +2736,17 @@ public abstract class LanguageTestBase
         // make sure the strategy loops in onStop so we have time to play with it
         // reset all our flags and counters
         setPropertiesToNull();
-        moduleManager.stop(strategyURN);
+        helperThread = new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+                try {
+                    moduleManager.stop(strategyURN);
+                } catch (ModuleException e) {
+                    thrownExceptions.add(e);
+                }
+            }});
+        helperThread.start();
         // wait until the strategy enters "STOPPING"
         MarketDataFeedTestBase.wait(new Callable<Boolean>(){
             @Override
@@ -2679,7 +2754,7 @@ public abstract class LanguageTestBase
                     throws Exception
             {
                 return getStatus(strategyURN).equals(STOPPING) &&
-                       AbstractRunningStrategy.getProperty("onStopBegins") != null;
+                                 AbstractRunningStrategy.getProperty("onStopBegins") != null;
             }
         });
         // strategy is now looping
@@ -2701,9 +2776,10 @@ public abstract class LanguageTestBase
             }
         };
         // test starting (STOPPING->UNSTARTED)
-        new ExpectedFailure<ModuleStateException>(STRATEGY_STILL_RUNNING,
-                                                  strategyImpl.toString(),
-                                                  strategyImpl.getStatus()) {
+        new ExpectedFailure<ModuleStateException>(MODULE_NOT_STARTED_STATE_INCORRECT,
+                                                  strategyURN.toString(),
+                                                  ExpectedFailure.IGNORE,
+                                                  ExpectedFailure.IGNORE) {
             @Override
             protected void run()
                 throws Exception
@@ -2714,6 +2790,7 @@ public abstract class LanguageTestBase
         // let the strategy stop
         AbstractRunningStrategy.setProperty("shouldStopLoop",
                                             "true");
+        helperThread.join();
         // wait for the strategy to stop
         verifyStrategyStopped(strategyURN);
         verifyStrategyStatus(strategyURN,
@@ -2760,6 +2837,7 @@ public abstract class LanguageTestBase
         // make sure it can start again (FAILED->UNSTARTED)
         moduleManager.start(strategyURN);
         verifyStrategyReady(strategyURN);
+        moduleManager.stop(strategyURN);
     }
     /**
      * Tests the ability for a strategy to request and receive {@link org.marketcetera.marketdata.MarketDataRequest.Content#MARKET_STAT} data.
@@ -2884,63 +2962,6 @@ public abstract class LanguageTestBase
     protected int getExpectedCompilationWarningsFor(StrategyCoordinates inStrategy)
     {
         return 0;
-    }
-    /**
-     * Executes a single interrupt test.
-     *
-     * @param inLoopOnStart a <code>boolean</code> value if the start loop should hang
-     * @param inLoopOnStop a <code>boolean</code> value if the stop loop should hang
-     * @throws Exception if an error occurs
-     */
-    protected void doInterruptTest(boolean inLoopOnStart,
-                                   boolean inLoopOnStop)
-        throws Exception
-    {
-        Properties parameters = new Properties();
-        if(inLoopOnStart) {
-            parameters.setProperty("shouldLoopOnStart",
-                                   "true");
-        }
-        if(inLoopOnStop) {
-            parameters.setProperty("shouldLoopOnStop",
-                                   "true");
-        }
-        StrategyCoordinates strategy = getStrategyCompiles();
-        final ModuleURN strategyURN = createModule(StrategyModuleFactory.PROVIDER_URN,
-                                                   null,
-                                                   strategy.getName(),
-                                                   getLanguage(),
-                                                   strategy.getFile(),
-                                                   parameters,
-                                                   null,
-                                                   null);
-        // wait for the appropriate condition before continuing
-        if(inLoopOnStart) {
-            // wait for the property to enter STARTING and the start loop to actually begin
-            MarketDataFeedTestBase.wait(new Callable<Boolean>(){
-                @Override
-                public Boolean call()
-                        throws Exception
-                {
-                    return getStatus(strategyURN).equals(STARTING) &&
-                           AbstractRunningStrategy.getProperty("onStartBegins") != null;
-                }
-            });
-            // strategy is looping in "onStart"
-            verifyStrategyStatus(strategyURN,
-                                 STARTING);
-        } else {
-            verifyStrategyReady(strategyURN);
-            verifyStrategyStatus(strategyURN,
-                                 RUNNING);
-        }
-        // strategy is in STARTING or RUNNING state
-        // try to interrupt
-        StrategyMXBean mxInterface = getMXProxy(strategyURN);
-        mxInterface.interrupt();
-        // status always ends up as STOPPED after interrupt
-        verifyStrategyStatus(strategyURN,
-                             STOPPED);
     }
     /**
      * Executes a single processed market data request test. 
@@ -3558,6 +3579,23 @@ public abstract class LanguageTestBase
             verifyPropertyNull(callbackShouldBeNull);
         }
     }
+    /**
+     * Executes the given block asynchronously.
+     * 
+     * @param inBlock a <code>Callable&lt;T&gt;</code> value
+     * @return a <code>Future&lt;T&gt;</code> value
+     * @throws InterruptedException if an error occurs
+     * @throws ExecutionException if an error occurs
+     */
+    private <T> Future<T> doAsynchronous(Callable<T> inBlock)
+        throws InterruptedException, ExecutionException
+    {
+        return executor.submit(inBlock);
+    }
+    /**
+     * used for asynchronous test blocks
+     */
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     /**
      * Indicates that a <code>JUnit</code> test is designated as a performance test instead of a unit test.
      * 

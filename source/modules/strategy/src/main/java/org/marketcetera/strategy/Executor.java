@@ -43,10 +43,4 @@ interface Executor
      * @return a <code>String</code> value
      */
     String translateMethodName(String inMethodName);
-    /**
-     * Interrupts the strategy being executed.
-     *
-     * <p>Attempts to stop the strategy being executed.
-     */
-    void interrupt();
 }
