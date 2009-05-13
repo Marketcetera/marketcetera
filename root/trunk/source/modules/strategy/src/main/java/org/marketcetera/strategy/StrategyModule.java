@@ -1,7 +1,5 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Status.UNSTARTED;
-
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -46,7 +44,6 @@ import org.marketcetera.module.IllegalRequestParameterValue;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.StopDataFlowException;
@@ -602,16 +599,6 @@ final class StrategyModule
         return strategy.getStatus().toString();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyMXBean#interrupt()
-     */
-    @Override
-    public void interrupt()
-    {
-        if(strategy != null) {
-            strategy.getExecutor().interrupt();
-        }
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServicesProvider#statusChanged(org.marketcetera.strategy.Status, org.marketcetera.strategy.Status)
      */
     @Override
@@ -900,16 +887,6 @@ final class StrategyModule
     protected void preStart()
             throws ModuleException
     {
-        // this is a special case.  if the strategy has already been started and stopped, but the strategy is still running
-        //  either its onStart or onStop loop, both of which are run asynchronously, do not allow a new strategy to start
-        //  with the same URN.  the old one *must* finish first.
-        if(strategy != null) {
-            if(!strategy.getStatus().canChangeStatusTo(UNSTARTED)) {
-                throw new ModuleStateException(new I18NBoundMessage2P(STRATEGY_STILL_RUNNING,
-                                                                      strategy.toString(),
-                                                                      strategy.getStatus()));
-            }
-        }
         assertStateForPreStart();
         // add destination data flows, if specified by the object parameters
         synchronized(dataFlows) {
