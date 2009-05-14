@@ -1,4 +1,6 @@
 #
+# $License$
+#
 # author:anshul@marketcetera.com
 # since 1.0.0
 # version: $Id$
@@ -12,7 +14,8 @@ include_class "org.marketcetera.marketdata.MarketDataRequest"
 #######################################
 class MarketData < Strategy
     SYMBOLS = "AMZN,JAVA" # Depends on MD - can be other symbols
-    MARKET_DATA_PROVIDER = "marketcetera" # Can also be activ, bogus, opentick
+    CONTENT = "LATEST_TICK,TOP_OF_BOOK"
+    MARKET_DATA_PROVIDER = "marketcetera" # Can also be activ, bogus, marketcetera
 
     ##########################################
     # Executed when the strategy is started. #
@@ -21,7 +24,7 @@ class MarketData < Strategy
     #  and other initialization tasks.       #
     ##########################################
     def on_start
-      request = MarketDataRequest.newRequest().withSymbols(SYMBOLS).fromProvider(MARKET_DATA_PROVIDER)
+      request = MarketDataRequest.newRequest().withSymbols(SYMBOLS).fromProvider(MARKET_DATA_PROVIDER).withContent(CONTENT)
       request_market_data(request)
     end
 
