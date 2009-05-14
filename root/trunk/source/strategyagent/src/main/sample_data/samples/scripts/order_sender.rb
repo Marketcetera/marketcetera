@@ -1,4 +1,6 @@
 #
+# $License$
+#
 # author:anshul@marketcetera.com
 # since 1.0.0
 # version: $Id$
@@ -19,7 +21,7 @@ include_class "java.math.BigDecimal"
 ###############################
 class OrderSender < Strategy
     SYMBOLS = "AMZN" # Depends on MD - can be other symbols
-    MARKET_DATA_PROVIDER = "marketcetera" # Can also be activ, bogus, opentick
+    MARKET_DATA_PROVIDER = "marketcetera" # Can be activ, bogus, marketcetera
     ACCOUNT = "accountable"
 
     ##########################################

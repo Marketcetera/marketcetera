@@ -1,4 +1,6 @@
 #
+# $License$
+#
 # author:anshul@marketcetera.com
 # since 1.0.0
 # version: $Id$
