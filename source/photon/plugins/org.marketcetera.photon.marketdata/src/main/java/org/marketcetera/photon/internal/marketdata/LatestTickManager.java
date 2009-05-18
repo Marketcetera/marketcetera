@@ -39,13 +39,13 @@ public class LatestTickManager extends DataFlowManager<MDLatestTickImpl, LatestT
 	 *             if moduleManager is null
 	 */
 	@Inject
-	public LatestTickManager(ModuleManager moduleManager,
-			@MarketDataExecutor Executor marketDataExecutor) {
+	public LatestTickManager(final ModuleManager moduleManager,
+			@MarketDataExecutor final Executor marketDataExecutor) {
 		super(moduleManager, EnumSet.of(Capability.LATEST_TICK), marketDataExecutor);
 	}
 
 	@Override
-	protected MDLatestTickImpl createItem(LatestTickKey key) {
+	protected MDLatestTickImpl createItem(final LatestTickKey key) {
 		assert key != null;
 		MDLatestTickImpl item = new MDLatestTickImpl();
 		item.setSymbol(key.getSymbol());
@@ -53,7 +53,7 @@ public class LatestTickManager extends DataFlowManager<MDLatestTickImpl, LatestT
 	}
 
 	@Override
-	protected void resetItem(LatestTickKey key, MDLatestTickImpl item) {
+	protected void resetItem(final LatestTickKey key, final MDLatestTickImpl item) {
 		assert key != null;
 		assert item != null;
 		synchronized (item) {
@@ -76,7 +76,7 @@ public class LatestTickManager extends DataFlowManager<MDLatestTickImpl, LatestT
 			}
 
 			@Override
-			public void receiveData(Object inData) {
+			public void receiveData(final Object inData) {
 				final MDLatestTickImpl item = getItem(key);
 				synchronized (item) {
 					if (inData instanceof TradeEvent) {

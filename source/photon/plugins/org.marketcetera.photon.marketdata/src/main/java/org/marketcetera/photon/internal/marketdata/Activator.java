@@ -7,28 +7,32 @@ import java.util.concurrent.Executors;
 import org.eclipse.core.runtime.Plugin;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.internal.marketdata.DataFlowManager.MarketDataExecutor;
-import org.marketcetera.photon.marketdata.MarketDataManager;
+import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.module.ModuleSupport;
+import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleContext;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import com.google.inject.Module;
+
+/* $License$ */
 
 /**
- * The activator class controls the plug-in life cycle
+ * This class controls the plug-in life cycle and manages singleton state.
+ * 
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since 1.0.0
  */
+@ClassVersion("$Id$")
 public class Activator extends Plugin {
 
 	/**
-	 * The plug-in ID
-	 */
-	public static final String PLUGIN_ID = "org.marketcetera.photon.marketdata"; //$NON-NLS-1$
-
-	/**
-	 * The shared instance
+	 * The singleton instance.
 	 */
 	private static Activator sInstance;
-	
+
 	/**
 	 * The {@link Executor} used by data flow managers to perform market data related operations
 	 * serially in a background thread.
@@ -41,60 +45,46 @@ public class Activator extends Plugin {
 	private MarketDataManager mMarketDataManager;
 
 	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		sInstance = this;
+	public final void start(final BundleContext context) throws Exception {
+		synchronized (getClass()) {
+			super.start(context);
+			mMarketDataExecutor = Executors.newSingleThreadExecutor();
+			final Module module = new AbstractModule() {
+				@Override
+				protected void configure() {
+					bind(ModuleManager.class).toInstance(ModuleSupport.getModuleManager());
+					bind(Executor.class).annotatedWith(MarketDataExecutor.class).toInstance(
+							mMarketDataExecutor);
+				}
+			};
+			mMarketDataManager = Guice.createInjector(module).getInstance(MarketDataManager.class);
+			// service is unregistered during stop
+			context.registerService(IMarketDataManager.class.getName(), mMarketDataManager, null);
+			sInstance = this;
+		}
 	}
 
 	@Override
-	public void stop(BundleContext context) throws Exception {
-		sInstance = null;
-		mMarketDataManager = null;
-		if (mMarketDataExecutor != null) {
-			mMarketDataExecutor.shutdownNow();
-			mMarketDataExecutor = null;
+	public final void stop(final BundleContext context) throws Exception {
+		synchronized (getClass()) {
+			sInstance = null;
+			mMarketDataManager = null;
+			if (mMarketDataExecutor != null) {
+				mMarketDataExecutor.shutdownNow();
+				mMarketDataExecutor = null;
+			}
+			super.stop(context);
 		}
-		super.stop(context);
 	}
 
 	/**
-	 * Returns the shared instance
+	 * Returns the market data manager for the singleton plug-in.
 	 * 
-	 * @return the shared instance
+	 * @return the market data manager, or null if the plug-in is not active
 	 */
-	public static Activator getDefault() {
-		return sInstance;
-	}
-
-	/**
-	 * Returns the {@link MarketDataManager} singleton for this plug-in. Typically, this should be
-	 * accessed through {@link MarketDataManager#getCurrent()}.
-	 * 
-	 * @return the MarketDataManager singleton for this plug-in
-	 */
-	public synchronized MarketDataManager getMarketDataManager() {
-		if (mMarketDataManager == null) {
-			mMarketDataManager = Guice.createInjector(new Module()).getInstance(
-					MarketDataManager.class);
+	public static MarketDataManager getMarketDataManager() {
+		synchronized (Activator.class) {
+			return sInstance == null ? null : sInstance.mMarketDataManager;
 		}
-		return mMarketDataManager;
 	}
-	
-	private synchronized Executor getMarketDataExecutor() {
-		if (mMarketDataExecutor == null) {
-			mMarketDataExecutor = Executors.newSingleThreadExecutor();
-		}
-		return mMarketDataExecutor;
-	}
-
-	private class Module extends AbstractModule {
-
-		@Override
-		protected void configure() {
-			bind(ModuleManager.class).toInstance(ModuleSupport.getModuleManager());
-			bind(Executor.class).annotatedWith(MarketDataExecutor.class).toInstance(getMarketDataExecutor());
-		}
-
-	}
-
 }

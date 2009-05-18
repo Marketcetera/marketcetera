@@ -56,7 +56,7 @@ import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commons.ui.table.ColumnState;
 import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
-import org.marketcetera.photon.marketdata.MarketDataManager;
+import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
 import org.marketcetera.trade.MSymbol;
@@ -92,7 +92,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 	private TextContributionItem mSymbolEntryText;
 
-	private final MarketDataManager mMarketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+	private final IMarketDataManager mMarketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
 	
 	private TableViewer mViewer;
 

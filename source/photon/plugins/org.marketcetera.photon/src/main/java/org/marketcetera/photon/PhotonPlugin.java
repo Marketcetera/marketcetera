@@ -37,7 +37,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.messagehistory.TradeReportsHistory;
-import org.marketcetera.photon.marketdata.MarketDataManager;
+import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.photon.views.OptionOrderTicketController;
@@ -56,6 +56,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.Strategy;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 import org.rubypeople.rdt.core.RubyCore;
 
 import quickfix.FieldNotFound;
@@ -123,6 +124,8 @@ public class PhotonPlugin
 
     private ServiceRegistration mPositionEngineService;
 
+	private ServiceTracker mMarketDataManagerTracker;
+
 	/**
 	 * The constructor.
 	 */
@@ -157,6 +160,8 @@ public class PhotonPlugin
 		
 		initPhotonController();
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+		mMarketDataManagerTracker = new ServiceTracker(context, IMarketDataManager.class.getName(), null);
+		mMarketDataManagerTracker.open();
 	}
 
 	public void initOrderTickets(){
@@ -185,6 +190,10 @@ public class PhotonPlugin
 		super.stop(context);
 		plugin = null;
 		mPositionEngine = null;
+		if (mMarketDataManagerTracker != null) {
+			mMarketDataManagerTracker.close();
+			mMarketDataManagerTracker = null;
+		}
 	}
 
 	/**
@@ -404,8 +413,8 @@ public class PhotonPlugin
 		return secondaryIDCreator.getNextSecondaryID();
 	}
 
-	public MarketDataManager getMarketDataManager() {
-		return MarketDataManager.getCurrent();
+	public IMarketDataManager getMarketDataManager() {
+		return (IMarketDataManager) mMarketDataManagerTracker.getService();
 	}
 	
 	@Override
@@ -549,8 +558,7 @@ public class PhotonPlugin
 		
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				MarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
-				marketDataManager.reconnectFeed();
+				getMarketDataManager().reconnectFeed();
 				return Status.OK_STATUS;
 			}
 		}.schedule();

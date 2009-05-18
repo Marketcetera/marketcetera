@@ -9,11 +9,11 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.Pair;
-import org.marketcetera.photon.marketdata.OptionContractData;
-import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
-import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.ui.databinding.ObservableEventList;
 import org.marketcetera.photon.ui.databinding.OptionSpecifierMatcherEditor;
+import org.marketcetera.photon.ui.marketdata.OptionContractData;
+import org.marketcetera.photon.ui.marketdata.OptionMarketDataUtils;
+import org.marketcetera.photon.ui.marketdata.OptionMessageHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.util.misc.ClassVersion;
 

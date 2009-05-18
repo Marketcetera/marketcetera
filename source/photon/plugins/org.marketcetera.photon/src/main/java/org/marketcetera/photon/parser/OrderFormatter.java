@@ -4,8 +4,8 @@ import java.text.ParseException;
 
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.ui.databinding.BindingHelper;
+import org.marketcetera.photon.ui.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.PriceObservableValue;

@@ -21,7 +21,7 @@ public class MarketstatKey extends Key<MDMarketstat> {
 	 * @param symbol
 	 *            the symbol
 	 */
-	public MarketstatKey(String symbol) {
+	public MarketstatKey(final String symbol) {
 		super(symbol);
 	}
 }

@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.ui.marketdata;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -9,8 +9,8 @@ import org.eclipse.swt.widgets.Label;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeed.FeedStatusEvent;
-import org.marketcetera.photon.marketdata.MarketDataFeed.IFeedStatusChangedListener;
+import org.marketcetera.photon.marketdata.IFeedStatusChangedListener;
+import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.ui.StatusIndicatorContributionItem;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -28,7 +28,7 @@ import org.marketcetera.util.misc.ClassVersion;
 public class MarketDataStatusIndicator extends StatusIndicatorContributionItem {
 
 	private Label imageLabel;
-	private final MarketDataManager mMarketDataManager = PhotonPlugin
+	private final IMarketDataManager mMarketDataManager = PhotonPlugin
 			.getDefault().getMarketDataManager();
 	private IFeedStatusChangedListener mListener;
 
@@ -43,7 +43,7 @@ public class MarketDataStatusIndicator extends StatusIndicatorContributionItem {
 		mListener = new IFeedStatusChangedListener() {
 
 			@Override
-			public void feedStatusChanged(FeedStatusEvent event) {
+			public void feedStatusChanged(IFeedStatusEvent event) {
 				imageLabel.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {

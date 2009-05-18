@@ -21,7 +21,7 @@ public class LatestTickKey extends Key<MDLatestTick> {
 	 * @param symbol
 	 *            the symbol
 	 */
-	public LatestTickKey(String symbol) {
+	public LatestTickKey(final String symbol) {
 		super(symbol);
 	}
 }

@@ -9,7 +9,7 @@ import junit.framework.Test;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.photon.marketdata.OptionContractData;
+import org.marketcetera.photon.ui.marketdata.OptionContractData;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.MSymbol;
 

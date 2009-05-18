@@ -40,13 +40,13 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 	 *             if moduleManager is null
 	 */
 	@Inject
-	public MarketstatManager(ModuleManager moduleManager,
-			@MarketDataExecutor Executor marketDataExecutor) {
+	public MarketstatManager(final ModuleManager moduleManager,
+			@MarketDataExecutor final Executor marketDataExecutor) {
 		super(moduleManager, EnumSet.of(Capability.MARKET_STAT), marketDataExecutor);
 	}
 
 	@Override
-	protected MDMarketstatImpl createItem(MarketstatKey key) {
+	protected MDMarketstatImpl createItem(final MarketstatKey key) {
 		assert key != null;
 		MDMarketstatImpl item = new MDMarketstatImpl();
 		item.setSymbol(key.getSymbol());
@@ -54,7 +54,7 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 	}
 
 	@Override
-	protected void resetItem(MarketstatKey key, MDMarketstatImpl item) {
+	protected void resetItem(final MarketstatKey key, final MDMarketstatImpl item) {
 		assert key != null;
 		assert item != null;
 		synchronized (item) {
@@ -79,8 +79,8 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 			}
 
 			@Override
-			public void receiveData(Object inData) {
-				final MDMarketstatImpl item = getItem(key);
+			public void receiveData(final Object inData) {
+				MDMarketstatImpl item = getItem(key);
 				synchronized (item) {
 					if (inData instanceof MarketstatEvent) {
 						MarketstatEvent data = (MarketstatEvent) inData;

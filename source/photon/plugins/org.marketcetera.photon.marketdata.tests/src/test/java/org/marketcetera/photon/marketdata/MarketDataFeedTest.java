@@ -21,8 +21,8 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ProviderNotFoundException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.photon.internal.marketdata.MarketDataFeed;
 import org.marketcetera.photon.internal.marketdata.Messages;
-import org.marketcetera.photon.marketdata.MarketDataFeed.FeedStatusEvent;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.except.I18NException;
 
@@ -137,7 +137,7 @@ public class MarketDataFeedTest {
 	@Test
 	public void testFeedCapabilities() throws Exception {
 		ModuleURN providerURN = new ModuleURN("metc:mdata:mock");
-		MarketDataFeed fixture = new MarketDataFeed(providerURN);
+		IMarketDataFeed fixture = new MarketDataFeed(providerURN);
 		assertThat(fixture.getCapabilities(), is(MockMarketDataModuleFactory.sInstance.getCapabilities()));
 	}
 	
@@ -146,10 +146,10 @@ public class MarketDataFeedTest {
 		ModuleURN providerURN = new ModuleURN("metc:mdata:mock");
 		final MarketDataFeed fixture = new MarketDataFeed(providerURN);
 		final Exception[] result = new Exception[1];
-		fixture.addFeedStatusChangedListener(new MarketDataFeed.IFeedStatusChangedListener() {
+		fixture.addFeedStatusChangedListener(new IFeedStatusChangedListener() {
 		
 			@Override
-			public void feedStatusChanged(FeedStatusEvent event) {
+			public void feedStatusChanged(IFeedStatusEvent event) {
 				try {
 					assertTrue("Wrong event source", event.getSource() == fixture);
 					assertEquals(FeedStatus.OFFLINE, event.getOldStatus());

@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.ui.marketdata;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -115,7 +115,7 @@ public class OptionMessageHolder
 	 * Compares this OptionMessageHolder to the specified OptionMessageHolder,
 	 * based on the values in the "key".
 	 * 
-	 * @see OptionPairKey#compareTo(org.marketcetera.photon.marketdata.OptionMessageHolder.OptionPairKey)
+	 * @see OptionPairKey#compareTo(org.marketcetera.photon.ui.marketdata.OptionMessageHolder.OptionPairKey)
 	 */
 	public int compareTo(OptionMessageHolder o) {
 		if (o == null){
