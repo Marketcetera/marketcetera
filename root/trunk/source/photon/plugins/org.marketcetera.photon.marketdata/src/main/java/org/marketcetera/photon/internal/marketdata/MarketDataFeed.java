@@ -1,10 +1,9 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.internal.marketdata;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.EventListener;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +27,9 @@ import org.marketcetera.module.MXBeanOperationException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.URNUtils;
-import org.marketcetera.photon.internal.marketdata.Messages;
+import org.marketcetera.photon.marketdata.IFeedStatusChangedListener;
+import org.marketcetera.photon.marketdata.IMarketDataFeed;
+import org.marketcetera.photon.marketdata.IFeedStatusChangedListener.IFeedStatusEvent;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
@@ -36,7 +37,12 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Market Data Feed abstraction for Photon.
+ * This is the internal implementation of {@link IMarketDataFeed}. It is initialized with a
+ * ModuleURN for a market data module provider and abstracts interactions with the underlying module
+ * framework.
+ * <p>
+ * Each instance supports the registration of {@code IFeedStatusChangedListener} objects. This is
+ * used to notify {@code MarketDataManager} when the status of a feed changes.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -45,7 +51,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public final class MarketDataFeed implements IMarketDataFeed {
 
-	static final String MARKET_DATA_PROVIDER_TYPE = "mdata"; //$NON-NLS-1$
+	public static final String MARKET_DATA_PROVIDER_TYPE = "mdata"; //$NON-NLS-1$
 	private static final String FEED_STATUS_ATTRIBUTE = "FeedStatus"; //$NON-NLS-1$
 
 	private static final FeedStatusFilter sFeedStatusFilter = new FeedStatusFilter();
@@ -60,10 +66,9 @@ public final class MarketDataFeed implements IMarketDataFeed {
 	private final String mDescription;
 
 	/**
-	 * Contructor. An exception will be thrown if the supplied URN is invalid or
-	 * does not correspond to a valid market data feed provider. Valid providers
-	 * must have provider type "mdata" and be singletons. The singleton instance
-	 * must have an MXBean interface that implements
+	 * Contructor. An exception will be thrown if the supplied URN is invalid or does not correspond
+	 * to a valid market data feed provider. Valid providers must have provider type "mdata" and be
+	 * singletons. The singleton instance must have an MXBean interface that implements
 	 * {@link AbstractMarketDataModuleMXBean} and {@link NotificationEmitter}.
 	 * 
 	 * @param providerURN
@@ -71,34 +76,31 @@ public final class MarketDataFeed implements IMarketDataFeed {
 	 * @throws I18NException
 	 *             if the feed provider is invalid
 	 */
-	public MarketDataFeed(ModuleURN providerURN) throws I18NException {
+	public MarketDataFeed(final ModuleURN providerURN) throws I18NException {
 		try {
 			URNUtils.validateProviderURN(providerURN);
 			if (!providerURN.providerType().equals(MARKET_DATA_PROVIDER_TYPE))
-				throw new I18NException(
-						Messages.MARKET_DATA_FEED_INVALID_PROVIDER_TYPE);
-			mDescription = mModuleManager.getProviderInfo(providerURN)
-					.getDescription();
-			List<ModuleURN> instances = mModuleManager
-					.getModuleInstances(providerURN);
+				throw new I18NException(Messages.MARKET_DATA_FEED_INVALID_PROVIDER_TYPE);
+			mDescription = mModuleManager.getProviderInfo(providerURN).getDescription();
+			List<ModuleURN> instances = mModuleManager.getModuleInstances(providerURN);
 			if (instances.size() != 1)
 				throw new I18NException(Messages.MARKET_DATA_FEED_NOT_SINGLETON);
 			mInstanceURN = instances.get(0);
 			if (!mModuleManager.getModuleInfo(mInstanceURN).isEmitter())
 				throw new I18NException(Messages.MARKET_DATA_FEED_NOT_EMITTER);
 			ObjectName objectName = mInstanceURN.toObjectName();
-			if (!mMBeanServer.isRegistered(objectName) || !mMBeanServer.isInstanceOf(objectName, AbstractMarketDataModuleMXBean.class.getName()))
+			if (!mMBeanServer.isRegistered(objectName)
+					|| !mMBeanServer.isInstanceOf(objectName, AbstractMarketDataModuleMXBean.class
+							.getName()))
 				throw new I18NException(Messages.MARKET_DATA_FEED_INVALID_INTERFACE);
 			mMBeanProxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
 					AbstractMarketDataModuleMXBean.class, true);
 			((NotificationEmitter) mMBeanProxy).addNotificationListener(
 					mFeedStatusNotificationListener, sFeedStatusFilter, null);
 		} catch (MXBeanOperationException e) {
-			throw new I18NException(e,
-					Messages.MARKET_DATA_FEED_INVALID_OBJECT_NAME);
+			throw new I18NException(e, Messages.MARKET_DATA_FEED_INVALID_OBJECT_NAME);
 		} catch (UndeclaredThrowableException e) {
-			throw new I18NException(e.getCause(),
-					Messages.MARKET_DATA_FEED_INVALID_INTERFACE);
+			throw new I18NException(e.getCause(), Messages.MARKET_DATA_FEED_INVALID_INTERFACE);
 		} catch (IOException e) {
 			throw new I18NException(e, Messages.MARKET_DATA_FEED_INVALID_INTERFACE);
 		} catch (InstanceNotFoundException e) {
@@ -111,11 +113,7 @@ public final class MarketDataFeed implements IMarketDataFeed {
 		return mInstanceURN;
 	}
 
-	/**
-	 * Returns the feed's unique identifier.
-	 * 
-	 * @return unique identifier for the feed
-	 */
+	@Override
 	public String getId() {
 		return mInstanceURN.parent().toString();
 	}
@@ -125,18 +123,13 @@ public final class MarketDataFeed implements IMarketDataFeed {
 		return mDescription;
 	}
 
-	/**
-	 * Returns the feed status.
-	 * 
-	 * @return the feed status
-	 */
-	FeedStatus getStatus() {
+	@Override
+	public FeedStatus getStatus() {
 		try {
 			return FeedStatus.valueOf(mMBeanProxy.getFeedStatus());
 		} catch (Exception e) {
-			Messages.MARKET_DATA_FEED_INVALID_STATUS_NOTIFICATION.warn(
-					MarketDataFeed.this, e, Arrays
-							.toString(FeedStatus.values()));
+			Messages.MARKET_DATA_FEED_INVALID_STATUS_NOTIFICATION.warn(MarketDataFeed.this, e,
+					Arrays.toString(FeedStatus.values()));
 			return FeedStatus.UNKNOWN;
 		}
 	}
@@ -159,7 +152,7 @@ public final class MarketDataFeed implements IMarketDataFeed {
 	 * @throws UnsupportedOperationException
 	 *             if the feed does not support this behavior
 	 */
-	void reconnect() {
+	public void reconnect() {
 		mMBeanProxy.reconnect();
 	}
 
@@ -169,7 +162,7 @@ public final class MarketDataFeed implements IMarketDataFeed {
 	 * @param listener
 	 *            to be notified when the feed status changes
 	 */
-	void addFeedStatusChangedListener(IFeedStatusChangedListener listener) {
+	public void addFeedStatusChangedListener(final IFeedStatusChangedListener listener) {
 		mStatusListeners.add(listener);
 	}
 
@@ -179,11 +172,11 @@ public final class MarketDataFeed implements IMarketDataFeed {
 	 * @param listener
 	 *            listener to remove
 	 */
-	void removeFeedStatusChangedListener(IFeedStatusChangedListener listener) {
+	public void removeFeedStatusChangedListener(final IFeedStatusChangedListener listener) {
 		mStatusListeners.remove(listener);
 	}
 
-	private void notifyListeners(FeedStatus oldValue, FeedStatus newValue) {
+	private void notifyListeners(final FeedStatus oldValue, final FeedStatus newValue) {
 		FeedStatusEvent event = createFeedStatusEvent(oldValue, newValue);
 		Object[] changeListeners = mStatusListeners.getListeners();
 		for (Object object : changeListeners) {
@@ -192,106 +185,81 @@ public final class MarketDataFeed implements IMarketDataFeed {
 	}
 
 	/**
-	 * This method is provided with package scope for {@link MarketDataManager} to 
-	 * generate notifications when the active feed changes.  It should only be used
-	 * for that purpose.
+	 * This method is provided for {@link MarketDataManager} to generate notifications when the
+	 * active feed changes. It should only be used for that purpose.
 	 * 
-	 * @param oldValue old status value
-	 * @param newValue new status value
+	 * @param oldValue
+	 *            old status value
+	 * @param newValue
+	 *            new status value
 	 * 
 	 * @return a {@link FeedStatusEvent} with the given parameters
 	 */
-	FeedStatusEvent createFeedStatusEvent(FeedStatus oldValue,
-			FeedStatus newValue) {
-		return new FeedStatusEvent(oldValue, newValue);
+	public FeedStatusEvent createFeedStatusEvent(final FeedStatus oldValue,
+			final FeedStatus newValue) {
+		return new FeedStatusEvent(this, oldValue, newValue);
 	}
 
-	private final class FeedStatusNotificationListener implements
-			NotificationListener {
+	/**
+	 * Handles JMX notifications, assuming they have been filtered by {@code FeedStatusFilter}.
+	 */
+	@ClassVersion("$Id$")
+	private final class FeedStatusNotificationListener implements NotificationListener {
 
 		@Override
-		public void handleNotification(Notification notification,
-				Object handback) {
+		public void handleNotification(final Notification notification, final Object handback) {
 			AttributeChangeNotification change = (AttributeChangeNotification) notification;
 			try {
-				notifyListeners(FeedStatus.valueOf(change.getOldValue()
-						.toString()), FeedStatus.valueOf(change.getNewValue()
-						.toString()));
+				notifyListeners(FeedStatus.valueOf(change.getOldValue().toString()), FeedStatus
+						.valueOf(change.getNewValue().toString()));
 			} catch (Exception e) {
-				Messages.MARKET_DATA_FEED_INVALID_STATUS_NOTIFICATION.warn(
-						MarketDataFeed.this, e, Arrays.toString(FeedStatus
-								.values()));
+				Messages.MARKET_DATA_FEED_INVALID_STATUS_NOTIFICATION.warn(MarketDataFeed.this, e,
+						Arrays.toString(FeedStatus.values()));
 			}
 		}
 
 	}
 
+	/**
+	 * Filters notifications, accepting only "FeedStatus" attribute change notifications.
+	 */
+	@ClassVersion("$Id$")
 	private static final class FeedStatusFilter implements NotificationFilter {
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public boolean isNotificationEnabled(Notification notification) {
+		public boolean isNotificationEnabled(final Notification notification) {
 			return (notification instanceof AttributeChangeNotification)
-					&& ((AttributeChangeNotification) notification)
-							.getAttributeName().equals(FEED_STATUS_ATTRIBUTE);
+					&& ((AttributeChangeNotification) notification).getAttributeName().equals(
+							FEED_STATUS_ATTRIBUTE);
 		}
 	};
 
 	/**
 	 * Event object for feed status changes.
-	 * 
-	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
-	 * @since 1.0.0
 	 */
-	@ClassVersion("$Id$")//$NON-NLS-1$
-	public final class FeedStatusEvent extends EventObject {
+	@ClassVersion("$Id$")
+	public static final class FeedStatusEvent extends EventObject implements IFeedStatusEvent {
 		private static final long serialVersionUID = 1L;
 		private final FeedStatus mOldStatus;
 		private final FeedStatus mNewStatus;
 
-		private FeedStatusEvent(FeedStatus oldStatus, FeedStatus newStatus) {
-			super(MarketDataFeed.this);
+		private FeedStatusEvent(final Object source, final FeedStatus oldStatus,
+				final FeedStatus newStatus) {
+			super(source);
 			mOldStatus = oldStatus;
 			mNewStatus = newStatus;
 		}
 
-		/**
-		 * Returns the old status, before the change that triggered this event.
-		 * 
-		 * @return the old status
-		 */
+		@Override
 		public FeedStatus getOldStatus() {
 			return mOldStatus;
 		}
 
-		/**
-		 * Returns the new status, i.e. the feed's current status.
-		 * 
-		 * @return the new status
-		 */
+		@Override
 		public FeedStatus getNewStatus() {
 			return mNewStatus;
 		}
-	}
-
-	/**
-	 * Interface that feed status listeners must implement.
-	 * 
-	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
-	 * @since 1.0.0
-	 */
-	@ClassVersion("$Id$")
-	public static interface IFeedStatusChangedListener extends EventListener {
-
-		/**
-		 * This callback happens when the feed status changes.
-		 * 
-		 * @param event
-		 *            event describing feed status change
-		 */
-		void feedStatusChanged(FeedStatusEvent event);
 	}
 }

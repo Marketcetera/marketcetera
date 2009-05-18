@@ -21,7 +21,6 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.marketdata.IMarketDataFeed;
-import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory;
 import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory.MockMarketDataModule;
 import org.marketcetera.photon.model.marketdata.MDItem;
@@ -110,7 +109,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 
 	@Before
 	public void before() throws Exception {
-		MarketDataManager.getCurrent().reconnectFeed(
+		Activator.getMarketDataManager().reconnectFeed(
 				MockMarketDataModuleFactory.PROVIDER_URN.toString());
 		mMockMarketDataModule = MockMarketDataModuleFactory.sInstance;
 		mMockMarketDataModule.setStatus("AVAILABLE");

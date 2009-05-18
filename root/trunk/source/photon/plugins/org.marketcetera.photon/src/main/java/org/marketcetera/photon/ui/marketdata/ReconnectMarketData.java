@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.ui.marketdata;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

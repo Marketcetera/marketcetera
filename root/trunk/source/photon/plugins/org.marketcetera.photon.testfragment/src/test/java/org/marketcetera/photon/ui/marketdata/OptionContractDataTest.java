@@ -1,10 +1,11 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.ui.marketdata;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 
 import junit.framework.TestCase;
 
+import org.marketcetera.photon.ui.marketdata.OptionContractData;
 import org.marketcetera.trade.MSymbol;
 
 import quickfix.FieldNotFound;

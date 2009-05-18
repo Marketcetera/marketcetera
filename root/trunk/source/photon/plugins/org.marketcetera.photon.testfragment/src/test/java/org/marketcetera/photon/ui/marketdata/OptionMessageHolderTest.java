@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.ui.marketdata;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -7,7 +7,8 @@ import java.text.ParseException;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.AccessViolator;
-import org.marketcetera.photon.marketdata.OptionMessageHolder.OptionPairKey;
+import org.marketcetera.photon.ui.marketdata.OptionMessageHolder;
+import org.marketcetera.photon.ui.marketdata.OptionMessageHolder.OptionPairKey;
 import org.marketcetera.trade.MSymbol;
 
 import quickfix.FieldMap;

@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.ui.marketdata;
 
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;

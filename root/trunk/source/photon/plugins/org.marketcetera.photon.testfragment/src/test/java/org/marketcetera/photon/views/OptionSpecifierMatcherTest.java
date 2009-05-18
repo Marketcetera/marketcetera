@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 import junit.framework.TestCase;
 
-import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.ui.databinding.OptionSpecifierMatcherEditor;
+import org.marketcetera.photon.ui.marketdata.OptionContractData;
 import org.marketcetera.trade.MSymbol;
 
 import quickfix.field.PutOrCall;

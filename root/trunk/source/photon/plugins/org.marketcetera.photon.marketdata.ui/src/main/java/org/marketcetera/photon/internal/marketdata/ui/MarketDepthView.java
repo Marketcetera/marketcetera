@@ -32,7 +32,6 @@ import org.marketcetera.photon.commons.ui.table.TableConfiguration;
 import org.marketcetera.photon.commons.ui.table.TableSupport;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
-import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDQuote;
@@ -87,7 +86,7 @@ public class MarketDepthView extends ViewPart {
 	 * Constructor.
 	 */
 	public MarketDepthView() {
-		mMarketData = MarketDataManager.getCurrent().getMarketData();
+		mMarketData = Activator.getMarketDataManager().getMarketData();
 	}
 
 	@Override

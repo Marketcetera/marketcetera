@@ -15,7 +15,7 @@ import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.services.IServiceLocator;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.photon.marketdata.MarketDataManager;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.ui.MarketDataUI;
 import org.marketcetera.photon.ui.ISymbolProvider;
 import org.marketcetera.trade.MSymbol;
@@ -44,7 +44,7 @@ public class MarketDepthMenu extends CompoundContributionItem {
 			Object selected = structured.getFirstElement();
 			if (selected instanceof ISymbolProvider) {
 				MSymbol symbol = ((ISymbolProvider) selected).getSymbol();
-				Set<Capability> capabilities = MarketDataManager.getCurrent()
+				Set<Capability> capabilities = PhotonPlugin.getDefault().getMarketDataManager()
 						.getActiveFeedCapabilities();
 				List<IContributionItem> items = new ArrayList<IContributionItem>(3);
 				if (capabilities.contains(Capability.LEVEL_2)) {

@@ -14,8 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.marketdata.MarketDataFeed;
-import org.marketcetera.photon.marketdata.MarketDataManager;
+import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.photon.module.ui.ModuleAttributePreferencePage;
 import org.marketcetera.util.misc.ClassVersion;
@@ -37,18 +36,18 @@ public class FeedPreferencePageInitializer implements IStartup {
 
 	@Override
 	public void earlyStartup() {
-		List<MarketDataFeed> providers = new ArrayList<MarketDataFeed>(
-				MarketDataManager.getCurrent().getProviders());
-		Collections.sort(providers, new Comparator<MarketDataFeed>() {
+		List<IMarketDataFeed> providers = new ArrayList<IMarketDataFeed>(
+				Activator.getMarketDataManager().getProviders());
+		Collections.sort(providers, new Comparator<IMarketDataFeed>() {
 			@Override
-			public int compare(MarketDataFeed o1, MarketDataFeed o2) {
+			public int compare(IMarketDataFeed o1, IMarketDataFeed o2) {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
 		PreferenceManager preferenceManager = PlatformUI.getWorkbench()
 				.getPreferenceManager();
 		IPreferenceNode rootNode = preferenceManager.find(ROOT_NODE);
-		for (MarketDataFeed provider : providers) {
+		for (IMarketDataFeed provider : providers) {
 			final ModuleURN urn = provider.getURN();
 			try {
 				MBeanAttributeInfo[] attributes = ModuleSupport

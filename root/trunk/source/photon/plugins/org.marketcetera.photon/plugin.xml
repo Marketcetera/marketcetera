@@ -197,7 +197,7 @@
       </command>
       <command
             categoryId="org.marketcetera.photon.commands"
-            defaultHandler="org.marketcetera.photon.marketdata.ReconnectMarketData"
+            defaultHandler="org.marketcetera.photon.ui.marketdata.ReconnectMarketData"
             description="%command.reconnectMarketData.description"
             id="org.marketcetera.photon.reconnectMarketData"
             name="%command.reconnectMarketData.name">
@@ -330,7 +330,7 @@
 	            </class>
              </control>
              <control>
-                <class class="org.marketcetera.photon.marketdata.MarketDataStatusIndicator">
+                <class class="org.marketcetera.photon.ui.marketdata.MarketDataStatusIndicator">
                    <parameter name="overlay" value="icons/overlay/m-template.gif"/>
                 </class>
              </control>

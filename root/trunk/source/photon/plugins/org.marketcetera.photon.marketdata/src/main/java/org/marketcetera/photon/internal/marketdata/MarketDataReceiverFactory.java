@@ -17,15 +17,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
-public class MarketDataReceiverFactory extends
-		ModuleFactory {
+@ClassVersion("$Id$")
+public class MarketDataReceiverFactory extends ModuleFactory {
 
 	/**
 	 * Provider URN for this factory.
 	 */
-	public static final ModuleURN PROVIDER_URN = new ModuleURN(
-			"metc:mdatasink:photon"); //$NON-NLS-1$
+	public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdatasink:photon"); //$NON-NLS-1$
 
 	private static final AtomicLong counter = new AtomicLong();
 
@@ -33,11 +31,12 @@ public class MarketDataReceiverFactory extends
 	 * Constructor.
 	 */
 	public MarketDataReceiverFactory() {
-		super(PROVIDER_URN, Messages.MARKET_DATA_RECEIVER_FACTORY_DESCRIPTION, true, false, IMarketDataSubscriber.class);
+		super(PROVIDER_URN, Messages.MARKET_DATA_RECEIVER_FACTORY_DESCRIPTION, true, false,
+				IMarketDataSubscriber.class);
 	}
 
 	@Override
-	public Module create(Object... inParameters) throws ModuleCreationException {
+	public Module create(final Object... inParameters) throws ModuleCreationException {
 		ModuleURN urn = new ModuleURN(PROVIDER_URN, "item" + counter.incrementAndGet()); //$NON-NLS-1$
 		IMarketDataSubscriber subscriber = (IMarketDataSubscriber) inParameters[0];
 		return new MarketDataReceiverModule(urn, subscriber);

@@ -40,13 +40,13 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 	 *             if moduleManager is null
 	 */
 	@Inject
-	public TopOfBookManager(ModuleManager moduleManager,
-			@MarketDataExecutor Executor marketDataExecutor) {
+	public TopOfBookManager(final ModuleManager moduleManager,
+			@MarketDataExecutor final Executor marketDataExecutor) {
 		super(moduleManager, EnumSet.of(Capability.TOP_OF_BOOK), marketDataExecutor);
 	}
 
 	@Override
-	protected MDTopOfBookImpl createItem(TopOfBookKey key) {
+	protected MDTopOfBookImpl createItem(final TopOfBookKey key) {
 		assert key != null;
 		MDTopOfBookImpl item = new MDTopOfBookImpl();
 		item.setSymbol(key.getSymbol());
@@ -54,7 +54,7 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 	}
 
 	@Override
-	protected void resetItem(TopOfBookKey key, MDTopOfBookImpl item) {
+	protected void resetItem(final TopOfBookKey key, final MDTopOfBookImpl item) {
 		assert key != null;
 		assert item != null;
 		synchronized (item) {
@@ -79,7 +79,7 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 			}
 
 			@Override
-			public void receiveData(Object inData) {
+			public void receiveData(final Object inData) {
 				final MDTopOfBookImpl item = getItem(key);
 				synchronized (item) {
 					if (inData instanceof SymbolExchangeEvent

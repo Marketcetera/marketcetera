@@ -2,7 +2,7 @@ package org.marketcetera.photon.ui.databinding;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.photon.marketdata.OptionContractData;
+import org.marketcetera.photon.ui.marketdata.OptionContractData;
 
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;

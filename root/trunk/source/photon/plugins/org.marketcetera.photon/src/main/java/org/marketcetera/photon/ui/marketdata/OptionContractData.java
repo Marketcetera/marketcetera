@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.ui.marketdata;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
