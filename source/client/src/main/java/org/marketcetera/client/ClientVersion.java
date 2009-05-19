@@ -35,7 +35,7 @@ public final class ClientVersion
      * The client's application ID: the version.
      */
 
-    public static final String APP_ID_VERSION="1.5.0"; //$NON-NLS-1$
+    public static final String APP_ID_VERSION="1.6.0"; //$NON-NLS-1$
 
     /**
      * The client's application ID: the ID.
