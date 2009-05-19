@@ -31,6 +31,7 @@ import java.util.EnumSet;
  * connects to it.</td></tr>
  * <tr><th>Stop Operation</th><td>Stops the embedded broker.</td></tr>
  * <tr><th>Management Interface</th><td>{@link ReceiverModuleMXBean}</td></tr>
+ * <tr><th>Factory</th><td>{@link ReceiverFactory}</td></tr>
  * </table>
  * <br/>
  * <b>Remoting Mechanism</b>

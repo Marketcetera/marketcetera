@@ -15,6 +15,18 @@ import org.marketcetera.module.ModuleCreationException;
  * not {@link ClientManager#isInitialized()  initialized},
  * the factory will initialize the Client before
  * creating the module instance.
+ * <p>
+ * The factory has the following characteristics.
+ * <table>
+ * <tr><th>Provider URN:</th><td><code>metc:server:system</code></td></tr>
+ * <tr><th>Cardinality:</th><td>Singleton</td></tr>
+ * <tr><th>InstanceURN:</th><td><code>metc:server:system:single</code></td></tr>
+ * <tr><th>Auto-Instantiated:</th><td>No</td></tr>
+ * <tr><th>Auto-Started:</th><td>Yes</td></tr>
+ * <tr><th>Instantiation Arguments:</th><td>None</td></tr>
+ * <tr><th>Management Interface</th><td>{@link ClientModuleFactoryMXBean}</td></tr>
+ * <tr><th>Module Type</th><td>{@link ClientModule}</td></tr>
+ * </table>
  *
  * @author anshul@marketcetera.com
  * @version $Id$

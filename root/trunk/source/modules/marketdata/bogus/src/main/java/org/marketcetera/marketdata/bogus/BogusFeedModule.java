@@ -8,6 +8,12 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * StrategyAgent module for {@link BogusFeed}.
+ * <p>
+ * Module Features
+ * <table>
+ * <tr><th>Factory:</th><td>{@link BogusFeedModuleFactory}</td></tr>
+ * <tr><th colspan="2">See {@link AbstractMarketDataModule parent} for module features.</th></tr>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

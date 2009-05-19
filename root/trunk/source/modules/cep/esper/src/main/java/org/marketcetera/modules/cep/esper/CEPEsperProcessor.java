@@ -45,6 +45,17 @@ import java.util.*;
  * query statements after it receives the first {@link TimestampCarrier}.
  * Any non-<code>TimestampCarrier</code> received prior to that are
  * reported and ignored.
+ * <p>
+ * Module Features
+ * <table>
+ * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
+ * <tr><th>DataFlow Request Parameters</th><td><code>String</code>: CEP query; <code>String[]</code>: Multiple CEP queries</td></tr>
+ * <tr><th>Stops data flows</th><td>If it encounters an error when creating statements in external time mode.</td></tr>
+ * <tr><th>Start Operation</th><td>Initializes Esper Runtime</td></tr>
+ * <tr><th>Stop Operation</th><td>Destroys Esper Runtime</td></tr>
+ * <tr><th>Management Interface</th><td>{@link CEPEsperProcessorMXBean}</td></tr>
+ * <tr><th>Factory</th><td>{@link CEPEsperFactory}</td></tr>
+ * </table>
  *
  * @author anshul@marketcetera.com
  * @author toli@marketcetera.com

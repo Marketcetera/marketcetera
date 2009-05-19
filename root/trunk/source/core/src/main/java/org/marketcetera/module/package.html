@@ -396,4 +396,58 @@
     The Sink module also exports a management interface via
     {@link org.marketcetera.module.SinkModuleMXBean}.
 </p>
+<h2>Documenting Factories and Modules</h2>
+<p>
+    It's recommended that the javadocs for the Module Factories and Modules
+    include the following pieces of information.
+</p>
+<h3>Module Factory</h3>
+<p>
+    See documentation of {@link org.marketcetera.module.ModuleFactory}
+    sub-classes for examples.
+</p>
+<table>
+  <tr><th>Provider URN:</th><td>The provider URN</td></tr>
+  <tr><th>Cardinality:</th><td>If the factory creates a singleton module
+      instance or if it can create module instances.</td></tr>
+  <tr><th>InstanceURN:</th><td>The singleton module instance URN, if the
+      factory only creates a single module instance.</td></tr>
+  <tr><th>Auto-Instantiated:</th><td>If the module instances can be
+      {@link org.marketcetera.module.ModuleFactory#isAutoInstantiate() auto-instantiated}
+      by the factory.</td></tr>
+  <tr><th>Auto-Started:</th><td>If the created module instance can be
+      {@link org.marketcetera.module.Module#isAutoStart() auto-started}.</td></tr>
+  <tr><th>Instantiation Arguments:</th><td>Description of arguments needed
+      when requesting the factory to create new instances.</td></tr>
+  <tr><th>Management Interface</th><td>MXBean Management interface exposed
+      by the module.</td></tr>
+  <tr><th>MX Notifications</th><td>Description of JMX notifications emitted
+        by the module factory.</td></tr>
+  <tr><th>Module Type</th><td>The type / class of modules created by this
+      factory.</td></tr>
+</table>
+<h3>Module</h3>
+<p>
+    See documentation of {@link org.marketcetera.module.Module} 
+    sub-classes for examples.
+</p>
+<table>
+  <tr><th>Capabilities</th><td>If the module can emit, receive data and if it
+      can request data flows.</td></tr>
+  <tr><th>DataFlow Request Parameters</th><td>The type of parameters that
+      should be included in a {@link org.marketcetera.module.DataRequest data flow request}
+      when requesting module to emit data.</td></tr>
+  <tr><th>Stops data flows</th><td>If the module stops data flows when emitting
+      or receiving data.</td></tr>
+  <tr><th>Start Operation</th><td>Description of any significant functions
+      performed when the module starts.</td></tr>
+  <tr><th>Stop Operation</th><td>Description of any significant functions
+      performed when the module stops.</td></tr>
+  <tr><th>Management Interface</th><td>MXBean Management interface exposed by
+      the module.</td></tr>
+  <tr><th>MX Notifications</th><td>Description of JMX notifications emitted
+      by the module.</td></tr>
+  <tr><th>Factory</th><td>The factory class that creates this module
+      instance.</td></tr>
+</table>
 </body>

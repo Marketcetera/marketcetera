@@ -13,6 +13,16 @@ import org.marketcetera.module.ModuleURN;
  *
  * The instances are auto-created when they are referred to in a data flow
  * request and they are auto-started.
+ * <p>
+ * The factory has the following characteristics.
+ * <table>
+ * <tr><th>Provider URN:</th><td><code>metc:cep:esper</code></td></tr>
+ * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
+ * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
+ * <tr><th>Auto-Started:</th><td>Yes</td></tr>
+ * <tr><th>Instantiation Arguments:</th><td>{@link ModuleURN}: module instance URN</td></tr>
+ * <tr><th>Module Type:</th><td>{@link CEPEsperProcessor}</td></tr>
+ * </table>
  *
  * @see CEPEsperProcessor
  * @author anshul@marketcetera.com

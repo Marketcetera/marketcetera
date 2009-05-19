@@ -37,7 +37,6 @@ public class CEPDataTypes {
     public static final String TIME_CARRIER = "timeCarrier";    //$NON-NLS-1$
     public static final String MARKET_STAT = "marketstat";    //$NON-NLS-1$
     public static final String LOG = "log";    //$NON-NLS-1$
-    public static final String TIME         = "time";           //$NON-NLS-1$
 
     public static List<Pair<String, Class<?>>> REQUEST_PRECANNED_TYPES = Collections.unmodifiableList(Arrays.asList(
                     new Pair<String, Class<?>>(CEPDataTypes.MARKET_DATA, SymbolExchangeEvent.class),

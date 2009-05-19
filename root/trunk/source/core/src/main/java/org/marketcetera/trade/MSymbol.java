@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlAccessType;
  * @author Graham Miller
  * @author anshul@marketcetera.com
  * @version $Id$
- * @Since 0.5.0
+ * @since 0.5.0
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")

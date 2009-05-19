@@ -69,6 +69,18 @@ import quickfix.Message;
 
 /**
  * Strategy Agent implementation for the <code>Strategy</code> module.
+ * <p>
+ * Module Features
+ * <table>
+ * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver, Data Flow Requester</td></tr>
+ * <tr><th>Stops data flows</th><td>No</td></tr>
+ * <tr><th>Start Operation</th><td>Plumbs all the data flows, compiles the strategy.</td></tr>
+ * <tr><th>Stop Operation</th><td>Stops the strategy, unplumbs all the dataflows</td></tr>
+ * <tr><th>Management Interface</th><td>{@link StrategyMXBean}</td></tr>
+ * <tr><th>MX Notification</th><td>{@link AttributeChangeNotification}
+ * whenever {@link #getStatus()} changes. </td></tr>
+ * <tr><th>Factory</th><td>{@link StrategyModuleFactory}</td></tr>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -670,7 +682,7 @@ final class StrategyModule
     /**
      * Logs the given event. 
      *
-     * @param inMessage a <code>LogEvent</code> value
+     * @param inEvent a <code>LogEvent</code> value
      * @param inStrategy a <code>Strategy</code> value
      */
     static void log(LogEvent inEvent,

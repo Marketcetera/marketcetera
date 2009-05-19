@@ -105,7 +105,7 @@ public abstract class ModuleFactory {
      * attribute the value of which is the module instance URN as
      * requested in the original data flow request.
      * Such factory classes's {@link #getParameterTypes()} should always
-     * return a list of size 1, only containing <code>Module.class</code>.
+     * return a list of size 1, only containing <code>ModuleURN.class</code>.
      * 
      * This condition is verified when the factory is loaded by the
      * module framework, and if this condition is not found to be true,

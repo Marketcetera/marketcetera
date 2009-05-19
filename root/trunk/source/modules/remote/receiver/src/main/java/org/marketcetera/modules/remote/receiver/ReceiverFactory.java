@@ -17,6 +17,7 @@ import org.marketcetera.module.ModuleURN;
  * <tr><th>Instance URN:</th><td><code>metc:remote:receiver:single</code></td></tr>
  * <tr><th>Auto-Instantiated:</th><td>No</td></tr>
  * <tr><th>Auto-Started:</th><td>Yes</td></tr>
+ * <tr><th>Module Type:</th><td>{@link ReceiverModule}</td></tr>
  * </table>
  *
  * @author anshul@marketcetera.com
