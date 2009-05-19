@@ -239,7 +239,7 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @param inRequestParam the request parameter to the emitter.
      *
-     * @param inReverse
+     * @param inReverse if the data flow is expected to emit data in reverse.
      * @throws Exception if there were errors
      */
     private void checkEmitCSV(Object inRequestParam, boolean inReverse)
@@ -251,15 +251,14 @@ public class EmitterTest extends ModuleTestBase {
                 new DataRequest(CSVEmitterFactory.INSTANCE_URN,
                         inRequestParam)
         });
-        DataFlowInfo info = mManager.getDataFlowInfo(flowID);
-        assertFlowInfo(info, flowID, 2, true, false, null, null);
-        //Wait until data flow ends
+        //Wait until data flow ends as we cannot deterministically test
+        //data flow status while it's active.
         while(!mManager.getDataFlows(true).isEmpty()) {
             Thread.sleep(1000);
         }
         List<DataFlowInfo> history = mManager.getDataFlowHistory();
         assertEquals(1, history.size());
-        info = history.get(0);
+        DataFlowInfo info = history.get(0);
         assertFlowInfo(info, flowID, 2, true, true, null,
                 CSVEmitterFactory.INSTANCE_URN);
         assertFlowStep(info.getFlowSteps()[0], CSVEmitterFactory.INSTANCE_URN,
