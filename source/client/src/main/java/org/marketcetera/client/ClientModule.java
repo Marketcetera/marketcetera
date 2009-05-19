@@ -32,6 +32,17 @@ import java.util.Date;
  *      <li>{@link org.marketcetera.trade.ExecutionReport}</li>
  *      <li>{@link org.marketcetera.trade.OrderCancelReject}</li>
  * </ul>
+ * <p>
+ * Module Features
+ * <table>
+ * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
+ * <tr><th>DataFlow Request Parameters</th><td>None, Should be null.</td></tr>
+ * <tr><th>Stops data flows</th><td>Yes, if the client is not initialized</td></tr>
+ * <tr><th>Start Operation</th><td>Does nothing</td></tr>
+ * <tr><th>Stop Operation</th><td>Does nothing</td></tr>
+ * <tr><th>Management Interface</th><td>{@link ClientModuleMXBean}</td></tr>
+ * <tr><th>Factory</th><td>{@link ClientModuleFactory}</td></tr>
+ * </table>
  *
  * @author anshul@marketcetera.com
  * @version $Id$

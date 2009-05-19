@@ -8,7 +8,17 @@ import org.marketcetera.module.ModuleURN;
 /* $License$ */
 /**
  * See {@link CEPSystemProcessor} for an explanation of how the System CEP module works.
- * 
+ * <p>
+ * The factory has the following characteristics.
+ * <table>
+ * <tr><th>Provider URN:</th><td><code>metc:cep:system</code></td></tr>
+ * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
+ * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
+ * <tr><th>Auto-Started:</th><td>Yes</td></tr>
+ * <tr><th>Instantiation Arguments:</th><td>{@link ModuleURN}: module instance URN</td></tr>
+ * <tr><th>Module Type:</th><td>{@link CEPSystemProcessor}</td></tr>
+ * </table>
+ *
  * @see CEPSystemProcessor
  * @author toli@marketcetera.com
  * @since 1.0.0

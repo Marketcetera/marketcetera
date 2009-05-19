@@ -12,6 +12,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>Note that in case of a credentials change via {@link #setSenderCompID(String)},
  * {@link #setTargetCompID(String)}, or {@link #setURL(String)}, this module must be
  * restarted for the changes to take effect.
+ * <p>
+ * Module Features
+ * <table>
+ * <tr><th>Management Interface</th><td>{@link MarketceteraFeedMXBean}</td></tr>
+ * <tr><th>Factory</th><td>{@link MarketceteraFeedModuleFactory}</td></tr>
+ * <tr><th colspan="2">For all other aspects see {@link AbstractMarketDataModule parent}</th></tr>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

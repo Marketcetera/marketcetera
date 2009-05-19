@@ -11,9 +11,20 @@ import java.util.Map;
 /**
  * Simple straight-through implementation of the CEP module that
  * filters received data and only emits data that match the type specified in the query.
- * Only allows for "select * from xyz" type of queries.
- * The XYZ types can be any alias listed in @{@link CEPDataTypes} or any valid Java class name
+ * Only allows for <code>"select * from type_name"</code> type of queries.
+ * The <code>type_name</code> can be any alias listed in {@link CEPDataTypes} or any valid Java class name
  *
+ * <p>
+ * Module Features
+ * <table>
+ * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
+ * <tr><th>DataFlow Request Parameters</th><td><code>String</code>: The CEP query</td></tr>
+ * <tr><th>Stops data flows</th><td>No</td></tr>
+ * <tr><th>Start Operation</th><td>Does nothing</td></tr>
+ * <tr><th>Stop Operation</th><td>Does nothing</td></tr>
+ * <tr><th>Management Interface</th><td>None</td></tr>
+ * <tr><th>Factory</th><td>{@link CEPSystemFactory}</td></tr>
+ * </table>
  *
  * The maps in the data structure are as follows:
  * <ul>
@@ -32,7 +43,7 @@ import java.util.Map;
 public class CEPSystemProcessor extends Module
         implements DataReceiver, DataEmitter {
 
-    private static final String QUERY_DELIM = "[ \t]+";
+    private static final String QUERY_DELIM = "[ \t]+";   //$NON-NLS-1$
     private static final String QUERY_PREFIX = "select * from ";        //$NON-NLS-1$
     private static final String[] QUERY_SPLIT = QUERY_PREFIX.split(QUERY_DELIM);
 

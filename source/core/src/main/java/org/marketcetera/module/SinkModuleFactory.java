@@ -4,7 +4,18 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
- * The factory for Sink Module. The Sink Module is a singleton.
+ * The factory for Sink Module.
+ * <p>
+ * The factory has the following characteristics.
+ * <table>
+ * <tr><th>Provider URN:</th><td><code>metc:sink:system</code></td></tr>
+ * <tr><th>Cardinality:</th><td>Singleton</td></tr>
+ * <tr><th>InstanceURN:</th><td><code>metc:sink:system:single</code></td></tr>
+ * <tr><th>Auto-Instantiated:</th><td>No</td></tr>
+ * <tr><th>Auto-Started:</th><td>Yes</td></tr>
+ * <tr><th>Instantiation Arguments:</th><td>None</td></tr>
+ * <tr><th>Module Type:</th><td>{@link SinkModule}</td></tr>
+ * </table>
  *
  * @author anshul@marketcetera.com
  * @version $Id$

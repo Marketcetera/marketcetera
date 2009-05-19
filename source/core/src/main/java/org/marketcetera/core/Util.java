@@ -106,7 +106,7 @@ public class Util
      * 
      * <p>Note that if any of the keys or values of the <code>Properties</code> object contains either the
      * {@link #KEY_VALUE_DELIMITER} or the {@link #KEY_VALUE_SEPARATOR} character, the resulting String will
-     * not be parseable with {@link propertiesFromString}.
+     * not be parseable with {@link #propertiesFromString(String)}.
      *
      * @param inProperties a <code>Properties</code> value
      * @return a <code>String</code> value or null if <code>inProperties</code> is null or empty

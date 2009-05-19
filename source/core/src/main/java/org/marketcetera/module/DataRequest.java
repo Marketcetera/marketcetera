@@ -7,37 +7,36 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Represents a stage within a data flow request. Instances of this class
  * should be used when creating a new data flow.
- *
+ * <p>
  * A data flow comprises
  * of 2 or more modules connected together, where the data is emitted
  * by the first module and is processed by the intervening modules before
  * being delivered to the last module in the data flow.
- *
+ * <p>
  * A <code>DataRequest</code> instance identifies each stage or module
  * in this data flow.
- *
+ * <p>
  * A data request is composed of a module URN and a request payload.
  * The request payload can be empty depending on the module identified
  * in the data request.
- *
+ * <p>
  * The URN must uniquely identify a module instance. Partial URNs may be used
  * if they do uniquely identify a module instance within the module
  * container.
- *
+ * <p>
  * If the data flow is being created by a module, the keyword
  * <code>this</code> can be used to dynamically substitute the keyword with
  * the appropriate value from the requesting module's URN. See
  * {@link org.marketcetera.module.DataFlowSupport} documentation for more
  * details on interpretation of <code>this</code> keyword. 
-
- *
+ * <p>
  * The data payload supplies request
  * parameters that may be used by the module to figure out what data to
  * emit or the kind of processing to apply to the data it receives. Some
  * modules may be capable of emitting data without any request parameters.
  * Others may require that a request parameter be specified and may choose
  * to throw errors if one is not specified.
- *
+ * <p>
  * Consult the module provider documentation to figure out specific
  * parameter types and values supported by the module.
  *

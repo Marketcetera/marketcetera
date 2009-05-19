@@ -19,7 +19,7 @@ import org.marketcetera.module.ModuleURN;
  * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>No</td></tr>
  * <tr><th>Auto-Started:</th><td>Yes</td></tr>
- * <tr><th>Instantiation Arguments:</th><td>module instance name</td></tr>
+ * <tr><th>Instantiation Arguments:</th><td>{@link String}: module instance name</td></tr>
  * </table>
  * <p>
  * The URN of the created module instance has the provider URN as the prefix

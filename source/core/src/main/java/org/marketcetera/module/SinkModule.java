@@ -15,26 +15,36 @@ import java.util.Map;
  * {@link SinkDataListener listener} to the
  * {@link ModuleManager#addSinkListener(SinkDataListener) ModuleManager}.
  * Other components of syste
- *
+ * <p>
  * This module is intended as an attach point for mechanisms that can help a
  * user debug their modules / data flows. Its expected that such debugging
  * aids will subscribe themselves as listeners to the data received by the
  * sink module and display that data to users via logs, screens or any
  * other means.
- *
+ * <p>
  * Users can append sink module to any of their data flows to examine
  * / test the output that the data flow is generating.
- *
+ * <p>
  * Besides routing data to the listeners, the sink module also
  * maintains statistics on data that it receives and makes those
  * statistics available via JMX.
- *
+ * <p>
  * Do note that the sink module's mechanism to receive data is
  * synchronized. Hence, if it is appended to multiple data flows
  * that produce copious amounts of data, the performance of those
  * data flows may be bottlenecked. Its recommended that the sink module
  * be only used for debugging data flows and not be used on flows
  * that emit lots of data into it. 
+ * <p>
+ * Module Features
+ * <table>
+ * <tr><th>Capabilities</th><td>DataReceiver</td></tr>
+ * <tr><th>Stops data flows</th><td>No</td></tr>
+ * <tr><th>Start Operation</th><td>Does nothing</td></tr>
+ * <tr><th>Stop Operation</th><td>Does nothing</td></tr>
+ * <tr><th>Management Interface</th><td>{@link SinkModuleMXBean}</td></tr>
+ * <tr><th>Factory</th><td>{@link SinkModuleFactory}</td></tr>
+ * </table>
  *
  * @author anshul@marketcetera.com
  * @version $Id$
