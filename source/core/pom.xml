@@ -137,6 +137,10 @@
           <manifest>null</manifest>
           <resolveDependencies>false</resolveDependencies>
           <additionalBuildcommands>
+            <!-- 
+              - This build command runs the package goal every time test files change.  Its sole purpose
+              - is to update the core.tests plug-in with the new code (see the antrun plug-in execution below). 
+              -->
             <buildCommand>
               <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
               <triggers>auto,full,incremental,</triggers>
@@ -180,37 +184,26 @@
           </componentProperties>
         </configuration>
       </plugin>
+      
+      <!-- Copy generated test jar into the corresponding photon plugin. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <property name="targetDirTests" value="../photon/plugins/org.marketcetera.core.tests/" />
+                <copy file="target/core-${project.version}-tests.jar" todir="${targetDirTests}" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
-
-  <profiles>
-
-    <!-- Copy generated test jar into photon plugin area. -->
-    <profile>
-      <id>eclipse-folders</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>copy.core.test.jar</id>
-                <phase>compile</phase>
-                <configuration>
-                  <tasks>
-                    <property name="targetDirTests" value="../photon/plugins/org.marketcetera.core.tests/" />
-                    <copy file="target/core-${project.version}-tests.jar" todir="${targetDirTests}" />
-                  </tasks>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>  
-    </profile>
-  </profiles>
 </project>
