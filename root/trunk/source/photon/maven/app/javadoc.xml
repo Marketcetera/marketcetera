@@ -46,7 +46,7 @@
             <link href="http://commons.apache.org/io/api-release/"/>
             <link href="http://commons.apache.org/lang/api-release/"/>
             <link href="http://commons.apache.org/vfs/apidocs/"/>
-            <link href="http://help.eclipse.org/help32/nftopic/org.eclipse.platform.doc.isv/reference/api/"/>
+            <link href="http://help.eclipse.org/stable/nftopic/org.eclipse.platform.doc.isv/reference/api/"/>
             <link href="http://java.sun.com/javaee/${javaee.version}/docs/api/"/>
             <link href="http://java.sun.com/javase/${javase.version}/docs/api/"/>
             <link href="http://logging.apache.org/log4j/1.2/apidocs/"/>
