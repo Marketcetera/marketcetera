@@ -53,6 +53,7 @@ import com.google.common.collect.ObjectArrays;
  * @version $Id$
  * @since 1.5.0
  */
+@ClassVersion("$Id$")
 public class MarketDepthView extends ViewPart {
 
 	/**

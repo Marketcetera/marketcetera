@@ -209,6 +209,13 @@
             id="org.marketcetera.photon.reconnectServer"
             name="%command.reconnectServer.name">
       </command>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            defaultHandler="org.marketcetera.photon.commands.CreateEquityOrderFromQuote"
+            description="%commands.createEquityOrderFromQuote.description"
+            id="org.marketcetera.photon.createEquityOrderFromQuote"
+            name="%commands.createEquityOrderFromQuote.name">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -338,6 +345,40 @@
                    class="org.marketcetera.photon.ui.ClockTrimWidget">
              </control>
           </toolbar>
+       </menuContribution>
+       <menuContribution
+             locationURI="popup:org.marketcetera.photon.marketdata.MarketDepthView.bidsPopup">
+          <command
+                commandId="org.marketcetera.photon.createEquityOrderFromQuote"
+                label="%marketDepthView.bidsPopup.sell.label"
+                style="push">
+             <visibleWhen
+                   checkEnabled="false">
+                <with
+                      variable="activeMenuSelection">
+                   <count
+                         value="1">
+                   </count>
+                </with>
+             </visibleWhen>
+          </command>
+       </menuContribution>
+       <menuContribution
+             locationURI="popup:org.marketcetera.photon.marketdata.MarketDepthView.asksPopup">
+          <command
+                commandId="org.marketcetera.photon.createEquityOrderFromQuote"
+                label="%marketDepthView.asksPopup.buy.label"
+                style="push">
+             <visibleWhen
+                   checkEnabled="false">
+                <with
+                      variable="activeMenuSelection">
+                   <count
+                         value="1">
+                   </count>
+                </with>
+             </visibleWhen>
+          </command>
        </menuContribution>
    </extension>
    <extension
