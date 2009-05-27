@@ -1,0 +1,13 @@
+Symbol,Side,Quantity,Price,OrderType,TimeInForce,Account
+SUNW,Buy,3000,4.23,Limit,Day,TOLI
+SUNW,SellShort,4000,4.26,Limit,Day,TOLI
+GOOG,Buy,2000,408.1,Limit,Day,TOLI
+GOOG,SellShort,4000,408.18,Limit,Day,TOLI
+MSFT,Buy,3000,22.8,Limit,Day,TOLI
+MSFT,SellShort,2000,22.81,Limit,Day,TOLI
+IBM,Buy,5000,77.65,Limit,Day,TOLI
+IBM,SellShort,1000,77.73,Limit,Day,TOLI
+T,Buy,2000,27.5,Limit,Day,TOLI
+T,SellShort,3000,27.55,Limit,Day,TOLI
+FRO,Buy,1000,37.68,Limit,Day,TOLI
+FRO,SellShort,2000,37.75,Limit,Day,TOLI
