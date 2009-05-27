@@ -2,7 +2,6 @@ package org.marketcetera.photon.ui.databinding;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.internal.databinding.provisional.swt.AbstractSWTObservableValue;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Label;
 

@@ -131,20 +131,44 @@
                         eclipse/plugins/org.eclipse.update.core.source_*,
                         eclipse/plugins/org.eclipse.equinox.security_*,
                         eclipse/plugins/org.eclipse.equinox.security.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.core_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.core.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.engine_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.engine.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.repository_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.repository.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.metadata_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.metadata.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.metadata.repository_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.metadata.repository.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.artifact.repository_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.artifact.repository.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.jarprocessor_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.jarprocessor.source_*,
                         eclipse/plugins/org.eclipse.ltk.core.refactoring_*,
                         eclipse/plugins/org.eclipse.ltk.core.refactoring.source_*,
                         eclipse/plugins/org.eclipse.ltk.ui.refactoring_*,
                         eclipse/plugins/org.eclipse.ltk.ui.refactoring.source_*,
                         eclipse/plugins/org.eclipse.ui.navigator_*,
                         eclipse/plugins/org.eclipse.ui.navigator.source_*,
+                        eclipse/plugins/org.eclipse.compare.core_*,
+                        eclipse/plugins/org.eclipse.compare.core.source_*,
                         eclipse/plugins/org.eclipse.compare_*,
                         eclipse/plugins/org.eclipse.compare.source_*,
                         eclipse/plugins/org.eclipse.team.ui_*,
                         eclipse/plugins/org.eclipse.team.ui.source_*,
+                        eclipse/plugins/org.eclipse.ecf_*,
+                        eclipse/plugins/org.eclipse.ecf.source_*,
+                        eclipse/plugins/org.eclipse.ecf.identity_*,
+                        eclipse/plugins/org.eclipse.ecf.identity.source_*,
+                        eclipse/plugins/org.eclipse.ecf.filetransfer_*,
+                        eclipse/plugins/org.eclipse.ecf.filetransfer.source_*,
                         eclipse/plugins/org.eclipse.ui.navigator.resources_*,
                         eclipse/plugins/org.eclipse.ui.navigator.resources.source_*,
                         eclipse/plugins/org.eclipse.ui.views.properties.tabbed_*,
-                        eclipse/plugins/org.eclipse.ui.views.properties.tabbed.source_*
+                        eclipse/plugins/org.eclipse.ui.views.properties.tabbed.source_*,
+                        eclipse/plugins/org.eclipse.jdt.junit4.runtime_*,
+                        eclipse/plugins/org.eclipse.jdt.junit4.runtime.source_*
                       </includes>
                     </artifactItem>
                     <artifactItem>
@@ -166,8 +190,8 @@
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
-                      <artifactId>emf</artifactId>
-                      <version>2.4.2</version>
+                      <artifactId>emf-runtime</artifactId>
+                      <version>2.5.0RC1</version>
                       <type>zip</type>
                       <includes>
                         eclipse/plugins/org.eclipse.emf.common_*,
@@ -177,19 +201,24 @@
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
-                      <artifactId>emf-source</artifactId>
-                      <version>2.4.2</version>
+                      <artifactId>emf-sourcedoc</artifactId>
+                      <version>2.5.0RC1</version>
                       <type>zip</type>
                       <includes>
                         eclipse/plugins/org.eclipse.emf.source_*/**
                       </includes>
                     </artifactItem>
                     <artifactItem>
-                      <groupId>org.eclipse</groupId>
-                      <artifactId>junit45-feature-patch-3.4.1</artifactId>
-                      <version>20090204</version>
+                      <!--
+                        - Customized org.junit4 bundle that gets hamcrest by import-package instead 
+                        - of require-bundle. This is necessary to integrate with the hamcrest libraries
+                        - provided by photon-test-bundle.
+                        -->
+                      <groupId>org.marketcetera</groupId>
+                      <artifactId>junit4</artifactId>
+                      <version>4.5.0.20090526</version>
                       <type>zip</type>
-                      <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
+                      <outputDirectory>${mvn.photon.target}/eclipse/plugins</outputDirectory>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.rubypeople</groupId>
