@@ -26,6 +26,7 @@ import org.marketcetera.photon.ui.validation.IntegerRequiredValidatorTest;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilderTest;
 import org.marketcetera.photon.ui.validation.fix.PriceObservableValueTest;
 import org.marketcetera.photon.ui.validation.fix.StringDateObservableValueTest;
+import org.marketcetera.photon.views.AddSymbolActionTest;
 import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
 import org.marketcetera.photon.views.FillsViewTest;
@@ -108,6 +109,8 @@ public class TS_Photon {
 		
 		suite.addTest(new JUnit4TestAdapter(PhotonPositionMarketDataTest.class));
 		suite.addTest(new JUnit4TestAdapter(PhotonPositionMarketDataConcurrencyTest.class));
+		
+		suite.addTest(new JUnit4TestAdapter(AddSymbolActionTest.class));
 
 		return suite;
 	}
