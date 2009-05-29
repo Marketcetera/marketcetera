@@ -180,4 +180,6 @@ public interface Messages
                                                                                  "compilation_failed_diagnostic"); //$NON-NLS-1$
     static final I18NMessage1P ERROR_CONVERTING_CLASSPATH_URL =
             new I18NMessage1P(LOGGER, "error_converting_classpath_url");   //$NON-NLS-1$
+    static final I18NMessage0P MISSING_JAVA_COMPILER = new I18NMessage0P(LOGGER,
+                                                                         "missing_java_compiler");   //$NON-NLS-1$
 }

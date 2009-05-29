@@ -1,10 +1,6 @@
 package org.marketcetera.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
 import static org.marketcetera.strategy.Status.FAILED;
 import static org.marketcetera.strategy.Status.RUNNING;
@@ -12,15 +8,22 @@ import static org.marketcetera.strategy.Status.STOPPED;
 
 import java.beans.ExceptionListener;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +34,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.jar.Manifest;
 
 import javax.management.JMX;
 import javax.management.MBeanServer;
@@ -1092,6 +1096,12 @@ public class StrategyTestBase
     public void setup()
         throws Exception
     {
+        StringBuilder classpath = new StringBuilder();
+        for(String path : getClassPath()) {
+            classpath.append(path).append(File.pathSeparator);
+        }
+        System.setProperty(JavaCompilerExecutionEngine.CLASSPATH_KEY,
+                           classpath.toString());
         brokers = generateBrokersStatus();
         MockClient.getBrokersFails = false;
         MockClient.getPositionFails = false;
@@ -1530,6 +1540,75 @@ public class StrategyTestBase
         }
         fail(inStrategyURN + " not currently running");
         return null;
+    }
+    /**
+     * Constructs a classpath to use for Java compilation.
+     * 
+     * <p>This method will make a best-effort to create the classpath,
+     * ignoring errors that occur during the collection.  This method
+     * is not expected to throw exceptions, muddling on instead.
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
+    private Set<String> getClassPath()
+    {
+        // get the classloader that was used to load this class
+        ClassLoader classLoader = getClass().getClassLoader();
+        // this collection will hold all the paths we find, duplicates discarded, in the order they appear
+        Set<String> paths = new LinkedHashSet<String>();
+//        //Collect all URLs from the URL Class Loaders.
+//        do {
+//            if(classLoader instanceof URLClassLoader) {
+//                URLClassLoader urlClassLoader = (URLClassLoader)classLoader;
+//                for(URL url : urlClassLoader.getURLs()) {
+//                    try {
+//                        paths.add(url.toURI().getPath());
+//                    } catch (URISyntaxException ignore) {
+//                    }
+//                }
+//            }
+//            // traverse the classloader tree upwards until no more remain
+//        } while((classLoader = classLoader.getParent()) != null);
+//        // reset the classloader to the current
+//        classLoader = getClass().getClassLoader();
+        //iterate through the manifests of all the jars to find the
+        // values of their Class-Path attribute value and add them to the
+        // set.
+        try {
+            Enumeration<URL> resourceEnumeration = classLoader.getResources("META-INF/MANIFEST.MF");
+            while(resourceEnumeration.hasMoreElements()) {
+                URL resourceURL = resourceEnumeration.nextElement();
+                InputStream is = null;
+                try {
+                    // open the resource
+                    is = resourceURL.openStream();
+                    Manifest manifest = new Manifest(is);
+                    String theClasspath = manifest.getMainAttributes().getValue("Class-Path");
+                    if(theClasspath != null &&
+                       !theClasspath.trim().isEmpty()) {
+                        //manifest classpath is space separated URLs
+                        for(String path : theClasspath.split(" ")) {
+                            try {
+                                URL pathURL = new URL(path);
+                                paths.add(pathURL.toURI().getPath());
+                            } catch (MalformedURLException ignore) {
+                            } catch (URISyntaxException ignore) {
+                            }
+                        }
+                    }
+                } catch (IOException ignore) {
+                } finally {
+                    if(is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException ignore) {
+                        }
+                    }
+                }
+            }
+        } catch (IOException ignore) {
+        }
+        return paths;
     }
     /**
      * random number generator for public use
