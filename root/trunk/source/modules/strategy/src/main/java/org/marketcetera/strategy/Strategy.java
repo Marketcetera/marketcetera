@@ -21,9 +21,9 @@ public interface Strategy
      */
     public static final String STRATEGY_MESSAGES = org.marketcetera.core.Messages.USER_MSG_CATEGORY;
     /**
-     * environment property name used to indicate the classpath to use to compile/execute scripts
+     * environment property name used to indicate the source directory of included strategy scripts
      */
-    public static final String CLASSPATH_PROPERTYNAME = "strategy.classpath";
+    public static final String CLASSPATH_PROPERTYNAME = "strategy.classpath"; //$NON-NLS-1$
     /**
      * Sends data received from an external source to a strategy.
      *

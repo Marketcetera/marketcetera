@@ -1,9 +1,5 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Messages.COMPILATION_FAILED;
-import static org.marketcetera.strategy.Messages.COMPILATION_FAILED_DIAGNOSTIC;
-import static org.marketcetera.strategy.Messages.INVALID_STRATEGY_NAME;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +11,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,8 +46,12 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  */
 @ClassVersion("$Id$")
 public class JavaCompilerExecutionEngine
-        implements ExecutionEngine
+        implements ExecutionEngine, Messages
 {
+    /**
+     * System properties key to set to inform the Java compiler of dependencies it should include on the classpath for compiling Java strategies
+     */
+    public static final String CLASSPATH_KEY = "metc.java.class.path"; //$NON-NLS-1$
     /**
      * the strategy to be executed 
      */
@@ -83,6 +84,9 @@ public class JavaCompilerExecutionEngine
     {
         // the compiler object to use
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        if(compiler == null) {
+            throw new StrategyException(MISSING_JAVA_COMPILER);
+        }
         // A map of class names to the InMemoryJavaFileObject that holds
         //  the compiled-code for that class. This is the cache of
         //  compiled classes.
@@ -116,28 +120,48 @@ public class JavaCompilerExecutionEngine
                                                                strategy.toString()));
         }
         // prepare the options to pass to the compiler
-        List<String> options = new ArrayList<String>();
-        StringBuffer classpathString = new StringBuffer();
+        // collect classpath entries
+        Set<String> classpathEntries = new LinkedHashSet<String>();
+        // add the system classpath
+        String systemPath = System.getProperty("java.class.path"); //$NON-NLS-1$
+        if(systemPath != null) {
+            String[] entries = systemPath.split(File.pathSeparator);
+            classpathEntries.addAll(Arrays.asList(entries));
+        }
         // add jars we are given by the parent class loaders, if any
         ClassLoader currentLoader = getClass().getClassLoader();
         do {
             if(currentLoader instanceof URLClassLoader) {
                 for(URL url: ((URLClassLoader)currentLoader).getURLs()) {
                     try {
-                        classpathString.append(url.toURI().getPath()).append(File.pathSeparator);
+                        classpathEntries.add(url.toURI().getPath());
                     } catch (URISyntaxException e) {
-                        Messages.ERROR_CONVERTING_CLASSPATH_URL.warn(this,e, url);
+                        Messages.ERROR_CONVERTING_CLASSPATH_URL.warn(this,
+                                                                     e,
+                                                                     url);
                     }
                 }
             }
         } while((currentLoader = currentLoader.getParent()) != null);
+        // add our custom classpath
+        String customPath = System.getProperty(CLASSPATH_KEY);
+        if(customPath != null) {
+            String[] entries = customPath.split(File.pathSeparator);
+            classpathEntries.addAll(Arrays.asList(entries));
+        }
         // put the classpath string in place with the classpath command-line option
+        List<String> options = new ArrayList<String>();
         options.add("-cp"); //$NON-NLS-1$
+        StringBuilder classpathString = new StringBuilder();
+        for(String entry : classpathEntries) {
+            classpathString.append(entry).append(File.pathSeparator);
+        }
         options.add(classpathString.toString());
         SLF4JLoggerProxy.debug(JavaCompilerExecutionEngine.class,
-                               "Java compiler compiling {} with options {}", //$NON-NLS-1$
+                               "Java compiler compiling {} with options {} (classpath length: {})", //$NON-NLS-1$
                                strategy.getName(),
-                               Arrays.toString(options.toArray()));
+                               Arrays.toString(options.toArray()),
+                               classpathString.length());
         // schedule the compilation task
         CompilationTask compilationJob = compiler.getTask(null, // out-writer not needed because we're using the in-memory file manager
                                                           specializedFileManager,

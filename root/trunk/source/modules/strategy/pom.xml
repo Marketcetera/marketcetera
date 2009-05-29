@@ -91,16 +91,6 @@
         </configuration>
       </plugin>
 
-      <!--
-        - Configure Maven to provide a full classpath to the
-        - strategy java compiler.
-        -->
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <useManifestOnlyJar>false</useManifestOnlyJar>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 </project>
