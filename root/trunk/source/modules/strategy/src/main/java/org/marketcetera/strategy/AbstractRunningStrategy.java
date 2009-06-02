@@ -32,6 +32,7 @@ import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.misc.NamedThreadFactory;
 
 import quickfix.Message;
 
@@ -1058,7 +1059,7 @@ public abstract class AbstractRunningStrategy
     /**
      * scheduler for request callbacks
      */
-    private final ScheduledExecutorService callbackService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService callbackService = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("StrategyCallback"));  //$NON-NLS-1$
     /**
      * tracks submitted orders and execution reports for this strategy during
      * this session

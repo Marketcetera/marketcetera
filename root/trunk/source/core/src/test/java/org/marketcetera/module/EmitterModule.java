@@ -1,6 +1,7 @@
 package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.misc.NamedThreadFactory;
 import org.marketcetera.util.log.I18NBoundMessage;
 
 import java.util.concurrent.ExecutorService;
@@ -27,7 +28,8 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
     @Override
     protected void preStart() throws ModuleException {
         super.preStart();
-        mService = Executors.newCachedThreadPool();
+        mService = Executors.newCachedThreadPool(
+                new NamedThreadFactory("TestEmitterModule"));
     }
 
     @Override

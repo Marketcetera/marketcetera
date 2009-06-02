@@ -61,6 +61,7 @@ import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TypesTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
+import org.marketcetera.util.misc.NamedThreadFactory;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;
@@ -3528,7 +3529,7 @@ public abstract class LanguageTestBase
     /**
      * used for asynchronous test blocks
      */
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory("LanguageTestBase"));  //$NON-NLS-1$
     /**
      * Indicates that a <code>JUnit</code> test is designated as a performance test instead of a unit test.
      * 

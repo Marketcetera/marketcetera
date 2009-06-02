@@ -1,6 +1,7 @@
 package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.misc.NamedThreadFactory;
 import org.marketcetera.module.*;
 
 import java.util.concurrent.ExecutorService;
@@ -76,5 +77,5 @@ public class OrderSenderModule extends Module implements DataEmitter {
     private final Object[] mOrders;
     private final Map<RequestID, Future<?>> mTable = new Hashtable<RequestID, Future<?>>();
     private final static ExecutorService sExecutors =
-            Executors.newCachedThreadPool();
+            Executors.newCachedThreadPool(new NamedThreadFactory("TestOrderSender-"));
 }

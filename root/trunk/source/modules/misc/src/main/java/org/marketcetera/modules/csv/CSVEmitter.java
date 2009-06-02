@@ -1,6 +1,7 @@
 package org.marketcetera.modules.csv;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.misc.NamedThreadFactory;
 import org.marketcetera.util.unicode.UnicodeInputStreamReader;
 import org.marketcetera.util.unicode.DecodingStrategy;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -68,7 +69,8 @@ public class CSVEmitter extends Module implements DataEmitter {
 
     @Override
     protected void preStart() {
-        mService = Executors.newCachedThreadPool();
+        mService = Executors.newCachedThreadPool(
+                new NamedThreadFactory("CSVEmitter-"));  //$NON-NLS-1$
     }
 
     @Override
