@@ -17,6 +17,8 @@ import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.metrics.ThreadedMetric;
+import org.marketcetera.metrics.ConditionsFactory;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.AggregateEvent;
@@ -25,6 +27,7 @@ import org.marketcetera.event.EventTranslator;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.NamedThreadFactory;
 
 /* $License$ */
 
@@ -69,7 +72,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     /**
      * the singleton instance that aggregates the actual connections to the server 
      */
-    private static ExecutorService sPool = Executors.newCachedThreadPool();
+    private static ExecutorService sPool = Executors.newCachedThreadPool(new NamedThreadFactory("AbsMarketDataFeed-"));  //$NON-NLS-1$
     /**
      * the status of the feed
      */
@@ -108,6 +111,12 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * but its use is not strictly limited to that by design.
      */
     public final static String MARKETDATA_SIMULATION_KEY = "allowMarketDataSimulation"; //$NON-NLS-1$
+    /**
+     * Condition used to determine if performance instrumentation should be
+     * recording sampled instrumentation data.
+     */
+    private static final Callable<Boolean> PUBLISHING_CONDITION = ConditionsFactory.createSamplingCondition(100,
+                                                                                                            "metc.metrics.marketdata.sampling.interval");  //$NON-NLS-1$
     /**
      * Indicates if the feed is allowed to simulate market data if the normal source is not
      * available.
@@ -497,38 +506,44 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     protected final void dataReceived(String inHandle,
                                       Object inData)
     {
-        MarketDataHandle mdHandle = compose(inHandle);
-        T token = mHandleHolder.getToken(mdHandle);
-        if(token == null) {
-            Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.debug(this,
-                                                                 inData);
-        } else {
-            try {
-                E eventTranslator = getEventTranslator();
-                List<EventBase> events = eventTranslator.toEvent(inData,
-                                                                 inHandle);
-                // events returned may contain aggregate events, which further need to be decomposed
-                // create a list of actual events
-                List<EventBase> actualEvents = new ArrayList<EventBase>();
-                // check the events returned to find aggregate events, if any
-                for(EventBase event : events) {
-                    if(event instanceof AggregateEvent) {
-                        AggregateEvent ae = (AggregateEvent)event;
-                        actualEvents.addAll(ae.decompose());
-                    } else {
-                        actualEvents.add(event);
+        ThreadedMetric.begin();
+        try {
+            MarketDataHandle mdHandle = compose(inHandle);
+            T token = mHandleHolder.getToken(mdHandle);
+            if(token == null) {
+                Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.debug(this,
+                                                                     inData);
+            } else {
+                try {
+                    E eventTranslator = getEventTranslator();
+                    List<EventBase> events = eventTranslator.toEvent(inData,
+                                                                     inHandle);
+                    // events returned may contain aggregate events, which further need to be decomposed
+                    // create a list of actual events
+                    List<EventBase> actualEvents = new ArrayList<EventBase>();
+                    // check the events returned to find aggregate events, if any
+                    for(EventBase event : events) {
+                        if(event instanceof AggregateEvent) {
+                            AggregateEvent ae = (AggregateEvent)event;
+                            actualEvents.addAll(ae.decompose());
+                        } else {
+                            actualEvents.add(event);
+                        }
                     }
+                    ThreadedMetric.event("mdata-translated");  //$NON-NLS-1$
+                    // now publish the complete list of events in the proper order
+                    for(EventBase event : actualEvents) {
+                        event.setSource(token);
+                        token.publish(event);
+                    }
+                } catch (Exception e) {
+                    Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.warn(this,
+                                                                        e,
+                                                                        inData);
                 }
-                // now publish the complete list of events in the proper order
-                for(EventBase event : actualEvents) {
-                    event.setSource(token);
-                    token.publish(event);
-                }
-            } catch (Exception e) {
-                Messages.WARNING_MARKET_DATA_FEED_DATA_IGNORED.warn(this,
-                                                                    e,
-                                                                    inData);
             }
+        } finally {
+            ThreadedMetric.end(PUBLISHING_CONDITION);
         }
     }
     /*

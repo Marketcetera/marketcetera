@@ -26,5 +26,6 @@ Export-Package: org.marketcetera.core,
  org.marketcetera.quickfix.messagefactory,
  org.marketcetera.symbology,
  org.marketcetera.trade,
+ org.marketcetera.metrics,
  quickfix.spring
 Eclipse-BuddyPolicy: registered

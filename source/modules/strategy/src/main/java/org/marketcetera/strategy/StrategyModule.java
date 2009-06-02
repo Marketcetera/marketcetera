@@ -26,6 +26,7 @@ import org.marketcetera.client.ClientModuleFactory;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.Util;
+import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
@@ -155,6 +156,7 @@ final class StrategyModule
                             Object inData)
             throws UnsupportedDataTypeException, StopDataFlowException
     {
+        ThreadedMetric.event("strategy-IN");  //$NON-NLS-1$
         assertStateForReceiveData();
         SLF4JLoggerProxy.trace(StrategyModule.class,
                                "{} received {}", //$NON-NLS-1$
@@ -1173,6 +1175,7 @@ final class StrategyModule
            inObject instanceof OrderSingle ||
            inObject instanceof OrderCancel ||
            inObject instanceof OrderReplace) {
+            ThreadedMetric.event("strategy-OUT");  //$NON-NLS-1$
             ordersPublisher.publish(inObject);
         } else if(inObject instanceof Suggestion) {
             suggestionsPublisher.publish(inObject);

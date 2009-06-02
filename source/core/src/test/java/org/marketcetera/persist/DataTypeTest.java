@@ -9,6 +9,7 @@ import org.marketcetera.util.test.UnicodeData;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.StringUtils;
+import org.marketcetera.util.misc.NamedThreadFactory;
 import static org.marketcetera.persist.Messages.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -16,10 +17,7 @@ import org.junit.Ignore;
 
 import javax.persistence.TemporalType;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
@@ -329,7 +327,7 @@ public class DataTypeTest extends
         //Create a threadpool to run these tests in a couple threads
         //Make sure that the number of threads is less than the
         //connection pool size
-        ExecutorService exec = Executors.newFixedThreadPool(10);
+        ExecutorService exec = Executors.newFixedThreadPool(10, TEST_FACTORY);
         LinkedList<SingleTestThread> list = new LinkedList<SingleTestThread>();
         //Create a bunch of tasks to execute in parallel
         for(int i = 0; i < 100; i++) {
@@ -352,7 +350,7 @@ public class DataTypeTest extends
         //Create a threadpool to run these tests in a couple threads
         //Make sure that the number of threads is less than the
         //connection pool size
-        ExecutorService exec = Executors.newFixedThreadPool(12);
+        ExecutorService exec = Executors.newFixedThreadPool(12, TEST_FACTORY);
         LinkedList<SingleTestThread> list = new LinkedList<SingleTestThread>();
         //Create a bunch of tasks to execute in parallel
         for(int i = 0; i < 100; i++) {
@@ -382,7 +380,7 @@ public class DataTypeTest extends
         //Create a threadpool to run these tests in a couple threads
         //Make sure that the number of threads is less than the
         //connection pool size
-        ExecutorService exec = Executors.newFixedThreadPool(10);
+        ExecutorService exec = Executors.newFixedThreadPool(10, TEST_FACTORY);
         LinkedList<SingleLobThread> list = new LinkedList<SingleLobThread>();
         //Create a bunch of tasks to execute in parallel
         for(int i = 0; i < 100; i++) {
@@ -787,4 +785,6 @@ public class DataTypeTest extends
 
     private static final File TEST_UNICODE_FILE = new File(LoggerConfiguration.TEST_SAMPLE_DATA,
             "unicode.txt"); //$NON-NLS-1$
+    private static final ThreadFactory TEST_FACTORY =
+            new NamedThreadFactory("DataTypeTest-");  //$NON-NLS-1$
 }

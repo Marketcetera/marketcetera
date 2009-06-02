@@ -4,6 +4,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
 import org.marketcetera.core.Pair;
+import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.event.TimestampCarrier;
 import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
@@ -122,6 +123,7 @@ public class CEPEsperProcessor extends Module
     @Override
     public void receiveData(DataFlowID inFlowID, Object inData)
             throws UnsupportedDataTypeException, StopDataFlowException {
+        ThreadedMetric.event("cep-IN");  //$NON-NLS-1$
         if(inData != null) {
             getDelegate().preProcessData(inFlowID, inData);
             int selfPostedCounter = mSelfPostingEvents.get();
@@ -441,6 +443,7 @@ public class CEPEsperProcessor extends Module
          * @param inMap the map of values containing results of the statement.
          */
         public void update(Map inMap) {
+            ThreadedMetric.event("cep-OUT");  //$NON-NLS-1$
             if(inMap != null && inMap.size() == 1) {
                 mSupport.send(inMap.values().iterator().next());
             } else {

@@ -7,6 +7,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.module.*;
 import org.marketcetera.trade.*;
+import org.marketcetera.metrics.ThreadedMetric;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Map;
@@ -55,6 +56,7 @@ class ClientModule extends Module implements DataReceiver,
     @Override
     public void receiveData(DataFlowID inFlowID, Object inData)
             throws ReceiveDataException {
+        ThreadedMetric.event("client-IN");  //$NON-NLS-1$
         try {
             if(inData instanceof OrderSingle) {
                 getClient().sendOrder((OrderSingle) inData);

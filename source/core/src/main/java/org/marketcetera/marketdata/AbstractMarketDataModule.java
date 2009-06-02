@@ -18,6 +18,7 @@ import javax.management.NotificationListener;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
+import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.module.DataEmitter;
@@ -164,6 +165,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                             }
                         });
                     }
+                    ThreadedMetric.event("mdata-OUT");  //$NON-NLS-1$
                     inSupport.send(inEvent);
                 }
             };
