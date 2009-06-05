@@ -1931,7 +1931,7 @@ public final class ModuleManager {
 
     /**
      * Returns true if the supplied object implements an
-     * interface that is an MXBean interface.
+     * interface that is an MXBean interface or a DynamicMBean interface.
      *
      * @param inObject the object instance that needs to be tested
      *
@@ -1943,7 +1943,8 @@ public final class ModuleManager {
              c = c.getSuperclass()) {
 
             for(Class intf: c.getInterfaces()) {
-                if(JMX.isMXBeanInterface(intf)) {
+                if(JMX.isMXBeanInterface(intf) ||
+                        DynamicMBean.class.equals(intf)) {
                     return true;
                 }
             }

@@ -9,7 +9,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.module.*;
-import org.marketcetera.modules.cep.system.DummySink;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.Suggestion;
@@ -30,7 +29,7 @@ import static junit.framework.Assert.assertTrue;
 @ClassVersion("$Id$")
 public class ExternalTimeTest extends ModuleTestBase {
     protected ModuleManager sManager;
-    protected static DummySink sSink;
+    protected static BlockingSinkDataListener sSink;
     protected static Factory sFactory;
 
     private static ModuleURN TEST_URN = new ModuleURN(CEPEsperFactory.PROVIDER_URN, "toli");
@@ -43,7 +42,7 @@ public class ExternalTimeTest extends ModuleTestBase {
 
     @Before
     public void before() throws Exception {
-        sSink = new DummySink();
+        sSink = new BlockingSinkDataListener();
         sManager = new ModuleManager();
         sManager.init();
         sManager.addSinkListener(sSink);
@@ -104,13 +103,13 @@ public class ExternalTimeTest extends ModuleTestBase {
                 new DataRequest(TEST_URN, new String[] {"select * from ask.win:time(10 days).std:size()"})
         });
 
-        assertEquals("wrong size event", 1L, sSink.getReceived().take());  // AB1
-        assertEquals("wrong size event", 2L, sSink.getReceived().take());  // AB1 + AB2
-        assertEquals("wrong size event", 0L, sSink.getReceived().take());  // AB3 comes in to reset clock 1 year later and gives 0 size
-        assertEquals("wrong size event", 1L, sSink.getReceived().take());  // AB3 also triggers new window/size of 1
-        assertEquals("wrong size event", 2L, sSink.getReceived().take());  // AB4 comes in after AB3 to give 2
-        assertEquals("wrong size event", 0L, sSink.getReceived().take());  // AB5 comes in 15 days later, resets window -> 0 size
-        assertEquals("wrong size event", 1L, sSink.getReceived().take());  // AB5 sets new window of size 1
+        assertEquals("wrong size event", 1L, sSink.getNextData());  // AB1
+        assertEquals("wrong size event", 2L, sSink.getNextData());  // AB1 + AB2
+        assertEquals("wrong size event", 0L, sSink.getNextData());  // AB3 comes in to reset clock 1 year later and gives 0 size
+        assertEquals("wrong size event", 1L, sSink.getNextData());  // AB3 also triggers new window/size of 1
+        assertEquals("wrong size event", 2L, sSink.getNextData());  // AB4 comes in after AB3 to give 2
+        assertEquals("wrong size event", 0L, sSink.getNextData());  // AB5 comes in 15 days later, resets window -> 0 size
+        assertEquals("wrong size event", 1L, sSink.getNextData());  // AB5 sets new window of size 1
 
         sManager.cancel(flow);
     }

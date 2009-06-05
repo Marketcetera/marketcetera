@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.*;
-import org.marketcetera.modules.cep.system.DummySink;
 import org.marketcetera.trade.Factory;
 
 /**
@@ -21,7 +20,7 @@ import org.marketcetera.trade.Factory;
 @ClassVersion("$Id$")
 public class SelfRepostingEventsTest extends ModuleTestBase {
     protected ModuleManager sManager;
-    protected static DummySink sSink;
+    protected static BlockingSinkDataListener sSink;
     protected static Factory sFactory;
 
     private static ModuleURN TEST_URN = new ModuleURN(CEPEsperFactory.PROVIDER_URN, "toli");
@@ -34,7 +33,7 @@ public class SelfRepostingEventsTest extends ModuleTestBase {
 
     @Before
     public void before() throws Exception {
-        sSink = new DummySink();
+        sSink = new BlockingSinkDataListener();
         sManager = new ModuleManager();
         sManager.init();
         sManager.addSinkListener(sSink);
@@ -63,7 +62,7 @@ public class SelfRepostingEventsTest extends ModuleTestBase {
                 new DataRequest(TEST_URN, "select strAttrib from "+ClassA.class.getName())
         });
 
-        assertEquals("vasya", sSink.getReceived().take());
+        assertEquals("vasya", sSink.getNextData());
 
         sManager.cancel(flow);
     }

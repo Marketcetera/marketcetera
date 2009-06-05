@@ -302,9 +302,18 @@
     The Module factory and individual instances can export MXBean interfaces
     that expose their attributes and operations to enable their management.
     Upon creation, if a factory or a module instance is found to be implementing
-    an MXBean interface, it registers the MBean with the platform MBean server.
-    Similarly, whenever a module instance is being deleted, the module framework
-    unregisters its MBean from the platform MBean server.
+    an {@link javax.management.MXBean} interface or an
+    {@link javax.management.DynamicMBean}, it registers the MBean with the
+    platform MBean server. Similarly, whenever a module instance is being
+    deleted, the module framework unregisters its MBean from the platform
+    MBean server.
+</p>
+<p>
+    Do note that if the module or the module factory implements
+    {@link javax.management.DynamicMBean} make sure that the types used
+    for various bean attributes & operations are limited to standard java
+    types. Otherwise, tools like jconsole will not be able to display
+    information from those beans.
 </p>
 <p>
     The MBeans, their attributes, methods and method parameters can be annotated

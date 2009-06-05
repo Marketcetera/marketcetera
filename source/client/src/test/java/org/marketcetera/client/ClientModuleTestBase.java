@@ -14,8 +14,6 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.management.JMX;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.Date;
 import java.util.List;
 import java.math.BigDecimal;
@@ -119,7 +117,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
         sServer.getHandler().addToSend(reports[2]);
         sServer.getHandler().addToSend(reports[3]);
         //Add a sink listener to receive these reports
-        ReportSink sink = new ReportSink();
+        BlockingSinkDataListener sink = new BlockingSinkDataListener();
         mManager.addSinkListener(sink);
         //Initialize a module to send this data
         ModuleURN senderURN = mManager.createModule(
@@ -212,7 +210,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 new Object[]{
                         errorData,
                         ClientTest.createOrderSingle()});
-        ReportSink sink = new ReportSink();
+        BlockingSinkDataListener sink = new BlockingSinkDataListener();
         mManager.addSinkListener(sink);
         DataFlowID flowID = mManager.createDataFlow(new DataRequest[]{
                 new DataRequest(senderURN, null),
@@ -316,19 +314,6 @@ public class ClientModuleTestBase extends ModuleTestBase {
         if (ClientManager.isInitialized()) {
             ClientManager.getInstance().close();
         }
-    }
-
-    private static class ReportSink implements SinkDataListener {
-        @Override
-        public void receivedData(DataFlowID inFlowID, Object inData) {
-            //Use add() instead of put() as we don't want this call to block
-            mReceived.add(inData);
-        }
-        public Object getNextData() throws InterruptedException {
-            //block until there's data available.
-            return mReceived.take();
-        }
-        private BlockingQueue<Object> mReceived = new LinkedBlockingDeque<Object>();
     }
 
     protected ModuleManager mManager;
