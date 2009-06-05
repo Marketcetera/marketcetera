@@ -205,7 +205,9 @@
                       <version>2.5.0RC1</version>
                       <type>zip</type>
                       <includes>
-                        eclipse/plugins/org.eclipse.emf.source_*/**
+                        eclipse/plugins/org.eclipse.emf.common.source_*,
+                        eclipse/plugins/org.eclipse.emf.ecore.source_*,
+                        eclipse/plugins/org.eclipse.emf.databinding.source_*
                       </includes>
                     </artifactItem>
                     <artifactItem>
