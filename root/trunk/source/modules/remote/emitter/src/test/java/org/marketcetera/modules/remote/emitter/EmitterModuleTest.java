@@ -26,8 +26,6 @@ import javax.security.auth.login.Configuration;
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.management.*;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -181,7 +179,7 @@ public class EmitterModuleTest extends ModuleTestBase {
         mManager.createModule(EmitterFactory.PROVIDER_URN,
                 TEST_INSTANCE_URN.instanceName());
         //Add a sink listener
-        SinkListener listener = new SinkListener();
+        BlockingSinkDataListener listener = new BlockingSinkDataListener();
         mManager.addSinkListener(listener);
         //Setup the emitter flow
         DataFlowID eFlowID = mManager.createDataFlow(new DataRequest[]{
@@ -255,7 +253,7 @@ public class EmitterModuleTest extends ModuleTestBase {
         mManager.createModule(EmitterFactory.PROVIDER_URN,
                 TEST_INSTANCE_URN.instanceName());
         //Add a sink listener
-        SinkListener listener = new SinkListener();
+        BlockingSinkDataListener listener = new BlockingSinkDataListener();
         mManager.addSinkListener(listener);
         final ReceiverModuleMXBean bean = JMX.newMXBeanProxy(getMBeanServer(),
                 ReceiverFactory.INSTANCE_URN.toObjectName(),
@@ -389,7 +387,7 @@ public class EmitterModuleTest extends ModuleTestBase {
      *
      * @throws Exception if there were errors.
      */
-    private void runLogFilterFlow(SinkListener inListener,
+    private void runLogFilterFlow(BlockingSinkDataListener inListener,
                                   LogEvent.Level inCurrentLevel)
             throws Exception {
         //Setup the emitter flow
@@ -591,39 +589,4 @@ public class EmitterModuleTest extends ModuleTestBase {
         private final Deque<Notification> mNotifications = new LinkedList<Notification>();
     }
 
-    /**
-     * A sink data listener for testing.
-     */
-    private static class SinkListener implements SinkDataListener {
-        @Override
-        public void receivedData(DataFlowID inFlowID, Object inData) {
-            //Use add() instead of put() as we don't want this call to block
-            mReceived.add(inData);
-        }
-
-        /**
-         * Gets the next received data object. waits until the data object
-         * is available.
-         *
-         * @return the next received data object.
-         *
-         * @throws InterruptedException if the thread was interrupted.
-         */
-        public Object getNextData() throws InterruptedException {
-            //block until there's data available.
-            return mReceived.take();
-        }
-
-        /**
-         * The number of objects that have been received but not yet fetched.
-         *
-         * @return number of unfetched received objects.
-         */
-        public int size() {
-            return mReceived.size();
-        }
-
-        private final BlockingQueue<Object> mReceived =
-                new LinkedBlockingDeque<Object>();
-    }
 }

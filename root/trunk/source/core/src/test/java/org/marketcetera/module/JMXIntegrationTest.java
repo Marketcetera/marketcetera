@@ -66,6 +66,7 @@ public class JMXIntegrationTest extends ModuleTestBase {
                 SingleModuleFactory.PROVIDER_URN.getValue(),
                 MultipleModuleFactory.PROVIDER_URN.getValue(),
                 ComplexModuleFactory.PROVIDER_URN.getValue(),
+                DynamicBeanModuleFactory.PROVIDER_URN.getValue(),
                 JMXTestModuleFactory.PROVIDER_URN.getValue());
         assertContains(mm.getInstances(),
                 SinkModuleFactory.INSTANCE_URN.getValue(),
@@ -328,6 +329,92 @@ public class JMXIntegrationTest extends ModuleTestBase {
         assertEquals(2, JMX.newMXBeanProxy(getMBeanServer(),
                 JMXTestModuleFactory.PROVIDER_URN.toObjectName(),
                 JMXTestFactoryMXBean.class).getNumInstancesCreated());
+    }
+
+    /**
+     * Tests the scenario where the provider / module instance implement
+     * dynamic bean interface instead of an MXBean interface.
+     *
+     * @throws Exception if there were unexpected failures.
+     */
+    @Test
+    public void dynamicBeanTests() throws Exception {
+        //Verify the provider
+        verifyDynamicBean(DynamicBeanModuleFactory.class,
+                DynamicBeanModuleFactory.PROVIDER_URN,
+                DynamicBeanModuleFactory.ATTRIB_NAME,
+                DynamicBeanModuleFactory.PROVIDER_URN.providerName());
+        //create a module instance
+        ModuleURN instanceURN = sManager.createModule(
+                DynamicBeanModuleFactory.PROVIDER_URN, "madule");
+        verifyDynamicBean(DynamicBeanModule.class, instanceURN,
+                DynamicBeanModule.ATTRIB_NAME, instanceURN.instanceName());
+        //delete the module and verify that the bean is unregistered
+        sManager.deleteModule(instanceURN);
+        assertFalse(getMBeanServer().isRegistered(instanceURN.toObjectName()));
+    }
+
+    /**
+     * Verifies a dynamic bean that implements the functionality by delegating
+     * to {@link DynamicBeanDelegate}.
+     *
+     * @param inClass the class of the dynamic bean.
+     * @param inURN the URN of the provider/module.
+     * @param inAttribName the single attribute supported by the bean.
+     * @param inAttribValue the default value of the attribute.
+     *
+     * @throws Exception if there was an error.
+     */
+    private void verifyDynamicBean(Class<? extends DynamicMBean> inClass,
+                                   ModuleURN inURN,
+                                   String inAttribName,
+                                   String inAttribValue) throws Exception {
+        final ObjectName objectName = inURN.toObjectName();
+        final MBeanServer server = getMBeanServer();
+        assertTrue(getMBeanServer().isRegistered(objectName));
+        //verify bean info.
+        MBeanInfo beanInfo = server.getMBeanInfo(objectName);
+        assertEquals(inClass.getName(), beanInfo.getClassName());
+        assertEquals(1, beanInfo.getAttributes().length);
+        assertEquals(inAttribName, beanInfo.getAttributes()[0].getName());
+        //verify bean operations
+        assertEquals(inAttribValue,  server.getAttribute(objectName, inAttribName));
+        String value = "blue";
+        server.setAttribute(objectName, new Attribute(inAttribName, value));
+        assertEquals(value,  server.getAttribute(objectName, inAttribName));
+        AttributeList list = server.getAttributes(objectName, new String[]{
+                "no", inAttribName, "dono"});
+        assertEquals(1, list.size());
+        assertEquals(new Attribute(inAttribName, value), list.get(0));
+        list.clear();
+        list.add(new Attribute("what", "walue"));
+        list.add(new Attribute(inAttribName, inAttribValue));
+        list.add(new Attribute("naught", "glue"));
+        list = server.setAttributes(objectName, list);
+        assertEquals(1, list.size());
+        assertEquals(new Attribute(inAttribName, inAttribValue), list.get(0));
+        assertEquals(inAttribValue,  server.getAttribute(objectName, inAttribName));
+        //verify failures
+        final String missingAttribute = "missing";
+        new ExpectedFailure<AttributeNotFoundException>(missingAttribute){
+            @Override
+            protected void run() throws Exception {
+                server.getAttribute(objectName, missingAttribute);
+            }
+        };
+        new ExpectedFailure<AttributeNotFoundException>(missingAttribute){
+            @Override
+            protected void run() throws Exception {
+                server.setAttribute(objectName, new Attribute(
+                        missingAttribute, "right?"));
+            }
+        };
+        new ExpectedFailure<ReflectionException>(null){
+            @Override
+            protected void run() throws Exception {
+                server.invoke(objectName, "run", null, null);
+            }
+        };
     }
 
     /**

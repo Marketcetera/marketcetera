@@ -56,7 +56,7 @@ public class ConfigurationProviderTest extends ConfigurationProviderTestBase {
         mManager.setConfigurationProvider(provider);
         mManager.init();
         verifyEmptyValues();
-        assertEquals(24, provider.getFetches());
+        assertEquals(25, provider.getFetches());
     }
 
     /**
@@ -134,7 +134,7 @@ public class ConfigurationProviderTest extends ConfigurationProviderTestBase {
         assertEquals(new Short((short) 123), module.getShort());
         assertEquals("theory", module.getString());
         assertEquals("http://blah.com", module.getURL());
-        assertEquals(24, provider.getFetches());
+        assertEquals(25, provider.getFetches());
     }
 
     /**

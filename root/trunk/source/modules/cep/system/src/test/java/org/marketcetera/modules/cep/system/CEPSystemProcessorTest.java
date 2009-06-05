@@ -72,8 +72,8 @@ public class CEPSystemProcessorTest extends CEPTestBase {
                 new DataRequest(TEST_URN, "select * from trade")
         });
 
-        assertSame("Didn't receive right trade event", trade1, sSink.getReceived().take());
-        assertSame("Didn't receive right trade event", trade2, sSink.getReceived().take());
+        assertSame("Didn't receive right trade event", trade1, sSink.getNextData());
+        assertSame("Didn't receive right trade event", trade2, sSink.getNextData());
 
         // check MXBean functionality
         assertEquals("Wrong number of received events", 3, sManager.getDataFlowInfo(flowID).getFlowSteps()[1].getNumReceived());

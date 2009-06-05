@@ -10,6 +10,8 @@ import javax.management.JMX;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 
@@ -112,6 +114,55 @@ public class SinkModuleTest extends ModuleTestBase {
         assertEquals(0, sink3.getData().length);
         verify(flowID, data, sink1.getData());
         verifyJMXStats(data, flowID);
+    }
+
+    /**
+     * Tests {@link BlockingSinkDataListener}.
+     *
+     * @throws Exception if there was an error.
+     */
+    @Test(timeout = 10000)
+    public void blockingSinkListenerTest() throws Exception {
+        final BlockingSinkDataListener listener = new BlockingSinkDataListener();
+        assertEquals(0 ,listener.size());
+        final List<Object> list = new ArrayList<Object>();
+        Thread thread = new Thread("testThread"){
+            @Override
+            public void run() {
+                try {
+                    list.add(listener.getNextData());
+                } catch (InterruptedException ignore) {
+                }
+            }
+        };
+        thread.start();
+        //wait until thread is blocked
+        while(thread.getState() != Thread.State.WAITING) {
+            Thread.sleep(1000);
+        }
+        assertTrue(list.isEmpty());
+        //Add an item to the listener
+        Object data = "data";
+        listener.receivedData(null, data);
+        //wait for the thread to terminate
+        while(thread.getState() != Thread.State.TERMINATED) {
+            Thread.sleep(1000);
+        }
+        //verify that the data is received.
+        assertFalse(list.toString(), list.isEmpty());
+        assertEquals(1, list.size());
+        assertEquals(data, list.get(0));
+        assertEquals(0 ,listener.size());
+        //Now test it with the sink
+        sManager.addSinkListener(listener);
+        DataFlowID flowID = sManager.createDataFlow(new DataRequest[]{
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, data)
+        });
+        //wait until the data is received
+        assertEquals(data, listener.getNextData());
+        //Terminate the data flow
+        sManager.cancel(flowID);
+        sManager.removeSinkListener(listener);
     }
 
     private void verifyJMXStats(Object[] inData, DataFlowID inFlowID) {
