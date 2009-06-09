@@ -5,6 +5,6 @@
 #
 #
 # Create the Order Slicer strategy, with properties symbol=IBM and quantity=2000
-createModule;metc:strategy:system;orderSlicer,OrderSlicer,RUBY,samples/scripts/order_slicer.rb,symbol=IBM:quantity=2000,false,metc:sink:system
+createModule;metc:strategy:system;orderSlicer,OrderSlicer,JAVA,samples/java/scripts/OrderSlicer.java,symbol=IBM:quantity=2000,false,metc:sink:system
 # Start the strategy
 startModule;metc:strategy:system:orderSlicer

@@ -5,7 +5,7 @@
 #
 #
 # Create the Strategy Module
-createModule;metc:strategy:system;movingAverages,MovingAverages,RUBY,samples/scripts/moving_averages.rb,,false,metc:sink:system
+createModule;metc:strategy:system;movingAverages,MovingAverages,RUBY,samples/ruby/scripts/moving_averages.rb,,false,metc:sink:system
 # Start the strategy
 startModule;metc:strategy:system:movingAverages
 # Create a data flow to feed historical OHLC data from yahoo to the strategy

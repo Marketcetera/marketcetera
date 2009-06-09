@@ -28,7 +28,7 @@ include_class "java.math.BigDecimal"
 ###############################
 class VWAPStrategy < Strategy
     SYMBOLS = ["AMZN","GOOG","MSFT"] # Depends on MD - can be other symbols
-    MARKET_DATA_PROVIDER = "bogus" # Can also be activ, bogus, marketcetera
+    MARKET_DATA_PROVIDER = "bogus" # Can be activ, bogus, marketcetera
     CONTENT = "LATEST_TICK"
     CEP_QUERY = ["SELECT t.symbolAsString AS symbol, sum(cast(t.price, double) * cast(t.size, double))/sum(cast(t.size, double)) AS vwap FROM trade t GROUP BY symbol"]
     CEP_PROVIDER = "esper"
@@ -59,7 +59,7 @@ class VWAPStrategy < Strategy
       SYMBOLS.each do |symbol|
         if (!@vwaps[symbol].nil?)
           info "About to send orders for #{symbol} with vwap of #{@vwaps[symbol].to_s}"
-          order = create_empty_order_single
+          order = Factory.instance.createOrderSingle()
           order.side = Side::Buy
           order.quantity = BigDecimal.new("1000.0")
           order.symbol = MSymbol.new(symbol)
@@ -71,8 +71,8 @@ class VWAPStrategy < Strategy
         else 
           warn "didnt' find anything for #{symbol} and checked value was #{@vwaps[symbol]} within #{@vwaps.inspect}"
         end
-        request_callback_after((1000*10), nil) # register for callback in 10 seconds
-      end      
+      end
+      request_callback_after((1000*10), nil) # register for callback in 10 seconds
     end
 
     ############################################################
@@ -82,9 +82,5 @@ class VWAPStrategy < Strategy
     def on_other(data)
       info "setting vwap for symbol #{data['symbol']} #{data['vwap']}"
       @vwaps[data['symbol']] = data['vwap'].to_s
-    end
-
-    def create_empty_order_single()
-      Factory.instance.createOrderSingle()
     end
 end

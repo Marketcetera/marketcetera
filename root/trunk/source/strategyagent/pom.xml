@@ -106,6 +106,7 @@
       <id>executeSample</id>
       <properties>
         <sampleName>HelloWorld.txt</sampleName>
+        <language>ruby</language>
       </properties>
       <build>
         <plugins>
@@ -119,7 +120,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>org.marketcetera.strategyagent.StrategyAgent</argument>
-                <argument>samples/inputs/${sampleName}</argument>
+                <argument>samples/${language}/inputs/${sampleName}</argument>
               </arguments>
               <workingDirectory>src/main/sample_data</workingDirectory>
               <classpathScope>test</classpathScope>
