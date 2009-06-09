@@ -34,13 +34,23 @@
         - as a workaround, use 420 decimal which results in 0644 octal.
         -->
       <fileMode>420</fileMode>
-      <directory>src/main/sample_data/samples/inputs</directory>
-      <outputDirectory>samples/commands</outputDirectory>
+      <directory>src/main/sample_data/samples/ruby/inputs</directory>
+      <outputDirectory>samples/ruby/commands</outputDirectory>
     </fileSet>
     <fileSet>
       <fileMode>420</fileMode>
-      <directory>src/main/sample_data/samples/scripts</directory>
-      <outputDirectory>samples/scripts</outputDirectory>
+      <directory>src/main/sample_data/samples/ruby/scripts</directory>
+      <outputDirectory>samples/ruby/scripts</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <fileMode>420</fileMode>
+      <directory>src/main/sample_data/samples/java/inputs</directory>
+      <outputDirectory>samples/java/commands</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <fileMode>420</fileMode>
+      <directory>src/main/sample_data/samples/java/scripts</directory>
+      <outputDirectory>samples/java/scripts</outputDirectory>
     </fileSet>
     <fileSet>
       <fileMode>420</fileMode>

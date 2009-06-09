@@ -15,7 +15,7 @@ include_class "org.marketcetera.marketdata.MarketDataRequest"
 class MarketData < Strategy
     SYMBOLS = "AMZN,JAVA" # Depends on MD - can be other symbols
     CONTENT = "LATEST_TICK,TOP_OF_BOOK"
-    MARKET_DATA_PROVIDER = "marketcetera" # Can also be activ, bogus, marketcetera
+    MARKET_DATA_PROVIDER = "marketcetera" # Can be activ, bogus, marketcetera
 
     ##########################################
     # Executed when the strategy is started. #

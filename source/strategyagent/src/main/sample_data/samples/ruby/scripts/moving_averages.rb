@@ -9,7 +9,9 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
 
 #######################################
-# Strategy that receives marketdata   #
+# Strategy that prints a message      #
+# whenever a symbol's moving average  #
+# crosses its closing price.       e  #
 #######################################
 class MovingAverages < Strategy
 
