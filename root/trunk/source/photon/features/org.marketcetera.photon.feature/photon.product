@@ -24,7 +24,7 @@ Visit http://www.marketcetera.org
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Xmx512m -XX:MaxPermSize=256m -XX:+UnlockDiagnosticVMOptions -XX:+UnsyncloadClass</vmArgs>
+      <vmArgs>-Xmx512m -XX:MaxPermSize=256m -XX:+UnlockDiagnosticVMOptions -XX:+UnsyncloadClass -client</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.marketcetera.photon/icons/marketcetera/photon-16x16.gif" i32="/org.marketcetera.photon/icons/marketcetera/photon-32x32.gif" i48="/org.marketcetera.photon/icons/marketcetera/photon-48x48.gif" i64="/org.marketcetera.photon/icons/marketcetera/photon-64x64.gif" i128="/org.marketcetera.photon/icons/marketcetera/photon-128x128.gif"/>
