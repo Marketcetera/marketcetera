@@ -308,14 +308,9 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	private void remove(final MarketDataViewItem item) {
-		busyRun(new Runnable() {
-			@Override
-			public void run() {
-				mItemMap.remove(item.getSymbol());
-				mItems.remove(item);
-				item.dispose();
-			}
-		});
+		mItemMap.remove(item.getSymbol());
+		mItems.remove(item);
+		item.dispose();
 	}
 
 	@Override
@@ -505,7 +500,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	 * @version $Id$
 	 * @since 1.0.0
 	 */
-	@ClassVersion("$Id$")//$NON-NLS-1$
+	@ClassVersion("$Id$")
 	public static final class DeleteCommandHandler extends AbstractHandler
 			implements IHandler {
 
@@ -516,13 +511,18 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					.getCurrentSelectionChecked(event);
 			if (part instanceof MarketDataView
 					&& selection instanceof IStructuredSelection) {
-				MarketDataView view = (MarketDataView) part;
-				IStructuredSelection sselection = (IStructuredSelection) selection;
-				for (Object obj : sselection.toArray()) {
-					if (obj instanceof MarketDataViewItem) {
-						view.remove((MarketDataViewItem) obj);
+				final MarketDataView view = (MarketDataView) part;
+				final IStructuredSelection sselection = (IStructuredSelection) selection;
+				// this can take some time
+				view.busyRun(new Runnable() {
+					public void run() {
+						for (Object obj : sselection.toArray()) {
+							if (obj instanceof MarketDataViewItem) {
+								view.remove((MarketDataViewItem) obj);
+							}
+						}
 					}
-				}
+				});
 			}
 			return null;
 		}
