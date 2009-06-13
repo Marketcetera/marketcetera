@@ -149,12 +149,12 @@ public class ThreadedMetricTest {
         assertOutput(new Object[][]{
                 {ThreadedMetric.BEGIN_IDENTIFIER, firstID, thirdID, ThreadedMetric.END_IDENTIFIER, ThreadedMetric.ITERATIONS_HEADER},
                 {currentTime, sleepInterval, sleepInterval, sleepInterval, 1},
-                {currentTime, sleepInterval, sleepInterval, sleepInterval, 2, "\\[first=[\\d]{9}\\]"},
-                {currentTime, sleepInterval, sleepInterval, sleepInterval, 3, "\\[second=[\\d]{9}\\]"},
-                {currentTime, sleepInterval, sleepInterval, sleepInterval, 4, "\\[fourth=[\\d]{9}\\]"},
-                {currentTime, sleepInterval, sleepInterval, sleepInterval, 5, "\\[first=[\\d]{9}:second=[\\d]{9}\\]"},
-                {currentTime, sleepInterval, sleepInterval, sleepInterval, 6, "\\[second=[\\d]{9}:first=[\\d]{9}\\]"},
-                {currentTime, sleepInterval, sleepInterval, sleepInterval, 7, "\\[second=[\\d]{9}:second=[\\d]{9}:first=[\\d]{9}:fourth=[\\d]{9}:first=[\\d]{9}\\]"},
+                {currentTime, sleepInterval, sleepInterval, sleepInterval, 2, "\\[first=" + NPTN + "\\]"},
+                {currentTime, sleepInterval, sleepInterval, sleepInterval, 3, "\\[second=" + NPTN + "\\]"},
+                {currentTime, sleepInterval, sleepInterval, sleepInterval, 4, "\\[fourth=" + NPTN + "\\]"},
+                {currentTime, sleepInterval, sleepInterval, sleepInterval, 5, "\\[first=" + NPTN + ":second=" + NPTN + "\\]"},
+                {currentTime, sleepInterval, sleepInterval, sleepInterval, 6, "\\[second=" + NPTN + ":first=" + NPTN + "\\]"},
+                {currentTime, sleepInterval, sleepInterval, sleepInterval, 7, "\\[second=" + NPTN + ":second=" + NPTN + ":first=" + NPTN + ":fourth=" + NPTN + ":first=" + NPTN + "\\]"},
                 {currentTime, sleepInterval, sleepInterval, sleepInterval, 8}
         },rows);
     }
@@ -266,7 +266,7 @@ public class ThreadedMetricTest {
         assertEquals(3, rows.length);
         assertOutput(new Object[][]{
                 {ThreadedMetric.BEGIN_IDENTIFIER, "beforeNest1", "beforeNest2", "nest3First", "nest3Second", "afterNest2", "afterNest1", ThreadedMetric.END_IDENTIFIER, ThreadedMetric.ITERATIONS_HEADER},
-                {currentTime, sleepInterval, sleepInterval, sleepInterval, sleepInterval, sleepInterval, sleepInterval, sleepInterval, 1, "\\[nest3First=\\d{9}:nest3Second=\\d{9}:beforeNest2=\\d{9}:nest3First=\\d{9}:nest3Second=\\d{9}:nest3First=\\d{9}:nest3Second=\\d{9}:afterNest2=\\d{9}\\]", "\\{beforeNest1=\\[2\\]:beforeNest2=\\[2\\]:beforeNest2=\\[2\\]\\}"},
+                {currentTime, sleepInterval, sleepInterval, sleepInterval, sleepInterval, sleepInterval, sleepInterval, sleepInterval, 1, "\\[nest3First=" + NPTN + ":nest3Second=" + NPTN + ":beforeNest2=" + NPTN + ":nest3First=" + NPTN + ":nest3Second=" + NPTN + ":nest3First=" + NPTN + ":nest3Second=" + NPTN + ":afterNest2=" + NPTN + "\\]", "\\{beforeNest1=\\[2\\]:beforeNest2=\\[2\\]:beforeNest2=\\[2\\]\\}"},
                 {currentTime, sleepInterval, sleepInterval, sleepInterval, sleepInterval, sleepInterval, sleepInterval, sleepInterval, 2, "\\{beforeNest1=\\[1\\]:beforeNest2=\\[1\\]\\}"},
         },rows);
     }
@@ -489,4 +489,11 @@ public class ThreadedMetricTest {
         return inClass.getConstructor(String.class).newInstance(inString);
     }
     static final long sleepInterval = 100;
+    /**
+     * A regex patter that matches the number of nanoseconds of time interval
+     * corresponding to sleepInterval above. Due to timing inaccuracies
+     * the actual time might be slightly less that the sleepInterval above.
+     * And this pattern should account for that.
+     */
+    static final String NPTN = "\\d{8,9}";
 }
