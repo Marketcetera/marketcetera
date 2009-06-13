@@ -4,8 +4,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +25,9 @@ import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.MapMaker;
+import com.google.common.collect.Sets;
 import com.google.inject.BindingAnnotation;
 
 /* $License$ */
@@ -73,7 +73,7 @@ abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? super T>> i
 			return createItem(from);
 		}
 	});
-	private final Set<Capability> mRequiredCapabilities;
+	private final ImmutableSet<Capability> mRequiredCapabilities;
 	private final Executor mMarketDataExecutor;
 	private ModuleURN mSourceModule;
 
@@ -94,9 +94,7 @@ abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? super T>> i
 			final Executor marketDataExecutor) {
 		Validate.noNullElements(new Object[] { moduleManager, requiredCapabilities });
 		mModuleManager = moduleManager;
-		// would like Sets.immutableEnumSet(requiredCapabilities) which may be in google
-		// collections someday
-		mRequiredCapabilities = Collections.unmodifiableSet(EnumSet.copyOf(requiredCapabilities));
+		mRequiredCapabilities = Sets.immutableEnumSet(requiredCapabilities);
 		mMarketDataExecutor = marketDataExecutor;
 	}
 
