@@ -22,6 +22,8 @@ public class TestCaseBaseTest
 {
     private static final String TEST_CATEGORY=
         "TestCategory";
+    private static final String TEST_UNDEFINED_CATEGORY=
+        "TestUndefinedCategory";
     private static final String TEST_MESSAGE=
         "Test message (expected)";
     private static final String TEST_LOCATION=
@@ -61,6 +63,25 @@ public class TestCaseBaseTest
         assertNotNull(getAppender());
     }
 
+
+    @Test
+    public void defaultLevelSetting()
+    {
+        setDefaultLevel(Level.WARN);
+        assertEquals(Level.WARN,Logger.getRootLogger().getLevel());
+        Logger.getLogger(TEST_UNDEFINED_CATEGORY).debug(TEST_MESSAGE);
+        assertEquals(0,getAppender().getEvents().size());
+        Logger.getLogger(TEST_UNDEFINED_CATEGORY).warn(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
+        Logger.getLogger(TEST_UNDEFINED_CATEGORY).error(TEST_MESSAGE);
+        assertEquals(2,getAppender().getEvents().size());
+        getAppender().getEvents().clear();
+
+        setDefaultLevel(Level.OFF);
+        assertEquals(Level.OFF,Logger.getRootLogger().getLevel());
+        Logger.getLogger(TEST_UNDEFINED_CATEGORY).warn(TEST_MESSAGE);
+        assertEquals(0,getAppender().getEvents().size());
+    }
 
     @Test
     public void levelSetting()
@@ -109,6 +130,14 @@ public class TestCaseBaseTest
                     Level.ERROR,TEST_CATEGORY,"",TEST_LOCATION);
     }
 
+    @Test(expected=AssertionError.class)
+    public void eventIncorrectLocation()
+    {
+        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
+        assertEvent(getAppender().getEvents().getLast(),
+                    Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,"");
+    }
+
 
     @Test
     public void noEvents()
@@ -142,6 +171,56 @@ public class TestCaseBaseTest
     public void noLastEvent()
     {
         assertLastEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+    }
+
+
+    @Test
+    public void someEventCorrect()
+    {
+        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
+        assertSomeEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        setLevel(TEST_CATEGORY,Level.INFO);
+        Logger.getLogger(TEST_CATEGORY).info(TEST_MESSAGE);
+        assertSomeEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        assertSomeEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        assertSomeEvent(null,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        assertSomeEvent(Level.INFO,null,TEST_MESSAGE,TEST_LOCATION);
+        assertSomeEvent(Level.INFO,TEST_CATEGORY,null,TEST_LOCATION);
+        assertSomeEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE,null);
+    }
+
+    @Test(expected=AssertionError.class)
+    public void noMatchingIncorrectLevel()
+    {
+        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
+        assertSomeEvent(Level.WARN,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+    }
+
+    @Test(expected=AssertionError.class)
+    public void noMatchingIncorrectName()
+    {
+        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
+        assertSomeEvent(Level.ERROR,"",TEST_MESSAGE,TEST_LOCATION);
+    }
+
+    @Test(expected=AssertionError.class)
+    public void noMatchingIncorrectMessage()
+    {
+        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
+        assertSomeEvent(Level.ERROR,TEST_CATEGORY,"",TEST_LOCATION);
+    }
+
+    @Test(expected=AssertionError.class)
+    public void noMatchingIncorrectLocation()
+    {
+        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
+        assertSomeEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,"");
+    }
+
+    @Test(expected=AssertionError.class)
+    public void noSomeEvent()
+    {
+        assertSomeEvent(null,null,null,null);
     }
 
 
