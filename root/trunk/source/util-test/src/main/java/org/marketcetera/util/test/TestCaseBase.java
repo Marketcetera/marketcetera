@@ -63,6 +63,18 @@ public class TestCaseBase
     // CLASS METHODS.
 
     /**
+     * Sets the level of the root logger to the given level.
+     *
+     * @param level The level.
+     */
+
+    protected static void setDefaultLevel
+        (Level level)
+    {
+        Logger.getRootLogger().setLevel(level);
+    }
+
+    /**
      * Sets the level of the logger with the given name to the given
      * level.
      *
@@ -79,7 +91,7 @@ public class TestCaseBase
 
     /**
      * Asserts that the contents of the given event match the given
-     * expected level, logger name, and message.
+     * expected level, logger name, message, and location.
      *
      * @param event The event.
      * @param level The expected level. Use null to indicate "don't
@@ -87,6 +99,8 @@ public class TestCaseBase
      * @param logger The expected logger name. Use null to indicate
      * "don't care".
      * @param message The expected message. Use null to indicate
+     * "don't care".
+     * @param location The expected location. Use null to indicate
      * "don't care".
      */
 
@@ -176,6 +190,43 @@ public class TestCaseBase
             fail("List is empty"); //$NON-NLS-1$
         }
         assertEvent(event,level,logger,message,location);
+    }
+
+    /**
+     * Asserts that at least one of the receiver's collector's events
+     * matches the given expected level, logger name, message, and
+     * location. If the collector has no events, the assertion fails.
+     *
+     * @param level The expected level. Use null to indicate "don't
+     * care".
+     * @param logger The expected logger name. Use null to indicate
+     * "don't care".
+     * @param message The expected message. Use null to indicate
+     * "don't care".
+     * @param location The expected location. Use null to indicate
+     * "don't care".
+     */
+
+    protected void assertSomeEvent
+        (Level level,
+         String logger,
+         String message,
+         String location)
+    {
+        for (LoggingEvent event:getAppender().getEvents()) {
+            if (((level==null) ||
+                 level.equals(event.getLevel())) &&
+                ((logger==null) ||
+                 logger.equals(event.getLoggerName())) &&
+                ((message==null) ||
+                 message.equals(event.getMessage())) &&
+                ((location==null) ||
+                 location.equals
+                 (event.getLocationInformation().getClassName()))) {
+                return;
+            }
+        }
+        fail("No matches against given event"); //$NON-NLS-1$
     }
 
     /**
