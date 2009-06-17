@@ -26,6 +26,7 @@ public class BigIntegerHolder
     private BigInteger[] mArray;
 
 
+    @SuppressWarnings("unused")
     private BigIntegerHolder() {}
 
     public BigIntegerHolder

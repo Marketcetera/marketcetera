@@ -27,6 +27,7 @@ public class ShortHolder
     private Short[] mArray;
 
 
+    @SuppressWarnings("unused")
     private ShortHolder() {}
 
     public ShortHolder

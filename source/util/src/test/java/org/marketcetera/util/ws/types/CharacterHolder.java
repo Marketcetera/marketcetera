@@ -36,6 +36,7 @@ public class CharacterHolder
     private TreeMap<Character,Character> mTreeMap;
 
 
+    @SuppressWarnings("unused")
     private CharacterHolder() {}
 
     public CharacterHolder

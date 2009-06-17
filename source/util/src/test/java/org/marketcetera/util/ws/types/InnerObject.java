@@ -41,6 +41,7 @@ public class InnerObject
     public static class InnerStatic
         extends Base<Integer>
     {
+        @SuppressWarnings("unused")
         private InnerStatic() {}
 
         public InnerStatic
@@ -53,6 +54,7 @@ public class InnerObject
     public class InnerNonstatic
         extends Base<Long>
     {
+        @SuppressWarnings("unused")
         private InnerNonstatic() {}
 
         public InnerNonstatic
@@ -68,6 +70,7 @@ public class InnerObject
     private int mRank;
 
 
+    @SuppressWarnings("unused")
     private InnerObject() {}
 
     public InnerObject
