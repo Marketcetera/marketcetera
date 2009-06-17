@@ -40,6 +40,7 @@ public class OperatingSystemTest
 
         single(DARWIN,       false,true, "DARWIN,Darwin,unix");
         single(MAC_OS_X,     false,true, "MAC_OS_X,Mac OS X,unix");
+        single(FREEBSD,      false,true, "FREEBSD,FreeBSD,unix");
         single(LINUX,        false,true, "LINUX,Linux,unix");
         single(SOLARIS,      false,true, "SOLARIS,SunOS,unix");
         single(AIX,          false,true, "AIX,AIX,unix");
