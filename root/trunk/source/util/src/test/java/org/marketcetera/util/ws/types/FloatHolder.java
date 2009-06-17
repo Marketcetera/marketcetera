@@ -27,6 +27,7 @@ public class FloatHolder
     private Float[] mArray;
 
 
+    @SuppressWarnings("unused")
     private FloatHolder() {}
 
     public FloatHolder

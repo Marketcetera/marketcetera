@@ -25,6 +25,7 @@ public class InnerObjectHolder
     private InnerObject[] mArray;
 
 
+    @SuppressWarnings("unused")
     private InnerObjectHolder() {}
 
     public InnerObjectHolder

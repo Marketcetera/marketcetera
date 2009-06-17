@@ -26,6 +26,7 @@ public class BigDecimalHolder
     private BigDecimal[] mArray;
 
 
+    @SuppressWarnings("unused")
     private BigDecimalHolder() {}
 
     public BigDecimalHolder

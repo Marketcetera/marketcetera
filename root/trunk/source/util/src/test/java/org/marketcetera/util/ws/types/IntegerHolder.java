@@ -27,6 +27,7 @@ public class IntegerHolder
     private Integer[] mArray;
 
 
+    @SuppressWarnings("unused")
     private IntegerHolder() {}
 
     public IntegerHolder
