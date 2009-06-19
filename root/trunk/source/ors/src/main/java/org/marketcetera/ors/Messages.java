@@ -46,6 +46,8 @@ public interface Messages
 
     static final I18NMessage0P APP_START=
         new I18NMessage0P(LOGGER,"app_start"); //$NON-NLS-1$
+    static final I18NMessage0P APP_STARTED=
+        new I18NMessage0P(LOGGER,"app_started"); //$NON-NLS-1$
     static final I18NMessage0P APP_STOP=
         new I18NMessage0P(LOGGER,"app_stop"); //$NON-NLS-1$
     static final I18NMessage0P APP_STOP_SUCCESS=

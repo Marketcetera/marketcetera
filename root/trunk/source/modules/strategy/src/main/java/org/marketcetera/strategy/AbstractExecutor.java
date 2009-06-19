@@ -74,7 +74,6 @@ abstract class AbstractExecutor
                 // this means that the "onStart" method was never completed so the strategy never started
                 // this will cause a moduleCreationError in StrategyModule, which is what we want
                 StrategyModule.log(LogEvent.error(RUNTIME_ERROR,
-                                                  e,
                                                   getStrategy().toString(),
                                                   translateMethodName("onStart"), //$NON-NLS-1$
                                                   interpretRuntimeException(e)),
@@ -108,7 +107,6 @@ abstract class AbstractExecutor
                 enclosingStrategy.setStatus(STOPPED);
         } catch (Exception e) {
             StrategyModule.log(LogEvent.error(RUNTIME_ERROR,
-                                              e,
                                               String.valueOf(getStrategy()),
                                               translateMethodName("onStop"), //$NON-NLS-1$
                                               interpretRuntimeException(e)),
