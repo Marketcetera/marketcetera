@@ -1,9 +1,21 @@
 package org.marketcetera.strategy;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import org.junit.Test;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.SinkDataListener;
+import org.marketcetera.module.SinkModuleFactory;
+import org.marketcetera.util.test.SerializableAssert;
+
+import static org.marketcetera.strategy.Status.FAILED;
 
 /* $License$ */
 
@@ -61,6 +73,12 @@ public class RubyLanguageTest
     public static final File REQUIRES_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                           "require.rb");
     public static final String REQUIRES_STRATEGY_NAME = "Require";
+    public static final File BAD_ON_START_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                              "bad_on_start.rb");
+    public static final String BAD_ON_START_STRATEGY_NAME = "BadOnStart";
+    public static final File BAD_ON_STOP_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                             "bad_on_stop.rb");
+    public static final String BAD_ON_STOP_STRATEGY_NAME = "BadOnStop";
     /**
      * Verifies that a Ruby strategy that requires another Ruby strategy works.
      *
@@ -84,6 +102,78 @@ public class RubyLanguageTest
         stopStrategy(strategyURN);
         verifyPropertyNonNull("onStop");
     }
+    /**
+     * Tests that all LogEvents are serializable when a strategy has a syntax error in on_start
+     * or in on_stop.
+     *
+     * @throws Exception if an error occurs
+     */
+     @Test
+     public void serializableError()
+         throws Exception
+     {
+         // runtime error in onStart
+         final StrategyCoordinates strategy = getBadOnStartStrategy();
+         final Properties parameters = new Properties();
+         parameters.setProperty("shouldFailOnStart",
+                                "true");
+         
+         // We want to listen for LogEvents emitted to the Sink module
+         final List<LogEvent> logEventList = new ArrayList<LogEvent>();
+         moduleManager.addSinkListener(new SinkDataListener() {
+             @Override
+             public void receivedData(DataFlowID inFlowID, Object inData) {
+                 if (inData instanceof LogEvent)
+                     logEventList.add((LogEvent) inData);
+             }
+         });
+         final ModuleURN strategyURN = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                                  null,
+                                                                  strategy.getName(),
+                                                                  getLanguage(),
+                                                                  strategy.getFile(),
+                                                                  parameters,
+                                                                  null,
+                                                                  SinkModuleFactory.INSTANCE_URN);
+         // failed "onStart" means that the strategy is in error status and will not receive any data
+         new ExpectedFailure<ModuleException>(FAILED_TO_START) {
+             @Override
+             protected void run()
+                     throws Exception
+             {
+                 moduleManager.start(strategyURN);
+             }
+         };
+         
+         // "onStart" has completed, but verify that the last statement in the strategy was never executed
+         verifyPropertyNull("onStart");
+         // verify the status of the strategy
+         verifyStrategyStatus(strategyURN,
+                              FAILED);
+                
+         setPropertiesToNull();
+         parameters.clear();
+         AbstractRunningStrategy.setProperty("shouldFailOnStop",
+                                             "true");
+         // runtime error in onStop
+         final StrategyCoordinates strategy2 = getBadOnStopStrategy();
+         ModuleURN strategyURN2 = createStrategy(strategy2.getName(),
+                                                 getLanguage(),
+                                                 strategy2.getFile(),
+                                                 parameters,
+                                                 null,
+                                                 SinkModuleFactory.INSTANCE_URN);
+         doSuccessfulStartTestNoVerification(strategyURN2);
+         stopStrategy(strategyURN2);
+         AbstractRunningStrategy.setProperty("shouldFailOnStop",
+                                             null);
+         
+         // Test that all LogEvents emitted are serializable
+         // assertSerializable throws error if they are not
+         for (LogEvent l : logEventList)
+             SerializableAssert.assertSerializable(UNSERIALIZABLE_LOG_EVENT, l);
+         
+     }
     /*
      * (non-Javadoc)
      * 
@@ -232,4 +322,25 @@ public class RubyLanguageTest
         return StrategyCoordinates.get(REQUIRES_STRATEGY,
                                        REQUIRES_STRATEGY_NAME);
     }
+    /**
+     * Gets a strategy which has a syntax error in on_start to test serialization of LogEvent
+     * 
+     * @return a <code>StrategyCoordinates</code> value
+     */
+     private StrategyCoordinates getBadOnStartStrategy()
+     {
+         return StrategyCoordinates.get(BAD_ON_START_STRATEGY, 
+                                        BAD_ON_START_STRATEGY_NAME);
+     }
+     /**
+      * Gets a strategy which has a syntax error in the on_stop to test serialization of LogEvent
+      * 
+      * @return a <code>StrategyCoordinates</code> value
+      */
+     private StrategyCoordinates getBadOnStopStrategy()
+     {
+         return StrategyCoordinates.get(BAD_ON_STOP_STRATEGY,
+                                        BAD_ON_STOP_STRATEGY_NAME);
+     }
+     private final String UNSERIALIZABLE_LOG_EVENT = "An unserializable LogEvent was emitted in on_start or on_stop.  See log for details.";
 }

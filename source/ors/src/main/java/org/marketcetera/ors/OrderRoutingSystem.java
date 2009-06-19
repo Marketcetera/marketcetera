@@ -268,7 +268,9 @@ public class OrderRoutingSystem
         // Execute application.
 
         try {
-            (new OrderRoutingSystem(args)).startWaitingForever();
+            OrderRoutingSystem ors = new OrderRoutingSystem(args);
+            Messages.APP_STARTED.info(LOGGER_CATEGORY);
+            ors.startWaitingForever();
             Messages.APP_STOP_SUCCESS.info(LOGGER_CATEGORY);
         } catch (Throwable t) {
             Messages.APP_STOP_ERROR.error(LOGGER_CATEGORY,t);
