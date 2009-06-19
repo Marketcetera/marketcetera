@@ -4,6 +4,8 @@ import java.util.Locale;
 import javax.jws.WebService;
 import javax.xml.ws.soap.SOAPFaultException;
 import org.apache.cxf.service.factory.ServiceConstructionException;
+import org.junit.Before;
+import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -65,6 +67,13 @@ public class ClientServerTestBase
     }
 
 
+    @Before
+    public void setupClientServerTestBase()
+    {
+        ActiveLocale.setProcessLocale(Locale.ROOT);
+    }
+
+
     protected static void singleClientEmpty
         (StatelessClient client,
          StatelessClient empty)
@@ -77,7 +86,7 @@ public class ClientServerTestBase
         assertEquals(VersionId.SELF,context.getVersionId());
         assertEquals(TEST_APP,context.getAppId());
         assertEquals(client.getId(),context.getClientId());
-        assertEquals(Locale.getDefault(),context.getLocale().getRaw());
+        assertEquals(Locale.ROOT,context.getLocale().getRaw());
 
         singleNode(client,empty);
     }
