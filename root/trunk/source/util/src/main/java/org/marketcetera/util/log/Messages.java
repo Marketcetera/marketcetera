@@ -34,6 +34,8 @@ public interface Messages
      * The messages.
      */
 
+    static final I18NMessage2P MESSAGE_FILE_NOT_FOUND=
+        new I18NMessage2P(LOGGER,"message_file_not_found"); //$NON-NLS-1$
     static final I18NMessage4P MESSAGE_NOT_FOUND=
         new I18NMessage4P(LOGGER,"message_not_found"); //$NON-NLS-1$
     static final I18NMessage4P UNEXPECTED_EXCEPTION=

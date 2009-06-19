@@ -9,6 +9,7 @@ import org.apache.commons.i18n.MessageManager;
 import org.apache.commons.i18n.MessageNotFoundException;
 import org.apache.commons.i18n.ResourceBundleMessageProvider;
 import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -23,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * deserialization, they are not guaranteed to have the same
  * classloader as during serialization, and hence may be unable to
  * access the same message files as were available during
- * serialization.</p>
+ * serialization. If this happens, deserialization will fail.</p>
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -93,7 +94,13 @@ public class I18NMessageProvider
          ClassLoader classLoader)
     {
         mProviderId=providerId;
-        init(classLoader);
+        try {
+            init(classLoader);
+        } catch (MessageNotFoundException ex) {
+            SLF4JLoggerProxy.error
+                (this,MESSAGE_FILE_NOT_FOUND,getProviderId(),getBaseName());
+            SLF4JLoggerProxy.error(this,UNEXPECTED_EXCEPTION_TRACE,ex);
+        }
     }
 
     /**
@@ -120,25 +127,21 @@ public class I18NMessageProvider
      *
      * @param classLoader The class loader used to load the mapping
      * file. It may be null to use the default classloader.
+     *
+     * @throws MessageNotFoundException Thrown if initialization
+     * fails.
      */
 
     private void init
         (ClassLoader classLoader)
+        throws MessageNotFoundException
     {
-        String baseName=getProviderId()+MESSAGE_FILE_EXTENSION;
         ResourceBundleMessageProvider provider;
-        try {
-            if (classLoader==null) {
-                provider=new ResourceBundleMessageProvider(baseName);
-            } else {
-                provider=new ResourceBundleMessageProvider
-                    (baseName,classLoader);
-            }
-        } catch (MessageNotFoundException ex) {
-            SLF4JLoggerProxy.error
-                (this,MESSAGE_FILE_NOT_FOUND,getProviderId(),baseName);
-            SLF4JLoggerProxy.error(this,UNEXPECTED_EXCEPTION_TRACE,ex);
-            return;
+        if (classLoader==null) {
+            provider=new ResourceBundleMessageProvider(getBaseName());
+        } else {
+            provider=new ResourceBundleMessageProvider
+                (getBaseName(),classLoader);
         }
         MessageManager.addMessageProvider(getProviderId(),provider);
     }
@@ -155,7 +158,18 @@ public class I18NMessageProvider
     }
 
     /**
-     * Java serialization. Reads a receiver instance from the given
+     * Returns the receiver's base name.
+     *
+     * @return The base name.
+     */
+
+    private String getBaseName()
+    {
+        return getProviderId()+MESSAGE_FILE_EXTENSION;
+    }
+
+    /**
+     * Java deserialization. Reads a receiver instance from the given
      * stream.
      *
      * @param in The stream.
@@ -170,7 +184,13 @@ public class I18NMessageProvider
                ClassNotFoundException
     {
         in.defaultReadObject();
-        init(null);
+        try {
+            init(null);
+        } catch (MessageNotFoundException ex) {
+            throw new IOException
+                (Messages.MESSAGE_FILE_NOT_FOUND.getText
+                 (getProviderId(),getBaseName()),ex);
+        }
     }
 
     /**
@@ -199,6 +219,7 @@ public class I18NMessageProvider
             return MessageManager.getText
                 (getProviderId(),messageId,entryId,params,locale);
         } catch (Exception ex) {
+            ExceptUtils.interrupt(ex);
 
             // Handle mutually recursive call.
 
