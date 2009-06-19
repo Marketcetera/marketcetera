@@ -82,6 +82,7 @@ public class CompSerWrapperTest
 
     @Test
     public void all()
+        throws Exception
     {
         CompSerWrapper<TestComparable> empty=
             new CompSerWrapper<TestComparable>();

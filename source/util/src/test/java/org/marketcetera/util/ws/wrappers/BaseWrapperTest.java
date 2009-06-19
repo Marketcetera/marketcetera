@@ -41,6 +41,7 @@ public class BaseWrapperTest
 
     @Test
     public void all()
+        throws Exception
     {
         TestWrapper empty=new TestWrapper();
         assertNull(empty.getTestValue());
