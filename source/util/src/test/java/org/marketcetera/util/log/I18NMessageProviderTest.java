@@ -2,10 +2,13 @@ package org.marketcetera.util.log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
+import org.apache.commons.lang.SerializationException;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
@@ -57,6 +60,19 @@ public class I18NMessageProviderTest
                        new I18NMessageProvider("a"),
                        new I18NMessageProvider("b"));
         assertSerializable(TestMessages.PROVIDER);
+    }
+
+    @Test
+    public void deserialization()
+    {
+        byte[] serialized=SerializationUtils.serialize
+            (new I18NMessageProvider("nonexistent_prv"));
+        try {
+            SerializationUtils.deserialize(serialized);
+            fail();
+        } catch (SerializationException ex) {
+            assertEquals(IOException.class,ex.getCause().getClass());
+        }
     }
 
     @Test

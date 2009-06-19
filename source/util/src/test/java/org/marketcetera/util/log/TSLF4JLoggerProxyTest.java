@@ -1,8 +1,6 @@
 package org.marketcetera.util.log;
 
-import java.util.Iterator;
 import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 

@@ -199,14 +199,54 @@ explicit locale is not supplied). Similarly, all code that needs to
 get/set the active locale should use that class.</p>
 
 
-<h3>Serialization gotcha</h3>
+<h3>De/serialization</h3>
 
-<p>Messages and their providers can be serialized. However, upon
-deserialization (even if it is successful), they are not guaranteed to
-be resolvable (localizable) as the appropriate localization message
-files may not exist in the deserialization context. Even if the files
-exist, the classloader employed by {@link
-org.marketcetera.util.log.I18NMessageProvider} may not be the right
-one. So serialize messages with care.</p>
+<p>Messages and their providers can be serialized. Upon successful
+deserialization, they are guaranteed to be resolvable (localizable)
+insofar as the message files are guaranteed to exist: that is, if the
+appropriate localization message files do not exist in the
+deserialization context (e.g. the classloader employed by {@link
+org.marketcetera.util.log.I18NMessageProvider} is not be the right
+one), or the message parameters are instances of classes that are not
+available, deserialization will fail. Note that there is no guarantee
+that the message handle will be correctly mapped to text within the
+existing message file: deserialization will succeed even if the handle
+cannot be mapped. The implied simplifying assumption is that, if the
+message file can be located in the deserialization context, it is
+assumed to be complete.</p>
+
+<p>Conduct under deserialization demonstrates a certain asymmetry. A
+message and its provider can be created and used even when the
+necessary message files are not available or the message is not mapped
+therein; the system will simply translate the message to a string
+containing the raw (unlocalized) message handle and its
+parameters. However, deserialization of messages and their providers
+fails altogether if the message file/handle cannot be located. Why the
+asymmetry? For one, the asymmetry is unavoidable when the message
+parameters are instances of classes that are not available in the
+deserialization context; however, there is more to this asymmetry than
+this unavoidable scenario.</p>
+
+<p>The reason is that in both cases we want to achieve the same
+end-goal: maximize the information available to the end-user, and to
+do so with minimal disruption to the system's operation. In the former
+case, the only information we have on a message is its handle and
+parameters, so, if we cannot localize, we log an error message and do
+the best we can to translate the message. In the latter case, a
+failure is desirable because this enables the deserializer to provide
+a more meaningful translation than the above simplistic
+handle-and-parameters text. Specifically, deserialization occurs in
+the context of client/server communications, and it is possible that
+the client may not have access to the server's message files. However,
+the server typically does have access to its message files (as well as
+the classes used by the message parameters). So, if the client cannot
+localize a message received from the server, the best fallback is to
+use the server's localization of the same message: to do this, the
+deserialization must fail (and, in the case of parameters whose
+classes are unavailable on the client, deserialization will certainly
+fail), so that the client can use the server's localization. The
+{@link org.marketcetera.util.ws.wrappers} package offers proxy objects
+for messages (or exceptions which can contain messages) that implement
+this fallback transparently.</p>
 
 </body>
