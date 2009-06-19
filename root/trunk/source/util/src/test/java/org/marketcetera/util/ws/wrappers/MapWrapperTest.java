@@ -18,6 +18,7 @@ public class MapWrapperTest
 {
     @Test
     public void all()
+        throws Exception
     {
         HashMap<Integer,String> map=new HashMap<Integer,String>();
         map.put(0,TEST_VALUE);

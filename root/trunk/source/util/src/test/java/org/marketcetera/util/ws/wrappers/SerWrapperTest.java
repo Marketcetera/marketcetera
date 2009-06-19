@@ -19,6 +19,7 @@ public class SerWrapperTest
 
     @Test
     public void all()
+        throws Exception
     {
         serialization(new SerWrapper<int[]>(TEST_ARRAY),
                       new SerWrapper<int[]>(TEST_ARRAY),

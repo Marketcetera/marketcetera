@@ -23,6 +23,11 @@ public class LocaleWrapper
     extends DualWrapper<Locale,MarshalledLocale>
 {
 
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
+
     // CONSTRUCTORS.
 
     /**
@@ -40,10 +45,10 @@ public class LocaleWrapper
 
     /**
      * Creates a new wrapper. This empty constructor is intended for
-     * use by JAXB.
+     * use by JAXB and Java serialization.
      */
 
-    protected LocaleWrapper() {}
+    public LocaleWrapper() {}
 
 
     // DualWrapper.
