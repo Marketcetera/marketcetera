@@ -90,6 +90,7 @@ public class NamedThreadFactoryTest {
                 }
             }
         };
+        actual.start();
         actual.join();
         assertTrue(failures.toString(), failures.isEmpty());
     }
