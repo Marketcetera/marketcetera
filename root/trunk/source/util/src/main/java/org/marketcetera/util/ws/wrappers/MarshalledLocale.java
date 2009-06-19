@@ -1,5 +1,6 @@
 package org.marketcetera.util.ws.wrappers;
 
+import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
@@ -16,7 +17,13 @@ import org.marketcetera.util.misc.ClassVersion;
 
 @ClassVersion("$Id$")
 public class MarshalledLocale
+    implements Serializable
 {
+
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
 
     // INSTANCE DATA.
 
@@ -47,7 +54,7 @@ public class MarshalledLocale
 
     /**
      * Creates a new marshalled form. This empty constructor is
-     * intended for use by JAXB.
+     * intended for use by JAXB or Java serialization.
      */
 
     protected MarshalledLocale() {}
