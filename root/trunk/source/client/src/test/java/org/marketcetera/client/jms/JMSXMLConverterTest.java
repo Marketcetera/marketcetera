@@ -85,6 +85,12 @@ public class JMSXMLConverterTest {
                 (OrderCancelReject) roundTrip(cancelReject));
     }
     @Test
+    public void verifyFIXResponse() throws Exception {
+        FIXResponse fixResponse = ClientTest.createFIXResponse();
+        TypesTestBase.assertFIXResponseEquals(fixResponse,
+                (FIXResponse) roundTrip(fixResponse));
+    }
+    @Test
     public void verifyBrokerStatus() throws Exception {
         BrokerStatus i = new BrokerStatus("me", new BrokerID("broke"), false);
         BrokerStatus o = (BrokerStatus) roundTrip(i);

@@ -1,16 +1,19 @@
 package org.marketcetera.client;
 
+import org.apache.log4j.Level;
+
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.log.ActiveLocale;
+import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.*;
 
 import static org.marketcetera.trade.TypesTestBase.*;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 import org.junit.*;
@@ -24,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -35,6 +39,7 @@ import java.lang.reflect.Method;
 import quickfix.field.OrdStatus;
 import quickfix.field.ClOrdID;
 import quickfix.field.OrigClOrdID;
+import quickfix.field.BusinessRejectReason;
 
 /* $License$ */
 /**
@@ -46,7 +51,9 @@ import quickfix.field.OrigClOrdID;
  * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class ClientTest {
+public class ClientTest
+    extends TestCaseBase
+{
     /*
      * This value can be set to a much higher value to assess
      * performance of jms roundtrip communications.
@@ -57,7 +64,6 @@ public class ClientTest {
     private static final int NUM_REPEAT = 5;
     @BeforeClass
     public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
         FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
                 FIXVersion.FIX42.getDataDictionaryURL());
         initServer();
@@ -485,6 +491,38 @@ public class ClientTest {
             ReportBase receivedReport = mReplies.getReport();
             assertTrue(receivedReport instanceof OrderCancelReject);
             assertCancelRejectEquals(report, (OrderCancelReject) receivedReport);
+        }
+    }
+
+    @Test
+    public void sendAnyGetFIXResponse() throws Exception {
+        initClient();
+        ActiveLocale.setProcessLocale(Locale.ROOT);
+        String category=ClientImpl.TradeMessageReceiver.class.getName();
+        setDefaultLevel(Level.OFF);
+        setLevel(category,Level.WARN);
+        getAppender().clear();
+            
+        for (int i = 0; i < NUM_REPEAT; i++) {
+            //Create a response for the mock server to send back
+            FIXResponse response = createFIXResponse();
+            sServer.getHandler().addToSend(response);
+
+            //Send an order
+            getClient().sendOrderRaw(createOrderFIX());
+            //Wait for responses to arrive.
+            Thread.sleep(5000);
+            //Verify received response (in the form of a logged message)
+            assertNull(mReplies.peekReport());
+            assertSingleEvent
+                (Level.WARN,category,
+                 "Received a fix report that was neither an execution report "+
+                 "nor an order cancel reject: '"+
+                 response.toString()+
+                 "'. Client applications do "+
+                 "not yet support this message type, so it was not forwarded "+
+                 "to the application or its embedded strategies.",
+                 category);
         }
     }
 
@@ -1039,6 +1077,23 @@ public class ClientTest {
                         new OrigClOrdID("origord1"),
                         "what?", null),
                 new BrokerID("bro"), Originator.Broker, null, null);
+    }
+
+    /**
+     * Creates a sample FIX response for the mock server to send back.
+     *
+     * @return sample FIX response.
+     *
+     * @throws Exception if there were errors creating the response.
+     */
+    public static FIXResponse createFIXResponse()
+        throws Exception
+    {
+        return Factory.getInstance().createFIXResponse
+            (FIXVersion.FIX42.getMessageFactory().newBusinessMessageReject
+             ("QQ",BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE,
+              "Bad message type"),
+             new BrokerID("bro"), Originator.Broker, null, null);
     }
 
     public static OrderSingle createOrderSingle() {

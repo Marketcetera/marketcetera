@@ -11,6 +11,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.management.JMX;
@@ -135,10 +136,12 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 assertExecReportEquals(
                         ((ExecutionReport) report),
                         (ExecutionReport) sink.getNextData());
-            } else {
+            } else if (report instanceof OrderCancelReject) {
                 assertCancelRejectEquals(
                         ((OrderCancelReject) report),
                         (OrderCancelReject) sink.getNextData());
+            } else {
+                fail("Support for FIXResponse messages is pending");
             }
 
         }
