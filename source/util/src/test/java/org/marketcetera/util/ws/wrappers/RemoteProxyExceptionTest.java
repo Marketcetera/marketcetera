@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
 import org.marketcetera.util.file.CloseableRegistry;
@@ -32,27 +33,9 @@ public class RemoteProxyExceptionTest
     private static final String TEST_STRING=
         "testString";
 
-
-    @Test
-    public void all()
+    private static String getStackTraceNoArg
+        (RemoteProxyException ex)
     {
-        assertEquality(new RemoteProxyException
-                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING),
-                       new RemoteProxyException
-                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING),
-                       new RemoteProxyException
-                       (TEST_MESSAGE+"d",TEST_TRACE,TEST_STRING),
-                       new RemoteProxyException
-                       (TEST_MESSAGE,new String[] {"d"},TEST_STRING),
-                       new RemoteProxyException
-                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING+"d"));
-
-        RemoteProxyException ex=new RemoteProxyException
-            (TEST_MESSAGE,TEST_TRACE,TEST_STRING);
-
-        assertEquals(TEST_MESSAGE,ex.getMessage());
-        assertArrayEquals(TEST_TRACE,ex.getTraceCapture());
-
         PrintStream stdErrSave=System.err;
         CloseableRegistry r=new CloseableRegistry();
         ByteArrayOutputStream byteArray=new ByteArrayOutputStream();
@@ -66,10 +49,14 @@ public class RemoteProxyExceptionTest
             System.setErr(stdErrSave);
             r.close();
         }
-        assertEquals(TEST_TRACE_PRINT,new String(byteArray.toByteArray()));
+        return new String(byteArray.toByteArray());
+    }
 
-        r=new CloseableRegistry();
-        byteArray=new ByteArrayOutputStream();
+    private static String getStackTraceStream
+        (RemoteProxyException ex)
+    {
+        CloseableRegistry r=new CloseableRegistry();
+        ByteArrayOutputStream byteArray=new ByteArrayOutputStream();
         try {
             r.register(byteArray);
             PrintStream out=new PrintStream(byteArray);
@@ -78,9 +65,13 @@ public class RemoteProxyExceptionTest
         } finally {
             r.close();
         }
-        assertEquals(TEST_TRACE_PRINT,new String(byteArray.toByteArray()));
+        return new String(byteArray.toByteArray());
+    }
 
-        r=new CloseableRegistry();
+    private static String getStackTraceWriter
+        (RemoteProxyException ex)
+    {
+        CloseableRegistry r=new CloseableRegistry();
         StringWriter string=new StringWriter();
         try {
             r.register(string);
@@ -90,10 +81,59 @@ public class RemoteProxyExceptionTest
         } finally {
             r.close();
         }
-        assertEquals(TEST_TRACE_PRINT,string.toString());
+        return string.toString();
+    }
 
+
+    @Test
+    public void basics()
+    {
+        assertEquality(new RemoteProxyException
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING),
+                       new RemoteProxyException
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING),
+                       new RemoteProxyException
+                       (null,TEST_TRACE,TEST_STRING),
+                       new RemoteProxyException
+                       (TEST_MESSAGE,null,TEST_STRING),
+                       new RemoteProxyException
+                       (TEST_MESSAGE,TEST_TRACE,null),
+                       new RemoteProxyException
+                       (TEST_MESSAGE+"d",TEST_TRACE,TEST_STRING),
+                       new RemoteProxyException
+                       (TEST_MESSAGE,new String[] {"d"},TEST_STRING),
+                       new RemoteProxyException
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING+"d"));
+
+        RemoteProxyException ex=new RemoteProxyException
+            (TEST_MESSAGE,TEST_TRACE,TEST_STRING);
+        assertEquals(TEST_MESSAGE,ex.getMessage());
+        assertArrayEquals(TEST_TRACE,ex.getTraceCapture());
+        assertEquals(TEST_TRACE_PRINT,getStackTraceNoArg(ex));
+        assertEquals(TEST_TRACE_PRINT,getStackTraceStream(ex));
+        assertEquals(TEST_TRACE_PRINT,getStackTraceWriter(ex));
         assertNull(ex.getStackTrace());
-
         assertEquals(TEST_STRING,ex.toString());
+    }
+
+    @Test
+    public void nullParams()
+    {
+        assertEquality(new RemoteProxyException
+                       (null,null,null),
+                       new RemoteProxyException
+                       (null,null,null),
+                       new RemoteProxyException
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING));
+
+        RemoteProxyException ex=new RemoteProxyException
+            (null,null,null);
+        assertNull(ex.getMessage());
+        assertNull(ex.getTraceCapture());
+        assertEquals(StringUtils.EMPTY,getStackTraceNoArg(ex));
+        assertEquals(StringUtils.EMPTY,getStackTraceStream(ex));
+        assertEquals(StringUtils.EMPTY,getStackTraceWriter(ex));
+        assertNull(ex.getStackTrace());
+        assertNull(ex.toString());
     }
 }

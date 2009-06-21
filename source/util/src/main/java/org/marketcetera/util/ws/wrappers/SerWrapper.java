@@ -1,6 +1,7 @@
 package org.marketcetera.util.ws.wrappers;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.SerializationException;
 import org.apache.commons.lang.SerializationUtils;
 import org.marketcetera.util.misc.ClassVersion;
@@ -13,9 +14,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>This wrapper is itself serializable: its own deserialization
  * succeeds without an exception even if the wrapped object cannot be
  * deserialized, in which case the wrapper contains a null value for
- * the wrapped object's raw and marshalled forms, and {@link
- * #getDeserializationException()} returns the exception thrown during
- * serialization.</p>
+ * the wrapped object's raw and marshalled forms, logs a warning, and
+ * {@link #getDeserializationException()} returns the exception thrown
+ * during serialization.</p>
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
@@ -72,6 +73,7 @@ public class SerWrapper<T extends Serializable>
      * @return The exception.
      */
 
+    @XmlTransient
     public SerializationException getDeserializationException()
     {
         return mDeserializationException;
@@ -102,7 +104,8 @@ public class SerWrapper<T extends Serializable>
             setDeserializationException(null);
         } catch (SerializationException ex) {
             setDeserializationException(ex);
-            Messages.SERIALIZATION_ERROR.error(this,ex);
+            Messages.SERIALIZATION_FAILED.warn
+                (this,getDeserializationException());
             setRawOnly(null);
         }
     }
