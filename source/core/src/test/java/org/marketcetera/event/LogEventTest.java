@@ -12,12 +12,8 @@ import static org.marketcetera.event.TestMessages.MESSAGE_6P;
 import static org.marketcetera.event.TestMessages.MESSAGE_NP;
 import static org.marketcetera.marketdata.TestMessages.EXPECTED_EXCEPTION;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+import org.apache.commons.lang.SerializationUtils;
+
 import java.io.Serializable;
 
 import org.junit.Test;
@@ -870,13 +866,10 @@ public class LogEventTest
         assertEquals(messageText,
                      inActualEvent.getMessage());
         // serialize event
-        ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-        ObjectOutput out = new ObjectOutputStream(bos);
-        out.writeObject(inActualEvent);
-        out.close();
-        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-        ObjectInput in = new ObjectInputStream(bis);
-        LogEvent serializedEvent = (LogEvent)in.readObject();
+
+        LogEvent serializedEvent = (LogEvent)
+            SerializationUtils.deserialize
+            (SerializationUtils.serialize(inActualEvent));
         assertEquals(inExpectedLevel,
                      serializedEvent.getLevel());
         if(inException == null) {

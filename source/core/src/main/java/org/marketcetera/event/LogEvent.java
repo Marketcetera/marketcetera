@@ -11,7 +11,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
@@ -19,8 +18,8 @@ import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.I18NBoundMessage4P;
 import org.marketcetera.util.log.I18NBoundMessage5P;
 import org.marketcetera.util.log.I18NBoundMessage6P;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessageNP;
-import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
@@ -28,8 +27,12 @@ import org.marketcetera.util.log.I18NMessage3P;
 import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessage5P;
 import org.marketcetera.util.log.I18NMessage6P;
+import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.log.I18NMessageNP;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.wrappers.RemoteI18NBoundMessage;
+import org.marketcetera.util.ws.wrappers.RemoteProperties;
 
 /* $License$ */
 
@@ -1874,52 +1877,62 @@ public class LogEvent
      * @return an <code>I18NBoundMessage</code> value
      * @throws IllegalStateException if the message takes an unexpected number of parameters
      */
+    private I18NBoundMessage getI18NBoundMessage()
+    {
+        switch(message.getParamCount()) {
+        case -1:
+            return new I18NBoundMessageNP((I18NMessageNP)message,
+                                          parameters);
+        case 0 :
+            return new I18NBoundMessage0P((I18NMessage0P)message);
+        case 1 :
+            return new I18NBoundMessage1P((I18NMessage1P)message,
+                                          parameters[0]);
+        case 2 :
+            return new I18NBoundMessage2P((I18NMessage2P)message,
+                                          parameters[0],
+                                          parameters[1]);
+        case 3 :
+            return new I18NBoundMessage3P((I18NMessage3P)message,
+                                          parameters[0],
+                                          parameters[1],
+                                          parameters[2]);
+        case 4 :
+            return new I18NBoundMessage4P((I18NMessage4P)message,
+                                          parameters[0],
+                                          parameters[1],
+                                          parameters[2],
+                                          parameters[3]);
+        case 5 :
+            return new I18NBoundMessage5P((I18NMessage5P)message,
+                                          parameters[0],
+                                          parameters[1],
+                                          parameters[2],
+                                          parameters[3],
+                                          parameters[4]);
+        case 6 :
+            return new I18NBoundMessage6P((I18NMessage6P)message,
+                                          parameters[0],
+                                          parameters[1],
+                                          parameters[2],
+                                          parameters[3],
+                                          parameters[4],
+                                          parameters[5]);
+        }
+        throw new IllegalStateException();
+    }
+    /**
+     * Returns the bound event message. 
+     *
+     * @return a <code>String</code> value
+     * @throws IllegalStateException if the message takes an unexpected number of parameters
+     */
     public String getMessage()
     {
         if(serialized) {
-            return boundMessage;
-        }
-        switch(message.getParamCount()) {
-            case -1:
-                return new I18NBoundMessageNP((I18NMessageNP)message,
-                                              parameters).getText();
-            case 0 :
-                return new I18NBoundMessage0P((I18NMessage0P)message).getText();
-            case 1 :
-                return new I18NBoundMessage1P((I18NMessage1P)message,
-                                              parameters[0]).getText();
-            case 2 :
-                return new I18NBoundMessage2P((I18NMessage2P)message,
-                                              parameters[0],
-                                              parameters[1]).getText();
-            case 3 :
-                return new I18NBoundMessage3P((I18NMessage3P)message,
-                                              parameters[0],
-                                              parameters[1],
-                                              parameters[2]).getText();
-            case 4 :
-                return new I18NBoundMessage4P((I18NMessage4P)message,
-                                              parameters[0],
-                                              parameters[1],
-                                              parameters[2],
-                                              parameters[3]).getText();
-            case 5 :
-                return new I18NBoundMessage5P((I18NMessage5P)message,
-                                              parameters[0],
-                                              parameters[1],
-                                              parameters[2],
-                                              parameters[3],
-                                              parameters[4]).getText();
-            case 6 :
-                return new I18NBoundMessage6P((I18NMessage6P)message,
-                                              parameters[0],
-                                              parameters[1],
-                                              parameters[2],
-                                              parameters[3],
-                                              parameters[4],
-                                              parameters[5]).getText();
-        }
-        throw new IllegalStateException();
+            return boundMessage.getText();
+        } 
+        return getI18NBoundMessage().getText();
     }
     /**
      * Get the Level value.
@@ -1940,13 +1953,14 @@ public class LogEvent
         return exception;
     }
     /**
-     * @serialData The <code>Level</code>, <code>Exception</code>,
+     * @serialData The <code>Level</code>, <code>exceptionInfo</code>,
      * and <code>boundMessage</code> are emitted.
      */
     private void writeObject(ObjectOutputStream inStream)
         throws IOException
     {
-        boundMessage = getMessage();
+        boundMessage = new RemoteI18NBoundMessage(getI18NBoundMessage());
+        exceptionInfo = new RemoteProperties(exception);
         inStream.defaultWriteObject();
     }
     /**
@@ -1960,6 +1974,7 @@ public class LogEvent
         throws IOException, ClassNotFoundException
     {
         inStream.defaultReadObject();
+        exception = exceptionInfo.getThrowable();
         serialized = true;
     }
     /**
@@ -1973,7 +1988,11 @@ public class LogEvent
     /**
      * the event exception or null
      */
-    private final Throwable exception;
+    private transient Throwable exception;
+    /**
+     * the event exception information or null valid only after serialization
+     */
+    private RemoteProperties exceptionInfo;
     /**
      * the unbound event message valid only before serialization
      */
@@ -1985,10 +2004,10 @@ public class LogEvent
     /**
      * the bound event message valid only after serialization
      */
-    private String boundMessage;
+    private RemoteI18NBoundMessage boundMessage;
     /**
      * indicates whether the object has been serialized or not
      */
     private transient boolean serialized = false;
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 }
