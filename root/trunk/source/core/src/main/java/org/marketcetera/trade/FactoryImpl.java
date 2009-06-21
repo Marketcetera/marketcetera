@@ -127,6 +127,24 @@ class FactoryImpl extends Factory {
     }
 
     @Override
+    public FIXResponse createFIXResponse
+        (Message inMessage,
+         BrokerID inBrokerID,
+         Originator inOriginator,
+         UserID inActorID,
+         UserID inViewerID)
+    {
+        if (inMessage==null) {
+            throw new NullPointerException();
+        }
+        if (inOriginator==null) {
+            throw new NullPointerException();
+        }
+        return new FIXResponseImpl(inMessage, inBrokerID, inOriginator,
+                                   inActorID, inViewerID);
+    }
+
+    @Override
     public OrderSingle createOrderSingle(Message inMessage, 
                                          BrokerID inBrokerID)
             throws MessageCreationException {

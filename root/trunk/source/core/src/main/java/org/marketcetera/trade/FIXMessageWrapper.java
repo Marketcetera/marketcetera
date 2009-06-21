@@ -31,6 +31,9 @@ class FIXMessageWrapper implements FIXMessageSupport {
      * @param inMessage The FIX Message instance.
      */
     public FIXMessageWrapper(Message inMessage) {
+        if(inMessage == null) {
+            throw new NullPointerException();
+        }
         mMessage = inMessage;
     }
 
