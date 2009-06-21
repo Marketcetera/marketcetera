@@ -314,8 +314,11 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         {
             if (inReport instanceof ExecutionReport) {
                 notifyExecutionReport((ExecutionReport)inReport);
-            } else {
+            } else if (inReport instanceof OrderCancelReject) {
                 notifyCancelReject((OrderCancelReject)inReport);
+            } else {
+                Messages.LOG_RECEIVED_FIX_REPORT.warn
+                    (this,ObjectUtils.toString(inReport));
             }
         }
     }

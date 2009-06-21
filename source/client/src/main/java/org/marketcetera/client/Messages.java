@@ -109,6 +109,8 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "log_error_notify_exception");   //$NON-NLS-1$
     static final I18NMessage1P LOG_ERROR_SEND_EXCEPTION =
             new I18NMessage1P(LOGGER, "log_error_send_exception");   //$NON-NLS-1$
+    static final I18NMessage1P LOG_RECEIVED_FIX_REPORT =
+            new I18NMessage1P(LOGGER, "log_received_fix_report");   //$NON-NLS-1$
     static final I18NMessage1P LOG_CLIENT_NOT_INIT_CANCEL_REQUEST =
             new I18NMessage1P(LOGGER, "log_client_not_init_cancel_request");   //$NON-NLS-1$
     static final I18NMessage0P LOG_UNABLE_FETCH_ID_SERVER =
