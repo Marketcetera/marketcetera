@@ -129,7 +129,7 @@ public class TypesTestBase {
     }
 
     public static void assertExecReportEquals(ExecutionReport inReport1,
-                                               ExecutionReport inReport2) {
+                                              ExecutionReport inReport2) {
         if (checkForNull(inReport1, inReport2)) return;
         assertReportBaseEquals(inReport1, inReport2);
         assertEquals(inReport1.getAccount(), inReport2.getAccount());
@@ -151,13 +151,34 @@ public class TypesTestBase {
     }
 
     public static void assertCancelRejectEquals(OrderCancelReject inReport1,
-                                               OrderCancelReject inReport2) {
-        if (checkForNull(inReport1, inReport1)) return;
+                                                OrderCancelReject inReport2) {
+        if (checkForNull(inReport1, inReport2)) return;
         assertReportBaseEquals(inReport1, inReport2);
     }
 
+    public static void assertFIXResponseEquals
+        (FIXResponse inResponse1,
+         FIXResponse inResponse2)
+    {
+        if (checkForNull(inResponse1,inResponse2)) {
+            return;
+        }
+        assertEquals(inResponse1.getBrokerID(),
+                     inResponse2.getBrokerID());
+        assertEquals(inResponse1.getOriginator(),
+                     inResponse2.getOriginator());
+        assertEquals(String.valueOf(inResponse1.getMessage()),
+                     String.valueOf(inResponse2.getMessage()));
+        assertEquals(inResponse1.getActorID(),
+                     inResponse2.getActorID());
+        assertEquals(inResponse1.getViewerID(),
+                     inResponse2.getViewerID());
+        assertEquals(inResponse1.getFields(),
+                     inResponse2.getFields());
+    }
+
     public static void assertFIXEquals(ReportBase inReport1, ReportBase inReport2) {
-        if (checkForNull(inReport1, inReport1)) return;
+        if (checkForNull(inReport1, inReport2)) return;
         HasFIXMessage fix1 = (HasFIXMessage) inReport1;
         HasFIXMessage fix2 = (HasFIXMessage) inReport2;
         assertEquals(fix1.getMessage().toString(), fix2.getMessage().toString());
@@ -235,7 +256,7 @@ public class TypesTestBase {
      *
      * @return the message factory creating system FIX messages.
      */
-    protected static FIXMessageFactory getSystemMessageFactory() {
+    public static FIXMessageFactory getSystemMessageFactory() {
         return FIXVersion.FIX_SYSTEM.getMessageFactory();
     }
 
@@ -426,6 +447,22 @@ public class TypesTestBase {
         assertEquals(inBrokerOrderID,  inOrder.getBrokerOrderID());
     }
 
+    protected static void assertFIXResponseValues
+        (FIXResponse inResponse,
+         BrokerID inBrokerID,
+         Originator inOriginator,
+         Message inMessage,
+         UserID inActorID,
+         UserID inViewerID)
+    {
+        assertEquals(inBrokerID,inResponse.getBrokerID());
+        assertEquals(inOriginator,inResponse.getOriginator());
+        assertEquals(String.valueOf(inMessage),
+                     String.valueOf(inResponse.getMessage()));
+        assertEquals(inActorID,inResponse.getActorID());
+        assertEquals(inViewerID,inResponse.getViewerID());
+    }
+
     protected static void assertReportBaseValues(ReportBase inReport,
                                                  BrokerID inBrokerID,
                                                  OrderID inOrderID,
@@ -495,7 +532,7 @@ public class TypesTestBase {
         assertEquals(inScore, inSuggestion.getScore());
     }
 
-    protected static Message createEmptyExecReport() {
+    public static Message createEmptyExecReport() {
         return getSystemMessageFactory().
                 getUnderlyingMessageFactory().create(
                 FIXDataDictionary.FIX_4_2_BEGIN_STRING,

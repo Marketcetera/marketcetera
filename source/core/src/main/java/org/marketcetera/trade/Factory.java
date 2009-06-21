@@ -235,6 +235,28 @@ public abstract class Factory {
         throws MessageCreationException;
 
     /**
+     * Creates an ORS response that wraps a generic FIX message which
+     * cannot be wrapped by any other FIX Agnostic wrapper.
+     *
+     * @param inMessage the FIX message. Cannot be null.
+     *
+     * @param inBrokerID the ID of the broker from which this message
+     * was received.
+     *
+     * @param inOriginator the originator of this message. Cannot be null.
+     *
+     * @param inActorID the ID of the actor user of this message.
+     *
+     * @param inViewerID the ID of the viewer user of this message.
+     */
+    public abstract FIXResponse createFIXResponse
+        (Message inMessage,
+         BrokerID inBrokerID,
+         Originator inOriginator,
+         UserID inActorID,
+         UserID inViewerID);
+
+    /**
      * Initializes the orderID factory that should be used to assign
      * OrderIDs to all the orders created by this instance.
      * If this method is not invoked, an in memory ID factory is used
