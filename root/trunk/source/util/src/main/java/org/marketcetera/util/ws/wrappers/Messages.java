@@ -37,8 +37,8 @@ public interface Messages
      * The messages.
      */
 
-    static final I18NMessage0P SERIALIZATION_ERROR=
-        new I18NMessage0P(LOGGER,"serialization_error"); //$NON-NLS-1$
+    static final I18NMessage0P SERIALIZATION_FAILED=
+        new I18NMessage0P(LOGGER,"serialization_failed"); //$NON-NLS-1$
     static final I18NMessage0P RECEIVER_WRAPS_NULL=
         new I18NMessage0P(LOGGER,"receiver_wraps_null"); //$NON-NLS-1$
     static final I18NMessage0P ARGUMENT_IS_NULL=

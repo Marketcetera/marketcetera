@@ -1,5 +1,6 @@
 package org.marketcetera.util.ws.wrappers;
 
+import java.io.Serializable;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -7,20 +8,20 @@ import org.marketcetera.util.except.I18NThrowable;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * A container for the information marshalled for a {@link
+ * A container for the information marshalled/serialized by a {@link
  * RemoteException}. That information is encapsulated in a container,
- * instead of being marshalled as properties of {@link
- * RemoteException}, so that the exception may perform post-processing
- * after all component properties below are set.
+ * instead of being marshalled/serialized as individual properties of
+ * {@link RemoteException}, so that the exception may perform
+ * post-processing after all component properties below are set.
  *
  * <p>The stack trace capture is a string array, containing the
- * individual lines of the receive's throwable stack trace printing:
+ * individual lines of the receiver's throwable stack trace printing:
  * the first string is usually the exception class and message, and
  * the remaining strings represent individual frames in the unravelled
  * stack.</p>
  *
- * <p>Also, equality (and hash code generation) ignore the receiver's
- * throwable (wrapper).</p>
+ * <p>Equality and hash code generation ignore the receiver's
+ * throwable and its wrapper.</p>
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
@@ -31,7 +32,13 @@ import org.marketcetera.util.misc.ClassVersion;
 
 @ClassVersion("$Id$")
 public class RemoteProperties
+    implements Serializable
 {
+
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
 
     // INSTANCE DATA.
 
@@ -47,12 +54,15 @@ public class RemoteProperties
      * Creates a new container for a {@link RemoteException} that
      * wraps the given throwable.
      *
-     * @param t The throwable.
+     * @param t The throwable, which may be null.
      */
 
     public RemoteProperties
         (Throwable t)
     {
+        if (t==null) {
+            return;
+        }
         setWrapper(new SerWrapper<Throwable>(t));
         setTraceCapture(ExceptionUtils.getStackFrames(t));
         if (t instanceof I18NThrowable) {
@@ -65,9 +75,9 @@ public class RemoteProperties
 
     /**
      * Creates a new container. This empty constructor is intended for
-     * use by JAXB. It must be public because a non-public one does
-     * not work for classes that are marshalled as part of an
-     * exception.
+     * use by JAXB and Java serialization. It must be public because a
+     * non-public one does not work for classes that are marshalled by
+     * JAXB as part of an exception.
      */
 
     public RemoteProperties() {}
@@ -78,7 +88,7 @@ public class RemoteProperties
     /**
      * Set the receiver's throwable (wrapper) to the given one.
      *
-     * @param wrapper The throwable (wrapper).
+     * @param wrapper The throwable (wrapper), which may be null.
      */
 
     public void setWrapper
@@ -90,7 +100,7 @@ public class RemoteProperties
     /**
      * Returns the receiver's throwable (wrapper).
      *
-     * @return The throwable (wrapper).
+     * @return The throwable (wrapper), which may be null.
      */
 
     public SerWrapper<Throwable> getWrapper()
@@ -101,7 +111,7 @@ public class RemoteProperties
     /**
      * Set the receiver's stack trace capture to the given one.
      *
-     * @param traceCapture The capture.
+     * @param traceCapture The capture, which may be null.
      */
 
     public void setTraceCapture
@@ -113,7 +123,7 @@ public class RemoteProperties
     /**
      * Returns the receiver's stack trace capture.
      *
-     * @return The capture.
+     * @return The capture, which may be null.
      */
 
     public String[] getTraceCapture()
@@ -124,7 +134,7 @@ public class RemoteProperties
     /**
      * Sets the receiver's server-localized message to the given one.
      *
-     * @param serverMessage The message.
+     * @param serverMessage The message, which may be null.
      */
 
     public void setServerMessage
@@ -136,7 +146,7 @@ public class RemoteProperties
     /**
      * Returns the receiver's server-localized message.
      *
-     * @return The message.
+     * @return The message, which may be null.
      */
 
     public String getServerMessage()
@@ -148,7 +158,7 @@ public class RemoteProperties
      * Sets the receiver's server string representation to the given
      * one.
      *
-     * @param serverString The string.
+     * @param serverString The string, which may be null.
      */
 
     public void setServerString
@@ -160,12 +170,31 @@ public class RemoteProperties
     /**
      * Returns the receiver's server string representation.
      *
-     * @return The string.
+     * @return The string, which may be null.
      */
 
     public String getServerString()
     {
         return mServerString;
+    }
+
+    /**
+     * Returns a best-effort reconstruction of the receiver's
+     * throwable, as described in {@link RemoteException}.
+     *
+     * @return The throwable, which may be null.
+     */
+
+    public Throwable getThrowable()
+    {
+        if (getWrapper()==null) {
+            return null;
+        }
+        if (getWrapper().getDeserializationException()==null) {
+            return getWrapper().getRaw();
+        }
+        return new RemoteProxyException
+            (getServerMessage(),getTraceCapture(),getServerString());
     }
 
 
