@@ -32,7 +32,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * active feed.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MarketDataManager.java 10533 2009-04-24 22:14:30Z will $
+ * @version $Id$
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
