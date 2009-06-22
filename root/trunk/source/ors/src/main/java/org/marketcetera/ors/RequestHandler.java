@@ -82,6 +82,9 @@ public class RequestHandler
         '\u0001';
     private static final char SOH_REPLACE=
         '|';
+    private static final Callable<Boolean> METRIC_CONDITION=
+        ConditionsFactory.createSamplingCondition
+        (100,"metc.metrics.ors.sampling.interval"); //$NON-NLS-1$
 
 
     // INSTANCE DATA.
@@ -396,9 +399,10 @@ public class RequestHandler
     public void receiveMessage
         (OrderEnvelope msgEnv)
     {
-        ThreadedMetric.begin(msgEnv.getOrder() instanceof OrderBase
-                ? ((OrderBase)msgEnv.getOrder()).getOrderID()
-                : null);
+        ThreadedMetric.begin
+            ((msgEnv.getOrder() instanceof OrderBase)
+             ?((OrderBase)msgEnv.getOrder()).getOrderID()
+             :null);
         Messages.RH_RECEIVED_MESSAGE.info(this,msgEnv);
         Order msg=null;
         UserID actorID=null;
@@ -548,22 +552,13 @@ public class RequestHandler
 
         ThreadedMetric.event("fetchPrincipals");  //$NON-NLS-1$
         Principals principals=getPersister().getPrincipals(qMsgReply);
-        TradeMessage reply=null;
+        TradeMessage reply;
         try {
             reply=FIXConverter.fromQMessage
                 (qMsgReply,Originator.Server,bID,
                  principals.getActorID(),principals.getViewerID());
-            if (reply==null) {
-                Messages.RH_REPORT_TYPE_UNSUPPORTED.warn(this,qMsgReply);
-            }
         } catch (MessageCreationException ex) {
             Messages.RH_REPORT_FAILED.error(this,ex,qMsgReply);
-        }
-
-        // If the reply could not be packaged in FIX Agnostic format,
-        // we are done (a warning/error has already been reported).
-
-        if (reply==null) {
             return;
         }
 
@@ -576,6 +571,4 @@ public class RequestHandler
         getUserManager().convertAndSend(reply);
         ThreadedMetric.end(METRIC_CONDITION);
 	}
-    private static final Callable<Boolean> METRIC_CONDITION = ConditionsFactory.
-            createSamplingCondition(100, "metc.metrics.ors.sampling.interval");  //$NON-NLS-1$
 }

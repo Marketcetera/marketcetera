@@ -25,14 +25,14 @@ public interface Messages
      * The message provider.
      */
 
-    static final I18NMessageProvider PROVIDER = 
+    static final I18NMessageProvider PROVIDER= 
         new I18NMessageProvider("ors");  //$NON-NLS-1$
 
     /**
      * The logger.
      */
 
-    static final I18NLoggerProxy LOGGER = 
+    static final I18NLoggerProxy LOGGER= 
         new I18NLoggerProxy(PROVIDER);
 
     /*
@@ -41,7 +41,7 @@ public interface Messages
 
     static final I18NMessage0P APP_COPYRIGHT=
         new I18NMessage0P(LOGGER,"app_copyright"); //$NON-NLS-1$
-    static final I18NMessage2P APP_VERSION_BUILD =
+    static final I18NMessage2P APP_VERSION_BUILD=
             new I18NMessage2P(LOGGER, "app_version_build");   //$NON-NLS-1$
 
     static final I18NMessage0P APP_START=
@@ -69,8 +69,6 @@ public interface Messages
         new I18NMessage2P(LOGGER,"qf_sending_status"); //$NON-NLS-1$
     static final I18NMessage1P QF_SENDING_TRADE_RECORD=
         new I18NMessage1P(LOGGER,"qf_sending_trade_record"); //$NON-NLS-1$
-    static final I18NMessage2P QF_REPORT_TYPE_UNSUPPORTED=
-        new I18NMessage2P(LOGGER,"qf_report_type_unsupported"); //$NON-NLS-1$
     static final I18NMessage2P QF_REPORT_FAILED=
         new I18NMessage2P(LOGGER,"qf_report_failed"); //$NON-NLS-1$
     static final I18NMessage1P QF_SENDING_REPLY=
@@ -134,8 +132,6 @@ public interface Messages
         new I18NMessage3P(LOGGER,"rh_message_processing_failed"); //$NON-NLS-1$
     static final I18NMessage1P RH_ANALYZED_MESSAGE=
         new I18NMessage1P(LOGGER,"rh_analyzed_message"); //$NON-NLS-1$
-    static final I18NMessage1P RH_REPORT_TYPE_UNSUPPORTED=
-        new I18NMessage1P(LOGGER,"rh_report_type_unsupported"); //$NON-NLS-1$
     static final I18NMessage1P RH_REPORT_FAILED=
         new I18NMessage1P(LOGGER,"rh_report_failed"); //$NON-NLS-1$
     static final I18NMessage1P RH_SENDING_REPLY=
