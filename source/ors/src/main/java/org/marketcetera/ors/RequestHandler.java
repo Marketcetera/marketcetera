@@ -3,7 +3,6 @@ package org.marketcetera.ors;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.concurrent.Callable;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
