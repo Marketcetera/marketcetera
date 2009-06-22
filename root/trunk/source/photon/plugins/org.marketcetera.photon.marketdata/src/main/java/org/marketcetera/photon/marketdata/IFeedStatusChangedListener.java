@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Interface that feed status listeners must implement.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MarketDataFeed.java 10533 2009-04-24 22:14:30Z will $
+ * @version $Id$
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
@@ -26,7 +26,7 @@ public interface IFeedStatusChangedListener extends EventListener {
 	/**
 	 * Event object interface for feed status changes.
 	 */
-	@ClassVersion("$Id: MarketDataFeed.java 10533 2009-04-24 22:14:30Z will $")
+	@ClassVersion("$Id$")
 	public interface IFeedStatusEvent {
 
 		/**

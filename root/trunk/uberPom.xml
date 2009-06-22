@@ -653,7 +653,7 @@
      -  workaround was to search central ahead of internal. This odd
      -  behaviour stopped at some point, prob. due to the order of
      -  artifact resolution, and then another problem came up where
-     -  esper would have its pom located in the public repo, but then
+     -  esper would have its pom located in the central repo, but then
      -  its jar would be downloaded from the internal repo (where an
      -  an older version of esper resided, but not the sought-after
      -  jar). So builds failed again. That was when the central repo
