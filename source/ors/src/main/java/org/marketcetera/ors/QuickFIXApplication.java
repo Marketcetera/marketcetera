@@ -165,7 +165,7 @@ public class QuickFIXApplication
         // Convert reply to FIX Agnostic messsage.
 
         Principals principals=getPersister().getPrincipals(msg);
-        TradeMessage reply=null;
+        TradeMessage reply;
         try {
             reply=FIXConverter.fromQMessage
                 (msg,originator,b.getBrokerID(),
@@ -174,16 +174,6 @@ public class QuickFIXApplication
         } catch (MessageCreationException ex) {
             Messages.QF_REPORT_FAILED.error
                 (getCategory(msg),ex,msg,b.toString());
-        }
-        if (reply==null) {
-            Messages.QF_REPORT_TYPE_UNSUPPORTED.warn
-                (getCategory(msg),msg,b.toString());
-        }
-
-        // If reply could not be packaged in FIX Agnostic format, we
-        // are done (an error has already been reported).
-
-        if (reply==null) {
             return;
         }
 
