@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import org.junit.Test;
-import org.marketcetera.client.Service;
+import org.marketcetera.client.Client;
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MSymbol;
-import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.SecurityType;
-import org.marketcetera.util.ws.wrappers.DateWrapper;
 
 import static org.junit.Assert.*;
 
@@ -28,14 +28,14 @@ public class ServiceTest
         ("IBM",SecurityType.CommonStock);
 
     @Test
-    public void startStopORS()
+    public void services()
         throws Exception
     {
-        startORS(new String[0]);
-        Service s=getORSService();
+        startORS();
 
-        List<BrokerStatus> bs=
-            s.getBrokersStatus(getORSClientContext()).getBrokers();
+        Client c=getAdminClient().getClient();
+
+        List<BrokerStatus> bs=c.getBrokersStatus().getBrokers();
         assertEquals(2,bs.size());
         BrokerStatus b=bs.get(0);
         assertEquals("Broker 1",b.getName());
@@ -44,21 +44,19 @@ public class ServiceTest
         assertEquals("Broker 2",b.getName());
         assertEquals("broker2",b.getId().getValue());
 
-        ReportBaseImpl[] rs=s.getReportsSince
-            (getORSClientContext(),new DateWrapper(new Date()));
-        assertNull(rs);
+        ReportBase[] rs=c.getReportsSince(new Date());
+        assertEquals(0,rs.length);
 
-        assertEquals(BigDecimal.ZERO,s.getPositionAsOf
-                     (getORSClientContext(),new DateWrapper(new Date()),
-                      TEST_SYMBOL));
+        assertEquals(BigDecimal.ZERO,c.getPositionAsOf
+                     (new Date(),TEST_SYMBOL));
 
-        assertTrue(s.getPositionsAsOf
-                   (getORSClientContext(),
-                    new DateWrapper(new Date())).getMap().isEmpty());
+        assertTrue(c.getPositionsAsOf(new Date()).isEmpty());
 
-        String id=s.getNextOrderID(getORSClientContext());
+        String id=Factory.getInstance().createOrderSingle().
+            getOrderID().getValue();
         assertNotNull(id);
-        assertFalse(id.equals(s.getNextOrderID(getORSClientContext())));
+        assertFalse(id.equals(Factory.getInstance().createOrderSingle().
+                              getOrderID().getValue()));
 
         stopORS();
     }

@@ -1,12 +1,23 @@
 package org.marketcetera.ors;
 
-import org.marketcetera.client.ClientVersion;
-import org.marketcetera.client.Service;
-import org.marketcetera.ors.config.SpringConfig;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.marketcetera.ors.brokers.Brokers;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.test.TestCaseBase;
-import org.marketcetera.util.ws.stateful.Client;
-import org.marketcetera.util.ws.stateful.ClientContext;
-import org.marketcetera.util.ws.tags.AppId;
+import quickfix.Message;
+import quickfix.field.AvgPx;
+import quickfix.field.BusinessRejectReason;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.OrdStatus;
+import quickfix.field.SendingTime;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
+
+import static org.junit.Assert.*;
+import static org.marketcetera.trade.TypesTestBase.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -19,16 +30,31 @@ import org.marketcetera.util.ws.tags.AppId;
 public class ORSTestBase
     extends TestCaseBase
 {
+    /**
+     * The URL for the JMS broker. It must match the ORS configuration
+     * files.
+     */
+
+    protected static final String BROKER_URL=
+        "tcp://localhost:61616";
+
+
     private OrderRoutingSystem mORS;
     private Thread mORSThread;
-    private Client mORSClient;
-    private Service mORSService;
+    private ORSTestClient mAdminClient;
+    private AtomicInteger mNextOrderID=new AtomicInteger(0);
+
 
     protected void startORS
         (final String args[])
         throws Exception
     {
+        // Initialize database.
+
         DBInit.initORSDB();
+
+        // Create and start ORS in a separate thread.
+
         mORS=new OrderRoutingSystem(args);
         mORSThread=new Thread("testThread") {
             @Override
@@ -38,20 +64,46 @@ public class ORSTestBase
         };
         mORSThread.start();
 
-        // Wait for initialization to complete.
+        // Wait for ORS initialization to complete.
+
         while (!getORS().isWaitingForever()) {
             Thread.sleep(1000);
         }
         Thread.sleep(1000);
 
-        mORSClient=new Client
-            (SpringConfig.getSingleton().getServerHost(),
-             SpringConfig.getSingleton().getServerPort(),
-             new AppId("testClient"+
-                       ClientVersion.APP_ID_VERSION_SEPARATOR+
-                       ClientVersion.APP_ID_VERSION));
-        mORSClient.login(mORS.getAuth().getUser(),mORS.getAuth().getPassword());
-        mORSService=getORSClient().getService(Service.class);
+        // Create the administrative client.
+
+        mAdminClient=new ORSTestClient
+            (getORS().getAuth().getUser(),
+             getORS().getAuth().getPassword());
+    }
+
+    protected void startORS()
+        throws Exception
+    {
+        startORS(new String[0]);
+    }
+
+    protected void stopORS()
+        throws Exception
+    {
+        // Close the administrative client.
+
+        getAdminClient().close();
+
+        // Shut down ORS waiting thread.
+
+        mORSThread.interrupt();
+
+        // Wait for ORS waiting thread to terminate.
+
+        while (mORSThread.isAlive()) {
+            Thread.sleep(1000);
+        }
+
+        // Close ORS Spring application context.
+
+        getORS().getApplicationContext().close();
     }
 
     protected OrderRoutingSystem getORS()
@@ -59,29 +111,72 @@ public class ORSTestBase
         return mORS;
     }
 
-    protected Client getORSClient()
+    protected ORSTestClient getAdminClient()
     {
-        return mORSClient;
+        return mAdminClient;
     }
 
-    protected ClientContext getORSClientContext()
+    protected QuickFIXApplication getQuickFIXApplication()
     {
-        return getORSClient().getContext();
+        return getORS().getQuickFIXApplication();
     }
 
-    protected Service getORSService()
+    protected Brokers getBrokers()
     {
-        return mORSService;
+        return getORS().getBrokers();
     }
 
-    protected void stopORS()
+    protected BrokerID getFirstBrokerID()
+    {
+        return getBrokers().getBrokers().get(0).getBrokerID();
+    }
+
+    protected void emulateBrokerResponse
+        (BrokerID brokerID,
+         Message msg)
         throws Exception
     {
-        mORSThread.interrupt();
-
-        // Wait for cleaup to complete.
-        while (mORSThread.isAlive()) {
-            Thread.sleep(1000);
+        if (!msg.getHeader().isSetField(AvgPx.FIELD)) {
+            msg.setField(new AvgPx(0));
         }
+        if (!msg.getHeader().isSetField(CumQty.FIELD)) {
+            msg.setField(new CumQty(0));
+        }
+        if (!msg.getHeader().isSetField(ClOrdID.FIELD)) {
+            msg.setField(new ClOrdID("ID"+mNextOrderID.getAndIncrement()));
+        }
+        if (!msg.getHeader().isSetField(OrdStatus.FIELD)) {
+            msg.setField(new OrdStatus(OrdStatus.FILLED));
+        }
+        if (!msg.getHeader().isSetField(SendingTime.FIELD)) {
+            msg.getHeader().setField(new SendingTime(new Date()));
+        }
+        if (!msg.getHeader().isSetField(Side.FIELD)) {
+            msg.setField(new Side(Side.BUY));
+        }
+        if (!msg.getHeader().isSetField(Symbol.FIELD)) {
+            msg.setField(new Symbol("IBM"));
+        }
+        getQuickFIXApplication().fromApp
+            (msg,getBrokers().getBroker(brokerID).getSessionID());
+    }
+
+    protected void emulateFirstBrokerResponse
+        (Message msg)
+        throws Exception
+    {
+        emulateBrokerResponse(getFirstBrokerID(),msg);
+    }
+
+    protected static Message createEmptyOrderCancelReject()
+    {
+        return getSystemMessageFactory().newOrderCancelReject();
+    }
+
+    protected static Message createEmptyBusinessMessageReject()
+    {
+        return getSystemMessageFactory().newBusinessMessageReject
+            ("QQ",BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE,
+             "Bad message type");
     }
 }
