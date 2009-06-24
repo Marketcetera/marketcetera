@@ -20,32 +20,39 @@ import static org.marketcetera.util.test.EqualityAssert.*;
 public class RemoteI18NBoundMessageTest
     extends WrapperTestBase
 {
-    private static final String TEST_MESSAGE=
-        "testMessage";
-    private static final I18NBoundMessage1P TEST_I18N_MESSAGE=
-        new I18NBoundMessage1P(TestMessages.BOUND,TEST_MESSAGE);
     private static final String EXPECTED_MESSAGE=
         "Bound message text is '"+TEST_MESSAGE+"'";
     private static final String EXPECTED_MESSAGE_FR=
         "Bound message text in French is '"+TEST_MESSAGE+"'";
-    private static final String EXPECTED_MISSING_MESSAGE=
+
+    private static final String EXPECTED_NONSER_MESSAGE=
+        "Bound message text is 'I am 1'";
+    private static final String EXPECTED_NONSER_MESSAGE_FR=
+        "Bound message text in French is 'I am 1'";
+
+    private static final String EXPECTED_NONDESER_MESSAGE=
         "provider 'nonexistent_prv'; id 'any'; entry 'msg'; parameters ()";
 
 
     private void singleBase
         (RemoteI18NBoundMessage m,
-         I18NBoundMessage message,
+         SerWrapper<I18NBoundMessage> wrapper,
+         boolean wrapperSerFailure,
+         boolean wrapperDeSerFailure,
          String string,
          String text,
-         String textFr,
-         boolean proxyUsed)
+         String textFr)
     {
-        if (message==null) {
-            assertNull(m.getWrapper());
-        } else if (proxyUsed) {
-            assertSerWrapperFailure(m.getWrapper());
-        } else {
-            assertEquals(message,m.getWrapper().getRaw());
+        assertEquals(wrapper,m.getWrapper());
+        if (wrapperSerFailure) {
+            assertSerWrapperSerFailure(m.getWrapper());
+        } else if (m.getWrapper()!=null) {
+            assertNull(m.getWrapper().getSerializationException());
+        }
+        if (wrapperDeSerFailure) {
+            assertSerWrapperDeSerFailure(m.getWrapper());
+        } else if (m.getWrapper()!=null) {
+            assertNull(m.getWrapper().getDeserializationException());
         }
 
         assertEquals(string,m.getString());
@@ -58,29 +65,49 @@ public class RemoteI18NBoundMessageTest
         ActiveLocale.setProcessLocale(Locale.ROOT);
     }
 
+    private void singleNonSerializable
+        (RemoteI18NBoundMessage server,
+         RemoteI18NBoundMessage client)
+    {
+        singleBase(client,
+                   server.getWrapper(),
+                   false,
+                   false,
+                   server.getString(),
+                   server.getText(),
+                   server.getText());
+    }
+
+    private void singleNonDeserializable
+        (RemoteI18NBoundMessage server,
+         RemoteI18NBoundMessage client)
+    {
+        singleBase(client,
+                   new SerWrapper<I18NBoundMessage>(),
+                   false,
+                   true,
+                   server.getString(),
+                   server.getText(),
+                   server.getText());
+    }
+
     private void single
-        (RemoteI18NBoundMessage m,
-         I18NBoundMessage message,
+        (RemoteI18NBoundMessage server,
+         SerWrapper<I18NBoundMessage> wrapper,
          String string,
          String text,
          String textFr)
         throws Exception
     {
-        singleBase(m,message,string,text,textFr,false);
-        singleBase(assertRoundTripJAXB(m),message,string,text,textFr,false);
-        singleBase(assertRoundTripJava(m),message,string,text,textFr,false);
-    }
-
-    private void singleMissingResources
-        (RemoteI18NBoundMessage server,
-         RemoteI18NBoundMessage client)
-    {
-        singleBase(client,
-                   server.getWrapper().getRaw(),
-                   server.getString(),
-                   server.getText(),
-                   server.getText(),
-                   true);
+        singleBase
+            (server,wrapper,
+             false,false,string,text,textFr);
+        singleBase
+            (assertRoundTripJAXB(server),wrapper,
+             false,false,string,text,textFr);
+        singleBase
+            (assertRoundTripJava(server),wrapper,
+             false,false,string,text,textFr);
     }
 
 
@@ -103,11 +130,9 @@ public class RemoteI18NBoundMessageTest
              new RemoteI18NBoundMessage(TEST_I18N_MESSAGE),
              new RemoteI18NBoundMessage(null),
              new RemoteI18NBoundMessage
-             (new I18NBoundMessage1P(TestMessages.BOUND,TEST_MESSAGE+"d")),
-             new RemoteI18NBoundMessage
-             (new I18NBoundMessage1P(TestMessages.EXCEPTION,TEST_MESSAGE)));
+             (new I18NBoundMessage1P(TestMessages.BOUND,TEST_MESSAGE+"d")));
         single(new RemoteI18NBoundMessage(TEST_I18N_MESSAGE),
-               TEST_I18N_MESSAGE,
+               new SerWrapper<I18NBoundMessage>(TEST_I18N_MESSAGE),
                EXPECTED_MESSAGE,
                EXPECTED_MESSAGE,
                EXPECTED_MESSAGE_FR);
@@ -133,24 +158,47 @@ public class RemoteI18NBoundMessageTest
     }
 
     @Test
-    public void missingResources()
+    public void nonSerializableThrowable()
         throws Exception
     {
-        I18NBoundMessage m=createBadProviderMessage();
-
-        RemoteI18NBoundMessage server=new RemoteI18NBoundMessage(m);
+        prepareSerWrapperFailure();
+        RemoteI18NBoundMessage server=
+            new RemoteI18NBoundMessage(TEST_NONSER_MESSAGE);
         assertEquality(server,
-                       new RemoteI18NBoundMessage(m),
+                       new RemoteI18NBoundMessage(TEST_NONSER_MESSAGE),
                        new RemoteI18NBoundMessage(null),
                        new RemoteI18NBoundMessage(TEST_I18N_MESSAGE));
         singleBase(server,
-                   m,
-                   EXPECTED_MISSING_MESSAGE,
-                   EXPECTED_MISSING_MESSAGE,
-                   EXPECTED_MISSING_MESSAGE,
-                   false);
+                   new SerWrapper<I18NBoundMessage>(),
+                   true,
+                   false,
+                   EXPECTED_NONSER_MESSAGE,
+                   EXPECTED_NONSER_MESSAGE,
+                   EXPECTED_NONSER_MESSAGE_FR);
 
-        singleMissingResources(server,assertRoundTripJAXB(server));
-        singleMissingResources(server,assertRoundTripJava(server));
+        singleNonSerializable(server,assertRoundTripJAXB(server));
+        singleNonSerializable(server,assertRoundTripJava(server));
+    }
+
+    @Test
+    public void nonDeserializableThrowable()
+        throws Exception
+    {
+        RemoteI18NBoundMessage server=
+            new RemoteI18NBoundMessage(TEST_NONDESER_MESSAGE);
+        assertEquality(server,
+                       new RemoteI18NBoundMessage(TEST_NONDESER_MESSAGE),
+                       new RemoteI18NBoundMessage(null),
+                       new RemoteI18NBoundMessage(TEST_I18N_MESSAGE));
+        singleBase(server,
+                   new SerWrapper<I18NBoundMessage>(TEST_NONDESER_MESSAGE),
+                   false,
+                   false,
+                   EXPECTED_NONDESER_MESSAGE,
+                   EXPECTED_NONDESER_MESSAGE,
+                   EXPECTED_NONDESER_MESSAGE);
+
+        singleNonDeserializable(server,assertRoundTripJAXB(server));
+        singleNonDeserializable(server,assertRoundTripJava(server));
     }
 }

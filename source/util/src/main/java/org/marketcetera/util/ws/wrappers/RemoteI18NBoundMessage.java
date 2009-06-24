@@ -1,6 +1,7 @@
 package org.marketcetera.util.ws.wrappers;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
@@ -9,11 +10,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * A wrapper for an {@link I18NBoundMessage}. The message is
  * marshalled using JAXB or Java serialization as both a bound
  * internationalized message and a server-localized string. If the
- * message can be recreated on the client side (which requires all
- * necessary message files and parameter classes to be available,
- * though no check is made to ensure the message handle is present in
- * these message files), then {@link #getText()} localizes the message
- * on the client; otherwise, it returns the server-localized string.
+ * message can be serialized on the server side and recreated on the
+ * client side (which requires all necessary message files and
+ * parameter classes to be available, though no check is made to
+ * ensure the message handle is present in these message files), then
+ * {@link #getText()} localizes the message on the client; otherwise,
+ * it returns the server-localized string.
  *
  * <p>Equality and hash code generation rely only upon the result of
  * {@link #getText()}.</p>
@@ -37,6 +39,7 @@ public class RemoteI18NBoundMessage
 
     // INSTANCE DATA.
 
+    private transient I18NBoundMessage mMessage;
     private SerWrapper<I18NBoundMessage> mWrapper;
     private String mString;
 
@@ -46,17 +49,18 @@ public class RemoteI18NBoundMessage
     /**
      * Creates a new message wrapper that wraps the given message.
      *
-     * @param m The message, which may be null.
+     * @param message The message, which may be null.
      */
 
     public RemoteI18NBoundMessage
-        (I18NBoundMessage m)
+        (I18NBoundMessage message)
     {
-        if (m==null) {
+        setTransientMessage(message);
+        if (getTransientMessage()==null) {
             return;
         }
-        mWrapper=new SerWrapper<I18NBoundMessage>(m);
-        mString=m.getText();
+        setWrapper(new SerWrapper<I18NBoundMessage>(getTransientMessage()));
+        setString(getTransientMessage().getText());
     }
 
     /**
@@ -69,6 +73,30 @@ public class RemoteI18NBoundMessage
 
 
     // INSTANCE METHODS.
+
+    /**
+     * Sets the receiver's message to the given one.
+     *
+     * @param message The message, which may be null.
+     */
+
+    private void setTransientMessage
+        (I18NBoundMessage message)
+    {
+        mMessage=message;
+    }
+
+    /**
+     * Returns the receiver's message.
+     *
+     * @return The message, which may be null.
+     */
+
+    @XmlTransient
+    private I18NBoundMessage getTransientMessage()
+    {
+        return mMessage;
+    }
 
     /**
      * Sets the receiver's message (wrapper) to the given one.
@@ -119,20 +147,23 @@ public class RemoteI18NBoundMessage
 
     /**
      * Returns the receiver's message text. Preference is given to
-     * localizing the message wrapper, if successfully
+     * localizing the given message on the server; then localizing the
+     * message wrapper on the client, if successfully
      * unmarshalled/deserialized; otherwise, the server-localized
-     * message message is returned.
+     * message is returned.
      *
      * @return The text, which may be null.
      */
 
     public String getText()
     {
+        if (getTransientMessage()!=null) {
+            return getTransientMessage().getText();
+        }
         if (getWrapper()==null) {
             return null;
         }
-        if ((getWrapper().getDeserializationException()==null) &&
-            (getWrapper().getRaw()!=null)) {
+        if (getWrapper().getRaw()!=null) {
             return getWrapper().getRaw().getText();
         }
         return getString();

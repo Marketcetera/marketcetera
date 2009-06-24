@@ -8,13 +8,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * object. The raw form is an object implementing {@link Serializable}
  * and {@link Comparable}, and the marshalled form is a byte
  * array.
- * 
- * <p>This wrapper is itself serializable: its own deserialization
- * succeeds without an exception even if the wrapped object cannot be
- * deserialized, in which case the wrapper contains a null value for
- * the wrapped object's raw and marshalled forms, and {@link
- * SerWrapper#getDeserializationException()} returns the exception
- * thrown during serialization.</p>
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0

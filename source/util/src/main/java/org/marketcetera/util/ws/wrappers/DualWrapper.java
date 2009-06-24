@@ -16,6 +16,17 @@ import org.marketcetera.util.misc.ClassVersion;
  * serialization. The raw form is null if and only if the marshalled
  * one is null.
  *
+ * <p>It is essential to note that the wrapper always maintains this
+ * invariant: the raw and marshalled forms represent the same object
+ * at all times. A consequence of this invariant is that the wrapper
+ * should not be considered an alternate storage container for objects
+ * server-side: if an object cannot be converted to its marshalled
+ * form (e.g. Java serialization fails for {@link SerWrapper}), then
+ * the wrapper will refuse to store that object and will set both the
+ * raw and marshalled forms to null. The wrapper will still get
+ * created and remote these null values to the client, but, on the
+ * server-side, the wrapper will not have retained the raw form.</p>
+ * 
  * <p>The <code>M</code> type parameter should implement {@link
  * Serializable}, and subclasses of this class need to have a public
  * empty constructor if this wrapper (or its subclasses) is to be used

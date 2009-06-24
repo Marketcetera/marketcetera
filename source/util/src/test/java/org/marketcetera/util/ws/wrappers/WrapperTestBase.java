@@ -1,18 +1,23 @@
 package org.marketcetera.util.ws.wrappers;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Locale;
 import javax.xml.bind.JAXBContext;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.junit.Before;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NThrowable;
 import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.I18NBoundMessage0P;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessageProvider;
@@ -36,6 +41,136 @@ public class WrapperTestBase
         "testValue";
     protected static final String TEST_VALUE_D=
         "testValueD";
+
+    protected static final String TEST_MESSAGE=
+        "testMessage";
+
+    protected static final I18NBoundMessage1P TEST_I18N_MESSAGE=
+        new I18NBoundMessage1P(TestMessages.BOUND,TEST_MESSAGE);
+    protected static final I18NBoundMessage1P TEST_NONSER_MESSAGE=
+        new I18NBoundMessage1P(TestMessages.BOUND,
+                               new TestUnserializableInteger(1));
+    protected static final I18NBoundMessage0P TEST_NONDESER_MESSAGE=
+        new I18NBoundMessage0P
+        (new I18NMessage0P
+         (new I18NLoggerProxy
+          (new I18NMessageProvider("nonexistent_prv")),"any"));
+
+    protected static final Throwable TEST_THROWABLE=
+        new TestThrowable(TEST_MESSAGE);
+    protected static final I18NException TEST_I18N_THROWABLE=
+        new I18NException(TEST_THROWABLE,TEST_I18N_MESSAGE);
+    protected static final Throwable TEST_NONSER_THROWABLE=
+        new TestUnserializableThrowable(TEST_MESSAGE);
+    protected static final I18NException TEST_NONDESER_THROWABLE=
+        new I18NException(TEST_THROWABLE,TEST_NONDESER_MESSAGE);
+
+
+    protected static class TestInteger
+        implements Serializable
+    {
+        private static final long serialVersionUID=1L;
+
+        private int mValue;
+
+        public TestInteger
+            (int value)
+        {
+            mValue=value;
+        }
+
+        public int getValue()
+        {
+            return mValue;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "I am "+getValue();
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return getValue();
+        }
+
+        @Override
+        public boolean equals
+            (Object other)
+        {
+            if (this==other) {
+                return true;
+            }
+            if ((other==null) || !getClass().equals(other.getClass())) {
+                return false;
+            }
+            TestInteger o=(TestInteger)other;
+            return (getValue()==o.getValue());
+        }
+    }
+
+    protected static class TestUnserializableInteger
+        extends TestInteger
+    {
+        private static final long serialVersionUID=1L;
+
+        public TestUnserializableInteger
+            (int value)
+        {
+            super(value);
+        }
+
+        private void writeObject(ObjectOutputStream out)
+            throws IOException
+        {
+            throw new IOException();
+        }
+    }
+
+    protected static class TestThrowable
+        extends Throwable
+    {
+        private static final long serialVersionUID=1L;
+
+        public TestThrowable
+            (String message)
+        {
+            super(message);
+        }
+
+        @Override
+        public boolean equals
+            (Object other)
+        {
+            if (this==other) {
+                return true;
+            }
+            if ((other==null) || !getClass().equals(other.getClass())) {
+                return false;
+            }
+            return ObjectUtils.equals(toString(),other.toString());
+        }
+    }
+
+    protected static class TestUnserializableThrowable
+        extends Throwable
+    {
+        private static final long serialVersionUID=1L;
+
+        public TestUnserializableThrowable
+            (String message)
+        {
+            super(message);
+        }
+
+        private void writeObject(ObjectOutputStream out)
+            throws IOException
+        {
+            throw new IOException();
+        }
+    }
 
 
     @Before
@@ -133,6 +268,7 @@ public class WrapperTestBase
         (String category)
     {
         setLevel(category,Level.WARN);
+        getAppender().clear();
     }
 
     protected void prepareSerWrapperFailure()
@@ -140,22 +276,40 @@ public class WrapperTestBase
         prepareSerWrapperFailure(SerWrapper.class.getName());
     }
 
-    protected void assertSerWrapperFailure
+    protected void assertSerWrapperDeSerFailure
         (SerWrapper<?> wrapper,
          String category)
     {
         assertNotNull(wrapper.getDeserializationException());
-        assertSingleEvent(Level.WARN,category,
+        assertSomeEvent(Level.WARN,category,
+             "A deserialization error has occured; the object will be assumed "+
+             "to have a null value",SerWrapper.class.getName());
+        assertNull(wrapper.getRaw());
+        assertNull(wrapper.getMarshalled());
+    }
+
+    protected void assertSerWrapperDeSerFailure
+        (SerWrapper<?> wrapper)
+    {
+        assertSerWrapperDeSerFailure(wrapper,SerWrapper.class.getName());
+    }
+
+    protected void assertSerWrapperSerFailure
+        (SerWrapper<?> wrapper,
+         String category)
+    {
+        assertNotNull(wrapper.getSerializationException());
+        assertSomeEvent(Level.WARN,category,
              "A serialization error has occured; the object will be assumed "+
              "to have a null value",SerWrapper.class.getName());
         assertNull(wrapper.getRaw());
         assertNull(wrapper.getMarshalled());
     }
 
-    protected void assertSerWrapperFailure
+    protected void assertSerWrapperSerFailure
         (SerWrapper<?> wrapper)
     {
-        assertSerWrapperFailure(wrapper,SerWrapper.class.getName());
+        assertSerWrapperSerFailure(wrapper,SerWrapper.class.getName());
     }
 
     protected <T extends Serializable> void serialization
@@ -165,24 +319,21 @@ public class WrapperTestBase
          SerWrapper<T> nullArg,
          String stringValue,
          T value,
+         T unserializableValue,
          String category)
         throws Exception
     {
         dual(wrapper,copy,empty,nullArg,stringValue,value,
              SerializationUtils.serialize(value));
+        assertNull(wrapper.getSerializationException());
         assertNull(wrapper.getDeserializationException());
 
         prepareSerWrapperFailure(category);
+        wrapper.setRaw(unserializableValue);
+        assertSerWrapperSerFailure(wrapper,category);
+        prepareSerWrapperFailure(category);
         wrapper.setMarshalled(ArrayUtils.EMPTY_BYTE_ARRAY);
-        assertSerWrapperFailure(wrapper,category);
-    }
-
-    protected static I18NBoundMessage0P createBadProviderMessage()
-    {
-        return new I18NBoundMessage0P
-            (new I18NMessage0P
-             (new I18NLoggerProxy
-              (new I18NMessageProvider("nonexistent_prv")),"any"));
+        assertSerWrapperDeSerFailure(wrapper,category);
     }
 
     protected <T> T assertRoundTripJAXB

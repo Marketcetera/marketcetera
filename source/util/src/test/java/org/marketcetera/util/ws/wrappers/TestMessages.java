@@ -19,8 +19,6 @@ public interface TestMessages
     static final I18NLoggerProxy LOGGER=
         new I18NLoggerProxy(PROVIDER);
 
-    static final I18NMessage1P EXCEPTION=
-        new I18NMessage1P(LOGGER,"exception");
     static final I18NMessage1P BOUND=
         new I18NMessage1P(LOGGER,"bound");
 }
