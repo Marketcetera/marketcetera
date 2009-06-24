@@ -2,7 +2,6 @@ package org.marketcetera.util.ws.wrappers;
 
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import static org.junit.Assert.*;
 import static org.marketcetera.util.test.EqualityAssert.*;
@@ -19,14 +18,6 @@ import static org.marketcetera.util.test.RegExAssert.*;
 public class RemotePropertiesTest
     extends WrapperTestBase
 {
-    private static final String TEST_MESSAGE=
-        "testMessage";
-    private static final Throwable TEST_THROWABLE=
-        new CloneNotSupportedException(TEST_MESSAGE);
-    private static final I18NException TEST_I18N_THROWABLE=
-        new I18NException
-        (TEST_THROWABLE,
-         new I18NBoundMessage1P(TestMessages.EXCEPTION,TEST_MESSAGE));
     private static final String[] TEST_TRACE=
         new String[] {"testTrace"};
     private static final String TEST_STRING=
@@ -35,17 +26,24 @@ public class RemotePropertiesTest
 
     private void singleBase
         (RemoteProperties p,
-         Throwable throwable,
+         SerWrapper<Throwable> wrapper,
+         boolean wrapperSerFailure,
+         boolean wrapperDeSerFailure,
          String serverMessage,
          String serverString,
+         Throwable throwable,
          boolean proxyUsed)
     {
-        if (throwable==null) {
-            assertNull(p.getWrapper());
-        } else if (proxyUsed) {
-            assertSerWrapperFailure(p.getWrapper());
-        } else {
-            assertThrowable(throwable,p.getWrapper().getRaw(),false);
+        assertEquals(wrapper,p.getWrapper());
+        if (wrapperSerFailure) {
+            assertSerWrapperSerFailure(p.getWrapper());
+        } else if (p.getWrapper()!=null) {
+            assertNull(p.getWrapper().getSerializationException());
+        }
+        if (wrapperDeSerFailure) {
+            assertSerWrapperDeSerFailure(p.getWrapper());
+        } else if (p.getWrapper()!=null) {
+            assertNull(p.getWrapper().getDeserializationException());
         }
         assertEquals(serverMessage,p.getServerMessage());
         assertEquals(serverString,p.getServerString());
@@ -56,36 +54,54 @@ public class RemotePropertiesTest
                 (serverString,p.getTraceCapture()[0]);
             assertMatches
                 ("\\s*at\\s*"+
-                 RemotePropertiesTest.class.getName().replace(".","\\.")+
+                 WrapperTestBase.class.getName().replace(".","\\.")+
                  ".*",p.getTraceCapture()[1]);
         }
         assertThrowable(throwable,p.getThrowable(),proxyUsed);
     }
 
-    private void single
-        (RemoteProperties p,
-         Throwable throwable,
-         String serverMessage,
-         String serverString)
-        throws Exception
-    {
-        singleBase
-            (p,throwable,serverMessage,serverString,false);
-        singleBase
-            (assertRoundTripJAXB(p),throwable,serverMessage,serverString,false);
-        singleBase
-            (assertRoundTripJava(p),throwable,serverMessage,serverString,false);
-    }
-
-    private void singleMissingResources
+    private void singleNonSerializable
         (RemoteProperties server,
          RemoteProperties client)
     {
         singleBase(client,
-                   server.getThrowable(),
+                   server.getWrapper(),
+                   false,
+                   false,
                    server.getServerMessage(),
                    server.getServerString(),
+                   server.getThrowable(),
                    true);
+    }
+
+    private void singleNonDeserializable
+        (RemoteProperties server,
+         RemoteProperties client)
+    {
+        singleBase(client,
+                   new SerWrapper<Throwable>(),
+                   false,
+                   true,
+                   server.getServerMessage(),
+                   server.getServerString(),
+                   server.getThrowable(),
+                   true);
+    }
+
+    private void single
+        (RemoteProperties server,
+         SerWrapper<Throwable> wrapper,
+         String serverMessage,
+         String serverString,
+         Throwable throwable)
+        throws Exception
+    {
+        singleBase(server,wrapper,false,false,
+                   serverMessage,serverString,throwable,false);
+        singleBase(assertRoundTripJAXB(server),wrapper,false,false,
+                   serverMessage,serverString,throwable,false);
+        singleBase(assertRoundTripJava(server),wrapper,false,false,
+                   serverMessage,serverString,throwable,false);
     }
 
 
@@ -100,6 +116,7 @@ public class RemotePropertiesTest
         single(new RemoteProperties(),
                null,
                null,
+               null,
                null);
 
         assertEquality(new RemoteProperties(null),
@@ -107,6 +124,7 @@ public class RemotePropertiesTest
                        new RemoteProperties(TEST_THROWABLE),
                        new RemoteProperties(TEST_I18N_THROWABLE));
         single(new RemoteProperties(null),
+               null,
                null,
                null,
                null);
@@ -118,9 +136,11 @@ public class RemotePropertiesTest
                        new RemoteProperties(null),
                        new RemoteProperties(TEST_I18N_THROWABLE));
         single(new RemoteProperties(TEST_THROWABLE),
-               TEST_THROWABLE,
+               new SerWrapper<Throwable>(TEST_THROWABLE),
                TEST_THROWABLE.getLocalizedMessage(),
-               CloneNotSupportedException.class.getName()+": "+TEST_MESSAGE);
+               TestThrowable.class.getName()+": "+
+               TEST_MESSAGE,
+               TEST_THROWABLE);
 
         assertEquality(new RemoteProperties(TEST_I18N_THROWABLE),
                        new RemoteProperties(TEST_I18N_THROWABLE),
@@ -128,22 +148,11 @@ public class RemotePropertiesTest
                        new RemoteProperties(null),
                        new RemoteProperties(TEST_THROWABLE));
         single(new RemoteProperties(TEST_I18N_THROWABLE),
-               TEST_I18N_THROWABLE,
+               new SerWrapper<Throwable>(TEST_I18N_THROWABLE),
                TEST_I18N_THROWABLE.getLocalizedDetail(),
                I18NException.class.getName()+": "+
-               TEST_I18N_THROWABLE.getLocalizedMessage());
-
-        RemoteProperties p=new RemoteProperties(TEST_I18N_THROWABLE);
-        p.setWrapper(null);
-        assertEquality(p,new RemoteProperties(TEST_I18N_THROWABLE),
-                       new RemoteProperties(),
-                       new RemoteProperties(null),
-                       new RemoteProperties(TEST_THROWABLE));
-        single(p, 
-               null,
-               TEST_I18N_THROWABLE.getLocalizedDetail(),
-               I18NException.class.getName()+": "+
-               TEST_I18N_THROWABLE.getLocalizedMessage());
+               TEST_I18N_THROWABLE.getLocalizedMessage(),
+               TEST_I18N_THROWABLE);
     }
 
     @Test
@@ -178,27 +187,54 @@ public class RemotePropertiesTest
     }
 
     @Test
-    public void missingResources()
+    public void nonSerializableThrowable()
         throws Exception
     {
-        I18NException throwable=new I18NException
-            (TEST_THROWABLE,createBadProviderMessage());
-
-        RemoteProperties server=new RemoteProperties(throwable);
+        prepareSerWrapperFailure();
+        RemoteProperties server=new RemoteProperties(TEST_NONSER_THROWABLE);
         assertEquality(server,
-                       new RemoteProperties(throwable),
+                       new RemoteProperties(TEST_NONSER_THROWABLE),
                        new RemoteProperties(),
                        new RemoteProperties(null),
                        new RemoteProperties(TEST_THROWABLE),
                        new RemoteProperties(TEST_I18N_THROWABLE));
+        singleBase
+            (server,
+             new SerWrapper<Throwable>(),
+             true,
+             false,
+             TEST_NONSER_THROWABLE.getLocalizedMessage(),
+             TestUnserializableThrowable.class.getName()+": "+TEST_MESSAGE,
+             TEST_NONSER_THROWABLE,
+             false);
+
+        singleNonSerializable(server,assertRoundTripJAXB(server));
+        singleNonSerializable(server,assertRoundTripJava(server));
+    }
+
+    @Test
+    public void nonDeserializableThrowable()
+        throws Exception
+    {
+        RemoteProperties server=new RemoteProperties(TEST_NONDESER_THROWABLE);
+        assertEquality(server,
+                       new RemoteProperties(TEST_NONDESER_THROWABLE),
+                       new RemoteProperties(),
+                       new RemoteProperties(null),
+                       new RemoteProperties(TEST_THROWABLE),
+                       new RemoteProperties(TEST_I18N_THROWABLE),
+                       new RemoteProperties(TEST_NONSER_THROWABLE));
         singleBase(server,
-                   throwable,
-                   throwable.getLocalizedDetail(),
+                   new SerWrapper<Throwable>(TEST_NONDESER_THROWABLE),
+                   false,
+                   false,
+                   TEST_NONDESER_THROWABLE.getLocalizedDetail(),
                    I18NException.class.getName()+": "+
-                   throwable.getLocalizedMessage(),
+                   TEST_NONDESER_THROWABLE.getLocalizedMessage(),
+                   TEST_NONDESER_THROWABLE,
                    false);
 
-        singleMissingResources(server,assertRoundTripJAXB(server));
-        singleMissingResources(server,assertRoundTripJava(server));
+        singleNonDeserializable(server,assertRoundTripJAXB(server));
+        singleNonDeserializable(server,assertRoundTripJava(server));
     }
 }

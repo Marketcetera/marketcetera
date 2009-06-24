@@ -1,6 +1,7 @@
 package org.marketcetera.util.ws.wrappers;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -42,6 +43,7 @@ public class RemoteProperties
 
     // INSTANCE DATA.
 
+    private transient Throwable mThrowable;
     private SerWrapper<Throwable> mWrapper;
     private String[] mTraceCapture;
     private String mServerMessage;
@@ -54,23 +56,25 @@ public class RemoteProperties
      * Creates a new container for a {@link RemoteException} that
      * wraps the given throwable.
      *
-     * @param t The throwable, which may be null.
+     * @param throwable The throwable, which may be null.
      */
 
     public RemoteProperties
-        (Throwable t)
+        (Throwable throwable)
     {
-        if (t==null) {
+        setTransientThrowable(throwable);
+        if (getTransientThrowable()==null) {
             return;
         }
-        setWrapper(new SerWrapper<Throwable>(t));
-        setTraceCapture(ExceptionUtils.getStackFrames(t));
-        if (t instanceof I18NThrowable) {
-            setServerMessage(((I18NThrowable)t).getLocalizedDetail());
+        setWrapper(new SerWrapper<Throwable>(getTransientThrowable()));
+        setTraceCapture(ExceptionUtils.getStackFrames(getTransientThrowable()));
+        if (getTransientThrowable() instanceof I18NThrowable) {
+            setServerMessage(((I18NThrowable)getTransientThrowable()).
+                             getLocalizedDetail());
         } else {
-            setServerMessage(t.getLocalizedMessage());
+            setServerMessage(getTransientThrowable().getLocalizedMessage());
         }
-        setServerString(t.toString());
+        setServerString(getTransientThrowable().toString());
     }
 
     /**
@@ -84,6 +88,30 @@ public class RemoteProperties
 
 
     // INSTANCE METHODS.
+
+    /**
+     * Sets the receiver's throwable to the given one.
+     *
+     * @param throwable The throwable, which may be null.
+     */
+
+    private void setTransientThrowable
+        (Throwable throwable)
+    {
+        mThrowable=throwable;
+    }
+
+    /**
+     * Returns the receiver's throwable.
+     *
+     * @return The throwable, which may be null.
+     */
+
+    @XmlTransient
+    private Throwable getTransientThrowable()
+    {
+        return mThrowable;
+    }
 
     /**
      * Set the receiver's throwable (wrapper) to the given one.
@@ -187,10 +215,13 @@ public class RemoteProperties
 
     public Throwable getThrowable()
     {
+        if (getTransientThrowable()!=null) {
+            return getTransientThrowable();
+        }
         if (getWrapper()==null) {
             return null;
         }
-        if (getWrapper().getDeserializationException()==null) {
+        if (getWrapper().getRaw()!=null) {
             return getWrapper().getRaw();
         }
         return new RemoteProxyException
