@@ -41,7 +41,6 @@ public class ServerStatusIndicator extends StatusIndicatorContributionItem {
 			// only one instance is allowed
 			throw new IllegalStateException();
 		}
-		super.createControl(parent);
 		Composite composite = new Composite(parent, SWT.NONE);
 		FillLayout layout = new FillLayout();
 		layout.marginWidth = 2;
@@ -82,10 +81,10 @@ public class ServerStatusIndicator extends StatusIndicatorContributionItem {
 	}
 
 	@Override
-	protected void doDispose() {
+	public void dispose() {
 		imageLabel = null;
 		instance = null;
-		super.doDispose();
+		super.dispose();
 	}
 
 	private static void setState(State state) {
