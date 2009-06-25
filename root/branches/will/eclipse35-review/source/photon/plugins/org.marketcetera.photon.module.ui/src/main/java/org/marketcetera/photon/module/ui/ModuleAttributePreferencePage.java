@@ -170,10 +170,6 @@ public abstract class ModuleAttributePreferencePage extends PreferencePage {
 		final IObservableValue mObservable;
 		final boolean mWriteOnly;
 
-		Field(String attributeName, IObservableValue observable) {
-			this(attributeName, observable, false);
-		}
-
 		Field(String attributeName, IObservableValue observable, boolean writeOnly) {
 			mAttributeName = attributeName;
 			mObservable = observable;

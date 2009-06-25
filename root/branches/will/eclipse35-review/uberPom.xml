@@ -31,7 +31,7 @@
     <mvn.cxf.version>2.1.2</mvn.cxf.version>
     <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
     <mvn.xjc.version>2.1.7</mvn.xjc.version>
-    <mvn.eclipse.version>3.4.1</mvn.eclipse.version>
+    <mvn.eclipse.version>3.5</mvn.eclipse.version>
   </properties>
 
   <dependencyManagement>
@@ -436,8 +436,14 @@
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>[1.5]</version>
+        <artifactId>mockito-core</artifactId>
+        <version>[1.8.0-rc2]</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>[1.0]</version>
         <scope>test</scope>
       </dependency>
       <dependency>
