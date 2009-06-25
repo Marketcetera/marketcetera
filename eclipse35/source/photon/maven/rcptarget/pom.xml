@@ -42,6 +42,11 @@
       <groupId>com.google</groupId>
       <artifactId>guice-source</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
@@ -174,7 +179,7 @@
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
                       <artifactId>mylyn</artifactId>
-                      <version>3.0.1.v20080721-2100-e3.4</version>
+                      <version>3.2.0.v20090617-0100-e3.4</version>
                       <type>zip</type>
                       <includes>
                         plugins/org.apache.commons.codec_*,
@@ -191,7 +196,7 @@
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
                       <artifactId>emf-runtime</artifactId>
-                      <version>2.5.0RC1</version>
+                      <version>2.5.0</version>
                       <type>zip</type>
                       <includes>
                         eclipse/plugins/org.eclipse.emf.common_*,
@@ -202,7 +207,7 @@
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
                       <artifactId>emf-sourcedoc</artifactId>
-                      <version>2.5.0RC1</version>
+                      <version>2.5.0</version>
                       <type>zip</type>
                       <includes>
                         eclipse/plugins/org.eclipse.emf.common.source_*,
@@ -211,10 +216,32 @@
                       </includes>
                     </artifactItem>
                     <artifactItem>
+                      <groupId>org.eclipse</groupId>
+                      <artifactId>swtbot</artifactId>
+                      <version>2.0.0.358-dev</version>
+                      <type>zip</type>
+                      <includes>
+                        plugins/org.apache.log4j_*,
+                        plugins/org.eclipse.swtbot.swt.finder_*,
+                        plugins/org.eclipse.swtbot.eclipse.finder_*,
+                        plugins/org.eclipse.swtbot.junit4_x_*,
+                        plugins/org.hamcrest_*,
+                        plugins/org.hamcrest.core_*,
+                        plugins/org.hamcrest.text_*,
+                        plugins/org.hamcrest.library_*,
+                        plugins/org.hamcrest.integration_*,
+                        plugins/org.hamcrest.core.source_*,
+                        plugins/org.hamcrest.text.source_*,
+                        plugins/org.hamcrest.library.source_*,
+                        plugins/org.hamcrest.integration.source_*
+                      </includes>
+                      <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
+                    </artifactItem>
+                    <artifactItem>
                       <!--
                         - Customized org.junit4 bundle that gets hamcrest by import-package instead 
                         - of require-bundle. This is necessary to integrate with the hamcrest libraries
-                        - provided by photon-test-bundle.
+                        - provided by SWT Bot.
                         -->
                       <groupId>org.marketcetera</groupId>
                       <artifactId>junit4</artifactId>

@@ -6,7 +6,12 @@ Bundle-Version: 1.6.0
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon.marketdata
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit4,
- org.marketcetera.core.tests,
+Require-Bundle: org.marketcetera.core.tests,
  org.marketcetera.photon.test
 Eclipse-RegisterBuddy: org.marketcetera.core
+Import-Package: org.hamcrest;version="1.1.0",
+ org.junit;version="4.5.0",
+ org.junit.runner;version="4.5.0",
+ org.junit.runners;version="4.5.0",
+ org.mockito;version="1.8.0.rc2",
+ org.mockito.stubbing;version="1.8.0.rc2"
