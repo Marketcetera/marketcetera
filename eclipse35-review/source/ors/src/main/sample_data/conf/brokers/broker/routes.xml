@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Primary broker configuration: routes.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.1.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_routes"
+   class="org.marketcetera.ors.filters.MessageRouteManager">
+    <!--
+      - If true, separate the symbol and its suffix, using '/' as
+      - the separator. Applies to non-FOREX orders only.
+      -->
+    <property
+     name="separateSuffix"
+     value="false"/>
+    <!--
+      - The field which will contain the routing information. May be
+      - 'field:57' (TargetSubID), 'field:100' (ExDestination), or
+      - 'field:128' (DeliverToCompID).
+      -->
+    <property
+     name="routeMethod"
+     value="field:100"/>
+    <!--
+      - The routing suffixes and the corresponding routing information
+      - field values.
+      -->
+    <property
+     name="routes">
+      <map>
+        <!-- Map the routing suffix 'N' to 'SIGMA' in ExDestination. -->
+        <entry
+         key="N"
+         value="SIGMA"/>
+      </map>
+    </property>
+  </bean>
+</beans>
