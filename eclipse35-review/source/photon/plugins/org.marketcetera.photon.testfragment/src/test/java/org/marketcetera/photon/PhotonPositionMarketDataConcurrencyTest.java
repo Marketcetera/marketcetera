@@ -2,7 +2,7 @@ package org.marketcetera.photon;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -223,7 +223,7 @@ public class PhotonPositionMarketDataConcurrencyTest extends MultiThreadedTestBa
 		// Logger.getLogger("ListenerThread").setLevel(Level.TRACE);
 		mMockMarketData = mock(IMarketData.class);
 		mFixture = new PhotonPositionMarketData(mMockMarketData);
-		stub(mMockMarketData.getLatestTick(anyString())).toAnswer(
+		when(mMockMarketData.getLatestTick(anyString())).thenAnswer(
 				new Answer<IMarketDataReference<MDLatestTick>>() {
 					@Override
 					public IMarketDataReference<MDLatestTick> answer(InvocationOnMock invocation)
@@ -232,7 +232,7 @@ public class PhotonPositionMarketDataConcurrencyTest extends MultiThreadedTestBa
 								.getArguments()[0]));
 					}
 				});
-		stub(mMockMarketData.getMarketstat(anyString())).toAnswer(
+		when(mMockMarketData.getMarketstat(anyString())).thenAnswer(
 				new Answer<IMarketDataReference<MDMarketstat>>() {
 					@Override
 					public IMarketDataReference<MDMarketstat> answer(InvocationOnMock invocation)

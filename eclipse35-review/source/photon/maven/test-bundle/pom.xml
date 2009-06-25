@@ -27,15 +27,13 @@
 
   <!-- Test time dependencies. Use compile scope for bundle plugin to work. -->
   <dependencies>
-    <!-- JUnit is not included since Eclipse needs to use its own plug-in. -->
+    <!-- JUnit is not included since Eclipse is hard-coded to depend on its own plug-in. -->
+    <!-- Hamcrest is not included since SWT Bot is hard-coded to depend on the Orbit bundle. -->
+    <!-- Mockito is not included since it is an OSGi bundle. -->
+    <!-- But, Mockito needs Objenesis. -->
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
+      <groupId>org.objenesis</groupId>
+      <artifactId>objenesis</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>

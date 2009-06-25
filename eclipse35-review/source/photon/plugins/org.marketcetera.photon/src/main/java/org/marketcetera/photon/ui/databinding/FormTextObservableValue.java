@@ -1,7 +1,6 @@
 package org.marketcetera.photon.ui.databinding;
 
 import org.eclipse.core.databinding.observable.Diffs;
-import org.eclipse.jface.internal.databinding.provisional.swt.AbstractSWTObservableValue;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 /**

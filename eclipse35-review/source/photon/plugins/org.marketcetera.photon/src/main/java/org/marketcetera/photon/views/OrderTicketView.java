@@ -31,11 +31,13 @@ import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
+import org.eclipse.jface.internal.databinding.swt.SWTObservableValueDecorator;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -52,6 +54,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -822,18 +825,19 @@ public abstract class OrderTicketView
 	 * for any Combo and Text controls, then calling {@link Binding#dispose()}.
 	 * 
 	 */
-	@SuppressWarnings("restriction") //$NON-NLS-1$
+	@SuppressWarnings("restriction")
     private void unbindMessage() {
 		Object[] bindingArray = messageBindings.toArray();
 		List<IObservableValue> clearables = new LinkedList<IObservableValue>();
 		for (Object bindingObj : bindingArray) {
 			Binding binding = ((Binding) (bindingObj));
 			IObservable observable = binding.getTarget();
-			if (observable instanceof  org.eclipse.jface.internal.databinding.swt.ComboObservableValue ||
-                observable instanceof org.eclipse.jface.internal.databinding.swt.CComboObservableValue ||
-                observable instanceof org.eclipse.jface.internal.databinding.swt.TextObservableValue) {
-				IObservableValue observableValue = (IObservableValue) observable;
-				clearables.add(observableValue);
+			if (observable instanceof SWTObservableValueDecorator) {
+				Widget widget = ((SWTObservableValueDecorator) observable).getWidget();
+				if (widget instanceof Combo || widget instanceof CCombo || widget instanceof Text) {
+					IObservableValue observableValue = (IObservableValue) observable;
+					clearables.add(observableValue);
+				}
 			}
 			binding.dispose();
 		}
