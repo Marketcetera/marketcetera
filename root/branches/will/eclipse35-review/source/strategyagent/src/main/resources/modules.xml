@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  <!--
+   This file initializes the module manager bean used by the Strategy Agent.
+  -->
+  <!-- This bean is instantiated to get to the class loader instance -->
+  <bean id="class" class="java.lang.Class" factory-method="forName">
+    <constructor-arg value="org.marketcetera.strategyagent.JarClassLoader"/>
+  </bean>
+  <!-- The current classloader -->
+  <bean id="currentLoader"
+        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+    <property name="targetObject" ref="class"/>
+    <property name="propertyPath" value="classLoader"/>
+  </bean>
+  <!-- The jar class loader to use for loading modules & their configurations -->
+  <bean id="moduleLoader" class="org.marketcetera.strategyagent.JarClassLoader">
+    <!-- This variable is set within StrategyAgent -->
+    <constructor-arg ref="modulesDir"/>
+    <constructor-arg ref="currentLoader"/>
+  </bean>
+  <!-- The default configuration provider -->
+  <bean id="propertyConfig"
+        class="org.marketcetera.module.PropertiesConfigurationProvider">
+    <constructor-arg ref="moduleLoader"/>
+  </bean>
+  <!-- The module manager instance -->
+  <bean id="moduleManager" class="org.marketcetera.module.ModuleManager"
+        destroy-method="stop">
+    <constructor-arg ref="moduleLoader"/>
+    <property name="configurationProvider" ref="propertyConfig"/>
+    <property name="refreshListener" ref="moduleLoader"/>
+  </bean>
+</beans>

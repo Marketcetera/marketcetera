@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Remote emitter jms client configuration.
+  -
+  - Author: anshul@marketcetera.com
+  - Since: 1.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!-- Contains basic jms connections configuration -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- Connection details -->
+  <bean id="externalConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" ref="brokerURI"/>
+    <property name="userName" ref="username"/>
+    <property name="password" ref="password"/>
+    <property name="transportListener" ref="delegate"/>
+  </bean>
+  <!-- The delegate used for all communications -->
+  <bean id="delegate" class="org.marketcetera.modules.remote.emitter.MessagingDelegate"/>
+
+  <!-- Receiver Details -->
+  <bean id="topic" class="org.apache.activemq.command.ActiveMQTopic">
+    <constructor-arg value="remote-flow"/>
+  </bean>
+
+  <!-- note that this needs to use the non-pooled connection factory -->
+  <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+    <property name="destination" ref="topic"/>
+    <property name="connectionFactory" ref="externalConnectionFactory"/>
+    <property name="exceptionListener" ref="delegate"/>
+    <property name="messageListener">
+      <bean class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="messageConverter">
+          <bean class="org.marketcetera.jms.JMSSerMessageConverter"/>
+        </property>
+        <property name="delegate" ref="delegate"/>
+      </bean>
+    </property>
+  </bean>
+</beans>

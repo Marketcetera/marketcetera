@@ -1,0 +1,7 @@
+<ul class="currencies">
+<% for currency in @currencies do -%>
+  <li class="currency"><div class="alpha_code"><%=h currency.alpha_code %></div>
+    <div class="name"><%=h currency.description %></div>
+  </li>
+<% end -%>
+</ul>

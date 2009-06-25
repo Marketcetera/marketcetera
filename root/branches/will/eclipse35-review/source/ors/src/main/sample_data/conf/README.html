@@ -1,0 +1,1118 @@
+<html>
+
+<head>
+<title>ORS Configuration</title>
+</head>
+
+<body>
+
+<h1>ORS Configuration</h1>
+
+<p>Author: tlerios@marketcetera.com<br/>
+Since: 1.1.0<br/>
+Version: $Id$<br/></p>
+<p>$License$</p>
+
+
+<hr/><a name="index"/>
+<h2>Index</h2>
+
+<ul>
+<li><a href="#configuration">Configuration files</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#ws">Web services</a></li>
+<li><a href="#jms">JMS services</a>
+ <ul>
+ <li><a href="#jms_broker">JMS broker</a></li>
+ <li><a href="#jms_producer">JMS producer/consumer</a></li>
+ </ul>
+</li>
+<li><a href="#brokers"/>Brokers</a>
+ <ul>
+ <li><a href="#quickfixj"/>QuickFIX/J</a></li>
+ <li><a href="#filters"/>Filters</a></li>
+ <li><a href="#selector"/>Broker selector</a></li>
+ <li><a href="#mbrokers"/>Multiple brokers</a></li>
+ </ul>
+</li>
+<li><a href="#database">Database services</a></li>
+<li><a href="#logging">Logging</a></li>
+<li><a href="#jmx">JMX</a></li>
+</ul>
+
+
+<hr/><a name="configuration"/>
+<h2>Configuration files</h2>
+
+<p>When the ORS is started using the <code>runORS</code> script
+(<code>runORS.sh</code> on UNIX and its variants
+and <code>runORS.bat</code> on Windows), it looks for its
+configuration in the <code>server.xml</code> file within
+the <code>conf</code> subdirectory of the ORS installation.</p>
+
+<p>The ORS can be minimally configured via <code>server.xml</code>,
+which can instantiate all configuration objects. However, to keep that
+one required file small and readable, the default configuration is
+split across multiple Spring files, which <code>server.xml</code>
+imports. Each such file covers a functionally distinct area of the
+ORS, such as the configuration of brokers or the database. In more
+depth, the default configuration uses a consistent pattern whereby
+each functional area's configuration resides within files in a
+subdirectory, and each subdirectory has a <code>main.xml</code> file
+that imports all other files in that same subdirectory; to import the
+contents of this subdirectory from files outside
+it, <code>main.xml</code> alone is imported.</p>
+
+<p>Besides clarity, another advantage of this configuration
+partitioning is that the CLI script <code>orsadmin</code>
+(<code>orsadmin.sh</code> on UNIX and its variants
+and <code>orsadmin.bat</code> on Windows) may be configured without
+duplicating configuration objects: instead, <code>cli.xml</code>
+imports some of the same Spring files as <code>server.xml</code>.</p>
+
+<p>Strictly speaking, this partitioning into multiple files and
+overall organizational method is arbitrary, and the end-user may
+change it at their own discretion; that said, a change in organization
+is discouraged because it may complicate migration to later version of
+the ORS.</p>
+
+<p>In addition, via <code>properties.xml</code> imported
+from <code>server.xml</code> (as well as from <code>cli.xml</code>),
+part of the configuration is relegated into two standard Java
+properties files: <code>default.properties</code>
+and <code>user.properties</code>. These files define certain
+name-value pairs, which then the Spring configuration files may
+reference using the <code>${name}</code> syntax. It is also possible
+for the values of other name-value pairs in these files to refer to
+such names using the same <code>${name}</code> syntax. This technique
+centralizes certain preferences that appear within multiple Spring
+configuration beans, such as the ORS's host name, easing the task of
+changing it.</p>
+
+<p>Variable names, as well as the choice of which settings to relegate
+into properties file, are again arbitrary, and the end-user may change
+all this at their own discretion. It is also possible to eliminate the
+properties files altogether, and place the values in-line within the
+Spring files, e.g. replace sections such as</p>
+
+<pre>
+ &lt;property name="serverHost" value="${metc.ws.host}"/&gt;
+</pre>
+
+<p>with</p>
+
+<pre>
+ &lt;property name="serverHost" value="localhost"/&gt;
+</pre>
+
+<p>This approach may be cleaner for some end-users, but it also has
+the drawback that certain key operational parameters may need to
+appear in more than one place, thereby making changes harder.</p>
+
+<p>The reason that two properties files are used, instead of one, is
+that <code>user.properties</code> may override default values set in
+<code>default.properties</code>. This makes it possible to start off
+with a simple and minimal custom configuration
+in <code>user.properties</code>, and gradually override additional
+properties from <code>default.properties</code> as the end-user makes
+further refinements to their installation, while retaining an easy way
+to revert to the original defaults: just delete the overriding line
+from <code>user.properties</code>, and the line in
+<code>default.properties</code> will kick back in. Moreover, migration
+to new ORS versions is easier as site-specific customizations are
+limited to a single file, <code>user.properties</code>.</p>
+
+
+<hr/><a name="architecture"/>
+<h2>Architecture</h2>
+
+<p>In order to refine the ORS configuration, it is essential to
+understand its core architectural elements.</p>
+
+<p>The ORS serves two key roles in the Marketcetera universe:</p>
+
+<ol>
+
+<li><p>It is an intermediary between ORS Clients (embedded within
+Photon, strategy agent, or other end-user applications) and brokerage
+firms. The connection to ORS Clients is effected by a mix of <i>Web
+Services (WS)</i> (for synchronous calls, such as broker status
+queries) and <i>Java Messaging Services (JMS)</i> (for asynchronous
+calls, such as optional notifications on broker status changes). The
+connection to brokers is effected by QuickFIX/J, which can, in fact,
+connect to any FIX-enabled counterparty; while these counterparties
+can, in general, be arbitrary intermediaries in financial
+transactions, the ORS refers to all of them
+as <i>brokers</i>.</p></li>
+
+<li><p>It is the gateway to the Marketcetera database for ORS
+Clients. That is, via WS calls, ORS Clients may obtain persistent data
+maintained by the ORS, e.g. past execution reports to populate
+Photon's history when it starts up.</p></li>
+
+</ol>
+
+<p>Accordingly, each role has its own configuration, which we explore
+separately in later sections.</p>
+
+<p>In addition, part of the ORS configuration requires an
+understanding of message flow through the ORS; in the context of the
+ensuing discussion, <i>message</i> refers to trading instructions or
+responses, and is not intended to encompass all the WS/JMS traffic in
+which the ORS participates. Messages are delivered to the ORS from
+either ORS Clients or from brokers:</p>
+
+<ol>
+
+<li><p>Messages from ORS Clients are typically orders, cancellations,
+or replacements, which are intended for delivery to some broker. These
+messages are delivered to the ORS as either FIX Agnostic orders, or as
+escape-hatch FIX messages. The ORS chooses a broker for the message,
+using the <a href="#selector">broker selector</a>, and then converts a
+FIX Agnostic order into a broker-specific FIX message. A
+<a href="#OrderFilter">filter</a> is applied on the FIX message at
+that point (possibly leading to its rejection by the ORS), which is
+then modified by
+broker-specific <a href="#MessageModifier">modifiers</a> and
+<a href="#MessageRouteManager">routes</a>. The
+altered message is then sent to QuickFIX/J for delivery to a broker
+while the ORS sends an immediate ack to the ORS Clients
+(<code>PENDING_xxx</code>, where <code><i>xxx</i></code> is the
+desired operation such as <code>NEW</code>, <code>CANCEL</code>, or
+<code>REPLACE</code>).</p></li>
+
+<li><p>In due time (though, rarely, before even the ORS can issue its
+immediate ack), the broker issues one or more formal responses; these
+are usually execution reports, such as a formal ack that an order was
+received, followed by a series of fills. Such messages from brokers,
+as well as most other messages received from brokers, are first
+<a href="#MessageFilter">filtered</a> (which may lead to rejection of
+the broker's message), and then routed to the ORS Clients.</p></li>
+
+</ol>
+
+<p>The above is a rough outline of the ORS message flow. There are a
+number of special cases and refinements (such as the generation of
+rejections) that are beyond the scope of regular use and are not
+covered here.</p>
+
+
+<hr/><a name="ws"/>
+<h2>Web services</h2>
+
+<p>The ORS WS configuration comprises the following settings:</p>
+
+<ul>
+
+<li><p>The WS hostname and port on which the ORS listens for WS
+requests, usually <code>localhost</code> and <code>9000</code>,
+respectively.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.serverHost</code></td>
+<td><code>server.xml</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.ws.host</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.serverPort</code></td>
+<td><code>server.xml</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.ws.port</code></td>
+</tr>
+</table></li>
+
+<li><p>The time interval, in seconds, during which the ORS must
+receive a heartbeat from ORS Client (who sends one heartbeat every 5
+seconds), or else the client's session is unilaterally terminated by
+the ORS. This automatic termination prevents all future WS calls from
+completing, results in rejection of all subsequent orders delivered
+via JMS, and the ORS Client receives no further messages from the
+ORS. That is usually <code>300</code> (5 minutes), or <code>-1</code>
+(a sentinel value that disables unilateral session termination).</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.serverSessionLife</code></td>
+<td><code>server.xml</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.ws.session.life</code></td>
+</tr>
+</table></li>
+
+</ul>
+
+
+<hr/><a name="jms"/>
+<h2>JMS services</h2>
+
+<p>The ORS interacts with JMS services in two distinct ways: it
+contains an <a href="#jms_broker">embedded JMS broker</a>, and also
+acts as a <a href="#jms_producer">JMS producer/consumer</a>.</p>
+
+<p>The default configuration of the ORS uses Apache's ActiveMQ for all
+JMS services (the broker, as well as the producer/consumer connection
+factories), but that can be changed by altering the Spring
+configuration files mentioned below.</p>
+
+<a name="jms_broker"/>
+<h3>JMS broker</h3>
+
+<p>By default, the JMS broker is configurable via a minimal set of
+properties: the name of the JAAS configuration file containing the
+JAAS authentication domain <code>ors-amq-domain</code>, used by the
+broker to authenticate producer/consumer connections, and the URL on
+which the broker listens for standard (TCP) connections.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>BrokerService</code></td>
+<td><code>messaging/broker.xml</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>java.security.auth.login.config</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.jms.broker.url</code></td>
+</tr>
+</table>
+
+<p>In <code>default.properties</code>, the WS
+host <code>metc.ws.host</code> is used to define
+<code>metc.jms.broker.url</code>; the WS host is also used in
+<code>messaging/broker.xml</code> to define the URL on which the
+broker listens for Stomp connections. By
+default, <code>java.security.auth.login.config</code> points to
+<code>messaging/login.config</code>. Detailed configuration of the
+broker is possible via the properties of
+the <a href="http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/activemq/broker/BrokerService.html">BrokerService</a>
+bean, as well as via the
+URL's <a href="http://activemq.apache.org/tcp-transport-reference.html">TCP
+transport options</a>.<p>
+
+<a name="jms_producer"/>
+<h3>JMS producer/consumer</h3>
+
+<p>As a JMS producer/consumer, the ORS is configured with an incoming
+and an outgoing factory for JMS connections.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.incomingConnectionFactory</code></td>
+<td><code>server.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>ActiveMQConnectionFactory</code></td>
+<td><code>messaging/client.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.outgoingConnectionFactory</code></td>
+<td><code>server.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>PooledConnectionFactory</code></td>
+<td><code>messaging/client.xml</code></td>
+</tr>
+</table>
+
+<p>The factories rely on two Spring beans, named
+<code>runtimeUsername</code> and <code>runtimePassword</code>, for the
+JMS broker authentication credentials used by the ORS in its role as
+JMS producer/consumer. These beans are defined at run-time by the ORS,
+which obtains the credentials from properties (below), the
+command-line (via the <code>-u</code> and <code>-p</code> switches),
+or the console. By default, the credentials come from the following
+properties:</p>
+
+<table border="1">
+<tr>
+<td>Properties</td>
+<td><code>metc.amq.user</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.amq.password</code></td>
+</tr>
+</table>
+
+<p>However, they may be overridden on the ORS command-line; or, their
+definitions in the property files can be removed (or commented out),
+in which case the ORS will either look for the credentials on the
+command-line, or, if absent, will prompt for them on the console. This
+run-time resolution of authentication credentials requires that the
+list of properties files be defined in a bean named
+<code>propertiesFiles</code> (by default, this bean is defined in
+<code>properties.xml</code>).</p>
+
+<p>Detailed configuration of the producer/consumer connection
+factories is possible via the properties of the beans above:
+<a href="http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/activemq/spring/ActiveMQConnectionFactory.html">ActiveMQConnectionFactory</a>
+and <a href="http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/activemq/pool/PooledConnectionFactory.html">PooledConnectionFactory</a>.</p>
+
+
+<hr/><a name="brokers"/>
+<h2>Brokers</h2>
+
+<p>The ORS broker configuration has multiple parts:</p>
+
+<ul>
+
+<li><p>The <a href="#quickfixj">QuickFIX/J</a> configuration of the
+brokers, which is two-level: QuickFIX/J session settings that apply to
+all brokers, and QuickFIX/J session descriptors that apply to each
+broker (and may override the session settings). Also, alongside the
+QuickFIX/J configuration, some additional non-QuickFIX/J configuration
+takes place (such as setting broker names and IDs).</p></li>
+
+<li><p>The configuration of <a href="#filters">filters</a>, some of
+which apply to all brokers, and some which are
+broker-specific.</p></li>
+
+<li><p>The <a href="#selector">broker selector</a>, which chooses a
+broker to direct incoming orders (for those orders that have no
+explicit broker), reaching the ORS from ORS Clients. The selector is
+most useful in the context of <a href="#mbrokers">multiple
+brokers.</p></li>
+
+</ul>
+
+<a name="quickfixj"/>
+<h3>QuickFIX/J</h3>
+
+<p>These beans respectively set the brokers' QuickFIX/J session
+settings, and the per-broker QuickFIX/J session descriptor:</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringSessionSettings.defaults</code></td>
+<td><code>brokers/qsettings.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>SpringSessionDescriptor.dictionary</code></td>
+<td><code>brokers/broker/qdescriptor.xml</code></td>
+</tr>
+</table>
+
+<p>In both cases, the property value is a map, whose property names
+and values are defined by
+the <a href="http://www.quickfixj.org/quickfixj/usermanual/usage/configuration.html">standard
+QuickFIX/J configuration</a>.</p>
+
+<p>In general, the per-broker session descriptor inherits the property
+name-value pairs of the session settings. However, two additional
+pseudo-properties may be defined only in the session settings:</p>
+
+<table border="1">
+<tr>
+<td>QuickFIX/J pseudo-property</td>
+<td><code>metc.LogFactoryClass</code></td>
+<td>
+ <code>quickfix.SLF4JLogFactory</code> (default)<br/>
+ <code>quickfix.FileLogFactory</code><br/>
+ <code>quickfix.JdbcLogFactory</code><br/>
+ <code>quickfix.ScreenLogFactory</code>
+</td>
+</tr>
+<tr>
+<td>QuickFIX/J pseudo-property</td>
+<td><code>metc.MessageStoreFactoryClass</code></td>
+<td>
+ <code>quickfix.FileStoreFactory</code> (default)<br/>
+ <code>quickfix.JdbcStoreFactory</code><br/>
+ <code>quickfix.SleepycatStoreFactory</code>
+</td>
+</tr>
+</table>
+
+<p>Also, the standard session descriptor
+property <code>DataDictionary</code> (possibly inherited from session
+settings) may be assigned the pseudo-value
+<code>metc.DefaultDataDictionary</code> which enables validation using
+the default QuickFIX/J data dictionary appropriate for the descriptor's
+FIX version.</p>
+
+<p>For the end-user's convenience, the default configuration files
+relegate the most common QuickFIX/J properties into these regular
+properties (the QuickFIX/J properties are shown on the third column):</p>
+
+<table border="1">
+<tr>
+<td>Properties</td>
+<td><code>metc.broker.qf.begin.string</code></td>
+<td><code>BeginString</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.broker.qf.data.dictionary</code></td>
+<td><code>DataDictionary</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.broker.qf.sender.comp.id</code></td>
+<td><code>SenderCompID</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.broker.qf.target.comp.id</code></td>
+<td><code>TargetCompID</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.broker.qf.store</code></td>
+<td><code>FileStorePath</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.broker.qf.host</code></td>
+<td><code>SocketConnectHost</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.broker.qf.port</code></td>
+<td><code>SocketConnectPort</code></td>
+</tr>
+</table>
+
+<p>The QuickFIX/J settings are coupled to some non-QuickFIX/J settings
+in both the session settings and descriptor via these bean
+properties:</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringBrokers.settings</code></td>
+<td><code>brokers/main.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>SpringBroker.descriptor</code></td>
+<td><code>brokers/broker/main.xml</code></td>
+</tr>
+</table>
+
+<p>The per-broker non-QuickFIX/J settings include additional
+properties: the broker's name and id, which are both arbitrary strings
+(the ID is best kept short), and <a href="#filters">filters</a>.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringBroker.name</code></td>
+<td><code>brokers/broker/main.xml</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.broker.name</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>SpringBroker.id</code></td>
+<td><code>brokers/broker/main.xml</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.broker.id</code></td>
+</tr>
+</table>
+
+<p>Finally, the individual <code>SpringBroker</code> beans are coupled
+to the <code>SpringBrokers</code> bean via this bean property:</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringBrokers.brokers</code></td>
+<td><code>brokers/main.xml</code></td>
+</tr>
+</table>
+
+<a name="filters"/>
+<h3>Filters</h3>
+
+<p>There are several filters that may be applied to traffic that goes
+through the ORS; no filters are activated in the default
+configuration.</p>
+
+<ul>
+
+<a name="MessageFilter"/>
+<li><p>An instance of the <code>MessageFilter</code> interface may be
+applied to every application message received by the ORS from any
+broker, and if it rejects the message (its <code>isAccepted()</code>
+method returns false), QuickFIX/J is notified of the rejection.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.supportedMessages</code></td>
+<td><code>server.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>MessageTypeFilter</code></td>
+<td><code>filters/supported_messages.xml</code></td>
+</tr>
+</table>
+
+<p>A common choice for such a filter is <code>MessageTypeFilter</code>
+which accepts a message if its type is within a given set of messages
+types. The acceptable types are all listed in a set; messages without
+a type can be accepted or rejected.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>MessageTypeFilter.acceptedMessages</code></td>
+<td><code>filters/supported_messages.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>MessageTypeFilter.acceptUnknown</code></td>
+<td><code>filters/supported_messages.xml</code></td>
+</tr>
+</table>
+
+<p>The sample configuration of this filter is not enabled by default
+(the setting of the <code>supportedMessages</code> property is
+commented out).</p></li>
+
+<a name="OrderFilter"/>
+<li><p>An instance of the <code>OrderFilter</code> interface may be
+applied to every message received by the ORS from ORS Clients
+(regardless of broker), after it has been translated into a
+broker-specific FIX form but before <a href="#MessageModifier">message
+modifiers</a> and <a href="#MessageRouteManager">routes</a> are
+applied; if it rejects the message (its <code>assertAccepted()</code>
+method throws a <code>CoreException</code>), the ORS rejects the
+message in turn (and does not forward it to the broker).</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.allowedOrders</code></td>
+<td><code>server.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>OrderLimitFilter</code></td>
+<td><code>filters/allowed_orders.xml</code></td>
+</tr>
+</table>
+
+<p>A common choice for such a filter is <code>OrderLimitFilter</code>
+which specifies a set of order limits (minimum and maximum price,
+maximum quantity, and maximum notional); these checks are performed
+only if both the limit is set (i.e. non-null) and the message contains
+the relevant data (price, quantity, or both). In addition, the same
+filter can optionally reject market orders.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>OrderLimitFilter.minPrice</code></td>
+<td><code>filters/allowed_orders.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>OrderLimitFilter.maxPrice</code></td>
+<td><code>filters/allowed_orders.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>OrderLimitFilter.maxQuantityPerOrder</code></td>
+<td><code>filters/allowed_orders.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>OrderLimitFilter.maxNotionalPerOrder</code></td>
+<td><code>filters/allowed_orders.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>OrderLimitFilter.disallowMarketOrders</code></td>
+<td><code>filters/allowed_orders.xml</code></td>
+</tr>
+</table>
+
+<p>The sample configuration of this filter is not enabled by default
+(the setting of the <code>allowedOrders</code> property is commented
+out).</p></li>
+
+<a name="MessageModifier"/>
+<li><p>A sequence of <code>MessageModifier</code> implementations (in
+a list value that is assigned to the <code>messageModifiers</code>
+property of the <code>MessageModifierManager</code> bean) may be
+applied to every message received by the ORS after the destination
+broker has been selected but before
+the <a href="#MessageRouteManager">routes</a> are applied. This
+filter is specific to each broker.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringBroker.modifiers</code></td>
+<td><code>brokers/broker/main.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>MessageModifierManager.messageModifiers</code></td>
+<td><code>brokers/broker/modifiers.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>DefaultMessageModifier</code></td>
+<td><code>brokers/broker/modifiers.xml</code></td>
+</tr>
+</table>
+
+<p>A common choice for such a modifier
+is <code>DefaultMessageModifier</code> which specifies zero or more
+modifications to message header, body, and trailer fields that match a
+particular pattern. For each category, a map of modifications is
+assigned, and each modification has a key, which selects a field to be
+modified (possibly in some limited contexts only), and the value to
+which the field is set. The field selection can be as simple as a
+field tag alone, or a field tag followed by a context in parentheses;
+the context can be <code>app</code> (for all application messages),
+<code>admin</code> (for all session messages), <code>*</code> (for all
+messages; same as if no context is specified), or a letter/digit (for
+messages of that specific message type). So, for example, the
+modification keys <code>50</code> or <code>50(*)</code> with
+associated value <code>mySenderSubID</code> always add
+the <code>SenderSubID</code> field (whose tag is 50) equal
+to <code>mySenderSubID</code> into every message,
+while <code>50(A)</code> adds it only to the <code>Logon</code>
+message.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>DefaultMessageModifier.headerFields</code></td>
+<td><code>brokers/broker/modifiers.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>DefaultMessageModifier.msgFields</code></td>
+<td><code>brokers/broker/modifiers.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>DefaultMessageModifier.trailerFields</code></td>
+<td><code>brokers/broker/modifiers.xml</code></td>
+</tr>
+</table>
+
+<p>The sample configuration of this filter is not enabled by default
+(the setting of the <code>modifiers</code> property is commented
+out).</p></li>
+
+<a name="MessageRouteManager"/>
+<li><p>An instance of the <code>MessageRouteManager</code> class may
+be applied to every message received by the ORS after the destination
+broker has been selected and the <a href="#MessageModifier">message
+modifiers</a> have been applied. This filter is specific to each
+broker.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringBroker.routes</code></td>
+<td><code>brokers/broker/main.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>MessageRouteManager</code></td>
+<td><code>brokers/broker/routes.xml</code></td>
+</tr>
+</table>
+
+<p>The filter's intent is to translate incoming symbols that include
+routing information (separated by <code>.</code>) into outgoing
+symbols without that information, while encoding the routing portion
+into FIX fields dedicated to such routing; note that such routing is
+effected by the broker and is wholly independent of the ORS's broker
+selection. The choice of the field that will contain the routing
+information can be either <code>field:57</code> (using the
+<code>TargetSubID</code> header field), <code>field:100</code> (using
+the <code>ExDestination</code> body field), or <code>field:128</code>
+(using the <code>DeliverToCompID</code> header field). A map pairs up
+the routing suffixes to values placed in the routing information
+field; for example, the entry key-value of
+(<code>N</code>,<code>SIGMA</code>) will translate a symbol such as
+<code>IBM.N</code> to <code>IBM</code> and set the routing information
+field to <code>SIGMA</code>.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>MessageRouteManager.routeMethod</code></td>
+<td><code>brokers/broker/routes.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>MessageRouteManager.routes</code></td>
+<td><code>brokers/broker/routes.xml</code></td>
+</tr>
+</table>
+
+<p>In addition to this core filtering, this filter can also split an
+incoming symbol into an outgoing <code>Symbol</code> field and an
+outgoing <code>SymbolSfx</code> field. This optional adjustment
+applies only to non-FOREX orders; the <code>/</code> character should
+be used within the incoming symbol to separate the symbol and
+suffix.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>MessageRouteManager.separateSuffix</code></td>
+<td><code>brokers/broker/routes.xml</code></td>
+</tr>
+</table>
+
+<p>The sample configuration of this filter is not enabled by default
+(the setting of the <code>routes</code> property is commented
+out).</p></li>
+
+</ul>
+
+<a name="selector"/>
+<h3>Broker selector</h3>
+
+<p>The broker selector object configures the broker selection
+algorithm.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.selector</code></td>
+<td><code>server.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>SpringSelector</code></td>
+<td><code>brokers/selector.xml</code></td>
+</tr>
+</table>
+
+<p>The selector comprises an ordered list of selector entries
+(instances of <code>SpringSelectorEntry</code>), and a default broker
+(a bean reference to the appropriate <code>SpringBroker</code>
+bean). Both are optional.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringSelector.entries</code></td>
+<td><code>brokers/selector.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>SpringSelector.defaultBroker</code></td>
+<td><code>brokers/selector.xml</code></td>
+</tr>
+</table>
+
+<p>Broker selection works as follows:</p>
+
+<ol>
+
+<li><p>If the incoming order has a broker ID, use the broker with that
+ID, and conclude the broker selection.</p></li>
+
+<li><p>Otherwise, go down the list of selector entries (if any) until
+a matching entry is found: a matching entry is one whose required
+security type (a string such as <code>CS</code> for Common Stock
+or <code>OPT</code> for options) matches that of the order.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringSelectorEntry.targetType</code></td>
+<td><code>brokers/selector.xml</code></td>
+</tr>
+</table>
+
+<p>If the entry's required broker (a bean reference to the appropriate
+<code>SpringBroker</code> bean) is available (online), then use that
+broker and conclude the broker selection.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringSelectorEntry.broker</code></td>
+<td><code>brokers/selector.xml</code></td>
+</tr>
+</table>
+
+<p>If it is not available, then: if the entry's optional
+<code>skipIfUnavailable</code> flag is true, skip that entry and
+continue the search for a matching entry.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringSelectorEntry.skipIfUnavailable</code></td>
+<td><code>brokers/selector.xml</code></td>
+</tr>
+</table>
+
+<p>Otherwise, if the entry's <code>skipIfUnavailable</code> flag is
+false (or missing), reject the order (and conclude the broker
+selection).</p></li>
+
+<li><p>If there is no match, use the default broker (which implies
+rejection and conclusion of the broker selection if that broker is
+unavailable). And if there is no default broker, reject the order (and
+conclude the broker selection).</p></li>
+
+</ol>
+
+<p>This selection algorithm supports several common scenarios:</p>
+
+<ul>
+
+<li><p>No list; no default broker. All orders are required to specify
+a broker.</p></li>
+
+<li><p>No list; the default broker is set to the one and only broker
+defined in the ORS. Thus, no orders need to carry an explicit broker,
+and the one system broker (the <i>primary</i> broker) is where all
+orders go. This is the default configuration.</p></li>
+
+<li><p>A list where all common stock orders are directed to one broker
+and all option orders are directed to another broker; no default
+broker. This is a simple scenario where the same broker is always used
+for each security type.</p></li>
+
+<li><p>A list where all common stock orders go to broker <i>A</i>, if
+available, and broker <i>B</i> otherwise (i.e. there are two selector
+entries, both with the common stock security type, but the first has
+broker <i>A</i> and <code>skipIfUnavailable</code> set to true while
+the second has broker <i>B</i> and <code>skipIfUnavailable</code> set
+to false). Because broker <i>A</i> charges less than broker <i>B</i>,
+but is unreliable (or unavailable by design) during parts of the day,
+we want to select broker <i>A</i> for common stock orders, if
+possible, and broker <i>B</i> otherwise; if broker <i>B</i> is also
+unavailable, then the order is rejected.</p></li>
+
+</ul>
+
+<a name="mbrokers"/>
+<h3>Multiple brokers</h3>
+
+<p>A common alternative to the default configuration is to define
+multiple broker configurations. To this end, follow these steps:</p>
+
+<ol>
+
+<li><p>Rename the <code>brokers/broker</code> directory
+into <code>brokers/broker1</code>, and create a new
+directory <code>brokers/broker2</code>. Populate the new directory
+with files that mirror those of
+<code>brokers/broker1</code>. Similarly, you can create additional directories
+for more brokers.</p></li>
+
+<li><p>In the files inside each broker directory, specify the desired
+settings for each broker, incl. the QuickFIX/J session descriptor. You
+can either specify the settings in-line, or use new properties such as
+<code>metc.broker2.qf.begin.string</code>,
+<code>metc.broker2.qf.data.dictionary</code>, etc., relagating their
+values into <code>default.properties</code> or
+<code>user.properties</code> (and, while doing so, possibly replace the
+definitions as well as all uses of standard properties such as
+<code>metc.broker.qf.begin.string</code> with
+<code>metc.broker1.qf.begin.string</code>).</p></li>
+
+<li><p>Edit <code>brokers/main.xml</code> to import all the
+<code>brokers/broker*/main.xml</code> files, as well as add all the
+<code>SpringBroker</code> beans of all the brokers onto the list value of the
+<code>brokers</code> property of the <code>SpringBrokers</code> bean.</p></li>
+
+<li><p>Edit the selector's configuration to reflect your desired
+broker selection logic.</p></li>
+
+</ol>
+
+
+<hr/><a name="database"/>
+<h2>Database services</h2>
+
+<p>The database connection of the ORS is setup via</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>ComboPooledDataSource</code></td>
+<td><code>db/db.xml</code></td>
+</tr>
+</table>
+
+<p>This bean's
+<a href="http://www.mchange.com/projects/c3p0/index.html#configuration_properties">properties</a> can be further modified by the end-user.</p>
+ 
+<p>By default, this bean relegates its key settings to properties that
+define the class of the database JDBC driver, the credentials used to
+connect to the database, the size of the JDBC connection pool, and the
+JDBC connection URL.</p>
+
+<table border="1">
+<tr>
+<td>Properties</td>
+<td><code>metc.jdbc.driver</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.jdbc.user</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.jdbc.password</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.jdbc.pool.size</code></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td><code>metc.jdbc.url</code></td>
+</tr>
+</table>
+
+<p>Also by default, an embedded MySQL database is used for database
+services. If the end-user decides to retain MySQL, the ORS connection
+to it can be configured
+by <a href="http://dev.mysql.com/doc/refman/5.1/en/connector-j-reference-configuration-properties.html">altering
+the URL property above</a> (or edit the
+<code>ComboPooledDataSource.jdbcUrl</code> bean property
+directly).</p>
+
+<p>Again by default, the Java persistence implementation
+(object-relational mapper) the ORS uses is Hibernate. Both the choice
+of database and that of a persistence implementation can be changed
+via <code>db/vendors.xml</code>.</p>
+
+<p>Additional beans in support of the object-relational mapping are
+defined in <code>db/orm.xml</code>.</p>
+
+<p>One of the tasks carried out by the database is assisting in the
+generation of unique IDs (order IDs, execution IDs, etc.). The ID
+generation factory is set via the following Spring bean, and the
+default setting should suffice for most installations.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.IDFactory</code></td>
+<td><code>server.xml</code></td>
+</tr>
+</table>
+
+
+<hr/><a name="logging"/>
+<h2>Logging</h2>
+
+<p>The ORS relies largely on SLF4J for logging, which in turn, by
+default, uses LOG4J; its configuration is stored in
+<code>log4j/server.properties</code> (the logging configuration of the
+CLI tool is in <code>log4j/cli.properties</code>). However, certain
+third party components embedded in the ORS may not use SLF4J or LOG4J
+for logging, and require configuration using their own custom
+mechanisms.</p>
+
+<p>While certifying a broker connection, the end-user may wish to
+change to <code>DEBUG</code> the logging level of some logging
+categories. The category</p>
+
+<table border="1">
+<tr>
+<td>Category</td>
+<td><code>log4j.logger.org.marketcetera</code></td>
+</tr>
+</table>
+
+<p>will result in very verbose output (possibly excessively so). The
+category</p>
+
+<table border="1">
+<tr>
+<td>Category</td>
+<td><code>log4j.logger.org.marketcetera.ors</code></td>
+</tr>
+</table>
+
+<p>will show detailed logs on all traffic exchanged between the ORS,
+ORS Clients, and brokers, and is probably best. If you want to include
+heartbeats in these detailed logs, these categories' logging levels
+should also be changed to <code>DEBUG</code> (the default for both is
+<code>ERROR</code>):</p>
+
+<table border="1">
+<tr>
+<td>Category</td>
+<td><code>log4j.logger.org.marketcetera.ors.brokers.Broker.HEARTBEATS</code></td>
+</tr>
+<tr>
+<td>Category</td>
+<td><code>log4j.logger.org.marketcetera.ors.QuickFIXApplication.HEARTBEATS</code></td>
+</tr>
+</table>
+
+<p>Another handy logging category reveals currently active sessions:
+if you want the ORS to report all active sessions whenever a change is
+made to them (or whenever
+the <a href="#JMX"><code>syncSessions()</code> JMX call</a> is made),
+change to <code>DEBUG</code> the category</p>
+
+<table border="1">
+<tr>
+<td>Category</td>
+<td><code>log4j.logger.org.marketcetera.ors.UserManager</code></td>
+</tr>
+</table>
+
+
+<hr/><a name="jmx"/>
+<h2>JMX</h2>
+
+<p>Run-time JMX (<i>MBeans</i>) access is provided to the ORS,
+incl. its embedded components which support
+JMX: <a href="http://www.quickfixj.org/confluence/display/qfj/JMX+Instrumentation">QuickFIX/J</a>,
+<a href="http://activemq.apache.org/jmx.html">ActiveMQ</a> (the JMS
+implementation), <a href="http://www.mchange.com/projects/c3p0/index.html#jmx_configuration_and_management">C3P0</a>
+(the database connection pool), etc. The ORS itself provides two
+operations via JMX, namely:</p>
+
+<ol>
+
+<li><p><code>sendPasswordReset()</code>, which changes the password used
+with a particular broker.</p></li>
+
+<li><p><code>syncSessions()</code>, which re-reads the contents of the
+database and updates the current ORS sessions accordingly
+(i.e. removing sessions for deleted users, or adding/removing delivery
+rules for sessions whose associated user experienced a change in their
+superuser status).</p></li>
+
+</ol>
+
+</body>
