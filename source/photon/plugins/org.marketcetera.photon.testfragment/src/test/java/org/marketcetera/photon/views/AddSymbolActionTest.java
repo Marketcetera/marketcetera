@@ -1,7 +1,7 @@
 package org.marketcetera.photon.views;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -33,14 +33,14 @@ public class AddSymbolActionTest {
 
 	@Test
 	public void singleSymbol() {
-		stub(mMockText.getText()).toReturn("ABC");
+		when(mMockText.getText()).thenReturn("ABC");
 		mFixture.run();
 		verify(mMockListener).onAssertSymbol(new MSymbol("ABC"));
 	}
 
 	@Test
 	public void multipleSymbols() {
-		stub(mMockText.getText()).toReturn("ABC, IBM,GOOG , MSFT      ");
+		when(mMockText.getText()).thenReturn("ABC, IBM,GOOG , MSFT      ");
 		mFixture.run();
 		verify(mMockListener).onAssertSymbol(new MSymbol("ABC"));
 		verify(mMockListener).onAssertSymbol(new MSymbol("IBM"));

@@ -8,7 +8,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -62,10 +62,10 @@ public class PhotonPositionMarketDataTest {
 		mMETCTick.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, "METC");
 		mMockIBMReference = mock(IMarketDataReference.class);
 		mMockMETCReference = mock(IMarketDataReference.class);
-		stub(mMockIBMReference.get()).toReturn(mIBMTick);
-		stub(mMockMETCReference.get()).toReturn(mMETCTick);
-		stub(mMockMarketData.getLatestTick("IBM")).toReturn(mMockIBMReference);
-		stub(mMockMarketData.getLatestTick("METC")).toReturn(mMockMETCReference);
+		when(mMockIBMReference.get()).thenReturn(mIBMTick);
+		when(mMockMETCReference.get()).thenReturn(mMETCTick);
+		when(mMockMarketData.getLatestTick("IBM")).thenReturn(mMockIBMReference);
+		when(mMockMarketData.getLatestTick("METC")).thenReturn(mMockMETCReference);
 		// statistic stubbing
 		mIBMStat = MDFactory.eINSTANCE.createMDMarketstat();
 		mIBMStat.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, "IBM");
@@ -73,10 +73,10 @@ public class PhotonPositionMarketDataTest {
 		mMETCStat.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, "METC");
 		mMockIBMStatReference = mock(IMarketDataReference.class);
 		mMockMETCStatReference = mock(IMarketDataReference.class);
-		stub(mMockIBMStatReference.get()).toReturn(mIBMStat);
-		stub(mMockMETCStatReference.get()).toReturn(mMETCStat);
-		stub(mMockMarketData.getMarketstat("IBM")).toReturn(mMockIBMStatReference);
-		stub(mMockMarketData.getMarketstat("METC")).toReturn(mMockMETCStatReference);
+		when(mMockIBMStatReference.get()).thenReturn(mIBMStat);
+		when(mMockMETCStatReference.get()).thenReturn(mMETCStat);
+		when(mMockMarketData.getMarketstat("IBM")).thenReturn(mMockIBMStatReference);
+		when(mMockMarketData.getMarketstat("METC")).thenReturn(mMockMETCStatReference);
 	}
 
 	@Test

@@ -10,8 +10,7 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 import org.eclipse.update.internal.ui.parts.ImageOverlayIcon;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonImages;
@@ -28,10 +27,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * can be overlayed with a custom image, the path of which is also provided by
  * the extension point.
  * 
- * Subclasses should extend {@link #createControl(Composite)} to actually create
- * the UI, but should be sure to call the base class implementation to work
- * around http://bugs.eclipse.org/bugs/show_bug.cgi?id=253082.
- * 
  * The Eclipse internal {@link ImageOverlayIcon} class is used intentionally to
  * avoid duplicating code. TODO: test to verify this continues to work as
  * expected.
@@ -42,7 +37,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public abstract class StatusIndicatorContributionItem extends
-		Workaround253082ContributionItem implements IExecutableExtension {
+		WorkbenchWindowControlContribution implements IExecutableExtension {
 
 	private static final String OVERLAY_KEY = "overlay"; //$NON-NLS-1$
 
@@ -77,17 +72,6 @@ public abstract class StatusIndicatorContributionItem extends
 	public Image getErrorImage() {
 		return mErrorImage;
 	}
-
-	/**
-	 * Subclasses must override to create the control, but must also call this
-	 * {@link StatusIndicatorContributionItem} implementation in the process.
-	 * 
-	 * @see Workaround253082ContributionItem#createControl(Composite)
-	 */
-	@Override
-	protected Control createControl(Composite parent) {
-		return super.createControl(parent);
-	}
 	
 	/**
 	 * Subclasses can override to provide additional cleanup, but must be sure
@@ -96,7 +80,7 @@ public abstract class StatusIndicatorContributionItem extends
 	 * @see Workaround253082ContributionItem#dispose()
 	 */
 	@Override
-	protected void doDispose() {
+	public void dispose() {
 		// Dispose custom images
 		if (mOverlays) {
 			if (mOnImage != null)

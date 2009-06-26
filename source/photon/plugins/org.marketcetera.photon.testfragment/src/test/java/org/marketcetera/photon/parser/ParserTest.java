@@ -1,7 +1,7 @@
 package org.marketcetera.photon.parser;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.regex.Matcher;
@@ -608,7 +608,7 @@ public class ParserTest extends FIXVersionedTestCase {
     	IBrokerIdValidator mockValidator = mock(IBrokerIdValidator.class);
     	aParser.setBrokerValidator(mockValidator);
     	
-    	stub(mockValidator.isValid("ABC")).toReturn(false);
+    	when(mockValidator.isValid("ABC")).thenReturn(false);
     	
     	new ExpectedFailure<ParserException>(
 				Messages.COMMAND_PARSER_INVALID_BROKER_ID.getText("ABC",
@@ -619,7 +619,7 @@ public class ParserTest extends FIXVersionedTestCase {
 			}
 		};
 		
-		stub(mockValidator.isValid("ABC")).toReturn(true);
+		when(mockValidator.isValid("ABC")).thenReturn(true);
 		order = "B 100 IBM 1 ABC";
     	command = (SendOrderToOrderManagerCommand) aParser.parseNewOrder(order);
     	result = command.getMessage();

@@ -1,7 +1,7 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
@@ -16,6 +16,7 @@ import org.marketcetera.core.ImmediateExecutorService;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleManager;
@@ -109,10 +110,13 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 
 	@Before
 	public void before() throws Exception {
-		Activator.getMarketDataManager().reconnectFeed(
-				MockMarketDataModuleFactory.PROVIDER_URN.toString());
 		mMockMarketDataModule = MockMarketDataModuleFactory.sInstance;
 		mMockMarketDataModule.setStatus("AVAILABLE");
+		Activator.getMarketDataManager().reconnectFeed(
+				MockMarketDataModuleFactory.PROVIDER_URN.toString());
+		while (Activator.getMarketDataManager().getActiveFeedStatus() != FeedStatus.AVAILABLE) {
+			Thread.sleep(250);
+		}
 		mFixture = createFixture(ModuleSupport.getModuleManager(), new ImmediateExecutorService());
 		mMockModuleFeed = createMockModuleFeed(getSupportedCapabilities());
 		mFixture.setSourceFeed(mMockModuleFeed);
@@ -131,8 +135,8 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 
 	private IMarketDataFeed createMockFeed(ModuleURN urn, EnumSet<Capability> capabilities) throws I18NException {
 		IMarketDataFeed mock = mock(IMarketDataFeed.class);
-		stub(mock.getURN()).toReturn(urn);
-		stub(mock.getCapabilities()).toReturn(capabilities);
+		when(mock.getURN()).thenReturn(urn);
+		when(mock.getCapabilities()).thenReturn(capabilities);
 		return mock;
 	}
 

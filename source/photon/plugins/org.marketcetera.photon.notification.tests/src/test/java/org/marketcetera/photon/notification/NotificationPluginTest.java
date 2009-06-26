@@ -54,19 +54,19 @@ public class NotificationPluginTest {
 
 	@Test
 	public void testShouldDisplayPopup() {
-		stub(mockPreferences.getString(NotificationPreferences.PRIORITY)).toReturn(Severity.HIGH.name());		
+		when(mockPreferences.getString(NotificationPreferences.PRIORITY)).thenReturn(Severity.HIGH.name());		
 		assertFalse(fixture.shouldDisplayPopup(Severity.LOW));
 		assertFalse(fixture.shouldDisplayPopup(Severity.MEDIUM));
 		assertTrue(fixture.shouldDisplayPopup(Severity.HIGH));
-		stub(mockPreferences.getString(NotificationPreferences.PRIORITY)).toReturn(Severity.MEDIUM.name());		
+		when(mockPreferences.getString(NotificationPreferences.PRIORITY)).thenReturn(Severity.MEDIUM.name());		
 		assertFalse(fixture.shouldDisplayPopup(Severity.LOW));
 		assertTrue(fixture.shouldDisplayPopup(Severity.MEDIUM));
 		assertTrue(fixture.shouldDisplayPopup(Severity.HIGH));
-		stub(mockPreferences.getString(NotificationPreferences.PRIORITY)).toReturn(Severity.LOW.name());		
+		when(mockPreferences.getString(NotificationPreferences.PRIORITY)).thenReturn(Severity.LOW.name());		
 		assertTrue(fixture.shouldDisplayPopup(Severity.LOW));
 		assertTrue(fixture.shouldDisplayPopup(Severity.MEDIUM));
 		assertTrue(fixture.shouldDisplayPopup(Severity.HIGH));
-		stub(mockPreferences.getString(NotificationPreferences.PRIORITY)).toReturn("");
+		when(mockPreferences.getString(NotificationPreferences.PRIORITY)).thenReturn("");
 		assertFalse(fixture.shouldDisplayPopup(Severity.LOW));
 		assertFalse(fixture.shouldDisplayPopup(Severity.MEDIUM));
 		assertFalse(fixture.shouldDisplayPopup(Severity.HIGH));
@@ -75,9 +75,9 @@ public class NotificationPluginTest {
 	@Test
 	public void testShouldPlaySound() {
 		for (Severity severity : Severity.values()) {
-			stub(mockPreferences.getBoolean(NotificationPreferences.SOUND_ENABLED_PREFIX + severity.name())).toReturn(true);		
+			when(mockPreferences.getBoolean(NotificationPreferences.SOUND_ENABLED_PREFIX + severity.name())).thenReturn(true);		
 			assertTrue(fixture.shouldPlaySound(severity));
-			stub(mockPreferences.getBoolean(NotificationPreferences.SOUND_ENABLED_PREFIX + severity.name())).toReturn(false);		
+			when(mockPreferences.getBoolean(NotificationPreferences.SOUND_ENABLED_PREFIX + severity.name())).thenReturn(false);		
 			assertFalse(fixture.shouldPlaySound(severity));
 		}
 	}
@@ -86,7 +86,7 @@ public class NotificationPluginTest {
 	public void testGetSoundClip() {
 		for (Severity severity : Severity.values()) {
 			String string = Long.toString(new Random().nextLong());
-			stub(mockPreferences.getString(NotificationPreferences.SOUND_CLIP_PREFIX + severity.name())).toReturn(string);		
+			when(mockPreferences.getString(NotificationPreferences.SOUND_CLIP_PREFIX + severity.name())).thenReturn(string);		
 			assertEquals(string, fixture.getSoundClip(severity));
 		}
 	}

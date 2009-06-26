@@ -34,7 +34,6 @@ public class MarketDataStatusIndicator extends StatusIndicatorContributionItem {
 
 	@Override
 	protected Control createControl(Composite parent) {
-		super.createControl(parent);
 		Composite composite = new Composite(parent, SWT.NONE);
 		FillLayout layout = new FillLayout();
 		layout.marginWidth = 2;
@@ -58,13 +57,13 @@ public class MarketDataStatusIndicator extends StatusIndicatorContributionItem {
 	}
 	
 	@Override
-	protected void doDispose() {
+	public void dispose() {
 		if (mListener != null) {
 			mMarketDataManager
 					.removeActiveFeedStatusChangedListener(mListener);
 			mListener = null;
 		}
-		super.doDispose();
+		super.dispose();
 	}
 
 	private void updateLabel() {

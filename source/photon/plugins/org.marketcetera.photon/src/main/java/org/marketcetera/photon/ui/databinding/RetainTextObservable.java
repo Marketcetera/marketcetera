@@ -14,8 +14,7 @@ import org.eclipse.swt.widgets.Combo;
  * @author gmiller
  *
  */
-@SuppressWarnings("restriction")
-public class RetainTextObservable extends org.eclipse.jface.internal.databinding.swt.ComboObservableList {
+public class RetainTextObservable extends ComboObservableList {
 
 	private Combo combo;
 

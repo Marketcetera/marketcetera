@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.5"?>
+
+<target name="Photon Target">
+<locations>
+<location path="${folder_prompt:mvn.photon.target}/eclipse" type="Directory"/>
+</locations>
+</target>

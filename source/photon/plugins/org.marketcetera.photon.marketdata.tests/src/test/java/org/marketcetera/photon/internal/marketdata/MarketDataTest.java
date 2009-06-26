@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -261,7 +261,7 @@ public class MarketDataTest {
 	@Test
 	public void testSetSourceModule() throws Exception {
 		IMarketDataFeed mockFeed = mock(IMarketDataFeed.class);
-		stub(mockFeed.getURN()).toReturn(new ModuleURN("abc:abc:abc:abc"));
+		when(mockFeed.getURN()).thenReturn(new ModuleURN("abc:abc:abc:abc"));
 		mFixture.setSourceFeed(mockFeed);
 		for (IDataFlowManager<?, ?> manager : ImmutableSet.<IDataFlowManager<?, ?>> of(
 				mMockLatestTickManager, mMockTopOfBookManager, mMockMarketstatManager,
@@ -290,8 +290,8 @@ public class MarketDataTest {
 		private void run() {
 			T mockTick1 = createItem(mKey1);
 			T mockTick2 = createItem(mKey2);
-			stub(mManager.getItem(mKey1)).toReturn(mockTick1);
-			stub(mManager.getItem(mKey2)).toReturn(mockTick2);
+			when(mManager.getItem(mKey1)).thenReturn(mockTick1);
+			when(mManager.getItem(mKey2)).thenReturn(mockTick2);
 			// get a reference
 			IMarketDataReference<? extends MDItem> ref1 = getReferenceAndValidate(mKey1);
 			// start flow should have been called
