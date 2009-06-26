@@ -10,9 +10,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.marketcetera.thirdparty,
  org.eclipse.core.databinding
 Export-Package: org.marketcetera.photon.test
-Import-Package: org.hamcrest;version="1.1.0",
- org.junit;version="4.5.0",
- org.junit.internal.runners;version="4.5.0",
- org.junit.runner;version="4.5.0",
- org.junit.runners;version="4.5.0",
- org.junit.runners.model;version="4.5.0"
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.internal.runners,
+ org.junit.runner,
+ org.junit.runners,
+ org.junit.runners.model

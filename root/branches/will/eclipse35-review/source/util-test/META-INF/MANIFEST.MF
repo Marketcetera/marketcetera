@@ -7,4 +7,4 @@ Bundle-Version: 1.6.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.thirdparty
 Export-Package: org.marketcetera.util.test
-Import-Package: org.junit;version="4.5.0"
+Import-Package: org.junit

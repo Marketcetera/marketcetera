@@ -8,9 +8,9 @@ Fragment-Host: org.marketcetera.photon.notification;bundle-version="1.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.photon.test
 Bundle-ClassPath: .
-Import-Package: org.hamcrest;version="1.1.0",
- org.junit;version="4.5.0",
- org.junit.runner;version="4.5.0",
- org.junit.runners;version="4.5.0",
- org.mockito;version="1.8.0.rc2",
- org.mockito.stubbing;version="1.8.0.rc2"
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.stubbing
