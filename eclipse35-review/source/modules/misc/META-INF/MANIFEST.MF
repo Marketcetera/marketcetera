@@ -8,5 +8,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional
 Eclipse-RegisterBuddy: org.marketcetera.core
-Import-Package: org.hamcrest;version="1.1.0",
- org.junit;version="4.5.0"
+Import-Package: org.hamcrest,
+ org.junit

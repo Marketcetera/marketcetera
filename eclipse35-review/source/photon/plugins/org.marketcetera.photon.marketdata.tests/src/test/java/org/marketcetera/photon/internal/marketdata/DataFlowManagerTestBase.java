@@ -115,7 +115,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		Activator.getMarketDataManager().reconnectFeed(
 				MockMarketDataModuleFactory.PROVIDER_URN.toString());
 		while (Activator.getMarketDataManager().getActiveFeedStatus() != FeedStatus.AVAILABLE) {
-			Thread.sleep(100);
+			Thread.sleep(250);
 		}
 		mFixture = createFixture(ModuleSupport.getModuleManager(), new ImmediateExecutorService());
 		mMockModuleFeed = createMockModuleFeed(getSupportedCapabilities());

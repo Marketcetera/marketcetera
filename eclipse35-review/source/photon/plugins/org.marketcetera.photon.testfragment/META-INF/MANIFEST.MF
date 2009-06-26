@@ -7,12 +7,12 @@ Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon
 Require-Bundle: org.marketcetera.core.tests,
  org.marketcetera.photon.test
-Import-Package: junit.framework;version="4.5.0",
- org.hamcrest;version="1.1.0",
- org.junit;version="4.5.0",
- org.junit.runner;version="4.5.0",
- org.junit.runners;version="4.5.0",
- org.mockito;version="1.8.0.rc2",
- org.mockito.invocation;version="1.5.0",
- org.mockito.stubbing;version="1.5.0"
+Import-Package: junit.framework,
+ org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.invocation,
+ org.mockito.stubbing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
