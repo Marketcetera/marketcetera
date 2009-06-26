@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 import org.eclipse.ui.swt.IFocusService;
 import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.EclipseUtils;
@@ -33,7 +34,7 @@ import quickfix.Message;
  * @author andrei@lissovski.org
  */
 public class CommandLineTrimWidget
-    extends Workaround253082ContributionItem
+    extends WorkbenchWindowControlContribution
     implements Messages
 {
 
@@ -67,7 +68,6 @@ public class CommandLineTrimWidget
 
 	@Override
 	protected Control createControl(Composite parent) {
-		super.createControl(parent);
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new RowLayout());
 		composite.setData(this);

@@ -6,8 +6,7 @@ Bundle-Name: Marketcetera Core Tests
 Bundle-Version: 1.6.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.util-test;visibility:=reexport,
- org.marketcetera.core,
- org.junit4
+ org.marketcetera.core
 Export-Package: org.marketcetera.core,
  org.marketcetera.core.notifications,
  org.marketcetera.core.position.impl,
@@ -25,4 +24,8 @@ Export-Package: org.marketcetera.core,
  org.marketcetera.quickfix.customfields,
  org.marketcetera.quickfix.messagefactory,
  org.marketcetera.trade
+Import-Package: junit.framework,
+ org.hamcrest,
+ org.junit,
+ org.mockito
 Bundle-ClassPath: core-1.6.0-tests.jar

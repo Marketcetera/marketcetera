@@ -42,6 +42,11 @@
       <groupId>com.google</groupId>
       <artifactId>guice-source</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
@@ -131,26 +136,54 @@
                         eclipse/plugins/org.eclipse.update.core.source_*,
                         eclipse/plugins/org.eclipse.equinox.security_*,
                         eclipse/plugins/org.eclipse.equinox.security.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.core_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.core.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.engine_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.engine.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.repository_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.repository.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.metadata_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.metadata.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.metadata.repository_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.metadata.repository.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.artifact.repository_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.artifact.repository.source_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.jarprocessor_*,
+                        eclipse/plugins/org.eclipse.equinox.p2.jarprocessor.source_*,
                         eclipse/plugins/org.eclipse.ltk.core.refactoring_*,
                         eclipse/plugins/org.eclipse.ltk.core.refactoring.source_*,
                         eclipse/plugins/org.eclipse.ltk.ui.refactoring_*,
                         eclipse/plugins/org.eclipse.ltk.ui.refactoring.source_*,
                         eclipse/plugins/org.eclipse.ui.navigator_*,
                         eclipse/plugins/org.eclipse.ui.navigator.source_*,
+                        eclipse/plugins/org.eclipse.compare.core_*,
+                        eclipse/plugins/org.eclipse.compare.core.source_*,
                         eclipse/plugins/org.eclipse.compare_*,
                         eclipse/plugins/org.eclipse.compare.source_*,
                         eclipse/plugins/org.eclipse.team.ui_*,
                         eclipse/plugins/org.eclipse.team.ui.source_*,
+                        eclipse/plugins/org.eclipse.ecf_*,
+                        eclipse/plugins/org.eclipse.ecf.source_*,
+                        eclipse/plugins/org.eclipse.ecf.identity_*,
+                        eclipse/plugins/org.eclipse.ecf.identity.source_*,
+                        eclipse/plugins/org.eclipse.ecf.filetransfer_*,
+                        eclipse/plugins/org.eclipse.ecf.filetransfer.source_*,
                         eclipse/plugins/org.eclipse.ui.navigator.resources_*,
                         eclipse/plugins/org.eclipse.ui.navigator.resources.source_*,
                         eclipse/plugins/org.eclipse.ui.views.properties.tabbed_*,
-                        eclipse/plugins/org.eclipse.ui.views.properties.tabbed.source_*
+                        eclipse/plugins/org.eclipse.ui.views.properties.tabbed.source_*,
+                        eclipse/plugins/org.eclipse.jdt.junit4.runtime_*,
+                        eclipse/plugins/org.eclipse.jdt.junit4.runtime.source_*,
+                        eclipse/plugins/org.eclipse.jdt.junit.runtime_*,
+                        eclipse/plugins/org.eclipse.jdt.junit.runtime.source_*,
+                        eclipse/plugins/org.junit.source_*,
+                        eclipse/plugins/org.junit_*/**
                       </includes>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
                       <artifactId>mylyn</artifactId>
-                      <version>3.0.1.v20080721-2100-e3.4</version>
+                      <version>3.2.0.v20090617-0100-e3.4</version>
                       <type>zip</type>
                       <includes>
                         plugins/org.apache.commons.codec_*,
@@ -166,8 +199,8 @@
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
-                      <artifactId>emf</artifactId>
-                      <version>2.4.2</version>
+                      <artifactId>emf-runtime</artifactId>
+                      <version>2.5.0</version>
                       <type>zip</type>
                       <includes>
                         eclipse/plugins/org.eclipse.emf.common_*,
@@ -177,19 +210,48 @@
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
-                      <artifactId>emf-source</artifactId>
-                      <version>2.4.2</version>
+                      <artifactId>emf-sourcedoc</artifactId>
+                      <version>2.5.0</version>
                       <type>zip</type>
                       <includes>
-                        eclipse/plugins/org.eclipse.emf.source_*/**
+                        eclipse/plugins/org.eclipse.emf.common.source_*,
+                        eclipse/plugins/org.eclipse.emf.ecore.source_*,
+                        eclipse/plugins/org.eclipse.emf.databinding.source_*
                       </includes>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
-                      <artifactId>junit45-feature-patch-3.4.1</artifactId>
-                      <version>20090204</version>
+                      <artifactId>swtbot</artifactId>
+                      <version>2.0.0.358-dev</version>
                       <type>zip</type>
+                      <includes>
+                        plugins/org.apache.log4j_*,
+                        plugins/org.eclipse.swtbot.swt.finder_*,
+                        plugins/org.eclipse.swtbot.eclipse.finder_*,
+                        plugins/org.eclipse.swtbot.junit4_x_*,
+                        plugins/org.hamcrest_*,
+                        plugins/org.hamcrest.core_*,
+                        plugins/org.hamcrest.text_*,
+                        plugins/org.hamcrest.library_*,
+                        plugins/org.hamcrest.integration_*,
+                        plugins/org.hamcrest.core.source_*,
+                        plugins/org.hamcrest.text.source_*,
+                        plugins/org.hamcrest.library.source_*,
+                        plugins/org.hamcrest.integration.source_*
+                      </includes>
                       <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
+                    </artifactItem>
+                    <artifactItem>
+                      <!--
+                        - Customized org.junit4 bundle that gets hamcrest by import-package instead 
+                        - of require-bundle. This is necessary to integrate with the hamcrest libraries
+                        - provided by SWT Bot.
+                        -->
+                      <groupId>org.marketcetera</groupId>
+                      <artifactId>junit4</artifactId>
+                      <version>4.5.0.20090526</version>
+                      <type>zip</type>
+                      <outputDirectory>${mvn.photon.target}/eclipse/plugins</outputDirectory>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.rubypeople</groupId>

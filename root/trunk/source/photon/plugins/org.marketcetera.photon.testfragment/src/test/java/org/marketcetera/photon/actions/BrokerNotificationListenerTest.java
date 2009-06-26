@@ -3,7 +3,7 @@ package org.marketcetera.photon.actions;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
@@ -36,13 +36,13 @@ public class BrokerNotificationListenerTest {
 	@Test
 	public void testReceiveBrokerStatus() throws Exception {
 		ISubscriber mockSubscriber = mock(ISubscriber.class);
-		stub(mockSubscriber.isInteresting(anyObject())).toReturn(true);
+		when(mockSubscriber.isInteresting(anyObject())).thenReturn(true);
 		Client mockClient = mock(Client.class);
 		NotificationManager.getNotificationManager().subscribe(mockSubscriber);
 
 		BrokerStatus status = new BrokerStatus("abc",
 				new BrokerID("abc"), true);
-		stub(mockClient.getBrokersStatus()).toReturn(new BrokersStatus(Collections.singletonList((status))));
+		when(mockClient.getBrokersStatus()).thenReturn(new BrokersStatus(Collections.singletonList((status))));
 		BrokerNotificationListener fixture = new BrokerNotificationListener(mockClient);
 		fixture.receiveBrokerStatus(status);
 

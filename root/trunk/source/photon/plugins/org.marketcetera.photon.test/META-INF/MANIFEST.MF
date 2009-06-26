@@ -8,10 +8,10 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.marketcetera.thirdparty,
- org.eclipse.core.databinding,
- org.marketcetera.test.thirdparty;visibility:=reexport
+ org.eclipse.core.databinding
 Export-Package: org.marketcetera.photon.test
-Import-Package: org.junit,
+Import-Package: org.hamcrest,
+ org.junit,
  org.junit.internal.runners,
  org.junit.runner,
  org.junit.runners,

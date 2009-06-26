@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.marketcetera.photon.test.IsExpectedPropertyChangeEvent.isPropertyChange;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 import java.beans.PropertyChangeListener;
@@ -58,14 +58,14 @@ public class MarketDataViewItemTest {
         mTick2 = createTick(symbol2);
         mMockTick1Reference = createReference(mTick1);
         mMockTick2Reference = createReference(mTick2);
-        stub(mMockMarketData.getLatestTick(symbol1.getFullSymbol())).toReturn(mMockTick1Reference);
-        stub(mMockMarketData.getLatestTick(symbol2.getFullSymbol())).toReturn(mMockTick2Reference);
+        when(mMockMarketData.getLatestTick(symbol1.getFullSymbol())).thenReturn(mMockTick1Reference);
+        when(mMockMarketData.getLatestTick(symbol2.getFullSymbol())).thenReturn(mMockTick2Reference);
         mTOB1 = createTOB(symbol1);
         mTOB2 = createTOB(symbol2);
         mMockTOB1Reference = createReference(mTOB1);
         mMockTOB2Reference = createReference(mTOB2);
-        stub(mMockMarketData.getTopOfBook(symbol1.getFullSymbol())).toReturn(mMockTOB1Reference);
-        stub(mMockMarketData.getTopOfBook(symbol2.getFullSymbol())).toReturn(mMockTOB2Reference);
+        when(mMockMarketData.getTopOfBook(symbol1.getFullSymbol())).thenReturn(mMockTOB1Reference);
+        when(mMockMarketData.getTopOfBook(symbol2.getFullSymbol())).thenReturn(mMockTOB2Reference);
         mFixture = new MarketDataViewItem(mMockMarketData, symbol1);
         assertEquals(symbol1, mFixture.getSymbol());
         mMockListener = mock(PropertyChangeListener.class);
@@ -83,7 +83,7 @@ public class MarketDataViewItemTest {
     @SuppressWarnings("unchecked")
     private <T extends MDItem> IMarketDataReference<T> createReference(T item) {
         IMarketDataReference<T> mock = mock(IMarketDataReference.class);
-        stub(mock.get()).toReturn(item);
+        when(mock.get()).thenReturn(item);
         return mock;
     }
 

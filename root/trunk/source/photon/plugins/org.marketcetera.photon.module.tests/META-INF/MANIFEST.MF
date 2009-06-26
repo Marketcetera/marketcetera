@@ -5,6 +5,10 @@ Bundle-SymbolicName: org.marketcetera.photon.module.tests;singleton:=true
 Bundle-Version: 1.6.0
 Fragment-Host: org.marketcetera.photon.module
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit4,
- org.marketcetera.photon.test,
+Require-Bundle: org.marketcetera.photon.test,
  org.marketcetera.core.tests
+Import-Package: org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.stubbing

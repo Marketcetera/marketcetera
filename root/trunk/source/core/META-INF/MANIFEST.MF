@@ -6,8 +6,7 @@ Bundle-Name: Marketcetera Core Library
 Bundle-Version: 1.6.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.util;visibility:=reexport,
- org.marketcetera.util-test;resolution:=optional,
- org.junit4;resolution:=optional
+ org.marketcetera.util-test;resolution:=optional
 Export-Package: org.marketcetera.core,
  org.marketcetera.core.notifications,
  org.marketcetera.core.position,
@@ -29,3 +28,7 @@ Export-Package: org.marketcetera.core,
  org.marketcetera.metrics,
  quickfix.spring
 Eclipse-BuddyPolicy: registered
+Import-Package: junit.framework;resolution:=optional,
+ org.hamcrest;resolution:=optional,
+ org.junit;resolution:=optional,
+ org.mockito;resolution:=optional

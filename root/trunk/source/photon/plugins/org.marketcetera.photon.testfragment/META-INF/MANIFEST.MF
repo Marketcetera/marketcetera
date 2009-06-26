@@ -8,7 +8,11 @@ Fragment-Host: org.marketcetera.photon
 Require-Bundle: org.marketcetera.core.tests,
  org.marketcetera.photon.test
 Import-Package: junit.framework,
+ org.hamcrest,
  org.junit,
  org.junit.runner,
- org.junit.runners
+ org.junit.runners,
+ org.mockito,
+ org.mockito.invocation,
+ org.mockito.stubbing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
