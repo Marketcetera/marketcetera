@@ -332,7 +332,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
                                                   "Q"),
                   list,
                   "Q");
-        }
+    }
 
     public void testMDR_ManySymbols()
         throws Exception
