@@ -108,5 +108,14 @@ public interface Messages
                                                                                     "simulated_exchange_code_mismatch");  //$NON-NLS-1$
     static final I18NMessage2P SIMULATED_EXCHANGE_SKIPPED_EVENT = new I18NMessage2P(LOGGER,
                                                                                     "simulated_exchange_skipped_event"); //$NON-NLS-1$
-    
+    static final I18NMessage1P SCHEME_REQUIRED = new I18NMessage1P(LOGGER,
+                                                                   "missing_scheme"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_HOSTNAME = new I18NMessage1P(LOGGER,
+                                                                    "invalid_hostname"); //$NON-NLS-1$
+    static final I18NMessage0P PORT_REQUIRED = new I18NMessage0P(LOGGER,
+                                                                 "port_required"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_URI = new I18NMessage1P(LOGGER,
+                                                               "invalid_uri"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_SCHEME_NAME = new I18NMessage1P(LOGGER,
+                                                                       "invalid_scheme_name"); //$NON-NLS-1$
 }

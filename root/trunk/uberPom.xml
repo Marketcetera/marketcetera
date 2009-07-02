@@ -242,6 +242,11 @@
         <artifactId>guice-source</artifactId>
         <version>[20090205]</version>
       </dependency>
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>[1.3.8]</version>
+      </dependency>
 
       <!-- Runtime. -->
       <dependency>
@@ -678,6 +683,13 @@
      -    </snapshots>
      -  </repository>
      -->
+    <repository>
+      <id>findbugs.googlecode.com</id>
+      <url>http://findbugs.googlecode.com/svn/repos/release-repository</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>central</id>
       <url>http://repo1.maven.org/maven2</url>
