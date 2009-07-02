@@ -697,7 +697,7 @@ public abstract class AbstractRunningStrategy
                            strategy);
         submittedOrderManager.add(inNewOrder);
         strategy.getOutboundServicesProvider().cancelReplace(replaceOrder);
-        return inNewOrder.getOrderID();
+        return replaceOrder.getOrderID();
     }
     /**
      * Sends a FIX message.

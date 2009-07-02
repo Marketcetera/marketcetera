@@ -1,13 +1,22 @@
 package org.marketcetera.strategy;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.marketcetera.event.LogEvent.Level.DEBUG;
 import static org.marketcetera.event.LogEvent.Level.ERROR;
 import static org.marketcetera.event.LogEvent.Level.INFO;
 import static org.marketcetera.event.LogEvent.Level.WARN;
 import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
-import static org.marketcetera.strategy.Status.*;
+import static org.marketcetera.strategy.Status.FAILED;
+import static org.marketcetera.strategy.Status.RUNNING;
+import static org.marketcetera.strategy.Status.STARTING;
+import static org.marketcetera.strategy.Status.STOPPED;
+import static org.marketcetera.strategy.Status.STOPPING;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -60,8 +69,8 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TypesTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.test.UnicodeData;
 import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.util.test.UnicodeData;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;
@@ -1849,7 +1858,9 @@ public abstract class LanguageTestBase
         assertNull(AbstractRunningStrategy.getProperty("newOrderID"));
         // now allow the cancel/replace to succeed
         runningStrategy.onOther(newOrder);
-        assertNotNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        String replaceIDString = AbstractRunningStrategy.getProperty("newOrderID");
+        assertNotNull(replaceIDString);
+        assertFalse(replaceIDString.equals(newOrder.getOrderID().toString()));
         // hooray, it worked
         // turn on execution reports
         MockRecorderModule.shouldSendExecutionReports = true;
