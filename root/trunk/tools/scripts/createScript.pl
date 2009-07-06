@@ -172,6 +172,7 @@ while (@ARGV) {
 
         if ($artifact eq "strategyagent") {
             print OUT ' -Dstrategy.classpath=${METC_HOME}/${APPLICATION_DIR}/src\\'.$sep;
+            print OUT ' -Djava.library.path=${METC_HOME}/${APPLICATION_DIR}/modules/lib\\'.$sep;
         }
 
         print OUT ' -cp "${THE_CLASSPATH}"\\'.$sep;
