@@ -130,7 +130,7 @@ public abstract class EventBase implements TimestampCarrier, Serializable
      *
      * @return a <code>long</code> value
      */
-    static long assignCounter()
+    protected final static long assignCounter()
     {
         return counter.incrementAndGet();
     }
