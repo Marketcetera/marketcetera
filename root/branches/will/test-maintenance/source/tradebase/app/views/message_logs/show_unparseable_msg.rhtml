@@ -1,0 +1,15 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Trades", :action_name => "Show Unparseable Message", :top_level_controller => 'message_logs' } %>
+<h1>Show Unparseable Message</h1>
+
+<form action="">
+    <fieldset>
+            <label for="id" class="view_background">Message ID</label>
+            <div id="id" class="data view_data"><%= @message.id %></div>
+            
+            <label for="msg_text" class="view_background">Message Text</label>
+            <div id="msg_text" class="data view_data"><%=h @message.text.gsub("\001", " ") %></div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
+            
