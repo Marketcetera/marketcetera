@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.marketcetera.photon.test;
 
 import java.util.concurrent.CountDownLatch;
@@ -14,7 +11,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
 /* $License$ */
 
 /**
- * Test runner that starts a separate UI thread. The UI thread initializes a
+ * Test runner that runs UI events starts a separate UI thread. The UI thread initializes a
  * {@link Display} and runs the event loop in the Display's default
  * {@link Realm}.
  * <p>
@@ -22,7 +19,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * indicate it should be run on the UI thread. For example:
  * 
  * <pre>
- * &#064;RunWith(UIRunner.class)
+ * &#064;RunWith(SimpleUIRunner.class)
  * public class MyTest {
  * 
  *     &#064;Before
@@ -48,6 +45,8 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * </pre>
  * <p>
  * Currently, a new thread is created for each test.
+ * <p>
+ * Use {@link WorkbenchRunner} if you need a full workbench.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -55,6 +54,14 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  */
 public final class SimpleUIRunner extends AbstractUIRunner {
     
+    /**
+     * Constructor. Should only be called by the JUnit framework.
+     * 
+     * @param klass
+     *            test class
+     * @throws InitializationError
+     *             if the test class is malformed.
+     */
     public SimpleUIRunner(Class<?> klass) throws InitializationError {
         super(klass);
     }

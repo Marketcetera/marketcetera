@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.marketcetera.photon.test;
 
 import java.lang.annotation.ElementType;
@@ -13,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
@@ -30,37 +26,7 @@ import org.junit.runners.model.Statement;
 
 /**
  * Test runner that starts a separate UI thread. The UI thread initializes a
- * {@link Display} and runs the event loop in the Display's default
- * {@link Realm}.
- * <p>
- * Any framework method on the test class can be annotated with {@link UI} to
- * indicate it should be run on the UI thread. For example:
- * 
- * <pre>
- * &#064;RunWith(UIRunner.class)
- * public class MyTest {
- * 
- *     &#064;Before
- *     &#064;UI
- *     public void before() {
- *         // on the UI thread
- *         ...
- *     }
- * 
- *     &#064;Test
- *     &#064;UI
- *     public void testText() throws Exception {
- *         // on the UI thread
- *         ...
- *     }
- * 
- *     &#064;Test
- *     public void testText() throws Exception {
- *         // NOT on the UI thread
- *         ...
- *     }
- * }
- * </pre>
+ * {@link Display} and delegates to subclasses to run the event loop.
  * <p>
  * Currently, a new thread is created for each test.
  * 
@@ -229,9 +195,20 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
             throw throwable;
         }
     }
-    
+
+    /**
+     * Hook for subclasses to run the event loop. This method should not return
+     * until the UI thread is done ({@link #shutDownUI()} has been called and/or
+     * the display is disposed.
+     * 
+     * @param display the display to run the event loop
+     * @param ready indicates that the display is ready for events
+     */
     protected abstract void runEventLoop(Display display, CountDownLatch ready);
 
+    /**
+     * Subclasses can override to do something before the display is disposed.
+     */
     protected void shutDownUI() {
     }
 
