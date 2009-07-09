@@ -83,6 +83,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 		// activate the main console
 		photonConsole.activate();
 
+		// TODO: should remove the console appender during UI shutdown, see EG-711
 		PhotonPlugin.getMainConsoleLogger().addAppender(new PhotonConsoleAppender(photonConsole));
 		Logger.getLogger(org.marketcetera.core.Messages.USER_MSG_CATEGORY).addAppender(
 				new PhotonConsoleAppender(photonConsole));

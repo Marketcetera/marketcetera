@@ -16,3 +16,5 @@ Bundle-ClassPath: .
 Bundle-Localization: plugin
 Bundle-Vendor: %providerName
 Export-Package: org.marketcetera.photon.notification
+Eclipse-ExtensibleAPI: true
+

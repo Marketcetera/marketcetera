@@ -13,3 +13,4 @@ Import-Package: org.hamcrest,
  org.junit.runners,
  org.mockito,
  org.mockito.stubbing
+Export-Package: org.marketcetera.photon.strategy.tests

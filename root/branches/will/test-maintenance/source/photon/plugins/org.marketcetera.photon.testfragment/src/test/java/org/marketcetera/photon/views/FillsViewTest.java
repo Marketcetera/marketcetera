@@ -230,38 +230,46 @@ public class FillsViewTest
 		options.put(Grouping.Symbol, symbols);
 		options.put(Grouping.Account, accounts);
 		options.put(Grouping.Trader, traderIds);
-		for (Grouping grouping : Grouping.values()) {
-			// test one grouping
-			for (String value : options.get(grouping)) {
-				currentTest = new EnumMap<Grouping, String>(Grouping.class);
-				currentTest.put(grouping, value);
-				validate(view, currentTest);
-			}
-			for (Grouping grouping1 : Grouping.values()) {
-				// test two groupings
-				for (String value : options.get(grouping)) {
-					for (String value1 : options.get(grouping1)) {
-						currentTest = new EnumMap<Grouping, String>(Grouping.class);
-						currentTest.put(grouping, value);
-						currentTest.put(grouping1, value1);
-						validate(view, currentTest);
-					}
-				}
-				for (Grouping grouping2 : Grouping.values()) {
-					// test three groupings
-					for (String value : options.get(grouping)) {
-						for (String value1 : options.get(grouping1)) {
-							for (String value2 : options.get(grouping2)) {
-								currentTest = new EnumMap<Grouping, String>(Grouping.class);
-								currentTest.put(grouping, value);
-								currentTest.put(grouping1, value1);
-								currentTest.put(grouping2, value2);
-								validate(view, currentTest);
-							}
-						}
-					}
-				}
-			}
+        for (Grouping grouping : Grouping.values()) {
+            // test one grouping
+            for (String value : options.get(grouping)) {
+                currentTest = new EnumMap<Grouping, String>(Grouping.class);
+                currentTest.put(grouping, value);
+                validate(view, currentTest);
+            }
+            for (Grouping grouping1 : Grouping.values()) {
+                if (grouping1 == grouping) {
+                    continue;
+                }
+                // test two groupings
+                for (String value : options.get(grouping)) {
+                    for (String value1 : options.get(grouping1)) {
+                        currentTest = new EnumMap<Grouping, String>(
+                                Grouping.class);
+                        currentTest.put(grouping, value);
+                        currentTest.put(grouping1, value1);
+                        validate(view, currentTest);
+                    }
+                }
+                for (Grouping grouping2 : Grouping.values()) {
+                    if (grouping2 == grouping || grouping2 == grouping1) {
+                        continue;
+                    }
+                    // test three groupings
+                    for (String value : options.get(grouping)) {
+                        for (String value1 : options.get(grouping1)) {
+                            for (String value2 : options.get(grouping2)) {
+                                currentTest = new EnumMap<Grouping, String>(
+                                        Grouping.class);
+                                currentTest.put(grouping, value);
+                                currentTest.put(grouping1, value1);
+                                currentTest.put(grouping2, value2);
+                                validate(view, currentTest);
+                            }
+                        }
+                    }
+                }
+            }
 		}
 		view.setFillsFilter(null);
 		assertThat(view.getInput().size(), is(count));

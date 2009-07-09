@@ -11,8 +11,10 @@ Import-Package: junit.framework,
  org.hamcrest,
  org.junit,
  org.junit.runner,
+ org.junit.runner.notification,
  org.junit.runners,
  org.mockito,
  org.mockito.invocation,
  org.mockito.stubbing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.marketcetera.photon.tests

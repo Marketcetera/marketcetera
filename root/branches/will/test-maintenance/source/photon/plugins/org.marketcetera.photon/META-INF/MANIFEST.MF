@@ -58,3 +58,4 @@ Export-Package: org.marketcetera.photon,
  org.marketcetera.scripting
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-ExtensibleAPI: true
