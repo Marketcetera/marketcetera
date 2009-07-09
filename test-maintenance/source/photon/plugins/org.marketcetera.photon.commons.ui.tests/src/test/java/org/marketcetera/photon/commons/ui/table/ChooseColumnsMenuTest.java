@@ -23,8 +23,11 @@ import org.eclipse.ui.part.ViewPart;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
 import org.marketcetera.photon.test.SWTTestUtil;
+import org.marketcetera.photon.test.WorkbenchRunner;
+import org.marketcetera.photon.test.AbstractUIRunner.UI;
 
 /* $License$ */
 
@@ -35,25 +38,29 @@ import org.marketcetera.photon.test.SWTTestUtil;
  * @version $Id$
  * @since 1.0.0
  */
+@RunWith(WorkbenchRunner.class)
 public class ChooseColumnsMenuTest {
 
-	private static final String MOCK_VIEW = "org.marketcetera.photon.commons.ui.table.ChooseColumnsMenuTest$MockTableView"; //$NON-NLS-1$
+	private static final String MOCK_VIEW = "org.marketcetera.photon.commons.ui.table.ChooseColumnsMenuTest$MockColumnView"; //$NON-NLS-1$
 
 	private static final String RESTORED_WIDTH = "restoredWidth"; //$NON-NLS-1$
 
 	private static ChooseColumnsMenuTestCase sCurrent = null;
-
+	
 	@Before
+	@UI
 	public void setUp() {
 		sCurrent = null;
 	}
 
 	@After
+        @UI
 	public void tearDown() {
 		sCurrent = null;
 	}
 
 	@Test
+        @UI
 	public void withoutColumns() throws Exception {
 		sCurrent = new ChooseColumnsMenuTestCase() {
 			@Override
@@ -70,6 +77,7 @@ public class ChooseColumnsMenuTest {
 	}
 
 	@Test
+        @UI
 	public void oneColumn() throws Exception {
 		final String columnName = "C1";
 		final int columnWidth = 101;
@@ -133,6 +141,7 @@ public class ChooseColumnsMenuTest {
 	}
 
 	@Test
+        @UI
 	public void withoutTreeColumns() throws Exception {
 		sCurrent = new ChooseColumnsMenuTestCase() {
 			@Override
@@ -149,6 +158,7 @@ public class ChooseColumnsMenuTest {
 	}
 
 	@Test
+        @UI
 	public void oneTreeColumn() throws Exception {
 		final String columnName = "C1";
 		final int columnWidth = 101;

@@ -18,3 +18,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans
 Bundle-Localization: plugin
+Eclipse-ExtensibleAPI: true

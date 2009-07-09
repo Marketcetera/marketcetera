@@ -2,24 +2,21 @@ package org.marketcetera.photon.module.ui.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.marketcetera.photon.internal.module.ui.MessagesTest;
 import org.marketcetera.photon.internal.module.ui.PreferencesAdapterTest;
-import org.marketcetera.photon.internal.module.ui.SinkConsoleControllerTest;
+import org.marketcetera.photon.internal.module.ui.PropertiesTreeTest;
 
 /* $License$ */
 
 /**
- * Test suite that must be run in an OSGi environment.
- *
+ * Test suite for this bundle.
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since 1.1.0
+ * @since 1.0.0
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-	HeadlessSuite.class,
-	PreferencesAdapterTest.class,
-	SinkConsoleControllerTest.class	
-})
-public class PluginSuite {
-
+@Suite.SuiteClasses( { PropertiesTreeTest.class, MessagesTest.class,
+        PreferencesAdapterTest.class })
+public class ModuleUISuite {
 }

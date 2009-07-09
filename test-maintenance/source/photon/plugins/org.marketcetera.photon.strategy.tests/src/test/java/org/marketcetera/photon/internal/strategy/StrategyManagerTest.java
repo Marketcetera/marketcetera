@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -26,6 +25,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.marketcetera.core.Util;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleState;
@@ -33,6 +33,8 @@ import org.marketcetera.module.SinkModuleFactory;
 import org.marketcetera.photon.internal.strategy.ruby.RubyStrategyTemplate;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.photon.test.SWTTestUtil;
+import org.marketcetera.photon.test.WorkbenchRunner;
+import org.marketcetera.photon.test.AbstractUIRunner.UI;
 import org.marketcetera.strategy.StrategyMXBean;
 
 /* $License$ */
@@ -44,6 +46,7 @@ import org.marketcetera.strategy.StrategyMXBean;
  * @version $Id$
  * @since 1.5.0
  */
+@RunWith(WorkbenchRunner.class)
 public class StrategyManagerTest {
 
 	private final ModuleManager moduleManager = ModuleSupport.getModuleManager();
@@ -125,6 +128,7 @@ public class StrategyManagerTest {
 	}
 
 	@Before
+	@UI
 	public void setup() throws Exception {
 		fixture = new StrategyManager();
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject("junit-scripts");
@@ -134,6 +138,7 @@ public class StrategyManagerTest {
 	}
 
 	@After
+        @UI
 	public void cleanup() throws Exception {
 		// make a copy to avoid concurrent modification exception
 		List<Strategy> toRemove = new ArrayList<Strategy>();
@@ -150,6 +155,7 @@ public class StrategyManagerTest {
 	 * Register a strategy
 	 */
 	@Test
+        @UI
 	public void registerStrategy() throws Exception {
 		new StrategyLifecycleTestTemplate().run("TestClass", "Test", "test.test", false);
 	}
@@ -158,6 +164,7 @@ public class StrategyManagerTest {
 	 * Register another strategy
 	 */
 	@Test
+        @UI
 	public void registerStrategy2() throws Exception {
 		new StrategyLifecycleTestTemplate().run("TestClass2", "Test2", "test2.test", true);
 	}
@@ -166,6 +173,7 @@ public class StrategyManagerTest {
 	 * Tests {@link StrategyManager#isUniqueName(String)}
 	 */
 	@Test
+        @UI
 	public void uniqueName() throws Exception {
 		new StrategyLifecycleTestTemplate() {
 			@Override
@@ -190,6 +198,7 @@ public class StrategyManagerTest {
 	 * Tests {@link StrategyManager#setParameters(Strategy, Properties)}
 	 */
 	@Test
+        @UI
 	public void modifyParameters() throws Exception {
 		new StrategyLifecycleTestTemplate() {
 			@Override
@@ -217,6 +226,7 @@ public class StrategyManagerTest {
 	 * Tests {@link StrategyManager#setRouteToServer(Strategy, boolean)}
 	 */
 	@Test
+        @UI
 	public void modifyRoute() throws Exception {
 		new StrategyLifecycleTestTemplate() {
 			@Override
@@ -237,6 +247,7 @@ public class StrategyManagerTest {
 	 * Tests enabling and disabling the remote agent.
 	 */
 	@Test
+        @UI
 	public void enableRemoteAgent() throws Exception {
 		fixture.enableRemoteAgent();
 		assertThat(fixture.getStrategies().size(), is(1));
@@ -244,13 +255,9 @@ public class StrategyManagerTest {
 		fixture.disableRemoteAgent();
 		assertThat(fixture.getStrategies().size(), is(0));
 	}
-
-	@Test
-	public void verifyStrategyClasspath() throws Exception {
-		assertNotNull(System.getProperty(org.marketcetera.strategy.Strategy.CLASSPATH_PROPERTYNAME));
-	}
 	
 	@Test
+        @UI
 	public void verifyStrategyFileDeletion() throws Exception {
 		String filename = "to_delete.test";
 		registerAndAssert("ToDelete", "ToDelete", filename, false);
@@ -260,6 +267,7 @@ public class StrategyManagerTest {
 	}
 	
 	@Test
+        @UI
 	public void verifyMultipleStrategyDeletion() throws Exception {
 		String filename = "to_delete.test";
 		Strategy s = registerAndAssert("ToDelete", "ToDelete1", filename, false);
@@ -270,6 +278,7 @@ public class StrategyManagerTest {
 	}
 	
 	@Test
+        @UI
 	public void verifyProjectDeletion() throws Exception {
 		registerAndAssert("ToDelete", "ToDelete", "to_delete1.test", false);
 		registerAndAssert("ToDelete", "ToDelete", "to_delete2.test", false);

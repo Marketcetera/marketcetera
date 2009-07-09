@@ -177,6 +177,7 @@
                         eclipse/plugins/org.eclipse.jdt.junit.runtime_*,
                         eclipse/plugins/org.eclipse.jdt.junit.runtime.source_*,
                         eclipse/plugins/org.junit.source_*,
+                        eclipse/plugins/org.junit4.source_*,
                         eclipse/plugins/org.junit_*/**
                       </includes>
                     </artifactItem>
