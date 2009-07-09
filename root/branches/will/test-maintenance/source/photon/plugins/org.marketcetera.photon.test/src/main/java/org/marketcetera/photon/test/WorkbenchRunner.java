@@ -1,56 +1,21 @@
-/**
- * 
- */
 package org.marketcetera.photon.test;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.junit.runners.model.InitializationError;
-import org.marketcetera.photon.test.AbstractUIRunner.UI;
 
 /* $License$ */
 
 /**
- * Test runner that starts a separate UI thread. The UI thread initializes a
- * {@link Display} and runs the event loop in the Display's default
- * {@link Realm}.
+ * Test runner that launches a simple workbench with an empty perspective.  Use this if you need to test views or other
+ * code that requires workbench services.
  * <p>
- * Any framework method on the test class can be annotated with {@link UI} to
- * indicate it should be run on the UI thread. For example:
- * 
- * <pre>
- * &#064;RunWith(UIRunner.class)
- * public class MyTest {
- * 
- *     &#064;Before
- *     &#064;UI
- *     public void before() {
- *         // on the UI thread
- *         ...
- *     }
- * 
- *     &#064;Test
- *     &#064;UI
- *     public void testText() throws Exception {
- *         // on the UI thread
- *         ...
- *     }
- * 
- *     &#064;Test
- *     public void testText() throws Exception {
- *         // NOT on the UI thread
- *         ...
- *     }
- * }
- * </pre>
- * <p>
- * Currently, a new thread is created for each test.
+ * For basic SWT/JFace tests, use {@link SimpleUIRunner}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -58,6 +23,14 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  */
 public final class WorkbenchRunner extends AbstractUIRunner {
     
+    /**
+     * Constructor. Should only be called by the JUnit framework.
+     * 
+     * @param klass
+     *            test class
+     * @throws InitializationError
+     *             if the test class is malformed.
+     */
     public WorkbenchRunner(Class<?> klass) throws InitializationError {
         super(klass);
     }
