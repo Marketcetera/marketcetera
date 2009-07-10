@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- START SNIPPET: spring -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+    <!--
+    || ActiveMQ Broker
+    -->
+   <bean id="requestQueue" class="org.apache.activemq.command.ActiveMQQueue">
+    <constructor-arg value="test-commands"/>
+  </bean>
+	
+  <bean id="replyTopic" class="org.apache.activemq.command.ActiveMQTopic">
+    <constructor-arg value="test-messages"/>
+  </bean>
+	
+  <bean
+   id="connectionFactory"
+   class="org.apache.activemq.ActiveMQConnectionFactory"
+   depends-on="systemPropertiesSetter">
+    <property name="brokerURL" value="vm://it-ors?broker.persistent=false"/>
+  </bean>
+
+    <!-- Reply Topic listener -->
+    <bean id="replyListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+      <property name="defaultListenerMethod" value="onMessage"/>
+      <property name="delegate" ref="incomingTopicHandler"/>
+      <property name="messageConverter">
+          <bean class="org.marketcetera.ors.jms.JMSFIXMessageConverter"/>
+      </property>
+    </bean>
+
+    <!-- note that this needs to use the non-pooled connection factory -->
+    <bean id="replyContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+      <property name="connectionFactory" ref="connectionFactory"/>
+      <property name="messageListener" ref="replyListener"/>
+      <property name="destination" ref="replyTopic"/>
+    </bean>
+
+
+  <!-- Spring JMS Template for sending orders on the request queue -->
+  <bean id="outgoingJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory">
+      <ref bean="pooledConnectionFactory"/>
+    </property>
+	<property name="messageConverter">
+		<bean class="org.marketcetera.ors.jms.JMSFIXMessageConverter"/>
+	</property>
+    <property name="defaultDestination" ref="requestQueue"/>
+  </bean>
+  <!--
+    || Message Driven POJOs
+    -->
+
+  <bean id="defaultSessionID" class="quickfix.SessionID">
+	<constructor-arg ref="fixVersion" />
+	<constructor-arg value="test-sender"/>
+	<constructor-arg value="test-target"/>
+  </bean>
+
+    <bean id="incomingTopicHandler" class="org.marketcetera.ors.TopicListener" scope="prototype">
+    </bean>
+
+    <bean id="quickfixSender" class="org.marketcetera.quickfix.NullQuickFIXSender"/>
+
+    <bean id="qfApplication" class="org.marketcetera.ors.QuickFIXApplication" scope="singleton">
+        <constructor-arg ref="fixMessageFactory"/>
+        <property name="jmsOperations" ref="outgoingJmsTemplate"/>
+    </bean>
+
+    <bean id="fixDictionaryPath" factory-bean="fixVersionEnum" factory-method="getDataDictionaryURL"/>
+
+    <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+      <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
+    </bean>
+
+	<!-- Create the in-memory id factory for outgoing messages -->
+	<bean id="idFactory" class="org.marketcetera.core.InMemoryIDFactory"><constructor-arg value="1000"/></bean>
+</beans>
+
+        <!-- END SNIPPET: spring -->

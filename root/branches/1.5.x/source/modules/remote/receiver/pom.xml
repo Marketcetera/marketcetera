@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: anshul@marketcetera.com
+  - Since: 1.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>remote</artifactId>
+    <version>1.5.0</version>
+  </parent>
+  <artifactId>remote-receiver</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Remote Receiver Module</name>
+
+  <dependencies>
+
+    <!-- Compile. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Runtime. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-pool</artifactId>
+    </dependency>
+    <!-- Ensures that older versions are not used by other dependencies. -->
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
+    </dependency>
+
+    <!-- Testing. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>util-test</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <!-- Configure Eclipse IDE metadata. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

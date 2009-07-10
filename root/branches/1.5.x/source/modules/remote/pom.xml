@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: anshul@marketcetera.com
+  - Since: 1.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>modules</artifactId>
+    <version>1.5.0</version>
+  </parent>
+  <artifactId>remote</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Remoting Modules</name>
+
+  <modules>
+    <module>receiver</module>
+    <module>emitter</module>
+  </modules>
+</project>
