@@ -16,3 +16,4 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.marketcetera.photon.marketdata,
  org.marketcetera.photon.model.marketdata
 Eclipse-RegisterBuddy: org.marketcetera.core
+Eclipse-ExtensibleAPI: true

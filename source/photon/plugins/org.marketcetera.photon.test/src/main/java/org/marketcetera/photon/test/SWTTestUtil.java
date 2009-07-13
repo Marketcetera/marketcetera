@@ -116,7 +116,7 @@ public class SWTTestUtil {
 				new Callable<Boolean>() {
 					@Override
 					public Boolean call() {
-						return Job.getJobManager().currentJob() != null;
+						return Job.getJobManager().currentJob() == null;
 					}
 				});
 	}

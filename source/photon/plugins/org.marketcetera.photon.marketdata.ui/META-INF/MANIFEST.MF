@@ -21,3 +21,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.marketcetera.photon.marketdata.ui
 Bundle-Activator: org.marketcetera.photon.internal.marketdata.ui.Activator
+Eclipse-ExtensibleAPI: true
