@@ -2,10 +2,13 @@
 <?eclipse version="3.2"?>
 <fragment>
    <extension
-         point="org.marketcetera.photon.test.testSuites">
-      <suite
-            class="org.marketcetera.photon.commons.ui.tests.HeadlessSuite">
-      </suite>
+         point="org.eclipse.ui.views">
+      <view
+            class="org.marketcetera.photon.commons.ui.table.ChooseColumnsMenuTest$MockColumnView"
+            id="org.marketcetera.photon.commons.ui.table.ChooseColumnsMenuTest$MockColumnView"
+            name="Mock Column View"
+            restorable="true">
+      </view>
    </extension>
 
 </fragment>

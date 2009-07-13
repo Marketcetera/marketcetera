@@ -1,37 +1,8 @@
-# Sample commands for strategyAgent
-#
-# author:anshul@marketcetera.com
-# since 0.9.0
-# version: $Id$
-#
-# Create Module Command
-#
-# Syntax: createModule;providerURN;parameters_to_createModule
-#
-# Where:
-#       parameters_to_createModule: is a comma separated list of
-#           parameters declared by the module factory as the
-#           parameter types needed to create a module instance.
-#
-createModule;metc:cep:system;metc:cep:system:myinstance
-#
-# Start Module Command
-#
-# Syntax: startModule;module_instance_urn
-#
-#
+# Start the market data module
 startModule;metc:mdata:bogus:single
-#
-# Create Data Flow Command
-#
-# Syntax: createDataFlow;data_flow_parameter
-#
-# Where:
-#   data_flow_parameter: is a '^' separated list of data requests. Each data
-#       request has the syntax: instance_urn;request_parameter
-#       where:
-#           instance_urn: is the name of the module instance
-#           request_parameter: is the request parameter for requesting
-#           data from the module instance.
-#
-createDataFlow;metc:mdata:bogus:single;type=marketdata:symbols=AAPL^metc:sink:system
+createModule;metc:strategy:system;processData,ProcessData,RUBY,process_data.rb,,false,metc:remote:receiver
+#createModule;metc:strategy:system;orderSender,OrderSender,RUBY,order_sender.rb,,true,metc:remote:receiver
+#createModule;metc:remote:emitter;myemitter
+#createDataFlow;metc:remote:emitter:myemitter^metc:sink:system
+startModule;metc:strategy:system:processData
+#startModule;metc:strategy:system:orderSender

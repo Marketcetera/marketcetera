@@ -9,3 +9,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4,
  org.marketcetera.util-test,
  org.marketcetera.photon.test
+Export-Package: org.marketcetera.photon.marketdata.ui.tests
