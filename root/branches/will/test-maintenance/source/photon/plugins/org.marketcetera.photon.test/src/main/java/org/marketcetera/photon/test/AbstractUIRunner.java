@@ -17,6 +17,8 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.notification.RunListener;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -45,7 +47,7 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     public @interface UI {
     }
 
-    private UIThread mUIThread;
+    private static volatile UIThread sUIThread;
     private final Set<FrameworkMethod> mUIMethods;
 
     /**
@@ -63,14 +65,26 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
+    public void run(RunNotifier notifier) {
+        RunListener failureSpy = new ScreenshotCaptureListener();
+        notifier.addListener(failureSpy);
+        try {
+            super.run(notifier);
+        } finally {
+            notifier.removeListener(failureSpy);
+        }
+    }
+
+    @Override
     protected Statement withBeforeClasses(final Statement statement) {
         final List<FrameworkMethod> beforeClasses = getTestClass()
                 .getAnnotatedMethods(BeforeClass.class);
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                mUIThread = new UIThread();
-                mUIThread.start();
+                sUIThread = new UIThread();
+                sUIThread.start();
+                sUIThread.await();
                 runFrameworkMethods(beforeClasses, null, false);
                 statement.evaluate();
             }
@@ -98,8 +112,9 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
                     }
                 }
                 try {
-                    mUIThread.dispose();
-                    mUIThread.join();
+                    sUIThread.dispose();
+                    sUIThread.join();
+                    sUIThread = null;
                 } catch (Throwable t) {
                     if (throwable == null) {
                         throwable = t;
@@ -178,8 +193,7 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
                 FrameworkMethodRunner runner = new FrameworkMethodRunner(
                         method, target);
                 if (mUIMethods.contains(method)) {
-                    mUIThread.syncExec(runner);
-                    runner.rethrow();
+                    syncRun(runner);
                 } else {
                     method.invokeExplosively(target);
                 }
@@ -201,8 +215,10 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
      * until the UI thread is done ({@link #shutDownUI()} has been called and/or
      * the display is disposed.
      * 
-     * @param display the display to run the event loop
-     * @param ready indicates that the display is ready for events
+     * @param display
+     *            the display to run the event loop
+     * @param ready
+     *            indicates that the display is ready for events
      */
     protected abstract void runEventLoop(Display display, CountDownLatch ready);
 
@@ -213,24 +229,24 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * Runs a FrameworkMethod and captures any Throwables to be rethrown. This
-     * is used to run the FrameworkMethod on the UI thread and capture failures
-     * on the main JUnit thread.
+     * A runnable that can throw checked throwables.
      */
-    private static class FrameworkMethodRunner implements Runnable {
-        private final FrameworkMethod mMethod;
-        private final Object mTarget;
-        private volatile Throwable mThrowable;
+    public interface ThrowableRunnable {
+        void run() throws Throwable;
+    }
 
-        public FrameworkMethodRunner(FrameworkMethod method, Object target) {
-            mMethod = method;
-            mTarget = target;
+    private static class CaptureRunnable implements Runnable {
+        private volatile Throwable mThrowable;
+        private final ThrowableRunnable mRunnable;
+
+        public CaptureRunnable(ThrowableRunnable runnable) {
+            mRunnable = runnable;
         }
 
         @Override
-        public void run() {
+        public final void run() {
             try {
-                mMethod.invokeExplosively(mTarget);
+                mRunnable.run();
             } catch (Throwable t) {
                 mThrowable = t;
             }
@@ -244,6 +260,26 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
+     * Runs a FrameworkMethod and captures any Throwables to be rethrown. This
+     * is used to run the FrameworkMethod on the UI thread and capture failures
+     * on the main JUnit thread.
+     */
+    private static class FrameworkMethodRunner implements ThrowableRunnable {
+        private final FrameworkMethod mMethod;
+        private final Object mTarget;
+
+        public FrameworkMethodRunner(FrameworkMethod method, Object target) {
+            mMethod = method;
+            mTarget = target;
+        }
+
+        @Override
+        public void run() throws Throwable {
+            mMethod.invokeExplosively(mTarget);
+        }
+    }
+
+    /**
      * UI thread implementation. Spins an event loop in the default realm and
      * allows Runnables to be executed synchronously.
      */
@@ -252,15 +288,25 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
         private final CountDownLatch mReady = new CountDownLatch(1);
         private volatile Display mDisplay;
 
+        public UIThread() {
+            super("Test UI Thread");
+        }
+
         @Override
         public void run() {
             mDisplay = new Display();
             runEventLoop(mDisplay, mReady);
         }
 
-        public void syncExec(Runnable r) throws Throwable {
+        public void await() throws InterruptedException {
             mReady.await();
-            mDisplay.syncExec(r);
+        }
+
+        public void syncExec(ThrowableRunnable r) throws Throwable {
+            await();
+            final CaptureRunnable capture = new CaptureRunnable(r);
+            mDisplay.syncExec(capture);
+            capture.rethrow();
         }
 
         public void dispose() {
@@ -282,6 +328,20 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
                 }
             }
         }
+    }
+
+    /**
+     * Executes the runnable on the UI thread. This is only valid during tests
+     * being run with {@link AbstractUIRunner}.
+     * 
+     * @param runnable
+     *            the runnable to run
+     * @throws Throwable
+     *             if the runnable throws it
+     */
+    public static void syncRun(final ThrowableRunnable runnable)
+            throws Throwable {
+        sUIThread.syncExec(runnable);
     }
 
 }
