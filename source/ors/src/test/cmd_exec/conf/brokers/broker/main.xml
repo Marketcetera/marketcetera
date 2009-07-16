@@ -26,6 +26,8 @@
    resource="modifiers.xml"/>
   <import
    resource="routes.xml"/>
+  <import
+   resource="ps_modifiers.xml"/>
 
   <bean
    id="metc_broker"
@@ -53,6 +55,12 @@
     <property
      name="routes"
      ref="metc_routes"/>
+    -->
+    <!-- The pre-sending message modifiers. -->
+    <!--
+    <property
+     name="preSendModifiers"
+     ref="metc_ps_modifiers"/>
     -->
   </bean>
 </beans>

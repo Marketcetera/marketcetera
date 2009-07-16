@@ -124,6 +124,8 @@ public interface Messages
         new I18NMessage0P(LOGGER,"rh_modification_failed"); //$NON-NLS-1$
     static final I18NMessage0P RH_ROUTING_FAILED=
         new I18NMessage0P(LOGGER,"rh_routing_failed"); //$NON-NLS-1$
+    static final I18NMessage0P RH_PRE_SEND_MODIFICATION_FAILED=
+        new I18NMessage0P(LOGGER,"rh_pre_send_modification_failed"); //$NON-NLS-1$
     static final I18NMessage3P RH_ACK_FAILED_WARN=
         new I18NMessage3P(LOGGER,"rh_ack_failed_warn"); //$NON-NLS-1$
     static final I18NMessage0P RH_ACK_FAILED=

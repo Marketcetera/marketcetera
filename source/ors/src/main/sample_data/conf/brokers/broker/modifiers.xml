@@ -46,13 +46,6 @@
           <property
            name="msgFields">
             <map>
-              <!--
-                - Set the 'Urgency' (tag 61) of all application messages
-                - to '0' (Normal).
-                -->
-              <entry
-               key="61(app)"
-               value="0"/>
             </map>
           </property>
           <!-- Modifications to the trailer fields. -->

@@ -28,6 +28,14 @@ public class DBAuthenticator
     implements Authenticator
 {
 
+    // CLASS DATA.
+
+    private static final String VERSION_1_5_0=
+        "1.5.0"; //$NON-NLS-1$
+    private static final String VERSION_1_5_1=
+        "1.5.1"; //$NON-NLS-1$
+
+
     // CLASS METHODS.
 
     /**
@@ -46,7 +54,9 @@ public class DBAuthenticator
     {
         // If the server's version is unknown, any client is allowed.
         return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
-                ObjectUtils.equals(clientVersion,serverVersion));            
+                ObjectUtils.equals(clientVersion,serverVersion) ||
+                (VERSION_1_5_0.equals(clientVersion) && //
+                 VERSION_1_5_1.equals(serverVersion)));
     }
 
 
