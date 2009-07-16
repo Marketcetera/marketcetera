@@ -534,7 +534,14 @@
             <dependency>
               <groupId>org.apache.ant</groupId>
               <artifactId>ant-junit</artifactId>
-              <version>[1.7.1]</version>
+              <!--
+                - Temporariy remove the brackets around the version
+                - because the central repo metadata was missing this
+                - version (http://jira.codehaus.org/browse/MANTRUN-113)
+                - Removing the brackets will cause the JAR to ultimately
+                - come from our internal repo.
+                -->
+              <version>1.7.1</version>
             </dependency>
           </dependencies>
         </plugin>

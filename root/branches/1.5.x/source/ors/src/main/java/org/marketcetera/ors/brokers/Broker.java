@@ -67,6 +67,10 @@ public class Broker
             getModifiers().setMessageFactory(getFIXMessageFactory());
             getModifiers().setHistoryServices(historyServices);
         }
+        if (getPreSendModifiers()!=null) {
+            getPreSendModifiers().setMessageFactory(getFIXMessageFactory());
+            getPreSendModifiers().setHistoryServices(historyServices);
+        }
     }
 
 
@@ -169,6 +173,17 @@ public class Broker
     public MessageRouteManager getRoutes()
     {
         return getSpringBroker().getRoutes();
+    }
+
+    /**
+     * Returns the receiver's pre-sending message modifier manager.
+     *
+     * @return The manager. It may be null.
+     */
+
+    public MessageModifierManager getPreSendModifiers()
+    {
+        return getSpringBroker().getPreSendModifiers();
     }
 
     /**

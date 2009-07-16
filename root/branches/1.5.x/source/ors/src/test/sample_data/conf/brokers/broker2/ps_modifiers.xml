@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Broker 2 configuration: message modifiers.
+  - Broker 2 configuration: pre-sending message modifiers.
   -
   - Author: tlerios@marketcetera.com
-  - Since: 1.0.0
+  - Since: 1.5.1
   - Version: $Id$
   - $License$
   -->
@@ -21,7 +21,7 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean
-   id="metc_broker2_modifiers"
+   id="metc_broker2_ps_modifiers"
    class="org.marketcetera.ors.filters.MessageModifierManager">
     <!-- The message modifiers. -->
     <property
@@ -33,19 +33,19 @@
           <property
            name="headerFields">
             <map>
-              <!--
-                - Set the 'SenderSubID' (tag 50) of 'Logon' (message type 'A')
-                - messages to 'mySenderSubID'.
-                -->
-              <entry
-               key="50(A)"
-               value="mySenderSubID"/>
             </map>
           </property>
           <!-- Modifications to the body fields. -->
           <property
            name="msgFields">
             <map>
+              <!--
+                - Set the 'Urgency' (tag 61) of all application messages
+                - to '0' (Normal).
+                -->
+              <entry
+               key="61(app)"
+               value="0"/>
             </map>
           </property>
           <!-- Modifications to the trailer fields. -->

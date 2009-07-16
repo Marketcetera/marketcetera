@@ -28,6 +28,7 @@ public class SpringBroker
     private String mName;
     private String mId;
     private MessageModifierManager mModifiers;
+    private MessageModifierManager mPreSendModifiers;
     private MessageRouteManager mRoutes;
 
 
@@ -148,6 +149,30 @@ public class SpringBroker
     public MessageRouteManager getRoutes()
     {
         return mRoutes;
+    }
+
+    /**
+     * Sets the receiver's pre-sending message modifier manager to the
+     * given one.
+     *
+     * @param preSendModifiers The manager. It may be null.
+     */
+
+    public void setPreSendModifiers
+        (MessageModifierManager preSendModifiers)
+    {
+        mPreSendModifiers=preSendModifiers;
+    }
+
+    /**
+     * Returns the receiver's pre-sending message modifier manager.
+     *
+     * @return The manager. It may be null.
+     */
+
+    public MessageModifierManager getPreSendModifiers()
+    {
+        return mPreSendModifiers;
     }
 
 

@@ -24,6 +24,7 @@
   <packaging>jar</packaging>
 
   <name>ORS</name>
+  <version>1.5.1</version>
 
   <dependencies>
 
@@ -31,6 +32,7 @@
     <dependency>
       <groupId>${mvn.public.package}</groupId>
       <artifactId>client</artifactId>
+      <version>[1.5.0]</version>
     </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
@@ -74,11 +76,13 @@
     <dependency>
       <groupId>${mvn.public.package}</groupId>
       <artifactId>core</artifactId>
+      <version>[1.5.0]</version>
       <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>${mvn.public.package}</groupId>
       <artifactId>util-test</artifactId>
+      <version>[1.5.0]</version>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>

@@ -507,10 +507,25 @@ public class RequestHandler
                 }
             }
 
+            // Apply message modifiers.
+
+            Message qMsgToSend;
+            if (b.getPreSendModifiers()!=null) {
+                qMsgToSend=(Message)qMsg.clone();
+                try {
+                    b.getPreSendModifiers().modifyMessage(qMsgToSend);
+                } catch (CoreException ex) {
+                    throw new I18NException
+                        (ex,Messages.RH_PRE_SEND_MODIFICATION_FAILED);
+                }
+            } else {
+                qMsgToSend=qMsg;
+            }
+
             // Send message to QuickFIX/J.
 
             try {
-                getSender().sendToTarget(qMsg,b.getSessionID());
+                getSender().sendToTarget(qMsgToSend,b.getSessionID());
             } catch (SessionNotFound ex) {
                 throw new I18NException(ex,Messages.RH_UNAVAILABLE_BROKER);
             }
