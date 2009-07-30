@@ -316,8 +316,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         TradeReportsHistory history = createMessageHistory();
         simulateOrderSingle(history, "1", Side.BUY, "10", "ASDF", "1");
         simulateOutOfOrderCancelReject(history, "2", "1");
-        assertEquals(OrderStatus.New, history.getOpenOrdersList().get(0).getReport()
-                .getOrderStatus());
+        assertThat(history.getOpenOrdersList().size(), is(0));
     }
 
     public void testOrderReject() throws Exception {
