@@ -312,6 +312,14 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 .getOrderStatus());
     }
 
+    public void testOutOfOrderCancelReject() throws Exception {
+        TradeReportsHistory history = createMessageHistory();
+        simulateOrderSingle(history, "1", Side.BUY, "10", "ASDF", "1");
+        simulateOutOfOrderCancelReject(history, "2", "1");
+        assertEquals(OrderStatus.New, history.getOpenOrdersList().get(0).getReport()
+                .getOrderStatus());
+    }
+
     public void testOrderReject() throws Exception {
         TradeReportsHistory history = createMessageHistory();
         simulateOrderReject(history, "1", Side.BUY, "10", "ASDF", "1");
@@ -1028,6 +1036,11 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     private void simulateCancel(TradeReportsHistory history, String orderId, String origOrdId) throws Exception {
         history.addIncomingMessage(createServerReport(addOrigOrdId(createSimpleMessage(OrdStatus.PENDING_CANCEL, orderId), origOrdId)));
         history.addIncomingMessage(createBrokerReport(addOrigOrdId(createSimpleMessage(OrdStatus.CANCELED, orderId), origOrdId)));
+    }
+
+    private void simulateOutOfOrderCancelReject(TradeReportsHistory history, String orderId, String origOrdId) throws Exception {
+        history.addIncomingMessage(createBrokerReport(addOrigOrdId(createSimpleMessage(OrdStatus.CANCELED, orderId), origOrdId)));
+        history.addIncomingMessage(createServerReport(addOrigOrdId(createSimpleMessage(OrdStatus.PENDING_CANCEL, orderId), origOrdId)));
     }
 
     private Message createMessage(char type, String orderId, char side, String quantity, String symbol,
