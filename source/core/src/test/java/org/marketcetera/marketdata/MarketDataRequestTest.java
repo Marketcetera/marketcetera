@@ -1,16 +1,33 @@
 package org.marketcetera.marketdata;
 
-import static org.junit.Assert.*;
-import static org.marketcetera.marketdata.MarketDataRequest.*;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.marketcetera.marketdata.MarketDataRequest.CONTENT_KEY;
+import static org.marketcetera.marketdata.MarketDataRequest.EXCHANGE_KEY;
+import static org.marketcetera.marketdata.MarketDataRequest.PROVIDER_KEY;
+import static org.marketcetera.marketdata.MarketDataRequest.SYMBOLS_KEY;
+import static org.marketcetera.marketdata.MarketDataRequest.SYMBOL_DELIMITER;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.MARKET_STAT;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.TOTAL_VIEW;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -657,6 +674,41 @@ public class MarketDataRequestTest
             for(Class<? extends EventBase> eventType : eventTypes) {
                 assertEquals(relevantTypes.get(content).contains(eventType),
                              content.isRelevantTo(eventType));
+            }
+        }
+    }
+    /**
+     * Test the function of {@link MarketDataRequest.Content#getAsCapability()}. 
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void getAsCapability()
+        throws Exception
+    {
+        Map<Content,Capability> expectedCapabilities = new HashMap<Content,Capability>();
+        expectedCapabilities.put(LATEST_TICK,
+                                 Capability.LATEST_TICK);
+        expectedCapabilities.put(LEVEL_2,
+                                 Capability.LEVEL_2);
+        expectedCapabilities.put(MARKET_STAT,
+                                 Capability.MARKET_STAT);
+        expectedCapabilities.put(OPEN_BOOK,
+                                 Capability.OPEN_BOOK);
+        expectedCapabilities.put(TOP_OF_BOOK,
+                                 Capability.TOP_OF_BOOK);
+        expectedCapabilities.put(TOTAL_VIEW,
+                                 Capability.TOTAL_VIEW);
+        for(Entry<Content,Capability> entry : expectedCapabilities.entrySet()) {
+            Content content = entry.getKey();
+            Capability capability = entry.getValue();
+            // verify the mapping
+            assertEquals(capability,
+                         content.getAsCapability());
+            // anti-verify the complement of the capability (this content is *not* all the other capabilities)
+            EnumSet<Capability> capabilityComplement = EnumSet.complementOf(EnumSet.of(capability));
+            for(Capability other : capabilityComplement) {
+                assertFalse(other.equals(content.getAsCapability()));
             }
         }
     }

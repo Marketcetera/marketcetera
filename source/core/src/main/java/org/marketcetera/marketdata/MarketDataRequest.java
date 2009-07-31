@@ -744,6 +744,24 @@ public class MarketDataRequest
                     throw new UnsupportedOperationException();
             }
         }
+        /**
+         * Gets the appropriate <code>Capability</code> that maps to this <code>Content</code>. 
+         *
+         * @return a <code>Capability</code> value
+         * @throws UnsupportedOperationException if this <code>Content</code> has no appropriate <code>Capability</code> mapping
+         */
+        public Capability getAsCapability()
+        {
+            switch(this) {
+                case TOP_OF_BOOK : return Capability.TOP_OF_BOOK;
+                case OPEN_BOOK : return Capability.OPEN_BOOK;
+                case TOTAL_VIEW : return Capability.TOTAL_VIEW;
+                case LEVEL_2 : return Capability.LEVEL_2;
+                case MARKET_STAT : return Capability.MARKET_STAT;
+                case LATEST_TICK : return Capability.LATEST_TICK;
+                default : throw new UnsupportedOperationException();
+            }
+        }
     }
     private static final long serialVersionUID = 1L;
 }
