@@ -57,6 +57,113 @@ public class UtilTest
         testString += ":" + "ke2=x=value2";
         assertEquals(expectedResults,
                      Util.propertiesFromString(testString));
+        assertEquals(Util.propertiesFromString(testString),
+                     Util.propertiesFromString(Util.propertiesToString(expectedResults)));
+    }
+    /**
+     * Tests the ability for {@link Util#propertiesFromString(String)} to parse strings that contain
+     * the delimiter characters.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void escapedPropertiesFromString()
+        throws Exception
+    {
+        Properties expectedResults = new Properties();
+        String testString = "key1=c" + Util.ESCAPED_KEY_VALUE_DELIMITER + Util.ESCAPED_ESCAPE_CHARACTER + "path:a" + Util.ESCAPED_ESCAPE_CHARACTER + "=value2:key3=value3";
+        expectedResults.setProperty("key1",
+                                    "c:\\path");
+        expectedResults.setProperty("a" + Util.ESCAPE_CHARACTER,
+                                    "value2");
+        expectedResults.setProperty("key3",
+                                    "value3");
+        assertEquals(expectedResults,
+                     Util.propertiesFromString(testString));
+        testString = "key4=value" + Util.ESCAPED_KEY_VALUE_SEPARATOR + "something" + Util.ESCAPED_KEY_VALUE_DELIMITER;
+        expectedResults.clear();
+        expectedResults.setProperty("key4",
+                                    "value=something:");
+        assertEquals(expectedResults,
+                     Util.propertiesFromString(testString));
+        assertEquals(Util.propertiesFromString(testString),
+                     Util.propertiesFromString(Util.propertiesToString(expectedResults)));
+    }
+    /**
+     * Tests a properties string that contains multiple instances of an escaped delimiter/separator. 
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void multipleTokenReplace()
+        throws Exception
+    {
+        StringBuilder propertiesBuilder = new StringBuilder();
+        Properties expectedResults = new Properties();
+        for(int keyCounter=0;keyCounter<=100;keyCounter++) {
+            String key = "key" + Util.ESCAPED_KEY_VALUE_DELIMITER + keyCounter;
+            String value = "value" + Util.ESCAPED_KEY_VALUE_SEPARATOR + keyCounter;
+            propertiesBuilder.append(key + Util.KEY_VALUE_SEPARATOR + value + Util.KEY_VALUE_DELIMITER);
+            expectedResults.setProperty("key" + Util.KEY_VALUE_DELIMITER  + keyCounter,
+                                        "value" + Util.KEY_VALUE_SEPARATOR + keyCounter);
+        }
+        assertEquals(expectedResults,
+                     Util.propertiesFromString(propertiesBuilder.toString()));
+        assertEquals(Util.propertiesFromString(propertiesBuilder.toString()),
+                     Util.propertiesFromString(Util.propertiesToString(expectedResults)));
+    }
+    /**
+     * Tests a scenario where the token to be used to replace a separator conflicts with the contents of the properties. 
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void tokenConflict()
+        throws Exception
+    {
+        StringBuilder propertiesBuilder = new StringBuilder();
+        Properties expectedResults = new Properties();
+        String key = "key1";
+        String value = "value" + "$TOKEN-1$" + Util.ESCAPED_KEY_VALUE_DELIMITER;
+        propertiesBuilder.append(key).append(Util.KEY_VALUE_SEPARATOR).append(value);
+        expectedResults.setProperty(key,
+                                    value.replace(Util.ESCAPED_KEY_VALUE_DELIMITER,
+                                                  Util.KEY_VALUE_DELIMITER));
+        assertEquals(expectedResults,
+                     Util.propertiesFromString(propertiesBuilder.toString()));
+        assertEquals(Util.propertiesFromString(propertiesBuilder.toString()),
+                     Util.propertiesFromString(Util.propertiesToString(expectedResults)));
+    }
+    /**
+     * Tests an edge condition that requires escaping the escape character.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void annoyingButCorrectExampleFromToli()
+        throws Exception
+    {
+        StringBuilder propertiesBuilder = new StringBuilder();
+        Properties expectedResults = new Properties();
+        String key1 = "a";
+        String value1 = Util.ESCAPED_ESCAPE_CHARACTER;
+        String key2 = "b";
+        String value2 = Util.ESCAPED_ESCAPE_CHARACTER;
+        String key3 = "c";
+        String value3 = "2";
+        propertiesBuilder.append(key1).append(Util.KEY_VALUE_SEPARATOR).append(value1).append(Util.KEY_VALUE_DELIMITER)
+                         .append(key2).append(Util.KEY_VALUE_SEPARATOR).append(value2).append(Util.KEY_VALUE_DELIMITER)
+                         .append(key3).append(Util.KEY_VALUE_SEPARATOR).append(value3);
+        expectedResults.setProperty(key1,
+                                    Util.ESCAPE_CHARACTER);
+        expectedResults.setProperty(key2,
+                                    Util.ESCAPE_CHARACTER);
+        expectedResults.setProperty(key3,
+                                    value3);
+        assertEquals(expectedResults,
+                     Util.propertiesFromString(propertiesBuilder.toString()));
+        assertEquals(Util.propertiesFromString(propertiesBuilder.toString()),
+                     Util.propertiesFromString(Util.propertiesToString(expectedResults)));
     }
     /**
      * Tests conversion of <code>Properties</code> objects to <code>String</code> objects. 
@@ -88,6 +195,12 @@ public class UtilTest
         testProperties.setProperty(UnicodeData.HOUSE_AR,
                                     UnicodeData.HELLO_GR);
         expectedResults += ":" + UnicodeData.HOUSE_AR + "=" + UnicodeData.HELLO_GR;
+        assertEquals(Util.propertiesFromString(expectedResults),
+                     Util.propertiesFromString(Util.propertiesToString(testProperties)));
+        // escaped values
+        expectedResults += ":" + "escapedKey\\:\\==x\\=\\:value2";
+        testProperties.setProperty("escapedKey:=",
+                                   "x=:value2");
         assertEquals(Util.propertiesFromString(expectedResults),
                      Util.propertiesFromString(Util.propertiesToString(testProperties)));
         // malformed key
