@@ -196,7 +196,12 @@ public class ORSTestBase
     protected Message getNextExchangeMessage()
         throws InterruptedException
     {
-        return ((FromAppEvent)(getExchange().getNext())).getMessage();
+        while (true) {
+            Event event=getExchange().getNext();
+            if (event instanceof FromAppEvent) {
+                return ((FromAppEvent)event).getMessage();
+            }
+        }
     }
 
     protected void completeExecReport
