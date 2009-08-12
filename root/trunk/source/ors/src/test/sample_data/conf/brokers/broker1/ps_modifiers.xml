@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Broker 2 configuration: message modifiers.
+  - Broker 1 configuration: pre-sending message modifiers.
   -
   - Author: tlerios@marketcetera.com
-  - Since: 1.0.0
+  - Since: 1.5.1
   - Version: $Id$
   - $License$
   -->
@@ -21,7 +21,7 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean
-   id="metc_broker2_modifiers"
+   id="metc_broker1_ps_modifiers"
    class="org.marketcetera.ors.filters.MessageModifierManager">
     <!-- The message modifiers. -->
     <property
@@ -33,19 +33,19 @@
           <property
            name="headerFields">
             <map>
-              <!--
-                - Set the 'MessageEncoding' (tag 347) of all
-                - messages to 'UTF-8'.
-                -->
-              <entry
-               key="347(*)"
-               value="UTF-8"/>
             </map>
           </property>
           <!-- Modifications to the body fields. -->
           <property
            name="msgFields">
             <map>
+              <!--
+                - Set the 'Rule80A' (tag 47) of all application messages
+                - to 'A' (Agency single order).
+                -->
+              <entry
+               key="47(app)"
+               value="A"/>
             </map>
           </property>
           <!-- Modifications to the trailer fields. -->

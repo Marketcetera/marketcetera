@@ -34,25 +34,18 @@
            name="headerFields">
             <map>
               <!--
-                - Set the 'SenderSubID' (tag 50) of 'Logon' (message type 'A')
-                - messages to 'mySenderSubID'.
+                - Set the 'MessageEncoding' (tag 347) of all
+                - messages to 'UTF-8'.
                 -->
               <entry
-               key="50(A)"
-               value="mySenderSubID"/>
+               key="347(*)"
+               value="UTF-8"/>
             </map>
           </property>
           <!-- Modifications to the body fields. -->
           <property
            name="msgFields">
             <map>
-              <!--
-                - Set the 'Urgency' (tag 61) of all application messages
-                - to '0' (Normal).
-                -->
-              <entry
-               key="61(app)"
-               value="0"/>
             </map>
           </property>
           <!-- Modifications to the trailer fields. -->
