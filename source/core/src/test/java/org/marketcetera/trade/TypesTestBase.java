@@ -486,6 +486,43 @@ public class TypesTestBase {
         assertEquals(inViewerID, inReport.getViewerID());
     }
 
+    public static void assertExecReportValues
+        (ExecutionReport inReport,
+         String inAccount,
+         BigDecimal inAvgPrice,
+         BigDecimal inCumQty,
+         ExecutionType inExecType,
+         String inLastMarket,
+         BigDecimal inLastPrice,
+         BigDecimal inLastShares,
+         BigDecimal inLeavesQty,
+         BigDecimal inOrderQty,
+         OrderType inOrderType,
+         Side inSide,
+         MSymbol inSymbol,
+         TimeInForce inTimeInForce,
+         OrderCapacity inOrderCapacity,
+         PositionEffect inPositionEffect,
+         boolean inIsCancelable)
+    {
+        assertEquals(inAccount, inReport.getAccount());
+        assertEquals(inAvgPrice, inReport.getAveragePrice());
+        assertEquals(inCumQty, inReport.getCumulativeQuantity());
+        assertEquals(inExecType, inReport.getExecutionType());
+        assertEquals(inLastMarket, inReport.getLastMarket());
+        assertEquals(inLastPrice, inReport.getLastPrice());
+        assertEquals(inLastShares, inReport.getLastQuantity());
+        assertEquals(inLeavesQty, inReport.getLeavesQuantity());
+        assertEquals(inOrderQty, inReport.getOrderQuantity());
+        assertEquals(inOrderType, inReport.getOrderType());
+        assertEquals(inSide, inReport.getSide());
+        assertEquals(inSymbol, inReport.getSymbol());
+        assertEquals(inTimeInForce, inReport.getTimeInForce());
+        assertEquals(inOrderCapacity, inReport.getOrderCapacity());
+        assertEquals(inPositionEffect, inReport.getPositionEffect());
+        assertEquals(inIsCancelable, inReport.isCancelable());
+    }
+
     protected static void assertExecReportValues(ExecutionReport inReport,
                                                  String inAccount,
                                                  BigDecimal inAvgPrice,
@@ -505,24 +542,25 @@ public class TypesTestBase {
                                                  OrderCapacity inOrderCapacity,
                                                  PositionEffect inPositionEffect,
                                                  boolean inIsCancelable) {
-        assertEquals(inAccount, inReport.getAccount());
-        assertEquals(inAvgPrice, inReport.getAveragePrice());
-        assertEquals(inCumQty, inReport.getCumulativeQuantity());
+        assertExecReportValues(inReport,
+                               inAccount,
+                               inAvgPrice,
+                               inCumQty,
+                               inExecType,
+                               inLastMarket,
+                               inLastPrice,
+                               inLastShares,
+                               inLeavesQty,
+                               inOrderQty,
+                               inOrderType,
+                               inSide,
+                               inSymbol,
+                               inTimeInForce,
+                               inOrderCapacity,
+                               inPositionEffect,
+                               inIsCancelable);
         assertEquals(inExecID, inReport.getExecutionID());
-        assertEquals(inExecType, inReport.getExecutionType());
-        assertEquals(inLastMarket, inReport.getLastMarket());
-        assertEquals(inLastPrice, inReport.getLastPrice());
-        assertEquals(inLastShares, inReport.getLastQuantity());
-        assertEquals(inLeavesQty, inReport.getLeavesQuantity());
-        assertEquals(inOrderQty, inReport.getOrderQuantity());
-        assertEquals(inOrderType, inReport.getOrderType());
-        assertEquals(inSide, inReport.getSide());
-        assertEquals(inSymbol, inReport.getSymbol());
-        assertEquals(inTimeInForce, inReport.getTimeInForce());
         assertEquals(inTransactTime, inReport.getTransactTime());
-        assertEquals(inOrderCapacity, inReport.getOrderCapacity());
-        assertEquals(inPositionEffect, inReport.getPositionEffect());
-        assertEquals(inIsCancelable, inReport.isCancelable());
     }
 
     protected static void assertSuggestionValues(Suggestion inSuggestion,
