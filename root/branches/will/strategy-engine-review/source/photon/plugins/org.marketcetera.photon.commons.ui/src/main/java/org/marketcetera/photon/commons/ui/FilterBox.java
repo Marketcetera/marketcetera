@@ -221,7 +221,7 @@ public class FilterBox extends Composite {
 		clearButton.setImage(inactiveImage);
 		clearButton.setBackground(composite.getDisplay().getSystemColor(
 				SWT.COLOR_LIST_BACKGROUND));
-		clearButton.setToolTipText(Messages.FilterBox_clearButton_tooltip);
+		clearButton.setToolTipText(Messages.FILTER_BOX_CLEARBUTTON_TOOLTIP.getText());
 		clearButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
