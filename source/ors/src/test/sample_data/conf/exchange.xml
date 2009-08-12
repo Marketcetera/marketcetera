@@ -73,7 +73,7 @@
                value="${metc.broker1.qf.sender.comp.id}"/>
               <entry
                key="FileStorePath"
-               value="target/unit_tests/broker1/qf_store"/>
+               value="target/unit_tests/exchange1/qf_store"/>
               <entry
                key="SocketConnectHost"
                value="${metc.broker1.qf.host}"/>
@@ -102,7 +102,7 @@
                value="${metc.broker2.qf.sender.comp.id}"/>
               <entry
                key="FileStorePath"
-               value="target/unit_tests/broker2/qf_store"/>
+               value="target/unit_tests/exchange2/qf_store"/>
               <entry
                key="SocketConnectHost"
                value="${metc.broker2.qf.host}"/>
