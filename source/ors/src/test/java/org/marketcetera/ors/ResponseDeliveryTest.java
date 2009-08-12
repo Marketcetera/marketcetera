@@ -4,13 +4,17 @@ import java.util.Date;
 import java.util.Locale;
 import org.apache.log4j.Level;
 import org.junit.Test;
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.ors.filters.SimpleMessageModifierManager;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXResponse;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.log.ActiveLocale;
 import quickfix.Message;
+import quickfix.field.ClearingFirm;
 
 import static org.junit.Assert.*;
 import static org.marketcetera.trade.TypesTestBase.*;
@@ -34,28 +38,41 @@ public class ResponseDeliveryTest
     public void responseDelivery()
         throws Exception
     {
-        startORS();
-
         Date start=new Date();
         // Allow clock to advance.
         Thread.sleep(1500);
         ORSTestClient c=getAdminClient();
 
         Message msg=createEmptyExecReport();
+        completeExecReport(msg);
+        assertFalse(msg.isSetField(ClearingFirm.FIELD));
         emulateFirstBrokerResponse(msg);
         ExecutionReport er=Factory.getInstance().createExecutionReport
             (msg,getFirstBrokerID(),Originator.Broker,null,null);
-        assertExecReportEquals
-            (er,(ExecutionReport)(c.getReportListener().getNext()));
-
+        ExecutionReport err=
+            (ExecutionReport)(c.getReportListener().getNext());
+        assertExecReportEquals(er,err);
+        // Test response message modifiers.
+        assertEquals(SimpleMessageModifierManager.FIRM,
+                     ((HasFIXMessage)err).getMessage().
+                     getString(ClearingFirm.FIELD));
+        
         msg=createEmptyOrderCancelReject();
+        completeOrderCancelReject(msg);
+        assertFalse(msg.isSetField(ClearingFirm.FIELD));
         emulateFirstBrokerResponse(msg);
         OrderCancelReject ocr=Factory.getInstance().createOrderCancelReject
             (msg,getFirstBrokerID(),Originator.Broker,null,null);
-        assertCancelRejectEquals
-            (ocr,(OrderCancelReject)(c.getReportListener().getNext()));
+        OrderCancelReject ocrr=
+            (OrderCancelReject)(c.getReportListener().getNext());
+        assertCancelRejectEquals(ocr,ocrr);
+        // Test response message modifiers.
+        assertEquals(SimpleMessageModifierManager.FIRM,
+                     ((HasFIXMessage)ocrr).getMessage().
+                     getString(ClearingFirm.FIELD));
 
         msg=createEmptyBusinessMessageReject();
+        assertFalse(msg.isSetField(ClearingFirm.FIELD));
         setupTestCaseBase();
         ActiveLocale.setProcessLocale(Locale.ROOT);
         setDefaultLevel(Level.OFF);
@@ -64,13 +81,16 @@ public class ResponseDeliveryTest
         emulateFirstBrokerResponse(msg);
         // Wait for message to reach client.
         Thread.sleep(5000);
+        FIXResponse response=Factory.getInstance().createFIXResponse
+            (msg,getFirstBrokerID(),Originator.Broker,null,null);
+        // Test response message modifiers.
+        ((HasFIXMessage)response).getMessage().setField
+            (new ClearingFirm(SimpleMessageModifierManager.FIRM));
         assertSomeEvent
             (Level.WARN,TEST_CATEGORY,
              "Received a fix report that was neither an execution report "+
              "nor an order cancel reject: '"+
-             Factory.getInstance().createFIXResponse
-             (msg,getFirstBrokerID(),Originator.Broker,null,null).
-             toString()+
+             response.toString()+
              "'. Client applications do "+
              "not yet support this message type, so it was not forwarded "+
              "to the application or its embedded strategies.",
@@ -82,7 +102,5 @@ public class ResponseDeliveryTest
             (er,(ExecutionReport)rs[0]);
         assertCancelRejectEquals
             (ocr,(OrderCancelReject)rs[1]);
-
-        stopORS();
     }
 }

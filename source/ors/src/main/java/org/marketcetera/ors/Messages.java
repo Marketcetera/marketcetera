@@ -5,6 +5,7 @@ import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessage3P;
+import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -124,12 +125,15 @@ public interface Messages
         new I18NMessage0P(LOGGER,"rh_modification_failed"); //$NON-NLS-1$
     static final I18NMessage0P RH_ROUTING_FAILED=
         new I18NMessage0P(LOGGER,"rh_routing_failed"); //$NON-NLS-1$
+    static final I18NMessage0P RH_PRE_SEND_MODIFICATION_FAILED=
+        new I18NMessage0P
+        (LOGGER,"rh_pre_send_modification_failed"); //$NON-NLS-1$
     static final I18NMessage3P RH_ACK_FAILED_WARN=
         new I18NMessage3P(LOGGER,"rh_ack_failed_warn"); //$NON-NLS-1$
     static final I18NMessage0P RH_ACK_FAILED=
         new I18NMessage0P(LOGGER,"rh_ack_failed"); //$NON-NLS-1$
-    static final I18NMessage3P RH_MESSAGE_PROCESSING_FAILED=
-        new I18NMessage3P(LOGGER,"rh_message_processing_failed"); //$NON-NLS-1$
+    static final I18NMessage4P RH_MESSAGE_PROCESSING_FAILED=
+        new I18NMessage4P(LOGGER,"rh_message_processing_failed"); //$NON-NLS-1$
     static final I18NMessage1P RH_ANALYZED_MESSAGE=
         new I18NMessage1P(LOGGER,"rh_analyzed_message"); //$NON-NLS-1$
     static final I18NMessage1P RH_REPORT_FAILED=

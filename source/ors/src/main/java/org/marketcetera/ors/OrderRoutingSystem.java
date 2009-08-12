@@ -13,6 +13,8 @@ import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.config.SpringConfig;
 import org.marketcetera.ors.history.ReportHistoryServices;
+import org.marketcetera.ors.info.SystemInfo;
+import org.marketcetera.ors.info.SystemInfoImpl;
 import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.ors.ws.ClientSessionFactory;
@@ -34,6 +36,7 @@ import org.quickfixj.jmx.JmxExporter;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import quickfix.DefaultMessageFactory;
 import quickfix.SocketInitiator;
 
@@ -68,11 +71,12 @@ public class OrderRoutingSystem
 
     // INSTANCE DATA.
 
-    private final AbstractApplicationContext mContext;
+    private AbstractApplicationContext mContext;
     private final StandardAuthentication mAuth;
     private final Brokers mBrokers;
     private final QuickFIXApplication mQFApp;
-
+    private SimpleMessageListenerContainer mListener;
+    private SocketInitiator mInitiator;
 
     // CONSTRUCTORS.
 
@@ -118,12 +122,18 @@ public class OrderRoutingSystem
             (new String[] {"file:"+CONF_DIR+ //$NON-NLS-1$
                            "server.xml"}, //$NON-NLS-1$
                 parentContext);
-        getApplicationContext().registerShutdownHook();
-        getApplicationContext().start();
+        mContext.registerShutdownHook();
+        mContext.start();
+
+        // Create system information.
+
+        SystemInfoImpl systemInfo=new SystemInfoImpl();
 
         // Create resource managers.
 
         ReportHistoryServices historyServices=new ReportHistoryServices();
+        systemInfo.setValue
+            (SystemInfo.HISTORY_SERVICES,historyServices);
         SpringConfig cfg=SpringConfig.getSingleton();
         if (cfg==null) {
             throw new I18NException(Messages.APP_NO_CONFIGURATION);
@@ -150,7 +160,7 @@ public class OrderRoutingSystem
 
         SessionManager<ClientSession> sessionManager=
             new SessionManager<ClientSession>
-            (new ClientSessionFactory(jmsMgr,userManager),
+            (new ClientSessionFactory(systemInfo,jmsMgr,userManager),
              (cfg.getServerSessionLife()==
               SessionManager.INFINITE_SESSION_LIFESPAN)?
              SessionManager.INFINITE_SESSION_LIFESPAN:
@@ -170,10 +180,10 @@ public class OrderRoutingSystem
         RequestHandler handler=new RequestHandler
             (getBrokers(),selector,cfg.getAllowedOrders(),
              persister,qSender,userManager,localIdFactory);
-        jmsMgr.getIncomingJmsFactory().registerHandlerOEX
+        mListener=jmsMgr.getIncomingJmsFactory().registerHandlerOEX
             (handler,Service.REQUEST_QUEUE,false);
         mQFApp=new QuickFIXApplication
-            (getBrokers(),cfg.getSupportedMessages(),
+            (systemInfo,getBrokers(),cfg.getSupportedMessages(),
              persister,qSender,userManager,
              jmsMgr.getOutgoingJmsFactory().createJmsTemplateX
              (Service.BROKER_STATUS_TOPIC,true),
@@ -183,16 +193,16 @@ public class OrderRoutingSystem
         // Initiate broker connections.
 
         SpringSessionSettings settings=getBrokers().getSettings();
-        SocketInitiator initiator=new SocketInitiator
-            (getQuickFIXApplication(),settings.getQMessageStoreFactory(),
+        mInitiator=new SocketInitiator
+            (mQFApp,settings.getQMessageStoreFactory(),
              settings.getQSettings(),settings.getQLogFactory(),
              new DefaultMessageFactory());
-        initiator.start();
+        mInitiator.start();
 
         // Initiate JMX (for QuickFIX/J and application MBeans).
 
         MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
-        (new JmxExporter(mbeanServer)).export(initiator);
+        (new JmxExporter(mbeanServer)).export(mInitiator);
         mbeanServer.registerMBean
             (new ORSAdmin(getBrokers(),qSender,localIdFactory,userManager),
              new ObjectName(JMX_NAME));
@@ -224,14 +234,25 @@ public class OrderRoutingSystem
     }
 
     /**
-     * Returns the receiver's Spring application context.
+     * Stops worker threads of the receiver.
      *
      * @return The context.
      */
 
-    AbstractApplicationContext getApplicationContext()
+    synchronized void stop()
     {
-        return mContext;
+        if (mInitiator!=null) {
+            mInitiator.stop();
+            mInitiator=null;
+        }
+        if (mListener!=null) {
+            mListener.shutdown();
+            mListener=null;
+        }
+        if (mContext!=null) {
+            mContext.close();
+            mContext=null;
+        }
     }
 
     /**
@@ -254,17 +275,6 @@ public class OrderRoutingSystem
     Brokers getBrokers()
     {
         return mBrokers;
-    }
-
-    /**
-     * Returns the receiver's QuickFIX/J application.
-     *
-     * @return The application.
-     */
-
-    QuickFIXApplication getQuickFIXApplication()
-    {
-        return mQFApp;
     }
 
 
@@ -294,11 +304,31 @@ public class OrderRoutingSystem
                 ApplicationVersion.getBuildNumber());
         Messages.APP_START.info(LOGGER_CATEGORY);
 
+        // Start ORS.
+
+        final OrderRoutingSystem ors;
+        try {
+            ors=new OrderRoutingSystem(args);
+        } catch (Throwable t) {
+            try {
+                Messages.APP_STOP_ERROR.error(LOGGER_CATEGORY,t);
+            } catch (Throwable t2) {
+                System.err.println("Reporting failed"); //$NON-NLS-1$
+                System.err.println("Reporting failure"); //$NON-NLS-1$
+                t2.printStackTrace();
+                System.err.println("Original failure"); //$NON-NLS-1$
+                t.printStackTrace();
+            }
+            return;
+        }
+        Messages.APP_STARTED.info(LOGGER_CATEGORY);
+
         // Hook to log shutdown.
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                ors.stop();
                 Messages.APP_STOP.info(LOGGER_CATEGORY);
             }
         });
@@ -306,12 +336,19 @@ public class OrderRoutingSystem
         // Execute application.
 
         try {
-            OrderRoutingSystem ors=new OrderRoutingSystem(args);
-            Messages.APP_STARTED.info(LOGGER_CATEGORY);
             ors.startWaitingForever();
-            Messages.APP_STOP_SUCCESS.info(LOGGER_CATEGORY);
         } catch (Throwable t) {
-            Messages.APP_STOP_ERROR.error(LOGGER_CATEGORY,t);
+            try {
+                Messages.APP_STOP_ERROR.error(LOGGER_CATEGORY,t);
+            } catch (Throwable t2) {
+                System.err.println("Reporting failed"); //$NON-NLS-1$
+                System.err.println("Reporting failure"); //$NON-NLS-1$
+                t2.printStackTrace();
+                System.err.println("Original failure"); //$NON-NLS-1$
+                t.printStackTrace();
+            }
+            return;
         }
+        Messages.APP_STOP_SUCCESS.info(LOGGER_CATEGORY);
     }
 }

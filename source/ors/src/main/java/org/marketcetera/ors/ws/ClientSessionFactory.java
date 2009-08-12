@@ -4,6 +4,7 @@ import javax.xml.bind.JAXBException;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.ors.UserManager;
+import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.persist.PersistenceException;
@@ -32,6 +33,7 @@ public class ClientSessionFactory
 
     // INSTANCE DATA.
 
+    private final SystemInfo mSystemInfo;
     private final JmsManager mJmsManager;
     private final UserManager mUserManager;
 
@@ -39,24 +41,39 @@ public class ClientSessionFactory
     // CONSTRUCTORS.
 
     /**
-     * Creates a new session factory which uses the given JMS manager
-     * to create reply topics, and which notifies the given user
-     * manager when sessions are added/removed.
+     * Creates a new session factory which uses the given system
+     * information to create session information, which uses the given
+     * JMS manager to create reply topics, and which notifies the
+     * given user manager when sessions are added/removed.
      *
+     * @param systemInfo The system information.
      * @param jmsManager The JMS manager.
      * @param userManager The user manager.
      */
 
     public ClientSessionFactory
-        (JmsManager jmsManager,
+        (SystemInfo systemInfo,
+         JmsManager jmsManager,
          UserManager userManager)
     {
+        mSystemInfo=systemInfo;
         mJmsManager=jmsManager;
         mUserManager=userManager;
     }
 
 
     // INSTANCE METHODS.
+
+    /**
+     * Returns the receiver's system information.
+     *
+     * @return The information.
+     */
+
+    public SystemInfo getSystemInfo()
+    {
+        return mSystemInfo;         
+    }
 
     /**
      * Returns the receiver's JMS manager.
@@ -107,7 +124,8 @@ public class ClientSessionFactory
                 (ex,new I18NBoundMessage1P
                  (Messages.CANNOT_RETRIEVE_USER,user));
         }
-        ClientSession session=new ClientSession(id,dbUser,jmsOps);
+        ClientSession session=new ClientSession
+            (getSystemInfo(),id,dbUser,jmsOps);
         getUserManager().addSession(session);
         return session;
     }

@@ -14,6 +14,9 @@ import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.filters.OrderFilter;
+import org.marketcetera.ors.info.RequestInfo;
+import org.marketcetera.ors.info.RequestInfoImpl;
+import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -238,7 +241,7 @@ public class RequestHandler
         msg.getHeader().setField(new MsgSeqNum(0));
         msg.getHeader().setField(new SenderCompID(SELF_SENDER_COMP_ID));
         msg.getHeader().setField(new TargetCompID(SELF_TARGET_COMP_ID));
-        msg.getHeader().setField(new SendingTime(new Date())); //non-i18n
+        msg.getHeader().setField(new SendingTime(new Date()));
 
         // This indirectly adds body length and checksum.
         msg.toString();
@@ -420,6 +423,7 @@ public class RequestHandler
         BrokerID bID=null;
         Broker b=null;
         Message qMsg=null;
+        Message qMsgToSend=null;
         Message qMsgReply=null;
         try {
 
@@ -438,12 +442,15 @@ public class RequestHandler
 
             // Reject invalid sessions.
 
-            actorID=getUserManager().getSessionUserID(msgEnv.getSessionId());
-            if (actorID==null) {
+            SessionInfo sessionInfo=
+                getUserManager().getSessionInfo(msgEnv.getSessionId());
+            if (sessionInfo==null) {
                 throw new I18NException
                     (new I18NBoundMessage1P
                      (Messages.RH_SESSION_EXPIRED,msgEnv.getSessionId()));
             }
+            actorID=(UserID)sessionInfo.getValue(SessionInfo.ACTOR_ID);
+            RequestInfo requestInfo=new RequestInfoImpl(sessionInfo);
 
             // Reject messages of unsupported types.
 
@@ -464,6 +471,8 @@ public class RequestHandler
             if (bID==null) {
                 throw new I18NException(Messages.RH_UNKNOWN_BROKER);
             }
+            requestInfo.setValue
+                (RequestInfo.BROKER_ID,bID);
 
             // Ensure broker ID maps to existing broker.
 
@@ -471,6 +480,10 @@ public class RequestHandler
             if (b==null) {
                 throw new I18NException(Messages.RH_UNKNOWN_BROKER_ID);
             }
+            requestInfo.setValue
+                (RequestInfo.BROKER,b);
+            requestInfo.setValue
+                (RequestInfo.FIX_MESSAGE_FACTORY,b.getFIXMessageFactory());
 
             // Convert to a QuickFIX/J message.
 
@@ -500,11 +513,14 @@ public class RequestHandler
             // Apply message modifiers.
 
             if (b.getModifiers()!=null) {
+                requestInfo.setValue(RequestInfo.CURRENT_MESSAGE,qMsg);
                 try {
-                    b.getModifiers().modifyMessage(qMsg);
-                } catch (CoreException ex) {
+                    b.getModifiers().modifyMessage(requestInfo);
+                } catch (I18NException ex) {
                     throw new I18NException(ex,Messages.RH_MODIFICATION_FAILED);
                 }
+                qMsg=requestInfo.getValueIfInstanceOf
+                    (RequestInfo.CURRENT_MESSAGE,Message.class);
             }
 
             // Apply order routing.
@@ -513,15 +529,36 @@ public class RequestHandler
                 try {
                     b.getRoutes().modifyMessage
                         (qMsg,b.getFIXMessageAugmentor());
-                } catch (CoreException ex) {
+                } catch (I18NException ex) {
                     throw new I18NException(ex,Messages.RH_ROUTING_FAILED);
                 }
+            }
+
+            // Apply pre-sending message modifiers.
+
+            if (b.getPreSendModifiers()!=null) {
+                qMsgToSend=(Message)qMsg.clone();
+                requestInfo.setValue(RequestInfo.CURRENT_MESSAGE,qMsgToSend);
+                try {
+                    try {
+                        b.getPreSendModifiers().modifyMessage(requestInfo);
+                    } catch (I18NException ex) {
+                        throw new I18NException
+                            (ex,Messages.RH_PRE_SEND_MODIFICATION_FAILED);
+                    }
+                    qMsgToSend=requestInfo.getValueIfInstanceOf
+                        (RequestInfo.CURRENT_MESSAGE,Message.class);
+                } finally {
+                    requestInfo.setValue(RequestInfo.CURRENT_MESSAGE,qMsg);
+                }
+            } else {
+                qMsgToSend=qMsg;
             }
 
             // Send message to QuickFIX/J.
 
             try {
-                getSender().sendToTarget(qMsg,b.getSessionID());
+                getSender().sendToTarget(qMsgToSend,b.getSessionID());
             } catch (SessionNotFound ex) {
                 throw new I18NException(ex,Messages.RH_UNAVAILABLE_BROKER);
             }
@@ -542,7 +579,7 @@ public class RequestHandler
             }
         } catch (I18NException ex) {
             Messages.RH_MESSAGE_PROCESSING_FAILED.error
-                (this,ex,msg,qMsg,
+                (this,ex,msg,qMsg,qMsgToSend,
                  ObjectUtils.toString(b,ObjectUtils.toString(bID)));
             qMsgReply=createRejection(ex,msg);
         }

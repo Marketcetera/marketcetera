@@ -31,8 +31,6 @@ public class ServiceTest
     public void services()
         throws Exception
     {
-        startORS();
-
         Client c=getAdminClient().getClient();
 
         List<BrokerStatus> bs=c.getBrokersStatus().getBrokers();
@@ -57,7 +55,5 @@ public class ServiceTest
         assertNotNull(id);
         assertFalse(id.equals(Factory.getInstance().createOrderSingle().
                               getOrderID().getValue()));
-
-        stopORS();
     }
 }

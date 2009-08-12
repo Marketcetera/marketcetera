@@ -11,7 +11,6 @@ import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import quickfix.*;
 import quickfix.field.*;
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.jms.core.JmsOperations;
 
 import java.math.BigDecimal;

@@ -1,14 +1,10 @@
 package org.marketcetera.ors;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.ConfigFileLoadingException;
 import org.marketcetera.ors.OrderRoutingSystem;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import quickfix.field.Symbol;
 
 /**
  * @author toli
