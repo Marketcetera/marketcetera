@@ -1,0 +1,351 @@
+Handle accelerator constants: 
+  ie: SWT.CONTROL + 'e'
+  
+----
+  
+A third (optional) section in the XSWT file
+
+- A top-level <x:shell></x:shell> section that optionally occurs immediately 
+  after the <import> and before the first <x:children>.  If it is found, then 
+  whatever that is defined there would be added as a child of parent.getShell() 
+  rather than as a child of the parent that is passed in.
+
+- I don't really like this, but Jan needs it in order to define a separate 
+  menu bar for each Shell, but have the shell have a standard tool bar and 
+  other things.  If there's a better (ie: cleaner) way to do this, I'd like
+  to do that instead.
+  
+----
+
+Proper error reporting!!!
+
+----
+
+Forward references to IDs.
+
+----
+
+Problematic SWT classes remaining:  (Not sure this is up to date)
+
+TableTree (can't set columns because can't access underlying Table)
+TableEditor (Can't attach a TableEditor to a TableItem: three-parameter method needed)
+ScrolledComposite, FormLayout? (Need forward references)
+
+----
+
+Make the editor plugin search the current Eclipse project's classpath for 
+SWT controls so that SWT controls that are currently under development in the
+workspace can be used in the XSWT editor.
+
+Provide a button like SWTworkbench Builder did to discard the classloader 
+used to load classes from the workspace and reload the classes (using a 
+different classloader) so that the classes can be evolved in real-time.
+
+----
+
+Scrap the current preview pane's use of SashForm to resize the layout.  It doesn't
+resize back to full size properly.  Instead, use the technique I used in Builder
+where there is a Composite with handles you can resize...
+
+----
+
+Be able to XREF XML source line and column numbers and the JDOM nodes.  This is
+necessary to implement 2-way graphical editing in a GUI builder.
+
+Example showing how to get line numbers out of a JDOM parser:
+
+package test;
+
+import java.util.Iterator;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.DefaultJDOMFactory;
+import org.jdom.input.JDOMFactory;
+import org.jdom.input.SAXBuilder;
+import org.jdom.input.SAXHandler;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+
+/**
+ * @author Per Norrman
+ *
+ */
+public class LineTest
+{
+    
+    public static void main(String[] args) throws Exception
+	{
+        String file = "data.xml";
+        SAXBuilder builder = new MySAXBuilder();
+        builder.setFactory(new MyFactory());
+        Document doc = builder.build(file);
+        
+        
+        for (Iterator iter = JDOMTreeWalker.Elements(doc); iter.hasNext();)
+		{
+			LineElement e = (LineElement) iter.next();
+			System.out.println(e.getName() + ": " + e.getStartLine() + " -- " + e.getEndLine());
+		}
+		
+	}
+
+}
+
+class MySAXBuilder extends SAXBuilder {
+    
+    /** override */
+    protected SAXHandler createContentHandler()
+	{
+        
+        return new MySAXHandler(new MyFactory());
+	}
+
+}
+
+class MySAXHandler extends SAXHandler {
+
+        
+    public MySAXHandler(JDOMFactory f) {
+        super(f);
+    }
+    
+    /** override */
+    public void startElement(
+		String arg0,
+		String arg1,
+		String arg2,
+		Attributes arg3)
+		throws SAXException
+	{
+		super.startElement(arg0, arg1, arg2, arg3);
+        Locator l = getDocumentLocator();
+        if (l != null) {
+            ((LineElement)getCurrentElement()).setStartLine(l.getLineNumber());
+        }
+	}
+    
+    /** override */
+    public void endElement(String arg0, String arg1, String arg2)
+		throws SAXException
+	{
+        Locator l = getDocumentLocator();
+        if (l != null) {
+            ((LineElement)getCurrentElement()).setEndLine(l.getLineNumber());
+        }
+        
+        super.endElement(arg0, arg1, arg2);
+	}
+
+
+}
+
+class MyFactory extends DefaultJDOMFactory {
+
+    public Element element(String name)
+	{
+		return new LineElement(name);
+	}
+
+
+}
+
+
+class LineElement extends Element {
+    private int _startLine;
+    private int _endLine;
+    
+    
+    public LineElement(String name)  {
+        super(name);
+    }
+    
+	public int getEndLine()
+	{
+		return _endLine;
+	}
+
+	public int getStartLine()
+	{
+		return _startLine;
+	}
+
+	public void setEndLine(int i)
+	{
+		_endLine = i;
+	}
+
+	public void setStartLine(int i)
+	{
+		_startLine = i;
+	}
+
+}
+
+
+---
+
+package test;
+
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import org.jdom.Element;
+import org.jdom.Document;
+import org.jdom.filter.ElementFilter;
+import org.jdom.filter.Filter;
+
+/**
+ * This class provides an Iterator implementation that performs a 
+ * pre-order, depth-first traversal of a JDOM Document or a JDOM subtree.
+ * <p>
+ * An optional {@link Filter} may be supplied with the constructor. 
+ * Every node is visited, but only those nodes accepted by the filter 
+ * will be returned.
+ * <p>
+ * Removing nodes is <strong>not</strong> supported.
+ *
+ * @author pernorrman@telia.com
+ */
+
+public class JDOMTreeWalker implements Iterator
+{
+
+	private Stack _stack = new Stack();
+
+	private Object _next;
+
+	private Filter _filter;
+
+	/**
+	 * Create an ElementWalker for a JDOM Element with the
+	 * specified filter.
+	 */
+	public JDOMTreeWalker(Element element, Filter filter)
+	{
+		this._filter = filter;
+		_stack.push(element.getContent());
+		_next = _stack.getNext();
+	}
+
+	/**
+	 * Create an ElementWalker for a JDOM Element with an empty filter, i.e.
+	 * every node will be returned.
+	 */
+	public JDOMTreeWalker(Element element)
+	{
+		this(element, null);
+	}
+
+	/**
+	 * Create an ElementWalker for a JDOM Document with the
+	 * specified filter.
+	 */
+	public JDOMTreeWalker(Document document, Filter filter)
+	{
+		this._filter = filter;
+		_stack.push(document.getContent());
+		_next = _stack.getNext();
+	}
+
+	/**
+	 * Create an ElementWalker for a JDOM Document with an empty filter, i.e.
+	 * all elements will be returned during iteration.
+	 */
+	public JDOMTreeWalker(Document document)
+	{
+		this(document, null);
+	}
+
+	public static JDOMTreeWalker Elements(Document doc)
+	{
+		return new JDOMTreeWalker(doc, new ElementFilter());
+	}
+
+	//
+	// Iterator implementation
+	//
+
+	public boolean hasNext()
+	{
+		return _next != null;
+	}
+
+	public Object next()
+	{
+		if (_next == null)
+		{
+			throw new NoSuchElementException();
+		}
+
+		Object object = _next;
+		_next = _stack.getNext();
+
+		return object;
+	}
+
+	public void remove()
+	{
+		throw new UnsupportedOperationException("Removal is not supported!");
+	}
+
+	/**
+	 * In order to keep track of the position in a list of child elements,
+	 * we use a stack of iterators. Each time we descend to the next level,
+	 * the list of child elements is pushed on to the stack and we iterate
+	 * on that list. When the list is exhausted, we pop up and resume iteration
+	 * from where we left.
+	 */
+	private class Stack extends LinkedList
+	{
+		Iterator iter;
+
+		public void push(List list)
+		{
+			add(0, iter = list.iterator());
+		}
+
+		private void pop()
+		{
+			if (size() > 0)
+			{
+				this.remove(0);
+			}
+			iter = size() > 0 ? (Iterator) get(0) : null;
+		}
+
+		public Object getNext()
+		{
+			if (iter == null)
+			{
+				return null;
+			}
+
+			while (iter.hasNext())
+			{
+				Object node = iter.next();
+				if (node instanceof Element)
+				{
+					List list = ((Element) node).getContent();
+					if (list.size() > 0)
+					{
+						push(((Element) node).getContent());
+					}
+				}
+				if (_filter == null || _filter.matches(node))
+				{
+					return node;
+				}
+			}
+			pop();
+			return getNext();
+		}
+
+	} /* class Stack */
+
+}
+
+---

@@ -1,0 +1,27 @@
+usd:
+  id: 154
+  alpha_code: "USD"
+  numeric_code: 840
+  description: "US Dollar"
+  obsolete: false
+  
+GPB:
+  id: 2
+  alpha_code: "GBP"
+  numeric_code: 826
+  description: "Pound Sterling"
+  obsolete: false
+
+ZAI:
+  id: 3
+  alpha_code: "ZAI"
+  numeric_code: 666
+  description: "Belarussian Zaichiki"
+  obsolete: false
+
+EUR:
+  id: 4
+  alpha_code: "EUR"
+  numeric_code: 978
+  description: "Euro"
+  obsolete: false
