@@ -1,7 +1,13 @@
 package org.marketcetera.photon.test;
 
+/* $License$ */
+
 /**
  * Base class for reusable, {@link IllegalArgumentException} expected failures.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
  */
 public abstract class ExpectedIllegalArgumentException {
 
