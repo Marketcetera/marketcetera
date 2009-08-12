@@ -142,8 +142,10 @@
           <resolveDependencies>false</resolveDependencies>
           <additionalBuildcommands>
             <!-- 
-              - This build command runs the package goal every time test files change.  Its sole purpose
-              - is to update the core.tests plug-in with the new code (see the antrun plug-in execution below). 
+              - This build command runs the package goal every time test
+              - files change. Its sole purpose is to update the core.tests
+              - plug-in with the new code (see the antrun plug-in execution
+              - below). 
               -->
             <buildCommand>
               <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
@@ -198,8 +200,12 @@
             <phase>package</phase>
             <configuration>
               <tasks>
-                <property name="targetDirTests" value="../photon/plugins/org.marketcetera.core.tests/" />
-                <copy file="target/core-${project.version}-tests.jar" todir="${targetDirTests}" />
+                <property
+                 name="targetDirTests"
+                 value="../photon/plugins/org.marketcetera.core.tests/" />
+                <copy
+                 file="target/core-${project.version}-tests.jar"
+                 todir="${targetDirTests}" />
               </tasks>
             </configuration>
             <goals>
