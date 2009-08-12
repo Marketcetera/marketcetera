@@ -2,9 +2,12 @@ package org.marketcetera.ors.filters;
 
 import java.util.LinkedList;
 import java.util.List;
-import org.marketcetera.core.CoreException;
 import org.marketcetera.ors.history.ReportHistoryServices;
+import org.marketcetera.ors.info.RequestInfo;
+import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import quickfix.Message;
 
@@ -19,15 +22,6 @@ import quickfix.Message;
 @ClassVersion("$Id$")
 public class MessageModifierManager {
     private List<MessageModifier> messageModifiers;
-    private FIXMessageFactory msgFactory;
-    private ReportHistoryServices mHistoryServices; 
-
-    public MessageModifierManager() {}
-
-    public MessageModifierManager(List<MessageModifier> mods, FIXMessageFactory msgFactory){
-        setMessageModifiers(mods);
-        setMessageFactory(msgFactory);
-    }
 
     public void setMessageModifiers(List<MessageModifier> mods){
 		messageModifiers = new LinkedList<MessageModifier>();
@@ -37,28 +31,19 @@ public class MessageModifierManager {
 		messageModifiers.add(new TransactionTimeInsertMessageModifier());
     }
 
-    public void setMessageFactory(FIXMessageFactory msgFactory){
-        this.msgFactory = msgFactory;
-    }
-
-    public ReportHistoryServices getHistoryServices()
-    {
-        return mHistoryServices;
-    }
-
-    public void setHistoryServices
-        (ReportHistoryServices historyServices)
-    {
-        mHistoryServices=historyServices;
-    }
-
     /** Apply all the order modifiers to this message */
-    public void modifyMessage(Message inMessage) throws CoreException
+    public void modifyMessage(RequestInfo info)
+        throws I18NException
     {
+        Message inMessage=(Message)info.getValue(RequestInfo.CURRENT_MESSAGE);
+        ReportHistoryServices historyServices=(ReportHistoryServices)
+            (info.getSessionInfo().getSystemInfo().getValue
+             (SystemInfo.HISTORY_SERVICES));
+        FIXMessageAugmentor augmentor=
+            ((FIXMessageFactory)
+             info.getValue(RequestInfo.FIX_MESSAGE_FACTORY)).getMsgAugmentor();
         for (MessageModifier oneModifier : messageModifiers) {
-            oneModifier.modifyMessage
-                (inMessage, getHistoryServices(), msgFactory.getMsgAugmentor());
+            oneModifier.modifyMessage(inMessage,historyServices,augmentor);
         }
     }
-
 }

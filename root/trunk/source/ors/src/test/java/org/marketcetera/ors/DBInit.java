@@ -1,10 +1,10 @@
+
 package org.marketcetera.ors;
 
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.persist.PersistTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.junit.Assert;
 
 import java.util.Arrays;

@@ -29,6 +29,8 @@ public class SpringBroker
     private String mId;
     private MessageModifierManager mModifiers;
     private MessageRouteManager mRoutes;
+    private MessageModifierManager mPreSendModifiers;
+    private MessageModifierManager mResponseModifiers;
 
 
     // INSTANCE METHODS.
@@ -148,6 +150,54 @@ public class SpringBroker
     public MessageRouteManager getRoutes()
     {
         return mRoutes;
+    }
+
+    /**
+     * Sets the receiver's pre-sending message modifier manager to the
+     * given one.
+     *
+     * @param preSendModifiers The manager. It may be null.
+     */
+ 
+    public void setPreSendModifiers
+        (MessageModifierManager preSendModifiers)
+    {
+        mPreSendModifiers=preSendModifiers;
+    }
+
+    /**
+     * Returns the receiver's pre-sending message modifier manager.
+     *
+     * @return The manager. It may be null.
+     */
+
+    public MessageModifierManager getPreSendModifiers()
+    {
+        return mPreSendModifiers;
+    }
+
+    /**
+     * Sets the receiver's response message modifier manager to the
+     * given one.
+     *
+     * @param responseModifiers The manager. It may be null.
+     */
+ 
+    public void setResponseModifiers
+        (MessageModifierManager responseModifiers)
+    {
+        mResponseModifiers=responseModifiers;
+    }
+
+    /**
+     * Returns the receiver's response message modifier manager.
+     *
+     * @return The manager. It may be null.
+     */
+
+    public MessageModifierManager getResponseModifiers()
+    {
+        return mResponseModifiers;
     }
 
 

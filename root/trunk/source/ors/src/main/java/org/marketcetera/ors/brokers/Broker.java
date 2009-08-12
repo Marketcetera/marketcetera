@@ -63,10 +63,6 @@ public class Broker
     {
         mSpringBroker=springBroker;
         mBrokerID=new BrokerID(getSpringBroker().getId());
-        if (getModifiers()!=null) {
-            getModifiers().setMessageFactory(getFIXMessageFactory());
-            getModifiers().setHistoryServices(historyServices);
-        }
     }
 
 
@@ -169,6 +165,28 @@ public class Broker
     public MessageRouteManager getRoutes()
     {
         return getSpringBroker().getRoutes();
+    }
+
+    /**
+     * Returns the receiver's pre-sending message modifier manager.
+     *
+     * @return The manager. It may be null.
+     */
+
+    public MessageModifierManager getPreSendModifiers()
+    {
+        return getSpringBroker().getPreSendModifiers();
+    }
+
+    /**
+     * Returns the receiver's response message modifier manager.
+     *
+     * @return The manager. It may be null.
+     */
+
+    public MessageModifierManager getResponseModifiers()
+    {
+        return getSpringBroker().getResponseModifiers();
     }
 
     /**

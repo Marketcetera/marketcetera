@@ -1,15 +1,20 @@
 package org.marketcetera.ors;
 
-import org.marketcetera.core.CoreException;
 import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.filters.MessageFilter;
+import org.marketcetera.ors.info.RequestInfo;
+import org.marketcetera.ors.info.RequestInfoImpl;
+import org.marketcetera.ors.info.SessionInfo;
+import org.marketcetera.ors.info.SessionInfoImpl;
+import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.IQuickFIXSender;
 import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.jms.core.JmsOperations;
 import quickfix.Application;
@@ -51,6 +56,7 @@ public class QuickFIXApplication
 
     // INSTANCE DATA.
 
+    private final SystemInfo mSystemInfo;
     private final Brokers mBrokers;
     private final MessageFilter mSupportedMessages;
     private final ReplyPersister mPersister;
@@ -63,7 +69,8 @@ public class QuickFIXApplication
     // CONSTRUCTORS.
 
     public QuickFIXApplication
-        (Brokers brokers,
+        (SystemInfo systemInfo,
+         Brokers brokers,
          MessageFilter supportedMessages,
          ReplyPersister persister,
          IQuickFIXSender sender,
@@ -71,6 +78,7 @@ public class QuickFIXApplication
          JmsOperations toClientStatus,
          JmsOperations toTradeRecorder)
     {
+        mSystemInfo=systemInfo;
         mBrokers=brokers;
         mSupportedMessages=supportedMessages;
         mPersister=persister;
@@ -83,6 +91,11 @@ public class QuickFIXApplication
 
     // INSTANCE METHODS.
 
+    public SystemInfo getSystemInfo()
+    {
+        return mSystemInfo;         
+    }
+         
     public Brokers getBrokers()
     {
         return mBrokers;
@@ -162,15 +175,51 @@ public class QuickFIXApplication
             return;
         }
 
+        // Obtain principals.
+
+        Principals principals;
+        if (admin) {
+            principals=Principals.UNKNOWN;
+        } else {
+            principals=getPersister().getPrincipals(msg);
+        }
+
+        // Apply message modifiers.
+
+        if ((originator==Originator.Broker) &&
+            (b.getResponseModifiers()!=null)) {
+            try {
+                SessionInfo sessionInfo=new SessionInfoImpl(getSystemInfo());
+                sessionInfo.setValue
+                    (SessionInfo.ACTOR_ID,principals.getActorID());
+                RequestInfo requestInfo=new RequestInfoImpl(sessionInfo);
+                requestInfo.setValue
+                    (RequestInfo.BROKER,b);
+                requestInfo.setValue
+                    (RequestInfo.BROKER_ID,b.getBrokerID());
+                requestInfo.setValue
+                    (RequestInfo.ORIGINATOR,originator);
+                requestInfo.setValue
+                    (RequestInfo.FIX_MESSAGE_FACTORY,b.getFIXMessageFactory());
+                requestInfo.setValue
+                    (RequestInfo.CURRENT_MESSAGE,msg);
+                b.getResponseModifiers().modifyMessage(requestInfo);
+                msg=requestInfo.getValueIfInstanceOf
+                    (RequestInfo.CURRENT_MESSAGE,Message.class);
+            } catch (I18NException ex) {
+                Messages.QF_MODIFICATION_FAILED.error
+                    (getCategory(msg),ex,msg,b.toString());
+                return;
+            }
+        }
+
         // Convert reply to FIX Agnostic messsage.
 
-        Principals principals=getPersister().getPrincipals(msg);
         TradeMessage reply;
         try {
             reply=FIXConverter.fromQMessage
                 (msg,originator,b.getBrokerID(),
-                 (admin?null:principals.getActorID()),
-                 admin?null:principals.getViewerID());
+                 principals.getActorID(),principals.getViewerID());
         } catch (MessageCreationException ex) {
             Messages.QF_REPORT_FAILED.error
                 (getCategory(msg),ex,msg,b.toString());
@@ -222,8 +271,20 @@ public class QuickFIXApplication
 
         if (b.getModifiers()!=null) {
             try {
-                b.getModifiers().modifyMessage(msg);
-            } catch (CoreException ex) {
+                RequestInfo requestInfo=
+                    new RequestInfoImpl(new SessionInfoImpl(getSystemInfo()));
+                requestInfo.setValue
+                    (RequestInfo.BROKER,b);
+                requestInfo.setValue
+                    (RequestInfo.BROKER_ID,b.getBrokerID());
+                requestInfo.setValue
+                    (RequestInfo.FIX_MESSAGE_FACTORY,b.getFIXMessageFactory());
+                requestInfo.setValue
+                    (RequestInfo.CURRENT_MESSAGE,msg);
+                b.getModifiers().modifyMessage(requestInfo);
+                msg=requestInfo.getValueIfInstanceOf
+                    (RequestInfo.CURRENT_MESSAGE,Message.class);
+            } catch (I18NException ex) {
                 Messages.QF_MODIFICATION_FAILED.warn
                     (getCategory(msg),ex,msg,b.toString());
             }

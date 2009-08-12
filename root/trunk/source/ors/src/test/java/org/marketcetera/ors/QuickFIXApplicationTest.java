@@ -1,9 +1,8 @@
+
 package org.marketcetera.ors;
 
 import junit.framework.Test;
 import org.marketcetera.core.*;
-import org.marketcetera.ors.filters.MessageModifierManager;
-import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.QuickFIXApplication;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.spring.MockJmsTemplate;
@@ -19,7 +18,6 @@ import quickfix.UnsupportedMessageType;
 import quickfix.field.*;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.HashSet;
 
 /**
@@ -138,7 +136,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     public void testExecutionReportGoesToTradeTopic() throws Exception {
         MockJmsTemplate jmsTemplate = new MockJmsTemplate();
         MockJmsTemplate tradeRecorderJMS = new MockJmsTemplate();
-        final QuickFIXApplication qfApp = new QuickFIXApplication(null, null, null, null, null,tradeRecorderJMS,null);
+        final QuickFIXApplication qfApp = new QuickFIXApplication(null, null, null, null, null, null,tradeRecorderJMS,null);
 
         Message msg = msgFactory.newExecutionReport("123", "456", "789", OrdStatus.FILLED, Side.BUY, new BigDecimal(100), new BigDecimal("10.10"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 new BigDecimal(100), new BigDecimal("10.10"), new BigDecimal(100), new BigDecimal("10.10"), new MSymbol("XYZ"), "bob"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -161,7 +159,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
      */
     public void testOutgoingRejectCopiedToJMS() throws Exception {
         MockJmsTemplate jmsTemplate = new MockJmsTemplate();
-        final QuickFIXApplication qfApp = new QuickFIXApplication(null, null, null, null, null, null, null);
+        final QuickFIXApplication qfApp = new QuickFIXApplication(null, null, null, null, null, null, null, null);
         SessionID sessionID = new SessionID(fixVersion.toString(), "sender", "target"); //$NON-NLS-1$ //$NON-NLS-2$
 
         Message logon = msgFactory.createMessage(MsgType.LOGON);
@@ -195,7 +193,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
 
         public MockQuickFIXApplication(JmsOperations jmsOperations)
         {
-            super(null,null,null,null,null,null,null);
+            super(null,null,null,null,null,null,null,null);
         }
 
         public static HashSet whiteList = new HashSet();

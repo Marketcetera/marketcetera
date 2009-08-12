@@ -46,7 +46,9 @@ public class DBAuthenticator
     {
         // If the server's version is unknown, any client is allowed.
         return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
-                ObjectUtils.equals(clientVersion,serverVersion));            
+                ObjectUtils.equals(clientVersion,serverVersion) ||
+                (ApplicationVersion.VERSION_1_5_0.equals(clientVersion) &&
+                 ApplicationVersion.VERSION_1_5_1.equals(serverVersion)));
     }
 
 

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.ors.ws.ClientSession;
@@ -219,21 +220,22 @@ public class UserManager
     }      
 
     /**
-     * Returns the ID of the user associated with the given session ID.
+     * Returns the session information associated with the given
+     * session ID.
      *
      * @param sessionId The session ID.
      *
-     * @return The user ID. It may be null if the session has expired.
+     * @return The information. It may be null if the session has expired.
      */
 
-    public UserID getSessionUserID
+    public SessionInfo getSessionInfo
         (SessionId sessionId)
     {
         SessionHolder<ClientSession> holder=getSessionManager().get(sessionId);
         if (holder==null) {
             return null;
         }
-        return holder.getSession().getUser().getUserID();
+        return holder.getSession().getSessionInfo();
     }
 
     /**
