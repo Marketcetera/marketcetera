@@ -66,8 +66,7 @@ public class StrategyEngineCoreTestUtil {
     public static List<StrategyEngine> buildEngines(EObject... objects) {
         List<StrategyEngine> engines = new ArrayList<StrategyEngine>();
         StrategyEngine currentEngine = null;
-        for (int i = 0; i < objects.length; i++) {
-            EObject eObject = objects[i];
+        for (EObject eObject : objects) {
             if (eObject instanceof StrategyEngine) {
                 if (currentEngine != null) {
                     engines.add(currentEngine);
