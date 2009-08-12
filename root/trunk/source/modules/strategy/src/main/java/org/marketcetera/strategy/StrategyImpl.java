@@ -164,6 +164,7 @@ class StrategyImpl
                 exceptionTranslation = getExecutor().interpretRuntimeException(e);
             }
             StrategyModule.log(LogEvent.warn(RUNTIME_ERROR,
+                                             e,
                                              String.valueOf(this),
                                              methodName,
                                              exceptionTranslation),

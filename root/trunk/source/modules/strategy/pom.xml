@@ -90,7 +90,6 @@
           <resolveDependencies>false</resolveDependencies>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
 </project>
