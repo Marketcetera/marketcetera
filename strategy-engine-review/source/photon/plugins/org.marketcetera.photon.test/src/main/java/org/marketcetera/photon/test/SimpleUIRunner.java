@@ -11,9 +11,9 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
 /* $License$ */
 
 /**
- * Test runner that runs UI events starts a separate UI thread. The UI thread initializes a
- * {@link Display} and runs the event loop in the Display's default
- * {@link Realm}.
+ * Test runner that runs UI events starts a separate UI thread. The UI thread
+ * initializes a {@link Display} and runs the event loop in the Display's
+ * default {@link Realm}.
  * <p>
  * Any framework method on the test class can be annotated with {@link UI} to
  * indicate it should be run on the UI thread. For example:
@@ -53,7 +53,9 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * @since $Release$
  */
 public final class SimpleUIRunner extends AbstractUIRunner {
-    
+
+    private volatile boolean mShutDown;
+
     /**
      * Constructor. Should only be called by the JUnit framework.
      * 
@@ -67,16 +69,28 @@ public final class SimpleUIRunner extends AbstractUIRunner {
     }
 
     @Override
-    protected void runEventLoop(final Display display, final CountDownLatch ready) {
+    protected void runEventLoop(final Display display,
+            final CountDownLatch ready) {
         ready.countDown();
         Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            @Override
             public void run() {
-                while (!display.isDisposed()) {
-                    if (!display.readAndDispatch()) {
-                        display.sleep();
+                while (!mShutDown) {
+                    try {
+                        if (!display.readAndDispatch()) {
+                            display.sleep();
+                        }
+                    } catch (Throwable t) {
+                        setAsyncThrowable(t);
                     }
                 }
             }
         });
+    }
+    
+    @Override
+    protected void shutDownUI(Display display) {
+        mShutDown = true;
+        display.wake();
     }
 }
