@@ -231,12 +231,13 @@
         <artifactId>google-collections</artifactId>
         <version>[1.0-rc2]</version>
       </dependency>
+      <!-- guice is an OSGi bundle. -->
       <dependency>
         <groupId>com.google</groupId>
         <artifactId>guice</artifactId>
         <version>[20090205]</version>
       </dependency>
-      <!-- guice is an OSGi bundle and guice-source is an Eclipse ready source package for it. -->
+      <!-- guice-source is an Eclipse ready source package for guice. -->
       <dependency>
         <groupId>com.google</groupId>
         <artifactId>guice-source</artifactId>
