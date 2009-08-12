@@ -173,10 +173,12 @@ FIX Agnostic order into a broker-specific FIX message. A
 <a href="#OrderFilter">filter</a> is applied on the FIX message at
 that point (possibly leading to its rejection by the ORS), which is
 then modified by
-broker-specific <a href="#MessageModifier">modifiers</a> and
-<a href="#MessageRouteManager">routes</a>. The
-altered message is then sent to QuickFIX/J for delivery to a broker
-while the ORS sends an immediate ack to the ORS Clients
+broker-specific <a href="#MessageModifier">modifiers</a>,
+<a href="#MessageRouteManager">routes</a>,
+and <a href="#PreSendMessageModifier">pre-send (a.k.a. send-only)
+modifiers</a>. The altered message is then sent to QuickFIX/J for
+delivery to a broker while the ORS persists and then sends an
+immediate ack to the appropriate ORS Clients
 (<code>PENDING_xxx</code>, where <code><i>xxx</i></code> is the
 desired operation such as <code>NEW</code>, <code>CANCEL</code>, or
 <code>REPLACE</code>).</p></li>
@@ -187,7 +189,9 @@ are usually execution reports, such as a formal ack that an order was
 received, followed by a series of fills. Such messages from brokers,
 as well as most other messages received from brokers, are first
 <a href="#MessageFilter">filtered</a> (which may lead to rejection of
-the broker's message), and then routed to the ORS Clients.</p></li>
+the broker's message), modified by
+broker-specific <a href="#ResponseMessageModifier">response
+modifiers</a>, and then routed to the ORS Clients.</p></li>
 
 </ol>
 
@@ -554,47 +558,6 @@ configuration.</p>
 
 <ul>
 
-<a name="MessageFilter"/>
-<li><p>An instance of the <code>MessageFilter</code> interface may be
-applied to every application message received by the ORS from any
-broker, and if it rejects the message (its <code>isAccepted()</code>
-method returns false), QuickFIX/J is notified of the rejection.</p>
-
-<table border="1">
-<tr>
-<td>Spring</td>
-<td><code>SpringConfig.supportedMessages</code></td>
-<td><code>server.xml</code></td>
-</tr>
-<tr>
-<td>Spring</td>
-<td><code>MessageTypeFilter</code></td>
-<td><code>filters/supported_messages.xml</code></td>
-</tr>
-</table>
-
-<p>A common choice for such a filter is <code>MessageTypeFilter</code>
-which accepts a message if its type is within a given set of messages
-types. The acceptable types are all listed in a set; messages without
-a type can be accepted or rejected.</p>
-
-<table border="1">
-<tr>
-<td>Spring</td>
-<td><code>MessageTypeFilter.acceptedMessages</code></td>
-<td><code>filters/supported_messages.xml</code></td>
-</tr>
-<tr>
-<td>Spring</td>
-<td><code>MessageTypeFilter.acceptUnknown</code></td>
-<td><code>filters/supported_messages.xml</code></td>
-</tr>
-</table>
-
-<p>The sample configuration of this filter is not enabled by default
-(the setting of the <code>supportedMessages</code> property is
-commented out).</p></li>
-
 <a name="OrderFilter"/>
 <li><p>An instance of the <code>OrderFilter</code> interface may be
 applied to every message received by the ORS from ORS Clients
@@ -793,7 +756,128 @@ suffix.</p>
 (the setting of the <code>routes</code> property is commented
 out).</p></li>
 
+<a name="PreSendMessageModifier"/>
+<li><p>A second sequence of <code>MessageModifier</code>
+implementations (in a list value that is assigned to
+the <code>messageModifiers</code> property of a
+second <code>MessageModifierManager</code> bean) may be applied to
+every message received by the ORS after
+the <a href="#MessageRouteManager">routes</a> are applied. This filter
+is specific to each broker. The difference between this sequence of
+modifiers, dubbed the <i>pre-send (a.k.a. send-only) modifiers</i> and
+the regular <a href="#MessageModifier">message modifiers</a> above is
+that the changes made by the pre-send modifiers apply <b>only</b> to
+the copy of the message sent to the broker; the ORS ack is still
+created using the message as it stood after
+the <a href="#MessageRouteManager">routes</a> are applied and before
+application of these pre-send modifiers.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringBroker.preSendModifiers</code></td>
+<td><code>brokers/broker/main.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>MessageModifierManager.messageModifiers</code></td>
+<td><code>brokers/broker/ps_modifiers.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>DefaultMessageModifier</code></td>
+<td><code>brokers/broker/ps_modifiers.xml</code></td>
+</tr>
+</table></li>
+
+<a name="MessageFilter"/>
+<li><p>An instance of the <code>MessageFilter</code> interface may be
+applied to every application message received by the ORS from any
+broker, and if it rejects the message (its <code>isAccepted()</code>
+method returns false), QuickFIX/J is notified of the rejection.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.supportedMessages</code></td>
+<td><code>server.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>MessageTypeFilter</code></td>
+<td><code>filters/supported_messages.xml</code></td>
+</tr>
+</table>
+
+<p>A common choice for such a filter is <code>MessageTypeFilter</code>
+which accepts a message if its type is within a given set of messages
+types. The acceptable types are all listed in a set; messages without
+a type can be accepted or rejected.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>MessageTypeFilter.acceptedMessages</code></td>
+<td><code>filters/supported_messages.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>MessageTypeFilter.acceptUnknown</code></td>
+<td><code>filters/supported_messages.xml</code></td>
+</tr>
+</table>
+
+<p>The sample configuration of this filter is not enabled by default
+(the setting of the <code>supportedMessages</code> property is
+commented out).</p></li>
+
+<a name="ResponseMessageModifier"/>
+<li><p>A third sequence of <code>MessageModifier</code>
+implementations (in a list value that is assigned to
+the <code>messageModifiers</code> property of a
+third <code>MessageModifierManager</code> bean) may be applied to
+every application message received by the ORS from any broker, and
+after the <a href="#MessageFilter">message filter</a> is applied. This
+filter is specific to each broker.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringBroker.responseModifiers</code></td>
+<td><code>brokers/broker/main.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>MessageModifierManager.messageModifiers</code></td>
+<td><code>brokers/broker/resp_modifiers.xml</code></td>
+</tr>
+<tr>
+<td>Spring</td>
+<td><code>DefaultMessageModifier</code></td>
+<td><code>brokers/broker/resp_modifiers.xml</code></td>
+</tr>
+</table></li>
+
 </ul>
+
+<h4>MessageModifierManager</h4>
+
+<p>The <code>MessageModifierManager</code> bean is part of several
+filters, as noted above. It is possible for advanced users to replace
+the provided <code>MessageModifierManager</code> with a subclass that
+overrides the</p>
+
+<pre>
+public void modifyMessage(RequestInfo info)
+    throws I18NException
+</pre>
+
+<p>method of <code>MessageModifierManager</code>. Consult the javadoc
+of the <code>RequestInfo</code> class (and its package javadoc) for
+additional insights on the information being made available to the
+above method. Note that the above method can even go as far as
+replacing the current QuickFIX/J message with another, completely
+different, message.</p>
 
 <a name="selector"/>
 <h3>Broker selector</h3>
