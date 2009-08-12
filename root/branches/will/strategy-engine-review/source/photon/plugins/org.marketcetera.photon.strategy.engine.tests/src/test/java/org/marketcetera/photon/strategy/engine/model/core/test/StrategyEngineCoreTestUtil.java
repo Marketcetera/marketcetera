@@ -14,6 +14,15 @@ import org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineCon
 
 import com.google.common.collect.Lists;
 
+/* $License$ */
+
+/**
+ * Utilities for testing with the strategy engine core model. 
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
 public class StrategyEngineCoreTestUtil {
 
     private StrategyEngineCoreTestUtil() {

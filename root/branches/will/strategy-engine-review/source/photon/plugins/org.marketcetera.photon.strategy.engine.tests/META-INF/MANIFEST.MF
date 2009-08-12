@@ -7,5 +7,3 @@ Bundle-Version: 1.6.0
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.marketcetera.photon.strategy.engine.model.core.test
-Import-Package: junit.framework,
- junit.textui
