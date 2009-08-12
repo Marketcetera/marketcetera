@@ -1,0 +1,26 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Equities", :action_name => "List Equities", :top_level_controller => @controller.controller_name } %>
+<h1>List Equities</h1>
+
+<table>
+  <tr>
+    <th>Symbol</th>
+    <th>Description</th>
+    <th colspan="3"/>
+  </tr>
+  
+<% i=0
+for equity in @equities %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%>>
+    
+    <% if equity.m_symbol != nil  %>
+     <td><%= equity_symbol_link(equity) %></td>
+    <% end %>
+
+    <td><%= equity.description %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => equity, :controller_name => 'equities'} %>
+  </tr>
+<% end %>
+</table>
+
+<%= pagination_links(@equity_pages) %> 

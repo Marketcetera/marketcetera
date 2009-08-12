@@ -1,0 +1,172 @@
+<body>
+<p>
+    Strategy Agent provides an environment for a collection of modules to run
+    and participate in data flows.
+</p>
+<h3>Command Line</h3>
+<pre>
+Syntax:
+        strategyagent [commands_file]
+</pre>
+<p>
+    The Strategy agent optionally accepts a file containing a limited set
+    of commands that are executed as soon as the agent is started.
+</p>
+<p>
+    Once started, the strategy agent waits until stopped. To shutdown the Strategy
+    Agent, simply kill the process: it has appropriate shutdown hooks
+    registered to stop all its activity before it shuts down.
+</p>
+<p>
+    The commands_file contains one command per line. Commands cannot span
+    multiple lines. Each line has a command name followed by a semicolon ';',
+    followed by command specific syntax to supply parameters to the particular
+    command.
+    Lines beginning with '#' character and empty lines
+    are ignored. The following commands are supported in the commands file:
+</p>
+<ul>
+    <li>createModule</li>
+    <li>startModule</li>
+    <li>createDataFlow</li>
+</ul>
+<br/>
+<h3>createModule</h3>
+<pre>
+Syntax:
+        createModule;providerURN;create_parameters
+</pre>
+<ul>
+    <li><code>providerURN</code> is the URN of the module provider whose instance
+    is being created.</li>
+    <li><code>create_parameters</code> is the list of parameters that are being
+    supplied to create the module instance per the syntax specified in
+    {@link org.marketcetera.module.ModuleManagerMXBean} documentation.</li>
+</ul>    
+
+<p>
+    For example:
+</p>
+<pre>
+    # Create a module instance of provider metc:surface:color
+    # First parameter is a module instance URN value
+    #       metc:surface:color:red
+    # Second parameter is a URL value
+    #       http://red.com
+    # Third parameters is a string value
+    #       username
+    # Fourth parameter is a double value
+    #       12.43
+    createModule;metc:surface:color;metc:surface:color:red,http://red.com,username,12.43
+
+</pre>
+<br/>
+<h3>startModule</h3>
+<pre>
+Syntax:
+        startModule;instanceURN
+</pre>
+<ul>
+    <li><code>instanceURN</code> is the URN of the module instance that
+        is being started.</li>
+</ul>
+<p>
+    For example:
+</p>
+<pre>
+    # Starts a module instance with the URN metc:surface:color:red
+    startModule;metc:surface:color:red
+
+</pre>
+<br/>
+<h3>createDataFlow</h3>
+<pre>
+Syntax:
+        createDataFlow;data_flow_request
+</pre>
+<ul>
+    <li><code>data_flow_request</code> is a string specifying the detail
+        of the data flow that is being setup, per the syntax specified in the
+    {@link org.marketcetera.module.ModuleManagerMXBean} documentation.</li>
+</ul>
+<p>
+    Do note that since this command invokes the
+    {@link org.marketcetera.module.ModuleManagerMXBean#createDataFlow(String)}
+    API to create the data flow, the sink module is always automatically
+    appended to every data flow being created.
+</p>
+<p>
+    For example:
+</p>
+<pre>
+    # Sets up a data flow with the module instance matching the URN
+    # 'metc:mdata' emitting data based on the request parameter 'symbol=ibm',
+    # the strategy module instance matching the URN 'metc:strategy::vegas'
+    # processing the data and the sink module receiving all the data.
+    createDataFlow;metc:mdata;symbol=ibm^metc:strategy::vegas
+
+</pre>
+<br/>
+<h3>Module Providers</h3>
+<p>
+    The module jars can be added to the
+    agent by copying them into the <code>modules/jars</code> sub-directory.
+    The Strategy Agent discovers all the jars when it's initialized. If new
+    jars are added after the agent has been started, the strategy agent
+    can be asked to discover them by invoking the
+    {@link org.marketcetera.module.ModuleManagerMXBean#refresh()} API via
+    JMX.
+</p>
+<h3>Classloading</h3>
+<p>
+    The strategy agent uses a {@link java.net.URLClassLoader} instance to
+    load provider classes from the <code>modules/jars</code> sub-directory.
+    Since a custom classloader is used, the system classloader cannot find
+    any of the provider classes.
+</p>
+<p>
+    This is usually not a problem unless the provider code depends on the thread's
+    context classloader to be set to a classloader that is able to load all
+    the provider classes. Many third party libraries do depend on the thread context
+    classloader value to be able to correctly load classes.
+</p>
+<p>
+    The strategy agent sets the thread context classloader to the custom
+    classloader that is used to load the providers before loading any of the
+    provider classes. This ensures that the provider code is invoked with
+    the thread context classloader set to the same classloader that loaded it.
+    Moreover, the module manager ensures that the thread context classloader
+    is set to the custom classloader when any module manager MXBean operations
+    or factory / instance MXBean operations are invoked.
+</p>
+<h3>Module Configuration</h3>
+<p>
+    The Strategy Agent uses the
+    {@link org.marketcetera.module.PropertiesConfigurationProvider} to
+    provide default property values to the module factories and instances.
+    The properties files, having appropriate names and key-value pairs
+    as described in the property configuration provider documentation,
+    can be copied into the <code>modules/conf</code> sub-directory.
+</p>
+<h3>Management and Monitoring</h3>
+<p>
+    The primary means of controlling the Strategy Agent is via JMX. Once
+    the strategy agent is up and running, clients can connect to its platform
+    MBean server and control its operation via the
+    {@link org.marketcetera.module.ModuleManagerMXBean} interface.
+</p>
+<h3>Logging</h3>
+<p>
+    The Strategy Agent is configured to print informational messages
+    from the agent and all the data received by the sink module to its console.
+    The rest of the messages are copied to its log file in the <code>log</code>
+    sub-directory.
+    The logging configuration is done via the <code>log4j.properties</code>
+    file in the <code>conf</code> sub-directory.
+    The category names for Strategy Agent and sink messages are
+    <code>org.marketcetera.strategyagent.StrategyAgent</code> and
+    <code>SINK</code>, the logging configuration for these two categories
+    can be altered to change what messages are printed on the strategyagent
+    console.
+</p>
+</body>
