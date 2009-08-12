@@ -21,7 +21,8 @@ public class VersionIdTest
         new VersionId();
 
 
-    static {
+    static
+    {
         TEST_VERSION.setValue("testVersion");
         TEST_VERSION_D.setValue("testVersionD");
     }

@@ -44,7 +44,8 @@ public class RemoteCallTestBase
         new SessionHolder<Object>(TEST_USER,TEST_CONTEXT);
 
 
-    static {
+    static
+    {
         TEST_MANAGER.put(TEST_SESSION,TEST_HOLDER);
     }
 
