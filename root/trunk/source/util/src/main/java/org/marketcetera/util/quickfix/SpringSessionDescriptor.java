@@ -75,7 +75,8 @@ public class SpringSessionDescriptor
      * Initialization.
      */ 
 
-    static {
+    static
+    {
         DATA_DICTIONARY_MAP.put
             (FixVersions.BEGINSTRING_FIX40,"FIX40.xml"); //$NON-NLS-1$
         DATA_DICTIONARY_MAP.put

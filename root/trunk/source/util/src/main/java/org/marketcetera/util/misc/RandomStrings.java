@@ -79,7 +79,8 @@ public final class RandomStrings
      * Initialization.
      */
 
-    static {
+    static
+    {
         sGenerator=new Random();
         resetGeneratorRandom();
     }
