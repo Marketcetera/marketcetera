@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.marketcetera.photon.commons.ui.databinding;
 
 import java.util.ArrayList;
