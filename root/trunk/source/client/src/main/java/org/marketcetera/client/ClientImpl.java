@@ -730,7 +730,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
         try {
             if (mTradeMessageListener!=null) {
-                mTradeMessageListener.destroy();
+                mTradeMessageListener.shutdown();
             }
         } catch (Exception ex) {
             SLF4JLoggerProxy.debug
@@ -739,7 +739,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         } finally {
             try {
                 if (mBrokerStatusListener!=null) {
-                    mBrokerStatusListener.destroy();
+                    mBrokerStatusListener.shutdown();
                 }
             } catch (Exception ex) {
                 SLF4JLoggerProxy.debug

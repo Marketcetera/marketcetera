@@ -104,7 +104,7 @@ public class MockServer {
         mServiceInterface = mServer.publish(mServiceImpl,Service.class);
     }
     public void close() {
-        mOrderEnvelopeListener.destroy();
+        mOrderEnvelopeListener.shutdown();
         mContext.close();
         mServiceInterface.stop();
         mServer.stop();
