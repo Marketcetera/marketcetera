@@ -1123,6 +1123,7 @@ public abstract class AbstractRunningStrategy
             } catch (Exception e) {
                 if(strategy.getExecutor() != null) {
                     StrategyModule.log(LogEvent.warn(CALLBACK_ERROR,
+                                                     e,
                                                      String.valueOf(strategy),
                                                      strategy.getExecutor().interpretRuntimeException(e)),
                                        strategy);
