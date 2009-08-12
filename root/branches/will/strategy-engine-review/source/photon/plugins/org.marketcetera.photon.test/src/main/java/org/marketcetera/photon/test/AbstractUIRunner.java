@@ -54,7 +54,7 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
 
     private final Set<FrameworkMethod> mUIMethods;
     private final AtomicReference<Throwable> mAsyncThrowable = new AtomicReference<Throwable>();
-    private static final ExecutorService sTestUIThreadExecutor;
+    public static final ExecutorService sTestUIThreadExecutor;
     private static final Display sDisplay;
     private Future<?> mEventLoopFuture;
 

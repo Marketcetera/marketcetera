@@ -1,5 +1,8 @@
 package org.marketcetera.photon.tests;
 
+import java.util.concurrent.Callable;
+
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.testing.ITestHarness;
 import org.eclipse.ui.testing.TestableObject;
@@ -8,7 +11,8 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.AllTests;
-import org.marketcetera.photon.Application;
+import org.marketcetera.photon.ApplicationWorkbenchAdvisor;
+import org.marketcetera.photon.test.AbstractUIRunner;
 
 /* $License$ */
 
@@ -44,7 +48,14 @@ public class PhotonRunner extends Runner implements ITestHarness {
         mTestableObject = PlatformUI.getTestableObject();
         mTestableObject.setTestHarness(this);
         try {
-            new Application().start(null);
+            AbstractUIRunner.sTestUIThreadExecutor.submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    PlatformUI.createAndRunWorkbench(Display.getCurrent(),
+                            new ApplicationWorkbenchAdvisor());
+                    return null;
+                }
+            }).get();
         } catch (Exception e) {
             notifier.fireTestFailure(new Failure(mDelegatedRunner
                     .getDescription(), e));
