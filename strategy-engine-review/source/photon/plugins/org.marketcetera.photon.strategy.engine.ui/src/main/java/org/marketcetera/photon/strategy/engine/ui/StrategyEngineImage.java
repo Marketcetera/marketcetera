@@ -2,7 +2,18 @@ package org.marketcetera.photon.strategy.engine.ui;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.marketcetera.photon.commons.ui.EclipseImages;
+import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
+/**
+ * Images used in the strategy engine UI.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$")
 public enum StrategyEngineImage {
     
     /**
