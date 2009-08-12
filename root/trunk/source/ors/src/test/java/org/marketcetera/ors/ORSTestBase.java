@@ -2,8 +2,8 @@ package org.marketcetera.ors;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.exchange.Event;
@@ -271,15 +271,15 @@ public class ORSTestBase
     }
 
 
-    @BeforeClass
-    public void setupClassORSTestBase()
+    @Before
+    public void setupORSTestBase()
         throws Exception
     {
         startORS();
     }
 
-    @AfterClass
-    public void tearDownClassORSTestBase()
+    @After
+    public void tearDownORSTestBase()
         throws Exception
     {
         stopORS();
