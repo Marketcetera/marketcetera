@@ -19,6 +19,15 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesContentProvider;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesLabelProvider;
 
+/* $License$ */
+
+/**
+ * Utility for tests that need a tree of strategy engines using {@link StrategyEnginesContentProvider}.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
 public class StrategyEngineTreeTestHelper {
 
     private final ApplicationWindow mWindow;
