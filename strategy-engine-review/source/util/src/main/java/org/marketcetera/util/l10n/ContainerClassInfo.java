@@ -2,9 +2,11 @@ package org.marketcetera.util.l10n;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
@@ -33,7 +35,7 @@ public class ContainerClassInfo
 
     private Class<?> mContainer;
     private I18NMessageProvider mProvider;
-    private I18NMessageInfo[] mMessageInfo;
+    private List<MessageInfo> mMessageInfo;
 
 
     // CONSTRUCTORS.
@@ -53,8 +55,7 @@ public class ContainerClassInfo
         throws I18NException
     {
         mContainer=container;
-        HashMap<String,I18NMessageInfo> messageInfo=
-            new HashMap<String,I18NMessageInfo>();
+        mMessageInfo=new LinkedList<MessageInfo>();
         try {
             for (Field field:ReflectUtils.getAllFields(getContainer())) {
                 String name=field.getName();
@@ -64,21 +65,18 @@ public class ContainerClassInfo
                 }
                 Class<?> type=field.getType();
                 if (I18NMessage.class.isAssignableFrom(type)) {
+                    field.setAccessible(true);
                     I18NMessage message=
                         ((I18NMessage)(field.get(getContainer())));
                     if (message==null) {
                         Messages.NULL_FIELD_IGNORED.info(this,name);
                         continue;
                     }
-                    String key=message.getMessageId()+"."+ //$NON-NLS-1$
-                        message.getEntryId();
-                    messageInfo.put
-                        (key,new I18NMessageInfo
-                         (key,message.getParamCount(),message));
+                    addMessage(message);
                 }
                 if (I18NMessageProvider.class.isAssignableFrom(type)) {
-                    mProvider=((I18NMessageProvider)
-                               (field.get(getContainer())));
+                    setProvider
+                        ((I18NMessageProvider)(field.get(getContainer())));
                 }
             }
         } catch (IllegalAccessException ex) {
@@ -91,12 +89,31 @@ public class ContainerClassInfo
                 (new I18NBoundMessage1P
                  (Messages.MISSING_PROVIDER,getContainer().getName()));
         }
-        mMessageInfo=messageInfo.values().toArray
-            (I18NMessageInfo.EMPTY_ARRAY);
     }
 
 
     // INSTANCE METHODS.
+
+    /**
+     * Adds the given message to the receiver's meta-information.
+     *
+     * @param message The message.
+     *
+     * @throws I18NException Thrown if addition of the message fails
+     * due to the message having a different message provider than
+     * other messages in the receiver's container class.
+     */
+
+    protected void addMessage
+        (I18NMessage message)
+        throws I18NException
+    {
+        setProvider(message.getMessageProvider());
+        mMessageInfo.add
+            (new I18NMessageInfo
+             (message.getMessageId()+"."+ //$NON-NLS-1$
+              message.getEntryId(),message.getParamCount(),message));
+    }
 
     /**
      * Returns the receiver's container class.
@@ -107,6 +124,29 @@ public class ContainerClassInfo
     public Class<?> getContainer()
     {
         return mContainer;
+    }
+
+    /**
+     * Sets the internationalized message provider declared in the
+     * receiver's container class to the given one.
+     *
+     * @param provider The provider.
+     *
+     * @throws I18NException Thrown if the provider has already been
+     * set to a different one.
+     */
+
+    private void setProvider
+        (I18NMessageProvider provider)
+        throws I18NException
+    {
+        if ((getProvider()!=null) && (!getProvider().equals(provider))) {
+            throw new I18NException
+                (new I18NBoundMessage3P
+                 (Messages.MULTIPLE_PROVIDERS,getContainer().getName(),
+                  getProvider().getProviderId(),provider.getProviderId()));
+        }
+        mProvider=provider;
     }
 
     /**
@@ -125,7 +165,7 @@ public class ContainerClassInfo
     // MessageInfoProvider.
 
     @Override
-    public I18NMessageInfo[] getMessageInfo()
+    public List<MessageInfo> getMessageInfo()
     {
         return mMessageInfo;
     }

@@ -46,6 +46,8 @@ public interface Messages
         new I18NMessage1P(LOGGER,"introspection_failed"); //$NON-NLS-1$
     static final I18NMessage1P MISSING_PROVIDER=
         new I18NMessage1P(LOGGER,"missing_provider"); //$NON-NLS-1$
+    static final I18NMessage3P MULTIPLE_PROVIDERS=
+        new I18NMessage3P(LOGGER,"multiple_providers"); //$NON-NLS-1$
     static final I18NMessage1P NONEXISTENT_RESOURCE=
         new I18NMessage1P(LOGGER,"nonexistent_resource"); //$NON-NLS-1$
     static final I18NMessage1P LOADING_FAILED=

@@ -2,6 +2,7 @@ package org.marketcetera.util.l10n;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.util.except.I18NException;
@@ -32,15 +33,15 @@ public class MessageComparator
 
     /**
      * Creates a new comparator for the given meta-information. For
-     * both parameters, the order of array elements is unimportant.
+     * both parameters, the order of list elements is unimportant.
      *
      * @param srcInfo The source meta-information.
      * @param dstInfo The destination meta-information.
      */
 
     public MessageComparator
-        (MessageInfo[] srcInfo,
-         MessageInfo[] dstInfo)
+        (List<MessageInfo> srcInfo,
+         List<MessageInfo> dstInfo)
     {
 
         // Analyze source and destination.
@@ -120,6 +121,24 @@ public class MessageComparator
     }
 
     /**
+     * Creates a new comparator for the given container class
+     * meta-information and the properties file deduced from the
+     * container's message provider.
+     *
+     * @param classInfo The meta-information of a container class.
+     *
+     * @throws I18NException Thrown if there is a problem obtaining
+     * the meta-information of the properties file.
+     */
+
+    public MessageComparator
+        (ContainerClassInfo classInfo)
+        throws I18NException
+    {
+        this(classInfo,Locale.ROOT);
+    }
+
+    /**
      * Creates a new comparator for the given container class and the
      * properties file deduced from the class's message provider and
      * the given locale.
@@ -157,26 +176,26 @@ public class MessageComparator
         (Class<?> container)
         throws I18NException
     {
-        this(container,Locale.ROOT);
+        this(new ContainerClassInfo(container));
     }
 
 
     // INSTANCE METHODS.
 
     /**
-     * Converts the given meta-information array into a map, with the
+     * Converts the given meta-information list into a map, with the
      * map keys being the message keys.
      *
-     * @param infoArray The meta-information in array form.
+     * @param infoList The meta-information in list form.
      *
      * @return The map.
      */
 
     private HashMap<String,MessageInfo> toHashMap
-        (MessageInfo[] infoArray)
+        (List<MessageInfo> infoList)
     {
         HashMap<String,MessageInfo> result=new HashMap<String,MessageInfo>();
-        for (MessageInfo info:infoArray) {
+        for (MessageInfo info:infoList) {
             result.put(info.getKey(),info);
         }
         return result;

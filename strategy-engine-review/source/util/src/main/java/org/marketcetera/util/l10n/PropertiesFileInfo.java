@@ -3,7 +3,8 @@ package org.marketcetera.util.l10n;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -41,7 +42,7 @@ public class PropertiesFileInfo
 
     private I18NMessageProvider mProvider;
     private Locale mLocale;
-    private PropertyMessageInfo[] mMessageInfo;
+    private List<MessageInfo> mMessageInfo;
 
 
     // CONSTRUCTORS.
@@ -96,8 +97,7 @@ public class PropertiesFileInfo
 
         // Analyze file entries.
 
-        HashMap<String,PropertyMessageInfo> messageInfo=
-            new HashMap<String,PropertyMessageInfo>();
+        mMessageInfo=new LinkedList<MessageInfo>();
         for (String key:properties.stringPropertyNames()) {
             String messageText=properties.getProperty(key);
             try {
@@ -114,11 +114,9 @@ public class PropertiesFileInfo
                     maxIndex=index;
                 }
             }
-            messageInfo.put
-                (key,new PropertyMessageInfo(key,maxIndex+1,messageText));
+            mMessageInfo.add
+                (new PropertyMessageInfo(key,maxIndex+1,messageText));
         }
-        mMessageInfo=messageInfo.values().toArray
-            (PropertyMessageInfo.EMPTY_ARRAY);
     }
 
     /**
@@ -168,7 +166,7 @@ public class PropertiesFileInfo
     // MessageInfoProvider.
 
     @Override
-    public PropertyMessageInfo[] getMessageInfo()
+    public List<MessageInfo> getMessageInfo()
     {
         return mMessageInfo;
     }
