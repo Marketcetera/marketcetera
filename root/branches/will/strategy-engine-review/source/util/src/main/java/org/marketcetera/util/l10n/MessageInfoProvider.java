@@ -1,5 +1,6 @@
 package org.marketcetera.util.l10n;
 
+import java.util.List;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -21,5 +22,5 @@ public interface MessageInfoProvider
      * @return The meta-information.
      */
 
-    MessageInfo[] getMessageInfo();
+    List<MessageInfo> getMessageInfo();
 }

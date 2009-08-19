@@ -25,8 +25,10 @@ public class MessageComparatorTest
     private static interface CorrectMessages
         extends TestMessages
     {
+        @SuppressWarnings("unused")
         static final I18NMessage0P B1_TTL=
             new I18NMessage0P(LOGGER,"b1","ttl");
+        @SuppressWarnings("unused")
         static final I18NMessage1P B2_TTL=
             new I18NMessage1P(LOGGER,"b2","ttl");
     }
