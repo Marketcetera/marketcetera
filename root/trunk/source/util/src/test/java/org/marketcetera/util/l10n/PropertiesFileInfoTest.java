@@ -53,7 +53,7 @@ public class PropertiesFileInfoTest
                 ("b1.ttl",0,"B Text"),
                 new PropertyMessageInfo
                 ("b2.ttl",1,"B Text {0,date,full}")
-            },info.getMessageInfo());
+            },info.getMessageInfo().toArray(PropertyMessageInfo.EMPTY_ARRAY));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class PropertiesFileInfoTest
                 ("m2.msg",2,HELLO_GR+" {1} {1} {1}"),
                 new PropertyMessageInfo
                 ("m3.msg",5,"{0}: {1,choice,0#|1#{2}}{3,choice,0#|1#({4})}")
-            },info.getMessageInfo());
+            },info.getMessageInfo().toArray(PropertyMessageInfo.EMPTY_ARRAY));
     }
 
     @Test
