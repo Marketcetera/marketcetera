@@ -4,10 +4,15 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
 import org.marketcetera.photon.test.ExpectedFailure;
+import org.marketcetera.photon.test.PhotonTestBase;
 
 /* $License$ */
 
@@ -18,7 +23,7 @@ import org.marketcetera.photon.test.ExpectedFailure;
  * @version $Id$
  * @since $Release$
  */
-public class ExceptionUtilsTest {
+public class ExceptionUtilsTest extends PhotonTestBase {
 
     @Test
     public void testLaunderThrowable() throws Exception {
@@ -44,5 +49,54 @@ public class ExceptionUtilsTest {
         assertThat(ExceptionUtils.launderThrowable(runtime),
                 sameInstance(runtime));
     }
+    
+    @Test
+    public void testLaunderedGet() throws Exception {
+        new ExpectedFailure<RuntimeException>("xyz") {
+            @Override
+            protected void run() throws Exception {
+                ExceptionUtils.launderedGet(new ImmediateFuture<Void>(new RuntimeException("xyz")));
+            }
+        };
+    }
+    
+    public class ImmediateFuture<T> implements Future<T> {
 
+        private final T result;
+        private final Exception exception;
+
+        public ImmediateFuture(T result) {
+            this.result = result;
+            this.exception = null;
+        }
+
+        public ImmediateFuture(Exception ex) {
+            this.result = null;
+            this.exception = ex;
+        }
+
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return false;
+        }
+
+        public T get() throws InterruptedException, ExecutionException {
+            if (exception != null){
+                throw new ExecutionException(exception);
+            }
+            return result;
+        }
+
+        public T get(long timeout, TimeUnit unit) throws InterruptedException,
+                ExecutionException, TimeoutException {
+            return get();
+        }
+
+        public boolean isCancelled() {
+            return false;
+        }
+
+        public boolean isDone() {
+            return true;
+        }
+    }
 }

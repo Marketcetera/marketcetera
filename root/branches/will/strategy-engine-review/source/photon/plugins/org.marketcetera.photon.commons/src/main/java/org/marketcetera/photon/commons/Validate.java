@@ -41,9 +41,19 @@ public final class Validate {
      */
     public static void notNull(Object... objects) {
         for (int i = 0; i < objects.length; i += 2) {
-            if (i + 1 == objects.length || !(objects[i + 1] instanceof String)) {
+            if (i + 1 == objects.length) {
                 throw new IllegalArgumentException(
-                        "improper usage of Validate.notNull"); //$NON-NLS-1$
+                        MessageFormat
+                                .format(
+                                        "improper usage of Validate.notNull: parameter at index {0} has no description", //$NON-NLS-1$
+                                        i));
+            }
+            if (!(objects[i + 1] instanceof String)) {
+                throw new IllegalArgumentException(
+                        MessageFormat
+                                .format(
+                                        "improper usage of Validate.notNull: parameter at index {0} is not a String", //$NON-NLS-1$
+                                        i + 1));
             }
             if (objects[i] == null) {
                 throw new IllegalArgumentException(MessageFormat.format(
@@ -72,8 +82,10 @@ public final class Validate {
      * 
      * @param array
      *            the array to validate
+     * @param description
+     *            the description of the array for error messages
      * @throws IllegalArgumentException
-     *             if array is null, or any object in array is null
+     *             if array is null, or any array element is null
      */
     public static void noNullElements(Object[] array, String description) {
         Validate.notNull(array, description);
@@ -91,8 +103,10 @@ public final class Validate {
      * 
      * @param collection
      *            the collection to validate
+     * @param description
+     *            the description of the collection for error messages
      * @throws IllegalArgumentException
-     *             if collection is null, or any object in collection is null
+     *             if collection is null, or any collection element is null
      */
     public static void noNullElements(Collection<?> collection,
             String description) {
@@ -102,7 +116,7 @@ public final class Validate {
 
     /**
      * Validates an array of objects is not empty, throwing
-     * IllegalArgumentException.
+     * IllegalArgumentException otherwise.
      * <p>
      * For example:
      * 
@@ -120,6 +134,8 @@ public final class Validate {
      * 
      * @param array
      *            the array to validate
+     * @param description
+     *            the description of the array for error messages
      * @throws IllegalArgumentException
      *             if array is null or empty
      */
@@ -137,6 +153,8 @@ public final class Validate {
      * 
      * @param collection
      *            the collection to validate
+     * @param description
+     *            the description of the collection for error messages
      * @throws IllegalArgumentException
      *             if collection is null or empty
      */
@@ -156,6 +174,8 @@ public final class Validate {
      * 
      * @param array
      *            the array to validate
+     * @param description
+     *            the description of the array for error messages
      * @throws IllegalArgumentException
      *             if array is null, empty, or has null elements
      */
@@ -170,6 +190,8 @@ public final class Validate {
      * 
      * @param collection
      *            the collection to validate
+     * @param description
+     *            the description of the collection for error messages
      * @throws IllegalArgumentException
      *             if collection is null, empty, or has null elements
      */

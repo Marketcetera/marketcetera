@@ -7,6 +7,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.marketcetera.photon.test.ExpectedIllegalArgumentException;
+import org.marketcetera.photon.test.PhotonTestBase;
 
 /* $License$ */
 
@@ -17,17 +18,17 @@ import org.marketcetera.photon.test.ExpectedIllegalArgumentException;
  * @version $Id$
  * @since $Release$
  */
-public class ValidateTest {
+public class ValidateTest extends PhotonTestBase {
 
     @Test
     public void testNotNull() throws Exception {
-        new ImproperUsageFailure() {
+        new ImproperUsageFailure2(1) {
             @Override
             protected void run() throws Exception {
                 Validate.notNull(null, null);
             }
         };
-        new ImproperUsageFailure() {
+        new ImproperUsageFailure1(2) {
             @Override
             protected void run() throws Exception {
                 Validate.notNull("ABC", "ABC", "ABC");
@@ -45,11 +46,12 @@ public class ValidateTest {
                 Validate.notNull("a", "a", null, "b");
             }
         };
+        Validate.notNull("a", "myParam");
     }
-    
+
     @Test
     public void testNoNullElements() throws Exception {
-        new ImproperUsageFailure() {
+        new ImproperUsageFailure2(1) {
             @Override
             protected void run() throws Exception {
                 Validate.noNullElements((Object[]) null, null);
@@ -73,7 +75,8 @@ public class ValidateTest {
                 Validate.noNullElements(new String[] { "xyz", null }, "s");
             }
         };
-        new ImproperUsageFailure() {
+        Validate.noNullElements(new String[] { "a" }, "myParam");
+        new ImproperUsageFailure2(1) {
             @Override
             protected void run() throws Exception {
                 Validate.noNullElements((Collection<?>) null, null);
@@ -97,11 +100,12 @@ public class ValidateTest {
                 Validate.noNullElements(Arrays.asList("x", null), "s");
             }
         };
+        Validate.noNullElements(Collections.singleton("s"), "myParam");
     }
-    
+
     @Test
     public void testNotEmpty() throws Exception {
-        new ImproperUsageFailure() {
+        new ImproperUsageFailure2(1) {
             @Override
             protected void run() throws Exception {
                 Validate.notEmpty((Object[]) null, null);
@@ -119,7 +123,8 @@ public class ValidateTest {
                 Validate.notEmpty(new Object[] {}, "o");
             }
         };
-        new ImproperUsageFailure() {
+        Validate.notEmpty(new String[] { "a" }, "myParam");
+        new ImproperUsageFailure2(1) {
             @Override
             protected void run() throws Exception {
                 Validate.notEmpty((Collection<?>) null, null);
@@ -137,11 +142,12 @@ public class ValidateTest {
                 Validate.notEmpty(Collections.emptyList(), "o");
             }
         };
+        Validate.notEmpty(Collections.singleton("s"), "myParam");
     }
-    
+
     @Test
     public void testNonNullElements() throws Exception {
-        new ImproperUsageFailure() {
+        new ImproperUsageFailure2(1) {
             @Override
             protected void run() throws Exception {
                 Validate.nonNullElements((Object[]) null, null);
@@ -165,7 +171,8 @@ public class ValidateTest {
                 Validate.nonNullElements(new Object[] { null }, "o");
             }
         };
-        new ImproperUsageFailure() {
+        Validate.nonNullElements(new String[] { "a" }, "myParam");
+        new ImproperUsageFailure2(1) {
             @Override
             protected void run() throws Exception {
                 Validate.nonNullElements((Collection<?>) null, null);
@@ -189,6 +196,7 @@ public class ValidateTest {
                 Validate.nonNullElements(Collections.singleton(null), "o");
             }
         };
+        Validate.nonNullElements(Collections.singleton("s"), "myParam");
     }
 
     /**
@@ -202,12 +210,10 @@ public class ValidateTest {
          * 
          * @param description
          *            the argument being checked
-         * 
          * @throws Exception
          *             if there was an unexpected failure
          */
-        public ExpectedNullArgumentFailure(String description)
-                throws Exception {
+        public ExpectedNullArgumentFailure(String description) throws Exception {
             super(MessageFormat.format("''{0}'' must not be null", description));
         }
     }
@@ -223,12 +229,10 @@ public class ValidateTest {
          * 
          * @param description
          *            the argument being checked
-         * 
          * @throws Exception
          *             if there was an unexpected failure
          */
-        public ExpectedNullElementFailure(String description)
-                throws Exception {
+        public ExpectedNullElementFailure(String description) throws Exception {
             super(MessageFormat.format("''{0}'' must not have null elements",
                     description));
         }
@@ -245,25 +249,54 @@ public class ValidateTest {
          * 
          * @param description
          *            the argument being checked
-         * 
          * @throws Exception
          *             if there was an unexpected failure
          */
-        public ExpectedEmptyFailure(String description)
-                throws Exception {
-            super(MessageFormat.format("''{0}'' must not be empty",
-                    description));
+        public ExpectedEmptyFailure(String description) throws Exception {
+            super(MessageFormat
+                    .format("''{0}'' must not be empty", description));
         }
     }
 
     /**
-     * Utility to test implementation details.
+     * Utility to test internal description checks.
      */
-    private abstract static class ImproperUsageFailure extends
+    private abstract static class ImproperUsageFailure1 extends
             ExpectedIllegalArgumentException {
 
-        public ImproperUsageFailure() throws Exception {
-            super("improper usage of Validate.notNull");
+        /**
+         * Constructor.
+         * 
+         * @param index
+         *            the index of the parameter missing a description throws
+         * @Exception if there was an unexpected failure
+         */
+        public ImproperUsageFailure1(int index) throws Exception {
+            super(
+                    MessageFormat
+                            .format(
+                                    "improper usage of Validate.notNull: parameter at index {0} has no description",
+                                    index));
+        }
+    }
+
+    /**
+     * Utility to test internal description checks.
+     */
+    private abstract static class ImproperUsageFailure2 extends
+            ExpectedIllegalArgumentException {
+
+        /**
+         * @param index
+         *            the index of the invalid description
+         * @Exception if there was an unexpected failure
+         */
+        public ImproperUsageFailure2(int index) throws Exception {
+            super(
+                    MessageFormat
+                            .format(
+                                    "improper usage of Validate.notNull: parameter at index {0} is not a String",
+                                    index));
         }
     }
 
