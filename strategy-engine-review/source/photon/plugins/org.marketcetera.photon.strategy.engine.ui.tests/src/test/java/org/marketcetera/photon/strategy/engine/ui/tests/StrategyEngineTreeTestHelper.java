@@ -22,8 +22,9 @@ import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesLabelProvider;
 /* $License$ */
 
 /**
- * Utility for tests that need a tree of strategy engines using {@link StrategyEnginesContentProvider}.
- *
+ * Utility for tests that need a tree of strategy engines using
+ * {@link StrategyEnginesContentProvider}.
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
@@ -58,9 +59,7 @@ public class StrategyEngineTreeTestHelper {
 
     protected IBaseLabelProvider createLabelProvider(IObservableSet elements) {
         checkThread();
-        final StrategyEnginesLabelProvider provider = new StrategyEnginesLabelProvider();
-        provider.track(elements);
-        return provider;
+        return StrategyEnginesLabelProvider.createAndTrack(elements);
     }
 
     public void openWindow() {

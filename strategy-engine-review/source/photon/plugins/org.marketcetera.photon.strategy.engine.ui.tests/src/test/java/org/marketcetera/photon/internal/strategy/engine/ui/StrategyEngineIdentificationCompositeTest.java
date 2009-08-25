@@ -14,11 +14,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.photon.commons.ui.databinding.DataBindingTestUtils;
 import org.marketcetera.photon.commons.ui.databinding.SWTBotControlDecoration;
-import org.marketcetera.photon.internal.strategy.engine.ui.StrategyEngineIdentificationComposite;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
 import org.marketcetera.photon.test.AbstractUIRunner;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
@@ -33,7 +33,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class StrategyEngineIdentificationCompositeTest {
+public class StrategyEngineIdentificationCompositeTest extends PhotonTestBase {
 
     private final SWTBot mBot = new SWTBot();
     private final StrategyEngine mStrategyEngine = StrategyEngineCoreFactory.eINSTANCE
@@ -69,13 +69,13 @@ public class StrategyEngineIdentificationCompositeTest {
         createAndOpenWindow();
         DataBindingTestUtils.testRequiredText(mBot, mStrategyEngine,
                 StrategyEngineCorePackage.Literals.STRATEGY_ENGINE__NAME,
-                "Name", "The engine name");
+                "Name", "The engine name", "abc");
         DataBindingTestUtils
                 .testOptionalText(
                         mBot,
                         mStrategyEngine,
                         StrategyEngineCorePackage.Literals.STRATEGY_ENGINE__DESCRIPTION,
-                        "Description", "The engine description");
+                        "Description", "The engine description", "abc");
     }
 
     @Test
@@ -95,8 +95,15 @@ public class StrategyEngineIdentificationCompositeTest {
         mStrategyEngine.setName("Engine");
         mStrategyEngine.setDescription("An engine");
         createAndOpenWindow();
-        final SWTBotText name = mBot.textWithLabel("Name:");
-        new SWTBotControlDecoration(name).assertHidden();
-        name.setText("XYZ");
+        testReadOnlyText("Name", "Engine");
+        testReadOnlyText("Description", "An engine");
+    }
+
+    private void testReadOnlyText(String label, String value) {
+        SWTBotText text = mBot.textWithLabel(label + ":");
+        assertThat(text.getText(), is(value));
+        text.typeText("abc");
+        assertThat(text.getText(), is(value));
+        assertThat(text.isEnabled(), is(true));
     }
 }

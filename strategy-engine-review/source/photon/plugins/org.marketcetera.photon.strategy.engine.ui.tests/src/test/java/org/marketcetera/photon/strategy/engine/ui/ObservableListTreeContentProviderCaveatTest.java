@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
 
@@ -31,7 +32,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class ObservableListTreeContentProviderCaveatTest {
+public class ObservableListTreeContentProviderCaveatTest extends PhotonTestBase {
 
     @Test
     @UI
@@ -47,6 +48,19 @@ public class ObservableListTreeContentProviderCaveatTest {
                     v.setContentProvider(cp);
                     WritableList input = WritableList
                             .withElementType(String.class);
+                    /*
+                     * The following four lines together cause the failure.
+                     * First, setInput causes an internal node to be created for
+                     * the "input" WritableList and an internal HashMap (named
+                     * "elementNodes") maps "input" to this node. The second
+                     * line adds an element to the list (changing its hash
+                     * code). Then getElements(input) corrupts the map by
+                     * creating a new internal node for the same key since the
+                     * hash code is different. The final v.setInput(null) causes
+                     * the exception since it iterates over the internal nodes
+                     * and disposes them. The WritableList thus ends up getting
+                     * disposed twice.
+                     */
                     v.setInput(input);
                     input.add("ABC");
                     cp.getElements(input);

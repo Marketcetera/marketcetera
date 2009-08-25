@@ -4,8 +4,8 @@ import static org.eclipse.swtbot.swt.finder.SWTBotAssert.assertText;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.buildEngines;
+import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createDeployedStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
-import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.*;
 
 import java.text.MessageFormat;
 
@@ -28,6 +28,7 @@ import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.ui.tests.StrategyEngineTreeTestHelper;
 import org.marketcetera.photon.test.AbstractUIRunner;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
@@ -44,7 +45,7 @@ import com.google.common.collect.Lists;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class StrategyEnginesContentProviderTest {
+public class StrategyEnginesContentProviderTest extends PhotonTestBase {
 
     private StrategyEngine mEngine1;
     private StrategyEngine mEngine2;

@@ -1,9 +1,7 @@
 package org.marketcetera.photon.strategy.engine.ui;
 
-import java.text.MessageFormat;
 import java.util.List;
 
-import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.emf.databinding.EMFProperties;
@@ -56,7 +54,7 @@ public class StrategyEngineStatusDecorator extends BaseLabelProvider implements
     /**
      * Creates a StrategyEngineStatusDecorator that tracks the given set of
      * elements, updating their labels when related properties change. Tracking
-     * will not stop until the return object is {@link #dispose() disposed}.
+     * will not stop until the returned object is {@link #dispose() disposed}.
      * 
      * @param elements
      *            the observable set of elements to track, must be on the realm
@@ -114,14 +112,6 @@ public class StrategyEngineStatusDecorator extends BaseLabelProvider implements
      */
     public final void track(IObservableSet elements) {
         SWTUtils.checkThread();
-        final Realm realm = elements.getRealm();
-        if (!realm.isCurrent()) {
-            throw new IllegalArgumentException(
-                    MessageFormat
-                            .format(
-                                    "the realm of elements [{0}] is not the realm of the current display", //$NON-NLS-1$
-                                    realm));
-        }
         mPropertyWatcher.watch(elements);
     }
 
@@ -141,6 +131,7 @@ public class StrategyEngineStatusDecorator extends BaseLabelProvider implements
                         replaceImage(decoration,
                                 StrategyEngineImage.ENGINE_CONNECTED_OBJ
                                         .getImageDescriptor());
+                        // use default color for foreground
                     } else {
                         replaceImage(decoration,
                                 StrategyEngineImage.ENGINE_DISCONNECTED_OBJ
@@ -158,6 +149,7 @@ public class StrategyEngineStatusDecorator extends BaseLabelProvider implements
                         replaceImage(decoration,
                                 StrategyEngineImage.STRATEGY_RUNNING_OBJ
                                         .getImageDescriptor());
+                        // use default color for foreground
                     } else {
                         replaceImage(decoration,
                                 StrategyEngineImage.STRATEGY_STOPPED_OBJ

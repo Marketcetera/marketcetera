@@ -39,6 +39,7 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory;
 import org.marketcetera.photon.strategy.engine.ui.ScriptSelectionButton;
 import org.marketcetera.photon.test.AbstractUIRunner;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
@@ -53,7 +54,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class DeployStrategyCompositeTest {
+public class DeployStrategyCompositeTest extends PhotonTestBase {
 
     private final SWTBot mBot = new SWTBot();
     private final Strategy mStrategy = StrategyEngineCoreFactory.eINSTANCE
@@ -102,10 +103,12 @@ public class DeployStrategyCompositeTest {
         SWTBotControlDecoration decoration = new SWTBotControlDecoration(combo);
         assertThat(combo.items(), is(new String[] { "JAVA", "RUBY" }));
         combo.setSelection("JAVA");
-        assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__LANGUAGE), is((Object) "JAVA"));
+        assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__LANGUAGE),
+                is((Object) "JAVA"));
         assertThat(decoration.isVisible(), is(false));
         combo.setSelection("RUBY");
-        assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__LANGUAGE), is((Object) "RUBY"));
+        assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__LANGUAGE),
+                is((Object) "RUBY"));
         assertThat(decoration.isVisible(), is(false));
     }
 
@@ -114,18 +117,23 @@ public class DeployStrategyCompositeTest {
         testRequiredText("Script", STRATEGY__SCRIPT_PATH,
                 "The path to the script which contains the strategy");
         final SWTBotButton button = mBot.button("Mock");
+        // mock button will return "c:\\strategy.xml"
         button.click();
         assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__SCRIPT_PATH),
                 is((Object) "c:\\strategy.xml"));
         button.click();
+        // mock button will return "c:\\strategy2.xml " (note space)
         assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__SCRIPT_PATH),
                 is((Object) "c:\\strategy2.xml"));
+        // mock button will return null
         button.click();
         assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__SCRIPT_PATH),
                 is((Object) "c:\\strategy2.xml"));
         mBot.textWithLabel("Script:").setText("    ");
+        // mock button will return null
         button.click();
-        assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__SCRIPT_PATH), is((Object) "    "));
+        assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__SCRIPT_PATH),
+                is((Object) "    "));
     }
 
     @Test
@@ -150,11 +158,11 @@ public class DeployStrategyCompositeTest {
                 is("If checked, the strategy will send orders to the order routing server"));
         assertThat(check.isChecked(), is(false));
         check.click();
-        assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__ROUTE_ORDERS_TO_SERVER),
-                is((Object) true));
+        assertThat(DataBindingTestUtils.eGet(mStrategy,
+                STRATEGY__ROUTE_ORDERS_TO_SERVER), is((Object) true));
         check.click();
-        assertThat(DataBindingTestUtils.eGet(mStrategy, STRATEGY__ROUTE_ORDERS_TO_SERVER),
-                is((Object) false));
+        assertThat(DataBindingTestUtils.eGet(mStrategy,
+                STRATEGY__ROUTE_ORDERS_TO_SERVER), is((Object) false));
     }
 
     @Test
@@ -178,11 +186,11 @@ public class DeployStrategyCompositeTest {
         decoration.assertHidden();
         item2.uncheck();
         assertThat(getSelectedEngine(), nullValue());
-        decoration.assertError(message);
+        decoration.assertRequired(message);
     }
 
     @Test
-    public void testSriptHeuristics() throws Exception {
+    public void testScriptHeuristics() throws Exception {
         assertInferred("", "");
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
@@ -207,6 +215,27 @@ public class DeployStrategyCompositeTest {
             }
         });
         assertInferred("RUBY", "RubyStrategy");
+        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+            @Override
+            public void run() throws Throwable {
+                mStrategy.setScriptPath("c:\\3unknown3.rb");
+            }
+        });
+        assertInferred("RUBY", "Unknown3");
+        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+            @Override
+            public void run() throws Throwable {
+                mStrategy.setScriptPath("c:\\unknown_5.rb");
+            }
+        });
+        assertInferred("RUBY", "Unknown5");
+        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+            @Override
+            public void run() throws Throwable {
+                mStrategy.setScriptPath("c:\\Unknown_5.java");
+            }
+        });
+        assertInferred("JAVA", "Unknown_5");
     }
 
     @Test
@@ -243,20 +272,20 @@ public class DeployStrategyCompositeTest {
     private void testRequiredText(String description,
             EStructuralFeature feature, String tooltip) throws Exception {
         DataBindingTestUtils.testRequiredText(mBot, mStrategy, feature,
-                description, tooltip);
+                description, tooltip, "abc");
     }
 
     private void testOptionalText(String description,
             EStructuralFeature feature, String tooltip) throws Exception {
         DataBindingTestUtils.testOptionalText(mBot, mStrategy, feature,
-                description, tooltip);
+                description, tooltip, "abc");
     }
 
     private void testRequiredControl(AbstractSWTBot<? extends Control> control,
             EStructuralFeature feature, String description, String tooltip)
             throws Exception {
         DataBindingTestUtils.testRequiredControl(mBot, control, mStrategy,
-                feature, description, tooltip);
+                feature, description, tooltip, "abc");
     }
 
     private final static class MockScriptSelectionButton extends

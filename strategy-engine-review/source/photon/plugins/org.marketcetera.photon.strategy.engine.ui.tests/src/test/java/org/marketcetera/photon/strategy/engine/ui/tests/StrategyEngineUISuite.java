@@ -23,6 +23,8 @@ import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesLabelProviderTe
         DeployStrategyCompositeTest.class, ScriptSelectionButtonTest.class,
         DeployStrategyWizardTest.class,
         StrategyEngineIdentificationCompositeTest.class,
-        DeployedStrategyConfigurationCompositeTest.class })
+        DeployedStrategyConfigurationCompositeTest.class,
+        org.marketcetera.photon.strategy.engine.ui.MessagesTest.class,
+        org.marketcetera.photon.internal.strategy.engine.ui.MessagesTest.class })
 public final class StrategyEngineUISuite {
 }

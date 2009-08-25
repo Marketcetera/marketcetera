@@ -20,6 +20,7 @@ import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.photon.test.AbstractUIRunner;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
@@ -34,7 +35,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class DeployedStrategyConfigurationCompositeTest {
+public class DeployedStrategyConfigurationCompositeTest extends PhotonTestBase {
 
     private final SWTBot mBot = new SWTBot();
     private volatile DeployedStrategy mStrategy;

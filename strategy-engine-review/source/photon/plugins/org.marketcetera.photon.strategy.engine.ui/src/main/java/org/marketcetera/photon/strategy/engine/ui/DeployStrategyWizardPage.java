@@ -2,6 +2,7 @@ package org.marketcetera.photon.strategy.engine.ui;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jface.databinding.dialog.DialogPageSupport;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.marketcetera.photon.commons.Validate;
@@ -24,13 +25,17 @@ import com.google.common.collect.ImmutableList;
  */
 @ClassVersion("$Id$")
 public final class DeployStrategyWizardPage extends WizardPage {
+    
+    /*
+     * unit tested with DeployStrategyWizard
+     */
 
     private final Strategy mStrategy;
     private final IObservableValue mEngine;
     private final ImmutableList<StrategyEngine> mAvailableEngines;
     private final ScriptSelectionButton[] mButtons;
     private final DataBindingContext mDataBindingContext;
-    private CustomWizardPageSupport mWizardSupport;
+    private DialogPageSupport mWizardSupport;
 
     /**
      * Constructor.
@@ -44,7 +49,7 @@ public final class DeployStrategyWizardPage extends WizardPage {
      * @param buttons
      *            the buttons used to assist in strategy script selection
      * @throws IllegalArgumentException
-     *             if an parameter is null, or if availableEngines or buttons
+     *             if any parameter is null, or if availableEngines or buttons
      *             contains null elements
      */
     public DeployStrategyWizardPage(Strategy strategy, IObservableValue engine,
@@ -65,7 +70,6 @@ public final class DeployStrategyWizardPage extends WizardPage {
         mAvailableEngines = availableEngines;
         mButtons = buttons;
         mDataBindingContext = new DataBindingContext();
-
     }
 
     @Override
