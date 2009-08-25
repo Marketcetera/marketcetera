@@ -321,7 +321,7 @@
           <menu
                 label="%chooseColumns.label">
              <dynamic
-                   class="org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu"
+                   class="org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu"
                    id="org.marketcetera.photon.chooseColumnsMenu">
              </dynamic>
           </menu>

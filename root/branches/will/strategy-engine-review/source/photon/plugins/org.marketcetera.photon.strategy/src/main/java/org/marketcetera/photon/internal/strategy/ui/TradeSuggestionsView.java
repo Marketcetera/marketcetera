@@ -10,7 +10,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.commons.ui.table.ColumnConfiguration;
 import org.marketcetera.photon.commons.ui.table.TableConfiguration;
 import org.marketcetera.photon.commons.ui.table.TableSupport;
-import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
+import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnProvider;
 import org.marketcetera.photon.internal.strategy.Messages;
 import org.marketcetera.photon.internal.strategy.TradeSuggestion;
 import org.marketcetera.photon.internal.strategy.TradeSuggestionManager;

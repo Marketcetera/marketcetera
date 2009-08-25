@@ -22,7 +22,8 @@ Require-Bundle: org.eclipse.ui,
  org.marketcetera.client,
  org.marketcetera.photon.module.ui,
  org.marketcetera.photon.commons.ui,
- org.marketcetera.modules.remote.emitter
+ org.marketcetera.modules.remote.emitter,
+ org.marketcetera.photon.commons.ui.workbench
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin

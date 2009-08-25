@@ -69,7 +69,7 @@
                id="org.marketcetera.photon.positions.ui.positionsPopup.chooseColumnsMenu"
                label="%menu.chooseColumnsMenu.label">
             <dynamic
-                  class="org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu"
+                  class="org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu"
                   id="org.marketcetera.photon.positions.ui.positionsPopup.chooseColumns">
             </dynamic>
          </menu>
