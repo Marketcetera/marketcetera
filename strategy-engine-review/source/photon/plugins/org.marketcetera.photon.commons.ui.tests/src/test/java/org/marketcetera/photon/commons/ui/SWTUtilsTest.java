@@ -2,6 +2,7 @@ package org.marketcetera.photon.commons.ui;
 
 import org.junit.Test;
 import org.marketcetera.photon.test.ExpectedIllegalStateException;
+import org.marketcetera.photon.test.PhotonTestBase;
 
 /* $License$ */
 
@@ -12,7 +13,7 @@ import org.marketcetera.photon.test.ExpectedIllegalStateException;
  * @version $Id$
  * @since $Release$
  */
-public class SWTUtilsTest {
+public class SWTUtilsTest extends PhotonTestBase {
 
     @Test
     public void testCheckThread() throws Exception {

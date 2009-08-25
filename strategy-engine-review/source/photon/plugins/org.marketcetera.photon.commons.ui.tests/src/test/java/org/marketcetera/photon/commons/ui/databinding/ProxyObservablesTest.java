@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -20,9 +21,11 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
 import org.marketcetera.photon.test.AbstractUIRunner;
-import org.marketcetera.photon.test.ExpectedFailure;
+import org.marketcetera.photon.test.ExpectedIllegalStateException;
 import org.marketcetera.photon.test.LockRealm;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SWTTestUtil;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.ThreadRealm;
@@ -38,19 +41,18 @@ import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class ProxyObservablesTest {
+public class ProxyObservablesTest extends PhotonTestBase {
 
     @Test
     public void testPreconditions() throws Exception {
-        new ExpectedFailure<IllegalStateException>(
+        new ExpectedIllegalStateException(
                 "this method requires a default realm") {
             @Override
             protected void run() throws Exception {
                 ProxyObservables.proxyList(null);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(
-                "the original list cannot be null") {
+        new ExpectedNullArgumentFailure("originalList") {
             @Override
             protected void run() throws Exception {
                 Realm.runWithDefault(new LockRealm(), new Runnable() {
@@ -61,8 +63,7 @@ public class ProxyObservablesTest {
                 });
             }
         };
-        new ExpectedFailure<IllegalStateException>(
-                "must be called from the proxy realm") {
+        new ExpectedIllegalStateException("must be called from the proxy realm") {
             @Override
             protected void run() throws Exception {
                 Realm.runWithDefault(new LockRealm(), new Runnable() {
@@ -73,22 +74,19 @@ public class ProxyObservablesTest {
                 });
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(
-                "the realm cannot be null") {
+        new ExpectedNullArgumentFailure("realm") {
             @Override
             protected void run() throws Exception {
-                ProxyObservables.proxyList(null, null);
+                ProxyObservables.proxyList(null, mock(IObservableList.class));
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(
-                "the original list cannot be null") {
+        new ExpectedNullArgumentFailure("originalList") {
             @Override
             protected void run() throws Exception {
                 ProxyObservables.proxyList(new LockRealm(), null);
             }
         };
-        new ExpectedFailure<IllegalStateException>(
-                "must be called from the proxy realm") {
+        new ExpectedIllegalStateException("must be called from the proxy realm") {
             @Override
             protected void run() throws Exception {
                 LockRealm realm = new LockRealm();
@@ -146,7 +144,8 @@ public class ProxyObservablesTest {
                 assertThat(proxy.getRealm(), is(Realm.getDefault()));
                 mProxyReady.countDown();
                 mModelUpdated.await();
-                // update should not happen immediately
+                // update should not happen immediately since the UI thread is
+                // in use
                 assertThat(proxy.size(), is(0));
                 // wait for the update
                 SWTTestUtil.conditionalDelay(1, TimeUnit.SECONDS,
@@ -183,7 +182,8 @@ public class ProxyObservablesTest {
                     assertThat(proxy.getRealm(), is((Realm) realm));
                     mProxyReady.countDown();
                     mModelUpdated.await();
-                    // update should not happen immediately
+                    // update should not happen immediately since the
+                    // ThreadRealm is not blocking
                     assertThat(proxy.size(), is(0));
                     // wait for the update
                     realm.processQueue();

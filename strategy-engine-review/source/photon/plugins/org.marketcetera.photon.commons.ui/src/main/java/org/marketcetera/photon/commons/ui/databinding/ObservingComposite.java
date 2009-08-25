@@ -23,6 +23,8 @@ public abstract class ObservingComposite extends Composite {
     private final ObservablesManager mObservablesManager;
 
     /**
+     * Constructor.
+     * 
      * @param parent
      *            parent composite in which to create the widgets
      */

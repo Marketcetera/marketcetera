@@ -1,4 +1,4 @@
-package org.marketcetera.photon.commons.ui.table;
+package org.marketcetera.photon.commons.ui.workbench;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Persists and restores table/tree column state information.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: ColumnState.java 10492 2009-04-14 00:11:35Z klim $
  * @since 1.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: ColumnState.java 10492 2009-04-14 00:11:35Z klim $")
 public class ColumnState {
 
 	private static final String RESTORED_WIDTH_KEY = "restoredWidth"; //$NON-NLS-1$

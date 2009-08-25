@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Level;
@@ -20,11 +21,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.marketcetera.photon.test.ExpectedFailure;
+import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.test.TestCaseBase;
 
 /* $License$ */
 
@@ -36,7 +37,7 @@ import org.marketcetera.util.test.TestCaseBase;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class JFaceUtilsTest extends TestCaseBase {
+public class JFaceUtilsTest extends PhotonTestBase {
 
     private class MockContext implements IRunnableContext, IShellProvider {
 
@@ -58,16 +59,12 @@ public class JFaceUtilsTest extends TestCaseBase {
     private final MockContext mMockContext = new MockContext();
 
     @Before
-    public void before() {
-        setDefaultLevel(Level.ALL);
-    }
-
-    @Before
     @UI
     public void beforeUI() {
+        setLevel(JFaceUtils.class.getName(), Level.ALL);
         mShell = new Shell();
     }
-    
+
     @After
     @UI
     public void afterUI() {
@@ -77,53 +74,62 @@ public class JFaceUtilsTest extends TestCaseBase {
     @Test
     @UI
     public void testRunModalSuccess() {
-        assertThat(JFaceUtils.runModalWithErrorDialog(mMockContext, mMockContext, new IRunnableWithProgress() {
-            @Override
-            public void run(IProgressMonitor monitor) throws InvocationTargetException,
-                    InterruptedException {
-            }
-        }, false, mock(I18NBoundMessage.class)), is(true));
+        assertThat(JFaceUtils.runModalWithErrorDialog(mMockContext,
+                mMockContext, new IRunnableWithProgress() {
+                    @Override
+                    public void run(IProgressMonitor monitor)
+                            throws InvocationTargetException,
+                            InterruptedException {
+                    }
+                }, false, mock(I18NBoundMessage.class)), is(true));
     }
-    
+
     @Test
     @UI
     public void testRunModalCancel() {
         final InterruptedException toThrow = new InterruptedException();
         final I18NBoundMessage failureMessage = mock(I18NBoundMessage.class);
-        assertThat(JFaceUtils.runModalWithErrorDialog(mMockContext, mMockContext, new IRunnableWithProgress() {
-            @Override
-            public void run(IProgressMonitor monitor) throws InvocationTargetException,
-                    InterruptedException {
-                throw toThrow;
-            }
-        }, false, failureMessage), is(false));
+        assertThat(JFaceUtils.runModalWithErrorDialog(mMockContext,
+                mMockContext, new IRunnableWithProgress() {
+                    @Override
+                    public void run(IProgressMonitor monitor)
+                            throws InvocationTargetException,
+                            InterruptedException {
+                        throw toThrow;
+                    }
+                }, false, failureMessage), is(false));
         verify(failureMessage).info(JFaceUtils.class, toThrow);
     }
 
     @Test
     public void testRunModalError() {
-        testRunModalErrorHelper(new Exception("Exception Text"), "Exception Text");
+        testRunModalErrorHelper(new Exception("Exception Text"),
+                "Exception Text");
     }
 
     @Test
     public void testRunModalErrorNoMessage() {
-        testRunModalErrorHelper(new Exception(), "A Java exception occurred during the operation.  See the log for details.");
+        testRunModalErrorHelper(new Exception(),
+                "A Java exception occurred during the operation.  See the log for details.");
     }
 
     private void testRunModalErrorHelper(Exception exception, String text) {
         final AtomicBoolean result = new AtomicBoolean(true);
-        final InvocationTargetException toThrow = new InvocationTargetException(exception);
+        final InvocationTargetException toThrow = new InvocationTargetException(
+                exception);
         final I18NBoundMessage failureMessage = mock(I18NBoundMessage.class);
         mShell.getDisplay().asyncExec(new Runnable() {
             @Override
             public void run() {
-                result.set(JFaceUtils.runModalWithErrorDialog(mMockContext, mMockContext, new IRunnableWithProgress() {
-                    @Override
-                    public void run(IProgressMonitor monitor) throws InvocationTargetException,
-                            InterruptedException {
-                        throw toThrow;
-                    }
-                }, false, failureMessage));
+                result.set(JFaceUtils.runModalWithErrorDialog(mMockContext,
+                        mMockContext, new IRunnableWithProgress() {
+                            @Override
+                            public void run(IProgressMonitor monitor)
+                                    throws InvocationTargetException,
+                                    InterruptedException {
+                                throw toThrow;
+                            }
+                        }, false, failureMessage));
             }
         });
         SWTBot bot = new SWTBot();
@@ -132,37 +138,114 @@ public class JFaceUtilsTest extends TestCaseBase {
         bot.button("OK").click();
         assertThat(result.get(), is(false));
     }
-    
+
+    @Test
+    @UI
+    public void testRunWithErrorDialogSuccess() {
+        assertThat(JFaceUtils.runWithErrorDialog(mMockContext,
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        return true;
+                    }
+                }, mock(I18NBoundMessage.class)), is(true));
+    }
+
+    @Test
+    public void testRunWithErrorDialogError() {
+        testRunWithErrorDialogErrorHelper(new Exception("Exception Text"),
+                "Exception Text");
+    }
+
+    @Test
+    public void testRunWithErrorDialogErrorNoMessage() {
+        testRunWithErrorDialogErrorHelper(new Exception(),
+                "A Java exception occurred during the operation.  See the log for details.");
+    }
+
+    private void testRunWithErrorDialogErrorHelper(final Exception exception,
+            String text) {
+        final AtomicBoolean result = new AtomicBoolean(true);
+        final I18NBoundMessage failureMessage = mock(I18NBoundMessage.class);
+        mShell.getDisplay().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                result.set(JFaceUtils.runWithErrorDialog(mMockContext,
+                        new Callable<Boolean>() {
+                            @Override
+                            public Boolean call() throws Exception {
+                                throw exception;
+                            }
+                        }, failureMessage));
+            }
+        });
+        SWTBot bot = new SWTBot();
+        bot.shell("Operation Failed");
+        bot.label(text);
+        bot.button("OK").click();
+        assertThat(result.get(), is(false));
+    }
+
     @Test
     public void testValidation() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>("'container' must not be null") {
+        final IRunnableWithProgress op = mock(IRunnableWithProgress.class);
+        final I18NBoundMessage message = mock(I18NBoundMessage.class);
+        new ExpectedNullArgumentFailure("container") {
             @Override
             protected void run() throws Exception {
-                JFaceUtils.runModalWithErrorDialog(null, null, false, null);
+                JFaceUtils.runModalWithErrorDialog(null, op, false, message);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>("'context' must not be null") {
+        new ExpectedNullArgumentFailure("context") {
             @Override
             protected void run() throws Exception {
-                JFaceUtils.runModalWithErrorDialog(null, null, null, false, null);
+                JFaceUtils.runModalWithErrorDialog(null, mMockContext, op,
+                        false, message);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>("'shellProvider' must not be null") {
+        new ExpectedNullArgumentFailure("shellProvider") {
             @Override
             protected void run() throws Exception {
-                JFaceUtils.runModalWithErrorDialog(mMockContext, null, null, false, null);
+                JFaceUtils.runModalWithErrorDialog(mMockContext, null, op,
+                        false, message);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>("'operation' must not be null") {
+        new ExpectedNullArgumentFailure("operation") {
             @Override
             protected void run() throws Exception {
-                JFaceUtils.runModalWithErrorDialog(mMockContext, mMockContext, null, false, null);
+                JFaceUtils.runModalWithErrorDialog(mMockContext, mMockContext,
+                        null, false, message);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>("'failureMessage' must not be null") {
+        new ExpectedNullArgumentFailure("failureMessage") {
             @Override
             protected void run() throws Exception {
-                JFaceUtils.runModalWithErrorDialog(mMockContext, mMockContext, mock(IRunnableWithProgress.class), false, null);
+                JFaceUtils.runModalWithErrorDialog(mMockContext, mMockContext,
+                        mock(IRunnableWithProgress.class), false, null);
+            }
+        };
+    }
+
+    @Test
+    public void testRunWithErrorDialogValidation() throws Exception {
+        new ExpectedNullArgumentFailure("shellProvider") {
+            @Override
+            protected void run() throws Exception {
+                JFaceUtils.runWithErrorDialog(null, null, null);
+            }
+        };
+        new ExpectedNullArgumentFailure("operation") {
+            @Override
+            protected void run() throws Exception {
+                JFaceUtils.runWithErrorDialog(mMockContext, null, null);
+            }
+        };
+        new ExpectedNullArgumentFailure("failureMessage") {
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void run() throws Exception {
+                JFaceUtils.runWithErrorDialog(mMockContext,
+                        mock(Callable.class), null);
             }
         };
     }

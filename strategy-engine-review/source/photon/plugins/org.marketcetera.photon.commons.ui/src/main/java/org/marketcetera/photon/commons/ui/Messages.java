@@ -18,13 +18,13 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 final class Messages {
 
-    static I18NMessage0P FILTER_BOX_CLEARBUTTON_TOOLTIP;
     static I18NMessage0P JFACE_UTILS_GENERIC_EXCEPTION_OCCURRED;
     static I18NMessage0P JFACE_UTILS_OPERATION_FAILED__DIALOG_TITLE;
     static I18NMessage1P COLOR_MANAGER_PROVIDER_NULL_DESCRIPTOR;
     static I18NMessage1P COLOR_MANAGER_UNKNOWN_DESCRIPTOR;
     static I18NMessage0P COLOR_MANAGER_ALREADY_INITIALIZED;
     static I18NMessage0P SWT_UTILS_INVALID_THREAD;
+    static I18NMessage1P LOCALIZED_LABEL__FORMAT_PATTERN;
 
     static {
         ReflectiveMessages.init(Messages.class);

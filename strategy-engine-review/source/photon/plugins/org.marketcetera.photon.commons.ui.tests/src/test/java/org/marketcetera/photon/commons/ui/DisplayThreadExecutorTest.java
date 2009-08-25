@@ -6,20 +6,23 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.marketcetera.photon.commons.SimpleExecutorService;
 import org.marketcetera.photon.commons.SimpleExecutorServiceTestBase;
-import org.marketcetera.photon.test.AbstractUIRunner;
+import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
 import org.marketcetera.photon.test.ExpectedFailure;
-import org.marketcetera.photon.test.SimpleUIRunner;
 
 /* $License$ */
 
@@ -30,17 +33,38 @@ import org.marketcetera.photon.test.SimpleUIRunner;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SimpleUIRunner.class)
 public class DisplayThreadExecutorTest extends SimpleExecutorServiceTestBase {
+
+    private volatile Display mDisplay;
+    private ExecutorService mHelperExecutor;
+
+    @Before
+    public void before() throws Exception {
+        mHelperExecutor = Executors.newSingleThreadExecutor();
+        final CountDownLatch latch = new CountDownLatch(1);
+        mHelperExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDisplay = new Display();
+                latch.countDown();
+                while (!Thread.currentThread().isInterrupted()) {
+                    mDisplay.readAndDispatch();
+                    Thread.yield();
+                }
+                System.out.println("shutdown");
+            }
+        });
+        latch.await();
+    }
+
+    @After
+    public void after() {
+        mHelperExecutor.shutdownNow();
+    }
 
     @Override
     protected ExecutorService createFixture() throws Exception {
-        return AbstractUIRunner.syncCall(new Callable<ExecutorService>() {
-            @Override
-            public ExecutorService call() throws Exception {
-                return DisplayThreadExecutor.getInstance(Display.getCurrent());
-            }
-        });
+        return DisplayThreadExecutor.getInstance(mDisplay);
     }
 
     @Test
@@ -62,10 +86,15 @@ public class DisplayThreadExecutorTest extends SimpleExecutorServiceTestBase {
 
     @Test
     public void testShutdownWhenDisplayIsDisposed() throws Exception {
-        Display d = new Display();
-        final ExecutorService fixture = DisplayThreadExecutor.getInstance(d);
-        d.dispose();
-        new ExpectedFailure<RejectedExecutionException>("org.eclipse.swt.SWTException: Device is disposed") {
+        final ExecutorService fixture = createFixture();
+        mDisplay.syncExec(new Runnable() { 
+            @Override
+            public void run() {
+                mDisplay.dispose();
+            }
+        });
+        new ExpectedFailure<RejectedExecutionException>(
+                "org.eclipse.swt.SWTException: Device is disposed") {
             @Override
             protected void run() throws Exception {
                 fixture.submit(mock(Runnable.class));
@@ -75,6 +104,8 @@ public class DisplayThreadExecutorTest extends SimpleExecutorServiceTestBase {
         fixture.shutdown();
         assertThat(fixture.isShutdown(), is(true));
         assertThat(fixture.isTerminated(), is(false));
+        assertThat(fixture.awaitTermination(300, TimeUnit.MILLISECONDS),
+                is(false));
         assertSingleEvent(
                 Level.ERROR,
                 DisplayThreadExecutor.class.getName(),
@@ -89,8 +120,7 @@ public class DisplayThreadExecutorTest extends SimpleExecutorServiceTestBase {
 
     @Test
     public void testValidation() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(
-                "'display' must not be null") {
+        new ExpectedNullArgumentFailure("display") {
             @Override
             protected void run() throws Exception {
                 DisplayThreadExecutor.getInstance(null);

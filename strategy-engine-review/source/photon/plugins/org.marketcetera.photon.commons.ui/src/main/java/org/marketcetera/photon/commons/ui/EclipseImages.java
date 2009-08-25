@@ -28,16 +28,24 @@ public enum EclipseImages {
      * Model objects.
      */
     OBJ("obj16/"), //$NON-NLS-1$
-    
+
     /**
      * View images.
      */
     VIEW("view16/"), //$NON-NLS-1$
-    
+
     /**
      * View images.
      */
     WIZBAN("wizban/"); //$NON-NLS-1$
+
+    private static final String ICONS_PATH = "$nl$/icons/"; //$NON-NLS-1$
+
+    private final String mPrefix;
+
+    private EclipseImages(String prefix) {
+        mPrefix = prefix;
+    }
 
     /**
      * Provides an image descriptor for the given bundle and image name. The
@@ -51,19 +59,6 @@ public enum EclipseImages {
      */
     public ImageDescriptor getImageDescriptor(String bundleId, String name) {
         String path = ICONS_PATH + mPrefix + name;
-        return getImageDescriptorImpl(bundleId, path);
-    }
-
-    private final String mPrefix;
-
-    private EclipseImages(String prefix) {
-        mPrefix = prefix;
-    }
-
-    private static final String ICONS_PATH = "$nl$/icons/"; //$NON-NLS-1$
-
-    private static ImageDescriptor getImageDescriptorImpl(String bundleId,
-            String path) {
         Bundle bundle = Platform.getBundle(bundleId);
         if (bundle != null) {
             URL url = FileLocator.find(bundle, new Path(path), null);

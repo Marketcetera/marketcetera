@@ -1,37 +1,49 @@
 package org.marketcetera.photon.commons.ui.databinding;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.set.WritableSet;
 import org.eclipse.core.databinding.property.value.IValueProperty;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.photon.commons.ValidateTest.ExpectedEmptyFailure;
+import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
+import org.marketcetera.photon.commons.ValidateTest.ExpectedNullElementFailure;
 import org.marketcetera.photon.commons.ui.databinding.PropertyWatcher.IPropertiesChangedListener;
 import org.marketcetera.photon.test.DefaultRealm;
+import org.marketcetera.photon.test.ExpectedIllegalArgumentException;
+import org.marketcetera.photon.test.ExpectedIllegalStateException;
+import org.marketcetera.photon.test.LockRealm;
+import org.marketcetera.photon.test.PhotonTestBase;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Multiset;
 
 /* $License$ */
 
 /**
  * Test {@link PropertyWatcher}.
- *
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
-public class PropertyWatcherTest {
+public class PropertyWatcherTest extends PhotonTestBase {
 
     private DefaultRealm mRealm;
 
@@ -47,10 +59,9 @@ public class PropertyWatcherTest {
 
     @Test
     public void testWatch() {
-        final List<Object> affected = Lists.newArrayList();
-        PropertyWatcher fixture = new PropertyWatcher(Arrays
-                .<IValueProperty> asList(BeanProperties.value("prop1"),
-                        BeanProperties.value("prop2")),
+        final Multiset<Object> affected = HashMultiset.create();
+        PropertyWatcher fixture = new PropertyWatcher(Arrays.asList(
+                BeanProperties.value("prop1"), BeanProperties.value("prop2")),
                 new IPropertiesChangedListener() {
                     @Override
                     public void propertiesChanged(
@@ -61,32 +72,139 @@ public class PropertyWatcherTest {
         Bean1 bean1a = new Bean1();
         Bean1 bean1b = new Bean1();
         Bean2 bean2 = new Bean2();
+        // watching 1a and 2
         fixture.watch(new WritableSet(Arrays.asList(bean1a, bean2), null));
-
         bean1a.setProp1("a");
         bean1b.setProp1("a");
+        // 1b change should have no affect
         assertItems(affected, bean1a);
         affected.clear();
+        // change both watched beans
         bean1a.setProp2("b");
         bean2.setProp1("a");
         assertItems(affected, bean1a, bean2);
         affected.clear();
+        // change a watched bean on a property that is not watched
         bean2.setProp3("c");
+        // should have no affect
         assertThat(affected.size(), is(0));
-        final WritableSet temp = new WritableSet(Arrays.asList(bean1b), null);
-        fixture.watch(temp);
+        // now watch 1b
+        fixture.watch(new WritableSet(Arrays.asList(bean1b), null));
         bean1a.setProp1("a");
         bean1b.setProp1("a2");
         assertItems(affected, bean1b);
         affected.clear();
+        // add 1b a second time
+        fixture.watch(new WritableSet(Arrays.asList(bean1b), null));
+        bean1b.setProp1("a3");
+        // two notifications
+        assertItems(affected, bean1b, bean1b);
+        affected.clear();
         fixture.dispose();
         bean2.setProp1("d");
+        // no notifications after dispose
         assertThat(affected.size(), is(0));
     }
 
-    private void assertItems(Collection<Object> collection, Object... objects) {
-        assertThat(collection.size(), is(objects.length));
-        assertThat(collection, hasItems(objects));
+    private void assertItems(Multiset<Object> collection, Object... objects) {
+        assertThat(collection, Matchers.<Multiset<Object>> is(ImmutableMultiset
+                .of(objects)));
+    }
+
+    @Test
+    public void testConstructorValidation() throws Exception {
+        new ExpectedNullArgumentFailure("properties") {
+            @Override
+            protected void run() throws Exception {
+                new PropertyWatcher(null,
+                        mock(IPropertiesChangedListener.class));
+            }
+        };
+        new ExpectedEmptyFailure("properties") {
+            @Override
+            protected void run() throws Exception {
+                final List<IValueProperty> empty = Collections.emptyList();
+                new PropertyWatcher(empty,
+                        mock(IPropertiesChangedListener.class));
+            }
+        };
+        new ExpectedNullElementFailure("properties") {
+            @Override
+            protected void run() throws Exception {
+                new PropertyWatcher(Collections
+                        .singleton((IValueProperty) null),
+                        mock(IPropertiesChangedListener.class));
+            }
+        };
+        new ExpectedNullArgumentFailure("listener") {
+            @Override
+            protected void run() throws Exception {
+                new PropertyWatcher(Collections
+                        .singleton(mock(IValueProperty.class)), null);
+            }
+        };
+    }
+
+    @Test
+    public void testWatchValidation() throws Exception {
+        final PropertyWatcher fixture = new PropertyWatcher(Collections
+                .singleton(mock(IValueProperty.class)),
+                mock(IPropertiesChangedListener.class));
+        new ExpectedNullArgumentFailure("elements") {
+            @Override
+            protected void run() throws Exception {
+                fixture.watch(null);
+            }
+        };
+        final LockRealm lockRealm = new LockRealm();
+        new PropertyWatcherElementsRealmCheckFailure(lockRealm, mRealm) {
+            @Override
+            protected void run() throws Exception {
+                fixture.watch(new WritableSet(lockRealm));
+            }
+        };
+        fixture.dispose();
+        new ExpectedIllegalStateException(
+                "PropertyWatcher has already been disposed") {
+            @Override
+            protected void run() throws Exception {
+                fixture.watch(new WritableSet(new LockRealm()));
+            }
+        };
+        new ExpectedIllegalStateException(MessageFormat.format(
+                "called from invalid realm [0], expected [1]", lockRealm,
+                mRealm)) {
+            @Override
+            protected void run() throws Exception {
+                lockRealm.lock();
+                Realm.runWithDefault(lockRealm, new Runnable() {
+                    @Override
+                    public void run() {
+                        fixture.watch(new WritableSet(lockRealm));
+                    }
+                });
+            }
+        };
+        mRealm.dispose();
+        new ExpectedIllegalStateException(
+                "must be called from a thread with a default realm") {
+            @Override
+            protected void run() throws Exception {
+                fixture.watch(new WritableSet(new LockRealm()));
+            }
+        };
+        new ExpectedIllegalStateException(
+                "must be called from the default realm") {
+            @Override
+            protected void run() throws Exception {
+                Realm.runWithDefault(new LockRealm(), new Runnable() {
+                    @Override
+                    public void run() {
+                        fixture.watch(new WritableSet(new LockRealm()));
+                    }
+                });
+            }
+        };
     }
 
     public static class BeanBase {
@@ -142,6 +260,33 @@ public class PropertyWatcherTest {
         public void setProp3(String prop3) {
             mChangeSupport.firePropertyChange("prop3", mProp3, mProp3 = prop3);
         }
+    }
+
+    /**
+     * Helper to verify
+     * {@link PropertyWatcher#watch(org.eclipse.core.databinding.observable.set.IObservableSet)}
+     * fails due to invalid realm of the elements parameter.
+     */
+    public static abstract class PropertyWatcherElementsRealmCheckFailure
+            extends ExpectedIllegalArgumentException {
+
+        /**
+         * Constructor.
+         * 
+         * @param actual
+         *            the actual realm
+         * @param expected
+         *            the expected realm
+         * @throws Exception
+         *             if there was an unexpected failure
+         */
+        protected PropertyWatcherElementsRealmCheckFailure(Realm actual,
+                Realm expected) throws Exception {
+            super(MessageFormat.format(
+                    "elements is on an invalid realm [0], expected [1]",
+                    actual, expected));
+        }
+
     }
 
 }
