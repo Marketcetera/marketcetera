@@ -277,12 +277,20 @@ public class DeployStrategyComposite extends ObservingComposite {
     private void scriptValueChanged() {
         final String newValue = mStrategy.getScriptPath();
         if (newValue != null) {
+            /*
+             * Split on '.' to get the extension
+             */
             String[] split1 = newValue.split("\\.", -1); //$NON-NLS-1$
             if (split1.length > 1) {
                 Language language = Language
                         .getLanguageFor(split1[split1.length - 1]);
                 if (language != null) {
                     mStrategy.setLanguage(language.getValue());
+                    /*
+                     * Split on common path separators, '\' or '/' to try to get
+                     * the file name. Don't just use File.separatorChar since
+                     * there is no guarantee that this is a native file path.
+                     */
                     String[] split2 = newValue.substring(0,
                             newValue.lastIndexOf('.')).split("[\\\\\\/]", -1); //$NON-NLS-1$
                     if (split2.length > 1) {
@@ -311,18 +319,16 @@ public class DeployStrategyComposite extends ObservingComposite {
          */
         Ruby("RUBY", "rb") { //$NON-NLS-1$ //$NON-NLS-2$
             @Override
-            public String getClassFor(String fileName) {
+            public String getClassFor(String fileNameExtensionStripped) {
+                String className = super.getClassFor(fileNameExtensionStripped);
                 /*
-                 * retains letters and capitalizes the first in a word, e.g.
+                 * retains letters and numbers and capitalizes the first in a word, e.g.
                  * my_strategy -> MyStrategy
                  */
-                if (fileName == null) {
-                    return null;
-                }
                 StringBuilder builder = new StringBuilder();
                 boolean caps = true;
-                for (char c : fileName.toCharArray()) {
-                    if (Character.isLetter(c)) {
+                for (char c : className.toCharArray()) {
+                    if (Character.isLetterOrDigit(c)) {
                         builder.append(caps ? Character.toUpperCase(c) : c);
                         caps = false;
                     } else {
@@ -336,8 +342,8 @@ public class DeployStrategyComposite extends ObservingComposite {
         private final String mValue;
         private final String mExtension;
 
-        private static final ImmutableMap<String, Language> mExtensionToLanguage;
-        private static final ImmutableList<String> mValues;
+        private static final ImmutableMap<String, Language> sExtensionToLanguage;
+        private static final ImmutableList<String> sValues;
 
         static {
             ImmutableMap.Builder<String, Language> mapBuilder = ImmutableMap
@@ -348,8 +354,8 @@ public class DeployStrategyComposite extends ObservingComposite {
                 mapBuilder.put(language.mExtension, language);
                 valuesBuilder.add(language.mValue);
             }
-            mExtensionToLanguage = mapBuilder.build();
-            mValues = valuesBuilder.build();
+            sExtensionToLanguage = mapBuilder.build();
+            sValues = valuesBuilder.build();
         }
 
         /**
@@ -360,7 +366,7 @@ public class DeployStrategyComposite extends ObservingComposite {
          * @return the language
          */
         public static Language getLanguageFor(String extension) {
-            return mExtensionToLanguage.get(extension);
+            return sExtensionToLanguage.get(extension);
         }
 
         /**
@@ -369,7 +375,7 @@ public class DeployStrategyComposite extends ObservingComposite {
          * @return the values
          */
         public static String[] getValues() {
-            return mValues.toArray(new String[mValues.size()]);
+            return sValues.toArray(new String[sValues.size()]);
         }
 
         private Language(String value, String extension) {
@@ -378,14 +384,27 @@ public class DeployStrategyComposite extends ObservingComposite {
         }
 
         /**
-         * Returns a best-guess class name for a given file name.
+         * Returns a best-guess class name for a given file name. The base
+         * implementation discards characters as needed to make the string a
+         * valid Java identifier.
          * 
-         * @param fileName
-         *            the file name
+         * @param fileNameExtensionStripped
+         *            the file name without its extension
          * @return the guessed class name
          */
-        public String getClassFor(String fileName) {
-            return fileName;
+        public String getClassFor(String fileNameExtensionStripped) {
+            assert fileNameExtensionStripped != null;
+            StringBuilder builder = new StringBuilder();
+            boolean started = false;
+            for (char c : fileNameExtensionStripped.toCharArray()) {
+                if (started && Character.isJavaIdentifierPart(c)) {
+                    builder.append(c);
+                } else if (Character.isJavaIdentifierStart(c)) {
+                    builder.append(c);
+                    started = true;
+                }
+            }
+            return builder.toString();
         }
 
         /**

@@ -18,11 +18,12 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public final class FileDialogButton extends ScriptSelectionButton {
-    
+
     /*
-     * Note: no unit tests since FileDialog is platform dependent.
+     * Note: no unit tests since FileDialog is a native dialog that cannot
+     * currently be accessed by SWTBot.
      */
-    
+
     /**
      * Constructor.
      * 

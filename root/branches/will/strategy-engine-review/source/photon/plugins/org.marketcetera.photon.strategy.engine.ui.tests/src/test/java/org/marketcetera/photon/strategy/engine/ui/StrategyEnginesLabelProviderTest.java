@@ -29,6 +29,7 @@ import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.ui.tests.StrategyEngineTreeTestHelper;
 import org.marketcetera.photon.test.AbstractUIRunner;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
@@ -48,7 +49,7 @@ import com.google.common.collect.Lists;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class StrategyEnginesLabelProviderTest {
+public class StrategyEnginesLabelProviderTest extends PhotonTestBase {
 
     private StrategyEngineTreeTestHelper mHelper;
     private StrategyEnginesLabelProvider mFixture;

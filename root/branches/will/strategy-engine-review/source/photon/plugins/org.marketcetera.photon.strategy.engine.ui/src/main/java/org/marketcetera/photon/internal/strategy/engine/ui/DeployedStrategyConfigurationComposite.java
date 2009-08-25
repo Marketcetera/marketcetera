@@ -1,5 +1,7 @@
 package org.marketcetera.photon.internal.strategy.engine.ui;
 
+import java.util.List;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -18,6 +20,8 @@ import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -52,62 +56,77 @@ public class DeployedStrategyConfigurationComposite extends ObservingComposite {
 
         GridLayoutFactory.swtDefaults().spacing(10, 5).numColumns(2).applyTo(
                 this);
+        List<Control> tabControls = Lists.newLinkedList();
 
         Messages.DEPLOYED_STRATEGY_CONFIGURATION_COMPOSITE_INSTANCE_NAME
                 .createLabel(this);
 
-        Text instanceNameText = new Text(this, SWT.READ_ONLY);
-        DataBindingUtils
-                .bindValue(
-                        dataBindingContext,
-                        SWTObservables
-                                .observeText(instanceNameText, SWT.Modify),
-                        observe(StrategyEngineCorePackage.Literals.STRATEGY__INSTANCE_NAME));
+        {
+            Text instanceNameText = new Text(this, SWT.READ_ONLY);
+            DataBindingUtils
+                    .bindValue(
+                            dataBindingContext,
+                            SWTObservables.observeText(instanceNameText,
+                                    SWT.Modify),
+                            observe(StrategyEngineCorePackage.Literals.STRATEGY__INSTANCE_NAME));
+        }
 
         Messages.DEPLOYED_STRATEGY_CONFIGURATION_COMPOSITE_CLASS
                 .createLabel(this);
 
-        Text classText = new Text(this, SWT.READ_ONLY);
-        DataBindingUtils
-                .bindValue(
-                        dataBindingContext,
-                        SWTObservables.observeText(classText, SWT.Modify),
-                        observe(StrategyEngineCorePackage.Literals.STRATEGY__CLASS_NAME));
+        {
+            Text classText = new Text(this, SWT.READ_ONLY);
+            DataBindingUtils
+                    .bindValue(
+                            dataBindingContext,
+                            SWTObservables.observeText(classText, SWT.Modify),
+                            observe(StrategyEngineCorePackage.Literals.STRATEGY__CLASS_NAME));
+        }
 
         Messages.DEPLOYED_STRATEGY_CONFIGURATION_COMPOSITE_LANGUAGE
                 .createLabel(this);
 
-        Text languageText = new Text(this, SWT.READ_ONLY);
-        DataBindingUtils.bindValue(dataBindingContext, SWTObservables
-                .observeText(languageText, SWT.Modify),
-                observe(StrategyEngineCorePackage.Literals.STRATEGY__LANGUAGE));
+        {
+            Text languageText = new Text(this, SWT.READ_ONLY);
+            DataBindingUtils
+                    .bindValue(
+                            dataBindingContext,
+                            SWTObservables
+                                    .observeText(languageText, SWT.Modify),
+                            observe(StrategyEngineCorePackage.Literals.STRATEGY__LANGUAGE));
+        }
 
         Messages.DEPLOYED_STRATEGY_CONFIGURATION_COMPOSITE_SCRIPT
                 .createLabel(this);
 
-        Text scriptText = new Text(this, SWT.READ_ONLY);
-        DataBindingUtils
-                .bindValue(
-                        dataBindingContext,
-                        SWTObservables.observeText(scriptText, SWT.Modify),
-                        observe(StrategyEngineCorePackage.Literals.STRATEGY__SCRIPT_PATH));
-
-        Button routeButton = new Button(this, SWT.CHECK);
-        routeButton.setText(Messages.STRATEGY_DEPLOYMENT_COMPOSITE_ROUTE
-                .getRawLabel());
-        routeButton.setToolTipText(Messages.STRATEGY_DEPLOYMENT_COMPOSITE_ROUTE
-                .getTooltip());
-        dataBindingContext
-                .bindValue(
-                        SWTObservables.observeSelection(routeButton),
-                        observe(StrategyEngineCorePackage.Literals.STRATEGY__ROUTE_ORDERS_TO_SERVER));
-        GridDataFactory.swtDefaults().span(2, 1).applyTo(routeButton);
-        if (strategy.getState() == StrategyState.RUNNING) {
-            routeButton.setEnabled(false);
-            setTabList(new Control[0]);
-        } else {
-            setTabList(new Control[] { routeButton });
+        {
+            Text scriptText = new Text(this, SWT.READ_ONLY);
+            DataBindingUtils
+                    .bindValue(
+                            dataBindingContext,
+                            SWTObservables.observeText(scriptText, SWT.Modify),
+                            observe(StrategyEngineCorePackage.Literals.STRATEGY__SCRIPT_PATH));
         }
+
+        {
+            Button routeButton = new Button(this, SWT.CHECK);
+            routeButton.setText(Messages.STRATEGY_DEPLOYMENT_COMPOSITE_ROUTE
+                    .getRawLabel());
+            routeButton
+                    .setToolTipText(Messages.STRATEGY_DEPLOYMENT_COMPOSITE_ROUTE
+                            .getTooltip());
+            dataBindingContext
+                    .bindValue(
+                            SWTObservables.observeSelection(routeButton),
+                            observe(StrategyEngineCorePackage.Literals.STRATEGY__ROUTE_ORDERS_TO_SERVER));
+            GridDataFactory.swtDefaults().span(2, 1).applyTo(routeButton);
+            if (strategy.getState() == StrategyState.RUNNING) {
+                routeButton.setEnabled(false);
+                tabControls.add(routeButton);
+            }
+        }
+        
+        setTabList(tabControls.toArray(new Control[tabControls.size()]));
     }
 
     private IObservableValue observe(EStructuralFeature feature) {

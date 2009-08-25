@@ -5,13 +5,17 @@ import static org.hamcrest.Matchers.is;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.buildEngines;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createDeployedStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.concurrent.Callable;
 
+import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
+import org.eclipse.core.databinding.observable.set.WritableSet;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -39,6 +43,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.marketcetera.photon.commons.ui.SWTUtilsTest.ExpectedThreadCheckFailure;
+import org.marketcetera.photon.commons.ui.databinding.PropertyWatcherTest.PropertyWatcherElementsRealmCheckFailure;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
@@ -47,6 +53,8 @@ import org.marketcetera.photon.strategy.engine.ui.StrategyEngineColors.StrategyE
 import org.marketcetera.photon.strategy.engine.ui.tests.StrategyEngineTreeTestHelper;
 import org.marketcetera.photon.test.AbstractUIRunner;
 import org.marketcetera.photon.test.JFaceAsserts;
+import org.marketcetera.photon.test.LockRealm;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
@@ -61,7 +69,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class StrategyEngineStatusDecoratorTest {
+public class StrategyEngineStatusDecoratorTest extends PhotonTestBase {
 
     private volatile StrategyEngineStatusDecorator mFixture;
     private IDecoration mMockDecoration;
@@ -85,7 +93,44 @@ public class StrategyEngineStatusDecoratorTest {
     @After
     @UI
     public void after() {
+        mFixture.dispose();
         StrategyEngineColors.dispose();
+    }
+
+    @Test
+    public void testInvalidThread() throws Exception {
+        new ExpectedThreadCheckFailure() {
+            @Override
+            protected void run() throws Exception {
+                mFixture.track(new WritableSet(new LockRealm()));
+            }
+        };
+        new ExpectedThreadCheckFailure() {
+            @Override
+            protected void run() throws Exception {
+                StrategyEngineStatusDecorator.createAndTrack(new WritableSet(
+                        new LockRealm()));
+            }
+        };
+    }
+
+    @Test
+    @UI
+    public void testElementsValidation() throws Exception {
+        final LockRealm realm = new LockRealm();
+        new PropertyWatcherElementsRealmCheckFailure(realm, Realm.getDefault()) {
+            @Override
+            protected void run() throws Exception {
+                mFixture.track(new WritableSet(realm));
+            }
+        };
+        new PropertyWatcherElementsRealmCheckFailure(realm, Realm.getDefault()) {
+            @Override
+            protected void run() throws Exception {
+                StrategyEngineStatusDecorator.createAndTrack(new WritableSet(
+                        realm));
+            }
+        };
     }
 
     @Test
@@ -111,6 +156,8 @@ public class StrategyEngineStatusDecoratorTest {
         verify(mMockDecoration).addOverlay(
                 StrategyEngineImage.ENGINE_CONNECTED_OBJ.getImageDescriptor(),
                 IDecoration.REPLACE);
+        verify(mMockDecoration, never())
+                .setForegroundColor((Color) anyObject());
     }
 
     @Test
@@ -120,8 +167,8 @@ public class StrategyEngineStatusDecoratorTest {
         verify(mMockDecorationContext).putProperty(IDecoration.ENABLE_REPLACE,
                 Boolean.TRUE);
         verify(mMockDecoration).addOverlay(
-                StrategyEngineImage.STRATEGY_STOPPED_OBJ
-                        .getImageDescriptor(), IDecoration.REPLACE);
+                StrategyEngineImage.STRATEGY_STOPPED_OBJ.getImageDescriptor(),
+                IDecoration.REPLACE);
         verify(mMockDecoration).setForegroundColor(
                 StrategyEngineColor.STRATEGY_STOPPED.getColor());
     }
@@ -136,6 +183,8 @@ public class StrategyEngineStatusDecoratorTest {
         verify(mMockDecoration).addOverlay(
                 StrategyEngineImage.STRATEGY_RUNNING_OBJ.getImageDescriptor(),
                 IDecoration.REPLACE);
+        verify(mMockDecoration, never())
+                .setForegroundColor((Color) anyObject());
     }
 
     private StrategyEngineTreeTestHelper mHelper;
@@ -165,7 +214,8 @@ public class StrategyEngineStatusDecoratorTest {
                 mEngine2 = createEngine("DEF");
                 mEngine2.setConnectionState(ConnectionState.CONNECTED);
                 mStrategy = createDeployedStrategy("ABC");
-                mHelper.getModel().addAll(buildEngines(mEngine1, mStrategy, mEngine2));
+                mHelper.getModel().addAll(
+                        buildEngines(mEngine1, mStrategy, mEngine2));
             }
         });
         try {
@@ -205,12 +255,13 @@ public class StrategyEngineStatusDecoratorTest {
         }
     }
 
-    private void assertImage(final SWTBotTreeItem item, final StrategyEngineImage image)
-            throws Throwable {
+    private void assertImage(final SWTBotTreeItem item,
+            final StrategyEngineImage image) throws Throwable {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
-                JFaceAsserts.assertImage(item.widget.getImage(), image.getImageDescriptor());
+                JFaceAsserts.assertImage(item.widget.getImage(), image
+                        .getImageDescriptor());
             }
         });
     }

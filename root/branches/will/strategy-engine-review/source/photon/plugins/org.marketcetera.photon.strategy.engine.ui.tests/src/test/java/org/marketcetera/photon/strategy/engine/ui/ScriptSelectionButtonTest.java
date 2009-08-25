@@ -3,6 +3,7 @@ package org.marketcetera.photon.strategy.engine.ui;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
 import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
+import org.marketcetera.photon.test.PhotonTestBase;
 
 
 /* $License$ */
@@ -14,7 +15,7 @@ import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
  * @version $Id$
  * @since $Release$
  */
-public class ScriptSelectionButtonTest {
+public class ScriptSelectionButtonTest extends PhotonTestBase {
 
     @Test
     public void testValidation() throws Exception {
