@@ -1,9 +1,5 @@
 package org.marketcetera.photon.test;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-
 import java.text.MessageFormat;
 import java.util.concurrent.Callable;
 
@@ -35,7 +31,7 @@ public class SWTBotConditions {
     public static ICondition isClosed(SWTBotShell shell) {
         return new IsClosed(shell);
     }
-    
+
     public static ICondition widgetTextIs(AbstractSWTBot<?> widget,
             String expected) {
         return new WidgetTextIs(widget, expected);
@@ -79,7 +75,7 @@ public class SWTBotConditions {
                 new ImageDescriptor[] { null, null, null, null, null,
                         decoration }));
     }
-    
+
     private static class IsClosed extends DefaultCondition {
 
         private final SWTBotShell mShell;
@@ -95,8 +91,8 @@ public class SWTBotConditions {
 
         @Override
         public String getFailureMessage() {
-            return MessageFormat.format(
-                    "waiting for shell [{0}] to close", mShell.getText());
+            return MessageFormat.format("waiting for shell [{0}] to close",
+                    mShell.getText());
         }
     }
 
@@ -104,6 +100,7 @@ public class SWTBotConditions {
 
         private final AbstractSWTBot<?> mWidget;
         private final String mExpected;
+        private String mLastActual;
 
         private WidgetTextIs(AbstractSWTBot<?> widget, String expected) {
             mWidget = widget;
@@ -112,14 +109,16 @@ public class SWTBotConditions {
 
         @Override
         public boolean test() throws Exception {
-            return mWidget.getText().equals(mExpected);
+            mLastActual = mWidget.getText();
+            return mLastActual.equals(mExpected);
         }
 
         @Override
         public String getFailureMessage() {
-            return MessageFormat.format(
-                    "waiting for text [{0}] on widget [{1}]", mExpected,
-                    mWidget);
+            return MessageFormat
+                    .format(
+                            "waiting for text [{0}] on widget [{1}], most recent value was [{2}]",
+                            mExpected, mWidget, mLastActual);
         }
     }
 
@@ -136,41 +135,24 @@ public class SWTBotConditions {
 
         @Override
         public boolean test() throws Exception {
-            try {
-                return AbstractUIRunner.syncCall(new Callable<Boolean>() {
-                    @Override
-                    public Boolean call() throws Exception {
-                        Image missingImage = JFaceResources.getResources()
-                                .createImage(
-                                        ImageDescriptor
-                                                .getMissingImageDescriptor());
-                        try {
-                            Image expectedImage = JFaceResources.getResources()
-                                    .createImage(mExpected);
-                            try {
-                                assertThat(expectedImage, not(is(missingImage)));
-                                return mWidget.widget.getImage().equals(
-                                        expectedImage);
-                            } finally {
-                                JFaceResources.getResources().destroyImage(
-                                        mExpected);
-                            }
-                        } finally {
-                            JFaceResources
-                                    .getResources()
-                                    .destroyImage(
-                                            ImageDescriptor
-                                                    .getMissingImageDescriptor());
-                        }
+            return AbstractUIRunner.syncCall(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    Image expectedImage = JFaceAsserts
+                            .createImageAndAssertNotMissing(mExpected);
+                    try {
+                        return mWidget.widget.getImage().equals(expectedImage);
+                    } finally {
+                        JFaceResources.getResources().destroyImage(mExpected);
                     }
-                });
-            } catch (Throwable e) {
-                return false;
-            }
+                }
+            });
         }
 
         @Override
         public String getFailureMessage() {
+            // don't have an easy way to display the last tested value - ok
+            // since the image reference number is not that useful for debugging
             return MessageFormat.format(
                     "waiting for image [{0}] on widget [{1}]", mExpected,
                     mWidget);
@@ -181,6 +163,7 @@ public class SWTBotConditions {
 
         private final SWTBotTreeItem mWidget;
         private final Color mExpected;
+        private volatile Color mLastActual;
 
         private TreeItemForegroundIs(SWTBotTreeItem widget, Color expected) {
             mWidget = widget;
@@ -189,24 +172,21 @@ public class SWTBotConditions {
 
         @Override
         public boolean test() throws Exception {
-            try {
-                Color color = AbstractUIRunner.syncCall(new Callable<Color>() {
-                    @Override
-                    public Color call() throws Exception {
-                        return mWidget.widget.getForeground(0);
-                    }
-                });
-                return color.equals(mExpected);
-            } catch (Throwable e) {
-                return false;
-            }
+            return AbstractUIRunner.syncCall(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    final Color mLastActual = mWidget.widget.getForeground(0);
+                    return mLastActual.equals(mExpected);
+                }
+            });
         }
 
         @Override
         public String getFailureMessage() {
-            return MessageFormat.format(
-                    "waiting for foreground color [{0}] on widget [{1}]",
-                    mExpected, mWidget);
+            return MessageFormat
+                    .format(
+                            "waiting for foreground color [{0}] on widget [{1}], most recent value was [{2}]",
+                            mExpected, mWidget, mLastActual);
         }
     }
 

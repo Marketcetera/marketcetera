@@ -11,9 +11,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
 /* $License$ */
 
 /**
- * Test runner that runs UI events starts a separate UI thread. The UI thread
- * initializes a {@link Display} and runs the event loop in the Display's
- * default {@link Realm}.
+ * Test runner that runs UI events in the Display's default {@link Realm}.
  * <p>
  * Any framework method on the test class can be annotated with {@link UI} to
  * indicate it should be run on the UI thread. For example:
@@ -43,8 +41,6 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  *     }
  * }
  * </pre>
- * <p>
- * Currently, a new thread is created for each test.
  * <p>
  * Use {@link WorkbenchRunner} if you need a full workbench.
  * 

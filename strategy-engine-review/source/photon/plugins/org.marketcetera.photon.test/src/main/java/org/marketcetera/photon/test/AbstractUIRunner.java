@@ -248,8 +248,9 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * Hook for subclasses to run the event loop. This method should not return
-     * until ({@link #shutDownUI()} has been called.
+     * Hook for subclasses to run the event loop. This is called at the
+     * beginning of the test in the UI thread and must not return until
+     * {@link #shutDownUI()} is called.
      * 
      * @param display
      *            the display to run the event loop
@@ -271,7 +272,7 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
      * throwable will be rethrown after the current test run (if no other
      * exceptions occurred). Note that only the first throwable captured in this
      * way will be rethrown. Successive calls in the same test will have no
-     * effect.
+     * effect other than printing the throwable's stack trace.
      * 
      * @param throwable
      *            throwable to rethrow after the test run
@@ -337,7 +338,7 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
             mMethod.invokeExplosively(mTarget);
         }
     }
-    
+
     /**
      * Executes the runnable on the UI thread. This is only valid during tests
      * being run with {@link AbstractUIRunner}.
@@ -368,7 +369,7 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
         final AtomicReference<T> ref = new AtomicReference<T>();
         syncRun(new ThrowableRunnable() {
             @Override
-            public void run() throws Throwable {
+            public void run() throws Exception {
                 ref.set(callable.call());
             }
         });
