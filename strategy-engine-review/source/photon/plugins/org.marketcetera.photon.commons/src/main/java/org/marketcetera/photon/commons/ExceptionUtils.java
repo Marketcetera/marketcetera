@@ -1,5 +1,9 @@
 package org.marketcetera.photon.commons;
 
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -15,8 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
 public class ExceptionUtils {
 
     /**
-     * Safely casts a Throwable to RuntimeException. Use this when you know a
-     * Throwable cannot be a checked exception.
+     * Safely casts a Throwable to RuntimeException.
      * 
      * @param throwable
      *            the throwable to launder
@@ -36,6 +39,29 @@ public class ExceptionUtils {
             throw (Error) throwable;
         else
             throw new IllegalStateException("Not unchecked", throwable); //$NON-NLS-1$
+    }
+
+    /**
+     * Gets the result of a future, laundering any resulting
+     * {@link ExecutionException}.
+     * 
+     * @param future
+     *            the future to await
+     * @return the result of future.get()
+     * @throws CancellationException
+     *             if the computation was canceled
+     * @throws InterruptedException
+     *             if the current thread was interrupted while waiting
+     * @throws IllegalStateException
+     *             if the future task throws a checked exception
+     */
+    public static <T> T launderedGet(Future<T> future)
+            throws InterruptedException {
+        try {
+            return future.get();
+        } catch (ExecutionException e) {
+            throw launderThrowable(e.getCause());
+        }
     }
 
     private ExceptionUtils() {

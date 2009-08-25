@@ -32,10 +32,6 @@ import org.marketcetera.util.misc.ClassVersion;
  *     static {
  *         ReflectiveMessages.init(Messages.class);
  *     }
- * 
- *     private Messages() {
- *         throw new AssertionError(&quot;non-instantiable&quot;); //$NON-NLS-1$
- *     }
  * }
  * </pre>
  * 
@@ -47,11 +43,11 @@ import org.marketcetera.util.misc.ClassVersion;
 public final class ReflectiveMessages {
 
     private static final String MESSAGE_ENTRY_SEPARATOR = "__"; //$NON-NLS-1$
-    private static final String EXTENSION_METHOD_NAME = "init"; //$NON-NLS-1$
+    private static final String EXTENSION_METHOD_NAME = "initReflectiveMessages"; //$NON-NLS-1$
 
     /**
      * Initializes message constants for a class. This assumes a properties file
-     * names "_messages.properties" in the same package as clazz. For each
+     * named "_messages.properties" in the same package as clazz. For each
      * static {@link I18NMessage} field in clazz, this method instantiates a
      * suitable instance. The message id and entry id is determined by the
      * following procedure:
@@ -63,13 +59,19 @@ public final class ReflectiveMessages {
      * {@link I18NMessage#UNKNOWN_ENTRY_ID} as the entry id</li>
      * </ul>
      * <p>
-     * This method also supports extension. If a field has a type that is not
-     * assignable to {@link I18NMessage}, this method will attempt to reflect on
-     * the fields type for a static "init" method with the signature:
-     * <p>
-     * <code>Object init(String, I18NLoggerProxy)</code>
-     * <p>
-     * If found, it will invoke this method and set the field to the returned object.
+     * This method also supports extension. If a field has a type Type that is
+     * not assignable to {@link I18NMessage}, this method will attempt to
+     * reflect on Type for a static "initReflectiveMessages" method with the
+     * signature:
+     * 
+     * <pre>
+     * Type initReflectiveMessages(String, I18NLoggerProxy)
+     * </pre>
+     * 
+     * If found, it will invoke this method and set the field to the returned
+     * Type object. Otherwise, the field will be ignored. An example of
+     * extension can be found in
+     * org.marketcetera.photon.commons.ui.LocalizedLabel.
      * 
      * @param clazz
      *            the class to initialize
@@ -77,9 +79,8 @@ public final class ReflectiveMessages {
     public static void init(Class<?> clazz) {
         final String className = clazz.getName();
         try {
-            final I18NMessageProvider provider = new I18NMessageProvider(clazz
-                    .getPackage().getName()
-                    + ".", //$NON-NLS-1$
+            String id = clazz.getPackage().getName().replaceAll("\\.", "/") + "/"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            final I18NMessageProvider provider = new I18NMessageProvider(id,
                     clazz.getClassLoader());
             final I18NLoggerProxy logger = new I18NLoggerProxy(provider);
             Field[] fields = clazz.getDeclaredFields();
@@ -96,7 +97,7 @@ public final class ReflectiveMessages {
                     String entryId = I18NMessage.UNKNOWN_ENTRY_ID;
                     String messageId = fieldName.toLowerCase();
                     String[] split = messageId.split(MESSAGE_ENTRY_SEPARATOR);
-                    if (split.length > 1 && !split[split.length - 1].isEmpty()) {
+                    if (split.length > 1) {
                         String suffix = split[split.length - 1];
                         if (!suffix.isEmpty()) {
                             entryId = suffix;
@@ -141,7 +142,7 @@ public final class ReflectiveMessages {
                         }
                     } catch (NoSuchMethodException e) {
                         Messages.UNSUPPORTED_FIELD_IGNORED.info(
-                                ReflectiveMessages.class, type.getName(),
+                                ReflectiveMessages.class, e, type.getName(),
                                 fieldName, className);
                     }
                 }
@@ -150,6 +151,10 @@ public final class ReflectiveMessages {
             Messages.FAILED_TO_INITIALIZE_CLASS.error(ReflectiveMessages.class,
                     e, className);
         }
+    }
+
+    private ReflectiveMessages() {
+        throw new AssertionError("non-instantiable"); //$NON-NLS-1$
     }
 
     /**

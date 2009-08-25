@@ -5,8 +5,8 @@ import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.util.misc.ClassVersion;
@@ -27,8 +27,14 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public abstract class SimpleExecutorService extends AbstractExecutorService {
 
-    private final AtomicBoolean mIsShutdown = new AtomicBoolean();
+    private final Object mLock = new Object();
+
+    @GuardedBy("mLock")
+    private volatile boolean mIsShutdown;
+
+    @GuardedBy("mLock")
     private volatile boolean mTerminated;
+
     private final CountDownLatch mTerminatedLatch = new CountDownLatch(1);
 
     @Override
@@ -40,7 +46,7 @@ public abstract class SimpleExecutorService extends AbstractExecutorService {
 
     @Override
     public final boolean isShutdown() {
-        return mIsShutdown.get();
+        return mIsShutdown;
     }
 
     @Override
@@ -50,21 +56,23 @@ public abstract class SimpleExecutorService extends AbstractExecutorService {
 
     @Override
     public final void shutdown() {
-        if (mIsShutdown.compareAndSet(false, true)) {
-            synchronized (mIsShutdown) {
+        synchronized (mLock) {
+            if (mIsShutdown) {
+                return;
+            }
+            mIsShutdown = true;
+            try {
                 // queue shutdown command
-                try {
-                    doExecute(new Runnable() {
-                        @Override
-                        public void run() {
-                            mTerminated = true;
-                            mTerminatedLatch.countDown();
-                        }
-                    });
-                } catch (Exception e) {
-                    Messages.SIMPLE_EXECUTOR_SERVICE_ABNORMAL_SHUTDOWN.error(
-                            this, e);
-                }
+                doExecute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTerminated = true;
+                        mTerminatedLatch.countDown();
+                    }
+                });
+            } catch (Exception e) {
+                Messages.SIMPLE_EXECUTOR_SERVICE_ABNORMAL_SHUTDOWN.error(this,
+                        e);
             }
         }
     }
@@ -82,13 +90,8 @@ public abstract class SimpleExecutorService extends AbstractExecutorService {
             // per specification
             throw new NullPointerException("command must not be null"); //$NON-NLS-1$
         }
-        synchronized (mIsShutdown) {
-            /*
-             * The value of the shutdown flag may change before doExecute
-             * completes, but the lock ensures that the current command will
-             * still be queued before the shutdown command.
-             */
-            if (mIsShutdown.get()) {
+        synchronized (mLock) {
+            if (mIsShutdown) {
                 throw new RejectedExecutionException(
                         Messages.SIMPLE_EXECUTOR_SERVICE_REJECT_SHUTDOWN
                                 .getText());
@@ -110,8 +113,9 @@ public abstract class SimpleExecutorService extends AbstractExecutorService {
      * it is guaranteed that this method will no longer be called.
      * 
      * Implementation note: this method is called while holding a lock that
-     * ensures it will not be called concurrently. Subclass implementations
-     * should not call any other method on this class.
+     * ensures it will not be called concurrently. This lock is required by
+     * {@link #shutdown()}, {@link #shutdownNow()}, or
+     * {@link #execute(Runnable)}.
      * 
      * @param command
      *            the runnable task, guaranteed to be non-null
