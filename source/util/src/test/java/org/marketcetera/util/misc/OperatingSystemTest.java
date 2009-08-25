@@ -37,6 +37,7 @@ public class OperatingSystemTest
         single(WINDOWS_XP,   true,false, "WINDOWS_XP,Windows XP,win32");
         single(WINDOWS_CE,   true,false, "WINDOWS_CE,Windows CE,win32");
         single(WINDOWS_VISTA,true,false, "WINDOWS_VISTA,Windows Vista,win32");
+        single(WINDOWS_7    ,true,false, "WINDOWS_7,Windows 7,win32");
 
         single(DARWIN,       false,true, "DARWIN,Darwin,unix");
         single(MAC_OS_X,     false,true, "MAC_OS_X,Mac OS X,unix");
