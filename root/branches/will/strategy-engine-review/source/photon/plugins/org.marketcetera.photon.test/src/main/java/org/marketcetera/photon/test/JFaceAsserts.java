@@ -19,16 +19,47 @@ import org.eclipse.swt.graphics.Image;
  */
 public class JFaceAsserts {
 
+    /**
+     * Asserts that the provided "actual" image is equal to the image described
+     * by the "expected" image descriptor.
+     * 
+     * @param actual
+     *            the actual image
+     * @param expected
+     *            the expected image descriptor
+     */
     public static void assertImage(Image actual, ImageDescriptor expected) {
+        Image expectedImage = createImageAndAssertNotMissing(expected);
+        try {
+            assertThat(actual, is(expectedImage));
+        } finally {
+            JFaceResources.getResources().destroyImage(expected);
+        }
+    }
+
+    /**
+     * Creates an image and asserts that it is not the JFace missing image.
+     * 
+     * NOTE: the caller of this method is responsible for disposing the image
+     * using {@code JFaceResources.getResources().destroyImage(image)} when no
+     * longer needed.
+     * 
+     * @param descriptor
+     *            the descriptor to create
+     * @return the Image, must be disposed by the caller
+     */
+    public static Image createImageAndAssertNotMissing(
+            ImageDescriptor descriptor) {
         Image missingImage = JFaceResources.getResources().createImage(
                 ImageDescriptor.getMissingImageDescriptor());
-        Image expectedImage = JFaceResources.getResources().createImage(
-                expected);
-        assertThat(expectedImage, not(is(missingImage)));
-        assertThat(actual, is(expectedImage));
-        JFaceResources.getResources().destroyImage(expected);
-        JFaceResources.getResources().destroyImage(
-                ImageDescriptor.getMissingImageDescriptor());
+        try {
+            Image image = JFaceResources.getResources().createImage(descriptor);
+            assertThat(image, not(is(missingImage)));
+            return image;
+        } finally {
+            JFaceResources.getResources().destroyImage(
+                    ImageDescriptor.getMissingImageDescriptor());
+        }
     }
 
     private JFaceAsserts() {

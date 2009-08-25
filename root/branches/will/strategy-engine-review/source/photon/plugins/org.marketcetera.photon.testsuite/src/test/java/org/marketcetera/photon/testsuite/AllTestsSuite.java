@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.marketcetera.photon.commons.tests.CommonsSuite;
 import org.marketcetera.photon.commons.ui.tests.CommonsUISuite;
+import org.marketcetera.photon.commons.ui.workbench.tests.CommonsWorkbenchSuite;
 import org.marketcetera.photon.marketdata.tests.MarketDataCoreSuite;
 import org.marketcetera.photon.marketdata.ui.tests.MarketDataUISuite;
 import org.marketcetera.photon.module.tests.ModuleCoreSuite;
@@ -17,8 +18,8 @@ import org.marketcetera.photon.tests.PhotonSuite;
 
 @RunWith(Suite.class)
 @SuiteClasses( { CommonsSuite.class, CommonsUISuite.class,
-        StrategyEngineUISuite.class, ModuleCoreSuite.class,
-        ModuleUISuite.class, MarketDataCoreSuite.class,
+        CommonsWorkbenchSuite.class, StrategyEngineUISuite.class,
+        ModuleCoreSuite.class, ModuleUISuite.class, MarketDataCoreSuite.class,
         MarketDataUISuite.class, NotificationSuite.class, StrategySuite.class,
         PhotonSuite.class, PhotonApplicationSuite.class })
 public class AllTestsSuite {
