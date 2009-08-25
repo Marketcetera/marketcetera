@@ -30,8 +30,8 @@ public final class JFaceUtils {
      * Runs the operation in a wizard container. This is equivalent to:
      * 
      * <pre>
-     * runModalWithErrorDialog(container, cancelable, operation, failureMessage,
-     *         new SameShellProvider(container.getShell()), errorDialogTitle)
+     * runModalWithErrorDialog(container, new SameShellProvider(container.getShell()),
+     *         operation, cancelable, failureMessage)
      * </pre>
      * 
      * @param container
@@ -82,26 +82,73 @@ public final class JFaceUtils {
      * @throws IllegalArgumentException
      *             if any parameter is null
      */
-    public static boolean runModalWithErrorDialog(IRunnableContext context,
-            IShellProvider shellProvider, IRunnableWithProgress operation,
-            boolean cancelable, I18NBoundMessage failureMessage) {
+    public static boolean runModalWithErrorDialog(
+            final IRunnableContext context, IShellProvider shellProvider,
+            final IRunnableWithProgress operation, final boolean cancelable,
+            final I18NBoundMessage failureMessage) {
         Validate.notNull(context, "context", //$NON-NLS-1$ 
                 shellProvider, "shellProvider", //$NON-NLS-1$
                 operation, "operation", //$NON-NLS-1$ 
                 failureMessage, "failureMessage"); //$NON-NLS-1$
+        return runWithErrorDialog(shellProvider, new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                try {
+                    context.run(true, cancelable, operation);
+                    return true;
+                } catch (InterruptedException e) {
+                    // The runnable responded to cancellation. This should only
+                    // happen
+                    // if cancelable is true. Since the exception occurred on a
+                    // separate
+                    // thread where task was forked, there is no need to do
+                    // anything
+                    // here.
+                    failureMessage.info(JFaceUtils.class, e);
+                    return false;
+                } catch (InvocationTargetException e) {
+                    Throwable realException = e.getCause();
+                    if (realException instanceof Error) {
+                        throw (Error) realException;
+                    } else if (realException instanceof Exception) {
+                        throw (Exception) realException;
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+        }, failureMessage);
+    }
+
+    /**
+     * Runs the operation. There are two possible outcomes:
+     * <ol>
+     * <li>The operation is successful - this method will return true.</li>
+     * <li>The operation threw an exception - failureMessage will be logged at
+     * the error level, a MessageDialog will be presented to the user with the
+     * details of the failure, and this method will return false.</li>
+     * </ol>
+     * 
+     * @param shellProvider
+     *            provides the shell for the error dialog
+     * @param operation
+     *            the operation to run
+     * @param failureMessage
+     *            the localized message for logging failures
+     * @return true if the operation succeeded, false if an error occurred
+     * @throws IllegalArgumentException
+     *             if any parameter is null
+     */
+    public static boolean runWithErrorDialog(IShellProvider shellProvider,
+            Callable<Boolean> operation, I18NBoundMessage failureMessage) {
+        Validate.notNull(shellProvider, "shellProvider", //$NON-NLS-1$
+                operation, "operation", //$NON-NLS-1$ 
+                failureMessage, "failureMessage"); //$NON-NLS-1$
         try {
-            context.run(true, cancelable, operation);
-        } catch (InterruptedException e) {
-            // The runnable responded to cancellation. This should only happen
-            // if cancelable is true. Since the exception occurred on a separate
-            // thread where task was forked, there is no need to do anything
-            // here.
-            failureMessage.info(JFaceUtils.class, e);
-            return false;
-        } catch (InvocationTargetException e) {
-            Throwable realException = e.getCause();
-            failureMessage.error(JFaceUtils.class, realException);
-            String message = realException.getLocalizedMessage();
+            return operation.call();
+        } catch (Exception e) {
+            failureMessage.error(JFaceUtils.class, e);
+            String message = e.getLocalizedMessage();
             if (message == null) {
                 message = Messages.JFACE_UTILS_GENERIC_EXCEPTION_OCCURRED
                         .getText();
@@ -111,7 +158,6 @@ public final class JFaceUtils {
                             .getText(), message);
             return false;
         }
-        return true;
     }
 
     /**
@@ -124,7 +170,8 @@ public final class JFaceUtils {
      * @param taskName
      *            the name for the task, may be null
      * @return an {@link IRunnableWithProgress} wrapping the task
-     * @throws IllegalArgumentException if callable is null
+     * @throws IllegalArgumentException
+     *             if callable is null
      */
     public static IRunnableWithProgress wrap(final Callable<Void> callable,
             final String taskName) {

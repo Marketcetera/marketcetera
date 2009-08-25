@@ -2,7 +2,6 @@ package org.marketcetera.photon.commons.ui.databinding;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.l10n.MessageComparator;
 
@@ -18,7 +17,6 @@ import org.marketcetera.util.l10n.MessageComparator;
 public class MessagesTest {
 
     @Test
-    @Ignore("some compatibility issues with MessageComparator and ReflectiveMessages")
     public void messagesMatch() throws Exception {
         MessageComparator comparator = new MessageComparator(Messages.class);
         assertTrue(comparator.getDifferences(), comparator.isMatch());

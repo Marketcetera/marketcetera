@@ -1,7 +1,5 @@
 package org.marketcetera.photon.commons.ui;
 
-import java.text.MessageFormat;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -33,11 +31,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * <li>element.label - the raw label</li>
  * <li>element.tooltip - the tooltip for the label</li>
  * </ol>
- * Typically labels are suffixed with a colon ":", which is handled by
- * {@link #getFormattedLabel()}.
+ * Typically labels are decorated in the UI, e.g. suffixed with a colon ":".
+ * This can be done with {@link #getFormattedLabel()}. The decoration format
+ * pattern is an external string that can be configured as desired.
  * <p>
  * For convenience, the formatted label text and tooltip can be set on a
- * {@link Label} widget by {@link #initializeLabel(Label)}.
+ * {@link Label} widget by {@link #initializeLabel(Label)}. A new Label can be
+ * created with {@link #createLabel(Composite)}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -46,9 +46,8 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public final class LocalizedLabel {
 
-    private static MessageFormat LABEL_PATTERN = new MessageFormat("{0}:"); //$NON-NLS-1$
-    private static String LABEL_ENTRY_ID = "label"; //$NON-NLS-1$
-    private static String TOOLTIP_ENTRY_ID = "tooltip"; //$NON-NLS-1$
+    private static final String LABEL_ENTRY_ID = "label"; //$NON-NLS-1$
+    private static final String TOOLTIP_ENTRY_ID = "tooltip"; //$NON-NLS-1$
 
     private final String mLabel;
     private final String mTooltip;
@@ -128,14 +127,15 @@ public final class LocalizedLabel {
     }
 
     /**
-     * Formats a field label for use in UI by appending ":"
+     * Formats a field label for use in UI by applying a format string. This
+     * typically adds a colon ":" to the label text.
      * 
      * @param message
      *            the field description
      * @return the label string
      */
     public static String formatLabel(String message) {
-        return LABEL_PATTERN.format(new Object[] { message });
+        return Messages.LOCALIZED_LABEL__FORMAT_PATTERN.getText(message);
     }
 
     /**
@@ -147,7 +147,7 @@ public final class LocalizedLabel {
      *            the logger to assist in {@link I18NMessage} construction
      * @return the LocalizedLabel to assign to the field
      */
-    static LocalizedLabel init(String fieldName, I18NLoggerProxy logger) {
+    static LocalizedLabel initReflectiveMessages(String fieldName, I18NLoggerProxy logger) {
         String messageId = fieldName.toLowerCase();
         return new LocalizedLabel(new I18NMessage0P(logger, messageId,
                 LABEL_ENTRY_ID).getText(), new I18NMessage0P(logger, messageId,

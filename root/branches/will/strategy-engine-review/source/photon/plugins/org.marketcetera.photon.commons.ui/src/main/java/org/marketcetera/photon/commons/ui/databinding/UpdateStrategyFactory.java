@@ -3,6 +3,9 @@ package org.marketcetera.photon.commons.ui.databinding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.databinding.EMFUpdateValueStrategy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -46,6 +49,23 @@ public final class UpdateStrategyFactory {
                 };
             }
         };
+    }
+    
+    /**
+     * 
+     */
+    public static UpdateValueStrategy withConvertErrorMessage(final UpdateValueStrategy strategy, final String message) {
+        return strategy.setAfterGetValidator(new IValidator() {
+            @Override
+            public IStatus validate(Object value) {
+                try {
+                    strategy.convert(value);
+                    return ValidationStatus.ok();
+                } catch (Exception e) {
+                    return ValidationStatus.error(message, e);
+                }
+            }
+        });
     }
 
     private UpdateStrategyFactory() {

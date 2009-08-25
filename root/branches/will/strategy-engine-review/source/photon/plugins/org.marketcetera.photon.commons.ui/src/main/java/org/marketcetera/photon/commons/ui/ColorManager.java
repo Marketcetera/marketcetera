@@ -31,9 +31,7 @@ import com.google.common.collect.Maps;
  * <li>not initialized - getColor returns null for all ColorDescriptors and
  * IColorDescriptorProviders.</li>
  * <li>initialized - getColor returns a valid Color for all ColorDescriptors
- * that were used to create the manager. getColor will not return a disposed
- * Color unless a client has improperly disposed the Color outside of the
- * manager.</li>
+ * that were used to create the manager.</li>
  * </ol>
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
@@ -68,16 +66,13 @@ public class ColorManager {
      *            the enum class
      * @return a ColorManager for the ColorDescriptors provided by the enum
      *         instances
-     * @throws ClassCastException
-     *             if the enum does not implement
-     *             {@link IColorDescriptorProvider}
      * @throws IllegalStateException
      *             if any enum instance provides a null ColorDescriptor
      */
-    public static <E extends Enum<E>> ColorManager createForEnum(Class<E> clazz) {
+    public static <E extends Enum<E> & IColorDescriptorProvider> ColorManager createForEnum(Class<E> clazz) {
         Collection<IColorDescriptorProvider> providers = Lists.newArrayList();
-        for (E provider : EnumSet.allOf(clazz)) {
-            providers.add(((IColorDescriptorProvider) provider));
+        for (IColorDescriptorProvider provider : EnumSet.allOf(clazz)) {
+            providers.add(provider);
         }
         return createForProviders(providers);
     }
@@ -123,7 +118,8 @@ public class ColorManager {
     }
 
     /**
-     * Returns the Color for the provider's descriptor.
+     * Returns the Color for the provider's descriptor. Clients must not dispose
+     * the returned Color.
      * 
      * @param provider
      *            the color descriptor provider

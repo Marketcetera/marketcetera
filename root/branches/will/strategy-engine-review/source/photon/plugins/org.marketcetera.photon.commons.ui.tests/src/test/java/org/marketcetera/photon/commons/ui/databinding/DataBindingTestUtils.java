@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.widgets.AbstractSWTBot;
 import org.marketcetera.photon.test.AbstractUIRunner;
+import org.marketcetera.photon.test.PhotonTestBase;
 
 /* $License$ */
 
@@ -24,26 +25,26 @@ import org.marketcetera.photon.test.AbstractUIRunner;
  * @version $Id$
  * @since $Release$
  */
-public class DataBindingTestUtils {
+public class DataBindingTestUtils extends PhotonTestBase {
 
     public static void testRequiredText(SWTBot bot, EObject object,
-            EStructuralFeature feature, String description, String tooltip)
-            throws Exception {
+            EStructuralFeature feature, String description, String tooltip,
+            String testText) throws Exception {
         testRequiredControl(bot, bot.textWithLabel(description + ":"), object,
-                feature, description, tooltip);
+                feature, description, tooltip, testText);
     }
 
     public static void testOptionalText(SWTBot bot, EObject object,
-            EStructuralFeature feature, String description, String tooltip)
-            throws Exception {
+            EStructuralFeature feature, String description, String tooltip,
+            String testText) throws Exception {
         testOptionalControl(bot, bot.textWithLabel(description + ":"), object,
-                feature, description, tooltip);
+                feature, description, tooltip, "abc");
     }
 
     public static void testRequiredControl(SWTBot bot,
             AbstractSWTBot<? extends Control> control, EObject object,
-            EStructuralFeature feature, String description, String tooltip)
-            throws Exception {
+            EStructuralFeature feature, String description, String tooltip,
+            String testText) throws Exception {
         assertThat(bot.label(description + ":").getToolTipText(), is(tooltip));
         SWTBotControlDecoration decoration = new SWTBotControlDecoration(
                 control);
@@ -51,28 +52,33 @@ public class DataBindingTestUtils {
                 .getRequiredValueMessage(description);
         decoration.assertRequired(message);
         assertThat(control.getText(), is(""));
-        setText(control, "abc");
-        assertThat(eGet(object, feature), is((Object) "abc"));
+        setText(control, testText);
+        assertThat(String.valueOf(eGet(object, feature)), is(testText));
         decoration.assertHidden();
         setText(control, "");
         assertThat(eGet(object, feature), nullValue());
-        decoration.assertError(message);
+        decoration.assertRequired(message);
     }
 
     public static void testOptionalControl(SWTBot bot,
             AbstractSWTBot<? extends Control> control, EObject object,
-            EStructuralFeature feature, String description, String tooltip)
-            throws Exception {
+            EStructuralFeature feature, String description, String tooltip,
+            String testText) throws Exception {
         assertThat(bot.label(description + ":").getToolTipText(), is(tooltip));
         assertThat(control.getText(), is(""));
-        setText(control, "abc");
-        assertThat(eGet(object, feature), is((Object) "abc"));
+        setText(control, testText);
+        assertThat(String.valueOf(eGet(object, feature)), is(testText));
         setText(control, "");
         assertThat(eGet(object, feature), nullValue());
     }
 
     public static void setText(final AbstractSWTBot<? extends Control> control,
             final String text) throws Exception {
+        /*
+         * AbstractSWTBot does not have setText(), but most subclasses have it.
+         * This makes testing easier, but will fail if called for a control that
+         * doesn't support it.
+         */
         Method method = control.getClass().getMethod("setText",
                 new Class[] { String.class });
         method.invoke(control, new Object[] { text });

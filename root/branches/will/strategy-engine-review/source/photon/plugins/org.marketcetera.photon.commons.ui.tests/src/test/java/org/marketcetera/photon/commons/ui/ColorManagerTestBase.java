@@ -24,6 +24,7 @@ import org.marketcetera.photon.commons.ui.ColorManager.IColorDescriptorProvider;
 import org.marketcetera.photon.commons.ui.SWTUtilsTest.ExpectedThreadCheckFailure;
 import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.photon.test.ExpectedIllegalArgumentException;
+import org.marketcetera.photon.test.PhotonTestBase;
 
 /* $License$ */
 
@@ -34,7 +35,7 @@ import org.marketcetera.photon.test.ExpectedIllegalArgumentException;
  * @version $Id$
  * @since $Release$
  */
-public abstract class ColorManagerTestBase {
+public abstract class ColorManagerTestBase extends PhotonTestBase {
 
     abstract protected void init();
 

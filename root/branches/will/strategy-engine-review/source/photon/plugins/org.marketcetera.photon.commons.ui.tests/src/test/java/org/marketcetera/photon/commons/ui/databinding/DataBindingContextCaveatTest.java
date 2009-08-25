@@ -17,6 +17,7 @@ import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
 import org.marketcetera.photon.test.ExpectedFailure;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.ThreadRealm;
 
 /* $License$ */
@@ -35,7 +36,7 @@ import org.marketcetera.photon.test.ThreadRealm;
  * @version $Id$
  * @since $Release$
  */
-public class DataBindingContextCaveatTest {
+public class DataBindingContextCaveatTest extends PhotonTestBase {
     @Test
     public void test() throws Exception {
         new ExpectedFailure<AssertionFailedException>(

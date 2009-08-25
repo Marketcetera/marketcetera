@@ -7,14 +7,20 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Locale;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.photon.commons.ReflectiveMessages;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
+import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.log.I18NMessageProvider;
@@ -29,7 +35,17 @@ import org.marketcetera.util.log.I18NMessageProvider;
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
-public class LocalizedLabelTest {
+public class LocalizedLabelTest extends PhotonTestBase {
+    
+    @Before
+    public void before() {
+        ActiveLocale.pushLocale(Locale.ROOT);
+    }
+    
+    @After
+    public void after() {
+        ActiveLocale.popLocale();
+    }
     
     @Test
     public void testExtension() throws Exception {
@@ -37,7 +53,7 @@ public class LocalizedLabelTest {
         final I18NLoggerProxy mockLogger = new I18NLoggerProxy(mockProvider);
         when(mockProvider.getText((I18NMessage) anyObject())).thenReturn("abc")
                 .thenReturn("xyz");
-        LocalizedLabel l = LocalizedLabel.init("ABCD", mockLogger);
+        LocalizedLabel l = LocalizedLabel.initReflectiveMessages("ABCD", mockLogger);
         assertThat(l.getRawLabel(), is("abc"));
         assertThat(l.getTooltip(), is("xyz"));
         ReflectiveMessages.init(Messages.class);

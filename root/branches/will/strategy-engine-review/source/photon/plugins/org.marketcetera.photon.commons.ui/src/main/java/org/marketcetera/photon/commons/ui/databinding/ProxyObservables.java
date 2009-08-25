@@ -8,6 +8,7 @@ import org.eclipse.core.databinding.observable.IDisposeListener;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -34,7 +35,7 @@ public class ProxyObservables {
      * of the usage of a {@link DataBindingContext} which is limited in that its
      * bound observables can only be disposed from its realm.
      * 
-     * @param original
+     * @param originalList
      *            the list to proxy
      * @return the proxy list
      * @throws IllegalArgumentException
@@ -44,13 +45,13 @@ public class ProxyObservables {
      * @throws IllegalStateException
      *             if the default realm is not the current realm
      */
-    public static IObservableList proxyList(IObservableList original) {
+    public static IObservableList proxyList(IObservableList originalList) {
         Realm realm = Realm.getDefault();
         if (realm == null) {
             throw new IllegalStateException(
                     "this method requires a default realm"); //$NON-NLS-1$
         }
-        return proxyList(realm, original);
+        return proxyList(realm, originalList);
     }
 
     /**
@@ -65,34 +66,29 @@ public class ProxyObservables {
      * of the usage of a {@link DataBindingContext} which is limited in that its
      * bound observables can only be disposed from its realm.
      * 
-     * @param original
+     * @param realm
+     *            the realm on which to proxy
+     * @param originalList
      *            the list to proxy
      * @return the proxy list
      * @throws IllegalArgumentException
-     *             if realm is null
-     * @throws IllegalArgumentException
-     *             if original is null
+     *             if realm or original is null
      * @throws IllegalStateException
      *             if the provided realm is not the current realm
      */
     public static IObservableList proxyList(Realm realm,
-            final IObservableList original) {
-        if (realm == null) {
-            throw new IllegalArgumentException("the realm cannot be null"); //$NON-NLS-1$
-        }
-        if (original == null) {
-            throw new IllegalArgumentException(
-                    "the original list cannot be null"); //$NON-NLS-1$
-        }
+            final IObservableList originalList) {
+        Validate.notNull(realm, "realm", //$NON-NLS-1$
+                originalList, "originalList"); //$NON-NLS-1$
         if (!realm.isCurrent()) {
             throw new IllegalStateException(
                     "must be called from the proxy realm"); //$NON-NLS-1$
         }
-        if (realm.equals(original.getRealm())) {
-            return original;
+        if (realm.equals(originalList.getRealm())) {
+            return originalList;
         }
         final WritableList list = new WritableList(realm,
-                new ArrayList<Object>(), original.getElementType());
+                new ArrayList<Object>(), originalList.getElementType());
         final DataBindingContext dbc = new DataBindingContext(realm);
         /*
          * A dispose listener is added to the original list to clean up the
@@ -107,15 +103,15 @@ public class ProxyObservables {
                 }
             }
         };
-        original.addDisposeListener(originalDisposeListener);
+        originalList.addDisposeListener(originalDisposeListener);
         list.addDisposeListener(new IDisposeListener() {
             @Override
             public void handleDispose(DisposeEvent staleEvent) {
-                original.removeDisposeListener(originalDisposeListener);
+                originalList.removeDisposeListener(originalDisposeListener);
                 dbc.dispose();
             }
         });
-        dbc.bindList(list, original);
+        dbc.bindList(list, originalList);
         return list;
     }
 

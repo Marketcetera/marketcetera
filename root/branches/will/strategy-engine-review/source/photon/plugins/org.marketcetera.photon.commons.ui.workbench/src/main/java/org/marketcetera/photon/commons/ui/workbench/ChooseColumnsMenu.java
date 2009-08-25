@@ -1,4 +1,4 @@
-package org.marketcetera.photon.commons.ui.table;
+package org.marketcetera.photon.commons.ui.workbench;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -20,10 +20,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Dynamic menu that allows columns to be added or removed.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: ChooseColumnsMenu.java 10490 2009-04-13 22:15:23Z tlerios $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: ChooseColumnsMenu.java 10490 2009-04-13 22:15:23Z tlerios $")
 public class ChooseColumnsMenu extends CompoundContributionItem {
 
 	private static final int DEFAULT_WIDTH = 100;
@@ -32,7 +32,7 @@ public class ChooseColumnsMenu extends CompoundContributionItem {
 	/**
 	 * Interface for objects that have a table.
 	 */
-	@ClassVersion("$Id$")
+	@ClassVersion("$Id: ChooseColumnsMenu.java 10490 2009-04-13 22:15:23Z tlerios $")
 	public interface IColumnProvider {
 
 		/**
