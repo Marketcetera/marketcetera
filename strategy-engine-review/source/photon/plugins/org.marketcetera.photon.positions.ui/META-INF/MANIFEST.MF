@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.ui,
  org.marketcetera.photon.commons.ui,
  org.marketcetera.core,
  org.eclipse.jface.databinding,
- org.eclipse.core.databinding
+ org.eclipse.core.databinding,
+ org.marketcetera.photon.commons.ui.workbench
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin

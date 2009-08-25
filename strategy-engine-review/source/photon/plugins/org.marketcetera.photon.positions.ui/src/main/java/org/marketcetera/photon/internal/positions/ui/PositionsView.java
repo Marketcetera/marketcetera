@@ -38,9 +38,9 @@ import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.PageBookView;
 import org.marketcetera.core.position.Grouping;
-import org.marketcetera.photon.commons.ui.FilterBox;
-import org.marketcetera.photon.commons.ui.FilterBox.FilterChangeEvent;
-import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
+import org.marketcetera.photon.commons.ui.workbench.FilterBox;
+import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnProvider;
+import org.marketcetera.photon.commons.ui.workbench.FilterBox.FilterChangeEvent;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
