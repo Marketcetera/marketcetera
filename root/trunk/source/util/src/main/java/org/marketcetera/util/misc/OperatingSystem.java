@@ -22,6 +22,7 @@ public enum OperatingSystem
     WINDOWS_CE("Windows CE"), //$NON-NLS-1$
     WINDOWS_XP("Windows XP"), //$NON-NLS-1$
     WINDOWS_VISTA("Windows Vista"), //$NON-NLS-1$
+    WINDOWS_7("Windows 7"), //$NON-NLS-1$
     MAC_OS_X("Mac OS X"), //$NON-NLS-1$
     DARWIN("Darwin"), //$NON-NLS-1$
     FREEBSD("FreeBSD"), //$NON-NLS-1$ 
@@ -152,7 +153,8 @@ public enum OperatingSystem
                 (this==WINDOWS_2003) ||
                 (this==WINDOWS_CE) ||
                 (this==WINDOWS_XP) ||
-                (this==WINDOWS_VISTA));
+                (this==WINDOWS_VISTA) ||
+                (this==WINDOWS_7));
     }
 
     /**
