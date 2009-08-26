@@ -51,7 +51,6 @@ public class DisplayThreadExecutorTest extends SimpleExecutorServiceTestBase {
                     mDisplay.readAndDispatch();
                     Thread.yield();
                 }
-                System.out.println("shutdown");
             }
         });
         latch.await();

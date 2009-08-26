@@ -102,7 +102,7 @@ public final class DeployStrategyWizard extends Wizard {
             }
         }, Messages.DEPLOY_STRATEGY_WIZARD_DEPLOY__TASK_NAME.getText(name));
         final boolean success = JFaceUtils.runModalWithErrorDialog(
-                getContainer(), operation, true, new I18NBoundMessage1P(
+                getContainer(), operation, false, new I18NBoundMessage1P(
                         Messages.DEPLOY_STRATEGY_WIZARD_DEPLOY_FAILED, name));
         if (success) {
             mResult = result.get();
