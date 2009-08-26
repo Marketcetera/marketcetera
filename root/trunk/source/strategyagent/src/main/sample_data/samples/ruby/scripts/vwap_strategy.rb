@@ -67,7 +67,7 @@ class VWAPStrategy < Strategy
           order.time_in_force = TimeInForce::Day
           order.price = BigDecimal.new(@vwaps[symbol])
           info "Sending order #{order}"
-          send_order(order)      
+          send order      
         else 
           warn "didnt' find anything for #{symbol} and checked value was #{@vwaps[symbol]} within #{@vwaps.inspect}"
         end

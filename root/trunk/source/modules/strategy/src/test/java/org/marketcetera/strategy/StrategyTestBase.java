@@ -367,6 +367,14 @@ public class StrategyTestBase
             {
                 return dataFlowID;
             }
+            /* (non-Javadoc)
+             * @see java.lang.Object#toString()
+             */
+            @Override
+            public String toString()
+            {
+                return data == null ? "null data" : data.toString();
+            }
             /**
              * Get the data value.
              *
@@ -420,6 +428,85 @@ public class StrategyTestBase
         extends Module
         implements DataEmitter
     {
+        /**
+         * data to transmit
+         */
+        private static final List<Object> dataToSend = new ArrayList<Object>();
+        /**
+         * Sets the data to transmit.
+         *
+         * @param inData a <code>List&lt;Object&gt;</code> value
+         */
+        public static void setDataToSend(List<Object> inData)
+        {
+            synchronized(dataToSend) {
+                dataToSend.clear();
+                dataToSend.addAll(inData);
+            }
+        }
+        /**
+         * Gets the data that will be tramsitted.
+         *
+         * @return a <code>List&lt;Object&gt;</code> value
+         */
+        public static List<Object> getDataToSend()
+        {
+            synchronized(dataToSend) {
+                return dataToSend;
+            }
+        }
+        /**
+         * Rests the data to be transmitted to its default setting.
+         *
+         * @throws Exception if an error occurs
+         */
+        public static void setDataToSendToDefaults()
+            throws Exception
+        {
+            synchronized(dataToSend) {
+                dataToSend.clear();
+                dataToSend.add(new TradeEvent(System.nanoTime(),
+                                              System.currentTimeMillis(),
+                                              new MSymbol("GOOG"),
+                                              "Exchange",
+                                              new BigDecimal("100"),
+                                              new BigDecimal("10000")));
+                dataToSend.add(new BidEvent(System.nanoTime(),
+                                            System.currentTimeMillis(),
+                                            new MSymbol("GOOG"),
+                                            "Exchange",
+                                            new BigDecimal("200"),
+                                            new BigDecimal("20000")));
+                dataToSend.add(new AskEvent(System.nanoTime(),
+                                            System.currentTimeMillis(),
+                                            new MSymbol("GOOG"),
+                                            "Exchange",
+                                            new BigDecimal("200"),
+                                            new BigDecimal("20000")));
+                Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
+                OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
+                                                                                                                null, Originator.Server, null, null);
+                dataToSend.add(cancel);
+                Message executionReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport("orderid",
+                                                                                                  "clOrderID",
+                                                                                                  "execID",
+                                                                                                  OrdStatus.FILLED,
+                                                                                                  Side.BUY,
+                                                                                                  new BigDecimal(100),
+                                                                                                  new BigDecimal(200),
+                                                                                                  new BigDecimal(300),
+                                                                                                  new BigDecimal(400),
+                                                                                                  new BigDecimal(500),
+                                                                                                  new BigDecimal(600),
+                                                                                                  new MSymbol("Symbol"),
+                                                                                                  "account");
+                dataToSend.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
+                                                                                                  new BrokerID("some-broker"),
+                                                                                                  Originator.Server, null, null));
+                // send an object that doesn't fit one of the categories
+                dataToSend.add(new Date());
+            }
+        }
         /**
          * Create a new MockRecorderModule instance.
          *
@@ -482,46 +569,11 @@ public class StrategyTestBase
         private void sendDataTypes(DataEmitterSupport inSupport)
             throws Exception
         {
-            inSupport.send(new TradeEvent(System.nanoTime(),
-                                          System.currentTimeMillis(),
-                                          new MSymbol("GOOG"),
-                                          "Exchange",
-                                          new BigDecimal("100"),
-                                          new BigDecimal("10000")));
-            inSupport.send(new BidEvent(System.nanoTime(),
-                                        System.currentTimeMillis(),
-                                        new MSymbol("GOOG"),
-                                        "Exchange",
-                                        new BigDecimal("200"),
-                                        new BigDecimal("20000")));
-            inSupport.send(new AskEvent(System.nanoTime(),
-                                        System.currentTimeMillis(),
-                                        new MSymbol("GOOG"),
-                                        "Exchange",
-                                        new BigDecimal("200"),
-                                        new BigDecimal("20000")));
-            Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
-            OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
-                                                                                                            null, Originator.Server, null, null);
-            inSupport.send(cancel);
-            Message executionReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport("orderid",
-                                                                                              "clOrderID",
-                                                                                              "execID",
-                                                                                              OrdStatus.FILLED,
-                                                                                              Side.BUY,
-                                                                                              new BigDecimal(100),
-                                                                                              new BigDecimal(200),
-                                                                                              new BigDecimal(300),
-                                                                                              new BigDecimal(400),
-                                                                                              new BigDecimal(500),
-                                                                                              new BigDecimal(600),
-                                                                                              new MSymbol("Symbol"),
-                                                                                              "account");
-            inSupport.send(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
-                                                                                              new BrokerID("some-broker"),
-                                                                                              Originator.Server, null, null));
-            // send an object that doesn't fit one of the categories
-            inSupport.send(this);
+            synchronized(dataToSend) {
+                for(Object o : dataToSend) {
+                    inSupport.send(o);
+                }
+            }
         }
         /**
          * The {@link ModuleFactory} implementation for {@link StrategyDataEmissionModule}.
@@ -1132,6 +1184,7 @@ public class StrategyTestBase
                                 "Q",
                                 new BigDecimal("100.00"),
                                 new BigDecimal("10000"));
+        StrategyDataEmissionModule.setDataToSendToDefaults();
     }
     /**
      * Run after each test.

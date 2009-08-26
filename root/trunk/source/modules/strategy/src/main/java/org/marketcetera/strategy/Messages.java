@@ -78,6 +78,18 @@ public interface Messages
                                                                          "invalid_strategy_name"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_ORDER = new I18NMessage1P(LOGGER,
                                                                 "invalid_order"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_DATA = new I18NMessage1P(LOGGER,
+                                                                "invalid_data"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_DATA_REQUEST = new I18NMessage1P(LOGGER,
+                                                                        "invalid_data_request"); //$NON-NLS-1$
+    static final I18NMessage2P DATA_REQUEST_FAILED = new I18NMessage2P(LOGGER,
+                                                                       "data_request_failed"); //$NON-NLS-1$
+    static final I18NMessage2P DATA_REQUEST_CANCEL_FAILED = new I18NMessage2P(LOGGER,
+                                                                              "data_request_cancel_failed"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_DATA_REQUEST_CANCEL = new I18NMessage1P(LOGGER,
+                                                                               "invalid_data_request_cancel"); //$NON-NLS-1$
+    static final I18NMessage2P STRATEGY_NOT_READY_TO_RECEIVE_DATA = new I18NMessage2P(LOGGER,
+                                                                                      "strategy_not_ready_to_receive_data"); //$NON-NLS-1$
     static final I18NMessage1P ORDER_VALIDATION_FAILED = new I18NMessage1P(LOGGER,
                                                                            "order_validation_failed"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_CANCEL = new I18NMessage1P(LOGGER,
@@ -172,6 +184,8 @@ public interface Messages
                                                                           "submitting_fix_message"); //$NON-NLS-1$
     static final I18NMessage3P SUBMITTING_ORDER = new I18NMessage3P(LOGGER,
                                                                     "submitting_order"); //$NON-NLS-1$
+    static final I18NMessage2P SUBMITTING_OTHER = new I18NMessage2P(LOGGER,
+                                                                    "submitting_other"); //$NON-NLS-1$
     static final I18NMessage2P SUBMITTING_TRADE_SUGGESTION = new I18NMessage2P(LOGGER,
                                                                                "submitting_trade_suggestion"); //$NON-NLS-1$
     static final I18NMessage1P MESSAGE_1P = new I18NMessage1P(LOGGER,

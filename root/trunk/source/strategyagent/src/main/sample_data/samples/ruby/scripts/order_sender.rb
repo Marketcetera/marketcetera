@@ -58,8 +58,8 @@ class OrderSender < Strategy
       order.setTimeInForce TimeInForce::Day
       warn "Sending Order " + order.to_s
 
-      order_id = send_order order
-      warn "Sent Order:"+order_id.to_s
+      send order
+      warn "Sent Order:"+order.to_s
 
       cancel_data_request @requestID
       info "Cancelled Market Data Request " + @requestID.to_s
@@ -86,8 +86,8 @@ class OrderSender < Strategy
       order.setTimeInForce TimeInForce::Day
       warn "Sending Order " + order.to_s
 
-      order_id = send_order order
-      warn "Sent Order:"+order_id.to_s
+      send order
+      warn "Sent Order:"+order.to_s
 
       cancel_data_request @requestID
       info "Cancelled Market Data Request " + @requestID.to_s

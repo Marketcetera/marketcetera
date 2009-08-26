@@ -12,12 +12,18 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowSupport;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 
 import quickfix.Message;
@@ -185,7 +191,7 @@ public class Strategy
     {
     }
     /**
-     * Invoked when the <code>Strategy</code> receives a callback requested via {@link #request_callback_at(long, Object)}
+     * Invoked when the <code>Strategy</code> receives a callback requested via {@link #request_callback_at(Date, Object)}
      * or {@link #request_callback_after(long, Object)}.
      * 
      * @param inData an <code>Object</code> value which was passed to the request, may be null
@@ -431,14 +437,14 @@ public class Strategy
         sendEvent(inEvent);
     }
     /**
-     * Sends an order to all subscribers to which orders are sent.
+     * Sends an object to subscribers.
      *
-     * @param inOrder an <code>OrderSingle</code> value
-     * @return an <code>OrderID</code> value representing the order sent
+     * @param inData an <code>Object</code> value
+     * @return a <code>boolean</code> value indicating whether the object was successfully transmitted or not
      */
-    public final OrderID send_order(OrderSingle inOrder)
+    public final boolean send(Object inData)
     {
-        return sendOrder(inOrder);
+        return super.send(inData);
     }
     /**
      * Submits a request to cancel the <code>OrderSingle</code> with the given <code>OrderID</code>.
@@ -447,27 +453,37 @@ public class Strategy
      * have no effect.
      *
      * @param inOrderID an <code>OrderID</code> value
-     * @return a <code>boolean</code> value indicating whether the cancel request was submitted or not
+     * @param inSendOrder a <code>boolean</code> value indicating whether the <code>OrderCancel</code> should be submitted or just returned to the caller.  If <code>false</code>,
+     *   it is the caller's responsibility to submit the <code>OrderReplace</code> with {@link #send(Object)}.
+     * @return an <code>OrderCancel</code> value containing the cancel order or <code>null</code> if
+     *   the <code>OrderCancel</code> could not be constructed
      */
-    public final boolean cancel_order(OrderID inOrderID)
+    public final OrderCancel cancel_order(OrderID inOrderID,
+                                          boolean inSendOrder)
     {
-        return cancelOrder(inOrderID);
+        return cancelOrder(inOrderID,
+                           inSendOrder);
     }
     /**
      * Submits a cancel-replace order for the given <code>OrderID</code> with the given <code>Order</code>. 
      *
      * <p>The order must have been submitted by this strategy during this session or this call will
-     * have no effect.
+     * have no effect.  If <code>inSendOrder</code> is <code>false</code>, it is the caller's responsibility to submit the <code>OrderReplace</code>.
+     * Upon successful completion of this method, the given <code>OrderID</code> may not be again canceled or replaced.
      *
      * @param inOrderID an <code>OrderID</code> value containing the order to cancel
      * @param inNewOrder an <code>OrderSingle</code> value containing the order with which to replace the existing order
-     * @return an <code>OrderID</code> value containing the <code>OrderID</code> of the new order
+     * @param inSendOrder a <code>boolean</code> value indicating whether the <code>OrderReplace</code> should be submitted or just returned to the caller.  If <code>false</code>,
+     *   it is the caller's responsibility to submit the <code>OrderReplace</code> with {@link #send(Object)}.
+     * @return an <code>OrderReplace</code> value containing the new order or <code>null</code> if the old order could not be canceled and the new one could not be sent
      */
-    public final OrderID cancel_replace(OrderID inOrderID,
-                                        OrderSingle inNewOrder)
+    public final OrderReplace cancel_replace(OrderID inOrderID,
+                                             OrderSingle inNewOrder,
+                                             boolean inSendOrder)
     {
         return cancelReplace(inOrderID,
-                             inNewOrder);
+                             inNewOrder,
+                             inSendOrder);
     }
     /**
      * Submits cancel requests for all <code>OrderSingle</code> objects created during this session.
@@ -481,6 +497,36 @@ public class Strategy
         return cancelAllOrders();
     }
     /**
+     * Initiates a data flow request.
+     * 
+     * <p>See {@link DataFlowSupport#createDataFlow(DataRequest[], boolean)}. 
+     *
+     * @param inAppendDataSink a <code>boolean</code> value indicating if the sink module should be appended to the
+     *   data pipeline, if it's not already requested as the last module and the last module is capable of emitting data.
+     * @param inRequests a <code>DataRequest[]</code> value containing the ordered list of requests. Each instance
+     *   identifies a stage of the data pipeline. The data from the first stage is piped to the next.
+     * @return a <code>DataFlowID</code> value containing a unique ID identifying the data flow. The ID can be used to cancel
+     *   the data flow request and get more details on it.  Returns <code>null</code> if the request could not be created.
+     */
+    public final DataFlowID create_data_flow(boolean inAppendDataSink,
+                                             DataRequest[] inRequests)
+    {
+        return createDataFlow(inAppendDataSink,
+                              inRequests);
+    }
+    /**
+     * Cancels a data flow identified by the supplied data flow ID.
+     *
+     * <p>See {@link DataFlowSupport#cancel(DataFlowID)}.
+     *
+     * @param inDataFlowID a <code>DataFlowID</code> value containing the request handle that was returned from
+     *   a prior call to {@link #create_data_flow(boolean, DataRequest[])}
+     */
+    public final void cancel_data_flow(DataFlowID inDataFlowID)
+    {
+        cancelDataFlow(inDataFlowID);
+    }
+    /**
      * Gets the <code>ExecutionReport</code> values received during the current session that
      * match the given <code>OrderID</code>.
      * 
@@ -488,7 +534,7 @@ public class Strategy
      * by this strategy during the current session.  If not, an empty list will be returned.
      *
      * @param inOrderID an <code>OrderID</code> value corresponding to an <code>OrderSingle</code>
-     *   generated during this session by this strategy via {@link #send_order(OrderSingle)} or {@link #cancel_replace(OrderID, OrderSingle)}.
+     *   generated during this session by this strategy via {@link #send(Object)} or {@link #cancel_replace(OrderID, OrderSingle, boolean)}
      * @return an <code>ExecutionReport[]</code> value containing the <code>ExecutionReport</code> objects as limited according to
      *   the conditions enumerated above
      */
@@ -579,7 +625,7 @@ public class Strategy
      * Returns the list of brokers known to the system.
      *
      * <p>These values can be used to create and send orders with {@link #send_message(Message, BrokerID)}
-     * or {@link #send_order(OrderSingle)}.
+     * or {@link #send(Object)}.
      *
      * @return a <code>BrokerStatus[]</code> value
      */
@@ -599,5 +645,14 @@ public class Strategy
     {
         return getPositionAsOf(inDate,
                                inSymbol);
+    }
+    /**
+     * Gets the {@link ModuleURN} of this strategy.
+     *
+     * @return a <code>ModuleURN</code> value
+     */
+    public final ModuleURN get_urn()
+    {
+        return getURN();
     }
 }

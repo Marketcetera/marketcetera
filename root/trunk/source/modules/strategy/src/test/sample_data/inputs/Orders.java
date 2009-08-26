@@ -12,7 +12,8 @@ import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
-
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderReplace;
 
 /* $License$ */
 
@@ -33,7 +34,7 @@ public class Orders
     public void onAsk(AskEvent inAsk)
     {
         if(getProperty("orderShouldBeNull") != null) {
-            sendOrder(null);
+            send(null);
         } else {
             OrderSingle order = Factory.getInstance().createOrderSingle();
             order.setAccount(getProperty("account"));
@@ -65,7 +66,7 @@ public class Orders
                          order.getOrderID().toString());
             setProperty("transactTime",
                          Long.toString(System.currentTimeMillis()));
-            sendOrder(order);
+            send(order);
         }
     }
     /* (non-Javadoc)
@@ -115,15 +116,26 @@ public class Orders
     public void onOther(Object inEvent)
     {
         if(inEvent instanceof OrderID) {
+            String shouldSkipSend = getProperty("skipSubmitOrders");
+            String shouldDelaySend = getProperty("delaySubmitOrders");
+            String newAccountName = getProperty("newAccountName");
+            OrderCancel orderCancel = cancelOrder((OrderID)inEvent,
+                                                  (shouldSkipSend == null ? true : false));
             setProperty("orderCanceled",
-                        Boolean.toString(cancelOrder((OrderID)inEvent)));
+                        orderCancel == null ? "false" : "true");
+            if(shouldDelaySend != null) {
+                orderCancel.setAccount(newAccountName);
+                send(orderCancel);
+            }
         } else if(inEvent instanceof OrderSingle) {
             doCancelReplaceTest(inEvent);
         } else if(inEvent instanceof String){
             doCancelReplaceTest(inEvent);
         } else {
+            OrderCancel orderCancel = cancelOrder(null,
+                                                  true);
             setProperty("orderCanceled",
-                        Boolean.toString(cancelOrder(null)));
+                        orderCancel == null ? "false" : "true");
         }
     }
     /**
@@ -134,6 +146,8 @@ public class Orders
     private void doCancelReplaceTest(Object inEvent)
     {
         String orderIDString = getProperty("orderID");
+        String shouldSkipSend = getProperty("skipSubmitOrders");
+        String shouldDelaySend = getProperty("delaySubmitOrders");
         OrderID orderID;
         if(orderIDString == null ||
            orderIDString.isEmpty()) {
@@ -141,15 +155,21 @@ public class Orders
         } else {
             orderID = new OrderID(orderIDString);
         }
-        OrderID newOrderID;
+        OrderReplace newOrder;
         if(inEvent instanceof OrderSingle) {
-            newOrderID = cancelReplace(orderID,
-                                       (OrderSingle)inEvent); 
+            newOrder = cancelReplace(orderID,
+                                     (OrderSingle)inEvent,
+                                     (shouldSkipSend == null ? true : false));
+            if(shouldDelaySend != null) {
+                newOrder.setPrice(newOrder.getPrice().add(BigDecimal.ONE));
+                send(newOrder);
+            }
         } else {
-            newOrderID = cancelReplace(orderID,
-                                       null); 
+            newOrder = cancelReplace(orderID,
+                                     null,
+                                     true); 
         }
         setProperty("newOrderID",
-                    (newOrderID == null ? null : newOrderID.toString())); 
+                    (newOrder == null ? null : newOrder.getOrderID().toString())); 
     }
 }

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -45,6 +46,8 @@ import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventTest;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataModuleTestBase.DataSink;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.CopierModuleFactory;
 import org.marketcetera.module.DataFlowID;
@@ -53,6 +56,7 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.SinkModuleFactory;
 import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
@@ -61,7 +65,9 @@ import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.OrderType;
@@ -1616,6 +1622,77 @@ public abstract class LanguageTestBase
                     cumulativeOrders);
     }
     /**
+     * Tests a strategy's ability to send arbitrary objects.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void other()
+        throws Exception
+    {
+        theStrategy = createStrategy(getOtherStrategy().getName(),
+                                     getLanguage(),
+                                     getOtherStrategy().getFile(),
+                                     null,
+                                     null,
+                                     outputURN);
+        // run the strategy with nothing set
+        setPropertiesToNull();
+        doOtherTest(theStrategy,
+                    new Object[0]);
+        assertTrue("Expected properties to be empty, but was: " + AbstractRunningStrategy.getProperties().toString(),
+                   AbstractRunningStrategy.getProperties().isEmpty());
+        // have the strategy send null
+        AbstractRunningStrategy.setProperty("sendNull",
+                                            "true");
+        doOtherTest(theStrategy,
+                    new Object[0]);
+        // make sure only the property we set above is set
+        assertEquals(1,
+                     AbstractRunningStrategy.getProperties().size());
+        assertEquals(AbstractRunningStrategy.getProperty("sendNull"),
+                     "true");
+        // have the strategy send a string
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("sendString",
+                                            "true");
+        doOtherTest(theStrategy,
+                    new Object[] { "test string" });
+        assertEquals("Properties were " + AbstractRunningStrategy.getProperties(),
+                     1,
+                     AbstractRunningStrategy.getProperties().size());
+        assertEquals(AbstractRunningStrategy.getProperty("sendString"),
+                     "true");
+        // have the strategy send two BigDecimals
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("sendTwo",
+                                            "true");
+        doOtherTest(theStrategy,
+                    new Object[] { BigDecimal.ONE, BigDecimal.TEN });
+        assertEquals("Properties was " + AbstractRunningStrategy.getProperties(),
+                     1,
+                     AbstractRunningStrategy.getProperties().size());
+        assertEquals(AbstractRunningStrategy.getProperty("sendTwo"),
+                     "true");
+        // route orders to strategy and check output
+        setPropertiesToNull();
+        theStrategy = createStrategy(getOtherStrategy().getName(),
+                                     getLanguage(),
+                                     getOtherStrategy().getFile(),
+                                     null,
+                                     true,
+                                     outputURN);
+        AbstractRunningStrategy.setProperty("sendTwo",
+                                            "true");
+        doOtherTest(theStrategy,
+                    new Object[] { BigDecimal.ONE, BigDecimal.TEN });
+        assertEquals("Properties was " + AbstractRunningStrategy.getProperties(),
+                     1,
+                     AbstractRunningStrategy.getProperties().size());
+        assertEquals(AbstractRunningStrategy.getProperty("sendTwo"),
+                     "true");
+    }
+    /**
      * Tests a strategy's ability to retrieve <code>ExecutionReport</code> values related to its own orders.
      *
      * @throws Exception if an error occurs
@@ -1707,6 +1784,9 @@ public abstract class LanguageTestBase
     public void cancelSingleOrder()
         throws Exception
     {
+        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(outputURN);
+        assertNotNull("Must be able to find the recorder created",
+                      recorder);
         // set up data for the orders to be created
         // set price
         AbstractRunningStrategy.setProperty("price",
@@ -1723,6 +1803,9 @@ public abstract class LanguageTestBase
         // add type
         AbstractRunningStrategy.setProperty("orderType",
                                             OrderType.Market.name());
+        // add account
+        AbstractRunningStrategy.setProperty("account",
+                                            "account-" + System.nanoTime());
         // try to cancel an order with a null orderID
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
                                             outputURN);
@@ -1770,6 +1853,73 @@ public abstract class LanguageTestBase
         runningStrategy.onOther(new OrderID(orderIDString));
         assertEquals("true",
                      AbstractRunningStrategy.getProperty("orderCanceled"));
+        // submit another order, create a cancel order, but don't submit it
+        recorder.resetDataReceived();
+        AbstractRunningStrategy.setProperty("executionReportsReceived",
+                                            "0");
+        AbstractRunningStrategy.setProperty("orderCanceled",
+                                            null);
+        runningStrategy.onAsk(askEvent);
+        assertEquals("1",
+                     AbstractRunningStrategy.getProperty("executionReportsReceived"));
+        assertEquals(recorder.getDataReceived().toString(),
+                     1,
+                     recorder.getDataReceived().size());
+        assertTrue(recorder.getDataReceived().get(0).getData() instanceof OrderSingle);
+        recorder.resetDataReceived();
+        // set up the strategy to not submit the cancel
+        AbstractRunningStrategy.setProperty("skipSubmitOrders",
+                                            "true");
+        // generate the cancel
+        orderIDString = AbstractRunningStrategy.getProperty("orderID"); 
+        assertNotNull(orderIDString);        
+        runningStrategy.onOther(new OrderID(orderIDString));
+        // verify it was properly generated
+        assertEquals("true",
+                     AbstractRunningStrategy.getProperty("orderCanceled"));
+        // verify it was not submitted
+        assertTrue(recorder.getDataReceived().isEmpty());
+        // submit, generate cancel, modify it, submit it after delay
+        recorder.resetDataReceived();
+        AbstractRunningStrategy.setProperty("executionReportsReceived",
+                                            "0");
+        AbstractRunningStrategy.setProperty("orderCanceled",
+                                            null);
+        runningStrategy.onAsk(askEvent);
+        assertEquals("1",
+                     AbstractRunningStrategy.getProperty("executionReportsReceived"));
+        assertEquals(recorder.getDataReceived().toString(),
+                     1,
+                     recorder.getDataReceived().size());
+        assertTrue(recorder.getDataReceived().get(0).getData() instanceof OrderSingle);
+        String modifiedAccountName = "modified account-" + System.nanoTime();
+        assertFalse(((OrderSingle)recorder.getDataReceived().get(0).getData()).getAccount().equals(modifiedAccountName));
+        recorder.resetDataReceived();
+        // set up the strategy to not submit the cancel
+        AbstractRunningStrategy.setProperty("delaySubmitOrders",
+                                            "true");
+        AbstractRunningStrategy.setProperty("newAccountName",
+                                            modifiedAccountName);
+        // generate the cancel
+        orderIDString = AbstractRunningStrategy.getProperty("orderID"); 
+        assertNotNull(orderIDString);        
+        runningStrategy.onOther(new OrderID(orderIDString));
+        // verify it was properly generated
+        assertEquals("true",
+                     AbstractRunningStrategy.getProperty("orderCanceled"));
+        // verify it was submitted
+        assertEquals(recorder.getDataReceived().toString(),
+                     1,
+                     recorder.getDataReceived().size());
+        assertTrue(recorder.getDataReceived().get(0).getData() instanceof OrderCancel);
+        OrderCancel orderCancel = (OrderCancel)recorder.getDataReceived().get(0).getData();
+        assertEquals(modifiedAccountName,
+                     orderCancel.getAccount());
+        // clean up before continuing
+        AbstractRunningStrategy.setProperty("skipSubmitOrders",
+                                            null);
+        AbstractRunningStrategy.setProperty("delaySubmitOrders",
+                                            null);
         // submit an order that will produce multiple ERs
         AbstractRunningStrategy.setProperty("executionReportsReceived",
                                             "0");
@@ -1795,6 +1945,9 @@ public abstract class LanguageTestBase
     public void cancelReplace()
         throws Exception
     {
+        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(outputURN);
+        assertNotNull("Must be able to find the recorder created",
+                      recorder);
         // for now, forbid the creation of execution reports
         MockRecorderModule.shouldSendExecutionReports = false;
         // set up data for the orders to be created
@@ -1833,7 +1986,8 @@ public abstract class LanguageTestBase
                                             "");
         OrderSingle newOrder = Factory.getInstance().createOrderSingle();
         assertNotNull(AbstractRunningStrategy.getProperty("newOrderID"));
-        newOrder.setPrice(new BigDecimal("1000.50"));
+        BigDecimal price = new BigDecimal("1000.50"); 
+        newOrder.setPrice(price);
         newOrder.setQuantity(new BigDecimal("1"));
         newOrder.setTimeInForce(TimeInForce.GoodTillCancel);
         // try to cancel/replace with a null OrderID
@@ -1862,6 +2016,44 @@ public abstract class LanguageTestBase
         assertNotNull(replaceIDString);
         assertFalse(replaceIDString.equals(newOrder.getOrderID().toString()));
         // hooray, it worked
+        // send a new order
+        runningStrategy.onAsk(askEvent);
+        orderIDString = AbstractRunningStrategy.getProperty("orderID");
+        assertNotNull(orderIDString);
+        AbstractRunningStrategy.setProperty("orderID",
+                                            orderIDString);
+        // cause a cancel/replace again, but this time don't allow the cancel/replace to be submitted
+        recorder.resetDataReceived();
+        AbstractRunningStrategy.setProperty("skipSubmitOrders",
+                                            "true");
+        runningStrategy.onOther(newOrder);
+        assertNotNull(replaceIDString);
+        assertTrue(recorder.getDataReceived().isEmpty());
+        // can't cancel/replace this order any more, so create a new one
+        runningStrategy.onAsk(askEvent);
+        recorder.resetDataReceived();
+        orderIDString = AbstractRunningStrategy.getProperty("orderID");
+        assertNotNull(orderIDString);
+        AbstractRunningStrategy.setProperty("orderID",
+                                            orderIDString);
+        // cancel/replace this order, don't automatically submit it, then modify it and submit it manually
+        AbstractRunningStrategy.setProperty("delaySubmitOrders",
+                                            "true");
+        runningStrategy.onOther(newOrder);
+        assertNotNull(replaceIDString);
+        assertEquals(recorder.getDataReceived().toString(),
+                     1,
+                     recorder.getDataReceived().size());
+        Object receivedData = recorder.getDataReceived().get(0).getData();
+        assertTrue("Object is " + receivedData,
+                   receivedData instanceof OrderReplace);
+        OrderReplace receivedOrder = (OrderReplace)receivedData;
+        assertEquals(price.add(BigDecimal.ONE),
+                     receivedOrder.getPrice());
+        AbstractRunningStrategy.setProperty("delaySubmitOrders",
+                                            null);
+        AbstractRunningStrategy.setProperty("skipSubmitOrders",
+                                            null);
         // turn on execution reports
         MockRecorderModule.shouldSendExecutionReports = true;
         StrategyTestBase.executionReportMultiplicity = 20;
@@ -2805,6 +2997,98 @@ public abstract class LanguageTestBase
         verifyPropertyNonNull("onStatistics");
     }
     /**
+     * Tests the ability of a strategy to request and cancel data flows from other modules.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void createDataFlows()
+        throws Exception
+    {
+        // invalid URN
+        final ModuleURN invalidURN = new ModuleURN("metc:something:something");
+        // valid URN, but not started
+        final ModuleURN validUnstartedURN = moduleManager.createModule(MockRecorderModule.Factory.PROVIDER_URN);
+        // valid URN, started, but not emitter
+        final ModuleURN validURNNotEmitter = SinkModuleFactory.INSTANCE_URN;
+        // valid URN, started, but not receiver
+        final ModuleURN validURNNotReceiver = BogusFeedModuleFactory.INSTANCE_URN;
+        assertFalse(moduleManager.getModuleInfo(SinkModuleFactory.INSTANCE_URN).isEmitter());
+        // valid, started receiver
+        ModuleURN dataEmitterURN = createModule(StrategyDataEmissionModule.Factory.PROVIDER_URN);
+        final Properties parameters = new Properties();
+        // null URN list
+        doDataFlowTest(parameters,
+                       false);
+        // single URN (invalid flow, need two at least)
+        parameters.setProperty("urns",
+                               dataEmitterURN.getValue());
+        doDataFlowTest(parameters,
+                       false);
+        // two URNs, but one is unstarted
+        parameters.setProperty("urns",
+                               validUnstartedURN.getValue());
+        parameters.setProperty("useStrategyURN",
+                               "true");
+        doDataFlowTest(parameters,
+                       false);
+        // two URNs, but one is invalid
+        parameters.setProperty("urns",
+                               invalidURN.getValue());
+        doDataFlowTest(parameters,
+                       false);
+        // valid, started, but not emitter
+        parameters.setProperty("urns",
+                               validURNNotEmitter.getValue());
+        doDataFlowTest(parameters,
+                       false);
+        // valid, started, but not receiver
+        parameters.setProperty("urns",
+                               dataEmitterURN.getValue() + "," + validURNNotReceiver.getValue());
+        doDataFlowTest(parameters,
+                       false);
+        // valid simple test with 2 URNs
+        parameters.setProperty("urns",
+                               dataEmitterURN.getValue());
+        doDataFlowTest(parameters,
+                       true);
+        // again, but this time setting up extra data flow tests
+        parameters.setProperty("shouldCancelDataFlow",
+                               "true");
+        doDataFlowTest(parameters,
+                       true);
+        parameters.remove("shouldCancelDataFlow");
+        // repeat the test, but sabotage the manual cancel
+        parameters.setProperty("urns",
+                               dataEmitterURN.getValue());
+        parameters.setProperty("shouldSkipCancel",
+                               "true");
+        doDataFlowTest(parameters,
+                       true);
+        parameters.remove("shouldSkipCancel");
+        // all tests so far have been without the sink, now add the sink
+        parameters.setProperty("routeToSink",
+                               "true");
+        doDataFlowTest(parameters,
+                       true);
+        // do a test that sets up a data flow that doesn't involve the strategy
+        parameters.remove("useStrategyURN");
+        parameters.remove("routeToSink");
+        parameters.setProperty("urns",
+                               dataEmitterURN.getValue() + "," + MockRecorderModule.Factory.recorders.get(outputURN).getURN());
+        doDataFlowTest(parameters,
+                       true);
+        // a new test that tries to set up a data flow when the strategy can't accept new data
+        parameters.setProperty("urns",
+                               dataEmitterURN.getValue());
+        parameters.setProperty("useStrategyURN",
+                               "true");
+        parameters.setProperty("shouldMakeNewRequest",
+                               "true");
+        doDataFlowTest(parameters,
+                       true);
+    }
+    /**
      * Gets the language to use for this test.
      *
      * @return a <code>Language</code> value
@@ -2865,6 +3149,12 @@ public abstract class LanguageTestBase
      */
     protected abstract StrategyCoordinates getOrdersStrategy();
     /**
+     * Get a strategy that sends other data.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getOtherStrategy();
+    /**
      * Gets a strategy that defines and calls into a helper class. 
      *
      * @return a <code>StrategyCoordinates</code> value
@@ -2894,6 +3184,12 @@ public abstract class LanguageTestBase
      * @return a <code>StrategyCoordinates</code> value
      */
     protected abstract StrategyCoordinates getCombinedStrategy();
+    /**
+     * Gets a strategy that requests and cancels data flows.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getDataFlowStrategy();
     /**
      * Indicates the number of expected compiler warnings for the given strategy.
      * 
@@ -3374,6 +3670,141 @@ public abstract class LanguageTestBase
             TypesTestBase.assertOrderSingleEquals(inExpectedCumulativeOrders.get(index++),
                                                   actualOrder,
                                                   true);
+        }
+    }
+    /**
+     * Starts a strategy module which generates data and measures against the
+     * given expected results.
+     * 
+     * @param inStrategy a <code>ModuleURN</code> value
+     * @param inExpectedObjects an <code>Object[]</code> value
+     * @throws Exception if an error occurs
+     */
+    private void doOtherTest(ModuleURN inStrategy,
+                             Object[] inExpectedObjects)
+        throws Exception
+    {
+        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(outputURN);
+        assertNotNull("Must be able to find the recorder created",
+                      recorder);
+        // this will execute onAsk on the strategies, which will generate the desired data
+        recorder.resetDataReceived();
+        AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(inStrategy).getRunningStrategy();
+        runningStrategy.onAsk(askEvent);
+        List<DataReceived> objects = recorder.getDataReceived();
+        int index = 0;
+        for(DataReceived datum : objects) {
+            assertEquals(inExpectedObjects[index++],
+                         datum.getData());
+        }
+    }
+    /**
+     * Executes a single data flow test.
+     *
+     * @param inParameters a <code>Properties</code> value
+     * @param inDataExpected a <code>boolean</code> value indicating whether the test is expected to produce data (succeed) or not
+     * @throws Exception if an error occurs
+     */
+    private void doDataFlowTest(Properties inParameters,
+                                boolean inDataExpected)
+        throws Exception
+    {
+        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(outputURN);
+        DataSink dataSink = new DataSink();
+        moduleManager.addSinkListener(dataSink);
+        assertNotNull("Must be able to find the recorder created",
+                      recorder);
+        recorder.resetDataReceived();
+        setPropertiesToNull();
+        StrategyCoordinates strategy = getDataFlowStrategy();
+        theStrategy = createStrategy(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     inParameters,
+                                     null,
+                                     outputURN);
+        List<Object> inExpectedData = new ArrayList<Object>();
+        if(inDataExpected) {
+            inExpectedData.addAll(StrategyDataEmissionModule.getDataToSend());
+            assertNotNull(AbstractRunningStrategy.getProperty("dataFlowID"));
+        }
+        List<DataReceived> dataReceived = recorder.getDataReceived();
+        assertEquals("Expected " + inExpectedData + " but got " + dataReceived,
+                     inExpectedData.size(),
+                     dataReceived.size());
+        int index = 0;
+        for(DataReceived datum : dataReceived) {
+            assertEquals("Expected " + inExpectedData.get(index) + " but got " + datum,
+                         inExpectedData.get(index++),
+                         datum.getData());
+        }
+        // check the sink
+        if(inParameters.getProperty("routeToSink") == "true") {
+            Map<DataFlowID,List<Object>> sinkData = dataSink.getAllData();
+            // all our tests create a single data flow at a time
+            assertEquals(1,
+                         sinkData.keySet().size());
+            DataFlowID dataFlowID = sinkData.keySet().iterator().next();
+            assertTrue("Expected " + inExpectedData + " but got " + sinkData.get(dataFlowID),
+                       Arrays.equals(inExpectedData.toArray(),
+                                     sinkData.get(dataFlowID).toArray()));
+        } else {
+            assertTrue(dataSink.getAllData().isEmpty());
+        }
+        String rawDataFlowID = AbstractRunningStrategy.getProperty("dataFlowID");
+        assertEquals(inDataExpected,
+                     rawDataFlowID != null);
+        // do an extra test, if necessary, canceling a few data flows
+        if(inParameters.getProperty("shouldCancelDataFlow") == "true") {
+            // cancel the main flow first (later setting us up to cancel a stopped flow)
+            if(inDataExpected) {
+                DataFlowID dataFlowID = new DataFlowID(rawDataFlowID);
+                assertTrue(moduleManager.getDataFlows(true).contains(dataFlowID));
+                getRunningStrategy(theStrategy).getRunningStrategy().onCallback(dataFlowID);
+                assertNotNull(AbstractRunningStrategy.getProperty("localDataFlowStopped"));
+                assertFalse(moduleManager.getDataFlows(true).contains(dataFlowID));
+                AbstractRunningStrategy.setProperty("localDataFlowStopped",
+                                                    null);
+                // create a bogus data flow
+                dataFlowID = new DataFlowID("not-a-data-flow-id");
+                getRunningStrategy(theStrategy).getRunningStrategy().onCallback(dataFlowID);
+                assertNotNull(AbstractRunningStrategy.getProperty("localDataFlowStopped"));
+                assertFalse(moduleManager.getDataFlows(true).contains(dataFlowID));
+                AbstractRunningStrategy.setProperty("localDataFlowStopped",
+                                                    null);
+                // create a data flow (not created by the strategy)
+                MarketDataRequest inRequest = MarketDataRequest.newRequest().fromProvider(BogusFeedModuleFactory.IDENTIFIER).withSymbols("METC");
+                dataFlowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(new ModuleURN(String.format("metc:mdata:%s",
+                                                                                                                          inRequest.getProvider())),
+                                                                                              inRequest)},
+                                                          true);
+                assertNotNull(dataFlowID);
+                assertTrue(moduleManager.getDataFlows(true).contains(dataFlowID));
+                getRunningStrategy(theStrategy).getRunningStrategy().onCallback(dataFlowID);
+                assertNotNull(AbstractRunningStrategy.getProperty("localDataFlowStopped"));
+                assertFalse(moduleManager.getDataFlows(true).contains(dataFlowID));
+            }
+        }
+        // cancel the data flow
+        stopStrategy(theStrategy);
+        // one way or the other, stopping the strategy will cause the data flow to stop, either directly
+        //  or indirectly when the strategy module stops
+        if(inDataExpected) {
+            DataFlowID dataFlowID = new DataFlowID(rawDataFlowID);
+            // verifies that the data flow is not still running
+            assertFalse(moduleManager.getDataFlows(true).contains(dataFlowID));
+            if(inParameters.getProperty("shouldSkipCancel") != null) {
+                assertNull(AbstractRunningStrategy.getProperty("dataFlowStopped"));
+            } else {
+                assertNotNull(AbstractRunningStrategy.getProperty("dataFlowStopped"));
+            }
+        }
+        // check to see if the strategy tried to create a new data flow while stopping
+        if(inParameters.getProperty("shouldMakeNewRequest") == "true") {
+            assertEquals("true",
+                         AbstractRunningStrategy.getProperty("newDataFlowAttempt"));
+            assertEquals("null",
+                         AbstractRunningStrategy.getProperty("newDataFlowID"));
         }
     }
     /**

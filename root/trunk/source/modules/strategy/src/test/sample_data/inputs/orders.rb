@@ -15,7 +15,7 @@ include_class "java.lang.Boolean"
 class Orders < Strategy
     def on_ask(ask)
       if(get_property("orderShouldBeNull") != nil)
-          send_order nil
+          send nil
       else
           order = Factory.getInstance().createOrderSingle()
           order.setAccount(get_property("account"))
@@ -47,7 +47,7 @@ class Orders < Strategy
                        order.getOrderID.to_s)
           set_property("transactTime",
                        Long.toString(System.currentTimeMillis))
-          send_order order
+          send order
       end
     end
     def on_bid(bid)
@@ -77,8 +77,16 @@ class Orders < Strategy
     end
     def on_other(event)
         if(event.instance_of? OrderID)
+            shouldSkipSend = get_property("skipSubmitOrders")
+            shouldDelaySend = get_property("delaySubmitOrders")
+            newAccountName = get_property("newAccountName")
+            orderCancel = cancel_order event, (shouldSkipSend == nil ? true : false)
             set_property("orderCanceled",
-                         Boolean.toString(cancel_order(event)))
+                         orderCancel == nil ? "false" : "true")
+            if shouldDelaySend != nil
+                orderCancel.setAccount newAccountName
+                send orderCancel
+            end
         else
             if event.kind_of? OrderSingle
                 do_cancel_replace_test event
@@ -86,24 +94,31 @@ class Orders < Strategy
                 if event.instance_of? String
                     do_cancel_replace_test event
                 else 
+                    orderCancel = cancel_order nil, true
                     set_property("orderCanceled",
-                                 Boolean.toString(cancel_order(nil)))
+                                 orderCancel == nil ? "false" : "true")
                 end
             end
         end
     end
     def do_cancel_replace_test(event)
         orderIDString = get_property("orderID")
+        shouldSkipSend = get_property("skipSubmitOrders")
+        shouldDelaySend = get_property("delaySubmitOrders")
         if orderIDString == nil or orderIDString.empty?
             orderID = nil
         else
             orderID = OrderID.new orderIDString
         end
         if event.kind_of? OrderSingle
-            newOrderID = cancel_replace orderID, event
+            newOrder = cancel_replace orderID, event, (shouldSkipSend == nil ? true : false)
+            if shouldDelaySend != nil
+                newOrder.setPrice newOrder.getPrice().add BigDecimal::ONE
+                send newOrder
+            end
         else  
-            newOrderID = cancel_replace orderID, nil
+            newOrder = cancel_replace orderID, nil, true
         end
-        set_property "newOrderID", (newOrderID == nil ? nil : newOrderID.toString()) 
+        set_property "newOrderID", (newOrder == nil ? nil : newOrder.getOrderID.toString()) 
     end
 end

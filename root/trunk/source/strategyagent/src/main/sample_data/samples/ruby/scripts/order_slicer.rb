@@ -104,7 +104,7 @@ class OrderSlicer < Strategy
   # all timer callbacks come with an order as an argument
   ############################################################
   def on_callback(data)
-    send_order data
+    send data
     @num_sent +=1
     info "sent order #{@num_sent}/#{@num_partitions}"
   end

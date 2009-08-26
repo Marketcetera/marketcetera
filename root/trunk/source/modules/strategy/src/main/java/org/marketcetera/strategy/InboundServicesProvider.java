@@ -7,6 +7,7 @@ import java.util.List;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
@@ -40,4 +41,10 @@ public interface InboundServicesProvider
     public BigDecimal getPositionAsOf(Date inDate,
                                       MSymbol inSymbol)
         throws ConnectionException;
+    /**
+     * Gets the {@link ModuleURN} for this strategy.
+     *
+     * @return a <code>ModuleURN</code> value
+     */
+    public ModuleURN getURN();
 }

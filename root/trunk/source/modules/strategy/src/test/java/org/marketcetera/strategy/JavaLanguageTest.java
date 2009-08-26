@@ -40,6 +40,9 @@ public class JavaLanguageTest
     public static final File ORDER_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                        "Orders.java");
     public static final String ORDER_STRATEGY_NAME = "Orders";
+    public static final File OTHER_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                       "SendOther.java");
+    public static final String OTHER_STRATEGY_NAME = "SendOther";
     public static final File MESSAGE_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                          "SendMessage.java");
     public static final String MESSAGE_STRATEGY_NAME = "SendMessage";
@@ -60,6 +63,9 @@ public class JavaLanguageTest
     public static final File COMBINED_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                           "CombinedRequest.java");
     public static final String COMBINED_STRATEGY_NAME = "CombinedRequest";
+    public static final File DATA_FLOW_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                           "DataFlow.java");
+    public static final String DATA_FLOW_NAME = "DataFlow";
     /**
      * Tests that a strategy declared in a package other than the default package works as expected.
      *
@@ -222,6 +228,24 @@ public class JavaLanguageTest
     {
         return StrategyCoordinates.get(COMBINED_STRATEGY,
                                        COMBINED_STRATEGY_NAME);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getOtherStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getOtherStrategy()
+    {
+        return StrategyCoordinates.get(OTHER_STRATEGY,
+                                       OTHER_STRATEGY_NAME);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getDataFlowStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getDataFlowStrategy()
+    {
+        return StrategyCoordinates.get(DATA_FLOW_STRATEGY,
+                                       DATA_FLOW_NAME);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.LanguageTestBase#getNotificationCount()
