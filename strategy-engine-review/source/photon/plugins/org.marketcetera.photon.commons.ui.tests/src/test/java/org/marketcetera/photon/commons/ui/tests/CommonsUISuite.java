@@ -11,6 +11,7 @@ import org.marketcetera.photon.commons.ui.SWTUtilsTest;
 import org.marketcetera.photon.commons.ui.databinding.CustomWizardPageSupportTest;
 import org.marketcetera.photon.commons.ui.databinding.DataBindingContextCaveatTest;
 import org.marketcetera.photon.commons.ui.databinding.DataBindingPreferencePageTest;
+import org.marketcetera.photon.commons.ui.databinding.DataBindingUtilsTest;
 import org.marketcetera.photon.commons.ui.databinding.ObservablesManagerCaveatTest;
 import org.marketcetera.photon.commons.ui.databinding.ObservingCompositeTest;
 import org.marketcetera.photon.commons.ui.databinding.PropertyWatcherTest;
@@ -40,6 +41,6 @@ import org.marketcetera.photon.commons.ui.table.TableSupportTest;
         SWTUtilsTest.class, JFaceUtilsTest.class, LocalizedLabelTest.class,
         DisplayThreadExecutorTest.class, ObservingCompositeTest.class,
         LocalizedLabelMessageInfoProviderTest.class,
-        CustomWizardPageSupportTest.class })
+        CustomWizardPageSupportTest.class, DataBindingUtilsTest.class })
 public class CommonsUISuite {
 }
