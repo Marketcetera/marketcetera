@@ -77,7 +77,7 @@ public class OrderSlicer extends Strategy {
      */
     @Override
     public void onCallback(Object inData) {
-        sendOrder((OrderSingle) inData);
+        send(inData);
         int sent = mNumSent.incrementAndGet();
         info("sent order " + sent + "/" + mNumPartitions);
     }

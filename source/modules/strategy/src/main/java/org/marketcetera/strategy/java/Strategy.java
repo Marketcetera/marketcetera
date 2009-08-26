@@ -186,4 +186,15 @@ public class Strategy
     {
         super.error(inMessage);
     }
+    /**
+     * Sends an order to order subscribers.
+     * 
+     * @param inData an <code>Object</code> value
+     * @return a <code>boolean</code> value indicating whether the object was successfully transmitted or not
+     */
+    @Override
+    protected final boolean send(Object inData)
+    {
+        return super.send(inData);
+    }
 }

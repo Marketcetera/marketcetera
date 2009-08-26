@@ -20,6 +20,10 @@ import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowSupport;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
@@ -445,8 +449,8 @@ public abstract class AbstractRunningStrategy
      * 
      * @param inOrderID an <code>OrderID</code> value corresponding to an
      *            <code>OrderSingle</code> generated during this session by this
-     *            strategy via {@link #sendOrder(OrderSingle)} or
-     *            {@link #cancelReplace(OrderID, OrderSingle)}.
+     *            strategy via {@link #send(Object)} or
+     *            {@link #cancelReplace(OrderID, OrderSingle, boolean)}
      * @return an <code>ExecutionReport[]</code> value containing the
      *         <code>ExecutionReport</code> objects as limited according to the
      *         conditions enumerated above
@@ -501,42 +505,50 @@ public abstract class AbstractRunningStrategy
     /**
      * Sends an order to order subscribers.
      * 
-     * @param inOrder an <code>OrderSingle</code> value
-     * @return an <code>OrderID</code> value representing the submitted order or null if the order could not be sent
+     * @param inData an <code>Object</code> value
+     * @return a <code>boolean</code> value indicating whether the object was successfully transmitted or not
      */
-    protected final OrderID sendOrder(OrderSingle inOrder)
+    protected boolean send(Object inData)
     {
         if(!canSendData()) {
             StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
                                              String.valueOf(strategy),
                                              strategy.getStatus()),
                                strategy);
-            return null;
+            return false;
         }
-        if(inOrder == null ||
-           inOrder.getOrderID() == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_ORDER,
+        if(inData == null) {
+            StrategyModule.log(LogEvent.warn(INVALID_DATA,
                                              String.valueOf(strategy)),
                                strategy);
-            return null;
+            return false;
         }
-        try {
-            Validations.validate(inOrder);
-        } catch (OrderValidationException e) {
-            StrategyModule.log(LogEvent.warn(ORDER_VALIDATION_FAILED,
-                                             e,
-                                             String.valueOf(strategy)),
+        if(inData instanceof OrderSingle) {
+            OrderSingle order = (OrderSingle)inData;
+            if(order.getOrderID() == null) {
+                StrategyModule.log(LogEvent.warn(INVALID_ORDER,
+                                                 String.valueOf(strategy)),
+                                   strategy);
+                     return false;
+            }
+            try {
+                Validations.validate(order);
+            } catch (OrderValidationException e) {
+                StrategyModule.log(LogEvent.warn(ORDER_VALIDATION_FAILED,
+                                                 e,
+                                                 String.valueOf(strategy)),
+                                   strategy);
+                return false;
+            }
+            StrategyModule.log(LogEvent.debug(SUBMITTING_ORDER,
+                                              String.valueOf(strategy),
+                                              order,
+                                              order.getOrderID()),
                                strategy);
-            return null;
+            submittedOrderManager.add(order);
         }
-        StrategyModule.log(LogEvent.debug(SUBMITTING_ORDER,
-                                          String.valueOf(strategy),
-                                          inOrder,
-                                          inOrder.getOrderID()),
-                           strategy);
-        submittedOrderManager.add(inOrder);
-        strategy.getOutboundServicesProvider().sendOrder(inOrder);
-        return inOrder.getOrderID();
+        strategy.getOutboundServicesProvider().send(inData);
+        return true;
     }
     /**
      * Submits a request to cancel the <code>OrderSingle</code> with the given
@@ -546,23 +558,26 @@ public abstract class AbstractRunningStrategy
      * or this call will have no effect.
      * 
      * @param inOrderID an <code>OrderID</code> value
-     * @return a <code>boolean</code> value indicating whether the cancel was
-     *         submitted or not
+     * @param inSendOrder a <code>boolean</code> value indicating whether the <code>OrderCancel</code> should be submitted or just returned to the caller.  If <code>false</code>,
+     *   it is the caller's responsibility to submit the <code>OrderReplace</code> with {@link #send(Object)}.
+     * @return an <code>OrderCancel</code> value containing the cancel order or <code>null</code> if
+     *   the <code>OrderCancel</code> could not be constructed
      */
-    protected final boolean cancelOrder(OrderID inOrderID)
+    protected final OrderCancel cancelOrder(OrderID inOrderID,
+                                            boolean inSendOrder)
     {
         if(!canSendData()) {
             StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
                                              String.valueOf(strategy),
                                              strategy.getStatus()),
                                strategy);
-            return false;
+            return null;
         }
         if(inOrderID == null) {
             StrategyModule.log(LogEvent.warn(INVALID_CANCEL,
                                              String.valueOf(strategy)),
                                strategy);
-            return false;
+            return null;
         }
         Entry order = submittedOrderManager.remove(inOrderID);
         if(order == null) {
@@ -570,7 +585,7 @@ public abstract class AbstractRunningStrategy
                                              String.valueOf(strategy),
                                              String.valueOf(inOrderID)),
                                strategy);
-            return false;
+            return null;
         }
         OrderCancel cancelRequest;
         ExecutionReport executionReportToUse = selectExecutionReportForCancel(order);
@@ -586,12 +601,14 @@ public abstract class AbstractRunningStrategy
             // use the most recent execution report to seed the cancel request
             cancelRequest = Factory.getInstance().createOrderCancel(executionReportToUse);
         }
-        StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_ORDER_REQUEST,
-                                          String.valueOf(strategy),
-                                          String.valueOf(cancelRequest)),                           
-                           strategy);                           
-        strategy.getOutboundServicesProvider().cancelOrder(cancelRequest);
-        return true;
+        if(inSendOrder) {
+            StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_ORDER_REQUEST,
+                                              String.valueOf(strategy),
+                                              String.valueOf(cancelRequest)),                           
+                               strategy);
+            strategy.getOutboundServicesProvider().cancelOrder(cancelRequest);
+        }
+        return cancelRequest;
     }
     /**
      * Submits cancel requests for all <code>OrderSingle</code> objects created
@@ -620,7 +637,8 @@ public abstract class AbstractRunningStrategy
         int count = 0;
         for(OrderSingle order : getSubmittedOrders()) {
             try {
-                if(cancelOrder(order.getOrderID())) {
+                if(cancelOrder(order.getOrderID(),
+                               true) != null) {
                     count += 1;
                 }
             } catch (Exception e) {
@@ -641,15 +659,19 @@ public abstract class AbstractRunningStrategy
      * Submits a cancel-replace order for the given <code>OrderID</code> with
      * the given <code>Order</code>.
      * 
-     * <p> The order must have been submitted by this strategy during this session
-     * or this call will have no effect.
+     * <p>The order must have been submitted by this strategy during this session or this call will
+     * have no effect.  If <code>inSendOrder</code> is <code>false</code>, it is the caller's responsibility to submit the <code>OrderReplace</code>.
+     * Upon successful completion of this method, the given <code>OrderID</code> may not be again canceled or replaced.
      * 
      * @param inOrderID an <code>OrderID</code> value containing the order to cancel
      * @param inNewOrder an <code>OrderSingle</code> value containing the order with which to replace the existing order
-     * @return an <code>OrderID</code> value containing the <code>OrderID</code> of the new order or null if the old order could not be canceled and the new one could not be sent
+     * @param inSendOrder a <code>boolean</code> value indicating whether the <code>OrderReplace</code> should be submitted or just returned to the caller.  If <code>false</code>,
+     *   it is the caller's responsibility to submit the <code>OrderReplace</code> with {@link #send(Object)}.
+     * @return an <code>OrderReplace</code> value containing the new order or <code>null</code> if the old order could not be canceled and the new one could not be sent
      */
-    protected final OrderID cancelReplace(OrderID inOrderID,
-                                          OrderSingle inNewOrder)
+    protected final OrderReplace cancelReplace(OrderID inOrderID,
+                                               OrderSingle inNewOrder,
+                                               boolean inSendOrder)
     {
         if(!canSendData()) {
             StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
@@ -691,13 +713,15 @@ public abstract class AbstractRunningStrategy
         replaceOrder.setQuantity(inNewOrder.getQuantity());
         replaceOrder.setPrice(inNewOrder.getPrice());
         replaceOrder.setTimeInForce(inNewOrder.getTimeInForce());
-        StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_REPLACE_REQUEST,
-                                          String.valueOf(strategy),
-                                          String.valueOf(replaceOrder)),
-                           strategy);
         submittedOrderManager.add(inNewOrder);
-        strategy.getOutboundServicesProvider().cancelReplace(replaceOrder);
-        return replaceOrder.getOrderID();
+        if(inSendOrder) {
+            StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_REPLACE_REQUEST,
+                                              String.valueOf(strategy),
+                                              String.valueOf(replaceOrder)),
+                               strategy);
+            strategy.getOutboundServicesProvider().cancelReplace(replaceOrder);
+        }
+        return replaceOrder;
     }
     /**
      * Sends a FIX message.
@@ -860,7 +884,7 @@ public abstract class AbstractRunningStrategy
      * Returns the list of brokers known to the system.
      *
      * <p>These values can be used to create and send orders with {@link #sendMessage(Message, BrokerID)}
-     * or {@link #sendOrder(OrderSingle)}.
+     * or {@link #send(Object)}.
      *
      * @return a <code>BrokerStatus[]</code> value
      */
@@ -934,6 +958,82 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return null;
         }
+    }
+    /**
+     * Initiates a data flow request.
+     * 
+     * <p>See {@link DataFlowSupport#createDataFlow(DataRequest[], boolean)}. 
+     * @param inAppendDataSink a <code>boolean</code> value indicating if the sink module should be appended to the
+     *   data pipeline, if it's not already requested as the last module and the last module is capable of emitting data.
+     * @param inRequests a <code>DataRequest...</code> value containing the ordered list of requests. Each instance
+     *   identifies a stage of the data pipeline. The data from the first stage is piped to the next.
+     *
+     * @return a <code>DataFlowID</code> value containing a unique ID identifying the data flow. The ID can be used to cancel
+     *   the data flow request and get more details on it.  Returns <code>null</code> if the request could not be created.
+     */
+    protected final DataFlowID createDataFlow(boolean inAppendDataSink,
+                                              DataRequest... inRequests)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
+                                             String.valueOf(strategy),
+                                             strategy.getStatus()),
+                               strategy);
+            return null;
+        }
+        if(inRequests == null ||
+           inRequests.length == 0) {
+            StrategyModule.log(LogEvent.warn(INVALID_DATA_REQUEST,
+                                             String.valueOf(strategy)),
+                               strategy);
+            return null;
+        }
+        try {
+            return strategy.getOutboundServicesProvider().createDataFlow(inRequests,
+                                                                         inAppendDataSink);
+        } catch (Exception e) {
+            StrategyModule.log(LogEvent.warn(DATA_REQUEST_FAILED,
+                                             e,
+                                             String.valueOf(strategy),
+                                             Arrays.toString(inRequests)),
+                               strategy);
+            return null;
+        }
+    }
+    /**
+     * Cancels a data flow identified by the supplied data flow ID.
+     *
+     * <p>See {@link DataFlowSupport#cancel(DataFlowID)}.
+     *
+     * @param inDataFlowID a <code>DataFlowID</code> value containing the request handle that was returned from
+     *   a prior call to {@link #createDataFlow(boolean, DataRequest[])}
+     */
+    protected final void cancelDataFlow(DataFlowID inDataFlowID)
+    {
+        if(inDataFlowID == null) {
+            StrategyModule.log(LogEvent.warn(INVALID_DATA_REQUEST_CANCEL,
+                                             String.valueOf(strategy)),
+                               strategy);
+            return;
+        }
+        try {
+            strategy.getOutboundServicesProvider().cancelDataFlow(inDataFlowID);
+        } catch (Exception e) {
+            StrategyModule.log(LogEvent.warn(DATA_REQUEST_CANCEL_FAILED,
+                                             e,
+                                             String.valueOf(strategy),
+                                             inDataFlowID),
+                               strategy);
+        }
+    }
+    /**
+     * Gets the {@link ModuleURN} of this strategy.
+     *
+     * @return a <code>ModuleURN</code> value
+     */
+    protected final ModuleURN getURN()
+    {
+        return strategy.getInboundServicesProvider().getURN();
     }
     /**
      * Emits the given debug message to the strategy log output.

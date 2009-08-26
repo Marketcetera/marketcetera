@@ -55,8 +55,8 @@ public class OrderSender extends Strategy {
         order.setTimeInForce(TimeInForce.Day);
         warn("Sending Order " + order);
 
-        OrderID orderID = sendOrder(order);
-        warn("Sent Order:" + orderID);
+        send(order);
+        warn("Sent Order:" + order);
 
         cancelDataRequest(mRequestID);
         info("Cancelled Market Data Request " + mRequestID);
@@ -84,8 +84,8 @@ public class OrderSender extends Strategy {
         order.setTimeInForce(TimeInForce.Day);
         warn("Sending Order " + order);
 
-        OrderID orderID = sendOrder(order);
-        warn("Sent Order:" + orderID);
+        send(order);
+        warn("Sent Order:" + order);
 
         cancelDataRequest(mRequestID);
         info("Cancelled Market Data Request " + mRequestID);

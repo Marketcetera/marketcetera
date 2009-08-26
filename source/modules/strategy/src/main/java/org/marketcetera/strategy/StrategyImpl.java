@@ -60,7 +60,7 @@ class StrategyImpl
         try {
             setExecutor(getLanguage().getExecutor(this));
             setStatus(COMPILING);
-            setRunningStrategy(getExecutor().start());
+            getExecutor().start();
             // intentionally not setting status to "RUNNING" because the
             //  "onStart" method, successful completion of which is required
             //  to be in "RUNNING" status, is being executed elsewhere.
@@ -119,6 +119,13 @@ class StrategyImpl
         String method = "onOther"; //$NON-NLS-1$
         try {
             RunningStrategy runningStrategy = getRunningStrategy();
+            if(runningStrategy == null) {
+                StrategyModule.log(LogEvent.warn(STRATEGY_NOT_READY_TO_RECEIVE_DATA,
+                                                 String.valueOf(this),
+                                                 String.valueOf(inData)),
+                                   this);
+                return;
+            }
             if(inData instanceof AskEvent) {
                 method = "onAsk"; //$NON-NLS-1$
                 runningStrategy.onAsk((AskEvent)inData);
@@ -365,7 +372,7 @@ class StrategyImpl
      *
      * @param a <code>RunningStrategy</code> value
      */
-    private void setRunningStrategy(RunningStrategy inRunningStrategy)
+    final void setRunningStrategy(RunningStrategy inRunningStrategy)
     {
         runningStrategy = inRunningStrategy;
     }

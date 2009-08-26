@@ -56,12 +56,10 @@ abstract class AbstractExecutor
             // make the parameters available to the strategy 
             abstractRunningStrategy.setStrategy(getStrategy());
             this.runningStrategy = runningStrategy;
-            // activate the strategy by causing its "onStart" method to be invoked.  note that this happens in another
-            //  thread which allows "onStart" to take as long as it wants.  the thread will stay alive until "onStart"
-            //  completes at which point it will be recycled for use for other strategies.
-            // note that any status changes that result from execution of the start thread need to be marked within
-            //  the following loop.  normally, the caller can decide how to set the status of the strategy, but, since
-            //  the following loop happens asynchronously, the caller has no context to make these decisions.
+            enclosingStrategy.setRunningStrategy(runningStrategy);
+            // activate the strategy by causing its "onStart" method to be invoked.
+            // note that any status changes that result from execution of the start method need to be marked within
+            //  the following loop.
             try {
                 SLF4JLoggerProxy.debug(AbstractExecutor.class,
                                        "{} start job beginning", //$NON-NLS-1$

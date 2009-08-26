@@ -348,5 +348,16 @@ public abstract class MarketDataModuleTestBase
                 return new ArrayList<Object>(result);
             }
         }
+        /**
+         * Gets all the data that has been collected by this object.
+         *
+         * @return a <code>Map&lt;DataFlowID,List&lt;Object&gt;&gt;</code> value
+         */
+        public Map<DataFlowID,List<Object>> getAllData()
+        {
+            synchronized(data) {
+                return new HashMap<DataFlowID,List<Object>>(data); 
+            }
+        }
     }
 }

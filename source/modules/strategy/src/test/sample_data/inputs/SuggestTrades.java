@@ -65,9 +65,9 @@ public class SuggestTrades
             }
             if(getParameter("doOrder") != null) {
                 if(getParameter("sendOrderShouldBeNull") != null) {
-                    sendOrder(null);
+                    send(null);
                 } else {
-                    sendOrder(suggestedOrder);
+                    send(suggestedOrder);
                 }
             } else {
                 suggestTrade(suggestedOrder,

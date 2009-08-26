@@ -81,7 +81,7 @@ public class VWAPStrategy extends Strategy {
                 order.setTimeInForce(TimeInForce.Day);
                 order.setPrice(new BigDecimal(vwap));
                 info("sending order " + order);
-                sendOrder(order);
+                send(order);
             } else {
                 warn("didnt' find anything for "+ symbol +
                         " and checked value was " + vwap + " within " + mVWAPs);

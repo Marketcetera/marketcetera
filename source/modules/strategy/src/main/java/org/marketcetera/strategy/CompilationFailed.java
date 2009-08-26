@@ -29,7 +29,7 @@ public class CompilationFailed
     /**
      * Create a new CompilationFailed instance.
      *
-     * @param inMessage
+     * @param inStrategy a <code>Strategy</code> value
      */
     public CompilationFailed(Strategy inStrategy)
     {
@@ -40,8 +40,8 @@ public class CompilationFailed
     /**
      * Create a new CompilationFailed instance.
      *
-     * @param inNested
-     * @param inMessage
+     * @param inNested a <code>Throwable</code> value
+     * @param inStrategy a <code>Strategy</code> value
      */
     public CompilationFailed(Throwable inNested,
                              Strategy inStrategy)

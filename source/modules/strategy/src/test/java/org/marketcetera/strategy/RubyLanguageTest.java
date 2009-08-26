@@ -53,6 +53,9 @@ public class RubyLanguageTest
     public static final File ORDER_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                        "orders.rb");
     public static final String ORDER_STRATEGY_NAME = "Orders";
+    public static final File OTHER_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                       "send_other.rb");
+    public static final String OTHER_STRATEGY_NAME = "SendOther";
     public static final File MESSAGE_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                          "send_message.rb");
     public static final String MESSAGE_STRATEGY_NAME = "SendMessage";
@@ -79,6 +82,9 @@ public class RubyLanguageTest
     public static final File BAD_ON_STOP_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                              "bad_on_stop.rb");
     public static final String BAD_ON_STOP_STRATEGY_NAME = "BadOnStop";
+    public static final File DATA_FLOW_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                           "data_flow.rb");
+    public static final String DATA_FLOW_STRATEGY_NAME = "DataFlow";
     /**
      * Verifies that a Ruby strategy that requires another Ruby strategy works.
      *
@@ -312,6 +318,15 @@ public class RubyLanguageTest
         return StrategyCoordinates.get(RubyLanguageTest.COMBINED_STRATEGY,
                                        RubyLanguageTest.COMBINED_STRATEGY_NAME);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getOtherStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getOtherStrategy()
+    {
+        return StrategyCoordinates.get(RubyLanguageTest.OTHER_STRATEGY,
+                                       RubyLanguageTest.OTHER_STRATEGY_NAME);
+    }
     /**
      * Gets a strategy which requires other strategies.
      *
@@ -341,6 +356,15 @@ public class RubyLanguageTest
      {
          return StrategyCoordinates.get(BAD_ON_STOP_STRATEGY,
                                         BAD_ON_STOP_STRATEGY_NAME);
+     }
+     /* (non-Javadoc)
+      * @see org.marketcetera.strategy.LanguageTestBase#getDataFlowStrategy()
+      */
+     @Override
+     protected StrategyCoordinates getDataFlowStrategy()
+     {
+         return StrategyCoordinates.get(DATA_FLOW_STRATEGY,
+                                        DATA_FLOW_STRATEGY_NAME);
      }
      private final String UNSERIALIZABLE_LOG_EVENT = "An unserializable LogEvent was emitted in on_start or on_stop.  See log for details.";
 }

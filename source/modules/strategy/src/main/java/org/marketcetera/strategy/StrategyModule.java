@@ -485,18 +485,18 @@ final class StrategyModule
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServices#sendOrder(java.lang.Object)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#sendOther(java.lang.Object)
      */
     @Override
-    public void sendOrder(OrderSingle inOrder)
+    public void send(Object inData)
     {
-        if(inOrder == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_ORDER,
+        if(inData == null) {
+            StrategyModule.log(LogEvent.warn(INVALID_DATA,
                                              String.valueOf(strategy)),
                                strategy);
             return;
         }
-        publish(inOrder);
+        publish(inData);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServices#sendSuggestion(java.lang.Object)
@@ -670,6 +670,29 @@ final class StrategyModule
             throws ListenerNotFoundException
     {
         notificationDelegate.removeNotificationListener(inListener);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelDataFlow(org.marketcetera.module.DataFlowID)
+     */
+    @Override
+    public void cancelDataFlow(DataFlowID inDataFlowID)
+        throws ModuleException
+    {
+        dataFlowSupport.cancel(inDataFlowID);
+        dataFlows.remove(inDataFlowID);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#createDataFlow(org.marketcetera.module.DataRequest[], boolean)
+     */
+    @Override
+    public DataFlowID createDataFlow(DataRequest[] inRequests,
+                                     boolean inAppendDataSink)
+        throws ModuleException
+    {
+        DataFlowID dataFlowID = dataFlowSupport.createDataFlow(inRequests,
+                                                               inAppendDataSink); 
+        dataFlows.add(dataFlowID);
+        return dataFlowID;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -905,10 +928,10 @@ final class StrategyModule
         // add destination data flows, if specified by the object parameters
         synchronized(dataFlows) {
             if(outputDestination != null) {
-                dataFlows.add(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
-                                                                                                 OutputType.ALL),
-                                                                                 new DataRequest(outputDestination) },
-                                                             false));
+                createDataFlow(new DataRequest[] { new DataRequest(getURN(),
+                                                                   OutputType.ALL),
+                                                   new DataRequest(outputDestination) },
+                               false);
             }
             // set the connection to the ORS to the correct value
             if(routeOrdersToORS) {
