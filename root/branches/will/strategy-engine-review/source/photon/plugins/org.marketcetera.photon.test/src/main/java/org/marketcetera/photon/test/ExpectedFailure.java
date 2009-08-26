@@ -14,8 +14,7 @@ import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NMessage;
 
 /**
- * Copied from org.marketcetera.module. Ideally, this should be in util-test.
- * See EG-190.
+ * Copied from org.marketcetera.module.  Ideally, this should be in util-test.  See EG-190.
  * 
  * Changed assertException to use getLocalizedMessage instead of getMessage.
  */
@@ -23,7 +22,7 @@ public abstract class ExpectedFailure<T extends Exception> {
 
     /**
      * Returns the exception instance, for further verification, if needed.
-     * 
+     *
      * @return the exception instance.
      */
     public T getException() {
@@ -31,33 +30,31 @@ public abstract class ExpectedFailure<T extends Exception> {
     }
 
     /**
-     * Verifies if the supplied exception is an I18NException having the
-     * supplied message and expected parameters.
-     * 
-     * @param inThrowable
-     *            the exception to verify.
-     * @param inExpectedMessage
-     *            the expected message, ignored if null.
-     * @param inExpectedParams
-     *            the expected parameters, ignored if null.
-     * 
+     * Verifies if the supplied exception is an I18NException having
+     * the supplied message and expected parameters.
+     *
+     * @param inThrowable the exception to verify.
+     * @param inExpectedMessage the expected message, ignored if null.
+     * @param inExpectedParams the expected parameters, ignored if null.
+     *
      * @return the supplied inThrowable value.
      */
     public static I18NException assertI18NException(Throwable inThrowable,
-            I18NMessage inExpectedMessage, Object... inExpectedParams) {
+                                           I18NMessage inExpectedMessage,
+                                           Object... inExpectedParams) {
         assertNotNull(inThrowable);
         assertTrue(inThrowable.getClass().toString(),
                 inThrowable instanceof I18NException);
         I18NException e = (I18NException) inThrowable;
-        if (inExpectedMessage != null) {
-            assertEquals(inThrowable.toString(), inExpectedMessage, e
-                    .getI18NBoundMessage().getMessage());
+        if(inExpectedMessage != null) {
+            assertEquals(inThrowable.toString(), inExpectedMessage,
+                    e.getI18NBoundMessage().getMessage());
         }
-        if (inExpectedParams != null && inExpectedParams.length > 0) {
+        if(inExpectedParams != null && inExpectedParams.length > 0) {
             String msg = inThrowable.toString();
             Serializable[] params = e.getI18NBoundMessage().getParams();
             assertEquals(msg, inExpectedParams.length, params.length);
-            for (int i = 0; i < inExpectedParams.length; i++) {
+            for(int i = 0; i < inExpectedParams.length; i++) {
                 if (inExpectedParams[i] != IGNORE) {
                     assertEquals(msg, inExpectedParams[i], params[i]);
                 }
@@ -68,18 +65,16 @@ public abstract class ExpectedFailure<T extends Exception> {
 
     /**
      * Verifies if the supplied exception has the specified message.
-     * 
-     * @param inThrowable
-     *            the exception to be verified.
-     * @param inExpectedMessage
-     *            the expected exception message.
-     * @param inExactMatch
-     *            true, if the specified message should match
-     * 
+     *
+     * @param inThrowable the exception to be verified.
+     * @param inExpectedMessage the expected exception message.
+     * @param inExactMatch true, if the specified message should match
+     *
      * @return the supplied inThrowable value.
      */
     public static Throwable assertException(Throwable inThrowable,
-            String inExpectedMessage, boolean inExactMatch) {
+                                            String inExpectedMessage,
+                                            boolean inExactMatch) {
         assertNotNull(inThrowable);
         if (inExactMatch) {
             // TODO: core version should likely use getLocalizedMessage too
@@ -90,51 +85,43 @@ public abstract class ExpectedFailure<T extends Exception> {
         }
         return inThrowable;
     }
-
     /**
      * Creates an instance that will test for failures with I18NExceptions
-     * 
-     * @param inExpectedMessage
-     *            the expected message in the exception, null if the message
-     *            need not be tested.
-     * @param inExpectedParams
-     *            the expected parameters to the message, null if the parameters
-     *            need not be tested.
-     * 
-     * @throws Exception
-     *             if there are unexpected failures.
+     *
+     * @param inExpectedMessage the expected message in the exception, null
+     * if the message need not be tested.
+     * @param inExpectedParams the expected parameters to the message, null
+     * if the parameters need not be tested.
+     *
+     * @throws Exception if there are unexpected failures.
      */
     protected ExpectedFailure(I18NMessage inExpectedMessage,
-            Object... inExpectedParams) throws Exception {
+                              Object... inExpectedParams) throws Exception {
         mExpectedMessage = inExpectedMessage;
         mExpectedParams = inExpectedParams;
         doRun();
     }
 
     /**
-     * Creates an instance that will test for failures with any java Exception.
-     * 
-     * @param inMessage
-     *            the exception message.
-     * 
-     * @throws Exception
-     *             if there was an unexpected failure
+     * Creates an instance that will test for failures with any java
+     * Exception.
+     *
+     * @param inMessage the exception message.
+     *
+     * @throws Exception if there was an unexpected failure
      */
     protected ExpectedFailure(String inMessage) throws Exception {
         this(inMessage, true);
     }
-
     /**
-     * Creates an instance that will test for failures with any java Exception.
-     * 
-     * @param inMessage
-     *            the exception message.
-     * @param inExactMatch
-     *            true if the message should match exactly, false if the
-     *            generated message contains the supplied message.
-     * 
-     * @throws Exception
-     *             if there was an unexpected failure
+     * Creates an instance that will test for failures with any java
+     * Exception.
+     *
+     * @param inMessage the exception message.
+     * @param inExactMatch true if the message should match exactly, false
+     * if the generated message contains the supplied message.
+     *
+     * @throws Exception if there was an unexpected failure
      */
     protected ExpectedFailure(String inMessage, boolean inExactMatch)
             throws Exception {
@@ -144,37 +131,35 @@ public abstract class ExpectedFailure<T extends Exception> {
     }
 
     /**
-     * Subclasses should implement this method to execute code that is expected
-     * to fail with the exception of type <code>T<code>
-     * 
-     * @throws Exception
-     *             if there's a failure.
+     * Subclasses should implement this method to execute
+     * code that is expected to fail with the exception of type
+     * <code>T<code>
+     *
+     * @throws Exception if there's a failure.
      */
     protected abstract void run() throws Exception;
 
     /**
      * Runs the test code and verifies the exception.
-     * 
-     * @throws Exception
-     *             runs the test code and verifies the exception.
+     *
+     * @throws Exception runs the test code and verifies the exception.
      */
     @SuppressWarnings("unchecked")
     private void doRun() throws Exception {
         try {
             run();
             fail("Didn't fail!");
-        } catch (Exception t) {
+        } catch(Exception t) {
             Class expected = getExceptionClass();
-            assertTrue("Expected<" + expected + ">Actual<" + t.getClass() + ">"
-                    + t, expected.isInstance(t));
+            assertTrue("Expected<" + expected + ">Actual<"+t.getClass()+">" + t,
+                    expected.isInstance(t));
             mException = (T) t;
-            if (t instanceof I18NException) {
+            if(t instanceof I18NException) {
                 assertI18NException(t, mExpectedMessage, mExpectedParams);
             } else {
-                assertNull(t.getClass() + " is not an I18NException",
-                        mExpectedMessage);
+                assertNull(t.getClass() + " is not an I18NException", mExpectedMessage);
             }
-            if (mMessage != null) {
+            if(mMessage != null) {
                 assertException(t, mMessage, mExactMatch);
             }
         }
@@ -183,27 +168,25 @@ public abstract class ExpectedFailure<T extends Exception> {
     /**
      * Extracts the exception type specified as the value of parameter
      * <code>T</code>from the class metadata.
-     * 
+     *
      * @return the expected exception type.
      */
     private Class<?> getExceptionClass() {
-        ParameterizedType pt = (ParameterizedType) getClass()
-                .getGenericSuperclass();
+        ParameterizedType pt = (ParameterizedType) getClass().getGenericSuperclass();
         Type[] t = pt.getActualTypeArguments();
         assertEquals(1, t.length);
         return (Class<?>) t[0];
     }
-
     private I18NMessage mExpectedMessage;
     private Object[] mExpectedParams;
     private T mException;
     private String mMessage;
     private boolean mExactMatch;
     /**
-     * A parameter value that can be used to indicate that a parameter may be
-     * ignored when testing for failure in
+     * A parameter value that can be used to indicate that a parameter
+     * may be ignored when testing for failure in
      * {@link #assertI18NException(Throwable, I18NMessage, Object[])} or
-     * {@link #ExpectedFailure(I18NMessage, Object[])}
+     * {@link #ExpectedFailure(I18NMessage, Object[])}  
      */
     public static final Object IGNORE = new Object();
 }
