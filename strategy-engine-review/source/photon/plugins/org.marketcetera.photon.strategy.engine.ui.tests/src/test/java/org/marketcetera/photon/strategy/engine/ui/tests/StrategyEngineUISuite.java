@@ -11,6 +11,7 @@ import org.marketcetera.photon.strategy.engine.ui.ObservableListTreeContentProvi
 import org.marketcetera.photon.strategy.engine.ui.ScriptSelectionButtonTest;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEngineColorsTest;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEngineStatusDecoratorTest;
+import org.marketcetera.photon.strategy.engine.ui.StrategyEngineUITest;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesContentProviderTest;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesLabelProviderTest;
 
@@ -25,6 +26,7 @@ import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesLabelProviderTe
         StrategyEngineIdentificationCompositeTest.class,
         DeployedStrategyConfigurationCompositeTest.class,
         org.marketcetera.photon.strategy.engine.ui.MessagesTest.class,
-        org.marketcetera.photon.internal.strategy.engine.ui.MessagesTest.class })
+        org.marketcetera.photon.internal.strategy.engine.ui.MessagesTest.class,
+        StrategyEngineUITest.class })
 public final class StrategyEngineUISuite {
 }
