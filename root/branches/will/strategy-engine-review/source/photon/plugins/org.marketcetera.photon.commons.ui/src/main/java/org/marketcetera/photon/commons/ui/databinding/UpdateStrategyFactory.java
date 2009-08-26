@@ -50,11 +50,20 @@ public final class UpdateStrategyFactory {
             }
         };
     }
-    
+
     /**
+     * Adds and "afterGet" validator to the update value strategy that attempts
+     * conversion and fails if the conversion fails. This is needed since
+     * conversion failures often do not produce readable messages.
      * 
+     * @param strategy
+     *            the update value strategy to enhance
+     * @param message
+     *            the error message for conversion failures
+     * @return the strategy passed in for method chaining
      */
-    public static UpdateValueStrategy withConvertErrorMessage(final UpdateValueStrategy strategy, final String message) {
+    public static UpdateValueStrategy withConvertErrorMessage(
+            final UpdateValueStrategy strategy, final String message) {
         return strategy.setAfterGetValidator(new IValidator() {
             @Override
             public IStatus validate(Object value) {
