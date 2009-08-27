@@ -125,25 +125,38 @@ public class ORSTestBase
     {
         // Close the administrative client.
 
-        getAdminClient().close();
+        if (getAdminClient()!=null) {
+            getAdminClient().close();
+            mAdminClient=null;
+        }
 
         // Shut down ORS waiting thread.
 
-        mORSThread.interrupt();
+        if (mORSThread!=null) {
+            mORSThread.interrupt();
 
-        // Wait for ORS waiting thread to terminate.
+            // Wait for ORS waiting thread to terminate.
 
-        while (mORSThread.isAlive()) {
-            Thread.sleep(1000);
+            while (mORSThread.isAlive()) {
+                Thread.sleep(1000);
+            }
+            mORSThread=null;
         }
 
         // Shut down the ORS.
 
-        getORS().stop();
+        if (getORS()!=null) {
+            getORS().stop();
+            mORS=null;
+        }
 
         // Shut down the exchange.
 
-        getExchange().stop();
+
+        if (getExchange()!=null) {
+            getExchange().stop();
+            mExchange=null;
+        }
     }
 
     protected SampleExchange getExchange()
