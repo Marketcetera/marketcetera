@@ -48,6 +48,7 @@ public class LocalizedLabelMessageInfoProviderTest extends PhotonTestBase {
     }
 
     public interface Messages {
+        Object obj = new Object();
         LocalizedLabel LL = new LocalizedLabel("lbl", "tltp");
         LocalizedLabel LL2 = new LocalizedLabel("lbl2", "tltp2");
     }
