@@ -1,27 +1,36 @@
 package org.marketcetera.photon.commons.ui;
 
-import org.eclipse.osgi.util.NLS;
+import org.marketcetera.photon.commons.ReflectiveMessages;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
+
 
 /* $License$ */
 
 /**
- * Eclipse-style internationalization to allow this plugin to be used without core marketcetera
- * jars.
+ * The internationalization constants used by this package.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.5.0
  */
-public class Messages extends NLS {
-	
-	private static final String BUNDLE_NAME = "org.marketcetera.photon.commons.ui.messages"; //$NON-NLS-1$
-	public static String FilterBox_clearButton_tooltip;
-	
-	static {
-		// initialize resource bundle
-		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
-	}
+@ClassVersion("$Id$")
+final class Messages {
 
-	private Messages() {
-	}
+    static I18NMessage0P JFACE_UTILS_GENERIC_EXCEPTION_OCCURRED;
+    static I18NMessage0P JFACE_UTILS_OPERATION_FAILED__DIALOG_TITLE;
+    static I18NMessage1P COLOR_MANAGER_PROVIDER_NULL_DESCRIPTOR;
+    static I18NMessage1P COLOR_MANAGER_UNKNOWN_DESCRIPTOR;
+    static I18NMessage0P COLOR_MANAGER_ALREADY_INITIALIZED;
+    static I18NMessage0P SWT_UTILS_INVALID_THREAD;
+    static I18NMessage1P LOCALIZED_LABEL__FORMAT_PATTERN;
+
+    static {
+        ReflectiveMessages.init(Messages.class);
+    }
+
+    private Messages() {
+        throw new AssertionError("non-instantiable"); //$NON-NLS-1$
+    }
 }

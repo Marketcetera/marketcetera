@@ -12,8 +12,9 @@ import org.junit.runners.model.InitializationError;
 /* $License$ */
 
 /**
- * Test runner that launches a simple workbench with an empty perspective.  Use this if you need to test views or other
- * code that requires workbench services.
+ * Test runner that launches a simple workbench with an empty perspective. Use
+ * this if you need to test views or other code that requires workbench
+ * services.
  * <p>
  * For basic SWT/JFace tests, use {@link SimpleUIRunner}.
  * 
@@ -22,7 +23,7 @@ import org.junit.runners.model.InitializationError;
  * @since $Release$
  */
 public final class WorkbenchRunner extends AbstractUIRunner {
-    
+
     /**
      * Constructor. Should only be called by the JUnit framework.
      * 
@@ -36,32 +37,45 @@ public final class WorkbenchRunner extends AbstractUIRunner {
     }
 
     @Override
-    protected void runEventLoop(final Display display, final CountDownLatch ready) {
+    protected void runEventLoop(final Display display,
+            final CountDownLatch ready) {
         PlatformUI.createAndRunWorkbench(display, new WorkbenchAdvisor() {
-            
+
             @Override
             public String getInitialWindowPerspectiveId() {
                 return Perspective.ID;
             }
-            
+
             @Override
             public void postStartup() {
                 ready.countDown();
             }
+
+            @Override
+            public void eventLoopException(Throwable exception) {
+                setAsyncThrowable(exception);
+                super.eventLoopException(exception);
+            }
         });
     }
-    
+
     @Override
-    protected void shutDownUI() {
-        PlatformUI.getWorkbench().close();
+    protected void shutDownUI(Display display) {
+        display.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                PlatformUI.getWorkbench().close();
+            }
+        });
     }
-    
+
     public static class Perspective implements IPerspectiveFactory {
-        
+
         public static final String ID = "org.marketcetera.photon.test.WorkbenchRunner$Perspective";
+
         @Override
         public void createInitialLayout(IPageLayout layout) {
-            
+
         }
     }
 }

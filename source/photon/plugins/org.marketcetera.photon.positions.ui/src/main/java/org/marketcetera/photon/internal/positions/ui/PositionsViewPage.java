@@ -20,7 +20,7 @@ import org.eclipse.ui.part.Page;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.PositionEngine.PositionData;
-import org.marketcetera.photon.commons.ui.table.ChooseColumnsMenu.IColumnProvider;
+import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnProvider;
 import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
