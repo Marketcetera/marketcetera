@@ -15,6 +15,15 @@ import org.marketcetera.photon.strategy.engine.ui.StrategyEngineUITest;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesContentProviderTest;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesLabelProviderTest;
 
+/* $License$ */
+
+/**
+ * Test suite for this bundle.
+ * 
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
 @RunWith(Suite.class)
 @SuiteClasses( { StrategyEngineColorsTest.class,
         StrategyEnginesLabelProviderTest.class,

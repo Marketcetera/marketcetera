@@ -8,6 +8,7 @@ import org.marketcetera.util.l10n.MessageInfo;
 import org.marketcetera.util.l10n.MessageInfoProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 /* $License$ */
@@ -23,7 +24,7 @@ import com.google.common.collect.Lists;
 @ClassVersion("$Id$")
 public final class ComposedContainerClassInfo extends ContainerClassInfo {
 
-    private final MessageInfoProvider[] mAdditionalProviders;
+    private final ImmutableList<MessageInfo> mMessageInfo;
 
     /**
      * Constructor.
@@ -34,23 +35,23 @@ public final class ComposedContainerClassInfo extends ContainerClassInfo {
      *             if introspection of the given class fails, or the class does
      *             not contain a message provider
      * @throws IllegalArgumentException
-     *             if additionalProviders is null
+     *             if additionalProviders is null, empty, or has null elements
      */
     public ComposedContainerClassInfo(Class<?> clazz,
             MessageInfoProvider... additionalProviders) throws I18NException {
         super(clazz);
         Validate.nonNullElements(additionalProviders, "additionalProviders"); //$NON-NLS-1$
-        mAdditionalProviders = additionalProviders;
+        List<MessageInfo> combined = Lists.newLinkedList();
+        combined.addAll(super.getMessageInfo());
+        for (MessageInfoProvider provider : additionalProviders) {
+            combined.addAll(provider.getMessageInfo());
+        }
+        mMessageInfo = ImmutableList.copyOf(combined);
     }
 
     @Override
     public List<MessageInfo> getMessageInfo() {
-        List<MessageInfo> combined = Lists.newLinkedList();
-        combined.addAll(super.getMessageInfo());
-        for (MessageInfoProvider provider : mAdditionalProviders) {
-            combined.addAll(provider.getMessageInfo());
-        }
-        return combined;
+        return mMessageInfo;
     }
 
 }

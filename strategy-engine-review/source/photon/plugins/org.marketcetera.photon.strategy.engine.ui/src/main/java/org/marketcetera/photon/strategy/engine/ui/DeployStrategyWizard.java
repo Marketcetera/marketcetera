@@ -14,6 +14,7 @@ import org.marketcetera.photon.commons.ui.JFaceUtils;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
+import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -93,11 +94,12 @@ public final class DeployStrategyWizard extends Wizard {
     public boolean performFinish() {
         final StrategyEngine engine = (StrategyEngine) mEngine.getValue();
         final String name = engine.getName();
+        final StrategyEngineConnection connection = engine.getConnection();
         final AtomicReference<DeployedStrategy> result = new AtomicReference<DeployedStrategy>();
         IRunnableWithProgress operation = JFaceUtils.wrap(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                result.set(engine.getConnection().deploy(mStrategy));
+                result.set(connection.deploy(mStrategy));
                 return null;
             }
         }, Messages.DEPLOY_STRATEGY_WIZARD_DEPLOY__TASK_NAME.getText(name));

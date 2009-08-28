@@ -18,5 +18,5 @@ import org.marketcetera.photon.commons.ui.workbench.MessagesTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses( { MessagesTest.class, DataBindingPropertyPageTest.class,
         ChooseColumnsMenuTest.class })
-public class CommonsWorkbenchSuite {
+public final class CommonsWorkbenchSuite {
 }
