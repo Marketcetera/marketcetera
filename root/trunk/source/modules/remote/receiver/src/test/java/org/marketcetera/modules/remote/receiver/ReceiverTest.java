@@ -1,6 +1,7 @@
 package org.marketcetera.modules.remote.receiver;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.test.LogTestAssist;
 import org.marketcetera.module.*;
 import org.marketcetera.event.LogEvent;
 import org.junit.After;
@@ -16,6 +17,9 @@ import javax.security.auth.login.Configuration;
 import java.util.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.Socket;
+import java.net.ConnectException;
+import java.io.IOException;
 
 /* $License$ */
 /**
@@ -44,18 +48,29 @@ public class ReceiverTest extends ModuleTestBase {
     }
 
     /**
+     * Verifies the behavior when no URL value is specified.
+     *
+     * @throws Exception if there were unexpected failures.
+     */
+    @Test
+    public void noURL() throws Exception {
+        initManager(new MockConfigProvider());
+        //Verify that the data can flow.
+        verifyDataFlow();
+        //But we cannot connect to the server
+        verifyNoConnectToReceiver();
+        //And that the log included the message on URL not being configured.
+        mLogAssist.assertSomeEvent(Level.INFO, null,
+                Messages.NO_URL_SPECIFIED_LOG.getText(), null);
+    }
+
+    /**
      * Verifies failures that prevent module from getting started.
      *
      * @throws Exception if there were errors.
      */
     @Test
     public void initFailures() throws Exception {
-        //Do not initialize the URL
-        new ExpectedFailure<ModuleException>(Messages.START_FAIL_NO_URL){
-            protected void run() throws Exception {
-                initManager(new MockConfigProvider());
-            }
-        };
         //Specify incorrect URL
         new ExpectedFailure<ModuleException>(Messages.ERROR_STARTING_MODULE){
             protected void run() throws Exception {
@@ -63,9 +78,16 @@ public class ReceiverTest extends ModuleTestBase {
                         "this is not a valid URL"));
             }
         };
+        verifyNoConnectToReceiver();
         //Verify that we can start up with correct configuration
         //after all these failures
         info();
+        //And that we can connect to the server.
+        verifyConnectToReceiver();
+        //And that the log included the message on module being fully configured
+        mLogAssist.assertSomeEvent(Level.INFO,  null,
+                Messages.RECIEVER_REMOTING_CONFIGURED.getText(DEFAULT_URL),
+                null);
     }
 
     /**
@@ -75,32 +97,10 @@ public class ReceiverTest extends ModuleTestBase {
      */
     @Test
     public void dataFlowSuccess() throws Exception {
+        verifyNoConnectToReceiver();
         initManager();
-        Object[]objs = new Object[]{
-                Integer.MAX_VALUE,
-                BigInteger.TEN,
-                BigDecimal.TEN,
-                new LinkedList(),
-                new HashMap()
-        };
-        CopierModule.SynchronousRequest req = new CopierModule.SynchronousRequest(objs);
-        //exhaust all the permits
-        req.semaphore.acquire();
-        DataFlowID flowID = mManager.createDataFlow(new DataRequest[]{
-                new DataRequest(CopierModuleFactory.INSTANCE_URN, req),
-                new DataRequest(ReceiverFactory.PROVIDER_URN)
-        });
-        //Wait for all the objects to get emitted
-        req.semaphore.acquire();
-        DataFlowInfo flowInfo = mManager.getDataFlowInfo(flowID);
-        assertFlowInfo(flowInfo, flowID, 2,
-                true, false, null, null);
-        assertFlowStep(flowInfo.getFlowSteps()[0],
-                CopierModuleFactory.INSTANCE_URN, true, 5, 0, null,
-                false, 0, 0, null, CopierModuleFactory.INSTANCE_URN, req.toString());
-        assertFlowStep(flowInfo.getFlowSteps()[1],
-                ReceiverFactory.INSTANCE_URN, false, 0, 0, null,
-                true, 5, 0, null, ReceiverFactory.PROVIDER_URN, null);
+        verifyDataFlow();
+        verifyConnectToReceiver();
     }
 
     /**
@@ -291,6 +291,7 @@ public class ReceiverTest extends ModuleTestBase {
             mManager.stop();
             mManager = null;
         }
+        mLogAssist.resetAppender();
     }
 
     /**
@@ -299,6 +300,63 @@ public class ReceiverTest extends ModuleTestBase {
     @Before
     public void resetJAASConfig() {
         Configuration.setConfiguration(null);
+    }
+
+    /**
+     * Tests a connection to the receiver server.
+     *
+     * @throws IOException if the connection failed.
+     */
+    private void verifyConnectToReceiver() throws IOException {
+        new Socket(DEFAULT_HOST, DEFAULT_PORT).close();
+    }
+
+    /**
+     * Verifies that the server for accepting remote connections
+     * is not created.
+     *
+     * @throws Exception if there were unexpected results.
+     */
+    private void verifyNoConnectToReceiver() throws Exception {
+        new ExpectedFailure<ConnectException>(null){
+            @Override
+            protected void run() throws Exception {
+                verifyConnectToReceiver();
+            }
+        };
+    }
+
+    /**
+     * Verifies data flow to the receiver.
+     *
+     * @throws Exception if there were unexpected failures.
+     */
+    private void verifyDataFlow() throws Exception {
+        Object[]objs = new Object[]{
+                Integer.MAX_VALUE,
+                BigInteger.TEN,
+                BigDecimal.TEN,
+                new LinkedList(),
+                new HashMap()
+        };
+        CopierModule.SynchronousRequest req = new CopierModule.SynchronousRequest(objs);
+        //exhaust all the permits
+        req.semaphore.acquire();
+        DataFlowID flowID = mManager.createDataFlow(new DataRequest[]{
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, req),
+                new DataRequest(ReceiverFactory.PROVIDER_URN)
+        });
+        //Wait for all the objects to get emitted
+        req.semaphore.acquire();
+        DataFlowInfo flowInfo = mManager.getDataFlowInfo(flowID);
+        assertFlowInfo(flowInfo, flowID, 2,
+                true, false, null, null);
+        assertFlowStep(flowInfo.getFlowSteps()[0],
+                CopierModuleFactory.INSTANCE_URN, true, 5, 0, null,
+                false, 0, 0, null, CopierModuleFactory.INSTANCE_URN, req.toString());
+        assertFlowStep(flowInfo.getFlowSteps()[1],
+                ReceiverFactory.INSTANCE_URN, false, 0, 0, null,
+                true, 5, 0, null, ReceiverFactory.PROVIDER_URN, null);
     }
 
     /**
@@ -369,8 +427,11 @@ public class ReceiverTest extends ModuleTestBase {
     }
 
     private ModuleManager mManager;
+    private final LogTestAssist mLogAssist = new LogTestAssist(ReceiverModule.class.getName(),Level.INFO);
     /**
      * The default URL value to run the receiver's embedded broker on.
      */
-    private static final String DEFAULT_URL = "tcp://localhost:61617";
+    private static final String DEFAULT_HOST = "localhost";
+    private static final int DEFAULT_PORT = 61617;
+    private static final String DEFAULT_URL = "tcp://" + DEFAULT_HOST + ":" + DEFAULT_PORT;
 }

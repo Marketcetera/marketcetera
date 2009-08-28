@@ -2,9 +2,12 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 
-import java.util.Date;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.beans.ConstructorProperties;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Date;
 
 /* $License$ */
 /**
@@ -15,6 +18,7 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
+@XmlAccessorType(XmlAccessType.FIELD)
 public final class ModuleInfo implements Serializable {
 
     /**
@@ -259,6 +263,38 @@ public final class ModuleInfo implements Serializable {
         mReadLockCount = inReadLockCount;
         mWriteLocked = inWriteLocked;
         mLockQueueLength = inLockQueueLength;
+    }
+
+    /**
+     * This constructor has been added for JAXB and is not meant to be
+     * used.
+     */
+    private ModuleInfo() {
+        this(null, null, null, null, null, null, null, false, false,
+                false, false, false, null, null, -1, false, -1);
+    }
+
+    @Override
+    public String toString() {
+        return "ModuleInfo{" +  //$NON-NLS-1$
+                "mURN=" + mURN +  //$NON-NLS-1$
+                ", mState=" + mState +  //$NON-NLS-1$
+                ", mInitiatedDataFlows=" + (mInitiatedDataFlows == null ? null : Arrays.asList(mInitiatedDataFlows)) +  //$NON-NLS-1$
+                ", mParticipatingDataFlows=" + (mParticipatingDataFlows == null ? null : Arrays.asList(mParticipatingDataFlows)) +  //$NON-NLS-1$
+                ", mCreated=" + mCreated +  //$NON-NLS-1$
+                ", mStarted=" + mStarted +  //$NON-NLS-1$
+                ", mStopped=" + mStopped +  //$NON-NLS-1$
+                ", mAutostart=" + mAutostart +  //$NON-NLS-1$
+                ", mAutocreated=" + mAutocreated +  //$NON-NLS-1$
+                ", mReceiver=" + mReceiver +  //$NON-NLS-1$
+                ", mEmitter=" + mEmitter +  //$NON-NLS-1$
+                ", mFlowRequester=" + mFlowRequester +  //$NON-NLS-1$
+                ", mLastStartFailure='" + mLastStartFailure + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
+                ", mLastStopFailure='" + mLastStopFailure + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
+                ", mReadLockCount=" + mReadLockCount +  //$NON-NLS-1$
+                ", mWriteLocked=" + mWriteLocked +  //$NON-NLS-1$
+                ", mLockQueueLength=" + mLockQueueLength +  //$NON-NLS-1$
+                '}';  //$NON-NLS-1$
     }
 
     private final ModuleURN mURN;

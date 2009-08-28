@@ -27,7 +27,7 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
     public void runNoArgs() {
         run(createAgent(false));
         assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertNoEvents();
+        assertNoEventsAbove(Level.INFO);
     }
     @Test
     public void runInvalidArgs() {

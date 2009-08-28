@@ -53,4 +53,27 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "log_app_copyright");   //$NON-NLS-1$
     static final I18NMessage2P LOG_APP_VERSION_BUILD =
             new I18NMessage2P(LOGGER, "log_app_version_build");   //$NON-NLS-1$
+    static final I18NMessage1P START_MODULE_NOT_STRATEGY =
+            new I18NMessage1P(LOGGER, "start_module_not_strategy");   //$NON-NLS-1$
+    static final I18NMessage1P STOP_MODULE_NOT_STRATEGY =
+            new I18NMessage1P(LOGGER, "stop_module_not_strategy");   //$NON-NLS-1$
+    static final I18NMessage1P DELETE_MODULE_NOT_STRATEGY =
+            new I18NMessage1P(LOGGER, "delete_module_not_strategy");   //$NON-NLS-1$
+    static final I18NMessage1P SET_PROPERTY_MODULE_NOT_STRATEGY =
+            new I18NMessage1P(LOGGER, "set_property_module_not_strategy");   //$NON-NLS-1$
+    static final I18NMessage3P UNEDITABLE_STRATEGY_PROPERTY =
+            new I18NMessage3P(LOGGER, "uneditable_strategy_property");   //$NON-NLS-1$
+    static final I18NMessage0P CANNOT_PROCESS_NULL_URN =
+            new I18NMessage0P(LOGGER, "cannot_process_null_urn");   //$NON-NLS-1$
+    static final I18NMessage1P NO_CREATE_PARAMETERS_FOR_STRATEGY =
+            new I18NMessage1P(LOGGER, "no_create_parameters_for_strategy");   //$NON-NLS-1$
+    static final I18NMessage0P NO_STRATEGY_CREATE_PARMS_SPECIFIED =
+            new I18NMessage0P(LOGGER, "no_strategy_create_parms_specified");   //$NON-NLS-1$
+    static final I18NMessage2P LOG_REMOTE_WS_CONFIGURED =
+            new I18NMessage2P(LOGGER, "log_remote_ws_configured");   //$NON-NLS-1$
+    static final I18NMessage2P LOG_ERROR_SET_ATTRIBUTE =
+            new I18NMessage2P(LOGGER, "log_error_set_attribute");   //$NON-NLS-1$
+    static final I18NMessage3P VERSION_MISMATCH =
+            new I18NMessage3P(LOGGER, "version_mismatch");   //$NON-NLS-1$
+
 }

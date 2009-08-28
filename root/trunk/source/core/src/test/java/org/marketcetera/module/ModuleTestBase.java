@@ -103,7 +103,7 @@ public class ModuleTestBase {
      * @param inFlowRequester if the module is a flow requester
      * @return the supplied module info
      */
-    protected static ModuleInfo assertModuleInfo(ModuleInfo inInfo,
+    public static ModuleInfo assertModuleInfo(ModuleInfo inInfo,
                                        ModuleURN inURN,
                                        ModuleState inState,
                                        DataFlowID[] inInitDataFlows,

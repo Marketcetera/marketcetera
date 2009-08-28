@@ -426,10 +426,10 @@ final class StrategyModule
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyMXBean#setIsRountingOrdersToORS(boolean)
+     * @see org.marketcetera.strategy.StrategyMXBean#setRoutingOrdersToORS(boolean)
      */
     @Override
-    public void setIsRountingOrdersToORS(boolean inValue)
+    public void setRoutingOrdersToORS(boolean inValue)
     {
         try {
             if(routeOrdersToORS != inValue) {
@@ -446,6 +446,22 @@ final class StrategyModule
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#getName()
+     */
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#getLanguage()
+     */
+    @Override
+    public Language getLanguage()
+    {
+        return type;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyMXBean#getParameters()

@@ -7,12 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import javax.management.JMX;
-import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Properties;
-import java.util.HashMap;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -41,9 +36,7 @@ public class PropertiesConfigurationProviderTest
         // and verify that module factory and instances
         // get default values
         mManager = new ModuleManager();
-        PropertiesConfigurationProvider provider =
-                new PropertiesConfigurationProvider(
-                        getClass().getClassLoader());
+        ModuleConfigurationProvider provider = createProvider(getClass().getClassLoader());
         mManager.setConfigurationProvider(provider);
         mManager.init();
         verifyEmptyValues();
@@ -58,8 +51,7 @@ public class PropertiesConfigurationProviderTest
     @Test
     public void providerWithValues() throws Exception {
         mManager = new ModuleManager();
-        PropertiesConfigurationProvider provider =
-                new PropertiesConfigurationProvider(mLoader);
+        ModuleConfigurationProvider provider = createProvider();
         mManager.setConfigurationProvider(provider);
         ModuleURN providerURN = ConfigurationProviderTestFactory.PROVIDER_URN;
         ModuleURN instanceURN = new ModuleURN(ConfigurationProviderTestFactory.PROVIDER_URN,
@@ -78,12 +70,7 @@ public class PropertiesConfigurationProviderTest
         properties.setProperty("int","312");
         properties.setProperty("whatever.PrimFloat","312");
 
-        String propertiesName = new StringBuilder().
-                append(providerURN.providerType()).
-                append("_").append(providerURN.providerName()).
-                append(".properties").toString();
-        mLoader.addResource(propertiesName,
-                properties);
+        mLoader.addResource(providerURN, properties);
         mManager.init();
 
         ConfigurationProviderFactoryMXBean factory = JMX.newMXBeanProxy(
@@ -123,18 +110,13 @@ public class PropertiesConfigurationProviderTest
     @Test
     public void providerRefresh() throws Exception {
         mManager = new ModuleManager();
-        PropertiesConfigurationProvider provider = new PropertiesConfigurationProvider(mLoader);
+        ModuleConfigurationProvider provider = createProvider();
         mManager.setConfigurationProvider(provider);
         ModuleURN providerURN = ConfigurationProviderTestFactory.PROVIDER_URN;
         Properties properties = new Properties();
         properties.setProperty("MaxLimit","897.98327");
         properties.setProperty(".String","before");
-        String propertiesName = new StringBuilder().
-                append(providerURN.providerType()).
-                append("_").append(providerURN.providerName()).
-                append(".properties").toString();
-        mLoader.addResource(propertiesName,
-                properties);
+        mLoader.addResource(providerURN, properties);
         mManager.init();
         ConfigurationProviderFactoryMXBean factory = JMX.newMXBeanProxy(
                 getMBeanServer(),
@@ -184,16 +166,12 @@ public class PropertiesConfigurationProviderTest
     @Test
     public void propertyReadFailure() throws Exception {
         mManager = new ModuleManager();
-        PropertiesConfigurationProvider provider = new PropertiesConfigurationProvider(mLoader);
+        ModuleConfigurationProvider provider = createProvider();
         mManager.setConfigurationProvider(provider);
         mLoader.setFail(true);
         ModuleURN providerURN = ConfigurationProviderTestFactory.PROVIDER_URN;
-        String propertiesName = new StringBuilder().
-                append(providerURN.providerType()).
-                append("_").append(providerURN.providerName()).
-                append(".properties").toString();
-        mLoader.addResource(propertiesName,
-                new Properties());
+        String propertiesName = DynamicResourceLoader.getPropertiesName(providerURN);
+        mLoader.addResource(providerURN, new Properties());
         new ExpectedFailure<ModuleException>(Messages.ERROR_READ_PROPERTIES,
                 propertiesName){
             protected void run() throws Exception {
@@ -203,65 +181,55 @@ public class PropertiesConfigurationProviderTest
     }
 
     /**
-     * A class loader that is used to test provider refresh behavior. The
-     * class loader dynamically returns properties files based on the
-     * resources that have been added to it.
+     * Tests failures from supplying null values to various methods.
+     *
+     * @throws Exception if there were unexpected errors.
      */
-    private static class DynamicResourceLoader extends ClassLoader {
-        @Override
-        public InputStream getResourceAsStream(String name) {
-            try {
-                if(mResources.containsKey(name)) {
-                    if(mFail) {
-                        return new InputStream(){
-                            public int read() throws IOException {
-                                throw new IOException();
-                            }
-                        };
-                    }
-                    Properties p = mResources.get(name);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    p.store(baos,"");
-                    baos.close();
-                    return new ByteArrayInputStream(baos.toByteArray());
-                }
-            } catch (IOException ignore) {
+    @Test
+    public void nulls() throws Exception {
+        //null loader
+        new ExpectedFailure<NullPointerException>(null){
+            @Override
+            protected void run() throws Exception {
+                createProvider(null);
             }
-            return super.getResourceAsStream(name);
-        }
-
-        /**
-         * Adds the property file with the specified name and contents to
-         * the set of resources that should be returned by this class loader.
-         *
-         * @param inName the resource name.
-         * @param inProperties the property value.
-         */
-        public void addResource(String inName, Properties inProperties) {
-            mResources.put(inName, inProperties);
-        }
-
-        /**
-         * if the returne input stream for a resource should
-         * throw an IOException when an attempt is  made to read it.
-         *
-         * @param inFail if the returne input stream for a resource should
-         * throw an IOException when an attempt is  made to read it.
-         */
-        public void setFail(boolean inFail) {
-            mFail = inFail;
-        }
-
-        /**
-         * Clears the classloader state.
-         */
-        public void clear() {
-            mResources.clear();
-            mFail = false;
-        }
-        private HashMap<String, Properties> mResources =
-                new HashMap<String, Properties>();
-        private boolean mFail = false;
+        };
+        //null URN
+        final ModuleConfigurationProvider provider = createProvider();
+        new ExpectedFailure<NullPointerException>(null){
+            @Override
+            protected void run() throws Exception {
+                provider.getDefaultFor(null,"value");
+            }
+        };
+        //null attribute name
+        assertNull(provider.getDefaultFor(ConfigurationProviderTestFactory.PROVIDER_URN, null));
+        //empty attribute name
+        assertNull(provider.getDefaultFor(ConfigurationProviderTestFactory.PROVIDER_URN, ""));
     }
-    private DynamicResourceLoader mLoader = new DynamicResourceLoader();
+
+    /**
+     * Creates a new provider instance using the supplied loader.
+     * <p>
+     * Subclasses may override this method to create a different type
+     * of provider.
+     *
+     * @param inLoader the classloader instance.
+     *
+     * @return a new provider instance.
+     */
+    protected ModuleConfigurationProvider createProvider(ClassLoader inLoader) {
+        return new PropertiesConfigurationProvider(inLoader);
+    }
+
+    /**
+     * Creates a provider instance using {@link #mLoader}.
+     *
+     * @return a new provider instance.
+     */
+    protected final ModuleConfigurationProvider createProvider() {
+        return createProvider(mLoader);
+    }
+
+    protected final DynamicResourceLoader mLoader = new DynamicResourceLoader();
 }

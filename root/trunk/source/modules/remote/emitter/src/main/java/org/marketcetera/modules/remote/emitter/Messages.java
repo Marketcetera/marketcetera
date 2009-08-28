@@ -39,8 +39,8 @@ public interface Messages {
     static final I18NMessage0P ATTRIB_CHANGE_NOTIFICATION =
             new I18NMessage0P(LOGGER, "attrib_change_notification");   //$NON-NLS-1$
 
-    static final I18NMessage1P LOG_ERROR_STOPPING_MODULE =
-            new I18NMessage1P(LOGGER, "log_error_stopping_module");   //$NON-NLS-1$
+    static final I18NMessage0P LOG_ERROR_CLOSING_CONNECTION =
+            new I18NMessage0P(LOGGER, "log_error_closing_connection");   //$NON-NLS-1$
     static final I18NMessage0P LOG_ERROR_RECEIVER_CONNECTION =
             new I18NMessage0P(LOGGER, "log_error_receiver_connection");   //$NON-NLS-1$
 

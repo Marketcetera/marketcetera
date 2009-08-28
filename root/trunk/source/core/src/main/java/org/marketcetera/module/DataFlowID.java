@@ -2,6 +2,9 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlValue;
 import java.io.Serializable;
 import java.beans.ConstructorProperties;
 
@@ -14,6 +17,7 @@ import java.beans.ConstructorProperties;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")   //$NON-NLS-1$
+@XmlAccessorType(XmlAccessType.FIELD)
 public final class DataFlowID implements Serializable {
     /**
      * Creates an instance.
@@ -26,6 +30,14 @@ public final class DataFlowID implements Serializable {
             throw new NullPointerException();
         }
         mValue = inValue;
+    }
+
+    /**
+     * Constructor for use by JAXB during serialization. It's not meant
+     * to be used for any other purpose.
+     */
+    private DataFlowID() {
+        this(null);
     }
 
     /**
@@ -60,6 +72,7 @@ public final class DataFlowID implements Serializable {
 
     }
 
+    @XmlValue
     private String mValue;
     private static final long serialVersionUID = -117964306857928984L;
 }

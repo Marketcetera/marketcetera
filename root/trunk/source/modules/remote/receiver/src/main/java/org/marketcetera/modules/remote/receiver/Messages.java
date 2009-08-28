@@ -40,8 +40,6 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "user_login_error");   //$NON-NLS-1$
     static final I18NMessage0P ERROR_STARTING_MODULE =
             new I18NMessage0P(LOGGER, "error_starting_module");   //$NON-NLS-1$
-    static final I18NMessage0P START_FAIL_NO_URL =
-            new I18NMessage0P(LOGGER, "start_fail_no_url");   //$NON-NLS-1$
     static final I18NMessage1P NULL_LEVEL_VALUE =
             new I18NMessage1P(LOGGER, "null_level_value");   //$NON-NLS-1$
     static final I18NMessage0P ILLEGAL_STATE_SET_SKIP_JAAS =
@@ -58,4 +56,9 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "user_logout_log");   //$NON-NLS-1$
     static final I18NMessage0P ERROR_STOPPING_MODULE_LOG =
             new I18NMessage0P(LOGGER, "error_stopping_module_log");   //$NON-NLS-1$
+    static final I18NMessage0P NO_URL_SPECIFIED_LOG =
+            new I18NMessage0P(LOGGER, "no_url_specified_log");   //$NON-NLS-1$
+    static final I18NMessage1P RECIEVER_REMOTING_CONFIGURED =
+            new I18NMessage1P(LOGGER, "reciever_remoting_configured");   //$NON-NLS-1$
+
 }

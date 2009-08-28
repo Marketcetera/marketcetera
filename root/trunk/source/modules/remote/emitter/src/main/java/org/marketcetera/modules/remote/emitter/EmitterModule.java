@@ -1,12 +1,9 @@
 package org.marketcetera.modules.remote.emitter;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.module.*;
-import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.management.*;
 import java.util.Map;
@@ -36,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @ClassVersion("$Id$")
 class EmitterModule extends Module
-        implements DataEmitter, EmitterModuleMXBean, NotificationEmitter {
+        implements DataEmitter, EmitterModuleMXBean, NotificationEmitter, EmitterAdapter {
 
     @Override
     public void requestData(DataRequest inRequest,
@@ -80,13 +77,13 @@ class EmitterModule extends Module
 
     @Override
     public boolean isConnected() {
-        return getState().isStarted() && mLastFailure == null;
+        return getState().isStarted() && mDataEmitter != null && mDataEmitter.isConnected();
     }
 
     @Override
     public String getLastFailure() {
-        if(mLastFailure != null) {
-            return mLastFailure.toString();
+        if(mDataEmitter != null && mDataEmitter.getLastFailure() != null) {
+             return mDataEmitter.getLastFailure().toString();
         }
         return null;
     }
@@ -134,25 +131,7 @@ class EmitterModule extends Module
             throw new ModuleException(Messages.START_FAIL_NO_URL);
         }
         try {
-            //Create spring contexts to initialize the broker and messaging topic
-            StaticApplicationContext parent = new StaticApplicationContext();
-            SpringUtils.addStringBean(parent, "brokerURI", url);  //$NON-NLS-1$
-            SpringUtils.addStringBean(parent, "username",  //$NON-NLS-1$
-                    getUsername());
-            SpringUtils.addStringBean(parent, "password",  //$NON-NLS-1$
-                    mPassword);
-            parent.refresh();
-            mContext  =
-                    new ClassPathXmlApplicationContext(new String[]{
-                            "remote-emitter-jms.xml"}, parent);  //$NON-NLS-1$
-            mContext.start();
-            MessagingDelegate delegate = (MessagingDelegate) mContext.getBean(
-                    "delegate", MessagingDelegate.class);  //$NON-NLS-1$
-            delegate.setModule(this);
-            //Reset last failure
-            setLastFailure(null);
-            //Send notification that the module is now connected.
-            sendConnectedChanged(false, true);
+            mDataEmitter = new RemoteDataEmitter(url, getUsername(), mPassword, this);
         } catch(Exception e) {
             throw new ModuleException(e, Messages.ERROR_STARTING_MODULE);
         }
@@ -160,20 +139,8 @@ class EmitterModule extends Module
 
     @Override
     protected void preStop() throws ModuleException {
-        boolean isConnected = getLastFailure() == null;
-        //Stop & destroy the broker.
-        try {
-            mContext.close();
-            setLastFailure(null);
-        } catch (Exception e) {
-            //Swallow the exception as it prevents the module from stopping.
-            //If the receiver closed the connection from its end
-            //this method always fails.
-            Messages.LOG_ERROR_STOPPING_MODULE.warn(this, e, getURN());
-        }
-        if(isConnected) {
-            sendConnectedChanged(isConnected, false);
-        }
+        mDataEmitter.close();
+        mDataEmitter = null;
     }
 
     /**
@@ -184,27 +151,13 @@ class EmitterModule extends Module
      *
      * @param inObject the received object.
      */
-    void receive(Object inObject) {
+    @Override
+    public void receiveData(Object inObject) {
         for(DataEmitterSupport support: mRequests.values()) {
             support.send(inObject);
         }
     }
 
-    /**
-     * This method is invoked when any failures are encountered receiving
-     * messages from the remote receiver.
-     * <p>
-     * The text of the failure is available via {@link #getLastFailure()}.
-     * <p>
-     * The a non-null parameter to this method causes {@link #isConnected()}
-     * to return false.
-     *
-     * @param inException the failure encountered.
-     */
-    void onException(Exception inException) {
-        Messages.LOG_ERROR_RECEIVER_CONNECTION.warn(this, inException);
-        setLastFailure(inException);
-    }
 
     /**
      * Verifies if the module is not started.
@@ -221,50 +174,36 @@ class EmitterModule extends Module
     }
 
     /**
-     * Sets the value of the last failure exception and sends out an
-     * attribute change notification for {@link #isConnected()} if necessary.
-     * <p>
-     * It's assumed that this method can only be invoked when the module
-     * is started.
-     *
-     * @param inLastFailure the failure exception, can be null.
-     */
-    private void setLastFailure(Exception inLastFailure) {
-        boolean oldConnected = mLastFailure == null;
-        mLastFailure = inLastFailure;
-        boolean newConnected = mLastFailure == null;
-        if(oldConnected != newConnected && getState().isStarted()) {
-            sendConnectedChanged(oldConnected, newConnected);
-        }
-    }
-
-    /**
      * Sends an attribute change notification for change in the
      * {@link #isConnected()} value.
      *
      * @param inOldValue the old attribute value.
      * @param inNewValue the new attribute value.
      */
-    private void sendConnectedChanged(boolean inOldValue, boolean inNewValue) {
-        SLF4JLoggerProxy.debug(this, "Sending attrib changed from {} to {}",  //$NON-NLS-1$
-                inOldValue, inNewValue);
-        mNotifySupport.sendNotification(new AttributeChangeNotification(
-                getURN().toString(),
-                mSequence.getAndIncrement(),
-                System.currentTimeMillis(),
-                Messages.ATTRIB_CHANGE_NOTIFICATION.getText(),
-                "Connected",  //$NON-NLS-1$
-                "boolean",  //$NON-NLS-1$
-                inOldValue,
-                inNewValue));
+    @Override
+    public void connectionStatusChanged(boolean inOldValue, boolean inNewValue) {
+        if (getState().isStarted() ||
+                getState() == ModuleState.STARTING ||
+                getState() == ModuleState.STOPPING) {
+            SLF4JLoggerProxy.debug(this, "Sending attrib changed from {} to {}",  //$NON-NLS-1$
+                    inOldValue, inNewValue);
+            mNotifySupport.sendNotification(new AttributeChangeNotification(
+                    getURN().toString(),
+                    mSequence.getAndIncrement(),
+                    System.currentTimeMillis(),
+                    Messages.ATTRIB_CHANGE_NOTIFICATION.getText(),
+                    "Connected",  //$NON-NLS-1$
+                    "boolean",  //$NON-NLS-1$
+                    inOldValue,
+                    inNewValue));
+        }
     }
 
     private volatile String mURL;
     private volatile String mUsername;
     private volatile String mPassword;
-    private volatile Exception mLastFailure;
 
-    private volatile ClassPathXmlApplicationContext mContext;
+    private volatile RemoteDataEmitter mDataEmitter;
     
     private final AtomicLong mSequence = new AtomicLong();
     private final NotificationBroadcasterSupport mNotifySupport =

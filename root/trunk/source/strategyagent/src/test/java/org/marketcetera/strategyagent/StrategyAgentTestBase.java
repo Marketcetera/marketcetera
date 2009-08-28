@@ -5,17 +5,18 @@ import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.util.file.Deleter;
 import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.unicode.UnicodeFileWriter;
-import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.ApplicationBase;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.BeforeClass;
+import static org.junit.Assert.assertThat;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
+import org.hamcrest.Matchers;
 
 import javax.management.MBeanServer;
 import java.util.Properties;
@@ -30,7 +31,7 @@ import java.lang.management.ManagementFactory;
 
 /* $License$ */
 /**
- * StrategyAgentTestBase
+ * Base class for Strategy Agent tests.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -38,6 +39,13 @@ import java.lang.management.ManagementFactory;
  */
 @ClassVersion("$Id$")
 public class StrategyAgentTestBase extends TestCaseBase {
+    /**
+     * Set the app dir property so that the properties files are picked up.
+     */
+    @BeforeClass
+    public static void setupConfDirProperty() {
+        System.setProperty(ApplicationBase.APP_DIR_PROP, ApplicationBase.APP_DIR);
+    }
     @Before
     public void setupLogLevel() {
         Logger.getRootLogger().setLevel(Level.ERROR);
@@ -49,10 +57,7 @@ public class StrategyAgentTestBase extends TestCaseBase {
     @After
     public void cleanup() throws Exception {
         if(mRunner != null) {
-            ModuleManager manager = mRunner.getManager();
-            if(manager != null) {
-                manager.stop();
-            }
+            mRunner.stop();
             mRunner = null;
         }
         if(mFile != null) {
@@ -130,6 +135,13 @@ public class StrategyAgentTestBase extends TestCaseBase {
         assertEvent(event, inLevel,  inLogger, null, null);
         matchMessage(inMessage, event, inMsgParams);
         return event;
+    }
+    
+    protected void assertNoEventsAbove(Level inLevel) {
+        for(LoggingEvent event: getAppender().getEvents()) {
+            assertThat(event.getRenderedMessage(), event.getLevel().toInt(), 
+                    Matchers.lessThanOrEqualTo(inLevel.toInt()));
+        }
     }
 
     protected static void run(TestAgent inRunner, String... args) {

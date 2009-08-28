@@ -93,7 +93,7 @@ public class ClientParameters {
     @Override
     public int hashCode() {
         return ObjectUtils.hashCode(mUsername) +
-                ObjectUtils.hashCode(mPassword) +
+                Arrays.hashCode(mPassword) +
                 ObjectUtils.hashCode(mHostname) +
                 ObjectUtils.hashCode(mPort) +
                 ObjectUtils.hashCode(mIDPrefix) +

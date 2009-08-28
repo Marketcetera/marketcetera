@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.File;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.tags.AppId;
 
 /**
  * Collection of random utilities
@@ -252,4 +253,48 @@ public class Util
         }
         return output.toString();
     }
+    
+    /**
+     * Returns the version portion of the given application ID.
+     *
+     * @param id The application ID. It may be null.
+     *
+     * @return The version portion. It may be null if the provided ID
+     * lacks a version.
+     */
+    public static String getVersion(AppId id)
+    {
+        if ((id==null) || (id.getValue()==null)) {
+            return null;
+        }
+        int index=id.getValue().indexOf(APP_ID_VERSION_SEPARATOR);
+        if (index==-1) {
+            return null;
+        }
+        index++;
+        if (index>=id.getValue().length()) {
+            return null;
+        }
+        return id.getValue().substring(index);
+    }
+
+    /**
+     * Returns an AppId, given the app name and version.
+     *
+     * @param inName the application name.
+     * @param inVersion the application version.
+     *
+     * @return the application version instance.
+     */
+    public static AppId getAppId(String inName, String inVersion)
+    {
+        return new AppId(inName + APP_ID_VERSION_SEPARATOR + inVersion);
+    }
+
+    /**
+     * The the version separator used to separate Application Name and Version
+     * number in application IDs.
+     */
+
+    private static final String APP_ID_VERSION_SEPARATOR="/"; //$NON-NLS-1$
 }
