@@ -10,8 +10,6 @@ import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationSupport;
-import org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationUpdater;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.marketcetera.util.misc.ClassVersion;
@@ -26,7 +24,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-@SuppressWarnings("restriction")
 public class DataBindingUtils {
 
     /**
@@ -108,9 +105,10 @@ public class DataBindingUtils {
      *            the object that will control the state of the control
      *            decoration
      */
+    @SuppressWarnings("restriction")
     public static void initControlDecorationSupportFor(
             ValidationStatusProvider provider) {
-        ControlDecorationSupport.create(provider, SWT.TOP | SWT.LEFT, null,
+        org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationSupport.create(provider, SWT.TOP | SWT.LEFT, null,
                 new CaptureUpdater());
     }
 
@@ -131,7 +129,8 @@ public class DataBindingUtils {
      * Captures the control decoration and attaches it to the control.
      */
     @ClassVersion("$Id$")
-    static class CaptureUpdater extends ControlDecorationUpdater {
+    @SuppressWarnings("restriction")
+    static class CaptureUpdater extends org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationUpdater {
 
         @Override
         protected void update(ControlDecoration decoration, IStatus status) {

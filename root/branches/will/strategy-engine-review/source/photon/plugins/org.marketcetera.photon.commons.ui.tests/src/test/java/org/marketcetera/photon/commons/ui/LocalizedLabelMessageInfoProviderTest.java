@@ -30,17 +30,23 @@ public class LocalizedLabelMessageInfoProviderTest extends PhotonTestBase {
             }
         };
     }
-    
+
     @Test
     public void testGetMessageInfo() throws Exception {
-        List<MessageInfo> info = new LocalizedLabelMessageInfoProvider(Messages.class).getMessageInfo();
+        List<MessageInfo> info = new LocalizedLabelMessageInfoProvider(
+                Messages.class).getMessageInfo();
         assertThat(info.size(), is(4));
-        assertThat(info.get(0).getKey(), is("ll.label"));
-        assertThat(info.get(1).getKey(), is("ll.tooltip"));
-        assertThat(info.get(2).getKey(), is("ll2.label"));
-        assertThat(info.get(3).getKey(), is("ll2.tooltip"));        
+        assertInfo(info.get(0), "ll.label");
+        assertInfo(info.get(1), "ll.tooltip");
+        assertInfo(info.get(2), "ll2.label");
+        assertInfo(info.get(3), "ll2.tooltip");
     }
-    
+
+    private void assertInfo(MessageInfo info, String label) {
+        assertThat(info.getKey(), is(label));
+        assertThat(info.getParamCount(), is(0));
+    }
+
     public interface Messages {
         LocalizedLabel LL = new LocalizedLabel("lbl", "tltp");
         LocalizedLabel LL2 = new LocalizedLabel("lbl2", "tltp2");

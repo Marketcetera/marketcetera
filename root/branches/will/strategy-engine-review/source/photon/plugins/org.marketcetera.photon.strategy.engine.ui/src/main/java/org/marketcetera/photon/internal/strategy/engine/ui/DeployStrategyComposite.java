@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.photon.commons.ui.databinding.DataBindingUtils;
 import org.marketcetera.photon.commons.ui.databinding.ObservingComposite;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
@@ -117,7 +118,9 @@ public class DeployStrategyComposite extends ObservingComposite {
                     }
                 });
             }
-            GridLayoutFactory.fillDefaults().generateLayout(buttons);
+            GridDataFactory.fillDefaults().applyTo(buttons);
+            GridLayoutFactory.swtDefaults().numColumns(
+                    scriptSelectionButtons.length).generateLayout(buttons);
         }
 
         Messages.STRATEGY_DEPLOYMENT_COMPOSITE_LANGUAGE.createLabel(this);
@@ -322,8 +325,8 @@ public class DeployStrategyComposite extends ObservingComposite {
             public String getClassFor(String fileNameExtensionStripped) {
                 String className = super.getClassFor(fileNameExtensionStripped);
                 /*
-                 * retains letters and numbers and capitalizes the first in a word, e.g.
-                 * my_strategy -> MyStrategy
+                 * retains letters and numbers and capitalizes the first in a
+                 * word, e.g. my_strategy -> MyStrategy
                  */
                 StringBuilder builder = new StringBuilder();
                 boolean caps = true;
@@ -391,14 +394,19 @@ public class DeployStrategyComposite extends ObservingComposite {
          * @param fileNameExtensionStripped
          *            the file name without its extension
          * @return the guessed class name
+         * @throws IllegalArgumentException
+         *             if fileNameExtensionStripped is null
          */
         public String getClassFor(String fileNameExtensionStripped) {
-            assert fileNameExtensionStripped != null;
+            Validate.notNull(fileNameExtensionStripped,
+                    "fileNameExtensionStripped"); //$NON-NLS-1$
             StringBuilder builder = new StringBuilder();
             boolean started = false;
             for (char c : fileNameExtensionStripped.toCharArray()) {
-                if (started && Character.isJavaIdentifierPart(c)) {
-                    builder.append(c);
+                if (started) {
+                    if (Character.isJavaIdentifierPart(c)) {
+                        builder.append(c);
+                    }
                 } else if (Character.isJavaIdentifierStart(c)) {
                     builder.append(c);
                     started = true;

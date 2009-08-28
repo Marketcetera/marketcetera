@@ -75,10 +75,12 @@ public class ExceptionUtilsTest extends PhotonTestBase {
             this.exception = ex;
         }
 
+        @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
             return false;
         }
 
+        @Override
         public T get() throws InterruptedException, ExecutionException {
             if (exception != null){
                 throw new ExecutionException(exception);
@@ -86,15 +88,18 @@ public class ExceptionUtilsTest extends PhotonTestBase {
             return result;
         }
 
+        @Override
         public T get(long timeout, TimeUnit unit) throws InterruptedException,
                 ExecutionException, TimeoutException {
             return get();
         }
 
+        @Override
         public boolean isCancelled() {
             return false;
         }
 
+        @Override
         public boolean isDone() {
             return true;
         }
