@@ -88,6 +88,11 @@
         <artifactId>remote-emitter</artifactId>
         <version>[${project.version}]</version>
       </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>saclient</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
 
       <!-- Compile: QuickFIX/J. -->
       <dependency>

@@ -1,8 +1,8 @@
 package org.marketcetera.ors.ws;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.client.ClientVersion;
 import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.core.Util;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.persist.NoResultException;
@@ -62,7 +62,7 @@ public class DBAuthenticator
         throws I18NException
     {
         String serverVersion=ApplicationVersion.getVersion();
-        String clientVersion=ClientVersion.getVersion(context.getAppId());
+        String clientVersion=Util.getVersion(context.getAppId());
         if (!compatibleVersions(clientVersion,serverVersion)) {
             throw new I18NException
                 (new I18NBoundMessage3P(Messages.VERSION_MISMATCH,

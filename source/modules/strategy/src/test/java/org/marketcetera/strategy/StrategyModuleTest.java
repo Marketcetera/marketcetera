@@ -1073,10 +1073,13 @@ public class StrategyModuleTest
         }
         assertEquals(inStartingRouteToORS,
                      mxBeanInterface.isRoutingOrdersToORS());
+        assertEquals(RubyLanguageTest.STRATEGY_NAME,
+                mxBeanInterface.getName());
+        assertEquals(RUBY, mxBeanInterface.getLanguage());
         // make the change
         mxBeanInterface.setOutputDestination(inOutputDestination);
         mxBeanInterface.setParameters(inNewParameters);
-        mxBeanInterface.setIsRountingOrdersToORS(inNewRouting);
+        mxBeanInterface.setRoutingOrdersToORS(inNewRouting);
         // test the change
         if(inOutputDestination == null ||
            inOutputDestination.isEmpty()) {
@@ -1181,7 +1184,7 @@ public class StrategyModuleTest
         };
     }
     /**
-     * should match the signature of {@link StrategyModule#StrategyModule(ModuleURN, String, Language, File, Properties, Boolean, ModuleURN)}. 
+     * should match the signature of {@link StrategyModule#StrategyModule(ModuleURN, String, Language, File, Properties, boolean, ModuleURN)}. 
      */
     private static final Class<?>[] expectedTypes = new Class<?>[] { String.class, String.class, Language.class, File.class, Properties.class, Boolean.class, ModuleURN.class };
 }

@@ -1,11 +1,9 @@
 package org.marketcetera.modules.remote.emitter;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.module.*;
 import org.marketcetera.client.*;
-import org.marketcetera.modules.remote.receiver.ClientLoginModule;
 import org.marketcetera.modules.remote.receiver.ReceiverFactory;
 import org.marketcetera.modules.remote.receiver.ReceiverModuleMXBean;
 import org.marketcetera.event.AskEvent;
@@ -14,16 +12,11 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.trade.*;
 import org.junit.Test;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import javax.security.auth.login.Configuration;
-import javax.security.auth.login.AppConfigurationEntry;
 import javax.management.*;
 import java.util.*;
 import java.math.BigDecimal;
@@ -42,7 +35,7 @@ import java.math.BigInteger;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class EmitterModuleTest extends ModuleTestBase {
+public class EmitterModuleTest extends RemoteEmitterTestBase {
     /**
      * Tests provider and module info values.
      *
@@ -336,50 +329,6 @@ public class EmitterModuleTest extends ModuleTestBase {
     }
 
     /**
-     * Stops the module manager and the mock server.
-     *
-     * @throws Exception if there were errors
-     */
-    @After
-    public void stopManager() throws Exception {
-        if (mManager != null) {
-            mManager.stop();
-            mManager = null;
-        }
-    }
-
-    /**
-     * Sets up the mock server and connects the client to it so that
-     * receiver module's authentication succeeds.
-     *
-     * @throws Exception if there were errors.
-     */
-    @BeforeClass
-    public static void setupClientAndServer() throws Exception {
-        //Do JAAS configuration so that both mock server and remote receiver
-        //can work.
-        setupConfiguration();
-        //Create a MockServer first to ensure that client auth succeeds
-        sServer = new MockServer();
-        //Initialize the client connection.
-        ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
-                DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT));
-    }
-
-    /**
-     * Closes the client connection & shuts down the mock server.
-     */
-    @AfterClass
-    public static void shutdownClientAndServer() throws Exception {
-        ClientManager.getInstance().close();
-        if(sServer != null) {
-            sServer.close();
-            sServer = null;
-        }
-    }
-
-    /**
      * Runs the log filtering data flow test.
      *
      * @param inListener the sink listener instance.
@@ -426,6 +375,15 @@ public class EmitterModuleTest extends ModuleTestBase {
         mManager.cancel(eFlowID);
     }
 
+    @Override
+    protected MockConfigProvider configProviderWithURLValue(String inUrl) {
+        MockConfigProvider prov = super.configProviderWithURLValue(inUrl);
+        prov.addDefault(EmitterModuleTest.TEST_INSTANCE_URN, "URL", inUrl);
+        prov.addDefault(EmitterModuleTest.TEST_INSTANCE_URN, "Username", DEFAULT_CREDENTIAL);
+        prov.addDefault(EmitterModuleTest.TEST_INSTANCE_URN, "Password", DEFAULT_CREDENTIAL);
+        return prov;
+    }
+
     /**
      * Verifies module start failure.
      *
@@ -459,73 +417,6 @@ public class EmitterModuleTest extends ModuleTestBase {
     }
 
     /**
-     * Initialize the manager with the default URL and credentials.
-     *
-     * @throws Exception if there were errors.
-     */
-    private void initManager() throws Exception {
-        initManager(configProviderWithURLValue(DEFAULT_URL));
-    }
-
-    /**
-     * Initialize the module manager with the configuration provided with
-     * the supplied configuration provider.
-     *
-     * @param inProvider the configured configuration provider.
-     *
-     * @throws Exception if there were errors.
-     */
-    private void initManager(MockConfigProvider inProvider) throws Exception {
-        mManager = new ModuleManager();
-        mManager.setConfigurationProvider(inProvider);
-        mManager.init();
-    }
-
-    /**
-     * Creates and configures a mock configuration provider with the
-     * supplied URL and default credentials.
-     *
-     * @param inUrl the URL for the receiver module.
-     *
-     * @return the configured mock configuration provider.
-     */
-    private MockConfigProvider configProviderWithURLValue(String inUrl) {
-        MockConfigProvider prov = new MockConfigProvider();
-        prov.addDefault(ReceiverFactory.INSTANCE_URN, "URL", inUrl);
-        prov.addDefault(TEST_INSTANCE_URN, "URL", inUrl);
-        prov.addDefault(TEST_INSTANCE_URN, "Username", DEFAULT_CREDENTIAL);
-        prov.addDefault(TEST_INSTANCE_URN, "Password", DEFAULT_CREDENTIAL);
-        return prov;
-    }
-
-    /**
-     * Sets up the JAAS Configuration such that both Client's test Mock server
-     * and remote-receiver's can work.
-     */
-    private static void setupConfiguration() {
-        Configuration.setConfiguration(new Configuration() {
-            public AppConfigurationEntry[] getAppConfigurationEntry(String inName) {
-                if("remoting-amq-domain".equals(inName)) {
-                    //the login module for the receiver module.
-                    return new AppConfigurationEntry[]{
-                            new AppConfigurationEntry(ClientLoginModule.class.getName(),
-                                    AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
-                                    Collections.unmodifiableMap(new HashMap<String, String>()))
-                    };
-                } else if ("test-amq-domain".equals(inName)) {
-                    //the login module for mock server
-                    return new AppConfigurationEntry[]{
-                            new AppConfigurationEntry(MockLoginModule.class.getName(),
-                                    AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
-                                    Collections.unmodifiableMap(new HashMap<String, String>()))
-                    };
-                }
-                return null;
-            }
-        });
-    }
-
-    /**
      * Verifies the supplied notification as an attribute change notification.
      *
      * @param inNotify the notification instance.
@@ -551,13 +442,8 @@ public class EmitterModuleTest extends ModuleTestBase {
         assertEquals(inNewValue, note.getNewValue());
     }
 
-    private ModuleManager mManager;
-    private static MockServer sServer;
-
     private static final ModuleURN TEST_INSTANCE_URN =
             new ModuleURN(EmitterFactory.PROVIDER_URN, "test");
-    private static final String DEFAULT_CREDENTIAL = "why";
-    private static final String DEFAULT_URL = "tcp://localhost:61617";
 
     /**
      * A notification listener to listen for MBean notifications.

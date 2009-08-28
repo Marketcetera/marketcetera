@@ -4,13 +4,22 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.unicode.UnicodeFileReader;
 import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.stateful.Server;
+import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateless.StatelessClientContext;
+import org.marketcetera.util.ws.stateless.ServiceInterface;
+import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.core.Util;
 import org.marketcetera.module.*;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.marketcetera.saclient.SAService;
+import org.marketcetera.client.ClientManager;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.management.JMX;
 import javax.management.ObjectName;
@@ -56,6 +65,17 @@ public class StrategyAgent extends ApplicationBase {
                 ApplicationVersion.getBuildNumber());
         //Run the application.
         run(new StrategyAgent(), args);
+    }
+
+    /**
+     * Stops the strategy agent. This method is meant to help with unit testing.
+     */
+    protected void stop() {
+        if(mContext != null) {
+            mContext.destroy();
+            mContext = null;
+        }
+        stopRemoteService();
     }
 
     /**
@@ -120,6 +140,20 @@ public class StrategyAgent extends ApplicationBase {
      */
     ModuleManager getManager() {
         return mManager;
+    }
+
+    /**
+     * Stops the remote web service.
+     */
+    private void stopRemoteService() {
+        if(mRemoteService != null) {
+            mRemoteService.stop();
+            mRemoteService = null;
+        }
+        if(mServer != null) {
+            mServer.stop();
+            mServer = null;
+        }
     }
 
     /**
@@ -204,17 +238,73 @@ public class StrategyAgent extends ApplicationBase {
         SpringUtils.addStringBean(parentCtx,"modulesDir",   //$NON-NLS-1$
                 modulesDir.getAbsolutePath());
         parentCtx.refresh();
-        ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext(
+        mContext = new ClassPathXmlApplicationContext(
                 new String[]{"modules.xml"},parentCtx);  //$NON-NLS-1$
-        ctx.registerShutdownHook();
-        mManager = (ModuleManager) ctx.getBean("moduleManager",  //$NON-NLS-1$
+        mContext.registerShutdownHook();
+        mManager = (ModuleManager) mContext.getBean("moduleManager",  //$NON-NLS-1$
                 ModuleManager.class);
         //Set the context classloader to the jar classloader so that
         //all modules have the thread context classloader set to the same
         //value as the classloader that loaded them.
-        ClassLoader loader = (ClassLoader) ctx.getBean("moduleLoader",  //$NON-NLS-1$
+        ClassLoader loader = (ClassLoader) mContext.getBean("moduleLoader",  //$NON-NLS-1$
                 ClassLoader.class);
         Thread.currentThread().setContextClassLoader(loader);
+
+        //Setup the WS services after setting up the context class loader.
+        String hostname = (String) mContext.getBean("wsServerHost");  //$NON-NLS-1$
+        if (hostname != null && !hostname.trim().isEmpty()) {
+            int port = (Integer) mContext.getBean("wsServerPort");  //$NON-NLS-1$
+            SessionManager<ClientSession> sessionManager=
+                new SessionManager<ClientSession>
+                (new ClientSessionFactory(), SessionManager.INFINITE_SESSION_LIFESPAN);
+            mServer =new Server<ClientSession>
+                (hostname,port, new Authenticator(){
+                     @Override
+                     public boolean shouldAllow(StatelessClientContext context,
+                                                String user,
+                                                char[] password) throws I18NException {
+                         return authenticate(context, user, password);
+                     }
+                 },sessionManager);
+            mRemoteService = mServer.publish(new SAServiceImpl(sessionManager, mManager), SAService.class);
+            //Register a shutdown task to shutdown the remote service.
+            Runtime.getRuntime().addShutdownHook(new Thread(){
+                @Override
+                public void run() {
+                    stopRemoteService();
+                }
+            });
+            Messages.LOG_REMOTE_WS_CONFIGURED.info(this, hostname, String.valueOf(port));
+        }
+    }
+
+    /**
+     * Authenticates a client connection.
+     * <p>
+     * This method is package protected to enable its unit testing.
+     *
+     * @param context the client's context.
+     * @param user the user name.
+     * @param password the password.
+     *
+     * @return if the authentication succeeded.
+     *
+     * @throws I18NException if the client version is incompatible with the server.
+     */
+    static boolean authenticate(StatelessClientContext context,
+                                String user,
+                                char[] password)
+            throws I18NException {
+        //Verify client version
+        String serverVersion = ApplicationVersion.getVersion();
+        String clientVersion = Util.getVersion(context.getAppId());
+        if (!compatibleVersions(clientVersion, serverVersion)) {
+            throw new I18NException
+                    (new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
+                            clientVersion, serverVersion, user));
+        }
+        //Use client to carry out authentication.
+        return ClientManager.getInstance().isCredentialsMatch(user, password);
     }
 
     /**
@@ -283,6 +373,21 @@ public class StrategyAgent extends ApplicationBase {
     }
 
     /**
+     * Checks for compatibility between the given client and server
+     * versions.
+     *
+     * @param clientVersion The client version.
+     * @param serverVersion The server version.
+     * @return True if the two versions are compatible.
+     */
+
+    private static boolean compatibleVersions(String clientVersion, String serverVersion) {
+        // If the server's version is unknown, any client is allowed.
+        return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
+                ObjectUtils.equals(clientVersion, serverVersion));
+    }
+
+    /**
      * The log category used to log all the data received by the sink module
      */
     public static final String SINK_DATA = "SINK";  //$NON-NLS-1$
@@ -324,4 +429,10 @@ public class StrategyAgent extends ApplicationBase {
      */
     private List<Command> mCommands =
             new LinkedList<Command>();
+    /**
+     * The handle to the remote web service.
+     */
+    private volatile ServiceInterface mRemoteService;
+    private volatile ClassPathXmlApplicationContext mContext;
+    private volatile Server<ClientSession> mServer;
 }

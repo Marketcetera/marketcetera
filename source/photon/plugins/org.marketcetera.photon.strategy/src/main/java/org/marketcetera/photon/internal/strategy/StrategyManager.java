@@ -310,7 +310,7 @@ public final class StrategyManager {
 			ObjectName objectName = strategy.getURN().toObjectName();
 			StrategyMXBean proxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
 					StrategyMXBean.class);
-			proxy.setIsRountingOrdersToORS(routeToServer);
+			proxy.setRoutingOrdersToORS(routeToServer);
 			strategy.setRouteToServer(routeToServer);
 			saveState();
 		} catch (Exception e) {

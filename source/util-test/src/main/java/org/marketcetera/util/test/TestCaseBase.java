@@ -1,7 +1,6 @@
 package org.marketcetera.util.test;
 
 import java.io.File;
-import java.util.NoSuchElementException;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -57,7 +56,7 @@ public class TestCaseBase
 
     // INSTANCE DATA.
 
-    private MemoryAppender mAppender;
+    private LogTestAssist mLogAssist;
 
 
     // CLASS METHODS.
@@ -137,7 +136,7 @@ public class TestCaseBase
     @Before
     public void setupTestCaseBase()
     {
-        mAppender=new MemoryAppender();
+        mLogAssist=new LogTestAssist();
         BasicConfigurator.configure(getAppender());
     }
 
@@ -149,7 +148,7 @@ public class TestCaseBase
 
     protected MemoryAppender getAppender()
     {
-        return mAppender;
+        return mLogAssist.getAppender();
     }
 
     /**
@@ -158,7 +157,7 @@ public class TestCaseBase
 
     protected void assertNoEvents()
     {
-        assertEquals(0,getAppender().getEvents().size());
+        mLogAssist.assertNoEvents();
     }
 
     /**
@@ -183,13 +182,7 @@ public class TestCaseBase
          String message,
          String location)
     {
-        LoggingEvent event=null;
-        try {
-            event=getAppender().getEvents().getLast();
-        } catch (NoSuchElementException ex) {
-            fail("List is empty"); //$NON-NLS-1$
-        }
-        assertEvent(event,level,logger,message,location);
+        mLogAssist.assertLastEvent(level,logger,message,location);
     }
 
     /**
@@ -213,20 +206,7 @@ public class TestCaseBase
          String message,
          String location)
     {
-        for (LoggingEvent event:getAppender().getEvents()) {
-            if (((level==null) ||
-                 level.equals(event.getLevel())) &&
-                ((logger==null) ||
-                 logger.equals(event.getLoggerName())) &&
-                ((message==null) ||
-                 message.equals(event.getMessage())) &&
-                ((location==null) ||
-                 location.equals
-                 (event.getLocationInformation().getClassName()))) {
-                return;
-            }
-        }
-        fail("No matches against given event"); //$NON-NLS-1$
+        mLogAssist.assertSomeEvent(level,logger,message,location);
     }
 
     /**
@@ -251,8 +231,6 @@ public class TestCaseBase
          String message,
          String location)
     {
-        assertEquals(1,getAppender().getEvents().size());
-        assertLastEvent(level,logger,message,location);
-        getAppender().clear();
+        mLogAssist.assertSingleEvent(level,logger,message,location);
     }
 }

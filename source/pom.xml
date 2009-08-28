@@ -32,6 +32,7 @@
     <module>orderloader</module>
     <module>ors</module>
     <!-- Build strategy agent before photon. -->
+    <module>saclient</module>
     <module>strategyagent</module>
     <module>photon</module>
     <module>util</module>

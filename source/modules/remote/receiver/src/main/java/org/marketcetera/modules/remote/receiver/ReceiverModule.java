@@ -94,8 +94,10 @@ public class ReceiverModule extends Module
     protected void preStart() throws ModuleException {
         //Check if the broker URL is supplied
         String url = getURL();
-        if(url == null) {
-            throw new ModuleException(Messages.START_FAIL_NO_URL);
+        if(url == null || url.trim().isEmpty()) {
+            //If no URL specified do not perform remoting.
+            Messages.NO_URL_SPECIFIED_LOG.info(this);
+            return;
         }
         if (!mSkipJAASConfiguration) {
             //Setup the JAAS configuration
@@ -117,6 +119,7 @@ public class ReceiverModule extends Module
             mContext.start();
             mSender = (JmsTemplate) mContext.getBean("sender",  //$NON-NLS-1$
                     JmsTemplate.class);
+            Messages.RECIEVER_REMOTING_CONFIGURED.info(this, url);
         } catch(Exception e) {
             throw new ModuleException(e, Messages.ERROR_STARTING_MODULE);
         }
@@ -125,10 +128,13 @@ public class ReceiverModule extends Module
     @Override
     protected void preStop() throws ModuleException {
         //Stop & destroy the broker.
-        try {
-            mContext.close();
-        } catch (Exception e) {
-            Messages.ERROR_STOPPING_MODULE_LOG.warn(this, e);
+        if (mContext != null) {
+            try {
+                mContext.close();
+                mContext = null;
+            } catch (Exception e) {
+                Messages.ERROR_STOPPING_MODULE_LOG.warn(this, e);
+            }
         }
         mSender = null;
     }
@@ -215,7 +221,6 @@ public class ReceiverModule extends Module
         if(getState().isStarted()) {
             throw new IllegalStateException(inMessage.getText());
         }
-
     }
 
     private volatile String mURL;

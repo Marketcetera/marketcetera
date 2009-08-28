@@ -26,17 +26,17 @@ public class MessagingDelegate
      */
 
     public void handleMessage(Object inObject) {
-        mModule.receive(inObject);
+        mDataEmitter.receive(inObject);
     }
 
     @Override
     public void onException(JMSException inException) {
-        mModule.onException(inException);
+        mDataEmitter.onException(inException);
     }
 
     @Override
     public void onException(IOException inException) {
-        mModule.onException(inException);
+        mDataEmitter.onException(inException);
     }
 
     @Override
@@ -61,9 +61,9 @@ public class MessagingDelegate
      *
      * @param inEmitterModule the module instance.
      */
-    void setModule(EmitterModule inEmitterModule) {
-        mModule = inEmitterModule;
+    void setDataEmitter(RemoteDataEmitter inEmitterModule) {
+        mDataEmitter = inEmitterModule;
     }
 
-    private volatile EmitterModule mModule;
+    private volatile RemoteDataEmitter mDataEmitter;
 }

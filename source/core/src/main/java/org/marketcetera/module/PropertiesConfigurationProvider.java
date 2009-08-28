@@ -38,7 +38,16 @@ import java.io.IOException;
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class PropertiesConfigurationProvider
         implements ModuleConfigurationProvider {
+    /**
+     * Creates a new instance.
+     *
+     * @param inLoader the classloader that should be used to fetch the
+     * properties files.
+     */
     public PropertiesConfigurationProvider(ClassLoader inLoader) {
+        if(inLoader == null) {
+            throw new NullPointerException();
+        }
         mLoader = inLoader;
     }
 

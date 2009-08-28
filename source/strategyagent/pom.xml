@@ -32,6 +32,18 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>saclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>remote-receiver</artifactId>
+    </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>
@@ -41,6 +53,10 @@
     </dependency>
 
     <!-- Runtime. -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -54,8 +70,22 @@
     </dependency>
     <dependency>
       <groupId>${mvn.public.package}</groupId>
+      <artifactId>client</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>util-test</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>strategy</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+    </dependency> 
     <dependency>
       <groupId>asm</groupId>
       <artifactId>asm</artifactId>
@@ -92,6 +122,12 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/sample_data</value>
+                </systemProperty>
+              </systemProperties>
               <mainClass>org.marketcetera.strategyagent.StrategyAgent</mainClass>
               <arguments>
                 <argument>src/test/sample_data/inputs/sampleCommands.txt</argument>

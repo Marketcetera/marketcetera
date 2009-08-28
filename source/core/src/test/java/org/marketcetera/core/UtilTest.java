@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import org.junit.Test;
 import org.marketcetera.util.test.UnicodeData;
+import org.marketcetera.util.ws.tags.AppId;
 
 /* $License$ */
 
@@ -217,5 +218,45 @@ public class UtilTest
         expectedResults += ":" + "ke2=x=value2";
         assertEquals(Util.propertiesFromString(expectedResults),
                      Util.propertiesFromString(Util.propertiesToString(testProperties)));
+    }
+
+    /**
+     * Tests {@link Util#getAppId(String, String)}.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void getAppId() throws Exception {
+        assertEquals(new AppId("x/y"),Util.getAppId("x","y"));
+        assertEquals(new AppId("x/"),Util.getAppId("x",""));
+        assertEquals(new AppId("/y"),Util.getAppId("","y"));
+        assertEquals(new AppId("/"),Util.getAppId("",""));
+        assertEquals(new AppId("null/y"),Util.getAppId(null,"y"));
+        assertEquals(new AppId("x/null"),Util.getAppId("x",null));
+        assertEquals(new AppId("null/null"),Util.getAppId(null,null));
+        assertEquals(new AppId(UnicodeData.COMBO + "/" + UnicodeData.COMBO),
+                Util.getAppId(UnicodeData.COMBO,UnicodeData.COMBO));
+    }
+
+    /**
+     * Tests {@link Util#getVersion(org.marketcetera.util.ws.tags.AppId)}.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void getVersion() throws Exception {
+        assertNull(Util.getVersion(null));
+        assertNull(Util.getVersion(new AppId(null)));
+        assertNull(Util.getVersion(new AppId("any")));
+        assertNull(Util.getVersion(Util.getAppId("","")));
+        assertNull(Util.getVersion(Util.getAppId("x","")));
+        assertEquals("x",Util.getVersion(Util.getAppId("","x")));
+        assertEquals(" x ",Util.getVersion(Util.getAppId(""," x ")));
+        assertEquals(" x ",Util.getVersion(Util.getAppId(" y "," x ")));
+        assertEquals(UnicodeData.COMBO,Util.getVersion(
+                Util.getAppId(UnicodeData.COMBO,UnicodeData.COMBO)));
+        assertEquals(ApplicationVersion.VERSION_1_5_0,
+                Util.getVersion(Util.getAppId("Weird",
+                        ApplicationVersion.VERSION_1_5_0)));
     }
 }

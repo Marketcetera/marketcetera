@@ -16,6 +16,7 @@ import org.marketcetera.trade.*;
 import static org.marketcetera.trade.TypesTestBase.*;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.core.Util;
 import org.junit.*;
 
 import static org.junit.Assert.assertNotNull;
@@ -84,6 +85,13 @@ public class ClientTest
         }
         clearAll();
     }
+
+    @Test
+    public void versionTest() throws Exception {
+        assertEquals(ClientVersion.APP_ID_VERSION,
+                     Util.getVersion(ClientVersion.APP_ID));
+    }
+    
     @Test
     public void connect() throws Exception {
         initClient();

@@ -137,6 +137,17 @@ public class ExpectedFailureTest {
             fail("should fail");
         } catch(AssertionError e) {
         }
+        try {
+            new I18NSubClass(inMessage, inParameters){
+                protected void run() throws Exception {
+                    if(inException != null) {
+                        throw inException;
+                    }
+                }
+            };
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
     }
     private static IllegalArgumentException check(final Exception e,
                                                   String message)
@@ -161,6 +172,17 @@ public class ExpectedFailureTest {
         }
         try {
             new ExpectedFailure<IllegalArgumentException>(inMessage){
+                protected void run() throws Exception {
+                    if(inException != null) {
+                        throw inException;
+                    }
+                }
+            };
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
+        try {
+            new RegularSubClass(inMessage){
                 protected void run() throws Exception {
                     if(inException != null) {
                         throw inException;
@@ -208,6 +230,46 @@ public class ExpectedFailureTest {
             };
             fail("should fail");
         } catch(AssertionError e) {
+        }
+        try {
+            new RegularSubClass(
+                    inMessage, inExactMatch){
+                protected void run() throws Exception {
+                    if(inException != null) {
+                        throw inException;
+                    }
+                }
+            };
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
+    }
+
+    /**
+     * A class to test exception type lookup when the test doesn't directly
+     * extend ExpectedFailure but extends one of its subclasses.
+     */
+    private static abstract class RegularSubClass
+            extends ExpectedFailure<IllegalArgumentException>{
+        protected RegularSubClass(String inMessage) throws Exception {
+            super(inMessage);
+        }
+
+        protected RegularSubClass(String inMessage, boolean inExactMatch)
+                throws Exception {
+            super(inMessage, inExactMatch);
+        }
+    }
+    /**
+     * A class to test exception type lookup when the test doesn't directly
+     * extend ExpectedFailure but extends one of its subclasses.
+     */
+    private static abstract class I18NSubClass
+            extends ExpectedFailure<I18NException>{
+        protected I18NSubClass(I18NMessage inExpectedMessage,
+                               Object... inExpectedParams)
+                throws Exception {
+            super(inExpectedMessage, inExpectedParams);
         }
     }
 }

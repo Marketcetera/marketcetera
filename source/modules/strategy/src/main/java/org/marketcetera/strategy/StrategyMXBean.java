@@ -9,7 +9,10 @@ import org.marketcetera.module.DisplayName;
 import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
-
+/*
+ * NOTE: If any new editable properties are added to this interface, consider
+ * updating the strategy agent to allow their remote editing.
+ */
 /**
  * MXBean interface for Strategies.
  * 
@@ -86,8 +89,8 @@ public interface StrategyMXBean
      *
      * @param inValue a <code>boolean</code> value
      */
-    @DisplayName("Determines if this strategy is currently set to route orders to the ORS")
-    public void setIsRountingOrdersToORS(boolean inValue);
+    @DisplayName("Indicates if this strategy is currently set to route orders to the ORS")
+    public void setRoutingOrdersToORS(boolean inValue);
     /**
      * Gets the strategy status. 
      *
@@ -95,4 +98,18 @@ public interface StrategyMXBean
      */
     @DisplayName("Gets the strategy status")
     public String getStatus();
+    /**
+     * Gets the strategy class name.
+     *
+     * @return the strategy class name.
+     */
+    @DisplayName("Strategy class name")
+    public String getName();
+    /**
+     * Gets the strategy language.
+     *
+     * @return the strategy language.
+     */
+    @DisplayName("Strategy language")
+    public Language getLanguage();
 }
