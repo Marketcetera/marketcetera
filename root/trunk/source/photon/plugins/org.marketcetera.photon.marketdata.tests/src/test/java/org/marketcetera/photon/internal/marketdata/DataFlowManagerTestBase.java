@@ -26,9 +26,9 @@ import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory;
 import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory.MockMarketDataModule;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.module.ModuleSupport;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.test.TestCaseBase;
 
 /* $License$ */
 
@@ -40,7 +40,7 @@ import org.marketcetera.util.test.TestCaseBase;
  * @since 1.5.0
  */
 public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>> extends
-		TestCaseBase {
+		PhotonTestBase {
 
 	/**
 	 * @return the test fixture
@@ -107,7 +107,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	protected K mKey3;
 	protected AtomicInteger mMessageIds = new AtomicInteger();
 	protected IMarketDataFeed mMockModuleFeed;
-
+	
 	@Before
 	public void before() throws Exception {
 		mMockMarketDataModule = MockMarketDataModuleFactory.sInstance;
@@ -127,6 +127,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		mItem2 = mFixture.getItem(mKey2);
 		validateInitialConditions(mItem2, mKey2);
 		mKey3 = createKey3();
+		setLevel(mFixture.getClass().getName(), Level.ALL);
 	}
 
 	private IMarketDataFeed createMockModuleFeed(EnumSet<Capability> capabilities) throws I18NException {

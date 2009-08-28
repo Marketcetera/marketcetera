@@ -8,10 +8,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -23,6 +27,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
+import org.marketcetera.util.misc.NamedThreadFactory;
 
 /* $License$ */
 
@@ -30,7 +35,7 @@ import org.junit.runners.model.Statement;
  * Test runner that starts a separate UI thread. The UI thread initializes a
  * {@link Display} and delegates to subclasses to run the event loop.
  * <p>
- * Currently, a new thread is created for each test.
+ * Currently, a single static thread is shared by all test.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -47,8 +52,32 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     public @interface UI {
     }
 
-    private static volatile UIThread sUIThread;
     private final Set<FrameworkMethod> mUIMethods;
+    private final AtomicReference<Throwable> mAsyncThrowable = new AtomicReference<Throwable>();
+    public static final ExecutorService sTestUIThreadExecutor;
+    private static final Display sDisplay;
+    private Future<?> mEventLoopFuture;
+
+    static {
+        sTestUIThreadExecutor = Executors
+                .newSingleThreadExecutor(new NamedThreadFactory(
+                        "Test UI Thread"));
+        Display d = null;
+        try {
+            d = sTestUIThreadExecutor.submit(new Callable<Display>() {
+                @Override
+                public Display call() throws Exception {
+                    return new Display();
+                }
+            }).get();
+        } catch (ExecutionException e) {
+            throw launderThrowable(e.getCause());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            sDisplay = d;
+        }
+    }
 
     /**
      * Constructor. Should only be called by the JUnit framework.
@@ -82,9 +111,14 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                sUIThread = new UIThread();
-                sUIThread.start();
-                sUIThread.await();
+                final CountDownLatch ready = new CountDownLatch(1);
+                mEventLoopFuture = sTestUIThreadExecutor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        runEventLoop(sDisplay, ready);
+                    }
+                });
+                ready.await();
                 runFrameworkMethods(beforeClasses, null, false);
                 statement.evaluate();
             }
@@ -112,9 +146,8 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
                     }
                 }
                 try {
-                    sUIThread.dispose();
-                    sUIThread.join();
-                    sUIThread = null;
+                    shutDownUI(sDisplay);
+                    mEventLoopFuture.get();
                 } catch (Throwable t) {
                     if (throwable == null) {
                         throwable = t;
@@ -165,6 +198,10 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
                 if (throwable != null) {
                     throw throwable;
                 }
+                throwable = mAsyncThrowable.getAndSet(null);
+                if (throwable != null) {
+                    throw throwable;
+                }
             }
         };
     }
@@ -211,9 +248,9 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * Hook for subclasses to run the event loop. This method should not return
-     * until the UI thread is done ({@link #shutDownUI()} has been called and/or
-     * the display is disposed.
+     * Hook for subclasses to run the event loop. This is called at the
+     * beginning of the test in the UI thread and must not return until
+     * {@link #shutDownUI()} is called.
      * 
      * @param display
      *            the display to run the event loop
@@ -223,9 +260,26 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     protected abstract void runEventLoop(Display display, CountDownLatch ready);
 
     /**
-     * Subclasses can override to do something before the display is disposed.
+     * Hook for subclasses to stop the event loop.
+     * 
+     * @param display
+     *            the display the event loop is running on
      */
-    protected void shutDownUI() {
+    protected abstract void shutDownUI(Display display);
+
+    /**
+     * Subclasses can call to save a throwable called from another thread. The
+     * throwable will be rethrown after the current test run (if no other
+     * exceptions occurred). Note that only the first throwable captured in this
+     * way will be rethrown. Successive calls in the same test will have no
+     * effect other than printing the throwable's stack trace.
+     * 
+     * @param throwable
+     *            throwable to rethrow after the test run
+     */
+    protected final void setAsyncThrowable(Throwable throwable) {
+        throwable.printStackTrace();
+        mAsyncThrowable.compareAndSet(null, throwable);
     }
 
     /**
@@ -252,9 +306,15 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
             }
         }
 
-        public void rethrow() throws Throwable {
+        public void rethrow() throws Exception {
             if (mThrowable != null) {
-                throw mThrowable;
+                if (mThrowable instanceof Error) {
+                    throw (Error) mThrowable;
+                } else if (mThrowable instanceof Exception) {
+                    throw (Exception) mThrowable;
+                } else {
+                    throw new RuntimeException(mThrowable);
+                }
             }
         }
     }
@@ -280,68 +340,49 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * UI thread implementation. Spins an event loop in the default realm and
-     * allows Runnables to be executed synchronously.
-     */
-    private class UIThread extends Thread {
-
-        private final CountDownLatch mReady = new CountDownLatch(1);
-        private volatile Display mDisplay;
-
-        public UIThread() {
-            super("Test UI Thread");
-        }
-
-        @Override
-        public void run() {
-            mDisplay = new Display();
-            runEventLoop(mDisplay, mReady);
-        }
-
-        public void await() throws InterruptedException {
-            mReady.await();
-        }
-
-        public void syncExec(ThrowableRunnable r) throws Throwable {
-            await();
-            final CaptureRunnable capture = new CaptureRunnable(r);
-            mDisplay.syncExec(capture);
-            capture.rethrow();
-        }
-
-        public void dispose() {
-            try {
-                mDisplay.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            shutDownUI();
-                        } finally {
-                            mDisplay.dispose();
-                        }
-                    }
-                });
-            } catch (SWTException e) {
-                // ignore device disposed since the display is already dead
-                if (e.code != SWT.ERROR_DEVICE_DISPOSED) {
-                    throw e;
-                }
-            }
-        }
-    }
-
-    /**
      * Executes the runnable on the UI thread. This is only valid during tests
      * being run with {@link AbstractUIRunner}.
      * 
      * @param runnable
      *            the runnable to run
-     * @throws Throwable
+     * @throws Exception
      *             if the runnable throws it
      */
     public static void syncRun(final ThrowableRunnable runnable)
-            throws Throwable {
-        sUIThread.syncExec(runnable);
+            throws Exception {
+        final CaptureRunnable capture = new CaptureRunnable(runnable);
+        sDisplay.syncExec(capture);
+        capture.rethrow();
+    }
+
+    /**
+     * Executes the callable on the UI thread. This is only valid during tests
+     * being run with {@link AbstractUIRunner}.
+     * 
+     * @param callable
+     *            the callable to run
+     * @return the result of the callable
+     * @throws Throwable
+     *             if the callable throws it
+     */
+    public static <T> T syncCall(final Callable<T> callable) throws Exception {
+        final AtomicReference<T> ref = new AtomicReference<T>();
+        syncRun(new ThrowableRunnable() {
+            @Override
+            public void run() throws Exception {
+                ref.set(callable.call());
+            }
+        });
+        return ref.get();
+    }
+
+    private static RuntimeException launderThrowable(Throwable throwable) {
+        if (throwable instanceof RuntimeException)
+            return (RuntimeException) throwable;
+        else if (throwable instanceof Error)
+            throw (Error) throwable;
+        else
+            throw new IllegalStateException("Not unchecked", throwable); //$NON-NLS-1$
     }
 
 }

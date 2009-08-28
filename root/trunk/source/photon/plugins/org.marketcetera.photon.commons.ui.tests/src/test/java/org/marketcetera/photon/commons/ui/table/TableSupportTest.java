@@ -11,8 +11,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.marketcetera.photon.commons.ui.table.TableConfiguration;
-import org.marketcetera.photon.commons.ui.table.TableSupport;
+import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
 
@@ -26,7 +25,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * @since 1.0.0
  */
 @RunWith(SimpleUIRunner.class)
-public class TableSupportTest {
+public class TableSupportTest extends PhotonTestBase {
 
     @Test
     @UI

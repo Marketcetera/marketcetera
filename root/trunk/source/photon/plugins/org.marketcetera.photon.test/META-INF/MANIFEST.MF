@@ -11,7 +11,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.databinding,
  org.eclipse.jface.databinding,
  org.eclipse.swtbot.swt.finder,
- org.eclipse.swtbot.junit4_x
+ org.eclipse.swtbot.junit4_x,
+ org.marketcetera.util,
+ org.marketcetera.util-test;visibility:=reexport
 Export-Package: org.marketcetera.photon.test
 Import-Package: org.hamcrest,
  org.junit,

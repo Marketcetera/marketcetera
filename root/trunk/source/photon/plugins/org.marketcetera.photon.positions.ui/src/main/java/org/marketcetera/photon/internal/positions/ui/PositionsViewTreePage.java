@@ -19,7 +19,7 @@ import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.PositionEngine.PositionData;
-import org.marketcetera.photon.commons.ui.table.ColumnState;
+import org.marketcetera.photon.commons.ui.workbench.ColumnState;
 import org.marketcetera.photon.internal.positions.ui.glazed.EventTreeModel;
 import org.marketcetera.photon.internal.positions.ui.glazed.EventTreeViewer;
 import org.marketcetera.photon.internal.positions.ui.glazed.TreeComparatorChooser;
