@@ -67,7 +67,7 @@ public class CreateStrategyParametersTest {
         unreadable.setReadable(false, false);
         //test unreadability failure only if we can make the file unreadable.
         if(!unreadable.canRead()) {
-            new ExpectedFailure<FileNotFoundException>(source.getAbsolutePath()){
+            new ExpectedFailure<FileNotFoundException>(unreadable.getAbsolutePath()){
                 @Override
                 protected void run() throws Exception {
                     new CreateStrategyParameters("blah", "naah", "JAVA",
