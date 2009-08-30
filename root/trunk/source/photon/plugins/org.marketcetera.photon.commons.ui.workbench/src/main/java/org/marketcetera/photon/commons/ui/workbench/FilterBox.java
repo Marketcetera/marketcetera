@@ -37,10 +37,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * org.eclipse.ui.dialogs.FilteredTree.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: FilterBox.java 10677 2009-08-12 16:33:49Z will $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: FilterBox.java 10677 2009-08-12 16:33:49Z will $")
+@ClassVersion("$Id$")
 public class FilterBox extends Composite {
 
 	/**
@@ -403,10 +403,10 @@ public class FilterBox extends Composite {
 	 * Interface to notify listeners of changes to the filter.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id: FilterBox.java 10677 2009-08-12 16:33:49Z will $
+	 * @version $Id$
 	 * @since 1.5.0
 	 */
-	@ClassVersion("$Id: FilterBox.java 10677 2009-08-12 16:33:49Z will $")
+	@ClassVersion("$Id$")
 	public interface FilterChangeListener {
 
 		/**
@@ -422,10 +422,10 @@ public class FilterBox extends Composite {
 	 * Event object for {@link FilterChangeListener}.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id: FilterBox.java 10677 2009-08-12 16:33:49Z will $
+	 * @version $Id$
 	 * @since 1.5.0
 	 */
-	@ClassVersion("$Id: FilterBox.java 10677 2009-08-12 16:33:49Z will $")
+	@ClassVersion("$Id$")
 	public class FilterChangeEvent extends EventObject {
 
 		private static final long serialVersionUID = 1L;

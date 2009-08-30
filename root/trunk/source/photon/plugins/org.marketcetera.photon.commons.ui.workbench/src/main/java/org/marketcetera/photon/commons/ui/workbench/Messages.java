@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: Messages.java 10677 2009-08-12 16:33:49Z will $")
+@ClassVersion("$Id$")
 final class Messages {
 
     static I18NMessage0P FILTER_BOX_CLEAR_BUTTON_TOOLTIP;
