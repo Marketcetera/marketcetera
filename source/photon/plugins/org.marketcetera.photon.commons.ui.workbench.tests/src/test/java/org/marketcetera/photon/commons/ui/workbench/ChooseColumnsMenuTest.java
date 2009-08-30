@@ -36,7 +36,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * Test {@link ChooseColumnsMenu}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: ChooseColumnsMenuTest.java 10643 2009-07-13 17:48:29Z will $
+ * @version $Id$
  * @since 1.0.0
  */
 @RunWith(WorkbenchRunner.class)

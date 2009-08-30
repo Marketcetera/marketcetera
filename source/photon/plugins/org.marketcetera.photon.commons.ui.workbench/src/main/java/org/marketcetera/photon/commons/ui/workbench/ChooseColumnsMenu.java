@@ -20,10 +20,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Dynamic menu that allows columns to be added or removed.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: ChooseColumnsMenu.java 10490 2009-04-13 22:15:23Z tlerios $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ChooseColumnsMenu.java 10490 2009-04-13 22:15:23Z tlerios $")
+@ClassVersion("$Id$")
 public class ChooseColumnsMenu extends CompoundContributionItem {
 
 	private static final int DEFAULT_WIDTH = 100;
@@ -32,7 +32,7 @@ public class ChooseColumnsMenu extends CompoundContributionItem {
 	/**
 	 * Interface for objects that have a table.
 	 */
-	@ClassVersion("$Id: ChooseColumnsMenu.java 10490 2009-04-13 22:15:23Z tlerios $")
+	@ClassVersion("$Id$")
 	public interface IColumnProvider {
 
 		/**
