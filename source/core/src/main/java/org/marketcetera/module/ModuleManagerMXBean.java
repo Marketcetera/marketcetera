@@ -120,6 +120,8 @@ public interface ModuleManagerMXBean {
      * Returns a list of URNs of available module providers.
      *
      * @return the list of URNs of available module providers.
+     *
+     * @see ModuleManager#getProviders()
      */
     @DisplayName("Fetches the URNs of all the module providers available in the system")
     List<String> getProviders();
@@ -128,6 +130,8 @@ public interface ModuleManagerMXBean {
      * Returns a list of URNs of all module instances.
      *
      * @return a list of URNs of all module instances.
+     *
+     * @see ModuleManager#getModuleInstances(ModuleURN)
      */
     @DisplayName("Fetches the URNs of all the module instances available in the system")
     List<String> getInstances();
@@ -141,6 +145,8 @@ public interface ModuleManagerMXBean {
      * @throws RuntimeException if a provider with the supplied
      * URN does not exist. OR if the supplied provider URN is not a
      * valid URN.
+     *
+     * @see ModuleManager#getProviderInfo(ModuleURN)
      */
     @DisplayName("Fetches Provider Details")
     ProviderInfo getProviderInfo(
@@ -159,6 +165,8 @@ public interface ModuleManagerMXBean {
      * @throws RuntimeException if a provider with the supplied
      * URN does not exist. OR if the supplied provider URN is not a
      * valid URN.
+     *
+     * @see ModuleManager#getModuleInstances(ModuleURN)  
      */
     @DisplayName("Fetches the URNs of all the module instances registered with the Framework")
     List<String> getModuleInstances(
@@ -203,6 +211,8 @@ public interface ModuleManagerMXBean {
      * the module
      *
      * @see #getProviderInfo(String) 
+     *
+     * @see ModuleManager#createModule(ModuleURN, Object[])  
      */
     @DisplayName("Creates a new module instance")
     String createModule(
@@ -214,8 +224,9 @@ public interface ModuleManagerMXBean {
 
     /**
      * Deletes the module identified by the supplied module URN.
-     * The module is stopped if its already running.
-     * Singleton instances of a module cannot be deleted.
+     * Singleton instances of a module cannot be deleted. The module
+     * should not be running when this method is invoked, otherwise
+     * the operation fails with an exception.
      *
      * @param inModuleURN the module URN, that uniquely identifies
      * the module being deleted.
@@ -223,6 +234,8 @@ public interface ModuleManagerMXBean {
      * @throws RuntimeException if a module with the supplied
      * URN cannot be deleted OR if the supplied module URN is not
      * a valid URN. OR if the module matching the URN was not found.
+     *
+     * @see ModuleManager#deleteModule(ModuleURN) 
      */
     @DisplayName("Delete a module instance")
     void deleteModule(
@@ -241,6 +254,8 @@ public interface ModuleManagerMXBean {
      * @throws RuntimeException if a module with the supplied
      * URN was not found OR if the supplied URN was invalid. OR if there
      * were errors creating module's ObjectName
+     *
+     * @see ModuleManager#getModuleInfo(ModuleURN)  
      */
     @DisplayName("Fetches the module instance details")
     ModuleInfo getModuleInfo(
@@ -255,6 +270,8 @@ public interface ModuleManagerMXBean {
      * the module that needs to be started.
      *
      * @throws RuntimeException if there were errors starting the module.
+     *
+     * @see ModuleManager#start(ModuleURN)  
      */
     @DisplayName("Starts a module instance")
     void start(
@@ -271,6 +288,8 @@ public interface ModuleManagerMXBean {
      *
      * @throws RuntimeException if a module with the supplied
      * URN was not found OR if the supplied module URN is invalid.
+     *
+     * @see ModuleManager#stop(ModuleURN)  
      */
     @DisplayName("Stops a module instance")
     void stop(
@@ -304,6 +323,7 @@ public interface ModuleManagerMXBean {
      * requested. Or if any of the modules didn't understand the
      * request parameters or were unable to emit data as requested.
      *
+     * @see ModuleManager#createDataFlow(DataRequest[])  
      */
     @DisplayName("Creates a new data flow, automatically appending the sink module")
     DataFlowID createDataFlow(
@@ -337,6 +357,8 @@ public interface ModuleManagerMXBean {
      * requested. Or if any of the modules didn't understand the
      * request parameters or were unable to emit data as requested.
      *
+     * @see ModuleManager#createDataFlow(DataRequest[], boolean)  
+     *
      */
     @DisplayName("Creates a data flow")
     DataFlowID createDataFlow(
@@ -361,6 +383,8 @@ public interface ModuleManagerMXBean {
      *
      * @throws RuntimeException if the data flow, specified by
      * the ID, could not be found.
+     *
+     * @see ModuleManager#cancel(DataFlowID)
      */
     @DisplayName("Cancels an active data flow")
     void cancel(
@@ -375,6 +399,8 @@ public interface ModuleManagerMXBean {
      * the module should be included in the returned list.
      *
      * @return the list of IDs of all data flows in the system.
+     *
+     * @see ModuleManager#getDataFlows(boolean)  
      */
     @DisplayName("Gets the list of IDs of all active data flows")
     List<DataFlowID> getDataFlows(
@@ -390,6 +416,8 @@ public interface ModuleManagerMXBean {
      *
      * @throws RuntimeException if the data flow, specified by
      * the ID, could not be found.
+     *
+     * @see ModuleManager#getDataFlowInfo(DataFlowID)
      */
     @DisplayName("Fetches an active data flow's details")
     DataFlowInfo getDataFlowInfo(
@@ -406,6 +434,8 @@ public interface ModuleManagerMXBean {
      *
      * @throws RuntimeException if there were errors initializing
      * newly discovered factories.
+     *
+     * @see ModuleManager#refresh()  
      */
     @DisplayName("Refreshes the providers list. Checks to see if any new provider implementations were added")
     void refresh() throws RuntimeException;
@@ -417,6 +447,8 @@ public interface ModuleManagerMXBean {
      *
      * @return historical record of data flows that are not active
      * any more.
+     *
+     * @see ModuleManager#getDataFlowHistory()   
      */
     @DisplayName("Data flows that are not active any more")
     List<DataFlowInfo> getDataFlowHistory();
@@ -427,6 +459,8 @@ public interface ModuleManagerMXBean {
      *
      * @return the maximum number of historical data flow
      * records.
+     *
+     * @see ModuleManager#getMaxFlowHistory()
      */
     @DisplayName("Maximum number of data flow records to retain in data flow history")
     int getMaxFlowHistory();
@@ -441,6 +475,8 @@ public interface ModuleManagerMXBean {
      * 
      * @param inMaxFlowHistory the maximum number of data flow
      * records.
+     *
+     * @see ModuleManager#setMaxFlowHistory(int)  
      */
     @DisplayName("Maximum number of data flow records to retain in data flow history")
     void setMaxFlowHistory(
