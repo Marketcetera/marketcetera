@@ -3,6 +3,7 @@ package org.marketcetera.saclient;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.core.Util;
+import org.marketcetera.core.LoggerConfiguration;
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.hamcrest.Matchers;
@@ -456,6 +457,7 @@ public class SAClientConnectionTest {
 
     @BeforeClass
     public static void setup() throws Exception {
+        LoggerConfiguration.logSetup();
         MockStrategyAgent.startServerAndClient();
     }
 
