@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License#
  *
  * $Id$
  */
@@ -16,6 +15,7 @@ import org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImp
 
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEnginePackage;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -32,6 +32,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
+ * @since $Release$
  */
 @ClassVersion("$Id$")
 public class StrategyAgentEngineImpl extends StrategyEngineImpl implements

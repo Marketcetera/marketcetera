@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -11,11 +10,10 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
-import org.marketcetera.photon.strategy.engine.model.core.Strategy;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
+
+import org.marketcetera.photon.strategy.engine.model.core.*;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -29,7 +27,9 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePack
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public class StrategyEngineCoreSwitch<T> {
     /**
      * The cached model package

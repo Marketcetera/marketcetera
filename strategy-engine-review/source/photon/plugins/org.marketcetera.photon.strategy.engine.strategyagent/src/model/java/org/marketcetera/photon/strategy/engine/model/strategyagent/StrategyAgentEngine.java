@@ -1,12 +1,12 @@
 /**
- * <copyright>
- * </copyright>
+ * $License#
  *
  * $Id$
  */
 package org.marketcetera.photon.strategy.engine.model.strategyagent;
 
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -26,6 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEnginePackage#getStrategyAgentEngine()
  * @model
  * @generated
+ * @since $Release$
  */
 @ClassVersion("$Id$")
 public interface StrategyAgentEngine extends StrategyEngine {
@@ -109,8 +110,6 @@ public interface StrategyAgentEngine extends StrategyEngine {
 
     /**
      * <!-- begin-user-doc -->
-     * Connects the engine to a remote strategy agent.
-     * @throws Exception if anything goes wrong
      * <!-- end-user-doc -->
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception"
      * @generated
@@ -119,8 +118,6 @@ public interface StrategyAgentEngine extends StrategyEngine {
 
     /**
      * <!-- begin-user-doc -->
-     * Disconnects from the remote strategy agent.
-     * @throws Exception if anything goes wrong
      * <!-- end-user-doc -->
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception"
      * @generated
