@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class StrategyEnginesCore {
+public final class StrategyEnginesCore {
 
     public static final String PLUGIN_ID = "org.marketcetera.photon.strategy.engine"; //$NON-NLS-1$
 
