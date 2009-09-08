@@ -142,59 +142,39 @@ public abstract class StrategyEngineConnectionImpl extends EObjectImpl
                     newEngine, newEngine));
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public DeployedStrategy deploy(Strategy strategy) throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public void undeploy(DeployedStrategy strategy) throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public void start(DeployedStrategy strategy) throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public void stop(DeployedStrategy strategy) throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public void update(DeployedStrategy strategy, Strategy newConfiguration)
             throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void refresh(DeployedStrategy strategy) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void refresh() throws Exception {
         throw new UnsupportedOperationException();
     }
 

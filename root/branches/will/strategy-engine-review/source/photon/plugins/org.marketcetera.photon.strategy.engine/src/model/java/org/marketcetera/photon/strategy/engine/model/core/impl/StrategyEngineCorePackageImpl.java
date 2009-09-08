@@ -597,11 +597,21 @@ public class StrategyEngineCorePackageImpl extends EPackageImpl implements
                 IS_UNIQUE, IS_ORDERED);
         addEException(op, this.getException());
 
+        op = addEOperation(strategyEngineConnectionEClass, null, "refresh", 0,
+                1, IS_UNIQUE, IS_ORDERED);
+        addEParameter(op, this.getDeployedStrategy(), "strategy", 1, 1,
+                IS_UNIQUE, IS_ORDERED);
+        addEException(op, this.getException());
+
+        op = addEOperation(strategyEngineConnectionEClass, null, "refresh", 0,
+                1, IS_UNIQUE, IS_ORDERED);
+        addEException(op, this.getException());
+
         initEClass(strategyEClass, Strategy.class, "Strategy", !IS_ABSTRACT,
                 !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getStrategy_InstanceName(), ecorePackage.getEString(),
-                "instanceName", null, 0, 1, Strategy.class, !IS_TRANSIENT,
-                !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+                "instanceName", null, 1, 1, Strategy.class, !IS_TRANSIENT,
+                !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE,
                 !IS_DERIVED, IS_ORDERED);
         initEAttribute(getStrategy_Language(), ecorePackage.getEString(),
                 "language", null, 1, 1, Strategy.class, !IS_TRANSIENT,
@@ -658,7 +668,6 @@ public class StrategyEngineCorePackageImpl extends EPackageImpl implements
         initEEnum(connectionStateEEnum, ConnectionState.class,
                 "ConnectionState");
         addEEnumLiteral(connectionStateEEnum, ConnectionState.DISCONNECTED);
-        addEEnumLiteral(connectionStateEEnum, ConnectionState.CONNECTING);
         addEEnumLiteral(connectionStateEEnum, ConnectionState.CONNECTED);
 
         initEEnum(strategyStateEEnum, StrategyState.class, "StrategyState");

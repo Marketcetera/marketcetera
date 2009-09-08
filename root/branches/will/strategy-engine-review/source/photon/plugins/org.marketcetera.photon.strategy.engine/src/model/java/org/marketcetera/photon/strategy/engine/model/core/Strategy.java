@@ -42,7 +42,7 @@ public interface Strategy extends EObject {
      * @return the value of the '<em>Instance Name</em>' attribute.
      * @see #setInstanceName(String)
      * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategy_InstanceName()
-     * @model
+     * @model id="true" required="true"
      * @generated
      */
     String getInstanceName();
