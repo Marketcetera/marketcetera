@@ -1,19 +1,24 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
 package org.marketcetera.photon.strategy.engine.model.core.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+
 import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EMap;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -28,7 +33,9 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePack
  * </p>
  *
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public class StringToStringMapEntryImpl extends EObjectImpl implements
         BasicEMap.Entry<String, String> {
     /**

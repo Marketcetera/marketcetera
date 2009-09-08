@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -15,8 +14,11 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+
 import org.marketcetera.module.ModuleURN;
+
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
@@ -26,12 +28,16 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFact
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /**
  * <!-- begin-user-doc -->
  * An implementation of the model <b>Package</b>.
  * <!-- end-user-doc -->
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public class StrategyEngineCorePackageImpl extends EPackageImpl implements
         StrategyEngineCorePackage {
     /**

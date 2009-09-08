@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License#
  *
  * $Id$
  */
@@ -15,6 +14,7 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
 import org.marketcetera.photon.strategy.engine.model.strategyagent.*;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -22,6 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * An implementation of the model <b>Factory</b>.
  * <!-- end-user-doc -->
  * @generated
+ * @since $Release$
  */
 @ClassVersion("$Id$")
 public class StrategyAgentEngineFactoryImpl extends EFactoryImpl implements

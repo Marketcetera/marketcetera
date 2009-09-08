@@ -2,10 +2,10 @@
 <?eclipse version="3.0"?>
 
 <!--
- <copyright>
- </copyright>
+ $License$
 
- $Id$
+ Since: $Release$
+ Version: $Id$
 -->
 
 <plugin>

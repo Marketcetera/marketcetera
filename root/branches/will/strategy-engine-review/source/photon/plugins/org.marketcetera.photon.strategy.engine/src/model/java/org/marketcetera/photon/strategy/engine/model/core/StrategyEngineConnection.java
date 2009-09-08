@@ -1,12 +1,13 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
 package org.marketcetera.photon.strategy.engine.model.core;
 
 import org.eclipse.emf.ecore.EObject;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -23,7 +24,9 @@ import org.eclipse.emf.ecore.EObject;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyEngineConnection()
  * @model abstract="true"
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface StrategyEngineConnection extends EObject {
     /**
      * Returns the value of the '<em><b>Engine</b></em>' reference.
@@ -51,7 +54,7 @@ public interface StrategyEngineConnection extends EObject {
      * @see #getEngine()
      * @generated
      */
-    void setEngine(StrategyEngine value) throws Exception;
+    void setEngine(StrategyEngine value);
 
     /**
      * <!-- begin-user-doc -->

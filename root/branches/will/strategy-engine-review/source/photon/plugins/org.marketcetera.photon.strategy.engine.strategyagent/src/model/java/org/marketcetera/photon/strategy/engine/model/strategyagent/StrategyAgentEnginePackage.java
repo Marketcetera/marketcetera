@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License#
  *
  * $Id$
  */
@@ -11,6 +10,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -27,6 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngineFactory
  * @model kind="package"
  * @generated
+ * @since $Release$
  */
 @ClassVersion("$Id$")
 public interface StrategyAgentEnginePackage extends EPackage {

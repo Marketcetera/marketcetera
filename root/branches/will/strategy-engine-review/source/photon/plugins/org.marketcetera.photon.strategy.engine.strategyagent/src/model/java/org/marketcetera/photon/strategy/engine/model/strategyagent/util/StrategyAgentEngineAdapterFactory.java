@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License#
  *
  * $Id$
  */
@@ -16,6 +15,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 
 import org.marketcetera.photon.strategy.engine.model.strategyagent.*;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -25,6 +25,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEnginePackage
  * @generated
+ * @since $Release$
  */
 @ClassVersion("$Id$")
 public class StrategyAgentEngineAdapterFactory extends AdapterFactoryImpl {

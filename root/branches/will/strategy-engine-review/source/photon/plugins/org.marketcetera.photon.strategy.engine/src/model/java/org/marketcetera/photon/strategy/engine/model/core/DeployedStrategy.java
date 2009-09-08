@@ -1,12 +1,13 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
 package org.marketcetera.photon.strategy.engine.model.core;
 
 import org.marketcetera.module.ModuleURN;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -25,7 +26,9 @@ import org.marketcetera.module.ModuleURN;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getDeployedStrategy()
  * @model
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface DeployedStrategy extends Strategy {
     /**
      * Returns the value of the '<em><b>Engine</b></em>' reference.
