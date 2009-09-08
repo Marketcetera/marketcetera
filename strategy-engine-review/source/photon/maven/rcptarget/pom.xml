@@ -206,6 +206,7 @@
                       <includes>
                         eclipse/plugins/org.eclipse.emf.common_*,
                         eclipse/plugins/org.eclipse.emf.ecore_*,
+                        eclipse/plugins/org.eclipse.emf.ecore.xmi_*,
                         eclipse/plugins/org.eclipse.emf.databinding_*
                       </includes>
                     </artifactItem>
@@ -217,6 +218,7 @@
                       <includes>
                         eclipse/plugins/org.eclipse.emf.common.source_*,
                         eclipse/plugins/org.eclipse.emf.ecore.source_*,
+                        eclipse/plugins/org.eclipse.emf.ecore.xmi.source_*,
                         eclipse/plugins/org.eclipse.emf.databinding.source_*
                       </includes>
                     </artifactItem>
