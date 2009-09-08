@@ -7,3 +7,10 @@ Bundle-Version: 1.6.0
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.marketcetera.photon.strategy.engine.model.core.test
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.invocation,
+ org.mockito.stubbing

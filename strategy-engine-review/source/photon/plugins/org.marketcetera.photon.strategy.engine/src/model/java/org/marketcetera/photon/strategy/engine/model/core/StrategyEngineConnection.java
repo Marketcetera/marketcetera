@@ -110,4 +110,20 @@ public interface StrategyEngineConnection extends EObject {
     void update(DeployedStrategy strategy, Strategy newConfiguration)
             throws Exception;
 
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
+     * @generated
+     */
+    void refresh(DeployedStrategy strategy) throws Exception;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception"
+     * @generated
+     */
+    void refresh() throws Exception;
+
 } // StrategyEngineConnection

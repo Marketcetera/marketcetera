@@ -33,22 +33,14 @@ public enum ConnectionState implements Enumerator {
     DISCONNECTED(0, "Disconnected", "Disconnected"),
 
     /**
-     * The '<em><b>Connecting</b></em>' literal object.
+     * The '<em><b>Connected</b></em>' literal object.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see #CONNECTING_VALUE
+     * @see #CONNECTED_VALUE
      * @generated
      * @ordered
      */
-    CONNECTING(1, "Connecting", "Connecting"), /**
-                                                * The '<em><b>Connected</b></em>' literal object.
-                                                * <!-- begin-user-doc -->
-                                                * <!-- end-user-doc -->
-                                                * @see #CONNECTED_VALUE
-                                                * @generated
-                                                * @ordered
-                                                */
-    CONNECTED(2, "Connected", "Connected");
+    CONNECTED(1, "Connected", "Connected");
 
     /**
      * The '<em><b>Disconnected</b></em>' literal value.
@@ -66,21 +58,6 @@ public enum ConnectionState implements Enumerator {
     public static final int DISCONNECTED_VALUE = 0;
 
     /**
-     * The '<em><b>Connecting</b></em>' literal value.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of '<em><b>Connecting</b></em>' literal object isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @see #CONNECTING
-     * @model name="Connecting"
-     * @generated
-     * @ordered
-     */
-    public static final int CONNECTING_VALUE = 1;
-
-    /**
      * The '<em><b>Connected</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
@@ -93,7 +70,7 @@ public enum ConnectionState implements Enumerator {
      * @generated
      * @ordered
      */
-    public static final int CONNECTED_VALUE = 2;
+    public static final int CONNECTED_VALUE = 1;
 
     /**
      * An array of all the '<em><b>Connection State</b></em>' enumerators.
@@ -102,7 +79,7 @@ public enum ConnectionState implements Enumerator {
      * @generated
      */
     private static final ConnectionState[] VALUES_ARRAY = new ConnectionState[] {
-            DISCONNECTED, CONNECTING, CONNECTED, };
+            DISCONNECTED, CONNECTED, };
 
     /**
      * A public read-only list of all the '<em><b>Connection State</b></em>' enumerators.
@@ -155,8 +132,6 @@ public enum ConnectionState implements Enumerator {
         switch (value) {
         case DISCONNECTED_VALUE:
             return DISCONNECTED;
-        case CONNECTING_VALUE:
-            return CONNECTING;
         case CONNECTED_VALUE:
             return CONNECTED;
         }
