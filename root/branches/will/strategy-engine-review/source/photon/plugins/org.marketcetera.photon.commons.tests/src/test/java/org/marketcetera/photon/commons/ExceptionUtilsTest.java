@@ -3,6 +3,7 @@ package org.marketcetera.photon.commons;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeoutException;
 import org.junit.Test;
 import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
 import org.marketcetera.photon.test.ExpectedFailure;
+import org.marketcetera.photon.test.ExpectedIllegalStateException;
 import org.marketcetera.photon.test.PhotonTestBase;
 
 /* $License$ */
@@ -39,7 +41,7 @@ public class ExceptionUtilsTest extends PhotonTestBase {
         } catch (Error e) {
             assertThat(e, sameInstance(e));
         }
-        new ExpectedFailure<IllegalStateException>("Not unchecked") {
+        new ExpectedIllegalStateException("Not unchecked") {
             @Override
             protected void run() throws Exception {
                 ExceptionUtils.launderThrowable(new IOException("test"));
@@ -49,17 +51,49 @@ public class ExceptionUtilsTest extends PhotonTestBase {
         assertThat(ExceptionUtils.launderThrowable(runtime),
                 sameInstance(runtime));
     }
-    
+
     @Test
     public void testLaunderedGet() throws Exception {
         new ExpectedFailure<RuntimeException>("xyz") {
             @Override
             protected void run() throws Exception {
-                ExceptionUtils.launderedGet(new ImmediateFuture<Void>(new RuntimeException("xyz")));
+                ExceptionUtils.launderedGet(new ImmediateFuture<Void>(
+                        new RuntimeException("xyz")));
+            }
+        };
+        new ExpectedFailure<FileNotFoundException>("xyz") {
+            @Override
+            protected void run() throws Exception {
+                ExceptionUtils.launderedGet(new ImmediateFuture<Void>(
+                        new FileNotFoundException("xyz")),
+                        FileNotFoundException.class);
+            }
+        };
+        new ExpectedIllegalStateException("Not unchecked") {
+            @Override
+            protected void run() throws Exception {
+                ExceptionUtils.launderedGet(new ImmediateFuture<Void>(
+                        new IOException("xyz")),
+                        FileNotFoundException.class);
+            }
+        };
+        new ExpectedIllegalStateException("Not unchecked") {
+            @Override
+            protected void run() throws Exception {
+                ExceptionUtils.launderedGet(new ImmediateFuture<Void>(
+                        new FileNotFoundException("xyz")));
+            }
+        };
+        new ExpectedIllegalStateException("Not unchecked") {
+            @Override
+            protected void run() throws Exception {
+                ExceptionUtils.launderedGet(new ImmediateFuture<Void>(
+                        new FileNotFoundException("xyz")),
+                        String.class);
             }
         };
     }
-    
+
     public class ImmediateFuture<T> implements Future<T> {
 
         private final T result;
@@ -82,7 +116,7 @@ public class ExceptionUtilsTest extends PhotonTestBase {
 
         @Override
         public T get() throws InterruptedException, ExecutionException {
-            if (exception != null){
+            if (exception != null) {
                 throw new ExecutionException(exception);
             }
             return result;
