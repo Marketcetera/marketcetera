@@ -61,7 +61,7 @@
     </children>
     <styles xmi:type="notation:ShapeStyle" xmi:id="_g7G50XPTEd6OOPLrIIocCw" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
     <element xmi:type="ecore:EClass" href="strategy-engine-core.ecore#//StrategyEngineConnection"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_g7G50nPTEd6OOPLrIIocCw" x="336" y="216"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_g7G50nPTEd6OOPLrIIocCw" x="348" y="216"/>
   </children>
   <children xmi:type="notation:Node" xmi:id="_j7i08XWUEd6c7JuU5oOiig" type="1005">
     <children xmi:type="notation:Node" xmi:id="_j7kqIHWUEd6c7JuU5oOiig" type="4010"/>
