@@ -65,7 +65,9 @@ if (genModel.useGenerics())
  * <!-- end-user-doc -->
  * @see <%=genPackage.getQualifiedPackageInterfaceName()%>
  * @generated
+ * @since $Release$
  */
+@<%=genModel.getImportedName("org.marketcetera.util.misc.ClassVersion")%>("$Id$")
 public class <%=genPackage.getSwitchClassName()%><%=templateParameters%>
 {
 <%if (genModel.hasCopyrightField()) {%>

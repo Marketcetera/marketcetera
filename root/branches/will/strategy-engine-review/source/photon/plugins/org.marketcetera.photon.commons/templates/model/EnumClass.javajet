@@ -44,7 +44,9 @@ package <%=genPackage.getInterfacePackageName()%>;
  * @model
 <%}}%>
  * @generated
+ * @since $Release$
  */
+ @<%=genModel.getImportedName("org.marketcetera.util.misc.ClassVersion")%>("$Id$")
 public <%if (isEnum) {%>enum<%} else {%>final class<%}%> <%=genEnum.getName()%> <%if (isEnum) {%>implements<%} else {%>extends<%}%> <%=genModel.isSuppressEMFMetaData() && !genModel.isSuppressInterfaces() ? "Internal" + genEnum.getName() : genModel.getImportedName(isEnum ? "org.eclipse.emf.common.util.Enumerator" : "org.eclipse.emf.common.util.AbstractEnumerator")%>
 {
 <%if (isEnum) {%>

@@ -6,4 +6,5 @@
 # </copyright>
 <%}}%>
 #
-# <%="$"%>Id<%="$"%>
+# Since: $Release$
+# Version: $Id$

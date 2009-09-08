@@ -71,6 +71,7 @@ package <%=genPackage.getClassPackageName()%>;
  * @extends <%=genModel.getImportedName(genModel.getRootExtendsInterface())%>
 <%}%>
  * @generated
+ * @since $Release$
  */
 <%} else {%>
 /**
@@ -89,8 +90,10 @@ package <%=genPackage.getClassPackageName()%>;
  * </p>
  *
  * @generated
+ * @since $Release$
  */
 <%}%>
+@<%=genModel.getImportedName("org.marketcetera.util.misc.ClassVersion")%>("$Id$")
 <%if (isImplementation) {%>
 public<%if (genClass.isAbstract()) {%> abstract<%}%> class <%=genClass.getClassName()%><%=genClass.getTypeParameters().trim()%><%=genClass.getClassExtends()%><%=genClass.getClassImplements()%>
 <%} else {%>

@@ -65,6 +65,7 @@ package <%=genPackage.getReflectionPackageName()%>;
  * @model
   <%}}%>
  * @generated
+ * @since $Release$
  */
 <%} else {%>
 
@@ -73,8 +74,10 @@ package <%=genPackage.getReflectionPackageName()%>;
  * An implementation of the model <b>Package</b>.
  * <!-- end-user-doc -->
  * @generated
+ * @since $Release$
  */
 <%}%>
+@<%=genModel.getImportedName("org.marketcetera.util.misc.ClassVersion")%>("$Id$")
 <%if (isImplementation) {%>
 public class <%=genPackage.getPackageClassName()%> extends <%=genModel.getImportedName("org.eclipse.emf.ecore.impl.EPackageImpl")%><%if (!isInterface){%> implements <%=genPackage.getImportedPackageInterfaceName()%><%}%>
 <%} else {%>
