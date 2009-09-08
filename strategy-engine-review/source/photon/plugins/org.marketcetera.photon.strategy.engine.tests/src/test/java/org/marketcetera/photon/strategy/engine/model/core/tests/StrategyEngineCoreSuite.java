@@ -2,6 +2,7 @@ package org.marketcetera.photon.strategy.engine.model.core.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.marketcetera.photon.strategy.engine.StrategyEnginesCoreTest;
 
 /* $License$ */
 
@@ -13,6 +14,6 @@ import org.junit.runners.Suite;
  * @since $Release$
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( {  })
+@Suite.SuiteClasses( { StrategyEnginesCoreTest.class })
 public class StrategyEngineCoreSuite {
 }
