@@ -44,6 +44,7 @@ package <%=genPackage.getClassPackageName()%>;
  * @see <%=genPackage.getQualifiedPackageInterfaceName()%>
 <%}%>
  * @generated
+ * @since $Release$
  */
 <%} else {%>
 /**
@@ -51,8 +52,10 @@ package <%=genPackage.getClassPackageName()%>;
  * An implementation of the model <b>Factory</b>.
  * <!-- end-user-doc -->
  * @generated
+ * @since $Release$
  */
 <%}%>
+@<%=genModel.getImportedName("org.marketcetera.util.misc.ClassVersion")%>("$Id$")
 <%if (isImplementation) {%>
 public class <%=genPackage.getFactoryClassName()%> extends <%=genModel.getImportedName("org.eclipse.emf.ecore.impl.EFactoryImpl")%><%if (!genModel.isSuppressInterfaces()) {%> implements <%=genPackage.getImportedFactoryInterfaceName()%><%}%>
 <%} else {%>

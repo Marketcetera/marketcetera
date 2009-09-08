@@ -18,8 +18,11 @@
 <%GenModel genModel = (GenModel)argument;%>
 <%@ include file="../Header.propertiesjetinc"%>
 
+# OSGi bundle localization.  For Java strings, use the org.marketcetera.util.log
+# package.  This is for non-Java strings only (e.g. plugin.xml, MANIFEST.MF)
+
 pluginName = <%=genModel.getModelName()%> Model
-providerName = www.example.org
+providerName = Marketcetera, Inc.
 <%boolean first = true; for (GenPackage genPackage : genModel.getAllGenPackagesWithClassifiers()) {%>
   <%if (genPackage.isContentType()) {%>
     <%if (first) { first = false;%>
