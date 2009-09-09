@@ -4,12 +4,14 @@ package org.marketcetera.photon.test;
 
 /**
  * Base class for reusable, {@link IllegalStateException} expected failures.
- *
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: ExpectedIllegalStateException.java 10713 2009-08-30 09:08:28Z
+ *          tlerios $
  * @since $Release$
  */
-public abstract class ExpectedIllegalStateException {
+public abstract class ExpectedIllegalStateException extends
+        ExpectedFailure<IllegalStateException> {
 
     /**
      * Constructor.
@@ -21,20 +23,6 @@ public abstract class ExpectedIllegalStateException {
      *             if there was an unexpected failure
      */
     protected ExpectedIllegalStateException(String message) throws Exception {
-        new ExpectedFailure<IllegalStateException>(message) {
-            @Override
-            protected void run() throws Exception {
-                ExpectedIllegalStateException.this.run();
-            }
-        };
+        super(message);
     }
-
-    /**
-     * Subclasses should implement this method to execute code that is expected
-     * to fail with an IllegalStateException.
-     * 
-     * @throws Exception
-     *             if there's a failure
-     */
-    protected abstract void run() throws Exception;
 }

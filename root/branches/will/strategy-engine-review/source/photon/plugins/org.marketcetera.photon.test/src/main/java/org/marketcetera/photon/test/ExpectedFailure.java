@@ -1,23 +1,63 @@
 package org.marketcetera.photon.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
-import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.except.I18NException;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNotNull;
 
+import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
+import java.io.Serializable;
+
+/* $License$ */
 /**
- * Copied from org.marketcetera.module.  Ideally, this should be in util-test.  See EG-190.
+ * A utility class for testing failure conditions in unit tests.
+ *
+ * <p>
+ * The code that is being tested is implemented within the
+ * {@link #run()} method.
+ *<p>
+ * The type parameter <code>T</code> reflects the actual type
+ * of exception that is expected to be thrown from the {@link #run()}
+ * method.
+ *<p> 
+ * The class can be used to test failures as follows.
+ *
+ * <pre>
+ * // Testing failures that throw I18NException subclass
+ * new ExpectedFailure&lt;I18NExceptionSubClass&gt;(Messages.FAILURE_MESSAGE,parameter1) {
+ *   protected void run() throws Exception {
+ *     // The code that is expected to throw I18NExceptionSubClass
+ *     // with <code>Messages.FAILURE_MESSAGE</code> message that has a
+ *     // parameter <code>parameter1</code> 
+ *   }
+ * }
+ *
+ *
+ * // Testing failures that throw any java Exception subclass
+ * new ExpectedFailure&lt;ExceptionSubClass&gt;(Messages.FAILURE_MESSAGE.getText()) {
+ *   protected void run() throws Exception {
+ *     // The code that is expected to throw ExceptionSubClass
+ *     // with <code>Messages.FAILURE_MESSAGE</code> message
+ *   }
+ * }
+ * </pre>
+ *
+ * If the caller needs to do further verification of the exception
+ * than is done by this class, they can get the caught exception by
+ * calling {@link #getException()}
  * 
- * Changed assertException to use getLocalizedMessage instead of getMessage.
+ * NOTE: This was copied from org.marketcetera.module. Ideally, it should be in
+ * util-test. See EG-190. There is a minor difference from the core version:
+ * assertException to use getLocalizedMessage instead of getMessage.
+ *
+ * @author anshul@marketcetera.com
  */
+@ClassVersion("$Id$")
 public abstract class ExpectedFailure<T extends Exception> {
 
     /**
@@ -77,7 +117,7 @@ public abstract class ExpectedFailure<T extends Exception> {
                                             boolean inExactMatch) {
         assertNotNull(inThrowable);
         if (inExactMatch) {
-            // TODO: core version should likely use getLocalizedMessage too
+            // core version uses getMessage here
             assertEquals(inExpectedMessage, inThrowable.getLocalizedMessage());
         } else {
             assertTrue(inThrowable.getLocalizedMessage(), inThrowable
@@ -172,7 +212,13 @@ public abstract class ExpectedFailure<T extends Exception> {
      * @return the expected exception type.
      */
     private Class<?> getExceptionClass() {
-        ParameterizedType pt = (ParameterizedType) getClass().getGenericSuperclass();
+        ParameterizedType pt;
+        Class<?> cls = getClass();
+        //find the direct sub-class of this class
+        while(!ExpectedFailure.class.equals(cls.getSuperclass())) {
+            cls = cls.getSuperclass();
+        }
+        pt = (ParameterizedType) cls.getGenericSuperclass();
         Type[] t = pt.getActualTypeArguments();
         assertEquals(1, t.length);
         return (Class<?>) t[0];
