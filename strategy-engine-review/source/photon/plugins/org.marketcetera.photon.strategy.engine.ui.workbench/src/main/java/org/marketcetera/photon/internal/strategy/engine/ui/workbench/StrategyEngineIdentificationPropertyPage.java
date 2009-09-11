@@ -12,13 +12,13 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Property page for configuring a {@link RemoteStrategyAgent}.
+ * Property page for configuring a {@link StrategyEngine}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: RemoteAgentPropertyPage.java 10492 2009-04-14 00:11:35Z klim $
- * @since 1.5.0
+ * @version $Id$
+ * @since $Release$
  */
-@ClassVersion("$Id: RemoteAgentPropertyPage.java 10492 2009-04-14 00:11:35Z klim $")
+@ClassVersion("$Id$")
 public class StrategyEngineIdentificationPropertyPage extends
         DataBindingPropertyPage {
 

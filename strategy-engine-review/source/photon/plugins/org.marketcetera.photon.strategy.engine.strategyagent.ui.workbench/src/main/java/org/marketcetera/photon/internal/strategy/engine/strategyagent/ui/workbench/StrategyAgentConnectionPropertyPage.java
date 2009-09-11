@@ -7,7 +7,18 @@ import org.marketcetera.photon.commons.ui.workbench.DataBindingPropertyPage;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
 import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEngineUI;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEngineImage;
+import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
+/**
+ * Property page for {@link StrategyAgentEngine} connection properties. 
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$")
 public class StrategyAgentConnectionPropertyPage extends DataBindingPropertyPage {
 
     private StrategyAgentEngine mOriginalEngine;
