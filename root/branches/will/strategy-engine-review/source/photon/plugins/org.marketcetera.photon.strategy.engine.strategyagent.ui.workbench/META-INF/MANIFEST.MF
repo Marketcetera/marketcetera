@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Strategy Agent Engine Workbench UI
+Bundle-Name: %bundleName
 Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.strategyagent.ui.workbench;singleton:=true
 Bundle-Version: 1.6.0
-Bundle-Vendor: Marketcetera, Inc.
+Bundle-Vendor: %bundleVendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
