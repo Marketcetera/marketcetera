@@ -31,7 +31,10 @@ import com.google.common.collect.Sets;
 /* $License$ */
 
 /**
- * A base class with common {@link StrategyEngineConnection} functionality.
+ * A base class with common {@link StrategyEngineConnection} functionality. This
+ * class handles the model updates and delegates to abstract methods to
+ * implement the interactions with the underlying module framework
+ * implmentation.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -296,23 +299,95 @@ public abstract class AbstractStrategyEngineConnection extends
         }));
     }
 
+    /**
+     * Deploys the strategy and provide the URN.
+     * 
+     * @param strategy
+     *            the strategy
+     * @param script
+     *            the script file (computed from the script path)
+     * @return the URN of the new strategy
+     * @throws Exception
+     *             if something goes wrong
+     */
     protected abstract ModuleURN doDeploy(Strategy strategy, File script)
             throws Exception;
 
+    /**
+     * Refreshes the state of the strategy with the given urn. The state must be
+     * stored in the given strategy and can be written directly (i.e. without
+     * using the GUI executor).
+     * 
+     * @param urn
+     *            the strategy urn
+     * @param strategy
+     * @throws Exception
+     *             if something goes wrong
+     */
     protected abstract void doRefresh(ModuleURN urn, DeployedStrategy strategy)
             throws Exception;
 
+    /**
+     * Returns whether the strategy with the given urn is running.
+     * 
+     * @param urn
+     *            the strategy urn
+     * @return true if the strategy is running
+     * @throws Exception
+     *             if something goes wrong
+     */
     protected abstract boolean isRunning(ModuleURN urn) throws Exception;
 
+    /**
+     * Starts the strategy with the given urn.
+     * 
+     * @param urn
+     *            the strategy urn
+     * @throws Exception
+     *             if something goes wrong
+     */
     protected abstract void doStart(ModuleURN urn) throws Exception;
 
+    /**
+     * Stops the strategy with the given urn.
+     * 
+     * @param urn
+     *            the strategy urn
+     * @throws Exception
+     *             if something goes wrong
+     */
     protected abstract void doStop(ModuleURN urn) throws Exception;
 
+    /**
+     * Updates the strategy with the given urn.
+     * 
+     * @param urn
+     *            the strategy urn
+     * @param newConfiguration
+     *            the new configuration to apply to the strategy
+     * @throws Exception
+     *             if something goes wrong
+     */
     protected abstract void doUpdate(ModuleURN urn, Strategy newConfiguration)
             throws Exception;
 
+    /**
+     * Undeploys the strategy with the given urn.
+     * 
+     * @param urn
+     *            the strategy urn
+     * @throws Exception
+     *             if something goes wrong
+     */
     protected abstract void doUndeploy(ModuleURN urn) throws Exception;
 
+    /**
+     * Returns a list of deployed strategy urns.
+     * 
+     * @return the strategy urn
+     * @throws Exception
+     *             if something goes wrong
+     */
     protected abstract List<ModuleURN> getDeployed() throws Exception;
 
 }

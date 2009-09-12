@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * 
+ * Utilities for working with the workbench {@link IProgressService}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -73,7 +73,7 @@ public final class ProgressUtils {
         return JFaceUtils.runModalWithErrorDialog(adapter, shellProvider,
                 operation, false, failureMessage);
     }
-    
+
     private ProgressUtils() {
         throw new AssertionError("non-instantiable"); //$NON-NLS-1$
     }
