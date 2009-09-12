@@ -236,17 +236,25 @@
         <artifactId>google-collections</artifactId>
         <version>[1.0-rc2]</version>
       </dependency>
-      <!-- guice is an OSGi bundle. -->
       <dependency>
-        <groupId>com.google</groupId>
-        <artifactId>guice</artifactId>
-        <version>[20090205]</version>
+        <groupId>org.ops4j</groupId>
+        <artifactId>peaberry</artifactId>
+        <version>[1.1.1]</version>
       </dependency>
-      <!-- guice-source is an Eclipse ready source package for guice. -->
       <dependency>
-        <groupId>com.google</groupId>
-        <artifactId>guice-source</artifactId>
-        <version>[20090205]</version>
+        <groupId>org.ops4j</groupId>
+        <artifactId>peaberry.eclipse</artifactId>
+        <version>[1.1.1]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.peaberry.dependencies</groupId>
+        <artifactId>aopalliance</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.peaberry.dependencies</groupId>
+        <artifactId>guice</artifactId>
+        <version>2.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -702,6 +710,13 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
+    </repository>
+    <repository>
+      <id>ops4j.snapshots</id>
+      <url>http://repository.ops4j.org/mvn-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
     </repository>
     <repository>
       <id>central</id>
