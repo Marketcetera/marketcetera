@@ -7,49 +7,56 @@ package org.marketcetera.photon.strategy.engine.model.core.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EMap;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.ecore.util.InternalEList;
-
+import org.marketcetera.photon.commons.SynchronizedProxy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
-
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Strategy</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '
+ * <em><b>Strategy</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getInstanceName <em>Instance Name</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getLanguage <em>Language</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getScriptPath <em>Script Path</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getClassName <em>Class Name</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#isRouteOrdersToServer <em>Route Orders To Server</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getParameters <em>Parameters</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getInstanceName
+ * <em>Instance Name</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getLanguage
+ * <em>Language</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getScriptPath
+ * <em>Script Path</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getClassName
+ * <em>Class Name</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#isRouteOrdersToServer
+ * <em>Route Orders To Server</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl#getParameters
+ * <em>Parameters</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  * @since $Release$
  */
 @ClassVersion("$Id$")
 public class StrategyImpl extends EObjectImpl implements Strategy {
     /**
-     * The default value of the '{@link #getInstanceName() <em>Instance Name</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The default value of the '{@link #getInstanceName()
+     * <em>Instance Name</em>}' attribute. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     * 
      * @see #getInstanceName()
      * @generated
      * @ordered
@@ -57,19 +64,20 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     protected static final String INSTANCE_NAME_EDEFAULT = null;
 
     /**
-     * The cached value of the '{@link #getInstanceName() <em>Instance Name</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #getInstanceName()
+     * <em>Instance Name</em>}' attribute. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     * 
      * @see #getInstanceName()
      * @generated
      * @ordered
      */
-    protected String instanceName = INSTANCE_NAME_EDEFAULT;
+    protected volatile String instanceName = INSTANCE_NAME_EDEFAULT;
 
     /**
-     * The default value of the '{@link #getLanguage() <em>Language</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The default value of the '{@link #getLanguage() <em>Language</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getLanguage()
      * @generated
      * @ordered
@@ -77,19 +85,19 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     protected static final String LANGUAGE_EDEFAULT = null;
 
     /**
-     * The cached value of the '{@link #getLanguage() <em>Language</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #getLanguage() <em>Language</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getLanguage()
      * @generated
      * @ordered
      */
-    protected String language = LANGUAGE_EDEFAULT;
+    protected volatile String language = LANGUAGE_EDEFAULT;
 
     /**
-     * The default value of the '{@link #getScriptPath() <em>Script Path</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The default value of the '{@link #getScriptPath() <em>Script Path</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getScriptPath()
      * @generated
      * @ordered
@@ -97,19 +105,19 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     protected static final String SCRIPT_PATH_EDEFAULT = null;
 
     /**
-     * The cached value of the '{@link #getScriptPath() <em>Script Path</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #getScriptPath() <em>Script Path</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getScriptPath()
      * @generated
      * @ordered
      */
-    protected String scriptPath = SCRIPT_PATH_EDEFAULT;
+    protected volatile String scriptPath = SCRIPT_PATH_EDEFAULT;
 
     /**
-     * The default value of the '{@link #getClassName() <em>Class Name</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The default value of the '{@link #getClassName() <em>Class Name</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getClassName()
      * @generated
      * @ordered
@@ -117,19 +125,20 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     protected static final String CLASS_NAME_EDEFAULT = null;
 
     /**
-     * The cached value of the '{@link #getClassName() <em>Class Name</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #getClassName() <em>Class Name</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getClassName()
      * @generated
      * @ordered
      */
-    protected String className = CLASS_NAME_EDEFAULT;
+    protected volatile String className = CLASS_NAME_EDEFAULT;
 
     /**
-     * The default value of the '{@link #isRouteOrdersToServer() <em>Route Orders To Server</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The default value of the '{@link #isRouteOrdersToServer()
+     * <em>Route Orders To Server</em>}' attribute. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     * 
      * @see #isRouteOrdersToServer()
      * @generated
      * @ordered
@@ -137,28 +146,29 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     protected static final boolean ROUTE_ORDERS_TO_SERVER_EDEFAULT = false;
 
     /**
-     * The cached value of the '{@link #isRouteOrdersToServer() <em>Route Orders To Server</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #isRouteOrdersToServer()
+     * <em>Route Orders To Server</em>}' attribute. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     * 
      * @see #isRouteOrdersToServer()
      * @generated
      * @ordered
      */
-    protected boolean routeOrdersToServer = ROUTE_ORDERS_TO_SERVER_EDEFAULT;
+    protected volatile boolean routeOrdersToServer = ROUTE_ORDERS_TO_SERVER_EDEFAULT;
 
     /**
-     * The cached value of the '{@link #getParameters() <em>Parameters</em>}' map.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #getParameters() <em>Parameters</em>}'
+     * map. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getParameters()
      * @generated
      * @ordered
      */
-    protected EMap<String, String> parameters;
+    protected volatile EMap<String, String> parameters;
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     protected StrategyImpl() {
@@ -166,8 +176,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -176,8 +186,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public String getInstanceName() {
@@ -185,8 +195,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setInstanceName(String newInstanceName) {
@@ -199,8 +209,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public String getLanguage() {
@@ -208,8 +218,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setLanguage(String newLanguage) {
@@ -222,8 +232,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public String getScriptPath() {
@@ -231,8 +241,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setScriptPath(String newScriptPath) {
@@ -245,8 +255,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public String getClassName() {
@@ -254,8 +264,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setClassName(String newClassName) {
@@ -268,8 +278,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public boolean isRouteOrdersToServer() {
@@ -277,8 +287,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setRouteOrdersToServer(boolean newRouteOrdersToServer) {
@@ -291,23 +301,25 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated NOT
      */
     public EMap<String, String> getParameters() {
         if (parameters == null) {
-            parameters = new EcoreEMap<String, String>(
+            final EMap<String, String> delegate = new EcoreEMap<String, String>(
                     StrategyEngineCorePackage.Literals.STRING_TO_STRING_MAP_ENTRY,
                     StringToStringMapEntryImpl.class, this,
                     StrategyEngineCorePackage.STRATEGY__PARAMETERS);
+            parameters = SynchronizedProxy.proxy(delegate, EMap.class,
+                    InternalEList.class);
         }
         return parameters;
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -322,8 +334,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -349,8 +361,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -379,8 +391,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -409,8 +421,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -437,8 +449,8 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -461,4 +473,4 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
         return result.toString();
     }
 
-} //StrategyImpl
+} // StrategyImpl

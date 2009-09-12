@@ -95,7 +95,7 @@ public class ExceptionUtils {
             Throwable cause = e.getCause();
             for (Class<?> clazz : expected) {
                 if (clazz.isInstance(cause)) {
-                    throw (Exception) clazz.cast(cause);
+                    throw (Exception) cause;
                 }
             }
             throw launderThrowable(e.getCause());

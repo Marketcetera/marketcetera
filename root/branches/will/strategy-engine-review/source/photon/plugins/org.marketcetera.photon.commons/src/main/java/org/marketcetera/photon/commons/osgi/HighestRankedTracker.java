@@ -20,7 +20,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * <p>
  * Note that clients may not be updated if a service ranking changes. In other
  * words, the behavior of this object is only predictable when services are
- * added and removed services. This is due to <a
+ * added and removed. This is due to <a
  * href="http://bugs.eclipse.org/288365">http://bugs.eclipse.org/288365</a>.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
@@ -50,7 +50,6 @@ public final class HighestRankedTracker extends ServiceTracker {
         void highestRankedServiceChanged(Object newService);
     }
 
-    private final BundleContext mContext;
     private final String mClazz;
     private final IHighestRankedTrackerListener mCallback;
     private final Object mLock = new Object();
@@ -70,7 +69,6 @@ public final class HighestRankedTracker extends ServiceTracker {
             IHighestRankedTrackerListener callback) {
         super(context, clazz, null);
         Validate.notNull(callback, "callback"); //$NON-NLS-1$
-        mContext = context;
         mClazz = clazz;
         mCallback = callback;
     }
@@ -99,7 +97,7 @@ public final class HighestRankedTracker extends ServiceTracker {
             /*
              * Use the context to get the highest ranked service reference.
              */
-            mLatest = mContext.getServiceReference(mClazz);
+            mLatest = context.getServiceReference(mClazz);
             if (!ObjectUtils.equals(mLatest, previous)) {
                 if (mLatest != null) {
                     /*
@@ -109,9 +107,12 @@ public final class HighestRankedTracker extends ServiceTracker {
                      * already done in serviceAdded) so we need to unget after
                      * we are done.
                      */
-                    Object service = mContext.getService(mLatest);
-                    mCallback.highestRankedServiceChanged(service);
-                    mContext.ungetService(mLatest);
+                    Object service = context.getService(mLatest);
+                    try {
+                        mCallback.highestRankedServiceChanged(service);
+                    } finally {
+                        context.ungetService(mLatest);
+                    }
                 } else {
                     mCallback.highestRankedServiceChanged(null);
                 }

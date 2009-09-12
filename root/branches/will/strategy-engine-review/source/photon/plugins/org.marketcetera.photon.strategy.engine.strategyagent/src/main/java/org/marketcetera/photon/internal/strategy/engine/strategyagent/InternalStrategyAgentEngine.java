@@ -1,6 +1,5 @@
 package org.marketcetera.photon.internal.strategy.engine.strategyagent;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,9 +46,6 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
             try {
                 disconnect();
             } catch (Exception e) {
-                /*
-                 * Note that getName() is not guaranteed to be visible here.
-                 */
                 Messages.INTERNAL_STRATEGY_AGENT_ENGINE_DISCONNECT_ON_LOGOUT_FAILED
                         .error(InternalStrategyAgentEngine.this, e, getName());
             }
@@ -91,7 +87,6 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
 
     @Override
     public void connect() throws Exception {
-        final ImmutableStrategyAgentEngine immutable = safeGet();
         final AtomicReference<ConnectionException> exception = new AtomicReference<ConnectionException>();
         if (!mCredentialsService
                 .authenticateWithCredentials(new IAuthenticationHelper() {
@@ -102,9 +97,8 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
                                     .create(new SAClientParameters(credentials
                                             .getUsername(), credentials
                                             .getPassword().toCharArray(),
-                                            immutable.getJmsUrl(), immutable
-                                                    .getWebServiceHostname(),
-                                            immutable.getWebServicePort()));
+                                            getJmsUrl(), getWebServiceHostname(),
+                                            getWebServicePort()));
                             return true;
                         } catch (ConnectionException e) {
                             exception.set(e);
@@ -144,7 +138,7 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
         mClient.addDataReceiver(new DataReceiver() {
             @Override
             public void receiveData(Object inObject) {
-                mSinkDataManager.sendData(immutable.getName(), inObject);
+                 mSinkDataManager.sendData(getName(), inObject);
             }
         });
 
@@ -175,16 +169,5 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
                 getDeployedStrategies().clear();
             }
         }));
-    }
-
-    private ImmutableStrategyAgentEngine safeGet() throws InterruptedException {
-        return ExceptionUtils.launderedGet(mGUIExecutor
-                .submit(new Callable<ImmutableStrategyAgentEngine>() {
-                    @Override
-                    public ImmutableStrategyAgentEngine call() {
-                        return new ImmutableStrategyAgentEngine(
-                                InternalStrategyAgentEngine.this);
-                    }
-                }));
     }
 }

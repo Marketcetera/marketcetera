@@ -22,7 +22,7 @@ public class CredentialsTest {
         new ExpectedNullArgumentFailure("username") {
             @Override
             protected void run() throws Exception {
-                new Credentials(null, null);
+                new Credentials(null, "asdf");
             }
         };
         new ExpectedNullArgumentFailure("password") {
@@ -37,6 +37,9 @@ public class CredentialsTest {
         fixture = new Credentials("abc", "xyz");
         assertThat(fixture.getUsername(), is("abc"));
         assertThat(fixture.getPassword(), is("xyz"));
+        fixture = new Credentials("", "");
+        assertThat(fixture.getUsername(), is(""));
+        assertThat(fixture.getPassword(), is(""));
     }
 
 }

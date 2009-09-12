@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -37,7 +38,8 @@ public class LogoutService implements ILogoutService {
             try {
                 doLogout();
             } catch (RuntimeException e) {
-                ExceptUtils.swallow(e, LogoutService.class, Messages.LOGOUT_SERVICE_UNHANDLED_EXCEPTION);
+                ExceptUtils.swallow(e, LogoutService.class,
+                        Messages.LOGOUT_SERVICE_UNHANDLED_EXCEPTION);
             }
             toRun = ImmutableList.copyOf(mLogoutRunnables);
             mLogoutRunnables.clear();
@@ -46,7 +48,8 @@ public class LogoutService implements ILogoutService {
             try {
                 r.run();
             } catch (RuntimeException e) {
-                ExceptUtils.swallow(e, LogoutService.class, Messages.LOGOUT_SERVICE_UNHANDLED_EXCEPTION);
+                ExceptUtils.swallow(e, LogoutService.class,
+                        Messages.LOGOUT_SERVICE_UNHANDLED_EXCEPTION);
             }
         }
     }
@@ -64,6 +67,7 @@ public class LogoutService implements ILogoutService {
 
     @Override
     public final void addLogoutRunnable(Runnable runnable) {
+        Validate.notNull(runnable, "runnable"); //$NON-NLS-1$
         synchronized (mLogoutRunnables) {
             mLogoutRunnables.add(runnable);
         }
@@ -71,6 +75,7 @@ public class LogoutService implements ILogoutService {
 
     @Override
     public final void removeLogoutRunnable(Runnable runnable) {
+        Validate.notNull(runnable, "runnable"); //$NON-NLS-1$
         synchronized (mLogoutRunnables) {
             mLogoutRunnables.remove(runnable);
         }

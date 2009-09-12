@@ -36,8 +36,10 @@ public interface IStrategyEngines {
      * 
      * @param engine
      *            the new engine
+     * @returns the new engine that was actually added, not necessarily the same
+     *          as the one passed in
      */
-    void addEngine(StrategyEngine engine);
+    StrategyEngine addEngine(StrategyEngine engine);
 
     /**
      * Removes the given engine to the managed list.

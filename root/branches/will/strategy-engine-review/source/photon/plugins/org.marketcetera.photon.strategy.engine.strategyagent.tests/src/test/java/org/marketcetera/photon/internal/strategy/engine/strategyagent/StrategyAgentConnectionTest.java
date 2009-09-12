@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -39,6 +40,7 @@ import org.marketcetera.strategy.StrategyModuleFactory;
 import org.marketcetera.util.ws.wrappers.RemoteProperties;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -118,8 +120,13 @@ public class StrategyAgentConnectionTest extends PhotonTestBase {
             props.putAll(parameters);
             properties = Util.propertiesToString(props);
         }
-        return ImmutableMap.of("RoutingOrdersToORS", (Object) routing, "Name",
-                name, "Language", language, "Parameters", properties);
+        // can't use ImmutableMap since properties may be null
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("RoutingOrdersToORS", routing);
+        map.put("Name", name);
+        map.put("Language", language);
+        map.put("Parameters", properties);
+        return map;
     }
 
     @Test
@@ -259,6 +266,11 @@ public class StrategyAgentConnectionTest extends PhotonTestBase {
                                 "invalid route")), "Parameters",
                         new RemoteProperties(
                                 new Exception("invalid parameters"))));
+        // need to mock client to return old values
+        when(mMockClient.getProperties(urn1)).thenReturn(
+                createParameters(true, "MySAStrategy", "JAVA", null));
+        when(mMockClient.getModuleInfo(urn1)).thenReturn(
+                createModuleInfo(ModuleState.CREATED));
         new ExpectedFailure<Exception>(
                 "The remote strategy agent failed to set the order routing to 'false':\n  invalid route\n"
                         + "The remote strategy agent failed to set the strategy parameters to 'xyz=123':\n  invalid parameters") {
@@ -280,6 +292,8 @@ public class StrategyAgentConnectionTest extends PhotonTestBase {
         strategy.setScriptPath("C:\\MyStrat.java");
         strategy.getParameters().put("key", "value");
         // program mock
+        when(mMockClient.getInstances(StrategyModuleFactory.PROVIDER_URN))
+                .thenReturn(Arrays.asList(urn1));
         when(mMockClient.getProperties(urn1)).thenReturn(
                 createParameters(false, "MySAStrategy2", "RUBY", ImmutableMap
                         .of("xyz", "123")));
@@ -290,6 +304,19 @@ public class StrategyAgentConnectionTest extends PhotonTestBase {
         assertDeployedStrategy(strategy, urn1, null, StrategyState.RUNNING,
                 "strat1", "MySAStrategy2", "RUBY", "C:\\MyStrat.java", false,
                 ImmutableMap.of("xyz", "123"));
+    }
+
+    @Test
+    public void testRefreshSingleStrategyThatNoLongerExists() throws Exception {
+        ModuleURN urn1 = new ModuleURN("metc:strategy:system:strat1");
+        DeployedStrategy deployed = createDeployedStrategy("DifferentName");
+        deployed.setUrn(urn1);
+        mFixture.getEngine().getDeployedStrategies().add(deployed);
+        when(mMockClient.getInstances(StrategyModuleFactory.PROVIDER_URN))
+                .thenReturn(Collections.<ModuleURN> emptyList());
+        mFixture.refresh(deployed);
+        // should be removed
+        assertThat(mFixture.getEngine().getDeployedStrategies().size(), is(0));
     }
 
     @Test
@@ -338,7 +365,7 @@ public class StrategyAgentConnectionTest extends PhotonTestBase {
             }
         }
     }
-    
+
     @Test
     public void testScriptPathURLResolves() throws Exception {
         ModuleURN urn1 = new ModuleURN("metc:strategy:system:strat1");
@@ -365,7 +392,5 @@ public class StrategyAgentConnectionTest extends PhotonTestBase {
                                 "Resolved strategy scriptPath ''{0}'' as a URL to file ''{1}''.",
                                 url, actualPath), null);
     }
-
-    
 
 }

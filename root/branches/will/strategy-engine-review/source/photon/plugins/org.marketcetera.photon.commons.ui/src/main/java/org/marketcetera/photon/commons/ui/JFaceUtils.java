@@ -4,7 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.IShellProvider;
@@ -63,8 +66,8 @@ public final class JFaceUtils {
      * <li>The operation was canceled - failureMessage will be logged at the
      * info level and this method will return false.</li>
      * <li>The operation threw an exception - failureMessage will be logged at
-     * the error level, a MessageDialog will be presented to the user with the
-     * details of the failure, and this method will return false.</li>
+     * the error level, a dialog will be presented to the user with the details
+     * of the failure, and this method will return false.</li>
      * </ol>
      * 
      * @param context
@@ -97,13 +100,12 @@ public final class JFaceUtils {
                     context.run(true, cancelable, operation);
                     return true;
                 } catch (InterruptedException e) {
-                    // The runnable responded to cancellation. This should only
-                    // happen
-                    // if cancelable is true. Since the exception occurred on a
-                    // separate
-                    // thread where task was forked, there is no need to do
-                    // anything
-                    // here.
+                    /*
+                     * The runnable responded to cancellation. This should only
+                     * happen if cancelable is true. Since the exception
+                     * occurred on a separate thread where task was forked,
+                     * there is no need to do anything here.
+                     */
                     failureMessage.info(JFaceUtils.class, e);
                     return false;
                 } catch (InvocationTargetException e) {
@@ -125,8 +127,8 @@ public final class JFaceUtils {
      * <ol>
      * <li>The operation is successful - this method will return true.</li>
      * <li>The operation threw an exception - failureMessage will be logged at
-     * the error level, a MessageDialog will be presented to the user with the
-     * details of the failure, and this method will return false.</li>
+     * the error level, a dialog will be presented to the user with the details
+     * of the failure, and this method will return false.</li>
      * </ol>
      * 
      * @param shellProvider
@@ -148,14 +150,31 @@ public final class JFaceUtils {
             return operation.call();
         } catch (Exception e) {
             failureMessage.error(JFaceUtils.class, e);
-            String message = e.getLocalizedMessage();
-            if (message == null) {
-                message = Messages.JFACE_UTILS_GENERIC_EXCEPTION_OCCURRED
-                        .getText();
+            MultiStatus details = new MultiStatus(CommonsUI.PLUGIN_ID,
+                    IStatus.ERROR,
+                    Messages.JFACE_UTILS_SEE_DETAILS.getText(),
+                    null);
+            Throwable current = e;
+            while (current != null) {
+                String message = current.getLocalizedMessage();
+                if (message != null) {
+                    details.add(new Status(Status.ERROR, CommonsUI.PLUGIN_ID,
+                            message));
+                }
+                current = current.getCause();
             }
-            MessageDialog.openError(shellProvider.getShell(),
+            IStatus status;
+            if (details.getChildren().length == 0) {
+                status = new Status(Status.ERROR, CommonsUI.PLUGIN_ID,
+                        Messages.JFACE_UTILS_SEE_LOG.getText());
+            } else if (details.getChildren().length == 1) {
+                status = details.getChildren()[0];
+            } else {
+                status = details;
+            }
+            ErrorDialog.openError(shellProvider.getShell(),
                     Messages.JFACE_UTILS_OPERATION_FAILED__DIALOG_TITLE
-                            .getText(), message);
+                            .getText(), null, status);
             return false;
         }
     }

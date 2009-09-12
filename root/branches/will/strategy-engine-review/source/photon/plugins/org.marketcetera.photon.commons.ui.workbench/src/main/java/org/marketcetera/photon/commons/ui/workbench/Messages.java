@@ -18,6 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
 final class Messages {
 
     static I18NMessage0P FILTER_BOX_CLEAR_BUTTON_TOOLTIP;
+    static I18NMessage0P SAFE_HANDLER_UNCHECKED_EXCEPTION;
 
     static {
         ReflectiveMessages.init(Messages.class);

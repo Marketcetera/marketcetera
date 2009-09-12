@@ -18,8 +18,6 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFact
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineConnectionImpl;
 
-import com.google.common.collect.Lists;
-
 /* $License$ */
 
 /**
@@ -118,34 +116,27 @@ public class StrategyEngineCoreTestUtil {
         assertStrategy(deployed, instanceName, className, language, scriptPath, route, parameters);
         assertThat(deployed.getEngine(), sameInstance(engine));
         assertThat(deployed.getState(), is(state));
+        assertThat(deployed.getUrn(), is(urn));
     }
 
     public static class MockConnection extends StrategyEngineConnectionImpl {
 
-        private final List<Strategy> mDeployed = Lists.newArrayList();
-
-        public List<Strategy> getDeployed() {
-            return mDeployed;
-        }
-
         @Override
         public DeployedStrategy deploy(Strategy strategy) throws Exception {
-            mDeployed.add(strategy);
             DeployedStrategy result = createDeployedStrategy(strategy.getInstanceName());
-            result.setScriptPath(strategy.getScriptPath());
-            result.setClassName(strategy.getClassName());
-            result.setLanguage(strategy.getLanguage());
-            result.setRouteOrdersToServer(strategy.isRouteOrdersToServer());
+            update(result, strategy);
             getEngine().getDeployedStrategies().add(result);
             return result;
         }
 
         @Override
         public void start(DeployedStrategy strategy) throws Exception {
+            strategy.setState(StrategyState.RUNNING);
         }
 
         @Override
         public void stop(DeployedStrategy strategy) throws Exception {
+            strategy.setState(StrategyState.STOPPED);
         }
 
         @Override
@@ -156,7 +147,12 @@ public class StrategyEngineCoreTestUtil {
         @Override
         public void update(DeployedStrategy strategy, Strategy newConfiguration)
                 throws Exception {
-            
+            strategy.setScriptPath(newConfiguration.getScriptPath());
+            strategy.setClassName(newConfiguration.getClassName());
+            strategy.setLanguage(newConfiguration.getLanguage());
+            strategy.setRouteOrdersToServer(newConfiguration.isRouteOrdersToServer());
+            strategy.getParameters().clear();
+            strategy.getParameters().addAll(newConfiguration.getParameters());
         }
         
         @Override

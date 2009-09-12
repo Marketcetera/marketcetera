@@ -17,6 +17,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,7 +111,7 @@ public class JFaceUtilsTest extends PhotonTestBase {
     @Test
     public void testRunModalErrorNoMessage() {
         testRunModalErrorHelper(new Exception(),
-                "A Java exception occurred during the operation.  See the log for details.");
+                "An exception occurred during the operation.  See the log for details.");
     }
 
     private void testRunModalErrorHelper(Exception exception, String text) {
@@ -154,17 +155,32 @@ public class JFaceUtilsTest extends PhotonTestBase {
     @Test
     public void testRunWithErrorDialogError() {
         testRunWithErrorDialogErrorHelper(new Exception("Exception Text"),
-                "Exception Text");
+                "Exception Text", null);
     }
 
     @Test
     public void testRunWithErrorDialogErrorNoMessage() {
         testRunWithErrorDialogErrorHelper(new Exception(),
-                "A Java exception occurred during the operation.  See the log for details.");
+                "An exception occurred during the operation.  See the log for details.", null);
+    }
+
+    @Test
+    public void testRunWithErrorDialogExceptionChain() {
+        Exception exception = new Exception("ABC", new Exception("XYZ"));
+        testRunWithErrorDialogErrorHelper(exception,
+                "An exception occurred during the operation.  See details for more information.", new String[] {"ABC", "XYZ"});
+    }
+
+    @Test
+    public void testRunWithErrorDialogRootCause() {
+        Exception exception = new Exception();
+        exception.initCause(new Exception("XYZ", new Exception("ABC")));
+        testRunWithErrorDialogErrorHelper(exception,
+                "An exception occurred during the operation.  See details for more information.", new String[] {"XYZ", "ABC"});
     }
 
     private void testRunWithErrorDialogErrorHelper(final Exception exception,
-            String text) {
+            String text, String[] details) {
         final AtomicBoolean result = new AtomicBoolean(true);
         final I18NBoundMessage failureMessage = mock(I18NBoundMessage.class);
         mShell.getDisplay().asyncExec(new Runnable() {
@@ -182,6 +198,12 @@ public class JFaceUtilsTest extends PhotonTestBase {
         SWTBot bot = new SWTBot();
         bot.shell("Operation Failed");
         bot.label(text);
+        if (details != null) {
+            bot.button("Details >>").click();
+            SWTBotList list = bot.list();
+            assertThat(list.getItems(), is(details));
+            
+        }
         bot.button("OK").click();
         assertThat(result.get(), is(false));
     }

@@ -4,9 +4,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.photon.test.OSGITestUtil.getTestBundleContext;
 import static org.marketcetera.photon.test.OSGITestUtil.registerMockService;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,27 +67,65 @@ public class HighestRankedTrackerTest {
 
         // context returns service1
         mFixture.addingService(null);
-        verify(mMockCallback, times(1)).highestRankedServiceChanged(service1);
-
+        verify(mMockCallback).highestRankedServiceChanged(service1);
+        reset(mMockCallback);
+        
         // context returns service2
         mFixture.removedService(null, null);
-        verify(mMockCallback, times(1)).highestRankedServiceChanged(service2);
-
+        verify(mMockCallback).highestRankedServiceChanged(service2);
+        reset(mMockCallback);
+        
         // context returns service1
         mFixture.modifiedService(null, null);
-        verify(mMockCallback, times(2)).highestRankedServiceChanged(service1);
-
+        verify(mMockCallback).highestRankedServiceChanged(service1);
+        reset(mMockCallback);
+        
+        
         // context returns null
         mFixture.addingService(null);
-        verify(mMockCallback, times(1)).highestRankedServiceChanged(null);
-
+        verify(mMockCallback).highestRankedServiceChanged(null);
+        reset(mMockCallback);
+        
         // context returns service3
         mFixture.addingService(null);
-        verify(mMockCallback, times(1)).highestRankedServiceChanged(service3);
-
+        verify(mMockCallback).highestRankedServiceChanged(service3);
+        reset(mMockCallback);
+        
         // context returns service3 again (no change)
         mFixture.addingService(null);
-        verify(mMockCallback, times(1)).highestRankedServiceChanged(service3);
+        verify(mMockCallback, never()).highestRankedServiceChanged(service3);
+    }
+    
+    @Test
+    public void testUngetService() throws Exception {
+        mFixture = new HighestRankedTracker(mMockContext, "Bogus",
+                mMockCallback);
+        Object service1 = "service1";
+        ServiceReference mockReference1 = mock(ServiceReference.class);
+        when(mMockContext.getServiceReference("Bogus")).thenReturn(
+                mockReference1);
+        when(mMockContext.getService(mockReference1)).thenReturn(service1);
+        mFixture.addingService(null);
+        verify(mMockContext).ungetService(mockReference1);
+    }
+    
+    @Test
+    public void testUngetServiceWhenExceptionThrown() throws Exception {
+        mFixture = new HighestRankedTracker(mMockContext, "Bogus",
+                mMockCallback);
+        Object service1 = "service1";
+        ServiceReference mockReference1 = mock(ServiceReference.class);
+        when(mMockContext.getServiceReference("Bogus")).thenReturn(
+                mockReference1);
+        when(mMockContext.getService(mockReference1)).thenReturn(service1);
+        doThrow(new RuntimeException()).when(mMockCallback).highestRankedServiceChanged(anyObject());
+        new ExpectedFailure<RuntimeException>(null) {
+            @Override
+            protected void run() throws Exception {
+                mFixture.addingService(null);
+            }
+        };
+        verify(mMockContext).ungetService(mockReference1);
     }
 
     @Test
@@ -103,21 +143,25 @@ public class HighestRankedTrackerTest {
         mFixture.open();
 
         verify(mMockCallback).highestRankedServiceChanged(service1);
+        reset(mMockCallback);
 
         ServiceRegistration registration2 = registerMockService(String.class,
                 service2, 15);
 
         verify(mMockCallback).highestRankedServiceChanged(service2);
+        reset(mMockCallback);
 
         ServiceRegistration registration3 = registerMockService(String.class,
                 service3, 10);
 
         verify(mMockCallback, never()).highestRankedServiceChanged(service3);
+        reset(mMockCallback);        
 
         registration2.unregister();
 
-        verify(mMockCallback, times(2)).highestRankedServiceChanged(service1);
-
+        verify(mMockCallback).highestRankedServiceChanged(service1);
+        reset(mMockCallback);
+        
         registration3.setProperties(new Hashtable<String, Integer>(ImmutableMap
                 .of(Constants.SERVICE_RANKING, 20)));
 

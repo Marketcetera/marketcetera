@@ -19,6 +19,7 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFact
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
 import org.marketcetera.photon.test.AbstractUIRunner;
 import org.marketcetera.photon.test.PhotonTestBase;
+import org.marketcetera.photon.test.SWTTestUtil;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
@@ -29,7 +30,8 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * Tests {@link StrategyEngineIdentificationComposite}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: StrategyEngineIdentificationCompositeTest.java 10713 2009-08-30
+ *          09:08:28Z tlerios $
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
@@ -95,15 +97,8 @@ public class StrategyEngineIdentificationCompositeTest extends PhotonTestBase {
         mStrategyEngine.setName("Engine");
         mStrategyEngine.setDescription("An engine");
         createAndOpenWindow();
-        testReadOnlyText("Name", "Engine");
-        testReadOnlyText("Description", "An engine");
-    }
-
-    private void testReadOnlyText(String label, String value) {
-        SWTBotText text = mBot.textWithLabel(label + ":");
-        assertThat(text.getText(), is(value));
-        text.typeText("abc");
-        assertThat(text.getText(), is(value));
-        assertThat(text.isEnabled(), is(true));
+        SWTTestUtil.testReadOnlyText(mBot.textWithLabel("Name:"), "Engine");
+        SWTTestUtil.testReadOnlyText(mBot.textWithLabel("Description:"),
+                "An engine");
     }
 }

@@ -6,7 +6,7 @@
     modelPluginID="org.marketcetera.photon.strategy.engine.strategyagent" templateDirectory="/org.marketcetera.photon.commons/templates"
     dynamicTemplates="true" modelName="StrategyAgentEngineModel" codeFormatting="true"
     importerID="org.eclipse.emf.importer.ecore" complianceLevel="6.0" copyrightFields="false"
-    usedGenPackages="../../org.marketcetera.photon.strategy.engine/model/strategy-engine-core.genmodel#//core">
+    publicConstructors="true" usedGenPackages="../../org.marketcetera.photon.strategy.engine/model/strategy-engine-core.genmodel#//core">
   <foreignModel>strategy-agent-engine.ecore</foreignModel>
   <genPackages prefix="StrategyAgentEngine" basePackage="org.marketcetera.photon.strategy.engine.model"
       disposableProviderFactory="true" generateExampleClass="false" fileExtensions="xml"

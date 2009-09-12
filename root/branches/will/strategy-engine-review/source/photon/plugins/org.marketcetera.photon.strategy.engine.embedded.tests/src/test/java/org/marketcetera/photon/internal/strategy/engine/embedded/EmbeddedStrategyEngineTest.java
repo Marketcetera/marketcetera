@@ -25,5 +25,6 @@ public class EmbeddedStrategyEngineTest  extends PhotonTestBase {
         assertThat(fixture.getConnectionState(), is(ConnectionState.CONNECTED));
         assertThat(fixture.getName(), is("Embedded Engine"));
         assertThat(fixture.getDescription(), is("The embedded strategy engine"));
+        assertThat(fixture.isReadOnly(), is(true));
     }
 }
