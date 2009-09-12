@@ -55,7 +55,7 @@ public class StrategyAgentEngineImpl extends StrategyEngineImpl implements
      * @generated
      * @ordered
      */
-    protected String jmsUrl = JMS_URL_EDEFAULT;
+    protected volatile String jmsUrl = JMS_URL_EDEFAULT;
 
     /**
      * The default value of the '{@link #getWebServiceHostname() <em>Web Service Hostname</em>}' attribute.
@@ -75,7 +75,7 @@ public class StrategyAgentEngineImpl extends StrategyEngineImpl implements
      * @generated
      * @ordered
      */
-    protected String webServiceHostname = WEB_SERVICE_HOSTNAME_EDEFAULT;
+    protected volatile String webServiceHostname = WEB_SERVICE_HOSTNAME_EDEFAULT;
 
     /**
      * The default value of the '{@link #getWebServicePort() <em>Web Service Port</em>}' attribute.
@@ -95,14 +95,14 @@ public class StrategyAgentEngineImpl extends StrategyEngineImpl implements
      * @generated
      * @ordered
      */
-    protected Integer webServicePort = WEB_SERVICE_PORT_EDEFAULT;
+    protected volatile Integer webServicePort = WEB_SERVICE_PORT_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    protected StrategyAgentEngineImpl() {
+    public StrategyAgentEngineImpl() {
         super();
     }
 

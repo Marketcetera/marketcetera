@@ -10,7 +10,6 @@ import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEn
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -32,11 +31,14 @@ import org.marketcetera.module.InvalidURNException;
 import org.marketcetera.module.MXBeanOperationException;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleNotFoundException;
 import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.SinkModuleFactory;
 import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
 import org.marketcetera.photon.module.ModuleSupport;
+import org.marketcetera.photon.strategy.engine.AbstractStrategyEngineConnection;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
@@ -49,6 +51,7 @@ import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.strategy.StrategyMXBean;
 import org.marketcetera.strategy.StrategyModuleFactory;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.file.CopyCharsUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -85,13 +88,10 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
                 new ImmediateExecutorService(), mPersistenceService);
         mFixture.initialize();
         mTempScript = File.createTempFile("my_strategy", "rb");
-        FileWriter writer = new FileWriter(mTempScript);
-        try {
-            writer
-                    .write("include_class \"org.marketcetera.strategy.ruby.Strategy\"\nclass MyStrategy < Strategy\n\nend");
-        } finally {
-            writer.close();
-        }
+        CopyCharsUtils
+                .copy(
+                        "include_class \"org.marketcetera.strategy.ruby.Strategy\"\nclass MyStrategy < Strategy\nend"
+                                .toCharArray(), mTempScript.getAbsolutePath());
         mTestConfiguration = createTestStrategy();
     }
 
@@ -110,9 +110,15 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
     public void after() throws Exception {
         mTempScript.delete();
         try {
-            mModuleManager.deleteModule(mTestInstanceURN);
+            mModuleManager.stop(mTestInstanceURN);
         } catch (Exception e) {
             // ignore
+        } finally {
+            try {
+                mModuleManager.deleteModule(mTestInstanceURN);
+            } catch (Exception e) {
+                // ignore
+            }
         }
     }
 
@@ -149,7 +155,7 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
                 mFixture.deploy(strategy);
             }
         };
-        strategy.setScriptPath("C:\\1234dslsdaksdf\\strategy.java");
+        strategy.setScriptPath("1234dslsdaksdf/strategy.java");
         new ExpectedFailure<I18NException>(
                 "The strategy class name was not specified.") {
             @Override
@@ -183,7 +189,19 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
         };
         strategy.setLanguage("JAVA");
         new ExpectedFailure<I18NException>(
-                "The file specified as the strategy source, \"C:\\1234dslsdaksdf\\strategy.java\", must exist and must be readable.") {
+                "The file specified as the strategy source, \""
+                        + new File("1234dslsdaksdf/strategy.java").getAbsolutePath()
+                        + "\", must exist and must be readable.") {
+            @Override
+            protected void run() throws Exception {
+                mFixture.deploy(strategy);
+            }
+        };
+        strategy.setScriptPath("http://www.google.com");
+        new ExpectedFailure<I18NException>(
+                "The file specified as the strategy source, \""
+                        + new File("http://www.google.com").getAbsolutePath()
+                        + "\", must exist and must be readable.") {
             @Override
             protected void run() throws Exception {
                 mFixture.deploy(strategy);
@@ -215,6 +233,12 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
             @Override
             protected void run() throws Exception {
                 mFixture.undeploy(null);
+            }
+        };
+        new ExpectedNullArgumentFailure("deployedStrategy") {
+            @Override
+            protected void run() throws Exception {
+                mFixture.refresh(null);
             }
         };
         final DeployedStrategy strategy = StrategyEngineCoreFactory.eINSTANCE
@@ -312,8 +336,8 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
                 MessageFormat
                         .format(
                                 "Resolved strategy scriptPath ''{0}'' as a URL to file ''{1}''.",
-                                url, actualPath), EmbeddedConnection.class
-                        .getName());
+                                url, actualPath),
+                AbstractStrategyEngineConnection.class.getName());
     }
 
     @Test
@@ -324,6 +348,21 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
         assertDeployedStrategy(deployed, mTestInstanceURN,
                 mFixture.getEngine(), StrategyState.STOPPED, "strat1",
                 "TestStrat", "JAVA", "abc", true, ImmutableMap.of("xyz", "123"));
+        assertThat(mPersistenceService.getPersisted().size(), is(1));
+        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
+                "TestStrat", "JAVA", "abc", true, ImmutableMap
+                        .of("xyz", "123"));
+    }
+
+    @Test
+    public void testRefreshSingleStrategyThatNoLongerExists() throws Exception {
+        DeployedStrategy deployed = createDeployedStrategy("DifferentName");
+        deployed.setUrn(mTestInstanceURN);
+        mFixture.getEngine().getDeployedStrategies().add(deployed);
+        mFixture.refresh(deployed);
+        // should be removed
+        assertThat(mFixture.getEngine().getDeployedStrategies().size(), is(0));
+        assertThat(mPersistenceService.getPersisted().size(), is(0));
     }
 
     @Test
@@ -354,6 +393,87 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
             }
         }
         mModuleManager.deleteModule(frameworkNotUI);
+        assertThat(mPersistenceService.getPersisted().size(), is(2));
+        for (Strategy strategy : mPersistenceService.getPersisted()) {
+            if (strategy.getInstanceName().equals("strat1")) {
+                assertStrategy(strategy, "strat1",
+                        "TestStrat", "JAVA", "abc", true, ImmutableMap.of(
+                                "xyz", "123"));
+            } else {
+                assertStrategy(strategy, "strat2",
+                        "TestStrat2", "JAVA", null, true, null);
+            }
+        }
+    }
+
+    @Test
+    public void testDeployWithProperties() throws Exception {
+        mTestConfiguration.getParameters().put("param", "value");
+        DeployedStrategy deployed = mFixture.deploy(mTestConfiguration);
+        assertModule(mTestInstanceURN, ModuleState.CREATED, true, ImmutableMap
+                .of("param", "value"));
+        assertDeployedStrategy(deployed, mTestInstanceURN,
+                mFixture.getEngine(), StrategyState.STOPPED, "strat1",
+                "MyStrategy", "RUBY", mTempScript.getPath(), true, ImmutableMap
+                        .of("param", "value"));
+        assertThat(mPersistenceService.getPersisted().size(), is(1));
+        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
+                "MyStrategy", "RUBY", mTempScript.getPath(), true, ImmutableMap
+                        .of("param", "value"));
+    }
+
+    @Test
+    public void testStartingStartedModule() throws Exception {
+        final DeployedStrategy deployed = deployAndStart(createTestStrategy(),
+                mTestInstanceURN);
+        new ExpectedFailure<ModuleStateException>(
+                "Unable to start module 'metc:strategy:system:strat1' as it is in state 'STARTED'. A module can be started when it is in one of '[CREATED, START_FAILED, STOPPED]' states. Ensure that module 'metc:strategy:system:strat1' is in one of '[CREATED, START_FAILED, STOPPED]' states and retry operation.") {
+            @Override
+            protected void run() throws Exception {
+                mFixture.start(deployed);
+            }
+        };
+    }
+
+    @Test
+    public void testStoppingStoppedModule() throws Exception {
+        final DeployedStrategy deployed = deploy(createTestStrategy(),
+                mTestInstanceURN);
+        new ExpectedFailure<ModuleStateException>(
+                "Unable to stop Module 'metc:strategy:system:strat1' as it is in state 'CREATED'. A module can be stopped if it is in one of '[STARTED, STOP_FAILED]' states. Ensure that the module is in one of '[STARTED, STOP_FAILED]' states and retry operation. ") {
+            @Override
+            protected void run() throws Exception {
+                mFixture.stop(deployed);
+            }
+        };
+    }
+
+    @Test
+    public void testUndeployDeletedModule() throws Exception {
+        final DeployedStrategy deployed = deploy(createTestStrategy(),
+                mTestInstanceURN);
+        undeploy(deployed);
+        new ExpectedFailure<ModuleNotFoundException>(
+                "Unable to find a module with URN 'metc:strategy:system:strat1'. Ensure that the module URN is correct and retry operation") {
+            @Override
+            protected void run() throws Exception {
+                mFixture.undeploy(deployed);
+            }
+        };
+    }
+
+    @Test
+    public void testUpdateRunningModule() throws Exception {
+        final DeployedStrategy deployed = deploy(createTestStrategy(),
+                mTestInstanceURN);
+        undeploy(deployed);
+        new ExpectedFailure<ModuleNotFoundException>(
+                "Unable to find a module with URN 'metc:strategy:system:strat1'. Ensure that the module URN is correct and retry operation") {
+            @Override
+            protected void run() throws Exception {
+                mFixture.undeploy(deployed);
+            }
+        };
     }
 
     private DeployedStrategy refreshHelper() throws ModuleException {

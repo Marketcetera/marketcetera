@@ -9,7 +9,9 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Interface for objects that can save and restore {@link EObject EObjects}.
+ * Interface for objects that can save and restore {@link EObject EObjects}. The
+ * methods {@link #save(List)} and {@link #restore()} can be called multiple
+ * times, but every save overwrites any existing saved state.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -19,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
 public interface IEMFPersistence {
 
     /**
-     * Restores EObjects saved by {@link #save(List)}.
+     * Restores EObjects last saved by {@link #save(List)}.
      * 
      * @return the saved EObjects
      * @throws IOException
@@ -29,7 +31,7 @@ public interface IEMFPersistence {
 
     /**
      * Saves the provided EObjects in a way that can later be restored using
-     * {@link #restore()}.
+     * {@link #restore()}. This will overwrite any previously saved state.
      * 
      * @param objects
      *            the EObjects to save

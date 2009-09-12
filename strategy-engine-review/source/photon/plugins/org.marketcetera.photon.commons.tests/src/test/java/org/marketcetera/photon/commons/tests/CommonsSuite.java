@@ -6,6 +6,7 @@ import org.marketcetera.photon.commons.ComposedContainerClassInfoTest;
 import org.marketcetera.photon.commons.ExceptionUtilsTest;
 import org.marketcetera.photon.commons.ReflectiveMessagesTest;
 import org.marketcetera.photon.commons.SimpleExecutorServiceTest;
+import org.marketcetera.photon.commons.SynchronizedProxyTest;
 import org.marketcetera.photon.commons.ValidateTest;
 import org.marketcetera.photon.commons.emf.EMFFilePersistenceTest;
 import org.marketcetera.photon.commons.osgi.HighestRankedTrackerTest;
@@ -24,8 +25,7 @@ import org.marketcetera.photon.commons.osgi.HighestRankedTrackerTest;
         ExceptionUtilsTest.class,
         org.marketcetera.photon.commons.MessagesTest.class,
         SimpleExecutorServiceTest.class, ComposedContainerClassInfoTest.class,
-        EMFFilePersistenceTest.class,
-        org.marketcetera.photon.commons.emf.MessagesTest.class,
-        HighestRankedTrackerTest.class })
+        EMFFilePersistenceTest.class, HighestRankedTrackerTest.class,
+        SynchronizedProxyTest.class })
 public final class CommonsSuite {
 }

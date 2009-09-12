@@ -32,6 +32,8 @@ public interface IPersistenceService {
     /**
      * Saves the provided strategies in a way that can later be restored using
      * {@link #restore(StrategyEngineConnection)}.
+     * <p>
+     * This is a no-op if a restore is currently in progress.
      * 
      * @param strategies
      *            the strategies to save

@@ -87,12 +87,12 @@ public final class PersistenceService implements IPersistenceService {
 
     @Override
     public synchronized void save(List<? extends Strategy> strategies) throws IOException {
+        Validate.noNullElements(strategies, "strategies"); //$NON-NLS-1$
         ImmutableList<? extends Strategy> copy = ImmutableList
                 .copyOf(strategies);
-        Validate.noNullElements(copy, "strategies"); //$NON-NLS-1$
         if (mLoading) {
             return;
         }
-        mEMFPersistence.save(ImmutableList.copyOf(strategies));
+        mEMFPersistence.save(copy);
     }
 }

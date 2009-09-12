@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.marketcetera.photon.commons.Validate;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.ImmutableList;
@@ -44,13 +45,13 @@ public class EMFFilePersistence implements IEMFPersistence {
      */
     public EMFFilePersistence(File file) {
         Validate.notNull(file, "file"); //$NON-NLS-1$
-        mResource = new XMIResourceImpl(URI.createFileURI(file.toString()));
+        mResource = new XMIResourceImpl(URI.createFileURI(file.getPath()));
     }
 
     @Override
     public void save(List<? extends EObject> objects) throws IOException {
+        Validate.noNullElements(objects, "objects"); //$NON-NLS-1$
         ImmutableList<EObject> copy = ImmutableList.copyOf(objects);
-        Validate.noNullElements(copy, "objects"); //$NON-NLS-1$
         synchronized (mResource) {
             mResource.getContents().clear();
             for (EObject object : copy) {
@@ -67,7 +68,7 @@ public class EMFFilePersistence implements IEMFPersistence {
             // make a copy and debug log the contents
             List<EObject> list = Lists.newArrayList();
             for (EObject object : mResource.getContents()) {
-                Messages.EMF_FILE_PERSISTENCE_OBJECT_DESERIALIZED.debug(this,
+                SLF4JLoggerProxy.debug(this, "Deserialized object: {}.", //$NON-NLS-1$
                         object);
                 list.add(object);
             }

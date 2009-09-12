@@ -1,14 +1,19 @@
 package org.marketcetera.photon.core;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.apache.log4j.Level;
 import org.junit.Test;
+import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
 import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.util.except.ExceptUtils;
+import org.mockito.InOrder;
 
 /* $License$ */
 
@@ -23,32 +28,34 @@ public class LogoutServiceTest extends PhotonTestBase {
 
     @Test
     public void testLogout() {
-        LogoutService fixture = new LogoutService();
-        TrackingRunnable runnable1 = new TrackingRunnable();
-        TrackingRunnable runnable2 = new TrackingRunnable();
+        ILogoutService fixture = new LogoutService();
+        Runnable runnable1 = mock(Runnable.class);
+        Runnable runnable2 = mock(Runnable.class);
         fixture.addLogoutRunnable(runnable1);
         fixture.addLogoutRunnable(runnable2);
         fixture.logout();
-        assertThat(runnable1.getCalled(), is(1));
-        assertThat(runnable2.getCalled(), is(1));
+        verify(runnable1).run();
+        verify(runnable2).run();
+        reset(runnable1, runnable2);
         fixture.logout();
         // should not be called again
-        assertThat(runnable1.getCalled(), is(1));
-        assertThat(runnable2.getCalled(), is(1));
+        verify(runnable1, never()).run();
+        verify(runnable2, never()).run();
     }
 
     @Test
     public void testRunnableExceptionIgnored() {
         setLevel(LogoutService.class.getName(), Level.WARN);
-        LogoutService fixture = new LogoutService();
-        TrackingRunnable runnable1 = new ThrowingRunnable();
-        TrackingRunnable runnable2 = new TrackingRunnable();
+        ILogoutService fixture = new LogoutService();
+        Runnable runnable1 = mock(Runnable.class);
+        doThrow(new RuntimeException()).when(runnable1).run();
+        Runnable runnable2 = mock(Runnable.class);
         fixture.addLogoutRunnable(runnable1);
         fixture.addLogoutRunnable(runnable2);
         fixture.logout();
-        assertThat(runnable1.getCalled(), is(1));
+        verify(runnable1).run();
         // runnable2 still called
-        assertThat(runnable2.getCalled(), is(1));
+        verify(runnable2).run();
         assertSingleEvent(Level.WARN, LogoutService.class.getName(),
                 "Unhandled runtime exception caught in LogoutService.",
                 ExceptUtils.class.getName());
@@ -56,68 +63,96 @@ public class LogoutServiceTest extends PhotonTestBase {
 
     @Test
     public void testSubclassInvoked() {
-        final TrackingRunnable doLogoutTracker = new ThrowingRunnable();
-        LogoutService fixture = new LogoutService() {
+        final Runnable doLogoutTracker = mock(Runnable.class);
+        doThrow(new RuntimeException()).when(doLogoutTracker).run();
+        ILogoutService fixture = new LogoutService() {
             @Override
             protected void doLogout() {
                 doLogoutTracker.run();
             }
         };
         fixture.logout();
-        assertThat(doLogoutTracker.getCalled(), is(1));
         fixture.logout();
-        // called again
-        assertThat(doLogoutTracker.getCalled(), is(2));
+        verify(doLogoutTracker, times(2)).run();
     }
 
     @Test
     public void testSubclassExceptionIgnored() {
         setLevel(LogoutService.class.getName(), Level.WARN);
-        final TrackingRunnable doLogoutTracker = new ThrowingRunnable();
-        LogoutService fixture = new LogoutService() {
+        final Runnable doLogoutTracker = mock(Runnable.class);
+        doThrow(new RuntimeException()).when(doLogoutTracker).run();
+        ILogoutService fixture = new LogoutService() {
             @Override
             protected void doLogout() {
                 doLogoutTracker.run();
             }
         };
-        TrackingRunnable runnable1 = new TrackingRunnable();
-        TrackingRunnable runnable2 = new TrackingRunnable();
+        Runnable runnable1 = mock(Runnable.class);
+        Runnable runnable2 = mock(Runnable.class);
         fixture.addLogoutRunnable(runnable1);
         fixture.addLogoutRunnable(runnable2);
         fixture.logout();
-        assertThat(doLogoutTracker.getCalled(), is(1));
-        assertThat(runnable1.getCalled(), is(1));
-        assertThat(runnable2.getCalled(), is(1));
         assertSingleEvent(Level.WARN, LogoutService.class.getName(),
                 "Unhandled runtime exception caught in LogoutService.",
                 ExceptUtils.class.getName());
+        // verify runnable1 is 
+        InOrder inOrder = inOrder(doLogoutTracker, runnable1, runnable2);
+        inOrder.verify(doLogoutTracker).run();
+        inOrder.verify(runnable1).run();
+        verify(runnable2).run();
         fixture.logout();
-        assertThat(runnable1.getCalled(), is(1));
-        assertThat(runnable2.getCalled(), is(1));
-        assertThat(doLogoutTracker.getCalled(), is(2));
-        assertLastEvent(Level.WARN, LogoutService.class.getName(),
+        assertSingleEvent(Level.WARN, LogoutService.class.getName(),
                 "Unhandled runtime exception caught in LogoutService.",
                 ExceptUtils.class.getName());
+        // doLogoutTracker called a second time, but the other runnables still
+        // only one invocation since they should have been removed
+        verify(doLogoutTracker, times(2)).run();
+        verify(runnable1).run();
+        verify(runnable2).run();
     }
 
-    private class TrackingRunnable implements Runnable {
-        AtomicInteger mCalled = new AtomicInteger();
-
-        @Override
-        public void run() {
-            mCalled.incrementAndGet();
-        }
-
-        int getCalled() {
-            return mCalled.get();
-        }
+    @Test
+    public void testDoLogoutCalledBeforeRunnable() {
+        setLevel(LogoutService.class.getName(), Level.WARN);
+        final Runnable doLogoutTracker = mock(Runnable.class);
+        ILogoutService fixture = new LogoutService() {
+            @Override
+            protected void doLogout() {
+                doLogoutTracker.run();
+            }
+        };
+        Runnable runnable1 = mock(Runnable.class);
+        fixture.addLogoutRunnable(runnable1);
+        fixture.logout(); 
+        InOrder inOrder = inOrder(doLogoutTracker, runnable1);
+        inOrder.verify(doLogoutTracker).run();
+        inOrder.verify(runnable1).run();
     }
-
-    private class ThrowingRunnable extends TrackingRunnable {
-        @Override
-        public void run() {
-            super.run();
-            throw new RuntimeException();
-        }
+    
+    @Test
+    public void testRemove() {
+        ILogoutService fixture = new LogoutService();
+        Runnable runnable1 = mock(Runnable.class);
+        fixture.addLogoutRunnable(runnable1);
+        fixture.removeLogoutRunnable(runnable1);
+        fixture.logout();
+        verify(runnable1, never()).run();
+    }
+    
+    @Test
+    public void testNullRunnables() throws Exception {
+        final ILogoutService fixture = new LogoutService();
+        new ExpectedNullArgumentFailure("runnable") {
+            @Override
+            protected void run() throws Exception {
+                fixture.addLogoutRunnable(null);
+            }
+        };
+        new ExpectedNullArgumentFailure("runnable") {
+            @Override
+            protected void run() throws Exception {
+                fixture.removeLogoutRunnable(null);
+            }
+        };
     }
 }

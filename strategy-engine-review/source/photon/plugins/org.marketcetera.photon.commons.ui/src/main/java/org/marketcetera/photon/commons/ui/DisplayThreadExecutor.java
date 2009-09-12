@@ -72,6 +72,10 @@ public final class DisplayThreadExecutor extends SimpleExecutorService
 
     @Override
     public void doExecute(Runnable command) {
-        mDisplay.asyncExec(command);
+        if (mDisplay.equals(Display.getCurrent())) {
+            command.run();
+        } else {
+            mDisplay.asyncExec(command);
+        }
     }
 }

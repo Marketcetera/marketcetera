@@ -178,7 +178,7 @@ public interface <%=genClass.getInterfaceName()%><%=genClass.getTypeParameters()
 	 * @generated
 	 * @ordered
 	 */
-	protected <%=genFeature.getImportedInternalType(genClass)%> <%=genFeature.getSafeName()%>;
+	protected volatile <%=genFeature.getImportedInternalType(genClass)%> <%=genFeature.getSafeName()%>;
 
       <%}%>
       <%if (genModel.isArrayAccessors() && genFeature.isListType() && !genFeature.isFeatureMapType() && !genFeature.isMapType()) { String rawListItemType = genFeature.getRawListItemType(); int index = rawListItemType.indexOf('['); String head = rawListItemType; String tail = ""; if (index != -1) { head = rawListItemType.substring(0, index); tail = rawListItemType.substring(index); } %>
@@ -273,7 +273,7 @@ public interface <%=genClass.getInterfaceName()%><%=genClass.getTypeParameters()
 	 * @generated
 	 * @ordered
 	 */
-	protected <%=genFeature.getImportedType(genClass)%> <%=genFeature.getSafeName()%><%if (genFeature.hasEDefault()) {%> = <%=genFeature.getEDefault()%><%}%>;
+	protected volatile <%=genFeature.getImportedType(genClass)%> <%=genFeature.getSafeName()%><%if (genFeature.hasEDefault()) {%> = <%=genFeature.getEDefault()%><%}%>;
 
         <%}%>
       <%}%>

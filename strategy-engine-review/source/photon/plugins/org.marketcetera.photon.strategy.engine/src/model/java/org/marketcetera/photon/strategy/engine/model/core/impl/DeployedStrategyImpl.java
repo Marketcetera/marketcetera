@@ -49,7 +49,7 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      * @ordered
      */
-    protected StrategyEngine engine;
+    protected volatile StrategyEngine engine;
 
     /**
      * The default value of the '{@link #getState() <em>State</em>}' attribute.
@@ -69,7 +69,7 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      * @ordered
      */
-    protected StrategyState state = STATE_EDEFAULT;
+    protected volatile StrategyState state = STATE_EDEFAULT;
 
     /**
      * The default value of the '{@link #getUrn() <em>Urn</em>}' attribute.
@@ -89,7 +89,7 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      * @ordered
      */
-    protected ModuleURN urn = URN_EDEFAULT;
+    protected volatile ModuleURN urn = URN_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->

@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
+import org.marketcetera.photon.commons.SynchronizedProxy;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
@@ -30,21 +31,32 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePack
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Strategy Engine</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '
+ * <em><b>Strategy Engine</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getName <em>Name</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getDescription <em>Description</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getConnectionState <em>Connection State</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getConnection <em>Connection</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getDeployedStrategies <em>Deployed Strategies</em>}</li>
- *   <li>{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#isReadOnly <em>Read Only</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getName
+ * <em>Name</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getDescription
+ * <em>Description</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getConnectionState
+ * <em>Connection State</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getConnection
+ * <em>Connection</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#getDeployedStrategies
+ * <em>Deployed Strategies</em>}</li>
+ * <li>
+ * {@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl#isReadOnly
+ * <em>Read Only</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  * @since $Release$
  */
@@ -52,8 +64,8 @@ import org.marketcetera.util.misc.ClassVersion;
 public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     /**
      * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getName()
      * @generated
      * @ordered
@@ -62,18 +74,18 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
 
     /**
      * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getName()
      * @generated
      * @ordered
      */
-    protected String name = NAME_EDEFAULT;
+    protected volatile String name = NAME_EDEFAULT;
 
     /**
-     * The default value of the '{@link #getDescription() <em>Description</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The default value of the '{@link #getDescription() <em>Description</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getDescription()
      * @generated
      * @ordered
@@ -81,19 +93,20 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     protected static final String DESCRIPTION_EDEFAULT = null;
 
     /**
-     * The cached value of the '{@link #getDescription() <em>Description</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #getDescription() <em>Description</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getDescription()
      * @generated
      * @ordered
      */
-    protected String description = DESCRIPTION_EDEFAULT;
+    protected volatile String description = DESCRIPTION_EDEFAULT;
 
     /**
-     * The default value of the '{@link #getConnectionState() <em>Connection State</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The default value of the '{@link #getConnectionState()
+     * <em>Connection State</em>}' attribute. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     * 
      * @see #getConnectionState()
      * @generated
      * @ordered
@@ -101,39 +114,41 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     protected static final ConnectionState CONNECTION_STATE_EDEFAULT = ConnectionState.DISCONNECTED;
 
     /**
-     * The cached value of the '{@link #getConnectionState() <em>Connection State</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #getConnectionState()
+     * <em>Connection State</em>}' attribute. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     * 
      * @see #getConnectionState()
      * @generated
      * @ordered
      */
-    protected ConnectionState connectionState = CONNECTION_STATE_EDEFAULT;
+    protected volatile ConnectionState connectionState = CONNECTION_STATE_EDEFAULT;
 
     /**
-     * The cached value of the '{@link #getConnection() <em>Connection</em>}' reference.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #getConnection() <em>Connection</em>}'
+     * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getConnection()
      * @generated
      * @ordered
      */
-    protected StrategyEngineConnection connection;
+    protected volatile StrategyEngineConnection connection;
 
     /**
-     * The cached value of the '{@link #getDeployedStrategies() <em>Deployed Strategies</em>}' reference list.
-     * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getDeployedStrategies()
+     * <em>Deployed Strategies</em>}' reference list. <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * 
      * @see #getDeployedStrategies()
      * @generated
      * @ordered
      */
-    protected EList<DeployedStrategy> deployedStrategies;
+    protected volatile EList<DeployedStrategy> deployedStrategies;
 
     /**
-     * The default value of the '{@link #isReadOnly() <em>Read Only</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The default value of the '{@link #isReadOnly() <em>Read Only</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #isReadOnly()
      * @generated
      * @ordered
@@ -141,18 +156,18 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     protected static final boolean READ_ONLY_EDEFAULT = false;
 
     /**
-     * The cached value of the '{@link #isReadOnly() <em>Read Only</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #isReadOnly() <em>Read Only</em>}'
+     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #isReadOnly()
      * @generated
      * @ordered
      */
-    protected boolean readOnly = READ_ONLY_EDEFAULT;
+    protected volatile boolean readOnly = READ_ONLY_EDEFAULT;
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     protected StrategyEngineImpl() {
@@ -160,8 +175,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -170,8 +185,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public String getName() {
@@ -179,8 +194,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setName(String newName) {
@@ -193,8 +208,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public String getDescription() {
@@ -202,8 +217,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setDescription(String newDescription) {
@@ -216,8 +231,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public ConnectionState getConnectionState() {
@@ -225,8 +240,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setConnectionState(ConnectionState newConnectionState) {
@@ -242,8 +257,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public StrategyEngineConnection getConnection() {
@@ -263,8 +278,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public StrategyEngineConnection basicGetConnection() {
@@ -272,8 +287,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public NotificationChain basicSetConnection(
@@ -294,8 +309,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setConnection(StrategyEngineConnection newConnection) {
@@ -323,24 +338,26 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated NOT
      */
     public EList<DeployedStrategy> getDeployedStrategies() {
         if (deployedStrategies == null) {
-            deployedStrategies = new EObjectWithInverseResolvingEList<DeployedStrategy>(
+            EObjectWithInverseResolvingEList<DeployedStrategy> delegate = new EObjectWithInverseResolvingEList<DeployedStrategy>(
                     DeployedStrategy.class,
                     this,
                     StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
                     StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE);
+            deployedStrategies = SynchronizedProxy.proxy(delegate,
+                    InternalEList.class);
         }
         return deployedStrategies;
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public boolean isReadOnly() {
@@ -348,8 +365,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     public void setReadOnly(boolean newReadOnly) {
@@ -362,8 +379,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @SuppressWarnings("unchecked")
@@ -387,8 +404,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -405,8 +422,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -431,8 +448,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @SuppressWarnings("unchecked")
@@ -464,8 +481,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -494,8 +511,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -520,8 +537,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -542,4 +559,4 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
         return result.toString();
     }
 
-} //StrategyEngineImpl
+} // StrategyEngineImpl

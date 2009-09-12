@@ -47,7 +47,7 @@ public abstract class StrategyEngineConnectionImpl extends EObjectImpl
      * @generated
      * @ordered
      */
-    protected StrategyEngine engine;
+    protected volatile StrategyEngine engine;
 
     /**
      * <!-- begin-user-doc -->

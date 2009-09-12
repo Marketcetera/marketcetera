@@ -7,6 +7,8 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Interface for a service that logs out the current user. There should only be
  * one {@link ILogoutService} active.
+ * <p>
+ * This service allows adding runnables to be run during logout.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -17,7 +19,13 @@ public interface ILogoutService {
 
     /**
      * Performs the logout and runs all runnables registered with
-     * {@link #addLogoutRunnable(Runnable)}.
+     * {@link #addLogoutRunnable(Runnable)}. There is no guarantee to the
+     * ordering in which runnables are invoked. Any {@link RuntimeException}
+     * thrown by a runnable will be logged and swallowed and will not prevent
+     * other runnables from running.
+     * <p>
+     * Runnables are only invoked once, i.e. after execution they are discarded
+     * and must be added again to be run during the next logout.
      */
     void logout();
 

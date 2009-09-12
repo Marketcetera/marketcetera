@@ -49,7 +49,7 @@ public class SWTBotConditions {
 
     public static ICondition itemImageIsReplaced(
             AbstractSWTBot<? extends Item> widget, final ImageDescriptor base,
-            ImageDescriptor decoration) throws Throwable {
+            ImageDescriptor decoration) throws Exception {
         Image baseImage = AbstractUIRunner.syncCall(new Callable<Image>() {
             @Override
             public Image call() throws Exception {

@@ -56,7 +56,7 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * @generated
      * @ordered
      */
-    protected String key = KEY_EDEFAULT;
+    protected volatile String key = KEY_EDEFAULT;
 
     /**
      * The default value of the '{@link #getTypedValue() <em>Value</em>}' attribute.
@@ -76,7 +76,7 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * @generated
      * @ordered
      */
-    protected String value = VALUE_EDEFAULT;
+    protected volatile String value = VALUE_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->

@@ -15,7 +15,12 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotCheckBox;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotTableItem;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotText;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +44,8 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * Tests {@link DeployStrategyWizard}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: DeployStrategyWizardTest.java 10713 2009-08-30 09:08:28Z
+ *          tlerios $
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
@@ -87,15 +93,16 @@ public class DeployStrategyWizardTest extends PhotonTestBase {
     @Test
     public void testSuccessfulDeployment() throws Exception {
         openWizard();
-        SWTBotShell dialog = mBot.shell("Deploy Strategy");
-        mBot.button("Browse..."); // just verify it's there
-        SWTBotButton finishButton = mBot.button("Finish");
-        assertThat(finishButton.isEnabled(), is(false));
-        mBot.textWithLabel("Script:").setText("C:\\Strat.java");
-        assertThat(finishButton.isEnabled(), is(false));
-        mBot.table().getTableItem(0).check();
-        finishButton.click();
-        mBot.waitUntil(isClosed(dialog));
+        DeployStrategyWizardFixture fixture = new DeployStrategyWizardFixture();
+        mBot.button("Browse..."); // just to verify it's there
+        assertThat(fixture.getFinishButton().isEnabled(), is(false));
+        fixture.setScript("C:\\Strat.java");
+        assertThat(fixture.getFinishButton().isEnabled(), is(false));
+        fixture.setInstanceName("Strat");
+        assertThat(fixture.getFinishButton().isEnabled(), is(false));
+        fixture.getEngines()[0].check();
+        fixture.finish();
+        fixture.waitForClose();
         assertThat(getResult(), is(getChild(mEngine1, 0)));
     }
 
@@ -106,19 +113,20 @@ public class DeployStrategyWizardTest extends PhotonTestBase {
             public void run() throws Throwable {
                 mWizard.dispose();
                 mStrategy.setScriptPath("C:\\MyStrat.java");
+                mStrategy.setInstanceName("MyStrat1");
                 mWizard = new DeployStrategyWizard(mStrategy, mEngine1,
                         mAvailableEngines);
             }
         });
         openWizard();
-        SWTBotShell dialog = mBot.shell("Deploy Strategy");
-        final SWTBotButton finishButton = mBot.button("Finish");
-        assertThat(mBot.textWithLabel("Script:").getText(),
+        DeployStrategyWizardFixture fixture = new DeployStrategyWizardFixture();
+        assertThat(fixture.getScriptText().getText(),
                 is("C:\\MyStrat.java"));
-        assertThat(mBot.table().getTableItem(0).isChecked(), is(true));
-        assertThat(mBot.table().getTableItem(1).isChecked(), is(false));
-        finishButton.click();
-        mBot.waitUntil(isClosed(dialog));
+        SWTBotTableItem[] engines = fixture.getEngines();
+        assertThat(engines[0].isChecked(), is(true));
+        assertThat(engines[1].isChecked(), is(false));
+        fixture.finish();
+        fixture.waitForClose();
         assertThat(getResult(), is(getChild(mEngine1, 0)));
     }
 
@@ -185,6 +193,106 @@ public class DeployStrategyWizardTest extends PhotonTestBase {
                 return mWizard.getResult();
             }
         });
+    }
+
+    /**
+     * Helper for testing {@link DeployStrategyWizard}.
+     */
+    public static class DeployStrategyWizardFixture {
+        private final SWTBot mBot = new SWTBot();
+        private final SWTBotShell mShell;
+        private final SWTBotText mScript;
+        private final SWTBotCombo mLanguageCombo;
+        private final SWTBotText mClassName;
+        private final SWTBotText mInstanceName;
+        private final SWTBotCheckBox mRouteToServer;
+        private final SWTBotButton mCancelButton;
+        private final SWTBotButton mFinishButton;
+
+        public DeployStrategyWizardFixture() {
+            mShell = mBot.shell("Deploy Strategy");
+            mScript = mBot.textWithLabel("Script:");
+            mLanguageCombo = mBot.comboBoxWithLabel("Language:");
+            mClassName = mBot.textWithLabel("Class:");
+            mInstanceName = mBot.textWithLabel("Instance Name:");
+            mRouteToServer = mBot.checkBox("Route orders to server");
+            mCancelButton = mBot.button("Cancel");
+            mFinishButton = mBot.button("Finish");
+        }
+
+        public SWTBotText getScriptText() {
+            return mScript;
+        }
+
+        public SWTBotCombo getLanguageCombo() {
+            return mLanguageCombo;
+        }
+
+        public SWTBotText getClassNameText() {
+            return mClassName;
+        }
+
+        public SWTBotText getInstanceNameText() {
+            return mInstanceName;
+        }
+
+        public SWTBotCheckBox getRouteToServerCheckBox() {
+            return mRouteToServer;
+        }
+
+        public SWTBotButton getCancelButton() {
+            return mCancelButton;
+        }
+
+        public SWTBotButton getFinishButton() {
+            return mFinishButton;
+        }
+
+        public SWTBotTableItem[] getEngines() {
+            SWTBotTable table = mBot.table();
+            int rowCount = table.rowCount();
+            SWTBotTableItem[] result = new SWTBotTableItem[rowCount];
+            for (int i = 0; i < rowCount; i++) {
+                result[i] = table.getTableItem(i);
+            }
+            return result;
+        }
+        
+        public void setScript(String script) {
+            mScript.setText(script);
+        }
+        
+        public void setLanguage(String language) {
+            mLanguageCombo.setText(language);
+        }
+        
+        public void setClassName(String className) {
+            mClassName.setText(className);
+        }
+        
+        public void setInstanceName(String instanceName) {
+            mInstanceName.setText(instanceName);
+        }
+        
+        public void setRouteToServer(boolean route) {
+            if (route) {
+                mRouteToServer.select();
+            } else {
+                mRouteToServer.deselect();
+            }                
+        }
+        
+        public void finish() {
+            mFinishButton.click();
+        }
+        
+        public void cancel() {
+            mCancelButton.click();
+        }
+        
+        public void waitForClose() {
+            mBot.waitUntil(isClosed(mShell));
+        }
     }
 
 }

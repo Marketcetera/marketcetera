@@ -159,9 +159,10 @@ public class DeployStrategyComposite extends ObservingComposite {
             Text instanceNameText = new Text(this, SWT.BORDER);
             GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.CENTER).hint(180,
                     SWT.DEFAULT).applyTo(instanceNameText);
-            bindValue(
+            bindRequiredField(
                     SWTObservables.observeText(instanceNameText, SWT.Modify),
-                    observe(StrategyEngineCorePackage.Literals.STRATEGY__INSTANCE_NAME));
+                    observe(StrategyEngineCorePackage.Literals.STRATEGY__INSTANCE_NAME),
+                    Messages.DEPLOYED_STRATEGY_CONFIGURATION_COMPOSITE_INSTANCE_NAME.getRawLabel());
         }
 
         new Label(this, SWT.NONE);
@@ -260,10 +261,6 @@ public class DeployStrategyComposite extends ObservingComposite {
                     Messages.STRATEGY_DEPLOYMENT_COMPOSITE_ENGINE__LABEL
                             .getText());
         }
-    }
-
-    private void bindValue(IObservableValue target, IObservableValue model) {
-        DataBindingUtils.bindValue(mDataBindingContext, target, model);
     }
 
     private void bindRequiredField(IObservableValue target,

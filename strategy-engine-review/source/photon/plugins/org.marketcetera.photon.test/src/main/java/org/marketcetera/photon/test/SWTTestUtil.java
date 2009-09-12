@@ -7,15 +7,24 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.widgets.AbstractSWTBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotText;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -150,12 +159,45 @@ public class SWTTestUtil {
     /**
      * Tests that a button does not exist.
      * 
-     * @param text the button text
+     * @param text
+     *            the button text
      */
     @SuppressWarnings("unchecked")
     public static void assertButtonDoesNotExist(String text) {
         assertThat(new SWTBot().getFinder().findControls(
                 allOf(widgetOfType(Button.class), withMnemonic(text),
                         withStyle(SWT.PUSH, "SWT.PUSH"))).size(), is(0));
+    }
+
+    /**
+     * Returns an array of {@link MenuState} reflecting the given widget's
+     * context menu state.
+     * 
+     * @param widget
+     *            the widget handle
+     * @return the menu items
+     * @throws Exception
+     *             if something goes wrong
+     */
+    public static Map<String, MenuState> getMenuItems(
+            final AbstractSWTBot<? extends Control> widget) throws Exception {
+        return AbstractUIRunner.syncCall(new Callable<Map<String, MenuState>>() {
+            @Override
+            public Map<String, MenuState> call() {
+                Map<String, MenuState> result = Maps.newHashMap();
+                Menu bar = widget.widget.getMenu();
+                if (bar != null) {
+                    bar.notifyListeners(SWT.Show, new Event());
+                    MenuItem[] items = bar.getItems();
+                    for (MenuItem menuItem : items) {
+                        if ((menuItem.getStyle() & SWT.SEPARATOR) == 0) {
+                            result.put(menuItem.getText(), new MenuState(menuItem));
+                        }
+                    }
+                    bar.notifyListeners(SWT.Hide, new Event());
+                }
+                return ImmutableMap.copyOf(result);
+            }
+        });
     }
 }
