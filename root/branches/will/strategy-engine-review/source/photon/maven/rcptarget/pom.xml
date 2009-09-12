@@ -35,12 +35,20 @@
       <artifactId>photon-test-bundle</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google</groupId>
-      <artifactId>guice</artifactId>
+      <groupId>org.ops4j</groupId>
+      <artifactId>peaberry</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google</groupId>
-      <artifactId>guice-source</artifactId>
+      <groupId>org.ops4j</groupId>
+      <artifactId>peaberry.eclipse</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.peaberry.dependencies</groupId>
+      <artifactId>aopalliance</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.peaberry.dependencies</groupId>
+      <artifactId>guice</artifactId>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
