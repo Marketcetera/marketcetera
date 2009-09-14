@@ -24,7 +24,8 @@ import org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineCon
  * Utilities for testing with the strategy engine core model.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: StrategyEngineCoreTestUtil.java 10744 2009-09-12 00:12:39Z will
+ *          $
  * @since $Release$
  */
 public class StrategyEngineCoreTestUtil {
@@ -110,20 +111,23 @@ public class StrategyEngineCoreTestUtil {
     }
 
     public static void assertDeployedStrategy(DeployedStrategy deployed,
-            ModuleURN urn, StrategyEngine engine, StrategyState state,
-            String instanceName, String className, String language,
-            String scriptPath, boolean route, Map<String, String> parameters) {
-        assertStrategy(deployed, instanceName, className, language, scriptPath, route, parameters);
+            StrategyEngine engine, StrategyState state, String instanceName,
+            String className, String language, String scriptPath,
+            boolean route, Map<String, String> parameters) {
+        assertStrategy(deployed, instanceName, className, language, scriptPath,
+                route, parameters);
         assertThat(deployed.getEngine(), sameInstance(engine));
         assertThat(deployed.getState(), is(state));
-        assertThat(deployed.getUrn(), is(urn));
+        assertThat(deployed.getUrn(), is(new ModuleURN("metc:strategy:system:"
+                + instanceName)));
     }
 
     public static class MockConnection extends StrategyEngineConnectionImpl {
 
         @Override
         public DeployedStrategy deploy(Strategy strategy) throws Exception {
-            DeployedStrategy result = createDeployedStrategy(strategy.getInstanceName());
+            DeployedStrategy result = createDeployedStrategy(strategy
+                    .getInstanceName());
             update(result, strategy);
             getEngine().getDeployedStrategies().add(result);
             return result;
@@ -150,15 +154,16 @@ public class StrategyEngineCoreTestUtil {
             strategy.setScriptPath(newConfiguration.getScriptPath());
             strategy.setClassName(newConfiguration.getClassName());
             strategy.setLanguage(newConfiguration.getLanguage());
-            strategy.setRouteOrdersToServer(newConfiguration.isRouteOrdersToServer());
+            strategy.setRouteOrdersToServer(newConfiguration
+                    .isRouteOrdersToServer());
             strategy.getParameters().clear();
             strategy.getParameters().addAll(newConfiguration.getParameters());
         }
-        
+
         @Override
         public void refresh() throws Exception {
         }
-        
+
         @Override
         public void refresh(DeployedStrategy strategy) throws Exception {
         }

@@ -184,9 +184,9 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
         assertThat(mFixture.getConnectionState(), is(ConnectionState.CONNECTED));
         assertThat(mFixture.getConnection(), is(not(nullValue())));
         assertThat(mFixture.getDeployedStrategies().size(), is(1));
-        assertDeployedStrategy(mFixture.getDeployedStrategies().get(0), urn1, mFixture,
-                StrategyState.RUNNING, "strat1", "MySAStrategy2",
-                "RUBY", null, false, ImmutableMap.of(
+        assertDeployedStrategy(mFixture.getDeployedStrategies().get(0), mFixture, StrategyState.RUNNING,
+                "strat1", "MySAStrategy2", "RUBY",
+                null, false, ImmutableMap.of(
                         "xyz", "123"));
     }
 

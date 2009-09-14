@@ -2,16 +2,13 @@ package org.marketcetera.photon.internal.strategy.engine.embedded;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.assertDeployedStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.assertStrategy;
-import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createDeployedStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createStrategy;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -21,15 +18,12 @@ import javax.management.JMX;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ImmediateExecutorService;
 import org.marketcetera.core.Util;
-import org.marketcetera.module.InvalidURNException;
 import org.marketcetera.module.MXBeanOperationException;
-import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleNotFoundException;
 import org.marketcetera.module.ModuleState;
@@ -39,19 +33,15 @@ import org.marketcetera.module.SinkModuleFactory;
 import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.photon.strategy.engine.AbstractStrategyEngineConnection;
+import org.marketcetera.photon.strategy.engine.AbstractStrategyEngineConnectionTestBase;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.photon.test.ExpectedFailure;
-import org.marketcetera.photon.test.ExpectedIllegalStateException;
-import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.strategy.StrategyMXBean;
 import org.marketcetera.strategy.StrategyModuleFactory;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.file.CopyCharsUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -65,59 +55,40 @@ import com.google.common.collect.ImmutableMap;
  * @version $Id$
  * @since $Release$
  */
-public class EmbeddedConnectionTest extends PhotonTestBase {
+public class EmbeddedConnectionTest extends
+        AbstractStrategyEngineConnectionTestBase {
 
-    private final ModuleURN mTestInstanceURN = new ModuleURN(
-            "metc:strategy:system:strat1");
     private ModuleManager mModuleManager;
     private MBeanServerConnection mMBeanServer;
     private MockPersistenceService mPersistenceService;
-    private EmbeddedConnection mFixture;
-    private File mTempScript;
-    private Strategy mTestConfiguration;
+    private StrategyEngine mEngine;
 
     @Before
     public void before() throws Exception {
+        super.before();
         mModuleManager = ModuleSupport.getModuleManager();
         mMBeanServer = ModuleSupport.getMBeanServerConnection();
         assertThat(mModuleManager.getModuleInstances(
                 StrategyModuleFactory.PROVIDER_URN).size(), is(0));
+        mEngine = createEngine("Embedded");
         mPersistenceService = new MockPersistenceService();
-        StrategyEngine engine = createEngine("Embedded");
-        mFixture = new EmbeddedConnection(engine,
-                new ImmediateExecutorService(), mPersistenceService);
-        mFixture.initialize();
-        mTempScript = File.createTempFile("my_strategy", "rb");
-        CopyCharsUtils
-                .copy(
-                        "include_class \"org.marketcetera.strategy.ruby.Strategy\"\nclass MyStrategy < Strategy\nend"
-                                .toCharArray(), mTempScript.getAbsolutePath());
-        mTestConfiguration = createTestStrategy();
-    }
-
-    private Strategy createTestStrategy() {
-        final Strategy strategy = StrategyEngineCoreFactory.eINSTANCE
-                .createStrategy();
-        strategy.setScriptPath(mTempScript.getPath());
-        strategy.setClassName("MyStrategy");
-        strategy.setLanguage("RUBY");
-        strategy.setInstanceName("strat1");
-        strategy.setRouteOrdersToServer(true);
-        return strategy;
     }
 
     @After
     public void after() throws Exception {
-        mTempScript.delete();
-        try {
-            mModuleManager.stop(mTestInstanceURN);
-        } catch (Exception e) {
-            // ignore
-        } finally {
+        super.after();
+        for (ModuleURN urn : mModuleManager
+                .getModuleInstances(StrategyModuleFactory.PROVIDER_URN)) {
             try {
-                mModuleManager.deleteModule(mTestInstanceURN);
+                mModuleManager.stop(urn);
             } catch (Exception e) {
                 // ignore
+            } finally {
+                try {
+                    mModuleManager.deleteModule(urn);
+                } catch (Exception e) {
+                    // ignore
+                }
             }
         }
     }
@@ -138,65 +109,68 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
         };
     }
 
+    @Override
+    public void testDeploy() throws Exception {
+        super.testDeploy();
+        assertModule(new ModuleURN("metc:strategy:system:strat1"),
+                ModuleState.CREATED, false, null);
+    }
+
+    @Override
+    public void testDeployWithParameters() throws Exception {
+        super.testDeployWithParameters();
+        assertModule(new ModuleURN("metc:strategy:system:strat2"),
+                ModuleState.CREATED, true, ImmutableMap.of("abc", "xyz", "123",
+                        "abc"));
+    }
+
     @Test
-    public void testDeployValidation() throws Exception {
-        new ExpectedNullArgumentFailure("strategy") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.deploy(null);
-            }
-        };
-        final Strategy strategy = StrategyEngineCoreFactory.eINSTANCE
-                .createStrategy();
-        new ExpectedFailure<I18NException>(
-                "The strategy script path was not specified.") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.deploy(strategy);
-            }
-        };
-        strategy.setScriptPath("1234dslsdaksdf/strategy.java");
-        new ExpectedFailure<I18NException>(
-                "The strategy class name was not specified.") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.deploy(strategy);
-            }
-        };
-        strategy.setClassName("Strategy");
-        new ExpectedFailure<I18NException>(
-                "The strategy language was not specified.") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.deploy(strategy);
-            }
-        };
+    public void testDeployPersistence() throws Exception {
+        AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        Strategy strategy = createStrategyToDeploy();
+        strategy.getParameters().put("abc", "xyz");
+        fixture.deploy(strategy);
+        assertThat(mPersistenceService.getPersisted().size(), is(1));
+        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
+                "MyStrategy", "RUBY", getTempScript().getPath(), false,
+                ImmutableMap.of("abc", "xyz"));
+    }
+
+    @Test
+    public void testDeployInvalidLanguage() throws Exception {
+        final AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        final Strategy strategy = createStrategyToDeploy();
         strategy.setLanguage("ABC");
-        new ExpectedFailure<I18NException>(
-                "The strategy instance name was not specified.") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.deploy(strategy);
-            }
-        };
-        strategy.setInstanceName("Strat1");
         new ExpectedFailure<I18NException>(
                 "The strategy module could not translate \"ABC\" to a valid language type.") {
             @Override
             protected void run() throws Exception {
-                mFixture.deploy(strategy);
+                fixture.deploy(strategy);
             }
         };
-        strategy.setLanguage("JAVA");
+    }
+
+    @Test
+    public void testDeployNonExistentFile() throws Exception {
+        final AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        final Strategy strategy = createStrategyToDeploy();
+        strategy.setScriptPath("1234dslsdaksdf/strategy.java");
         new ExpectedFailure<I18NException>(
                 "The file specified as the strategy source, \""
-                        + new File("1234dslsdaksdf/strategy.java").getAbsolutePath()
+                        + new File("1234dslsdaksdf/strategy.java")
+                                .getAbsolutePath()
                         + "\", must exist and must be readable.") {
             @Override
             protected void run() throws Exception {
-                mFixture.deploy(strategy);
+                fixture.deploy(strategy);
             }
         };
+    }
+
+    @Test
+    public void testDeployBogusURL() throws Exception {
+        final AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        final Strategy strategy = createStrategyToDeploy();
         strategy.setScriptPath("http://www.google.com");
         new ExpectedFailure<I18NException>(
                 "The file specified as the strategy source, \""
@@ -204,329 +178,263 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
                         + "\", must exist and must be readable.") {
             @Override
             protected void run() throws Exception {
-                mFixture.deploy(strategy);
+                fixture.deploy(strategy);
+            }
+        };
+    }
+
+    @Override
+    public void testUndeploy() throws Exception {
+        super.testUndeploy();
+        assertThat(mModuleManager.getModuleInstances(
+                StrategyModuleFactory.PROVIDER_URN).size(), is(0));
+    }
+
+    @Test
+    public void testUndeployNonExistantModule() throws Exception {
+        final AbstractStrategyEngineConnection fixture = createFixture();
+        Strategy strategy = createStrategyToDeploy();
+        final DeployedStrategy deployed = fixture.deploy(strategy);
+        mModuleManager.deleteModule(deployed.getUrn());
+        new ExpectedFailure<ModuleNotFoundException>(
+                "Unable to find a module with URN 'metc:strategy:system:strat1'. Ensure that the module URN is correct and retry operation") {
+            @Override
+            protected void run() throws Exception {
+                fixture.undeploy(deployed);
             }
         };
     }
 
     @Test
-    public void testValidation() throws Exception {
-        new ExpectedNullArgumentFailure("deployedStrategy") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.start(null);
-            }
-        };
-        new ExpectedNullArgumentFailure("deployedStrategy") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.stop(null);
-            }
-        };
-        new ExpectedNullArgumentFailure("deployedStrategy") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.update(null, null);
-            }
-        };
-        new ExpectedNullArgumentFailure("deployedStrategy") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.undeploy(null);
-            }
-        };
-        new ExpectedNullArgumentFailure("deployedStrategy") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.refresh(null);
-            }
-        };
-        final DeployedStrategy strategy = StrategyEngineCoreFactory.eINSTANCE
-                .createDeployedStrategy();
-        new ExpectedNullArgumentFailure("newConfiguration") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.update(strategy, null);
-            }
-        };
-        new ExpectedIllegalStateException(
-                "Cannot start a DeployedStrategy that does not have a ModuleURN") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.start(strategy);
-            }
-        };
-        new ExpectedIllegalStateException(
-                "Cannot stop a DeployedStrategy that does not have a ModuleURN") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.stop(strategy);
-            }
-        };
-        new ExpectedIllegalStateException(
-                "Cannot update a DeployedStrategy that does not have a ModuleURN") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.update(strategy, StrategyEngineCoreFactory.eINSTANCE
-                        .createStrategy());
-            }
-        };
-        new ExpectedIllegalStateException(
-                "Cannot undeploy a DeployedStrategy that does not have a ModuleURN") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.undeploy(strategy);
-            }
-        };
-        new ExpectedIllegalStateException(
-                "Cannot refresh a DeployedStrategy that does not have a ModuleURN") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.refresh(strategy);
-            }
-        };
-    }
-
-    @Test
-    public void testDeployStartStopUpdateUndeploy() throws Exception {
-        DeployedStrategy deployed = deployAndStart(mTestConfiguration,
-                mTestInstanceURN);
-        mFixture.stop(deployed);
-        assertModule(mTestInstanceURN, ModuleState.STOPPED, true, null);
-        assertDeployedStrategy(deployed, mTestInstanceURN,
-                mFixture.getEngine(), StrategyState.STOPPED, "strat1",
-                "MyStrategy", "RUBY", mTempScript.getPath(), true, null);
-        Strategy newConfiguration = createStrategy(null);
-        newConfiguration.setRouteOrdersToServer(false);
-        newConfiguration.getParameters().put("xyz", "123");
-        mFixture.update(deployed, newConfiguration);
-        assertModule(mTestInstanceURN, ModuleState.STOPPED, false, ImmutableMap
-                .of("xyz", "123"));
-        assertDeployedStrategy(deployed, mTestInstanceURN,
-                mFixture.getEngine(), StrategyState.STOPPED, "strat1",
-                "MyStrategy", "RUBY", mTempScript.getPath(), false,
-                ImmutableMap.of("xyz", "123"));
-        assertThat(mPersistenceService.getPersisted().size(), is(1));
-        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
-                "MyStrategy", "RUBY", mTempScript.getPath(), false,
-                ImmutableMap.of("xyz", "123"));
-        undeploy(deployed);
-    }
-
-    @Test
-    public void testUndeployRunningStrategy() throws Exception {
-        DeployedStrategy deployed = deployAndStart(mTestConfiguration,
-                mTestInstanceURN);
-        undeploy(deployed);
-    }
-
-    @Test
-    public void testScriptPathURLResolves() throws Exception {
-        Strategy strategy = createTestStrategy();
-        String url = mTempScript.toURI().toString();
-        String actualPath = mTempScript.getAbsolutePath();
-        strategy.setScriptPath(url);
-        setLevel(EmbeddedConnection.class.getName(), Level.DEBUG);
-        // should succeed if url is resolved to a local file path
-        mFixture.deploy(strategy);
-        // there will also be a debug message
-        assertLastEvent(
-                Level.DEBUG,
-                EmbeddedConnection.class.getName(),
-                MessageFormat
-                        .format(
-                                "Resolved strategy scriptPath ''{0}'' as a URL to file ''{1}''.",
-                                url, actualPath),
-                AbstractStrategyEngineConnection.class.getName());
-    }
-
-    @Test
-    public void testRefreshSingleStrategy() throws Exception {
-        DeployedStrategy deployed = refreshHelper();
-        // refresh and validate everything is pulled from the backend
-        mFixture.refresh(deployed);
-        assertDeployedStrategy(deployed, mTestInstanceURN,
-                mFixture.getEngine(), StrategyState.STOPPED, "strat1",
-                "TestStrat", "JAVA", "abc", true, ImmutableMap.of("xyz", "123"));
-        assertThat(mPersistenceService.getPersisted().size(), is(1));
-        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
-                "TestStrat", "JAVA", "abc", true, ImmutableMap
-                        .of("xyz", "123"));
-    }
-
-    @Test
-    public void testRefreshSingleStrategyThatNoLongerExists() throws Exception {
-        DeployedStrategy deployed = createDeployedStrategy("DifferentName");
-        deployed.setUrn(mTestInstanceURN);
-        mFixture.getEngine().getDeployedStrategies().add(deployed);
-        mFixture.refresh(deployed);
-        // should be removed
-        assertThat(mFixture.getEngine().getDeployedStrategies().size(), is(0));
+    public void testUndeployPersistence() throws Exception {
+        AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        Strategy strategy = createStrategyToDeploy();
+        strategy.getParameters().put("abc", "xyz");
+        DeployedStrategy deployed = fixture.deploy(strategy);
+        fixture.undeploy(deployed);
         assertThat(mPersistenceService.getPersisted().size(), is(0));
     }
 
-    @Test
-    public void testRefreshEngine() throws Exception {
-        DeployedStrategy toRefresh = refreshHelper();
-        // deploy another one
-        ModuleURN frameworkNotUI = mModuleManager
-                .createModule(StrategyModuleFactory.PROVIDER_URN, "strat2",
-                        "TestStrat2", "JAVA", mTempScript, null, true,
-                        SinkModuleFactory.INSTANCE_URN);
-        DeployedStrategy inUINotFramework = createDeployedStrategy("ShouldRemove");
-        inUINotFramework.setUrn(new ModuleURN("metc:strategy:abc"));
-        mFixture.getEngine().getDeployedStrategies().add(inUINotFramework);
-        // refresh and validate everything is pulled from the backend
-        mFixture.refresh();
-        assertThat(mFixture.getEngine().getDeployedStrategies().size(), is(2));
-        for (DeployedStrategy deployed : mFixture.getEngine()
-                .getDeployedStrategies()) {
-            if (deployed == toRefresh) {
-                assertDeployedStrategy(deployed, mTestInstanceURN, mFixture
-                        .getEngine(), StrategyState.STOPPED, "strat1",
-                        "TestStrat", "JAVA", "abc", true, ImmutableMap.of(
-                                "xyz", "123"));
-            } else {
-                assertDeployedStrategy(deployed, frameworkNotUI, mFixture
-                        .getEngine(), StrategyState.STOPPED, "strat2",
-                        "TestStrat2", "JAVA", null, true, null);
-            }
-        }
-        mModuleManager.deleteModule(frameworkNotUI);
-        assertThat(mPersistenceService.getPersisted().size(), is(2));
-        for (Strategy strategy : mPersistenceService.getPersisted()) {
-            if (strategy.getInstanceName().equals("strat1")) {
-                assertStrategy(strategy, "strat1",
-                        "TestStrat", "JAVA", "abc", true, ImmutableMap.of(
-                                "xyz", "123"));
-            } else {
-                assertStrategy(strategy, "strat2",
-                        "TestStrat2", "JAVA", null, true, null);
-            }
-        }
-    }
-
-    @Test
-    public void testDeployWithProperties() throws Exception {
-        mTestConfiguration.getParameters().put("param", "value");
-        DeployedStrategy deployed = mFixture.deploy(mTestConfiguration);
-        assertModule(mTestInstanceURN, ModuleState.CREATED, true, ImmutableMap
-                .of("param", "value"));
-        assertDeployedStrategy(deployed, mTestInstanceURN,
-                mFixture.getEngine(), StrategyState.STOPPED, "strat1",
-                "MyStrategy", "RUBY", mTempScript.getPath(), true, ImmutableMap
-                        .of("param", "value"));
-        assertThat(mPersistenceService.getPersisted().size(), is(1));
-        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
-                "MyStrategy", "RUBY", mTempScript.getPath(), true, ImmutableMap
-                        .of("param", "value"));
+    @Override
+    public void testStart() throws Exception {
+        super.testStart();
+        assertModule(new ModuleURN("metc:strategy:system:strat1"),
+                ModuleState.STARTED, false, null);
     }
 
     @Test
     public void testStartingStartedModule() throws Exception {
-        final DeployedStrategy deployed = deployAndStart(createTestStrategy(),
-                mTestInstanceURN);
+        final AbstractStrategyEngineConnection fixture = createFixture();
+        Strategy strategy = createStrategyToDeploy();
+        final DeployedStrategy deployed = fixture.deploy(strategy);
+        fixture.start(deployed);
         new ExpectedFailure<ModuleStateException>(
                 "Unable to start module 'metc:strategy:system:strat1' as it is in state 'STARTED'. A module can be started when it is in one of '[CREATED, START_FAILED, STOPPED]' states. Ensure that module 'metc:strategy:system:strat1' is in one of '[CREATED, START_FAILED, STOPPED]' states and retry operation.") {
             @Override
             protected void run() throws Exception {
-                mFixture.start(deployed);
+                fixture.start(deployed);
             }
         };
+    }
+
+    @Override
+    public void testStop() throws Exception {
+        super.testStop();
+        assertModule(new ModuleURN("metc:strategy:system:strat1"),
+                ModuleState.STOPPED, false, null);
     }
 
     @Test
     public void testStoppingStoppedModule() throws Exception {
-        final DeployedStrategy deployed = deploy(createTestStrategy(),
-                mTestInstanceURN);
+        final AbstractStrategyEngineConnection fixture = createFixture();
+        Strategy strategy = createStrategyToDeploy();
+        final DeployedStrategy deployed = fixture.deploy(strategy);
+        fixture.start(deployed);
+        fixture.stop(deployed);
         new ExpectedFailure<ModuleStateException>(
-                "Unable to stop Module 'metc:strategy:system:strat1' as it is in state 'CREATED'. A module can be stopped if it is in one of '[STARTED, STOP_FAILED]' states. Ensure that the module is in one of '[STARTED, STOP_FAILED]' states and retry operation. ") {
+                "Unable to stop Module 'metc:strategy:system:strat1' as it is in state 'STOPPED'. A module can be stopped if it is in one of '[STARTED, STOP_FAILED]' states. Ensure that the module is in one of '[STARTED, STOP_FAILED]' states and retry operation. ") {
             @Override
             protected void run() throws Exception {
-                mFixture.stop(deployed);
+                fixture.stop(deployed);
             }
         };
     }
 
-    @Test
-    public void testUndeployDeletedModule() throws Exception {
-        final DeployedStrategy deployed = deploy(createTestStrategy(),
-                mTestInstanceURN);
-        undeploy(deployed);
-        new ExpectedFailure<ModuleNotFoundException>(
-                "Unable to find a module with URN 'metc:strategy:system:strat1'. Ensure that the module URN is correct and retry operation") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.undeploy(deployed);
-            }
-        };
+    @Override
+    public void testRestart() throws Exception {
+        super.testRestart();
+        assertModule(new ModuleURN("metc:strategy:system:strat1"),
+                ModuleState.STARTED, false, null);
     }
 
-    @Test
-    public void testUpdateRunningModule() throws Exception {
-        final DeployedStrategy deployed = deploy(createTestStrategy(),
-                mTestInstanceURN);
-        undeploy(deployed);
-        new ExpectedFailure<ModuleNotFoundException>(
-                "Unable to find a module with URN 'metc:strategy:system:strat1'. Ensure that the module URN is correct and retry operation") {
-            @Override
-            protected void run() throws Exception {
-                mFixture.undeploy(deployed);
-            }
-        };
-    }
-
-    private DeployedStrategy refreshHelper() throws ModuleException {
-        // deploy directly
-        Properties props = new Properties();
-        props.put("xyz", "123");
-        ModuleURN urn = mModuleManager.createModule(
-                StrategyModuleFactory.PROVIDER_URN, mTestInstanceURN
-                        .instanceName(), "TestStrat", "JAVA", mTempScript,
-                props, true, SinkModuleFactory.INSTANCE_URN);
-        // add directly to the engine with same URN but different values
-        DeployedStrategy deployed = createDeployedStrategy("DifferentName");
-        deployed.setUrn(urn);
-        deployed.setLanguage("RUBY");
-        deployed.setRouteOrdersToServer(false);
-        deployed.setScriptPath("abc");
-        deployed.setClassName("Bogus");
-        deployed.setState(StrategyState.RUNNING);
-        deployed.getParameters().put("abc", "def");
-        mFixture.getEngine().getDeployedStrategies().add(deployed);
-        return deployed;
-    }
-
-    private DeployedStrategy deployAndStart(Strategy strategy, ModuleURN urn)
-            throws Exception {
-        DeployedStrategy deployed = deploy(strategy, urn);
-        mFixture.start(deployed);
-        assertModule(urn, ModuleState.STARTED, true, null);
-        assertDeployedStrategy(deployed, mTestInstanceURN,
-                mFixture.getEngine(), StrategyState.RUNNING, "strat1",
-                "MyStrategy", "RUBY", mTempScript.getPath(), true, null);
-        return deployed;
-    }
-
-    private DeployedStrategy deploy(Strategy strategy, ModuleURN urn)
-            throws Exception {
-        DeployedStrategy deployed = mFixture.deploy(strategy);
-        assertModule(urn, ModuleState.CREATED, true, null);
-        assertDeployedStrategy(deployed, mTestInstanceURN,
-                mFixture.getEngine(), StrategyState.STOPPED, "strat1",
-                "MyStrategy", "RUBY", mTempScript.getPath(), true, null);
-        assertThat(mPersistenceService.getPersisted().size(), is(1));
-        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
-                "MyStrategy", "RUBY", mTempScript.getPath(), true, null);
-        return deployed;
-    }
-
-    private void undeploy(DeployedStrategy deployed) throws Exception,
-            InvalidURNException {
-        mFixture.undeploy(deployed);
+    @Override
+    public void testUndeployRunningStrategy() throws Exception {
+        super.testUndeployRunningStrategy();
         assertThat(mModuleManager.getModuleInstances(
                 StrategyModuleFactory.PROVIDER_URN).size(), is(0));
+    }
+
+    @Override
+    public void testUpdate() throws Exception {
+        super.testUpdate();
+        assertModule(new ModuleURN("metc:strategy:system:strat1"),
+                ModuleState.CREATED, true, ImmutableMap.of("xyz", "123"));
+    }
+
+    @Test
+    public void testUpdateWithPersistence() throws Exception {
+        AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        Strategy strategy = createStrategyToDeploy();
+        DeployedStrategy deployed = fixture.deploy(strategy);
+        Strategy newConfiguration = createStrategy(null);
+        newConfiguration.setRouteOrdersToServer(true);
+        newConfiguration.getParameters().put("xyz", "123");
+        fixture.update(deployed, newConfiguration);
+        assertThat(mPersistenceService.getPersisted().size(), is(1));
+        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
+                "MyStrategy", "RUBY", getTempScript().getPath(), true,
+                ImmutableMap.of("xyz", "123"));
+    }
+
+    @Override
+    public void testRefreshDeployedStrategy() throws Exception {
+        super.testRefreshDeployedStrategy();
+        assertModule(new ModuleURN("metc:strategy:system:strat1"),
+                ModuleState.STARTED, true, ImmutableMap.of("xyz", "123"));
+    }
+
+    @Test
+    public void testRefreshDeployedStrategyWithPersistence() throws Exception {
+        AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        Strategy strategy = createStrategyToDeploy();
+        DeployedStrategy deployed = fixture.deploy(strategy);
+        Strategy newConfiguration = createStrategy(null);
+        newConfiguration.setRouteOrdersToServer(true);
+        newConfiguration.getParameters().put("xyz", "123");
+        externalUpdateAndStartStrategy(deployed.getUrn(), newConfiguration);
+        fixture.refresh(deployed);
+        assertThat(mPersistenceService.getPersisted().size(), is(1));
+        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
+                "MyStrategy", "RUBY", getTempScript().getPath(), true,
+                ImmutableMap.of("xyz", "123"));
+    }
+
+    @Override
+    public void testRefreshDeployedStrategyThatNoLongerExists()
+            throws Exception {
+        super.testRefreshDeployedStrategyThatNoLongerExists();
+        assertThat(mModuleManager.getModuleInstances(
+                StrategyModuleFactory.PROVIDER_URN).size(), is(0));
+    }
+
+    @Test
+    public void testRefreshDeployedStrategyThatNoLongerExistsWithPersistence()
+            throws Exception {
+        AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        Strategy strategy = createStrategyToDeploy();
+        DeployedStrategy deployed = fixture.deploy(strategy);
+        externalUndeployStrategy(deployed.getUrn());
+        fixture.refresh(deployed);
         assertThat(mPersistenceService.getPersisted().size(), is(0));
+    }
+
+    @Test
+    public void testRefresh() throws Exception {
+        super.testRefresh();
+        assertThat(mModuleManager.getModuleInstances(
+                StrategyModuleFactory.PROVIDER_URN).size(), is(2));
+        assertModule(new ModuleURN("metc:strategy:system:strat1"),
+                ModuleState.STARTED, true, ImmutableMap.of("xyz", "123"));
+        assertModule(new ModuleURN("metc:strategy:system:strat3"),
+                ModuleState.CREATED, false, null);
+    }
+
+    @Test
+    public void testRefreshWithPersistence() throws Exception {
+        AbstractStrategyEngineConnection fixture = createPersistingFixture();
+
+        /*
+         * Deploy a strategy and change it externally.
+         */
+        Strategy strategy = createStrategyToDeploy();
+        DeployedStrategy deployed1 = fixture.deploy(strategy);
+        Strategy newConfiguration = createStrategy(null);
+        newConfiguration.setRouteOrdersToServer(true);
+        newConfiguration.getParameters().put("xyz", "123");
+        externalUpdateAndStartStrategy(deployed1.getUrn(), newConfiguration);
+
+        /*
+         * Deploy a strategy and undeploy it externally.
+         */
+        strategy = createStrategyToDeploy();
+        strategy.setInstanceName("strat2");
+        DeployedStrategy deployed2 = fixture.deploy(strategy);
+        externalUndeployStrategy(deployed2.getUrn());
+
+        /*
+         * Deploy a strategy externally.
+         */
+        strategy = createStrategyToDeploy();
+        strategy.setInstanceName("strat3");
+        externalDeployStrategy(strategy);
+
+        /*
+         * Refresh and validate.
+         */
+        fixture.refresh();
+        assertThat(mPersistenceService.getPersisted().size(), is(2));
+        for (Strategy persisted : mPersistenceService.getPersisted()) {
+            if (persisted.getInstanceName().equals("strat1")) {
+                assertStrategy(mPersistenceService.getPersisted().get(0),
+                        "strat1", "MyStrategy", "RUBY", getTempScript()
+                                .getPath(), true, ImmutableMap.of("xyz", "123"));
+            } else {
+                assertStrategy(mPersistenceService.getPersisted().get(1),
+                        "strat3", "MyStrategy", "RUBY", null, false, null);
+            }
+        }
+    }
+
+    @Override
+    protected AbstractStrategyEngineConnection createFixture() {
+        EmbeddedConnection fixture = new EmbeddedConnection(mEngine,
+                new ImmediateExecutorService(), null);
+        fixture.initialize();
+        return fixture;
+    }
+
+    @Override
+    protected void externalUpdateAndStartStrategy(ModuleURN urn, Strategy newConfiguration)
+            throws Exception {
+        StrategyMXBean proxy = getProxy(urn);
+        proxy.setRoutingOrdersToORS(newConfiguration.isRouteOrdersToServer());
+        Properties properties = new Properties();
+        properties.putAll(newConfiguration.getParameters().map());
+        proxy.setParameters(Util.propertiesToString(properties));
+        mModuleManager.start(urn);
+    }
+
+    @Override
+    protected void externalUndeployStrategy(ModuleURN urn) throws Exception {
+        mModuleManager.deleteModule(urn);
+    }
+
+    @Override
+    protected void externalDeployStrategy(Strategy strategy) throws Exception {
+        Properties properties = new Properties();
+        properties.putAll(strategy.getParameters().map());
+        mModuleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                strategy.getInstanceName(), strategy.getClassName(), strategy
+                        .getLanguage(), getTempScript(), properties, strategy
+                        .isRouteOrdersToServer(),
+                SinkModuleFactory.INSTANCE_URN);
+    }
+
+    private AbstractStrategyEngineConnection createPersistingFixture() {
+        EmbeddedConnection fixture = new EmbeddedConnection(mEngine,
+                new ImmediateExecutorService(), mPersistenceService);
+        fixture.initialize();
+        return fixture;
     }
 
     private void assertModule(ModuleURN urn, ModuleState state, boolean route,
@@ -570,7 +478,5 @@ public class EmbeddedConnectionTest extends PhotonTestBase {
         public ImmutableList<Strategy> getPersisted() {
             return mPersisted;
         }
-
     }
-
 }

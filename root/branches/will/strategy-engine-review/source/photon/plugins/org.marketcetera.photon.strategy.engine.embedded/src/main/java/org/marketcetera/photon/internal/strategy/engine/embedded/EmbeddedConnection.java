@@ -26,7 +26,6 @@ import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.strategy.StrategyMXBean;
 import org.marketcetera.strategy.StrategyModuleFactory;
-import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -85,23 +84,6 @@ public class EmbeddedConnection extends AbstractStrategyEngineConnection {
     @Override
     public DeployedStrategy deploy(final Strategy strategy) throws Exception {
         Validate.notNull(strategy, "strategy"); //$NON-NLS-1$
-        final String scriptPath = strategy.getScriptPath();
-        if (scriptPath == null) {
-            throw new I18NException(
-                    Messages.EMBEDDED_CONNECTION_MISSING_SCRIPT_PATH);
-        }
-        if (strategy.getClassName() == null) {
-            throw new I18NException(
-                    Messages.EMBEDDED_CONNECTION_MISSING_CLASS_NAME);
-        }
-        if (strategy.getLanguage() == null) {
-            throw new I18NException(
-                    Messages.EMBEDDED_CONNECTION_MISSING_LANGUAGE);
-        }
-        if (strategy.getInstanceName() == null) {
-            throw new I18NException(
-                    Messages.EMBEDDED_CONNECTION_MISSING_INSTANCE_NAME);
-        }
         DeployedStrategy result;
         try {
             result = super.deploy(strategy);
