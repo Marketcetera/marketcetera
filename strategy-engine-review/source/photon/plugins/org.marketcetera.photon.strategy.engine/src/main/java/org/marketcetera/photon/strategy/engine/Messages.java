@@ -1,8 +1,6 @@
-package org.marketcetera.photon.internal.strategy.engine.embedded;
-
+package org.marketcetera.photon.strategy.engine;
 import org.marketcetera.photon.commons.ReflectiveMessages;
 import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -17,13 +15,10 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 final class Messages {
     
-    static I18NMessage0P EMBEDDED_ENGINE_IMPL__NAME;
-    static I18NMessage0P EMBEDDED_ENGINE_IMPL__DESCRIPTION;
-    static I18NMessage0P EMBEDDED_CONNECTION_SAVE_FAILED;
-    static I18NMessage1P PERSISTENCE_SERVICE_UNEXPECTED_OBJECT;
-    static I18NMessage0P PERSISTENCE_SERVICE_NO_FILE;
-    static I18NMessage0P PERSISTENCE_SERVICE_RESTORE_FAILED;
-    static I18NMessage1P PERSISTENCE_SERVICE_DEPLOY_FAILED;
+    static I18NMessage0P ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_SCRIPT_PATH;
+    static I18NMessage0P ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_CLASS_NAME;
+    static I18NMessage0P ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_LANGUAGE;
+    static I18NMessage0P ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_INSTANCE_NAME;
 
     static {
         ReflectiveMessages.init(Messages.class);

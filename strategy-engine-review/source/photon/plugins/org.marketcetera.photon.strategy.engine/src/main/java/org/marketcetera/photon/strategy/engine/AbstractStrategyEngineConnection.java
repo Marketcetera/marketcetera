@@ -2,7 +2,6 @@ package org.marketcetera.photon.strategy.engine;
 
 import java.io.File;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -21,6 +20,7 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnecti
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineConnectionImpl;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -72,6 +72,22 @@ public abstract class AbstractStrategyEngineConnection extends
     public DeployedStrategy deploy(Strategy strategy) throws Exception {
         Validate.notNull(strategy, "strategy"); //$NON-NLS-1$
         String scriptPath = strategy.getScriptPath();
+        if (scriptPath == null) {
+            throw new I18NException(
+                    Messages.ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_SCRIPT_PATH);
+        }
+        if (strategy.getClassName() == null) {
+            throw new I18NException(
+                    Messages.ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_CLASS_NAME);
+        }
+        if (strategy.getLanguage() == null) {
+            throw new I18NException(
+                    Messages.ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_LANGUAGE);
+        }
+        if (strategy.getInstanceName() == null) {
+            throw new I18NException(
+                    Messages.ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_INSTANCE_NAME);
+        }
         File script = new File(scriptPath);
         if (!script.isFile()) {
             /*
@@ -124,8 +140,7 @@ public abstract class AbstractStrategyEngineConnection extends
     @Override
     public void start(final DeployedStrategy deployedStrategy) throws Exception {
         Validate.notNull(deployedStrategy, "deployedStrategy"); //$NON-NLS-1$
-        final ModuleURN urn = deployedStrategy.getUrn();
-        validateURN(urn, "start"); //$NON-NLS-1$
+        ModuleURN urn = deployedStrategy.getUrn();
         doStart(urn);
         ExceptionUtils.launderedGet(getGUIExecutor().submit(new Runnable() {
             @Override
@@ -138,8 +153,7 @@ public abstract class AbstractStrategyEngineConnection extends
     @Override
     public void stop(final DeployedStrategy deployedStrategy) throws Exception {
         Validate.notNull(deployedStrategy, "deployedStrategy"); //$NON-NLS-1$
-        final ModuleURN urn = deployedStrategy.getUrn();
-        validateURN(urn, "stop"); //$NON-NLS-1$
+        ModuleURN urn = deployedStrategy.getUrn();
         doStop(urn);
         ExceptionUtils.launderedGet(getGUIExecutor().submit(new Runnable() {
             @Override
@@ -154,7 +168,6 @@ public abstract class AbstractStrategyEngineConnection extends
             throws Exception {
         Validate.notNull(deployedStrategy, "deployedStrategy"); //$NON-NLS-1$
         ModuleURN urn = deployedStrategy.getUrn();
-        validateURN(urn, "refresh"); //$NON-NLS-1$
         if (getDeployed().contains(urn)) {
             internalRefresh(deployedStrategy);
         } else {
@@ -217,8 +230,7 @@ public abstract class AbstractStrategyEngineConnection extends
             Strategy newConfiguration) throws Exception {
         Validate.notNull(deployedStrategy, "deployedStrategy", //$NON-NLS-1$ 
                 newConfiguration, "newConfiguration"); //$NON-NLS-1$
-        final ModuleURN urn = deployedStrategy.getUrn();
-        validateURN(urn, "update"); //$NON-NLS-1$
+        ModuleURN urn = deployedStrategy.getUrn();
         try {
             doUpdate(urn, newConfiguration);
         } finally {
@@ -230,8 +242,7 @@ public abstract class AbstractStrategyEngineConnection extends
     public void undeploy(final DeployedStrategy deployedStrategy)
             throws Exception {
         Validate.notNull(deployedStrategy, "deployedStrategy"); //$NON-NLS-1$
-        final ModuleURN urn = deployedStrategy.getUrn();
-        validateURN(urn, "undeploy"); //$NON-NLS-1$
+        ModuleURN urn = deployedStrategy.getUrn();
         if (isRunning(urn)) {
             doStop(urn);
         }
@@ -242,16 +253,6 @@ public abstract class AbstractStrategyEngineConnection extends
                 deployedStrategy.setEngine(null);
             }
         }));
-    }
-
-    private void validateURN(ModuleURN urn, String operation) {
-        if (urn == null) {
-            throw new IllegalStateException(
-                    MessageFormat
-                            .format(
-                                    "Cannot {0} a DeployedStrategy that does not have a ModuleURN", //$NON-NLS-1$
-                                    operation));
-        }
     }
 
     private DeployedStrategy internalDeploy(final String scriptPath,
