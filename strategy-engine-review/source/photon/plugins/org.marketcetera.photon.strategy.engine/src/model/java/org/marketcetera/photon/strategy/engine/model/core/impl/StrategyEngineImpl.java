@@ -328,15 +328,16 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated NOT
      */
+    @SuppressWarnings("unchecked")
     public EList<DeployedStrategy> getDeployedStrategies() {
         if (deployedStrategies == null) {
-            EObjectWithInverseResolvingEList<DeployedStrategy> delegate = new EObjectWithInverseResolvingEList<DeployedStrategy>(
+            EList<DeployedStrategy> delegate = new EObjectWithInverseResolvingEList<DeployedStrategy>(
                     DeployedStrategy.class,
                     this,
                     StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
                     StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE);
-            deployedStrategies = SynchronizedProxy.proxy(delegate,
-                    InternalEList.class);
+            deployedStrategies = (EList<DeployedStrategy>) SynchronizedProxy
+                    .proxy(delegate, InternalEList.class);
         }
         return deployedStrategies;
     }

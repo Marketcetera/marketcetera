@@ -94,10 +94,38 @@ public abstract class AbstractStrategyEngineConnectionTestBase extends
     }
 
     @Test
+    public void testDeployBlankScript() throws Exception {
+        final AbstractStrategyEngineConnection fixture = createFixture();
+        final Strategy strategy = createStrategyToDeploy();
+        strategy.setScriptPath(" ");
+        new ExpectedFailure<I18NException>(
+                "The strategy script path was not specified.") {
+            @Override
+            protected void run() throws Exception {
+                fixture.deploy(strategy);
+            }
+        };
+    }
+
+    @Test
     public void testDeployNoClassName() throws Exception {
         final AbstractStrategyEngineConnection fixture = createFixture();
         final Strategy strategy = createStrategyToDeploy();
         strategy.setClassName(null);
+        new ExpectedFailure<I18NException>(
+                "The strategy class name was not specified.") {
+            @Override
+            protected void run() throws Exception {
+                fixture.deploy(strategy);
+            }
+        };
+    }
+
+    @Test
+    public void testDeployBlankClassName() throws Exception {
+        final AbstractStrategyEngineConnection fixture = createFixture();
+        final Strategy strategy = createStrategyToDeploy();
+        strategy.setClassName("");
         new ExpectedFailure<I18NException>(
                 "The strategy class name was not specified.") {
             @Override
@@ -122,10 +150,38 @@ public abstract class AbstractStrategyEngineConnectionTestBase extends
     }
 
     @Test
+    public void testDeployBlankLanguage() throws Exception {
+        final AbstractStrategyEngineConnection fixture = createFixture();
+        final Strategy strategy = createStrategyToDeploy();
+        strategy.setLanguage("   ");
+        new ExpectedFailure<I18NException>(
+                "The strategy language was not specified.") {
+            @Override
+            protected void run() throws Exception {
+                fixture.deploy(strategy);
+            }
+        };
+    }
+
+    @Test
     public void testDeployNoInstanceName() throws Exception {
         final AbstractStrategyEngineConnection fixture = createFixture();
         final Strategy strategy = createStrategyToDeploy();
         strategy.setInstanceName(null);
+        new ExpectedFailure<I18NException>(
+                "The strategy instance name was not specified.") {
+            @Override
+            protected void run() throws Exception {
+                fixture.deploy(strategy);
+            }
+        };
+    }
+
+    @Test
+    public void testDeployBlankInstanceName() throws Exception {
+        final AbstractStrategyEngineConnection fixture = createFixture();
+        final Strategy strategy = createStrategyToDeploy();
+        strategy.setInstanceName("");
         new ExpectedFailure<I18NException>(
                 "The strategy instance name was not specified.") {
             @Override

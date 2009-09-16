@@ -102,12 +102,8 @@ public class StrategyAgentConnection extends AbstractStrategyEngineConnection {
             if (errorFound) {
                 errorMessage.append('\n');
             }
-            Throwable throwable = ((RemoteProperties) result).getThrowable();
-            String detail = null;
-            if (throwable != null) {
-                detail = throwable.getLocalizedMessage();
-            }
-            errorMessage.append(description.getText(value, detail));
+            errorMessage.append(description.getText(value,
+                    ((RemoteProperties) result).getServerMessage()));
             return true;
         }
         return false;

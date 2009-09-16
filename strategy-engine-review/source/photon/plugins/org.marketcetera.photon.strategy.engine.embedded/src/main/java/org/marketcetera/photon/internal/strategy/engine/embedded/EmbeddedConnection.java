@@ -3,7 +3,6 @@ package org.marketcetera.photon.internal.strategy.engine.embedded;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -83,7 +82,6 @@ public class EmbeddedConnection extends AbstractStrategyEngineConnection {
 
     @Override
     public DeployedStrategy deploy(final Strategy strategy) throws Exception {
-        Validate.notNull(strategy, "strategy"); //$NON-NLS-1$
         DeployedStrategy result;
         try {
             result = super.deploy(strategy);
@@ -118,8 +116,6 @@ public class EmbeddedConnection extends AbstractStrategyEngineConnection {
             throws Exception {
         StrategyMXBean proxy = getProxy(urn);
         proxy.setRoutingOrdersToORS(newConfiguration.isRouteOrdersToServer());
-        Properties properties = new Properties();
-        properties.putAll(newConfiguration.getParameters().map());
         proxy.setParameters(getPropertiesString(newConfiguration));
     }
 

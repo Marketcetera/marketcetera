@@ -3,6 +3,7 @@ package org.marketcetera.photon.internal.strategy.engine.strategyagent;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.assertDeployedStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createDeployedStrategy;
@@ -129,12 +130,17 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
     public void testConnectionException() throws Exception {
         SAClientParameters parameters = new SAClientParameters("me", "pass"
                 .toCharArray(), "url", "host", 1000);
-        ConnectionException mockException = mock(ConnectionException.class);
+        final Exception mockException = mock(ConnectionException.class);
         when(mMockFactory.create(parameters)).thenThrow(mockException);
         new ExpectedFailure<ConnectionException>(null) {
             @Override
             protected void run() throws Exception {
-                mFixture.connect();
+                try {
+                    mFixture.connect();
+                } catch (Exception e) {
+                    assertThat(e, sameInstance(mockException));
+                    throw e;
+                }
             }
         };
         assertThat(mFixture.getConnectionState(),
@@ -172,11 +178,11 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
         ModuleURN urn1 = new ModuleURN("metc:strategy:system:strat1");
         when(mMockClient.getInstances(StrategyModuleFactory.PROVIDER_URN))
                 .thenReturn(Arrays.asList(urn1));
-        when(mMockClient.getProperties(urn1))
-                .thenReturn(
-                        StrategyAgentConnectionTest.createParameters(false,
-                                "MySAStrategy2", "RUBY", ImmutableMap.of("xyz",
-                                        "123")));
+        when(mMockClient.getProperties(urn1)).thenReturn(
+                StrategyAgentConnectionTest.createParameters(false,
+                        "MySAStrategy2", "RUBY", StrategyAgentConnectionTest
+                                .getParametersString(ImmutableMap.of("xyz",
+                                        "123"))));
         when(mMockClient.getModuleInfo(urn1)).thenReturn(
                 StrategyAgentConnectionTest
                         .createModuleInfo(ModuleState.STARTED));
@@ -184,10 +190,9 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
         assertThat(mFixture.getConnectionState(), is(ConnectionState.CONNECTED));
         assertThat(mFixture.getConnection(), is(not(nullValue())));
         assertThat(mFixture.getDeployedStrategies().size(), is(1));
-        assertDeployedStrategy(mFixture.getDeployedStrategies().get(0), mFixture, StrategyState.RUNNING,
-                "strat1", "MySAStrategy2", "RUBY",
-                null, false, ImmutableMap.of(
-                        "xyz", "123"));
+        assertDeployedStrategy(mFixture.getDeployedStrategies().get(0),
+                mFixture, StrategyState.RUNNING, "strat1", "MySAStrategy2",
+                "RUBY", null, false, ImmutableMap.of("xyz", "123"));
     }
 
     @Test
@@ -203,6 +208,10 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
                 is(ConnectionState.DISCONNECTED));
         assertThat(mFixture.getConnection(), is(nullValue()));
         assertThat(mFixture.getDeployedStrategies().size(), is(0));
+        /*
+         * Disconnect again, make sure no exceptions.
+         */
+        mFixture.disconnect();
     }
 
     @Test
@@ -212,9 +221,11 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
         when(mMockFactory.create(parameters)).thenReturn(mMockClient);
         mFixture.connect();
         mLogoutService.logout();
+        verify(mMockClient).close();
         assertThat(mFixture.getConnectionState(),
                 is(ConnectionState.DISCONNECTED));
         assertThat(mFixture.getConnection(), is(nullValue()));
+        assertThat(mFixture.getDeployedStrategies().size(), is(0));
     }
 
     @Test
@@ -228,6 +239,7 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
         assertThat(mFixture.getConnectionState(),
                 is(ConnectionState.DISCONNECTED));
         assertThat(mFixture.getConnection(), is(nullValue()));
+        assertThat(mFixture.getDeployedStrategies().size(), is(0));
     }
 
     @Test
@@ -237,9 +249,11 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
         when(mMockFactory.create(parameters)).thenReturn(mMockClient);
         mFixture.connect();
         mConnectionStatusListener.receiveConnectionStatus(false);
+        verify(mMockClient).close();
         assertThat(mFixture.getConnectionState(),
                 is(ConnectionState.DISCONNECTED));
         assertThat(mFixture.getConnection(), is(nullValue()));
+        assertThat(mFixture.getDeployedStrategies().size(), is(0));
     }
 
     @Test

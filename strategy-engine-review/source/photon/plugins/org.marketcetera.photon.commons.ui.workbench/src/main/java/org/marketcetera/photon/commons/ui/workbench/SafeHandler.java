@@ -24,8 +24,7 @@ public abstract class SafeHandler extends AbstractHandler {
             executeSafely(event);
             return null;
         } catch (RuntimeException e) {
-            throw new ExecutionException(
-                    Messages.SAFE_HANDLER_UNCHECKED_EXCEPTION.getText(), e);
+            throw new ExecutionException(e.getLocalizedMessage(), e);
         }
     }
 

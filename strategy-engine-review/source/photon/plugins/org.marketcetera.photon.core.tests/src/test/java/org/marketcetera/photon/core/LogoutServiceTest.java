@@ -27,7 +27,7 @@ import org.mockito.InOrder;
 public class LogoutServiceTest extends PhotonTestBase {
 
     @Test
-    public void testLogout() {
+    public void testAdd() {
         ILogoutService fixture = new LogoutService();
         Runnable runnable1 = mock(Runnable.class);
         Runnable runnable2 = mock(Runnable.class);
@@ -135,6 +135,8 @@ public class LogoutServiceTest extends PhotonTestBase {
         Runnable runnable1 = mock(Runnable.class);
         fixture.addLogoutRunnable(runnable1);
         fixture.removeLogoutRunnable(runnable1);
+        // do it again, make sure its no-op
+        fixture.removeLogoutRunnable(runnable1);
         fixture.logout();
         verify(runnable1, never()).run();
     }
@@ -154,5 +156,16 @@ public class LogoutServiceTest extends PhotonTestBase {
                 fixture.removeLogoutRunnable(null);
             }
         };
+    }
+    
+    @Test
+    public void testDuplicateAdd() throws Exception {
+        ILogoutService fixture = new LogoutService();
+        Runnable runnable1 = mock(Runnable.class);
+        fixture.addLogoutRunnable(runnable1);
+        fixture.addLogoutRunnable(runnable1);
+        fixture.logout();
+        // one time
+        verify(runnable1).run();
     }
 }

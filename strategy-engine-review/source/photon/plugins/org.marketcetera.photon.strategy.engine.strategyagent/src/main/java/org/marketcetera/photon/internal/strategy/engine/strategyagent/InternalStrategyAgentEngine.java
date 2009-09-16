@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.marketcetera.photon.commons.ExceptionUtils;
+import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.photon.core.ICredentials;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ILogoutService;
@@ -25,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Internal engine implementation. See
- * {@link StrategyAgentEngines#createStrategyAgentEngine(ExecutorService, ICredentialsService, ILogoutService, StrategyAgentEngine)}
+ * {@link StrategyAgentEngines#createStrategyAgentEngine(StrategyAgentEngine, ExecutorService, ICredentialsService, ILogoutService)}
  * .
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
@@ -55,6 +56,8 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
     private volatile SAClient mClient;
 
     /**
+     * Constructor.
+     * 
      * @param engine
      *            the desired engine configuration
      * @param guiExecutor
@@ -66,13 +69,22 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
      * @param factory
      *            the SAClient factory
      * @param sinkDataManager
-     *            manager to send data received from remote agent
+     *            manager to send data received from remote agent, may be null
+     *            to ignore data
+     * @throws IllegalArgumentException
+     *             if engine, guiExecutor, credentialsService, logoutService, or
+     *             factory is null
      */
     public InternalStrategyAgentEngine(StrategyAgentEngine engine,
             ExecutorService guiExecutor,
             ICredentialsService credentialsService,
             ILogoutService logoutService, SAClientFactory factory,
             ISinkDataManager sinkDataManager) {
+        Validate.notNull(engine, "engine", //$NON-NLS-1$
+                guiExecutor, "guiExecutor", //$NON-NLS-1$
+                credentialsService, "credentialsService", //$NON-NLS-1$
+                logoutService, "logoutService", //$NON-NLS-1$
+                factory, "factory"); //$NON-NLS-1$
         mGUIExecutor = guiExecutor;
         mCredentialsService = credentialsService;
         mLogoutService = logoutService;
@@ -97,7 +109,8 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
                                     .create(new SAClientParameters(credentials
                                             .getUsername(), credentials
                                             .getPassword().toCharArray(),
-                                            getJmsUrl(), getWebServiceHostname(),
+                                            getJmsUrl(),
+                                            getWebServiceHostname(),
                                             getWebServicePort()));
                             return true;
                         } catch (ConnectionException e) {
@@ -117,17 +130,8 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
             @Override
             public void receiveConnectionStatus(boolean inStatus) {
                 if (!inStatus) {
-                    mLogoutService.removeLogoutRunnable(mLogoutRunnable);
                     try {
-                        ExceptionUtils.launderedGet(mGUIExecutor
-                                .submit(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        setConnection(null);
-                                        setConnectionState(ConnectionState.DISCONNECTED);
-                                        getDeployedStrategies().clear();
-                                    }
-                                }));
+                        disconnect();
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
@@ -135,12 +139,14 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
             }
         });
 
-        mClient.addDataReceiver(new DataReceiver() {
-            @Override
-            public void receiveData(Object inObject) {
-                 mSinkDataManager.sendData(getName(), inObject);
-            }
-        });
+        if (mSinkDataManager != null) {
+            mClient.addDataReceiver(new DataReceiver() {
+                @Override
+                public void receiveData(Object inObject) {
+                    mSinkDataManager.sendData(getName(), inObject);
+                }
+            });
+        }
 
         mLogoutService.addLogoutRunnable(mLogoutRunnable);
         final StrategyAgentConnection newConnection = new StrategyAgentConnection(
@@ -157,7 +163,10 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
     }
 
     @Override
-    public void disconnect() throws Exception {
+    public void disconnect() throws InterruptedException {
+        if (mClient == null) {
+            return;
+        }
         mClient.close();
         mClient = null;
         mLogoutService.removeLogoutRunnable(mLogoutRunnable);

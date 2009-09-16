@@ -153,4 +153,31 @@ public class CustomWizardPageSupportTest {
         assertThat(mWizardPage.isPageComplete(), is(true));
     }
 
+    @Test
+    @UI
+    public void testErrorGoesAwayWhenFixed() {
+        final WritableValue status1 = new WritableValue(ValidationStatus.error("error"), IStatus.class);
+        final MultiValidator validator1 = new MultiValidator() {
+            @Override
+            protected IStatus validate() {
+                return (IStatus) status1.getValue();
+            }
+        };
+        mDataBindingContext.addValidationStatusProvider(validator1);
+        final WritableValue status2 = new WritableValue(new RequiredStatus("required"), IStatus.class);
+        final MultiValidator validator2 = new MultiValidator() {
+            @Override
+            protected IStatus validate() {
+                return (IStatus) status2.getValue();
+            }
+        };
+        mDataBindingContext.addValidationStatusProvider(validator2);
+        mWizardDialog.open();
+        assertThat(mWizardPage.getErrorMessage(), is("error"));
+        assertThat(mWizardPage.isPageComplete(), is(false));
+        status1.setValue(ValidationStatus.ok());
+        assertThat(mWizardPage.getErrorMessage(), nullValue());
+        assertThat(mWizardPage.isPageComplete(), is(false));
+    }
+
 }

@@ -2,7 +2,6 @@ package org.marketcetera.photon.strategy.engine.strategyagent;
 
 import java.util.concurrent.ExecutorService;
 
-import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.internal.strategy.engine.strategyagent.InternalStrategyAgentEngine;
@@ -42,27 +41,23 @@ public class StrategyAgentEngines {
      * <li>All updates to the model are performed synchronously using the
      * guiExecutor.</li>
      * </ol>
-     * 
+     * @param engine
+     *            the desired engine configuration
      * @param guiExecutor
      *            the executor to run tasks that change the model state
      * @param credentialsService
      *            the service to use to authenticate connections
      * @param logoutService
      *            the service used to disconnect remote connections on logout
-     * @param engine
-     *            the desired engine configuration
+     * 
      * @return the ready-to-use strategy agent engine
      * @throws IllegalArgumentException
      *             if any parameter is null
      */
     public static StrategyAgentEngine createStrategyAgentEngine(
+            StrategyAgentEngine engine,
             ExecutorService guiExecutor,
-            ICredentialsService credentialsService,
-            ILogoutService logoutService, StrategyAgentEngine engine) {
-        Validate.notNull(guiExecutor, "guiExecutor", //$NON-NLS-1$
-                credentialsService, "credentialsService", //$NON-NLS-1$
-                logoutService, "logoutService", //$NON-NLS-1$
-                engine, "engine"); //$NON-NLS-1$
+            ICredentialsService credentialsService, ILogoutService logoutService) {
         return new InternalStrategyAgentEngine(engine, guiExecutor,
                 credentialsService, logoutService, SAClientFactory
                         .getInstance(), ModuleSupport.getSinkDataManager());

@@ -48,7 +48,7 @@ public class DisplayThreadExecutorTest extends SimpleExecutorServiceTestBase {
             public void run() {
                 mDisplay = new Display();
                 latch.countDown();
-                while (!Thread.currentThread().isInterrupted()) {
+                while (!mDisplay.isDisposed() && !Thread.currentThread().isInterrupted()) {
                     mDisplay.readAndDispatch();
                     Thread.yield();
                 }

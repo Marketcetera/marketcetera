@@ -11,7 +11,6 @@ Export-Package: org.marketcetera.photon.strategy.engine.model.core.test,
 Import-Package: org.hamcrest,
  org.junit,
  org.junit.runner,
- org.junit.runners,
- org.mockito
+ org.junit.runners
 Require-Bundle: org.marketcetera.photon.test,
  org.marketcetera.core.tests

@@ -1,5 +1,11 @@
 package org.marketcetera.photon.strategy.engine;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
 
 import java.io.File;
@@ -67,7 +73,7 @@ public class AbstractStrategyEngineConnectionTest extends AbstractStrategyEngine
         protected ModuleURN doDeploy(Strategy strategy, File script)
                 throws Exception {
             ModuleURN urn = new ModuleURN("metc:strategy:system:" + strategy.getInstanceName());
-            mDeployedStrategies.put(urn, strategy);
+            assertNull(mDeployedStrategies.put(urn, strategy));
             return urn;
         }
 
@@ -85,18 +91,18 @@ public class AbstractStrategyEngineConnectionTest extends AbstractStrategyEngine
 
         @Override
         protected void doStart(ModuleURN urn) throws Exception {
-            mRunning.add(urn);
+            assertTrue(mRunning.add(urn));
         }
 
         @Override
         protected void doStop(ModuleURN urn) throws Exception {
-            mRunning.remove(urn);
+            assertTrue(mRunning.remove(urn));
         }
 
         @Override
         protected void doUndeploy(ModuleURN urn) throws Exception {
-            mDeployedStrategies.remove(urn);
-            mRunning.remove(urn);
+            assertThat(mRunning, not(hasItem(urn)));
+            assertNotNull(mDeployedStrategies.remove(urn));
         }
 
         @Override
