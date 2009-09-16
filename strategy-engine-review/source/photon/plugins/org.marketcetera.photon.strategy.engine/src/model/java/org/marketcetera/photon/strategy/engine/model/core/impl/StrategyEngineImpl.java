@@ -245,9 +245,9 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
+     * @generated NOT
      */
-    public StrategyEngineConnection getConnection() {
+    public synchronized StrategyEngineConnection getConnection() {
         if (connection != null && connection.eIsProxy()) {
             InternalEObject oldConnection = (InternalEObject) connection;
             connection = (StrategyEngineConnection) eResolveProxy(oldConnection);
@@ -329,7 +329,7 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated NOT
      */
     @SuppressWarnings("unchecked")
-    public EList<DeployedStrategy> getDeployedStrategies() {
+    public synchronized EList<DeployedStrategy> getDeployedStrategies() {
         if (deployedStrategies == null) {
             EList<DeployedStrategy> delegate = new EObjectWithInverseResolvingEList<DeployedStrategy>(
                     DeployedStrategy.class,
