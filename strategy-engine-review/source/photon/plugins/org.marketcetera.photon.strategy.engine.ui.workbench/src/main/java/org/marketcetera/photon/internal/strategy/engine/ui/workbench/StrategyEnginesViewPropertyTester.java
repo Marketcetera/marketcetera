@@ -22,6 +22,8 @@ public class StrategyEnginesViewPropertyTester extends PropertyTester {
 
     private static final String DISCONNECT_COMMAND_HANDLED_PROPERTY = "disconnectCommandHandled"; //$NON-NLS-1$
     private static final String CONNECT_COMMAND_HANDLED_PROPERTY = "connectCommandHandled"; //$NON-NLS-1$
+    private static final String DELETE_COMMAND_HANDLED_PROPERTY = "deleteCommandHandled"; //$NON-NLS-1$
+    private static final String DELETE_COMMAND_ID = "org.eclipse.ui.edit.delete"; //$NON-NLS-1$
 
     @Override
     public boolean test(Object receiver, String property, Object[] args,
@@ -40,6 +42,13 @@ public class StrategyEnginesViewPropertyTester extends PropertyTester {
             return Boolean.valueOf(
                     service.getCommand(
                             StrategyEngineWorkbenchUI.DISCONNECT_COMMAND_ID)
+                            .isHandled()).equals(expectedValue);
+        } else if (DELETE_COMMAND_HANDLED_PROPERTY.equals(property)) {
+            ICommandService service = (ICommandService) view.getViewSite()
+                    .getService(ICommandService.class);
+            return Boolean.valueOf(
+                    service.getCommand(
+                            DELETE_COMMAND_ID)
                             .isHandled()).equals(expectedValue);
         } else {
             throw new IllegalArgumentException(MessageFormat.format(

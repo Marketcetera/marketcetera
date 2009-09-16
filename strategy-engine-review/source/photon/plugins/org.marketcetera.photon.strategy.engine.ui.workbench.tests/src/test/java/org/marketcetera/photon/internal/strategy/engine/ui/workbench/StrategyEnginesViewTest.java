@@ -201,7 +201,8 @@ public class StrategyEnginesViewTest {
         activateMockHandler("org.marketcetera.photon.strategy.engine.ui.workbench.connect");
         item.select();
         singleEngineSelectionHelper(tree, true, true, true, true, true);
-        assertThat(SWTTestUtil.getMenuItems(tree).get("Connect").isEnabled(), is(false));
+        assertThat(SWTTestUtil.getMenuItems(tree).get("Connect").isEnabled(),
+                is(false));
     }
 
     @Test
@@ -211,7 +212,9 @@ public class StrategyEnginesViewTest {
         activateMockHandler("org.marketcetera.photon.strategy.engine.ui.workbench.disconnect");
         item.select();
         singleEngineSelectionHelper(tree, true, true, true, true, true);
-        assertThat(SWTTestUtil.getMenuItems(tree).get("Disconnect").isEnabled(), is(false));
+        assertThat(
+                SWTTestUtil.getMenuItems(tree).get("Disconnect").isEnabled(),
+                is(false));
     }
 
     @Test
@@ -221,14 +224,29 @@ public class StrategyEnginesViewTest {
         activateMockHandler("org.marketcetera.photon.strategy.engine.ui.workbench.connect");
         activateMockHandler("org.marketcetera.photon.strategy.engine.ui.workbench.disconnect");
         item.select();
-        assertThat(SWTTestUtil.getMenuItems(tree).get("Connect").isEnabled(), is(false));
-        assertThat(SWTTestUtil.getMenuItems(tree).get("Disconnect").isEnabled(), is(false));
+        assertThat(SWTTestUtil.getMenuItems(tree).get("Connect").isEnabled(),
+                is(false));
+        assertThat(
+                SWTTestUtil.getMenuItems(tree).get("Disconnect").isEnabled(),
+                is(false));
     }
-    
+
+    @Test
+    public void testDeleteCommandHandled() throws Exception {
+        SWTBotTree tree = mViewBot.tree();
+        SWTBotTreeItem item = tree.getAllItems()[0];
+        activateMockHandler("org.eclipse.ui.edit.delete");
+        item.select();
+        singleEngineSelectionHelper(tree, true, true, true, true, true);
+        assertThat(SWTTestUtil.getMenuItems(tree).get("Delete\tDelete")
+                .isEnabled(), is(false));
+    }
+
     @Test
     @UI
     public void testIStrategyEnginesAPI() throws Exception {
-        assertThat(mFixture.getRealView().getStrategyEngines(), is((IObservableList) mModel));
+        assertThat(mFixture.getRealView().getStrategyEngines(),
+                is((IObservableList) mModel));
         int size = mModel.size();
         StrategyEngine newEngine = createEngine("asdf");
         mFixture.getRealView().addEngine(newEngine);
@@ -237,7 +255,7 @@ public class StrategyEnginesViewTest {
         mFixture.getRealView().removeEngine(newEngine);
         assertThat(mModel.size(), is(size));
     }
-    
+
     @Test
     public void testDoubleClick() throws Exception {
         SWTBotTreeItem item = mViewBot.tree().getAllItems()[0];
@@ -361,7 +379,8 @@ public class StrategyEnginesViewTest {
         });
     }
 
-    private void assertStrategyStarted(SWTBotTree tree, SWTBotTreeItem item) throws Exception {
+    private void assertStrategyStarted(SWTBotTree tree, SWTBotTreeItem item)
+            throws Exception {
         item.select();
         mViewBot.waitUntil(itemImageIsReplaced(item,
                 StrategyEngineImage.STRATEGY_OBJ.getImageDescriptor(),
@@ -369,7 +388,8 @@ public class StrategyEnginesViewTest {
         singleStrategySelectionHelper(tree, true, false, true, true, true);
     }
 
-    private void assertStrategyStopped(SWTBotTree tree, SWTBotTreeItem item) throws Exception {
+    private void assertStrategyStopped(SWTBotTree tree, SWTBotTreeItem item)
+            throws Exception {
         item.select();
         mViewBot.waitUntil(itemImageIsReplaced(item,
                 StrategyEngineImage.STRATEGY_OBJ.getImageDescriptor(),
@@ -377,7 +397,8 @@ public class StrategyEnginesViewTest {
         singleStrategySelectionHelper(tree, true, true, false, true, true);
     }
 
-    private void assertEngineConnected(SWTBotTree tree, SWTBotTreeItem item) throws Exception {
+    private void assertEngineConnected(SWTBotTree tree, SWTBotTreeItem item)
+            throws Exception {
         item.select();
         mViewBot.waitUntil(itemImageIsReplaced(item,
                 StrategyEngineImage.ENGINE_OBJ.getImageDescriptor(),
@@ -385,7 +406,8 @@ public class StrategyEnginesViewTest {
         singleEngineSelectionHelper(tree, true, true, true, true, true);
     }
 
-    private void assertEngineDisconnected(SWTBotTreeItem item, SWTBotTree tree) throws Exception {
+    private void assertEngineDisconnected(SWTBotTreeItem item, SWTBotTree tree)
+            throws Exception {
         mViewBot.waitUntil(itemImageIsReplaced(item,
                 StrategyEngineImage.ENGINE_OBJ.getImageDescriptor(),
                 StrategyEngineImage.ENGINE_DISCONNECTED_OBJ
@@ -395,15 +417,17 @@ public class StrategyEnginesViewTest {
         singleEngineSelectionHelper(tree, false, false, false, false, true);
     }
 
-    private void singleEngineSelectionHelper(SWTBotTree tree, boolean deployEnabled,
-            boolean startAllEnabled, boolean stopAllEnabled,
-            boolean refreshEnabled, boolean propertiesEnabled) throws Exception {
+    private void singleEngineSelectionHelper(SWTBotTree tree,
+            boolean deployEnabled, boolean startAllEnabled,
+            boolean stopAllEnabled, boolean refreshEnabled,
+            boolean propertiesEnabled) throws Exception {
         Map<String, MenuState> items = SWTTestUtil.getMenuItems(tree);
         assertThat(items.get("Deploy...").isEnabled(), is(deployEnabled));
         assertThat(items.get("Start All").isEnabled(), is(startAllEnabled));
         assertThat(items.get("Stop All").isEnabled(), is(stopAllEnabled));
         assertThat(items.get("Refresh\tF5").isEnabled(), is(refreshEnabled));
-        assertThat(items.get("Properties\tAlt+Enter").isEnabled(), is(propertiesEnabled));
+        assertThat(items.get("Properties\tAlt+Enter").isEnabled(),
+                is(propertiesEnabled));
     }
 
     private void singleStrategySelectionHelper(SWTBotTree tree,
@@ -414,7 +438,8 @@ public class StrategyEnginesViewTest {
         assertThat(items.get("Start").isEnabled(), is(startEnabled));
         assertThat(items.get("Stop").isEnabled(), is(stopEnabled));
         assertThat(items.get("Refresh\tF5").isEnabled(), is(refreshEnabled));
-        assertThat(items.get("Properties\tAlt+Enter").isEnabled(), is(propertiesEnabled));
+        assertThat(items.get("Properties\tAlt+Enter").isEnabled(),
+                is(propertiesEnabled));
     }
 
     private void multiEngineSelectionHelper(SWTBotTree tree,

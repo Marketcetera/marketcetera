@@ -3,6 +3,7 @@ package org.marketcetera.photon.strategy.engine.strategyagent.ui.workbench.tests
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.ConnectHandlerTest;
+import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.DeleteHandlerTest;
 import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.DisconnectHandlerTest;
 import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.NewStrategyAgentHandlerTest;
 import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.StrategyAgentConnectionPropertyPageTest;
@@ -20,7 +21,7 @@ import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workben
 @Suite.SuiteClasses( {
         org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.MessagesTest.class,
         NewStrategyAgentHandlerTest.class, ConnectHandlerTest.class,
-        DisconnectHandlerTest.class,
+        DisconnectHandlerTest.class, DeleteHandlerTest.class,
         StrategyAgentConnectionPropertyPageTest.class })
 public class StrategyAgentEngineWorkbenchUISuite {
 }

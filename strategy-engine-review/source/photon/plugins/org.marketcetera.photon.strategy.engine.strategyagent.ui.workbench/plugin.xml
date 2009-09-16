@@ -58,6 +58,15 @@
          </enabledWhen>
       </handler>
       <handler
+            class="org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.DeleteHandler"
+            commandId="org.eclipse.ui.edit.delete">
+         <activeWhen>
+            <reference
+                  definitionId="org.marketcetera.photon.strategy.engine.strategyagent.ui.workbench.strategyAgentSelected">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
             class="org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.NewStrategyAgentHandler"
             commandId="org.marketcetera.photon.strategy.engine.strategyagent.ui.workbench.newStrategyAgent">
          <enabledWhen>

@@ -1,6 +1,7 @@
 package org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench;
 
 import org.marketcetera.photon.commons.ReflectiveMessages;
+import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -20,6 +21,8 @@ final class Messages {
     static I18NMessage1P CONNECT_HANDLER_FAILED;
     static I18NMessage1P DISCONNECT_HANDLER__TASK_NAME;
     static I18NMessage1P DISCONNECT_HANDLER_FAILED;
+    static I18NMessage0P DELETE_HANDLER_CONFIRMATION__TITLE;
+    static I18NMessage1P DELETE_HANDLER_CONFIRMATION;
 
     static {
         ReflectiveMessages.init(Messages.class);
