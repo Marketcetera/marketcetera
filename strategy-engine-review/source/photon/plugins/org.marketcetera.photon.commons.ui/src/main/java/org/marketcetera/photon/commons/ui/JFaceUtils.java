@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -214,6 +215,69 @@ public final class JFaceUtils {
                 }
             }
         };
+    }
+
+    /**
+     * Convenience utility that creates a {@link SubMonitor}, handles checked
+     * exceptions, and calls {@link IProgressMonitor#done()} on the parent
+     * progress monitor.
+     * 
+     * @param runnable
+     *            the code that does the actual work
+     * @param work
+     *            the amount of work to be done
+     * @return a runnable that can safely be used
+     */
+    public static IRunnableWithProgress safeRunnableWithProgress(
+            final IUnsafeRunnableWithProgress runnable, final int work) {
+        Validate.notNull(runnable, "runnable"); //$NON-NLS-1$
+        return new IRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor)
+                    throws InvocationTargetException, InterruptedException {
+                SubMonitor progress = SubMonitor.convert(monitor, work);
+                try {
+                    runnable.run(progress);
+                } catch (InterruptedException e) {
+                    // propagate InterruptedException since it has special
+                    // meaning, i.e. cancellation
+                    throw e;
+                } catch (Exception e) {
+                    throw new InvocationTargetException(e);
+                } finally {
+                    if (monitor != null) {
+                        monitor.done();
+                    }
+                }
+            }
+        };
+    }
+
+    /**
+     * Interface to be used with
+     * {@link JFaceUtils#safeRunnableWithProgress(IUnsafeRunnableWithProgress)}.
+     */
+    @ClassVersion("$Id$")
+    public interface IUnsafeRunnableWithProgress {
+
+        /**
+         * Runs this operation. Progress should be reported to the given
+         * progress sub monitor. A request to cancel the operation should be
+         * honored and acknowledged by throwing
+         * <code>InterruptedException</code>.
+         * 
+         * @param monitor
+         *            the progress monitor to use to display progress and
+         *            receive requests for cancelation, implementers should not
+         *            call {@link IProgressMonitor#done()}.
+         * @throws InterruptedException
+         *             if the operation detects a request to cancel, using
+         *             <code>IProgressMonitor.isCanceled()</code>, it should
+         *             exit by throwing <code>InterruptedException</code>
+         * @throws Exception
+         *             if an exception occurs
+         */
+        void run(SubMonitor monitor) throws Exception;
     }
 
     private JFaceUtils() {

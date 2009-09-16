@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.log4j.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.IShellProvider;
@@ -23,6 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
+import org.marketcetera.photon.commons.ui.JFaceUtils.IUnsafeRunnableWithProgress;
+import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
@@ -276,6 +279,66 @@ public class JFaceUtilsTest extends PhotonTestBase {
             protected void run() throws Exception {
                 JFaceUtils.runWithErrorDialog(mMockContext,
                         mock(Callable.class), null);
+            }
+        };
+    }
+
+    @Test
+    public void testSafeRunnableParentMonitorDone() throws Exception {
+        IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
+        JFaceUtils.safeRunnableWithProgress(new IUnsafeRunnableWithProgress() {
+            @Override
+            public void run(SubMonitor monitor)
+                    throws InvocationTargetException, Exception {
+                monitor.worked(990);
+                monitor.worked(20);
+            }
+        }, 1000).run(mockMonitor);
+        verify(mockMonitor).beginTask("", 1000);
+        verify(mockMonitor).worked(990);
+        // only 10 are used since only ten are left
+        verify(mockMonitor).worked(10);
+        verify(mockMonitor).done();
+    }
+
+    @Test
+    public void testSafeRunnableInterruptedException() throws Exception {
+        final IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
+        new ExpectedFailure<InterruptedException>(null) {
+            @Override
+            protected void run() throws Exception {
+                JFaceUtils.safeRunnableWithProgress(
+                        new IUnsafeRunnableWithProgress() {
+                            @Override
+                            public void run(SubMonitor monitor)
+                                    throws Exception {
+                                throw new InterruptedException();
+                            }
+                        }, 1).run(mockMonitor);
+            }
+        };
+    }
+
+    @Test
+    public void testSafeRunnableException() throws Exception {
+        final IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
+        final Exception exception = new Exception();
+        new ExpectedFailure<InvocationTargetException>(null) {
+            @Override
+            protected void run() throws Exception {
+                try {
+                    JFaceUtils.safeRunnableWithProgress(
+                            new IUnsafeRunnableWithProgress() {
+                                @Override
+                                public void run(SubMonitor monitor)
+                                        throws Exception {
+                                    throw exception;
+                                }
+                            }, 1).run(mockMonitor);
+                } catch (InvocationTargetException e) {
+                    assertThat(e.getCause(), is((Throwable) exception));
+                    throw e;
+                }
             }
         };
     }

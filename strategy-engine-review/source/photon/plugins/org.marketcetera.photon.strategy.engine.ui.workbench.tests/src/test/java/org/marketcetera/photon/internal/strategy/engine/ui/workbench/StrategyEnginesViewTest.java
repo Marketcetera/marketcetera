@@ -310,7 +310,7 @@ public class StrategyEnginesViewTest {
         final SWTBotTreeItem parent = tree.getAllItems()[0];
         parent.expand();
         parent.select("strat1", "strat2");
-        multiStrategySelectionHelper(tree, true, true, false, true);
+        multiStrategySelectionHelper(tree, true, true, false, true, false);
 
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
@@ -318,7 +318,7 @@ public class StrategyEnginesViewTest {
                 mStrategy1.setState(StrategyState.RUNNING);
             }
         });
-        multiStrategySelectionHelper(tree, true, true, true, true);
+        multiStrategySelectionHelper(tree, true, true, true, true, true);
 
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
@@ -327,7 +327,7 @@ public class StrategyEnginesViewTest {
                 mStrategy2.setState(StrategyState.RUNNING);
             }
         });
-        multiStrategySelectionHelper(tree, true, false, true, true);
+        multiStrategySelectionHelper(tree, true, false, true, true, true);
 
         /*
          * Would like to test combination of engine/strategy selection but can't
@@ -385,7 +385,7 @@ public class StrategyEnginesViewTest {
         mViewBot.waitUntil(itemImageIsReplaced(item,
                 StrategyEngineImage.STRATEGY_OBJ.getImageDescriptor(),
                 StrategyEngineImage.STRATEGY_RUNNING_OBJ.getImageDescriptor()));
-        singleStrategySelectionHelper(tree, true, false, true, true, true);
+        singleStrategySelectionHelper(tree, true, false, true, true, true, true);
     }
 
     private void assertStrategyStopped(SWTBotTree tree, SWTBotTreeItem item)
@@ -394,7 +394,7 @@ public class StrategyEnginesViewTest {
         mViewBot.waitUntil(itemImageIsReplaced(item,
                 StrategyEngineImage.STRATEGY_OBJ.getImageDescriptor(),
                 StrategyEngineImage.STRATEGY_STOPPED_OBJ.getImageDescriptor()));
-        singleStrategySelectionHelper(tree, true, true, false, true, true);
+        singleStrategySelectionHelper(tree, true, true, false, true, true, false);
     }
 
     private void assertEngineConnected(SWTBotTree tree, SWTBotTreeItem item)
@@ -432,7 +432,7 @@ public class StrategyEnginesViewTest {
 
     private void singleStrategySelectionHelper(SWTBotTree tree,
             boolean undeployEnabled, boolean startEnabled, boolean stopEnabled,
-            boolean refreshEnabled, boolean propertiesEnabled) throws Exception {
+            boolean refreshEnabled, boolean propertiesEnabled, boolean restartEnabled) throws Exception {
         Map<String, MenuState> items = SWTTestUtil.getMenuItems(tree);
         assertThat(items.get("Undeploy").isEnabled(), is(undeployEnabled));
         assertThat(items.get("Start").isEnabled(), is(startEnabled));
@@ -440,6 +440,7 @@ public class StrategyEnginesViewTest {
         assertThat(items.get("Refresh\tF5").isEnabled(), is(refreshEnabled));
         assertThat(items.get("Properties\tAlt+Enter").isEnabled(),
                 is(propertiesEnabled));
+        assertThat(items.get("Restart").isEnabled(), is(restartEnabled));
     }
 
     private void multiEngineSelectionHelper(SWTBotTree tree,
@@ -453,11 +454,12 @@ public class StrategyEnginesViewTest {
 
     private void multiStrategySelectionHelper(SWTBotTree tree,
             boolean undeployEnabled, boolean startEnabled, boolean stopEnabled,
-            boolean refreshEnabled) throws Exception {
+            boolean refreshEnabled, boolean restartEnabled) throws Exception {
         Map<String, MenuState> items = SWTTestUtil.getMenuItems(tree);
         assertThat(items.get("Undeploy").isEnabled(), is(undeployEnabled));
         assertThat(items.get("Start").isEnabled(), is(startEnabled));
         assertThat(items.get("Stop").isEnabled(), is(stopEnabled));
         assertThat(items.get("Refresh\tF5").isEnabled(), is(refreshEnabled));
+        assertThat(items.get("Restart").isEnabled(), is(restartEnabled));
     }
 }

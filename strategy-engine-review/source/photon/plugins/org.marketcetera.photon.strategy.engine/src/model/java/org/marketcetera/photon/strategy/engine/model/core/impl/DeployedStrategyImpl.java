@@ -113,9 +113,9 @@ public class DeployedStrategyImpl extends StrategyImpl implements
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
+     * @generated NOT
      */
-    public StrategyEngine getEngine() {
+    public synchronized StrategyEngine getEngine() {
         if (engine != null && engine.eIsProxy()) {
             InternalEObject oldEngine = (InternalEObject) engine;
             engine = (StrategyEngine) eResolveProxy(oldEngine);

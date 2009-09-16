@@ -208,6 +208,7 @@ public class StrategyEnginesView extends CommonNavigator implements
                                 .activateContext(StrategyEngineWorkbenchUI.STRATEGY_ENGINES_VIEW_READY_CONTEXT_ID);
                     }
                     getCommonViewer().setInput(mInput);
+                    getCommonViewer().expandAll();
                 }
             }
         });
