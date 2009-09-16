@@ -23,6 +23,7 @@ import org.marketcetera.photon.commons.ValidateTest.ExpectedNullElementFailure;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
+import org.marketcetera.photon.strategy.engine.model.core.impl.DeployedStrategyImpl;
 import org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.MockConnection;
 import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.photon.test.PhotonTestBase;
@@ -115,14 +116,14 @@ public class PersistenceServiceTest extends PhotonTestBase {
                 "file1", false, ImmutableMap.of("key1", "value1"));
         assertStrategy(deployed.get(1), "strat2", "class2", "language2",
                 "file2", false, ImmutableMap.of("key2", "value2"));
-        
+
     }
 
     @Test
     public void testUnexpectedObjectIgnored() throws Exception {
         setLevel(PersistenceService.class.getName(), Level.WARN); // skip debug
-                                                                  // for this
-                                                                  // test
+        // for this
+        // test
         XMLResourceImpl resource = new XMLResourceImpl(URI
                 .createFileURI(mTempFile.toString()));
         resource.getContents().add(mEngine);
@@ -163,13 +164,13 @@ public class PersistenceServiceTest extends PhotonTestBase {
 
     @Test
     public void testDeployFailureErrors() throws Exception {
-        setLevel(PersistenceService.class.getName(), Level.WARN); // skip debug
-                                                                  // for this
-                                                                  // test
-        final DeployedStrategy strat1 = createDeployedStrategy("asdf");
-        final DeployedStrategy strat2 = createDeployedStrategy("xyz");
+        setLevel(PersistenceService.class.getName(), Level.WARN);
+        DeployedStrategy strat1 = createDeployedStrategy("asdf");
+        strat1.setScriptPath("path");
+        DeployedStrategy strat2 = createDeployedStrategy("xyz");
+        strat2.setScriptPath("path");
         mFixture.save(Arrays.asList(strat1, strat2));
-        final MockConnection mockConnection = new MockConnection() {
+        MockConnection mockConnection = new MockConnection() {
             public DeployedStrategy deploy(Strategy strategy) throws Exception {
                 if (strategy.getInstanceName().equals("asdf")) {
                     throw new Exception();
@@ -186,6 +187,33 @@ public class PersistenceServiceTest extends PhotonTestBase {
                 Level.ERROR,
                 PersistenceService.class.getName(),
                 "Failed to deploy strategy with instance name 'asdf' when attempting to restore persisted state for the embedded engine.",
+                PersistenceService.class.getName());
+    }
+
+    @Test
+    public void testStrategWithoutScriptIgnored() throws Exception {
+        setLevel(PersistenceService.class.getName(), Level.WARN);
+        /*
+         * Override toString for easy message validation.
+         */
+        DeployedStrategy strat1 = new DeployedStrategyImpl() {
+            @Override
+            public String toString() {
+                return getInstanceName();
+            }
+        };
+        strat1.setInstanceName("asdf");
+        DeployedStrategy strat2 = createDeployedStrategy("xyz");
+        strat2.setScriptPath("path");
+        mFixture.save(Arrays.asList(strat1, strat2));
+        mFixture.restore(mEngine.getConnection());
+        List<DeployedStrategy> deployed = mEngine.getDeployedStrategies();
+        assertThat(deployed.size(), is(1));
+        assertThat(deployed.get(0).getInstanceName(), is("xyz"));
+        assertSingleEvent(
+                Level.WARN,
+                PersistenceService.class.getName(),
+                "Did not save strategy because script path is missing and it will not be able to be restored: 'asdf'",
                 PersistenceService.class.getName());
     }
 

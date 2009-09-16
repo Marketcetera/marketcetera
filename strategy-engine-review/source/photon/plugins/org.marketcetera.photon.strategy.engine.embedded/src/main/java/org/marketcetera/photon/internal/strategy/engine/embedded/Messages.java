@@ -24,6 +24,7 @@ final class Messages {
     static I18NMessage0P PERSISTENCE_SERVICE_NO_FILE;
     static I18NMessage0P PERSISTENCE_SERVICE_RESTORE_FAILED;
     static I18NMessage1P PERSISTENCE_SERVICE_DEPLOY_FAILED;
+    static I18NMessage1P PERSISTENCE_SERVICE_IGNORED_STRATEGY_WITH_NO_SCRIPT_PATH;
 
     static {
         ReflectiveMessages.init(Messages.class);
