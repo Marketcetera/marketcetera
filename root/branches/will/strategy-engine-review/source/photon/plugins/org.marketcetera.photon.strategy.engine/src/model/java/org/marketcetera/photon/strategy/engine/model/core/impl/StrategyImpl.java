@@ -297,7 +297,7 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
      * @generated NOT
      */
     @SuppressWarnings("unchecked")
-    public EMap<String, String> getParameters() {
+    public synchronized EMap<String, String> getParameters() {
         if (parameters == null) {
             EMap<String, String> delegate = new EcoreEMap<String, String>(
                     StrategyEngineCorePackage.Literals.STRING_TO_STRING_MAP_ENTRY,
