@@ -366,6 +366,20 @@
             </visibleWhen>
          </command>
          <command
+               commandId="org.eclipse.ui.edit.delete"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="activePart">
+                  <test
+                        property="org.marketcetera.photon.strategy.engine.ui.workbench.strategyEnginesView.deleteCommandHandled"
+                        value="true">
+                  </test>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
                commandId="org.eclipse.ui.file.properties"
                style="push">
             <visibleWhen
@@ -442,7 +456,7 @@
             class="org.marketcetera.photon.internal.strategy.engine.ui.workbench.StrategyEnginesViewPropertyTester"
             id="org.marketcetera.photon.strategy.engine.ui.workbench.strategyEnginesViewPropertyTester"
             namespace="org.marketcetera.photon.strategy.engine.ui.workbench.strategyEnginesView"
-            properties="connectCommandHandled,disconnectCommandHandled"
+            properties="connectCommandHandled,disconnectCommandHandled,deleteCommandHandled"
             type="org.marketcetera.photon.internal.strategy.engine.ui.workbench.StrategyEnginesView">
       </propertyTester>
    </extension>
