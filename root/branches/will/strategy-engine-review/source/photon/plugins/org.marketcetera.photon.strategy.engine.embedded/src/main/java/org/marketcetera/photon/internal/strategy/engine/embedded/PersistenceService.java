@@ -2,10 +2,12 @@ package org.marketcetera.photon.internal.strategy.engine.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.photon.commons.emf.EMFFilePersistence;
@@ -14,7 +16,7 @@ import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -86,12 +88,21 @@ public final class PersistenceService implements IPersistenceService {
     }
 
     @Override
-    public synchronized void save(List<? extends Strategy> strategies) throws IOException {
+    public synchronized void save(List<? extends Strategy> strategies)
+            throws IOException {
         Validate.noNullElements(strategies, "strategies"); //$NON-NLS-1$
-        ImmutableList<? extends Strategy> copy = ImmutableList
-                .copyOf(strategies);
         if (mLoading) {
             return;
+        }
+        List<? extends Strategy> copy = Lists.newArrayList(strategies);
+        for (Iterator<? extends Strategy> iterator = copy.iterator(); iterator
+                .hasNext();) {
+            Strategy strategy = (Strategy) iterator.next();
+            if (StringUtils.isBlank(strategy.getScriptPath())) {
+                Messages.PERSISTENCE_SERVICE_IGNORED_STRATEGY_WITH_NO_SCRIPT_PATH
+                        .warn(this, strategy);
+                iterator.remove();
+            }
         }
         mEMFPersistence.save(copy);
     }
