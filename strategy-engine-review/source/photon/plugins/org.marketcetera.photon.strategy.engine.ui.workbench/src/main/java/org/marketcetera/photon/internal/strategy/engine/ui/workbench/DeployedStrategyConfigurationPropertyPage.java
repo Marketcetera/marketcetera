@@ -225,6 +225,9 @@ public class DeployedStrategyConfigurationPropertyPage extends DataBindingProper
             }
         });
         ((GridLayout) parent.getLayout()).numColumns++;
+        if (mOriginalStrategy.getState().equals(StrategyState.RUNNING)) {
+            addButton.setEnabled(false);
+        }
     }
 
     @Override
