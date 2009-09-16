@@ -14,6 +14,7 @@ import org.marketcetera.photon.internal.strategy.engine.ui.workbench.StrategyEng
 import org.marketcetera.photon.internal.strategy.engine.ui.workbench.StrategyEnginesViewTest;
 import org.marketcetera.photon.internal.strategy.engine.ui.workbench.handlers.DeployHandlerTest;
 import org.marketcetera.photon.internal.strategy.engine.ui.workbench.handlers.RefreshHandlerTest;
+import org.marketcetera.photon.internal.strategy.engine.ui.workbench.handlers.RestartHandlerTest;
 import org.marketcetera.photon.internal.strategy.engine.ui.workbench.handlers.StartAllHandlerTest;
 import org.marketcetera.photon.internal.strategy.engine.ui.workbench.handlers.StartHandlerTest;
 import org.marketcetera.photon.internal.strategy.engine.ui.workbench.handlers.StopAllHandlerTest;
@@ -37,6 +38,7 @@ import org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbe
         NewPropertyInputDialogTest.class, DeployHandlerTest.class,
         UndeployHandlerTest.class, StartHandlerTest.class,
         StopHandlerTest.class, StartAllHandlerTest.class,
-        StopAllHandlerTest.class, RefreshHandlerTest.class })
+        StopAllHandlerTest.class, RefreshHandlerTest.class,
+        RestartHandlerTest.class })
 public final class StrategyEngineWorkbenchUISuite {
 }

@@ -43,4 +43,41 @@ public class SafeHandlerTest extends PhotonTestBase {
             }
         };
     }
+    
+    @Test
+    public void testExecutionException() throws Exception {
+        final ExecutionException exception = new ExecutionException("Hello World");
+        final AbstractHandler fixture = new SafeHandler() {
+            @Override
+            protected void executeSafely(ExecutionEvent event)
+                    throws ExecutionException {
+                throw exception;
+            }
+        };
+        new ExpectedFailure<ExecutionException>("Hello World") {
+            @Override
+            protected void run() throws Exception {
+                try {
+                    fixture.execute(new ExecutionEvent());
+                } catch (ExecutionException e) {
+                    assertThat(e, is(exception));
+                    throw e;
+                }
+            }
+        };
+    }
+
+    @Test
+    public void testNoException() throws Exception {
+        /*
+         * Test the happy path.
+         */
+        final AbstractHandler fixture = new SafeHandler() {
+            @Override
+            protected void executeSafely(ExecutionEvent event)
+                    throws ExecutionException {
+            }
+        };
+        fixture.execute(new ExecutionEvent());
+    }
 }

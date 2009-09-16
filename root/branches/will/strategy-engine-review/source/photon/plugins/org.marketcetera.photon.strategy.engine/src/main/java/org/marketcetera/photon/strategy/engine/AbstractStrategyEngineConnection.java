@@ -278,7 +278,7 @@ public abstract class AbstractStrategyEngineConnection extends
 
     private DeployedStrategy internalDeploy(final String scriptPath,
             final ModuleURN urn) throws Exception {
-        final DeployedStrategy strategy = ExceptionUtils
+        final DeployedStrategy deployed = ExceptionUtils
                 .launderedGet(getGUIExecutor().submit(
                         new Callable<DeployedStrategy>() {
                             @Override
@@ -287,13 +287,18 @@ public abstract class AbstractStrategyEngineConnection extends
                                         .createDeployedStrategy();
                                 deployed.setUrn(urn);
                                 deployed.setScriptPath(scriptPath);
-                                getEngine().getDeployedStrategies().add(
-                                        deployed);
                                 return deployed;
                             }
                         }));
-        internalRefresh(strategy);
-        return strategy;
+        internalRefresh(deployed);
+        ExceptionUtils.launderedGet(getGUIExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
+                getEngine().getDeployedStrategies().add(
+                        deployed);
+            }
+        }));
+        return deployed;
     }
 
     private void internalRefresh(final DeployedStrategy deployed)

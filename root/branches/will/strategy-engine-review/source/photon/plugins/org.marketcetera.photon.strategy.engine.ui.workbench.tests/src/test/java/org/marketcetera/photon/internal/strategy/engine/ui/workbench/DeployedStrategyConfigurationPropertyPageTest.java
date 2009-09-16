@@ -107,7 +107,7 @@ public class DeployedStrategyConfigurationPropertyPageTest {
         mBot.button("Add New Property").click();
         new NewPropertyInputDialogTestFixture("key2", "value2").inputData();
         mBot.button("OK").click();
-        Thread.sleep(500);
+        Thread.sleep(800);
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {

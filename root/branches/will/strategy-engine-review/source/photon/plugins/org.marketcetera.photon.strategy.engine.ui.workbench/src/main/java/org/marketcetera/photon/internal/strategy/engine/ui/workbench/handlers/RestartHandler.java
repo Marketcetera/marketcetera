@@ -15,7 +15,6 @@ import org.marketcetera.photon.commons.ui.JFaceUtils.IUnsafeRunnableWithProgress
 import org.marketcetera.photon.commons.ui.workbench.ProgressUtils;
 import org.marketcetera.photon.commons.ui.workbench.SafeHandler;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -23,15 +22,15 @@ import com.google.common.collect.Lists;
 
 /**
  * Handler for the {@code
- * org.marketcetera.photon.strategy.engine.ui.workbench.stopAll} command that
- * stops all running strategies deployed on the selected engines.
+ * org.marketcetera.photon.strategy.engine.ui.workbench.restart} command that
+ * restarted selected strategies.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public final class StopAllHandler extends SafeHandler {
+public final class RestartHandler extends SafeHandler {
 
     @Override
     protected void executeSafely(ExecutionEvent event)
@@ -41,11 +40,9 @@ public final class StopAllHandler extends SafeHandler {
         final List<DeployedStrategy> strategies = Collections
                 .synchronizedList(Lists.<DeployedStrategy> newArrayList());
         for (Object item : selection.toList()) {
-            StrategyEngine engine = (StrategyEngine) item;
-            for (DeployedStrategy strategy : engine.getDeployedStrategies()) {
-                if (strategy.getState() == StrategyState.RUNNING) {
-                    strategies.add(strategy);
-                }
+            DeployedStrategy strategy = (DeployedStrategy) item;
+            if (strategy.getState() == StrategyState.RUNNING) {
+                strategies.add(strategy);
             }
         }
         final IRunnableWithProgress operation = JFaceUtils
@@ -55,9 +52,15 @@ public final class StopAllHandler extends SafeHandler {
                         for (DeployedStrategy strategy : strategies) {
                             ModalContext.checkCanceled(monitor);
                             monitor
-                                    .setTaskName(Messages.STOP_ALL_HANDLER__TASK_NAME
+                                    .setTaskName(Messages.STOP_HANDLER__TASK_NAME
                                             .getText(strategy.getInstanceName()));
                             strategy.getEngine().getConnection().stop(strategy);
+                            monitor.worked(1);
+                            ModalContext.checkCanceled(monitor);
+                            monitor
+                                    .setTaskName(Messages.START_HANDLER__TASK_NAME
+                                            .getText(strategy.getInstanceName()));
+                            strategy.getEngine().getConnection().start(strategy);
                             monitor.worked(1);
                         }
                     }
@@ -66,4 +69,5 @@ public final class StopAllHandler extends SafeHandler {
                 .getActiveWorkbenchWindowChecked(event), operation,
                 Messages.STOP_ALL_HANDLER_FAILED);
     }
+
 }
