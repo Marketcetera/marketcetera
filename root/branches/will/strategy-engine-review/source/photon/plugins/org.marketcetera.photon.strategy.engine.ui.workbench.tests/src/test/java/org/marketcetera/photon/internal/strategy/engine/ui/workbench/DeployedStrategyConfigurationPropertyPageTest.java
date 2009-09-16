@@ -20,6 +20,7 @@ import org.eclipse.ui.internal.dialogs.PropertyDialog;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.internal.strategy.engine.ui.workbench.NewPropertyInputDialogTest.NewPropertyInputDialogTestFixture;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
@@ -67,6 +68,7 @@ public class DeployedStrategyConfigurationPropertyPageTest {
             @Override
             public void run() throws Throwable {
                 mStrategy = createDeployedStrategy("Strategy1");
+                mStrategy.setUrn(new ModuleURN("metc:strategy:system:Strategy1"));
                 mStrategy.setClassName("Claz");
                 mStrategy.setLanguage("Lang");
                 mStrategy.setScriptPath("c:\\path");
@@ -109,9 +111,9 @@ public class DeployedStrategyConfigurationPropertyPageTest {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
-                assertDeployedStrategy(mStrategy, null, mEngine,
-                        StrategyState.STOPPED, "Strategy1", "Claz", "Lang",
-                        "c:\\path", false, ImmutableMap.of("key", "value",
+                assertDeployedStrategy(mStrategy, mEngine, StrategyState.STOPPED,
+                        "Strategy1", "Claz", "Lang", "c:\\path",
+                        false, ImmutableMap.of("key", "value",
                                 "key2", "value2"));
             }
         });
@@ -152,6 +154,7 @@ public class DeployedStrategyConfigurationPropertyPageTest {
                 is(true));
         // use index 1 since first tree is property page navigation tree
         assertThat(mBot.tree(1).isEnabled(), is(false));
+        assertThat(mBot.button("Add New Property").isEnabled(), is(false));
     }
 
     private void testDisabled(SWTBotText text, String value) {
@@ -170,9 +173,9 @@ public class DeployedStrategyConfigurationPropertyPageTest {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
-                assertDeployedStrategy(mStrategy, null, mEngine,
-                        StrategyState.STOPPED, "Strategy1", "Claz", "Lang",
-                        "c:\\path", true, null);
+                assertDeployedStrategy(mStrategy, mEngine, StrategyState.STOPPED,
+                        "Strategy1", "Claz", "Lang", "c:\\path",
+                        true, null);
             }
         });
     }
@@ -192,9 +195,9 @@ public class DeployedStrategyConfigurationPropertyPageTest {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
-                assertDeployedStrategy(mStrategy, null, mEngine,
-                        StrategyState.STOPPED, "Strategy1", "Claz", "Lang",
-                        "c:\\path", true, ImmutableMap.of("key2", "value3"));
+                assertDeployedStrategy(mStrategy, mEngine, StrategyState.STOPPED,
+                        "Strategy1", "Claz", "Lang", "c:\\path",
+                        true, ImmutableMap.of("key2", "value3"));
             }
         });
     }
@@ -215,9 +218,9 @@ public class DeployedStrategyConfigurationPropertyPageTest {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
-                assertDeployedStrategy(mStrategy, null, mEngine,
-                        StrategyState.STOPPED, "Strategy1", "Claz", "Lang",
-                        "c:\\path", true, ImmutableMap.of("keyx", "valuex"));
+                assertDeployedStrategy(mStrategy, mEngine, StrategyState.STOPPED,
+                        "Strategy1", "Claz", "Lang", "c:\\path",
+                        true, ImmutableMap.of("keyx", "valuex"));
             }
         });
     }

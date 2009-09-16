@@ -95,7 +95,8 @@ public class StrategyAgentConnectionPropertyPageTest {
         mBot.textWithLabel("Web Service Port:").setText("2");
         mBot.button("OK").click();
         StrategyAgentEngineTestUtil.assertStrategyAgentEngine(
-                mStrategyAgentEngine, "SAEngine", null, "url2", "host2", 2);
+                mStrategyAgentEngine, "SAEngine", null, "url2", "host2", 2,
+                ConnectionState.DISCONNECTED);
     }
 
     @Test
@@ -106,7 +107,8 @@ public class StrategyAgentConnectionPropertyPageTest {
         mBot.textWithLabel("Web Service Port:").setText("2");
         mBot.button("Cancel").click();
         StrategyAgentEngineTestUtil.assertStrategyAgentEngine(
-                mStrategyAgentEngine, "SAEngine", null, "url1", "host1", 1);
+                mStrategyAgentEngine, "SAEngine", null, "url1", "host1", 1,
+                ConnectionState.DISCONNECTED);
     }
 
     @Test
@@ -116,19 +118,22 @@ public class StrategyAgentConnectionPropertyPageTest {
             public void run() throws Throwable {
                 mStrategyAgentEngine = StrategyAgentEngineFactory.eINSTANCE
                         .createStrategyAgentEngine();
-                mStrategyAgentEngine.setConnectionState(ConnectionState.CONNECTED);
+                mStrategyAgentEngine
+                        .setConnectionState(ConnectionState.CONNECTED);
                 mStrategyAgentEngine.setJmsUrl("url1");
                 mStrategyAgentEngine.setWebServiceHostname("host1");
                 mStrategyAgentEngine.setWebServicePort(1);
             }
         });
         openDialog();
-        SWTTestUtil
-                .testReadOnlyText(mBot.textWithLabel("JMS URL:"), "url1");
-        SWTTestUtil.testReadOnlyText(mBot.textWithLabel("Web Service Hostname:"), "host1");
-        SWTTestUtil.testReadOnlyText(mBot.textWithLabel("Web Service Port:"), "1");
+        SWTTestUtil.testReadOnlyText(mBot.textWithLabel("JMS URL:"), "url1");
+        SWTTestUtil.testReadOnlyText(mBot
+                .textWithLabel("Web Service Hostname:"), "host1");
+        SWTTestUtil.testReadOnlyText(mBot.textWithLabel("Web Service Port:"),
+                "1");
         mBot.button("OK").click();
         StrategyAgentEngineTestUtil.assertStrategyAgentEngine(
-                mStrategyAgentEngine, "SAEngine", null, "url1", "host1", 1);
+                mStrategyAgentEngine, "SAEngine", null, "url1", "host1", 1,
+                ConnectionState.CONNECTED);
     }
 }

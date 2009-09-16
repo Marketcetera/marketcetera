@@ -22,3 +22,4 @@ Import-Package: com.google.inject,
  org.ops4j.peaberry,
  org.ops4j.peaberry.builders
 Export-Package: org.marketcetera.photon.strategy.engine.ui.workbench.resources
+Eclipse-ExtensibleAPI: true
