@@ -2,6 +2,7 @@ package org.marketcetera.photon.strategy.engine;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -9,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.marketcetera.core.Util;
 import org.marketcetera.module.ModuleURN;
@@ -24,7 +26,6 @@ import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -72,19 +73,19 @@ public abstract class AbstractStrategyEngineConnection extends
     public DeployedStrategy deploy(Strategy strategy) throws Exception {
         Validate.notNull(strategy, "strategy"); //$NON-NLS-1$
         String scriptPath = strategy.getScriptPath();
-        if (scriptPath == null) {
+        if (StringUtils.isBlank(scriptPath)) {
             throw new I18NException(
                     Messages.ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_SCRIPT_PATH);
         }
-        if (strategy.getClassName() == null) {
+        if (StringUtils.isBlank(strategy.getClassName())) {
             throw new I18NException(
                     Messages.ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_CLASS_NAME);
         }
-        if (strategy.getLanguage() == null) {
+        if (StringUtils.isBlank(strategy.getLanguage())) {
             throw new I18NException(
                     Messages.ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_LANGUAGE);
         }
-        if (strategy.getInstanceName() == null) {
+        if (StringUtils.isBlank(strategy.getInstanceName())) {
             throw new I18NException(
                     Messages.ABSTRACT_STRATEGY_ENGINE_CONNECTION_MISSING_INSTANCE_NAME);
         }
@@ -116,17 +117,38 @@ public abstract class AbstractStrategyEngineConnection extends
         return internalDeploy(scriptPath, urn);
     }
 
-    protected Properties getProperties(Strategy strategy) {
+    /**
+     * Return strategy properties as a {@link Properties} object.
+     * 
+     * @param strategy
+     *            the strategy
+     * @return the properties
+     */
+    protected static Properties getProperties(Strategy strategy) {
         Properties properties = new Properties();
         properties.putAll(strategy.getParameters().map());
         return properties;
     }
 
-    protected String getPropertiesString(Strategy strategy) {
+    /**
+     * Return strategy properties as a String.
+     * 
+     * @param strategy
+     *            the strategy
+     * @return the properties
+     */
+    protected static String getPropertiesString(Strategy strategy) {
         return Util.propertiesToString(getProperties(strategy));
     }
 
-    protected Map<String, String> getPropertiesMap(String properties) {
+    /**
+     * Return string based properties as a map.
+     * 
+     * @param properties
+     *            the string-encoded properties
+     * @return a map of properties
+     */
+    protected static Map<String, String> getPropertiesMap(String properties) {
         Map<String, String> map = Maps.newHashMap();
         Properties props = Util.propertiesFromString(properties);
         if (props != null) {
@@ -182,12 +204,13 @@ public abstract class AbstractStrategyEngineConnection extends
 
     @Override
     public void refresh() throws Exception {
-        final Set<ModuleURN> deployedModules = Sets.newHashSet(getDeployed());
-        Set<ModuleURN> visibleModules = Sets.newHashSet();
-        Set<DeployedStrategy> removedStrategies = Sets.newHashSet();
+        Set<ModuleURN> deployedModules = Sets.newHashSet(getDeployed());
+        final Set<DeployedStrategy> removedStrategies = Collections
+                .synchronizedSet(Sets.<DeployedStrategy> newHashSet());
 
         /*
-         * Iterate visible strategies, refresh ones that should be there.
+         * Iterate visible strategies, refresh ones that should be there and
+         * mark for removal those that should not.
          */
         for (DeployedStrategy deployedStrategy : getEngine()
                 .getDeployedStrategies()) {
@@ -198,7 +221,7 @@ public abstract class AbstractStrategyEngineConnection extends
                  * refresh again to recover.
                  */
                 internalRefresh(deployedStrategy);
-                visibleModules.add(deployedStrategy.getUrn());
+                deployedModules.remove(deployedStrategy.getUrn());
             } else {
                 removedStrategies.add(deployedStrategy);
             }
@@ -207,20 +230,18 @@ public abstract class AbstractStrategyEngineConnection extends
         /*
          * Remove the ones that should not be there.
          */
-        final ImmutableSet<DeployedStrategy> toRemove = ImmutableSet
-                .copyOf(removedStrategies);
         ExceptionUtils.launderedGet(getGUIExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                getEngine().getDeployedStrategies().removeAll(toRemove);
+                getEngine().getDeployedStrategies()
+                        .removeAll(removedStrategies);
             }
         }));
 
         /*
          * Now add new ones.
          */
-        for (ModuleURN missing : Sets.difference(deployedModules,
-                visibleModules)) {
+        for (ModuleURN missing : deployedModules) {
             internalDeploy(null, missing);
         }
     }

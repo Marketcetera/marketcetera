@@ -1,5 +1,11 @@
 package org.marketcetera.photon.internal.strategy.engine.strategyagent;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createDeployedStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createStrategy;
@@ -11,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +26,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
 import org.marketcetera.photon.strategy.engine.AbstractStrategyEngineConnection;
 import org.marketcetera.photon.strategy.engine.AbstractStrategyEngineConnectionTestBase;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
@@ -58,6 +66,22 @@ public class StrategyAgentConnectionTest extends
         super.before();
         mMockClient = new MockClient();
         mEngine = createEngine("SATestEngine");
+    }
+
+    @Test
+    public void testConstructorValidation() throws Exception {
+        new ExpectedNullArgumentFailure("client") {
+            @Override
+            protected void run() throws Exception {
+                new StrategyAgentConnection(null, mock(ExecutorService.class));
+            }
+        };
+        new ExpectedNullArgumentFailure("guiExecutor") {
+            @Override
+            protected void run() throws Exception {
+                new StrategyAgentConnection(mMockClient, null);
+            }
+        };
     }
 
     @Test
@@ -107,24 +131,31 @@ public class StrategyAgentConnectionTest extends
                 false, false, false, false, null, null, -1, false, -1);
     }
 
-    static Map<String, Object> createParameters(boolean routing, String name,
-            String language, Map<String, String> parameters) {
+    static String getParametersString(Map<String, String> parameters) {
         String properties = null;
         if (parameters != null) {
             Properties props = new Properties();
             props.putAll(parameters);
             properties = Util.propertiesToString(props);
         }
-        return createParameters(routing, name, language, properties);
+        return properties;
     }
 
     static Map<String, Object> createParameters(boolean routing, String name,
             String language, String parameters) {
         // can't use ImmutableMap since properties may be null
         Map<String, Object> map = Maps.newHashMap();
-        map.put("RoutingOrdersToORS", routing);
         map.put("Name", name);
         map.put("Language", language);
+        map.putAll(createWritableParameters(routing, parameters));
+        return map;
+    }
+
+    static Map<String, Object> createWritableParameters(boolean routing,
+            String parameters) {
+        // can't use ImmutableMap since properties may be null
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("RoutingOrdersToORS", routing);
         map.put("Parameters", parameters);
         return map;
     }
@@ -156,10 +187,9 @@ public class StrategyAgentConnectionTest extends
     @Override
     protected void externalUpdateAndStartStrategy(ModuleURN urn,
             Strategy newConfiguration) throws Exception {
-        mMockClient.setProperties(urn, createParameters(newConfiguration
-                .isRouteOrdersToServer(), newConfiguration.getClassName(),
-                newConfiguration.getLanguage(), newConfiguration
-                        .getParameters().map()));
+        mMockClient.setProperties(urn, createWritableParameters(
+                newConfiguration.isRouteOrdersToServer(),
+                getParametersString(newConfiguration.getParameters().map())));
         mMockClient.start(urn);
 
     }
@@ -176,14 +206,14 @@ public class StrategyAgentConnectionTest extends
 
             ModuleURN urn = new ModuleURN("metc:strategy:system:"
                     + inParameters.getInstanceName());
-            mDeployedStrategies.put(urn, inParameters);
+            assertNull(mDeployedStrategies.put(urn, inParameters));
             return urn;
         }
 
         @Override
         public void delete(ModuleURN inURN) throws ConnectionException {
-            mDeployedStrategies.remove(inURN);
-            mRunning.remove(inURN);
+            assertThat(mRunning, not(hasItem(inURN)));
+            assertNotNull(mDeployedStrategies.remove(inURN));
         }
 
         @Override
@@ -210,12 +240,12 @@ public class StrategyAgentConnectionTest extends
 
         @Override
         public void start(ModuleURN inURN) throws ConnectionException {
-            mRunning.add(inURN);
+            assertTrue(mRunning.add(inURN));
         }
 
         @Override
         public void stop(ModuleURN inURN) throws ConnectionException {
-            mRunning.remove(inURN);
+            assertTrue(mRunning.remove(inURN));
         }
 
         @Override

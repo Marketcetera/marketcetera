@@ -296,14 +296,15 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
      * <!-- end-user-doc -->
      * @generated NOT
      */
+    @SuppressWarnings("unchecked")
     public EMap<String, String> getParameters() {
         if (parameters == null) {
-            final EMap<String, String> delegate = new EcoreEMap<String, String>(
+            EMap<String, String> delegate = new EcoreEMap<String, String>(
                     StrategyEngineCorePackage.Literals.STRING_TO_STRING_MAP_ENTRY,
                     StringToStringMapEntryImpl.class, this,
                     StrategyEngineCorePackage.STRATEGY__PARAMETERS);
-            parameters = SynchronizedProxy.proxy(delegate, EMap.class,
-                    InternalEList.class);
+            parameters = (EMap<String, String>) SynchronizedProxy.proxy(
+                    delegate, EMap.class, InternalEList.class);
         }
         return parameters;
     }

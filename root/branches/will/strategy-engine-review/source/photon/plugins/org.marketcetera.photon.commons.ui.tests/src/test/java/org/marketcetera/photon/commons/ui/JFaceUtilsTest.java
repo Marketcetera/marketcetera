@@ -110,8 +110,9 @@ public class JFaceUtilsTest extends PhotonTestBase {
 
     @Test
     public void testRunModalErrorNoMessage() {
-        testRunModalErrorHelper(new Exception(),
-                "An exception occurred during the operation.  See the log for details.");
+        testRunModalErrorHelper(
+                new Exception(),
+                "A problem occurred during the operation (Exception).  See the log for details.");
     }
 
     private void testRunModalErrorHelper(Exception exception, String text) {
@@ -138,6 +139,7 @@ public class JFaceUtilsTest extends PhotonTestBase {
         bot.label(text);
         bot.button("OK").click();
         assertThat(result.get(), is(false));
+        verify(failureMessage).error(JFaceUtils.class, exception);
     }
 
     @Test
@@ -155,32 +157,37 @@ public class JFaceUtilsTest extends PhotonTestBase {
     @Test
     public void testRunWithErrorDialogError() {
         testRunWithErrorDialogErrorHelper(new Exception("Exception Text"),
-                "Exception Text", null);
+                "Exception Text");
     }
 
     @Test
     public void testRunWithErrorDialogErrorNoMessage() {
-        testRunWithErrorDialogErrorHelper(new Exception(),
-                "An exception occurred during the operation.  See the log for details.", null);
+        testRunWithErrorDialogErrorHelper(
+                new Exception(),
+                "A problem occurred during the operation (Exception).  See the log for details.");
     }
 
     @Test
     public void testRunWithErrorDialogExceptionChain() {
         Exception exception = new Exception("ABC", new Exception("XYZ"));
-        testRunWithErrorDialogErrorHelper(exception,
-                "An exception occurred during the operation.  See details for more information.", new String[] {"ABC", "XYZ"});
+        testRunWithErrorDialogErrorHelper(exception, "ABC", "XYZ");
     }
 
     @Test
     public void testRunWithErrorDialogRootCause() {
+        /*
+         * Used initCause instead of Exception(Throwable) because the latter
+         * makes a message from Throwable#toString.
+         */
+        Exception nested = new Exception();
+        nested.initCause(new Exception("ABC"));
         Exception exception = new Exception();
-        exception.initCause(new Exception("XYZ", new Exception("ABC")));
-        testRunWithErrorDialogErrorHelper(exception,
-                "An exception occurred during the operation.  See details for more information.", new String[] {"XYZ", "ABC"});
+        exception.initCause(new Exception("XYZ", nested));
+        testRunWithErrorDialogErrorHelper(exception, "XYZ", "ABC");
     }
 
     private void testRunWithErrorDialogErrorHelper(final Exception exception,
-            String text, String[] details) {
+            String text, String... details) {
         final AtomicBoolean result = new AtomicBoolean(true);
         final I18NBoundMessage failureMessage = mock(I18NBoundMessage.class);
         mShell.getDisplay().asyncExec(new Runnable() {
@@ -198,14 +205,15 @@ public class JFaceUtilsTest extends PhotonTestBase {
         SWTBot bot = new SWTBot();
         bot.shell("Operation Failed");
         bot.label(text);
-        if (details != null) {
+        if (details.length > 0) {
             bot.button("Details >>").click();
             SWTBotList list = bot.list();
             assertThat(list.getItems(), is(details));
-            
+
         }
         bot.button("OK").click();
         assertThat(result.get(), is(false));
+        verify(failureMessage).error(JFaceUtils.class, exception);
     }
 
     @Test

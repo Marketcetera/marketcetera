@@ -2,14 +2,10 @@ package org.marketcetera.photon.internal.strategy.engine.embedded;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.assertStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
-import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createStrategy;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -37,13 +33,11 @@ import org.marketcetera.photon.strategy.engine.AbstractStrategyEngineConnectionT
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection;
 import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.strategy.StrategyMXBean;
 import org.marketcetera.strategy.StrategyModuleFactory;
 import org.marketcetera.util.except.I18NException;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 /* $License$ */
@@ -60,8 +54,7 @@ public class EmbeddedConnectionTest extends
 
     private ModuleManager mModuleManager;
     private MBeanServerConnection mMBeanServer;
-    private MockPersistenceService mPersistenceService;
-    private StrategyEngine mEngine;
+    protected StrategyEngine mEngine;
 
     @Before
     public void before() throws Exception {
@@ -71,7 +64,6 @@ public class EmbeddedConnectionTest extends
         assertThat(mModuleManager.getModuleInstances(
                 StrategyModuleFactory.PROVIDER_URN).size(), is(0));
         mEngine = createEngine("Embedded");
-        mPersistenceService = new MockPersistenceService();
     }
 
     @After
@@ -125,20 +117,8 @@ public class EmbeddedConnectionTest extends
     }
 
     @Test
-    public void testDeployPersistence() throws Exception {
-        AbstractStrategyEngineConnection fixture = createPersistingFixture();
-        Strategy strategy = createStrategyToDeploy();
-        strategy.getParameters().put("abc", "xyz");
-        fixture.deploy(strategy);
-        assertThat(mPersistenceService.getPersisted().size(), is(1));
-        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
-                "MyStrategy", "RUBY", getTempScript().getPath(), false,
-                ImmutableMap.of("abc", "xyz"));
-    }
-
-    @Test
     public void testDeployInvalidLanguage() throws Exception {
-        final AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        final AbstractStrategyEngineConnection fixture = createFixture();
         final Strategy strategy = createStrategyToDeploy();
         strategy.setLanguage("ABC");
         new ExpectedFailure<I18NException>(
@@ -152,7 +132,7 @@ public class EmbeddedConnectionTest extends
 
     @Test
     public void testDeployNonExistentFile() throws Exception {
-        final AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        final AbstractStrategyEngineConnection fixture = createFixture();
         final Strategy strategy = createStrategyToDeploy();
         strategy.setScriptPath("1234dslsdaksdf/strategy.java");
         new ExpectedFailure<I18NException>(
@@ -169,7 +149,7 @@ public class EmbeddedConnectionTest extends
 
     @Test
     public void testDeployBogusURL() throws Exception {
-        final AbstractStrategyEngineConnection fixture = createPersistingFixture();
+        final AbstractStrategyEngineConnection fixture = createFixture();
         final Strategy strategy = createStrategyToDeploy();
         strategy.setScriptPath("http://www.google.com");
         new ExpectedFailure<I18NException>(
@@ -203,16 +183,6 @@ public class EmbeddedConnectionTest extends
                 fixture.undeploy(deployed);
             }
         };
-    }
-
-    @Test
-    public void testUndeployPersistence() throws Exception {
-        AbstractStrategyEngineConnection fixture = createPersistingFixture();
-        Strategy strategy = createStrategyToDeploy();
-        strategy.getParameters().put("abc", "xyz");
-        DeployedStrategy deployed = fixture.deploy(strategy);
-        fixture.undeploy(deployed);
-        assertThat(mPersistenceService.getPersisted().size(), is(0));
     }
 
     @Override
@@ -281,42 +251,11 @@ public class EmbeddedConnectionTest extends
                 ModuleState.CREATED, true, ImmutableMap.of("xyz", "123"));
     }
 
-    @Test
-    public void testUpdateWithPersistence() throws Exception {
-        AbstractStrategyEngineConnection fixture = createPersistingFixture();
-        Strategy strategy = createStrategyToDeploy();
-        DeployedStrategy deployed = fixture.deploy(strategy);
-        Strategy newConfiguration = createStrategy(null);
-        newConfiguration.setRouteOrdersToServer(true);
-        newConfiguration.getParameters().put("xyz", "123");
-        fixture.update(deployed, newConfiguration);
-        assertThat(mPersistenceService.getPersisted().size(), is(1));
-        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
-                "MyStrategy", "RUBY", getTempScript().getPath(), true,
-                ImmutableMap.of("xyz", "123"));
-    }
-
     @Override
     public void testRefreshDeployedStrategy() throws Exception {
         super.testRefreshDeployedStrategy();
         assertModule(new ModuleURN("metc:strategy:system:strat1"),
                 ModuleState.STARTED, true, ImmutableMap.of("xyz", "123"));
-    }
-
-    @Test
-    public void testRefreshDeployedStrategyWithPersistence() throws Exception {
-        AbstractStrategyEngineConnection fixture = createPersistingFixture();
-        Strategy strategy = createStrategyToDeploy();
-        DeployedStrategy deployed = fixture.deploy(strategy);
-        Strategy newConfiguration = createStrategy(null);
-        newConfiguration.setRouteOrdersToServer(true);
-        newConfiguration.getParameters().put("xyz", "123");
-        externalUpdateAndStartStrategy(deployed.getUrn(), newConfiguration);
-        fixture.refresh(deployed);
-        assertThat(mPersistenceService.getPersisted().size(), is(1));
-        assertStrategy(mPersistenceService.getPersisted().get(0), "strat1",
-                "MyStrategy", "RUBY", getTempScript().getPath(), true,
-                ImmutableMap.of("xyz", "123"));
     }
 
     @Override
@@ -327,18 +266,7 @@ public class EmbeddedConnectionTest extends
                 StrategyModuleFactory.PROVIDER_URN).size(), is(0));
     }
 
-    @Test
-    public void testRefreshDeployedStrategyThatNoLongerExistsWithPersistence()
-            throws Exception {
-        AbstractStrategyEngineConnection fixture = createPersistingFixture();
-        Strategy strategy = createStrategyToDeploy();
-        DeployedStrategy deployed = fixture.deploy(strategy);
-        externalUndeployStrategy(deployed.getUrn());
-        fixture.refresh(deployed);
-        assertThat(mPersistenceService.getPersisted().size(), is(0));
-    }
-
-    @Test
+    @Override
     public void testRefresh() throws Exception {
         super.testRefresh();
         assertThat(mModuleManager.getModuleInstances(
@@ -347,52 +275,6 @@ public class EmbeddedConnectionTest extends
                 ModuleState.STARTED, true, ImmutableMap.of("xyz", "123"));
         assertModule(new ModuleURN("metc:strategy:system:strat3"),
                 ModuleState.CREATED, false, null);
-    }
-
-    @Test
-    public void testRefreshWithPersistence() throws Exception {
-        AbstractStrategyEngineConnection fixture = createPersistingFixture();
-
-        /*
-         * Deploy a strategy and change it externally.
-         */
-        Strategy strategy = createStrategyToDeploy();
-        DeployedStrategy deployed1 = fixture.deploy(strategy);
-        Strategy newConfiguration = createStrategy(null);
-        newConfiguration.setRouteOrdersToServer(true);
-        newConfiguration.getParameters().put("xyz", "123");
-        externalUpdateAndStartStrategy(deployed1.getUrn(), newConfiguration);
-
-        /*
-         * Deploy a strategy and undeploy it externally.
-         */
-        strategy = createStrategyToDeploy();
-        strategy.setInstanceName("strat2");
-        DeployedStrategy deployed2 = fixture.deploy(strategy);
-        externalUndeployStrategy(deployed2.getUrn());
-
-        /*
-         * Deploy a strategy externally.
-         */
-        strategy = createStrategyToDeploy();
-        strategy.setInstanceName("strat3");
-        externalDeployStrategy(strategy);
-
-        /*
-         * Refresh and validate.
-         */
-        fixture.refresh();
-        assertThat(mPersistenceService.getPersisted().size(), is(2));
-        for (Strategy persisted : mPersistenceService.getPersisted()) {
-            if (persisted.getInstanceName().equals("strat1")) {
-                assertStrategy(mPersistenceService.getPersisted().get(0),
-                        "strat1", "MyStrategy", "RUBY", getTempScript()
-                                .getPath(), true, ImmutableMap.of("xyz", "123"));
-            } else {
-                assertStrategy(mPersistenceService.getPersisted().get(1),
-                        "strat3", "MyStrategy", "RUBY", null, false, null);
-            }
-        }
     }
 
     @Override
@@ -404,8 +286,8 @@ public class EmbeddedConnectionTest extends
     }
 
     @Override
-    protected void externalUpdateAndStartStrategy(ModuleURN urn, Strategy newConfiguration)
-            throws Exception {
+    protected void externalUpdateAndStartStrategy(ModuleURN urn,
+            Strategy newConfiguration) throws Exception {
         StrategyMXBean proxy = getProxy(urn);
         proxy.setRoutingOrdersToORS(newConfiguration.isRouteOrdersToServer());
         Properties properties = new Properties();
@@ -425,16 +307,9 @@ public class EmbeddedConnectionTest extends
         properties.putAll(strategy.getParameters().map());
         mModuleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                 strategy.getInstanceName(), strategy.getClassName(), strategy
-                        .getLanguage(), getTempScript(), properties, strategy
-                        .isRouteOrdersToServer(),
+                        .getLanguage(), new File(strategy.getScriptPath()),
+                properties, strategy.isRouteOrdersToServer(),
                 SinkModuleFactory.INSTANCE_URN);
-    }
-
-    private AbstractStrategyEngineConnection createPersistingFixture() {
-        EmbeddedConnection fixture = new EmbeddedConnection(mEngine,
-                new ImmediateExecutorService(), mPersistenceService);
-        fixture.initialize();
-        return fixture;
     }
 
     private void assertModule(ModuleURN urn, ModuleState state, boolean route,
@@ -459,24 +334,5 @@ public class EmbeddedConnectionTest extends
         StrategyMXBean proxy = JMX.newMXBeanProxy(mMBeanServer, objectName,
                 StrategyMXBean.class);
         return proxy;
-    }
-
-    private class MockPersistenceService implements IPersistenceService {
-
-        private ImmutableList<Strategy> mPersisted;
-
-        @Override
-        public void restore(StrategyEngineConnection connection) {
-        }
-
-        @Override
-        public void save(List<? extends Strategy> strategies)
-                throws IOException {
-            mPersisted = ImmutableList.copyOf(strategies);
-        }
-
-        public ImmutableList<Strategy> getPersisted() {
-            return mPersisted;
-        }
     }
 }

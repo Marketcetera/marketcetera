@@ -44,20 +44,18 @@ public class SynchronizedProxy implements InvocationHandler {
     }
 
     /**
-     * Creates a dynamic proxy for an object that synchronizes all invocations.
+     * Creates a dynamic proxy for an object that synchronizes all invocations
+     * via the provided interfaces.
      * 
-     * @param <T>
-     *            the type of the delegate object
      * @param delegate
      *            the delegate object
-     * @param clazz
-     *            type token for the proxy's interface
-     * @return a dynamic proxy for delegate that synchronizes all method
-     *         invocations
+     * @param interfaces
+     *            the interfaces for the proxy to implement.
+     * @return a dynamic proxy for delegate that synchronizes method
+     *         invocations via the provided interfaces
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T proxy(T delegate, Class<?>... interfaces) {
-        return (T) Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
+    public static Object proxy(Object delegate, Class<?>... interfaces) {
+        return Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
                 interfaces, new SynchronizedProxy(delegate));
     }
 }

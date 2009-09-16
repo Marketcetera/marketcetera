@@ -1,5 +1,5 @@
 /**
- * $License#
+ * $License$
  *
  * $Id$
  */

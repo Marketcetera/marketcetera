@@ -86,7 +86,7 @@ public class NewStrategyAgentWizardTest extends PhotonTestBase {
         fixture.finish();
         StrategyAgentEngineTestUtil.assertStrategyAgentEngine(fixture.waitForClose(), "My Engine",
                 "My Strategy Agent Engine", "tcp://localhost:123", "localhost",
-                456);
+                456, ConnectionState.DISCONNECTED);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class NewStrategyAgentWizardTest extends PhotonTestBase {
                 .create(mShell, mMockService, engine);
         fixture.finish();
         StrategyAgentEngineTestUtil.assertStrategyAgentEngine(fixture.waitForClose(), "abc", "xyz", "tcp://abc", "host",
-                8080);
+                8080, ConnectionState.CONNECTED);
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.marketcetera.photon.commons.ui;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -16,6 +17,8 @@ import org.eclipse.jface.wizard.IWizardContainer;
 import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -150,27 +153,29 @@ public final class JFaceUtils {
             return operation.call();
         } catch (Exception e) {
             failureMessage.error(JFaceUtils.class, e);
-            MultiStatus details = new MultiStatus(CommonsUI.PLUGIN_ID,
-                    IStatus.ERROR,
-                    Messages.JFACE_UTILS_SEE_DETAILS.getText(),
-                    null);
+            List<IStatus> nestedDetails = Lists.newArrayList();
             Throwable current = e;
             while (current != null) {
                 String message = current.getLocalizedMessage();
                 if (message != null) {
-                    details.add(new Status(Status.ERROR, CommonsUI.PLUGIN_ID,
-                            message));
+                    nestedDetails.add(new Status(Status.ERROR,
+                            CommonsUI.PLUGIN_ID, message));
                 }
                 current = current.getCause();
             }
+            int size = nestedDetails.size();
             IStatus status;
-            if (details.getChildren().length == 0) {
+            if (size == 0) {
                 status = new Status(Status.ERROR, CommonsUI.PLUGIN_ID,
-                        Messages.JFACE_UTILS_SEE_LOG.getText());
-            } else if (details.getChildren().length == 1) {
-                status = details.getChildren()[0];
+                        Messages.JFACE_UTILS_SEE_LOG.getText(e.getClass()
+                                .getSimpleName()));
+            } else if (size == 1) {
+                status = nestedDetails.get(0);
             } else {
-                status = details;
+                status = new MultiStatus(CommonsUI.PLUGIN_ID, IStatus.ERROR,
+                        nestedDetails.subList(1, size).toArray(
+                                new IStatus[size - 1]), nestedDetails.get(0)
+                                .getMessage(), null);
             }
             ErrorDialog.openError(shellProvider.getShell(),
                     Messages.JFACE_UTILS_OPERATION_FAILED__DIALOG_TITLE

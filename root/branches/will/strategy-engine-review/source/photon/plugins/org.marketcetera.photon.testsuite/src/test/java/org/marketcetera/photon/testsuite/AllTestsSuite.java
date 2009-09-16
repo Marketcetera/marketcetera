@@ -18,6 +18,7 @@ import org.marketcetera.photon.strategy.engine.strategyagent.tests.StrategyAgent
 import org.marketcetera.photon.strategy.engine.strategyagent.ui.tests.StrategyAgentEngineUISuite;
 import org.marketcetera.photon.strategy.engine.strategyagent.ui.workbench.tests.StrategyAgentEngineWorkbenchUISuite;
 import org.marketcetera.photon.strategy.engine.ui.tests.StrategyEngineUISuite;
+import org.marketcetera.photon.strategy.engine.ui.workbench.resources.tests.StrategyEngineWorkspaceSuite;
 import org.marketcetera.photon.strategy.engine.ui.workbench.tests.StrategyEngineWorkbenchUISuite;
 import org.marketcetera.photon.strategy.tests.StrategySuite;
 import org.marketcetera.photon.tests.PhotonApplicationSuite;
@@ -29,7 +30,8 @@ import org.marketcetera.photon.tests.PhotonSuite;
         StrategyEngineCoreSuite.class, StrategyEngineUISuite.class,
         StrategyEngineWorkbenchUISuite.class, StrategyAgentEngineSuite.class,
         StrategyAgentEngineUISuite.class,
-        StrategyAgentEngineWorkbenchUISuite.class, EmbeddedEngineSuite.class,
+        StrategyAgentEngineWorkbenchUISuite.class,
+        StrategyEngineWorkspaceSuite.class, EmbeddedEngineSuite.class,
         StrategyAgentEngineSuite.class, ModuleCoreSuite.class,
         ModuleUISuite.class, MarketDataCoreSuite.class,
         MarketDataUISuite.class, NotificationSuite.class, StrategySuite.class,
