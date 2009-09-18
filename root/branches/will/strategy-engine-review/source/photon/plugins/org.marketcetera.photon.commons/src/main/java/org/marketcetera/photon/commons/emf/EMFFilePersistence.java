@@ -2,6 +2,7 @@ package org.marketcetera.photon.commons.emf;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
@@ -31,7 +32,7 @@ import com.google.common.collect.Lists;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class EMFFilePersistence implements IEMFPersistence {
+public final class EMFFilePersistence implements IEMFPersistence {
 
     private final Resource mResource;
 
@@ -49,7 +50,7 @@ public class EMFFilePersistence implements IEMFPersistence {
     }
 
     @Override
-    public void save(List<? extends EObject> objects) throws IOException {
+    public void save(Collection<? extends EObject> objects) throws IOException {
         Validate.noNullElements(objects, "objects"); //$NON-NLS-1$
         ImmutableList<EObject> copy = ImmutableList.copyOf(objects);
         synchronized (mResource) {
