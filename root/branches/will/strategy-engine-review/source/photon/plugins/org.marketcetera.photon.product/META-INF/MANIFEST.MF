@@ -10,8 +10,16 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.marketcetera.core,
  org.marketcetera.photon,
- org.marketcetera.photon.positions.ui
+ org.marketcetera.photon.positions.ui,
+ org.marketcetera.photon.commons,
+ org.marketcetera.photon.core,
+ org.marketcetera.photon.strategy,
+ org.marketcetera.client,
+ org.marketcetera.photon.module.ui,
+ org.marketcetera.photon.notification,
+ org.marketcetera.photon.strategy.engine.strategyagent.ui.workbench
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Localization: plugin
 Bundle-Activator: org.marketcetera.photon.internal.product.Activator
 Bundle-ActivationPolicy: lazy
+Eclipse-ExtensibleAPI: true

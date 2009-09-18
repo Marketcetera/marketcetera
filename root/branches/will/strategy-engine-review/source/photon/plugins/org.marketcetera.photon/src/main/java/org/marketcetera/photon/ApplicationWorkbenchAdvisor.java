@@ -38,7 +38,7 @@ import org.osgi.framework.Bundle;
  * @author gmiller
  * @author andrei@lissovski.org
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: ApplicationWorkbenchAdvisor.java 10532 2009-04-24 17:36:35Z will $
  * @since 1.0.0
  */
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
@@ -64,7 +64,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		configurer.setSaveAndRestore(true);
 
 		// register workspace adapters
-		WorkbenchAdapterBuilder.registerAdapters();
+		IDE.registerAdapters();
 
 		// register shared images
 		declareWorkbenchImages();

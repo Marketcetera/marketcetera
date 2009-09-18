@@ -43,7 +43,9 @@ Require-Bundle: org.eclipse.core.commands;visibility:=reexport,
  org.eclipse.emf.databinding,
  org.marketcetera.photon.marketdata.ui,
  org.marketcetera.modules.strategy,
- org.marketcetera.photon.commons.ui.workbench
+ org.marketcetera.photon.commons.ui.workbench,
+ org.marketcetera.photon.commons,
+ org.marketcetera.photon.core
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
  org.marketcetera.photon.commands,

@@ -1,6 +1,18 @@
 package org.marketcetera.photon.internal.product;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
+import org.marketcetera.photon.core.Credentials;
+import org.marketcetera.photon.core.ICredentials;
+import org.marketcetera.photon.core.ICredentialsService;
+import org.marketcetera.photon.core.ILogoutService;
+import org.marketcetera.photon.core.LogoutService;
 import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
+import org.marketcetera.photon.ui.LoginDialog;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -17,14 +29,89 @@ import org.osgi.framework.BundleContext;
 @ClassVersion("$Id$")
 public class Activator implements BundleActivator {
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		context.registerService(IPositionLabelProvider.class.getName(),
-				new PhotonPositionLabelProvider(), null);
-	}
+    /**
+     * {@link ICredentialsService} that pops obtains credentials from a {@link LoginDialog}.
+     */
+    @ClassVersion("$Id$")
+    private static class LoginCredentialsService implements ICredentialsService {
+        private ICredentials mCredentials;
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-	}
+        @Override
+        public synchronized boolean authenticateWithCredentials(
+                IAuthenticationHelper helper) {
+            if (mCredentials == null) {
+                Display display = PlatformUI.getWorkbench().getDisplay();
+                while (true) {
+                    final AtomicBoolean cancelled = new AtomicBoolean();
+                    final AtomicReference<Credentials> credentials = new AtomicReference<Credentials>();
+                    display.syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            LoginDialog dialog = new LoginDialog(null);
+                            if (dialog.open() == Window.OK) {
+                                credentials.set(new Credentials(dialog
+                                        .getConnectionDetails().getUserId(),
+                                        dialog.getConnectionDetails()
+                                                .getPassword()));
+
+                            } else {
+                                cancelled.set(true);
+                            }
+                        }
+                    });
+                    if (cancelled.get()) {
+                        break;
+                    }
+                    if (helper.authenticate(credentials.get())) {
+                        mCredentials = credentials.get();
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return helper.authenticate(mCredentials);
+            }
+        }
+
+        @Override
+        public synchronized void invalidate() {
+            mCredentials = null;
+        }
+    }
+
+    private LoginCredentialsService mCredentialsService;
+    private LogoutService mLogoutService;
+    private static Activator sInstance;
+
+    @Override
+    public void start(BundleContext context) throws Exception {
+        context.registerService(IPositionLabelProvider.class.getName(),
+                new PhotonPositionLabelProvider(), null);
+        mCredentialsService = new LoginCredentialsService();
+        context.registerService(ICredentialsService.class.getName(),
+                mCredentialsService, null);
+        mLogoutService = new LogoutService() {
+            @Override
+            protected void doLogout() {
+                mCredentialsService.invalidate();
+            }
+        };
+        context.registerService(ILogoutService.class.getName(), mLogoutService,
+                null);
+        sInstance = this;
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        sInstance = null;
+        mCredentialsService = null;
+    }
+
+    /**
+     * @return the logout service
+     */
+    static ILogoutService getLogoutService() {
+        return sInstance.mLogoutService;
+    }
 
 }

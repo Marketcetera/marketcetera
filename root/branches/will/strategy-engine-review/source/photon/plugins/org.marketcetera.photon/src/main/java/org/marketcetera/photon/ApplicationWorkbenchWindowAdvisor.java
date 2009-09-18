@@ -33,10 +33,10 @@ import org.marketcetera.photon.ui.PhotonConsole;
  * 
  * @author gmiller
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: ApplicationWorkbenchWindowAdvisor.java 10643 2009-07-13 17:48:29Z will $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: ApplicationWorkbenchWindowAdvisor.java 10643 2009-07-13 17:48:29Z will $")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements Messages {
 
 	/**
@@ -95,10 +95,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 		PhotonPlugin.getDefault().ensureDefaultProject(
 				ProgressManager.getInstance().getDefaultMonitor());
-
+        
 		// The login dialog interferes with testing, this check is to ensure tests are not being run
 		if (PlatformUI.getTestableObject().getTestHarness() == null) {
-			startClient();
+		    startClient();
 		}
 		PhotonPlugin.getDefault().reconnectMarketDataFeed();
 		initStatusLine();
