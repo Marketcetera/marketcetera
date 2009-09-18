@@ -101,7 +101,7 @@ public interface StrategyEngine extends EObject {
      * @see org.marketcetera.photon.strategy.engine.model.core.ConnectionState
      * @see #setConnectionState(ConnectionState)
      * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyEngine_ConnectionState()
-     * @model default="" required="true"
+     * @model default="" required="true" transient="true"
      * @generated
      */
     ConnectionState getConnectionState();

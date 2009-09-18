@@ -38,6 +38,8 @@ public interface IStrategyEngines {
      *            the new engine
      * @returns the new engine that was actually added, not necessarily the same
      *          as the one passed in
+     * @throws IllegalArgumentException
+     *             if engine is null
      */
     StrategyEngine addEngine(StrategyEngine engine);
 
@@ -46,6 +48,8 @@ public interface IStrategyEngines {
      * 
      * @param engine
      *            the engine to remove
+     * @throws IllegalArgumentException
+     *             if engine is null
      */
     void removeEngine(StrategyEngine engine);
 

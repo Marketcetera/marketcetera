@@ -5,6 +5,8 @@ import org.junit.runners.Suite;
 import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.StrategyAgentConnectionCompositeTest;
 import org.marketcetera.photon.strategy.engine.strategyagent.ui.NewStrategyAgentWizardTest;
 import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEngineUITest;
+import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEnginesSupportPersistenceTest;
+import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEnginesSupportTest;
 
 /* $License$ */
 
@@ -20,6 +22,8 @@ import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEng
         StrategyAgentConnectionCompositeTest.class,
         org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.MessagesTest.class,
         org.marketcetera.photon.strategy.engine.strategyagent.ui.MessagesTest.class,
-        StrategyAgentEngineUITest.class, NewStrategyAgentWizardTest.class })
+        StrategyAgentEngineUITest.class, NewStrategyAgentWizardTest.class,
+        StrategyAgentEnginesSupportTest.class,
+        StrategyAgentEnginesSupportPersistenceTest.class })
 public class StrategyAgentEngineUISuite {
 }

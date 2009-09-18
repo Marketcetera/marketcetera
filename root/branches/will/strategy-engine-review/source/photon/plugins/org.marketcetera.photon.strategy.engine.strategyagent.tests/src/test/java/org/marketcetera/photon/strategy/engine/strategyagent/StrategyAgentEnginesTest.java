@@ -8,9 +8,7 @@ import org.junit.Test;
 import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ILogoutService;
-import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
-import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngineFactory;
 import org.marketcetera.photon.strategy.engine.strategyagent.tests.StrategyAgentEngineTestUtil;
 import org.marketcetera.photon.test.OSGITestUtil;
 
@@ -35,18 +33,12 @@ public class StrategyAgentEnginesTest {
         final ExecutorService mockExecutor = mock(ExecutorService.class);
         final ICredentialsService mockCredentialsService = mock(ICredentialsService.class);
         final ILogoutService mockLogoutService = mock(ILogoutService.class);
-        final StrategyAgentEngine engine = StrategyAgentEngineFactory.eINSTANCE
-                .createStrategyAgentEngine();
-        engine.setName("Dummy");
-        engine.setDescription("Desc");
-        engine.setJmsUrl("url");
-        engine.setWebServiceHostname("host");
-        engine.setWebServicePort(12);
+        final StrategyAgentEngine engine = StrategyAgentEngineTestUtil
+                .createStrategyAgentEngine("Dummy", "Desc", "url", "host", 12);
         StrategyAgentEngine agent = StrategyAgentEngines
                 .createStrategyAgentEngine(engine, mockExecutor,
                         mockCredentialsService, mockLogoutService);
-        StrategyAgentEngineTestUtil.assertStrategyAgentEngine(agent, "Dummy",
-                "Desc", "url", "host", 12, ConnectionState.DISCONNECTED);
+        StrategyAgentEngineTestUtil.assertStrategyAgentEngine(agent, engine);
 
     }
 
@@ -55,13 +47,13 @@ public class StrategyAgentEnginesTest {
         final ExecutorService mockExecutor = mock(ExecutorService.class);
         final ICredentialsService mockCredentialsService = mock(ICredentialsService.class);
         final ILogoutService mockLogoutService = mock(ILogoutService.class);
-        final StrategyAgentEngine engine = StrategyAgentEngineFactory.eINSTANCE
-                .createStrategyAgentEngine();
+        final StrategyAgentEngine engine = StrategyAgentEngineTestUtil
+                .createStrategyAgentEngine("Dummy");
         new ExpectedNullArgumentFailure("guiExecutor") {
             @Override
             protected void run() throws Exception {
-                StrategyAgentEngines.createStrategyAgentEngine(engine,
-                        null, mockCredentialsService, mockLogoutService);
+                StrategyAgentEngines.createStrategyAgentEngine(engine, null,
+                        mockCredentialsService, mockLogoutService);
             }
         };
         new ExpectedNullArgumentFailure("credentialsService") {
@@ -81,8 +73,9 @@ public class StrategyAgentEnginesTest {
         new ExpectedNullArgumentFailure("engine") {
             @Override
             protected void run() throws Exception {
-                StrategyAgentEngines.createStrategyAgentEngine(null,
-                        mockExecutor, mockCredentialsService, mockLogoutService);
+                StrategyAgentEngines
+                        .createStrategyAgentEngine(null, mockExecutor,
+                                mockCredentialsService, mockLogoutService);
             }
         };
     }

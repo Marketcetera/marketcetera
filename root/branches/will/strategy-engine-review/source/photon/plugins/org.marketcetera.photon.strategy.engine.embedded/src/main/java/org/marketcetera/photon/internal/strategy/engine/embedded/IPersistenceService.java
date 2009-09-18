@@ -1,7 +1,7 @@
 package org.marketcetera.photon.internal.strategy.engine.embedded;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection;
@@ -42,6 +42,6 @@ public interface IPersistenceService {
      * @throws IllegalArgumentException
      *             if strategies is null
      */
-    void save(List<? extends Strategy> strategies) throws IOException;
+    void save(Collection<? extends Strategy> strategies) throws IOException;
 
 }

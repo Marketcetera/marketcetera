@@ -2,6 +2,7 @@ package org.marketcetera.photon.internal.strategy.engine.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public final class PersistenceService implements IPersistenceService {
         } else {
             mLoading = true;
             try {
-                final List<? extends EObject> restored;
+                final Collection<? extends EObject> restored;
                 try {
                     restored = mEMFPersistence.restore();
                 } catch (Exception e) {
@@ -88,7 +89,7 @@ public final class PersistenceService implements IPersistenceService {
     }
 
     @Override
-    public synchronized void save(List<? extends Strategy> strategies)
+    public synchronized void save(Collection<? extends Strategy> strategies)
             throws IOException {
         Validate.noNullElements(strategies, "strategies"); //$NON-NLS-1$
         if (mLoading) {

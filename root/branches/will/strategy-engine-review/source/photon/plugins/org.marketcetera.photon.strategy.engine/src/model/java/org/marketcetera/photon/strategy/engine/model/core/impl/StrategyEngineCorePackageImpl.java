@@ -540,7 +540,7 @@ public class StrategyEngineCorePackageImpl extends EPackageImpl implements
                 !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getStrategyEngine_ConnectionState(), this
                 .getConnectionState(), "connectionState", "", 1, 1,
-                StrategyEngine.class, !IS_TRANSIENT, !IS_VOLATILE,
+                StrategyEngine.class, IS_TRANSIENT, !IS_VOLATILE,
                 IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
                 IS_ORDERED);
         initEReference(getStrategyEngine_Connection(), this

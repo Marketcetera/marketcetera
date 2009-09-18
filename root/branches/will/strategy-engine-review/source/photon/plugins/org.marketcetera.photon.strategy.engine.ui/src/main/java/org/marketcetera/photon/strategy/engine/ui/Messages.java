@@ -16,15 +16,14 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 final class Messages {
-    /*
-     * UI Text
-     */
+    
     static I18NMessage0P DEPLOY_STRATEGY_WIZARD_PAGE__TITLE;
     static I18NMessage0P DEPLOY_STRATEGY_WIZARD_PAGE__DESCRIPTION;
     static I18NMessage0P DEPLOY_STRATEGY_WIZARD_DEFAULT_BUTTON__TEXT;
     static I18NMessage0P DEPLOY_STRATEGY_WIZARD_WINDOW__TITLE;
     static I18NMessage1P DEPLOY_STRATEGY_WIZARD_DEPLOY__TASK_NAME;
     static I18NMessage1P DEPLOY_STRATEGY_WIZARD_DEPLOY_FAILED;
+    static I18NMessage0P ABSTRACT_STRATEGY_ENGINES_SUPPORT_SERVICE_NOT_AVAILABLE;    
 
     static {
         ReflectiveMessages.init(Messages.class);

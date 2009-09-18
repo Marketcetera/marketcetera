@@ -18,6 +18,7 @@ import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngineFactory;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEnginePackage;
+import org.marketcetera.photon.strategy.engine.strategyagent.tests.StrategyAgentEngineTestUtil;
 import org.marketcetera.photon.test.AbstractUIRunner;
 import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
@@ -28,18 +29,18 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
 
 /**
  * Tests {@link StrategyAgentConnectionComposite}.
- *
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @RunWith(SimpleUIRunner.class)
 public class StrategyAgentConnectionCompositeTest extends PhotonTestBase {
-    
+
     private ApplicationWindow mWindow;
     private volatile StrategyAgentEngine mEngine;
     private final SWTBot mBot = new SWTBot();
-    
+
     private void createAndOpenWindow() throws Exception {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
@@ -69,13 +70,18 @@ public class StrategyAgentConnectionCompositeTest extends PhotonTestBase {
             mWindow.close();
         }
     }
-    
+
     @Test
     public void testJMSURL() throws Exception {
         createAndOpenWindow();
-        DataBindingTestUtils.testRequiredText(mBot, mEngine,
-                StrategyAgentEnginePackage.Literals.STRATEGY_AGENT_ENGINE__JMS_URL,
-                "JMS URL", "The URL to connect to the strategy agent message queue", "abc");
+        DataBindingTestUtils
+                .testRequiredText(
+                        mBot,
+                        mEngine,
+                        StrategyAgentEnginePackage.Literals.STRATEGY_AGENT_ENGINE__JMS_URL,
+                        "JMS URL",
+                        "The URL to connect to the strategy agent message queue",
+                        "abc");
         SWTBotText jms = mBot.textWithLabel("JMS URL:");
         SWTBotControlDecoration jmsDecoration = new SWTBotControlDecoration(jms);
         jms.setText("::");
@@ -83,48 +89,59 @@ public class StrategyAgentConnectionCompositeTest extends PhotonTestBase {
         jms.setText("tcp://localhost:67676");
         jmsDecoration.assertHidden();
     }
-    
+
     @Test
     public void testHostname() throws Exception {
         createAndOpenWindow();
-        DataBindingTestUtils.testRequiredText(mBot, mEngine,
-                StrategyAgentEnginePackage.Literals.STRATEGY_AGENT_ENGINE__WEB_SERVICE_HOSTNAME,
-                "Web Service Hostname", "The hostname of the strategy agent web service", "abc");
+        DataBindingTestUtils
+                .testRequiredText(
+                        mBot,
+                        mEngine,
+                        StrategyAgentEnginePackage.Literals.STRATEGY_AGENT_ENGINE__WEB_SERVICE_HOSTNAME,
+                        "Web Service Hostname",
+                        "The hostname of the strategy agent web service", "abc");
     }
-    
+
     @Test
     public void testPort() throws Exception {
         createAndOpenWindow();
-        DataBindingTestUtils.testRequiredText(mBot, mEngine,
-                StrategyAgentEnginePackage.Literals.STRATEGY_AGENT_ENGINE__WEB_SERVICE_PORT,
-                "Web Service Port", "The port of the strategy agent web service", "1");
+        DataBindingTestUtils
+                .testRequiredText(
+                        mBot,
+                        mEngine,
+                        StrategyAgentEnginePackage.Literals.STRATEGY_AGENT_ENGINE__WEB_SERVICE_PORT,
+                        "Web Service Port",
+                        "The port of the strategy agent web service", "1");
         SWTBotText text = mBot.textWithLabel("Web Service Port:");
         SWTBotControlDecoration decoration = new SWTBotControlDecoration(text);
         text.setText("a");
-        decoration.assertError("Web Service Port must be an integer between 1 and 65535");
+        decoration
+                .assertError("Web Service Port must be an integer between 1 and 65535");
         text.setText("67676");
-        decoration.assertError("Web Service Port must be an integer between 1 and 65535");
+        decoration
+                .assertError("Web Service Port must be an integer between 1 and 65535");
         text.setText("1000000000000");
-        decoration.assertError("Web Service Port must be an integer between 1 and 65535");
+        decoration
+                .assertError("Web Service Port must be an integer between 1 and 65535");
         text.setText("-1");
-        decoration.assertError("Web Service Port must be an integer between 1 and 65535");
+        decoration
+                .assertError("Web Service Port must be an integer between 1 and 65535");
         text.setText("0");
-        decoration.assertError("Web Service Port must be an integer between 1 and 65535");
+        decoration
+                .assertError("Web Service Port must be an integer between 1 and 65535");
         text.setText("65535");
         decoration.assertHidden();
     }
-    
+
     @Test
     public void testSeededValues() throws Exception {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
-                mEngine = StrategyAgentEngineFactory.eINSTANCE
-                .createStrategyAgentEngine();
+                mEngine = StrategyAgentEngineTestUtil
+                        .createStrategyAgentEngine(null, null, "tcp://abc",
+                                "host", 8080);
                 mEngine.setConnectionState(ConnectionState.CONNECTED);
-                mEngine.setJmsUrl("tcp://abc");
-                mEngine.setWebServiceHostname("host");
-                mEngine.setWebServicePort(8080);
             }
         });
         createAndOpenWindow();
@@ -141,5 +158,5 @@ public class StrategyAgentConnectionCompositeTest extends PhotonTestBase {
         assertThat(wsport.getText(), is("8080"));
         wsport.typeText("abc");
         assertThat(wsport.getText(), is("8080"));
-    }    
+    }
 }

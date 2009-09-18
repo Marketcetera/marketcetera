@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
+import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngineFactory;
 
 /* $License$ */
 
@@ -26,6 +27,31 @@ public class StrategyAgentEngineTestUtil {
         assertThat(engine.getWebServiceHostname(), is(hostname));
         assertThat(engine.getWebServicePort(), is(port));
         assertThat(engine.getConnectionState(), is(state));
+    }
+
+    public static void assertStrategyAgentEngine(StrategyAgentEngine actual,
+            StrategyAgentEngine expected) {
+        assertStrategyAgentEngine(actual, expected.getName(), expected
+                .getDescription(), expected.getJmsUrl(), actual
+                .getWebServiceHostname(), expected.getWebServicePort(),
+                expected.getConnectionState());
+    }
+
+    public static StrategyAgentEngine createStrategyAgentEngine(String name,
+            String description, String url, String host, int port) {
+        StrategyAgentEngine engine = StrategyAgentEngineFactory.eINSTANCE
+                .createStrategyAgentEngine();
+        engine.setName(name);
+        engine.setDescription(description);
+        engine.setJmsUrl(url);
+        engine.setWebServiceHostname(host);
+        engine.setWebServicePort(port);
+        return engine;
+    }
+
+    public static StrategyAgentEngine createStrategyAgentEngine(String name) {
+        return createStrategyAgentEngine(name, "Description", "url", "host",
+                100);
     }
 
     private StrategyAgentEngineTestUtil() {

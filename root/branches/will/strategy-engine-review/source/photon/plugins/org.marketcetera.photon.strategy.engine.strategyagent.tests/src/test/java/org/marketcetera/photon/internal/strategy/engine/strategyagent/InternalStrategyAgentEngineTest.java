@@ -28,7 +28,7 @@ import org.marketcetera.photon.module.ISinkDataManager;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
-import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngineFactory;
+import org.marketcetera.photon.strategy.engine.strategyagent.tests.StrategyAgentEngineTestUtil;
 import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.saclient.ConnectionException;
 import org.marketcetera.saclient.ConnectionStatusListener;
@@ -96,24 +96,14 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
         };
         mLogoutService = new LogoutService();
         mMockSinkDataManager = mock(ISinkDataManager.class);
-        mEngine = StrategyAgentEngineFactory.eINSTANCE
-                .createStrategyAgentEngine();
-        mEngine.setName("sa");
-        mEngine.setDescription("strategy agent");
-        mEngine.setJmsUrl("url");
-        mEngine.setWebServiceHostname("host");
-        mEngine.setWebServicePort(1000);
+        mEngine = StrategyAgentEngineTestUtil.createStrategyAgentEngine("sa",
+                "strategy agent", "url", "host", 100);
         mFixture = new InternalStrategyAgentEngine(mEngine,
                 new ImmediateExecutorService(), mMockCredentials,
                 mLogoutService, mMockFactory, mMockSinkDataManager);
         assertThat(mFixture.getConnection(), nullValue());
-        assertThat(mFixture.getConnectionState(),
-                is(ConnectionState.DISCONNECTED));
-        assertThat(mFixture.getName(), is("sa"));
-        assertThat(mFixture.getDescription(), is("strategy agent"));
-        assertThat(mFixture.getJmsUrl(), is("url"));
-        assertThat(mFixture.getWebServiceHostname(), is("host"));
-        assertThat(mFixture.getWebServicePort(), is(1000));
+        StrategyAgentEngineTestUtil
+                .assertStrategyAgentEngine(mFixture, mEngine);
     }
 
     @Test
