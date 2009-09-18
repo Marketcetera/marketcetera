@@ -437,8 +437,13 @@ public class Strategy
         sendEvent(inEvent);
     }
     /**
-     * Sends an object to subscribers.
-     *
+     * Sends an order to order subscribers.
+     * 
+     * <p><code>OrderSingle</code> objects passed to this method will be added to the list of submitted orders
+     * but other object types will not.  In order to track, for example, <code>OrderReplace</code> and <code>OrderCancel</code>
+     * objects, they must have first been created via {@link #cancel_replace(OrderID, OrderSingle, boolean)} and
+     * {@link #cancel_order(OrderID, boolean)} respectively. 
+     * 
      * @param inData an <code>Object</code> value
      * @return a <code>boolean</code> value indicating whether the object was successfully transmitted or not
      */
@@ -469,7 +474,6 @@ public class Strategy
      *
      * <p>The order must have been submitted by this strategy during this session or this call will
      * have no effect.  If <code>inSendOrder</code> is <code>false</code>, it is the caller's responsibility to submit the <code>OrderReplace</code>.
-     * Upon successful completion of this method, the given <code>OrderID</code> may not be again canceled or replaced.
      *
      * @param inOrderID an <code>OrderID</code> value containing the order to cancel
      * @param inNewOrder an <code>OrderSingle</code> value containing the order with which to replace the existing order

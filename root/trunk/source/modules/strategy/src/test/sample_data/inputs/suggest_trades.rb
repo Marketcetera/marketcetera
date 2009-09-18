@@ -8,6 +8,12 @@ include_class "org.marketcetera.trade.MSymbol"
 
 class SuggestTrades < Strategy
     def on_start
+        do_suggest
+    end
+    def on_stop
+        do_suggest
+    end
+    def do_suggest
         orderShouldBeNull = get_parameter("orderShouldBeNull")
         if(orderShouldBeNull != nil)
             suggest_trade(nil, BigDecimal.new("100.00"), "suggestion")

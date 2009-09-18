@@ -7,6 +7,12 @@ include_class "quickfix.field.TransactTime"
 
 class SendMessage < Strategy
     def on_start
+        do_send
+    end
+    def on_stop
+        do_send
+    end
+    def do_send
         messageDate = Long.parseLong(get_parameter("date"))
 
         nullMessage = get_parameter("nullMessage")

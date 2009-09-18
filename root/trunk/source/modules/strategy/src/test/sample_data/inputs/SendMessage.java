@@ -23,6 +23,21 @@ public class SendMessage
     @Override
     public void onStart()
     {
+        doSend();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onStop()
+     */
+    @Override
+    public void onStop()
+    {
+        doSend();
+    }
+    /**
+     * Sends messages according to strategy parameters.
+     */
+    private void doSend()
+    {
         long messageDate = Long.parseLong(getParameter("date"));
         String nullMessage = getParameter("nullMessage");
         Message message;

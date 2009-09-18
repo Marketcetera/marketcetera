@@ -66,6 +66,9 @@ public class JavaLanguageTest
     public static final File DATA_FLOW_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                            "DataFlow.java");
     public static final String DATA_FLOW_NAME = "DataFlow";
+    public static final File ORDER_RETENTION_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                                 "OrderRetention.java");
+    public static final String ORDER_RETENTION_NAME = "OrderRetention";
     /**
      * Tests that a strategy declared in a package other than the default package works as expected.
      *
@@ -246,6 +249,15 @@ public class JavaLanguageTest
     {
         return StrategyCoordinates.get(DATA_FLOW_STRATEGY,
                                        DATA_FLOW_NAME);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getOrderRetentionStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getOrderRetentionStrategy()
+    {
+        return StrategyCoordinates.get(ORDER_RETENTION_STRATEGY,
+                                       ORDER_RETENTION_NAME);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.LanguageTestBase#getNotificationCount()

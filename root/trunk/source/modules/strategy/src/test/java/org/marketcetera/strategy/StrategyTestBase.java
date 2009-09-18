@@ -1,6 +1,10 @@
 package org.marketcetera.strategy;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
 import static org.marketcetera.strategy.Status.FAILED;
 import static org.marketcetera.strategy.Status.RUNNING;
@@ -83,11 +87,14 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.UserID;
@@ -169,6 +176,7 @@ public class StrategyTestBase
          * indicates if the module should emit execution reports when it receives OrderSingle objects
          */
         public static boolean shouldSendExecutionReports = true;
+        public static boolean shouldFullyFillOrders = true;
         public static boolean shouldIgnoreLogMessages = true;
         public static int ordersReceived = 0;
         /**
@@ -1159,6 +1167,7 @@ public class StrategyTestBase
         MockClient.getPositionFails = false;
         executionReportMultiplicity = 1;
         MockRecorderModule.shouldSendExecutionReports = true;
+        MockRecorderModule.shouldFullyFillOrders = true;
         MockRecorderModule.shouldIgnoreLogMessages = true;
         MockRecorderModule.ordersReceived = 0;
         StrategyModule.orsClient = new MockClient();
@@ -1305,52 +1314,115 @@ public class StrategyTestBase
     protected static List<ExecutionReport> generateExecutionReports(OrderSingle inOrder)
         throws Exception
     {
-        int multiplicity = executionReportMultiplicity;
         List<ExecutionReport> reports = new ArrayList<ExecutionReport>();
+        for(Message rawExeReport : generateFixExecutionReports(inOrder)) {
+            reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
+                                                                                           inOrder.getBrokerID(),
+                                                                                           Originator.Broker,
+                                                                                           null,
+                                                                                           null));
+        }
+        return reports;
+    }
+    /**
+     * Generates FIX <code>Message</code> objects that contain execution reports for partial and/or
+     * complete fills of the given order.
+     *
+     * <p>The number of objects returned can be adjusted by changing the value of {@link #executionReportMultiplicity}.
+     * Whether or not the list partially or fully fills the given order can be adjusted by changing the
+     * value of {@link MockRecorderModule#shouldFullyFillOrders}.
+     *
+     * @param inOrder an <code>OrderSingle</code> value
+     * @return a <code>List&lt;Message&gt;</code> value
+     * @throws Exception if an error occurs
+     */
+    protected static List<Message> generateFixExecutionReports(OrderSingle inOrder)
+        throws Exception
+    {
+        int multiplicity = executionReportMultiplicity;
+        List<Message> reports = new ArrayList<Message>();
         if(inOrder.getQuantity() != null) {
             BigDecimal totalQuantity = new BigDecimal(inOrder.getQuantity().toString());
             BigDecimal lastQuantity = BigDecimal.ZERO;
             for(int iteration=0;iteration<multiplicity-1;iteration++) {
                 BigDecimal thisQuantity = totalQuantity.subtract(totalQuantity.divide(new BigDecimal(Integer.toString(multiplicity))));
                 totalQuantity = totalQuantity.subtract(thisQuantity);
-                Message rawExeReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport(inOrder.getOrderID().toString(),
-                                                                                               inOrder.getOrderID().toString(),
-                                                                                               "execID",
-                                                                                               OrdStatus.PARTIALLY_FILLED,
-                                                                                               Side.BUY,
-                                                                                               thisQuantity,
-                                                                                               inOrder.getPrice(),
-                                                                                               lastQuantity,
-                                                                                               inOrder.getPrice(),
-                                                                                               inOrder.getQuantity(),
-                                                                                               inOrder.getPrice(),
-                                                                                               inOrder.getSymbol(),
-                                                                                               inOrder.getAccount());
-                rawExeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
-                reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
-                                                                                               inOrder.getBrokerID(),
-                                                                                               Originator.Broker, null, null));
+                Message rawExeReport = generateFixExecutionReport(inOrder,
+                                                                  OrdStatus.PARTIALLY_FILLED,
+                                                                  thisQuantity,
+                                                                  lastQuantity,
+                                                                  FIXVersion.FIX44);
+                reports.add(rawExeReport);
                 lastQuantity = thisQuantity;
             }
-            Message rawExeReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport(inOrder.getOrderID().toString(),
-                                                                                           inOrder.getOrderID().toString(),
-                                                                                           "execID",
-                                                                                           OrdStatus.FILLED,
-                                                                                           Side.BUY,
-                                                                                           totalQuantity,
-                                                                                           inOrder.getPrice(),
-                                                                                           lastQuantity,
-                                                                                           inOrder.getPrice(),
-                                                                                           inOrder.getQuantity(),
-                                                                                           inOrder.getPrice(),
-                                                                                           inOrder.getSymbol(),
-                                                                                           inOrder.getAccount());
-            rawExeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
-            reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
-                                                                                           inOrder.getBrokerID(),
-                                                                                           Originator.Server, null, null));
+            Message rawExeReport = generateFixExecutionReport(inOrder,
+                                                              MockRecorderModule.shouldFullyFillOrders ? OrdStatus.FILLED : OrdStatus.PARTIALLY_FILLED,
+                                                              totalQuantity,
+                                                              lastQuantity,
+                                                              FIXVersion.FIX44);
+            reports.add(rawExeReport);
         }
         return reports;
+    }
+    /**
+     * Generates a FIX <code>Message</code> containing an execution report of the given
+     * status for the given order.
+     * 
+     * <p><em>Warning</em> - most of the attributes of the FIX message returned are arbitrary and possibly
+     * incorrect.  It is the caller's responsibility to review and modify the returned value
+     * for the intended purpose.
+     *
+     * @param inOrder an <code>OrderSingle</code> value
+     * @param inOrderStatus a <code>char</code> value corresponding to an {@link OrdStatus} value
+     * @param inQuantity a <code>BigDecimal</code> value
+     * @param inLastQuantity a <code>BigDecimal</code> value
+     * @return a <code>Message</code> value
+     * @throws Exception if an error occurs
+     */
+    protected static Message generateFixExecutionReport(OrderSingle inOrder,
+                                                        char inOrderStatus,
+                                                        BigDecimal inQuantity,
+                                                        BigDecimal inLastQuantity,
+                                                        FIXVersion inFIXVersion)
+        throws Exception
+    {
+        Message exeReport = inFIXVersion.getMessageFactory().newExecutionReport(inOrder.getOrderID().toString(),
+                                                                                inOrder.getOrderID().toString(),
+                                                                                "execID",
+                                                                                inOrderStatus,
+                                                                                Side.BUY,
+                                                                                inQuantity,
+                                                                                inOrder.getPrice(),
+                                                                                inLastQuantity,
+                                                                                inOrder.getPrice(),
+                                                                                inOrder.getQuantity(),
+                                                                                inOrder.getPrice(),
+                                                                                inOrder.getSymbol(),
+                                                                                inOrder.getAccount());
+        exeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
+        return exeReport;
+    }
+    /**
+     * Creates an <code>OrderSingle</code> value with the given <code>OrderID</code>.
+     * 
+     * <p>If a null <code>OrderID</code> is given, a new <code>OrderID</code> is assigned to
+     * the <code>OrderSingle</code>.
+     *
+     * @param inOrderID an <code>OrderID</code> value or <code>null</code>
+     * @return an <code>OrderSingle</code> value
+     */
+    protected static OrderSingle createOrderWithID(OrderID inOrderID)
+    {
+        OrderSingle order = Factory.getInstance().createOrderSingle();
+        order.setOrderType(OrderType.Limit);
+        order.setPrice(new BigDecimal("100.23"));
+        order.setQuantity(new BigDecimal("10000"));
+        order.setSide(org.marketcetera.trade.Side.Buy);
+        order.setSymbol(new MSymbol("METC"));
+        if(inOrderID != null) {
+            order.setOrderID(inOrderID);
+        }
+        return order;
     }
     /**
      * Extracts the date used to generate an order from a running strategy, if applicable.
