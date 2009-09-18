@@ -1,6 +1,7 @@
 package org.marketcetera.photon.commons.emf;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
@@ -40,6 +41,6 @@ public interface IEMFPersistence {
      * @throws IllegalArgumentException
      *             if objects is null or has null elements
      */
-    void save(List<? extends EObject> objects) throws IOException;
+    void save(Collection<? extends EObject> objects) throws IOException;
 
 }
