@@ -3,7 +3,7 @@
 <plugin>
    <extension
          id="application"
-         name="Photon"
+         name="%application.name"
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
@@ -171,9 +171,9 @@
       </command>
       <command
             defaultHandler="org.marketcetera.photon.internal.product.LogoutHandler"
-            description="Logout current credentials and disconnect all services"
+            description="%logoutCommand.description"
             id="org.marketcetera.photon.product.commands.logout"
-            name="Logout">
+            name="%logoutCommand.name">
       </command>
    </extension>
    <extension
@@ -197,9 +197,9 @@
                commandId="org.marketcetera.photon.product.commands.logout"
                disabledIcon="icons/dtool16/logout.gif"
                icon="icons/etool16/logout.gif"
-               label="Logout"
+               label="%logoutCommand.name"
                style="push"
-               tooltip="Logout current credentials and disconnect all services">
+               tooltip="%logoutCommand.description">
          </command>
       </menuContribution>
    </extension>
