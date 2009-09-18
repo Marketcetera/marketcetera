@@ -24,6 +24,21 @@ public class SuggestTrades
     @Override
     public void onStart()
     {
+        doSuggestion();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onStop()
+     */
+    @Override
+    public void onStop()
+    {
+        doSuggestion();
+    }
+    /**
+     * Executes a single suggestion test based on test parameters.
+     */
+    private void doSuggestion()
+    {
         String orderShouldBeNull = getParameter("orderShouldBeNull");
         if(orderShouldBeNull != null) {
             suggestTrade(null,

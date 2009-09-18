@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,8 +26,10 @@ import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowSupport;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderCancel;
@@ -33,6 +37,8 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -110,14 +116,36 @@ public abstract class AbstractRunningStrategy
         onExecutionReport(inExecutionReport);
     }
     /**
-     * Returns the list of orders created during this session in the order they
+     * Returns the list of open orders created during this session in the order they
      * were submitted.
+     * 
+     * <p>Returns open orders only.  Orders that were canceled, replaced, filled, or
+     * otherwise are no longer open will not be returned.  For orders submitted
+     * via {@link AbstractRunningStrategy#cancelReplace(OrderID, OrderSingle, boolean)},
+     * the {@link OrderSingle} value is returned, not the {@link OrderReplace} value sent
+     * to the broker.
      * 
      * @return a <code>List&lt;OrderSingle&gt;</code> value
      */
     final List<OrderSingle> getSubmittedOrders()
     {
         return submittedOrderManager.getOrders();
+    }
+    /**
+     * Returns the list of <code>OrderID</code> values for open orders created in this
+     * session in the order they were submitted.
+     *
+     * <p>Returns IDs of open orders only.  Orders that were canceled, replaced, filled, or
+     * otherwise are no longer open will not be returned.  For orders submitted
+     * via {@link AbstractRunningStrategy#cancelReplace(OrderID, OrderSingle, boolean)},
+     * the ID of the {@link OrderReplace} value sent to the broker is returned, not the 
+     * {@link OrderSingle} value used to create the <code>OrderReplace</code>.
+     *
+     * @return a <code>List&lt;OrderID&gt;</code> value
+     */
+    final List<OrderID> getSubmittedOrderIDs()
+    {
+        return submittedOrderManager.getOrderIDs();
     }
     /**
      * Sets the given key to the given value.
@@ -475,13 +503,6 @@ public abstract class AbstractRunningStrategy
                                       BigDecimal inScore,
                                       String inIdentifier)
     {
-        if(!canSendData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
-                               strategy);
-            return;
-        }
         if(inOrder == null ||
            inScore == null ||
            inIdentifier == null ||
@@ -505,18 +526,16 @@ public abstract class AbstractRunningStrategy
     /**
      * Sends an order to order subscribers.
      * 
+     * <p><code>OrderSingle</code> objects passed to this method will be added to the list of submitted orders
+     * but other object types will not.  In order to track, for example, <code>OrderReplace</code> and <code>OrderCancel</code>
+     * objects, they must have first been created via {@link #cancelReplace(OrderID, OrderSingle, boolean)} and
+     * {@link #cancelOrder(OrderID, boolean)} respectively. 
+     * 
      * @param inData an <code>Object</code> value
      * @return a <code>boolean</code> value indicating whether the object was successfully transmitted or not
      */
     protected boolean send(Object inData)
     {
-        if(!canSendData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
-                               strategy);
-            return false;
-        }
         if(inData == null) {
             StrategyModule.log(LogEvent.warn(INVALID_DATA,
                                              String.valueOf(strategy)),
@@ -545,7 +564,12 @@ public abstract class AbstractRunningStrategy
                                               order,
                                               order.getOrderID()),
                                strategy);
-            submittedOrderManager.add(order);
+            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                   "{} created {}", //$NON-NLS-1$
+                                   strategy,
+                                   order);
+            submittedOrderManager.add(order.getOrderID(),
+                                      order);
         }
         strategy.getOutboundServicesProvider().send(inData);
         return true;
@@ -566,20 +590,13 @@ public abstract class AbstractRunningStrategy
     protected final OrderCancel cancelOrder(OrderID inOrderID,
                                             boolean inSendOrder)
     {
-        if(!canSendData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
-                               strategy);
-            return null;
-        }
         if(inOrderID == null) {
             StrategyModule.log(LogEvent.warn(INVALID_CANCEL,
                                              String.valueOf(strategy)),
                                strategy);
             return null;
         }
-        Entry order = submittedOrderManager.remove(inOrderID);
+        Entry order = submittedOrderManager.get(inOrderID);
         if(order == null) {
             StrategyModule.log(LogEvent.warn(INVALID_ORDERID,
                                              String.valueOf(strategy),
@@ -593,14 +610,22 @@ public abstract class AbstractRunningStrategy
             // use an empty execution report
             cancelRequest = Factory.getInstance().createOrderCancel(null);
             cancelRequest.setOriginalOrderID(inOrderID);
-            cancelRequest.setBrokerID(order.underlyingOrder.getBrokerID());
-            cancelRequest.setQuantity(order.underlyingOrder.getQuantity());
-            cancelRequest.setSymbol(order.underlyingOrder.getSymbol());
-            cancelRequest.setSide(order.underlyingOrder.getSide());
+            cancelRequest.setBrokerID(order.getUnderlyingOrder().getBrokerID());
+            cancelRequest.setQuantity(order.getUnderlyingOrder().getQuantity());
+            cancelRequest.setSymbol(order.getUnderlyingOrder().getSymbol());
+            cancelRequest.setSide(order.getUnderlyingOrder().getSide());
         } else {
             // use the most recent execution report to seed the cancel request
             cancelRequest = Factory.getInstance().createOrderCancel(executionReportToUse);
+            // set the BrokerOrderID to null (EG-762) because the ER acks we get back from the ORS (server)
+            //  do not have the BrokerOrderID set correctly.  it is OK to send no BrokerOrderID, but it is
+            //  not OK to send an invalid BrokerOrderID.
+            cancelRequest.setBrokerOrderID(null);
         }
+        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                               "{} created {}", //$NON-NLS-1$
+                               strategy,
+                               cancelRequest);
         if(inSendOrder) {
             StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_ORDER_REQUEST,
                                               String.valueOf(strategy),
@@ -622,13 +647,6 @@ public abstract class AbstractRunningStrategy
      */
     protected final int cancelAllOrders()
     {
-        if(!canSendData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
-                               strategy);
-            return 0;
-        }
         StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_ALL_ORDERS_REQUEST,
                                           String.valueOf(strategy)),
                            strategy);
@@ -661,7 +679,6 @@ public abstract class AbstractRunningStrategy
      * 
      * <p>The order must have been submitted by this strategy during this session or this call will
      * have no effect.  If <code>inSendOrder</code> is <code>false</code>, it is the caller's responsibility to submit the <code>OrderReplace</code>.
-     * Upon successful completion of this method, the given <code>OrderID</code> may not be again canceled or replaced.
      * 
      * @param inOrderID an <code>OrderID</code> value containing the order to cancel
      * @param inNewOrder an <code>OrderSingle</code> value containing the order with which to replace the existing order
@@ -673,13 +690,6 @@ public abstract class AbstractRunningStrategy
                                                OrderSingle inNewOrder,
                                                boolean inSendOrder)
     {
-        if(!canSendData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
-                               strategy);
-            return null;
-        }
         if(inOrderID == null ||
            inNewOrder == null ||
            inNewOrder.getOrderID() == null) {
@@ -688,7 +698,7 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return null;
         }
-        Entry order = submittedOrderManager.remove(inOrderID);
+        Entry order = submittedOrderManager.get(inOrderID);
         if(order == null) {
             StrategyModule.log(LogEvent.warn(INVALID_ORDERID,
                                              String.valueOf(strategy),
@@ -703,17 +713,31 @@ public abstract class AbstractRunningStrategy
         if(executionReport == null) {
             replaceOrder = Factory.getInstance().createOrderReplace(null);
             replaceOrder.setOriginalOrderID(inOrderID);
-            replaceOrder.setBrokerID(order.underlyingOrder.getBrokerID());
-            replaceOrder.setSymbol(order.underlyingOrder.getSymbol());
-            replaceOrder.setSide(order.underlyingOrder.getSide());
-            replaceOrder.setOrderType(order.underlyingOrder.getOrderType());
+            replaceOrder.setBrokerID(order.getUnderlyingOrder().getBrokerID());
+            replaceOrder.setSymbol(order.getUnderlyingOrder().getSymbol());
+            replaceOrder.setSide(order.getUnderlyingOrder().getSide());
+            replaceOrder.setOrderType(order.getUnderlyingOrder().getOrderType());
         } else {
             replaceOrder = Factory.getInstance().createOrderReplace(executionReport);
+            // set the BrokerOrderID to null (EG-762) because the ER acks we get back from the ORS (server)
+            //  do not have the BrokerOrderID set correctly.  it is OK to send no BrokerOrderID, but it is
+            //  not OK to send an invalid BrokerOrderID.
+            replaceOrder.setBrokerOrderID(null);
         }
         replaceOrder.setQuantity(inNewOrder.getQuantity());
-        replaceOrder.setPrice(inNewOrder.getPrice());
+        // special case: when replacing a market order, it is absolutely verbotten to specify a price
+        if(OrderType.Market.equals(order.getUnderlyingOrder().getOrderType())) {
+            replaceOrder.setPrice(null);
+        } else {
+            replaceOrder.setPrice(inNewOrder.getPrice());
+        }
         replaceOrder.setTimeInForce(inNewOrder.getTimeInForce());
-        submittedOrderManager.add(inNewOrder);
+        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                               "{} created {}", //$NON-NLS-1$
+                               strategy,
+                               replaceOrder);
+        submittedOrderManager.add(replaceOrder.getOrderID(),
+                                  inNewOrder);
         if(inSendOrder) {
             StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_REPLACE_REQUEST,
                                               String.valueOf(strategy),
@@ -732,13 +756,6 @@ public abstract class AbstractRunningStrategy
     protected final void sendMessage(Message inMessage,
                                      BrokerID inBroker)
     {
-        if(!canSendData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
-                               strategy);
-            return;
-        }
         if(inMessage == null ||
            inBroker == null) {
             StrategyModule.log(LogEvent.warn(INVALID_MESSAGE,
@@ -765,13 +782,6 @@ public abstract class AbstractRunningStrategy
     protected final void sendEventToCEP(EventBase inEvent,
                                         String inProvider)
     {
-        if(!canSendData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
-                               strategy);
-            return;
-        }
         if(inEvent == null ||
            inProvider == null ||
            inProvider.isEmpty()) {
@@ -800,13 +810,6 @@ public abstract class AbstractRunningStrategy
      */
     protected final void sendEvent(EventBase inEvent)
     {
-        if(!canSendData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_SEND_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
-                               strategy);
-            return;
-        }
        if(inEvent == null) {
            StrategyModule.log(LogEvent.warn(INVALID_EVENT,
                                             String.valueOf(strategy)),
@@ -1135,15 +1138,6 @@ public abstract class AbstractRunningStrategy
         return null;
     }
     /**
-     * Indicates if outgoing data can be sent.
-     *
-     * @return a <code>boolean</code> value
-     */
-    private boolean canSendData()
-    {
-        return strategy.getStatus().canSendData();
-    }
-    /**
      * Indicates if incoming data can be received.
      *
      * @return a <code>boolean</code> value
@@ -1254,7 +1248,7 @@ public abstract class AbstractRunningStrategy
          */
         private final Map<OrderID, Entry> submittedOrders = new LinkedHashMap<OrderID, Entry>();
         /**
-         * Gets the orders submitted during this strategy session in the order
+         * Gets the open orders submitted during this strategy session in the order
          * they were submitted.
          * 
          * @return a <code>List&lt;OrderSingle&gt;</code> value
@@ -1264,25 +1258,33 @@ public abstract class AbstractRunningStrategy
             synchronized(submittedOrders) {
                 List<OrderSingle> orders = new ArrayList<OrderSingle>();
                 for(Entry entry : submittedOrders.values()) {
-                    orders.add(entry.underlyingOrder);
+                    orders.add(entry.getUnderlyingOrder());
                 }
                 return orders;
             }
         }
         /**
-         * Removes an order from the order tracker.
+         * Gets the order IDs of the open orders submitted during this strategy session in the order
+         * they were submitted.
          * 
-         * @param inOrderID an <code>OrderID</code> value
-         * @return an <code>Entry</code> value or null if the given <code>OrderID</code> does not correspond to a submitted order
+         * @return a <code>List&lt;OrderID&gt;</code> value
          */
-        private Entry remove(OrderID inOrderID)
+        private List<OrderID> getOrderIDs()
         {
             synchronized(submittedOrders) {
-                Entry entry = submittedOrders.remove(inOrderID);
-                if(entry == null) {
-                    return null;
-                }
-                return entry;
+                return new ArrayList<OrderID>(submittedOrders.keySet());
+            }
+        }
+        /**
+         * Gets an open order from the order tracker.
+         * 
+         * @param inOrderID an <code>OrderID</code> value
+         * @return an <code>Entry</code> value or <code>null</code> if the given <code>OrderID</code> does not correspond to an open submitted order
+         */
+        private Entry get(OrderID inOrderID)
+        {
+            synchronized(submittedOrders) {
+                return submittedOrders.get(inOrderID);
             }
         }
         /**
@@ -1292,10 +1294,23 @@ public abstract class AbstractRunningStrategy
          */
         private void add(ExecutionReport inExecutionReport)
         {
+            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                   "{} analyzing {}", //$NON-NLS-1$
+                                   this,
+                                   inExecutionReport);
             assert(inExecutionReport.getOrderID() != null);
             synchronized(submittedOrders) {
+                for(OrderID orderToRemove : findOrdersToRelease(inExecutionReport)) {
+                    SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                           "Removing order {} from order-tracker", //$NON-NLS-1$
+                                           orderToRemove);
+                    submittedOrders.remove(orderToRemove);
+                }
                 Entry entry = submittedOrders.get(inExecutionReport.getOrderID());
                 if(entry != null) {
+                    SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                           "Recording execution report for {}", //$NON-NLS-1$
+                                           inExecutionReport.getOrderID());
                     entry.executionReports.add(inExecutionReport);
                 } else {
                     SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
@@ -1306,15 +1321,47 @@ public abstract class AbstractRunningStrategy
             }
         }
         /**
+         * Examines the given <code>ExecutionReport</code> and determines the
+         * <code>OrderID</code> objects that should be removed from the list of active
+         * orders, if any.
+         *
+         * @param inExecutionReport an <code>ExecutionReport</code> value
+         * @return a <code>Set&lt;OrderID&gt;</code> value containing the <code>OrderID</code>
+         *  values to release, if any
+         */
+        private Set<OrderID> findOrdersToRelease(ExecutionReport inExecutionReport)
+        {
+            // check the list of scenarios that justify removing an order from the list of
+            //  orders that are cancellable
+            // first, if the order status is not cancellable, this indicates that the order
+            //  has Moved On and is no longer our concern
+            Set<OrderID> orders = new HashSet<OrderID>();
+            if(!FIXMessageUtil.isCancellable(inExecutionReport.getOrderStatus().getFIXValue())) {
+                // a non-cancellable order is, of course, itself done
+                orders.add(inExecutionReport.getOrderID());
+            }
+            // next, check to see if the order is of a type that implies the demise
+            //  and lamented passage of another order
+            // the check for either ExecutionType or OrderStatus covers FIX versions
+            //  4.2 and earlier (OrderStatus) and later than 4.2 (ExecutionType)
+            return orders;
+        }
+        /**
          * Adds an <code>OrderSingle</code> to the order tracker.
          * 
+         * @param inOrderID an <code>OrderID</code> value
          * @param inOrder an <code>OrderSingle</code> value
          */
-        private void add(OrderSingle inOrder)
+        private void add(OrderID inOrderID,
+                         OrderSingle inOrder)
         {
-            assert(inOrder.getOrderID() != null);
+            assert(inOrder != null);
+            assert(inOrderID != null);
             synchronized(submittedOrders) {
-                submittedOrders.put(inOrder.getOrderID(),
+                SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                                       "Adding order {} to order-tracker", //$NON-NLS-1$
+                                       inOrderID);
+                submittedOrders.put(inOrderID,
                                     new Entry(inOrder));
             }
         }
@@ -1365,6 +1412,15 @@ public abstract class AbstractRunningStrategy
         {
             assert(inOrder.getOrderID() != null);
             underlyingOrder = inOrder;
+        }
+        /**
+         * Gets the underlying order.
+         *
+         * @return an <code>OrderSingle</code> value
+         */
+        private OrderSingle getUnderlyingOrder()
+        {
+            return underlyingOrder;
         }
         /* (non-Javadoc)
          * @see java.lang.Object#toString()

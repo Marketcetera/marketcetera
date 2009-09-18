@@ -85,6 +85,9 @@ public class RubyLanguageTest
     public static final File DATA_FLOW_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                            "data_flow.rb");
     public static final String DATA_FLOW_STRATEGY_NAME = "DataFlow";
+    public static final File ORDER_RETENTION_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                                 "order_retention.rb");
+    public static final String ORDER_RETENTION_STRATEGY_NAME = "OrderRetention";
     /**
      * Verifies that a Ruby strategy that requires another Ruby strategy works.
      *
@@ -326,6 +329,15 @@ public class RubyLanguageTest
     {
         return StrategyCoordinates.get(RubyLanguageTest.OTHER_STRATEGY,
                                        RubyLanguageTest.OTHER_STRATEGY_NAME);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getOrderRetentionStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getOrderRetentionStrategy()
+    {
+        return StrategyCoordinates.get(RubyLanguageTest.ORDER_RETENTION_STRATEGY,
+                                       RubyLanguageTest.ORDER_RETENTION_STRATEGY_NAME);
     }
     /**
      * Gets a strategy which requires other strategies.

@@ -64,16 +64,6 @@ public enum Status
                this.equals(RUNNING);
     }
     /**
-     * Indicates if a strategy can send outgoing data.
-     *
-     * @return a <code>boolean</code> value
-     */
-    boolean canSendData()
-    {
-        return this.equals(STARTING) ||
-               this.equals(RUNNING);
-    }
-    /**
      * Validates a potential state change based on the current state. 
      *
      * @param inNewStatus

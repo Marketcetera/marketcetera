@@ -1,6 +1,14 @@
+import java.math.BigDecimal;
+
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.EventBase;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.strategy.OutputType;
 import org.marketcetera.strategy.java.Strategy;
+import org.marketcetera.trade.MSymbol;
 
 /* $License$ */
 
@@ -15,6 +23,32 @@ public class SendEvent
         extends Strategy
 {
     private int askCounter = 0;
+    private DataFlowID dataFlowID;
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onStart()
+     */
+    @Override
+    public void onStart()
+    {
+        dataFlowID = createDataFlow(true,
+                                    new DataRequest(getURN(),
+                                                    OutputType.ALL));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onStart()
+     */
+    @Override
+    public void onStop()
+    {
+        TradeEvent trade = new TradeEvent(1,
+                                          1,
+                                          new MSymbol("METC"),
+                                          "exchange",
+                                          BigDecimal.ONE,
+                                          BigDecimal.TEN);
+        doSendEvent(trade);
+        cancelDataFlow(dataFlowID);
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.event.AskEvent)
      */

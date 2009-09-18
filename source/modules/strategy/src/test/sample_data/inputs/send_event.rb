@@ -1,9 +1,22 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
+include_class "org.marketcetera.strategy.OutputType"
+include_class "org.marketcetera.event.TradeEvent"
+include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.module.DataRequest"
 include_class "java.lang.Long"
+include_class "java.math.BigDecimal"
 
 class SendEvent < Strategy
     def on_start
         @askCounter = 0
+        dataRequests = Array.new
+        dataRequests << DataRequest.new(get_urn, OutputType::ALL)
+        @dataFlowID = create_data_flow true, dataRequests.to_java(DataRequest)
+    end
+    def on_stop
+        trade = TradeEvent.new(1,1,MSymbol.new("METC"),"exchange",BigDecimal::ONE,BigDecimal::TEN)
+        do_send_event trade
+        cancel_data_flow @dataFlowID
     end
     def on_other (data)
         do_send_event data

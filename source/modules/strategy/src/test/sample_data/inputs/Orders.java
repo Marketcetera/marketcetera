@@ -34,39 +34,9 @@ public class Orders
     public void onAsk(AskEvent inAsk)
     {
         if(getProperty("orderShouldBeNull") != null) {
-            send(null);
+            doOrderSend(false);
         } else {
-            OrderSingle order = Factory.getInstance().createOrderSingle();
-            order.setAccount(getProperty("account"));
-            String orderType = getProperty("orderType");
-            if(orderType != null) {
-                order.setOrderType(OrderType.valueOf(orderType));
-            }
-            String price = getProperty("price");
-            if(price != null) {
-                order.setPrice(new BigDecimal(price));
-            }
-            String quantity = getProperty("quantity");
-            if(quantity != null) {
-                order.setQuantity(new BigDecimal(quantity));
-            }
-            String side = getProperty("side");
-            if(side != null) {
-                order.setSide(Side.valueOf(side));
-            }
-            String symbol = getProperty("symbol");
-            if(symbol != null) {
-                order.setSymbol(new MSymbol(symbol));
-            }
-            String timeInForce = getProperty("timeInForce");
-            if(timeInForce != null) {
-                order.setTimeInForce(TimeInForce.valueOf(timeInForce));
-            }
-            setProperty("orderID",
-                         order.getOrderID().toString());
-            setProperty("transactTime",
-                         Long.toString(System.currentTimeMillis()));
-            send(order);
+            doOrderSend(true);
         }
     }
     /* (non-Javadoc)
@@ -138,6 +108,43 @@ public class Orders
                         orderCancel == null ? "false" : "true");
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onStop()
+     */
+    @Override
+    public void onStop()
+    {
+        doOrderSend(true);
+        String rawOrderID = getProperty("orderID");
+        if(rawOrderID != null) {
+            OrderID orderID = new OrderID(rawOrderID);
+            if(getProperty("shouldReplace") != null) {
+                OrderSingle order = Factory.getInstance().createOrderSingle();
+                OrderReplace replace = cancelReplace(orderID,
+                                                     order,
+                                                     false);
+                if(replace != null) {
+                    setProperty("orderReplaceNull",
+                                "false");
+                } else {
+                    setProperty("orderReplaceNull",
+                                "true");
+                }
+            } else {
+                OrderCancel orderCancel = cancelOrder(orderID,
+                                                      false);
+                if(orderCancel != null) {
+                    setProperty("orderCancelNull",
+                                "false");
+                } else {
+                    setProperty("orderCancelNull",
+                                "true");
+                }
+            }
+        }
+        setProperty("allOrdersCanceled",
+                    String.valueOf(cancelAllOrders()));
+    }
     /**
      * Executes the tests for <code>cancelReplace</code>.
      *
@@ -161,7 +168,7 @@ public class Orders
                                      (OrderSingle)inEvent,
                                      (shouldSkipSend == null ? true : false));
             if(shouldDelaySend != null) {
-                newOrder.setPrice(newOrder.getPrice().add(BigDecimal.ONE));
+                newOrder.setQuantity(newOrder.getQuantity().add(BigDecimal.ONE));
                 send(newOrder);
             }
         } else {
@@ -171,5 +178,55 @@ public class Orders
         }
         setProperty("newOrderID",
                     (newOrder == null ? null : newOrder.getOrderID().toString())); 
+    }
+    /**
+     * Sends an order based on test parameters.
+     *
+     * @param inShouldSendOrder a <code>boolean</code> value indicating whether the order should be
+     *  sent or <code>null</code> should be sent instead
+     */
+    private void doOrderSend(boolean inShouldSendOrder)
+    {
+        if(inShouldSendOrder) {
+            OrderSingle order = Factory.getInstance().createOrderSingle();
+            order.setAccount(getProperty("account"));
+            String orderType = getProperty("orderType");
+            if(orderType != null) {
+                order.setOrderType(OrderType.valueOf(orderType));
+            }
+            String price = getProperty("price");
+            if(price != null) {
+                order.setPrice(new BigDecimal(price));
+            }
+            String quantity = getProperty("quantity");
+            if(quantity != null) {
+                order.setQuantity(new BigDecimal(quantity));
+            }
+            String side = getProperty("side");
+            if(side != null) {
+                order.setSide(Side.valueOf(side));
+            }
+            String symbol = getProperty("symbol");
+            if(symbol != null) {
+                order.setSymbol(new MSymbol(symbol));
+            }
+            String timeInForce = getProperty("timeInForce");
+            if(timeInForce != null) {
+                order.setTimeInForce(TimeInForce.valueOf(timeInForce));
+            }
+            setProperty("orderID",
+                         order.getOrderID().toString());
+            setProperty("transactTime",
+                         Long.toString(System.currentTimeMillis()));
+            if(send(order)) {
+                setProperty("sendResult",
+                            "true");
+            } else {
+                setProperty("sendResult",
+                            "false");
+            }
+        } else {
+            send(null);
+        }
     }
 }
