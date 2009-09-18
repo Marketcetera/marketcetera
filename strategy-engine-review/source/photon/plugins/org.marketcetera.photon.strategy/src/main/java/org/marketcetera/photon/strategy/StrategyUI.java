@@ -1,6 +1,5 @@
 package org.marketcetera.photon.strategy;
 
-import org.eclipse.swt.widgets.Display;
 import org.marketcetera.photon.internal.strategy.Activator;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -39,11 +38,11 @@ public final class StrategyUI {
     /**
      * Initializes the list of strategy engines.
      * 
-     * @param display
-     *            the display on which to create the engines
+     * @throws IllegalStateException
+     *             if called from a non UI thread
      */
-    public static void initializeStrategyEngines(final Display display) {
-        Activator.initEngines(display);
+    public static void initializeStrategyEngines() {
+        Activator.initEngines();
     }
     
     private StrategyUI() {
