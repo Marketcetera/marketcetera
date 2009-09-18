@@ -79,6 +79,11 @@ public class StrategyEngineWorkbenchUI {
     public static final String STOP_COMMAND_ID = PLUGIN_ID + ".stop"; //$NON-NLS-1$
 
     /**
+     * The id of the restart command.
+     */
+    public static final String RESTART_COMMAND_ID = PLUGIN_ID + ".restart"; //$NON-NLS-1$
+
+    /**
      * The id of the start all command.
      */
     public static final String START_ALL_COMMAND_ID = PLUGIN_ID + ".startAll"; //$NON-NLS-1$

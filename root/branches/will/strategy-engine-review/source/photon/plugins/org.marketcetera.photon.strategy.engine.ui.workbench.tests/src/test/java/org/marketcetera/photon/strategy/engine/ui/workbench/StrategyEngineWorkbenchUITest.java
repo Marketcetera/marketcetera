@@ -6,6 +6,7 @@ import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngin
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.DEPLOY_COMMAND_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.DISCONNECT_COMMAND_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.PLUGIN_ID;
+import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.RESTART_COMMAND_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.START_ALL_COMMAND_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.START_COMMAND_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.STOP_ALL_COMMAND_ID;
@@ -42,7 +43,7 @@ public class StrategyEngineWorkbenchUITest {
     public void verifyCommands() {
         ImmutableList<String> commands = ImmutableList.of(CONNECT_COMMAND_ID,
                 DISCONNECT_COMMAND_ID, DEPLOY_COMMAND_ID, UNDEPLOY_COMMAND_ID,
-                START_COMMAND_ID, STOP_COMMAND_ID, START_ALL_COMMAND_ID,
+                START_COMMAND_ID, STOP_COMMAND_ID, RESTART_COMMAND_ID, START_ALL_COMMAND_ID,
                 STOP_ALL_COMMAND_ID);
         ICommandService service = (ICommandService) PlatformUI.getWorkbench()
                 .getService(ICommandService.class);
