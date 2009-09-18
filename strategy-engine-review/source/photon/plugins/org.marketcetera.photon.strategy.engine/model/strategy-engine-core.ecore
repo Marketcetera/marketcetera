@@ -7,7 +7,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="connectionState" lowerBound="1"
-        eType="#//ConnectionState" defaultValueLiteral=""/>
+        eType="#//ConnectionState" transient="true" defaultValueLiteral=""/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="connection" eType="#//StrategyEngineConnection"
         transient="true" eOpposite="#//StrategyEngineConnection/engine"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="deployedStrategies" upperBound="-1"

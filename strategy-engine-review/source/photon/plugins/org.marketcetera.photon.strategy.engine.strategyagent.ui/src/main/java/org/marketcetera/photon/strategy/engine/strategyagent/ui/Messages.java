@@ -2,6 +2,7 @@ package org.marketcetera.photon.strategy.engine.strategyagent.ui;
 
 import org.marketcetera.photon.commons.ReflectiveMessages;
 import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -18,6 +19,9 @@ final class Messages {
 
     static I18NMessage0P NEW_STRATEGY_AGENT_WIZARD__TITLE;
     static I18NMessage0P NEW_STRATEGY_AGENT_WIZARD_ADD_ENGINE_FAILED;
+    static I18NMessage0P STRATEGY_AGENT_ENGINES_SUPPORT_SAVE_FAILED;
+    static I18NMessage0P STRATEGY_AGENT_ENGINES_SUPPORT_RESTORE_FAILED;
+    static I18NMessage1P STRATEGY_AGENT_ENGINES_SUPPORT_UNEXPECTED_OBJECT;
 
     static {
         ReflectiveMessages.init(Messages.class);

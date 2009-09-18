@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -141,7 +142,7 @@ public class EmbeddedConnectionPersistenceTest extends EmbeddedConnectionTest {
         }
 
         @Override
-        public void save(List<? extends Strategy> strategies)
+        public void save(Collection<? extends Strategy> strategies)
                 throws IOException {
             mPersisted = ImmutableList.copyOf(strategies);
         }

@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
-import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngineFactory;
 import org.marketcetera.photon.strategy.engine.strategyagent.tests.StrategyAgentEngineTestUtil;
 import org.marketcetera.photon.strategy.engine.strategyagent.ui.workbench.StrategyAgentEngineWorkbenchUI;
 import org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI;
@@ -65,11 +64,9 @@ public class StrategyAgentConnectionPropertyPageTest {
             @Override
             public void run() throws Throwable {
                 if (mStrategyAgentEngine == null) {
-                    mStrategyAgentEngine = StrategyAgentEngineFactory.eINSTANCE
-                            .createStrategyAgentEngine();
-                    mStrategyAgentEngine.setJmsUrl("url1");
-                    mStrategyAgentEngine.setWebServiceHostname("host1");
-                    mStrategyAgentEngine.setWebServicePort(1);
+                    mStrategyAgentEngine = StrategyAgentEngineTestUtil
+                            .createStrategyAgentEngine(null, null, "url1",
+                                    "host1", 1);
                 }
                 mStrategyAgentEngine.setName("SAEngine");
                 mDialog = PropertyDialog
@@ -116,13 +113,11 @@ public class StrategyAgentConnectionPropertyPageTest {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
-                mStrategyAgentEngine = StrategyAgentEngineFactory.eINSTANCE
-                        .createStrategyAgentEngine();
+                mStrategyAgentEngine = StrategyAgentEngineTestUtil
+                        .createStrategyAgentEngine(null, null, "url1", "host1",
+                                1);
                 mStrategyAgentEngine
                         .setConnectionState(ConnectionState.CONNECTED);
-                mStrategyAgentEngine.setJmsUrl("url1");
-                mStrategyAgentEngine.setWebServiceHostname("host1");
-                mStrategyAgentEngine.setWebServicePort(1);
             }
         });
         openDialog();

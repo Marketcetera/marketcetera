@@ -20,7 +20,6 @@ import org.marketcetera.photon.strategy.engine.IStrategyEngines;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
-import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngineFactory;
 import org.marketcetera.photon.strategy.engine.strategyagent.tests.StrategyAgentEngineTestUtil;
 import org.marketcetera.photon.test.AbstractUIRunner;
 import org.marketcetera.photon.test.PhotonTestBase;
@@ -84,9 +83,10 @@ public class NewStrategyAgentWizardTest extends PhotonTestBase {
         fixture.assertFinishEnabled(true);
         fixture.setDescription("My Strategy Agent Engine");
         fixture.finish();
-        StrategyAgentEngineTestUtil.assertStrategyAgentEngine(fixture.waitForClose(), "My Engine",
-                "My Strategy Agent Engine", "tcp://localhost:123", "localhost",
-                456, ConnectionState.DISCONNECTED);
+        StrategyAgentEngineTestUtil.assertStrategyAgentEngine(fixture
+                .waitForClose(), "My Engine", "My Strategy Agent Engine",
+                "tcp://localhost:123", "localhost", 456,
+                ConnectionState.DISCONNECTED);
     }
 
     @Test
@@ -95,22 +95,19 @@ public class NewStrategyAgentWizardTest extends PhotonTestBase {
                 .syncCall(new Callable<StrategyAgentEngine>() {
                     @Override
                     public StrategyAgentEngine call() {
-                        StrategyAgentEngine engine = StrategyAgentEngineFactory.eINSTANCE
-                                .createStrategyAgentEngine();
-                        engine.setName("abc");
-                        engine.setDescription("xyz");
+                        StrategyAgentEngine engine = StrategyAgentEngineTestUtil
+                                .createStrategyAgentEngine("abc", "xyz",
+                                        "tcp://abc", "host", 8080);
                         engine.setConnectionState(ConnectionState.CONNECTED);
-                        engine.setJmsUrl("tcp://abc");
-                        engine.setWebServiceHostname("host");
-                        engine.setWebServicePort(8080);
                         return engine;
                     }
                 });
         NewStrategyAgentWizardFixture fixture = NewStrategyAgentWizardFixture
                 .create(mShell, mMockService, engine);
         fixture.finish();
-        StrategyAgentEngineTestUtil.assertStrategyAgentEngine(fixture.waitForClose(), "abc", "xyz", "tcp://abc", "host",
-                8080, ConnectionState.CONNECTED);
+        StrategyAgentEngineTestUtil.assertStrategyAgentEngine(fixture
+                .waitForClose(), "abc", "xyz", "tcp://abc", "host", 8080,
+                ConnectionState.CONNECTED);
     }
 
     /**
@@ -121,17 +118,19 @@ public class NewStrategyAgentWizardTest extends PhotonTestBase {
         public static NewStrategyAgentWizardFixture create(final Shell shell,
                 final IStrategyEngines engines, final StrategyAgentEngine engine)
                 throws Exception {
-            NewStrategyAgentWizard wizard = AbstractUIRunner.syncCall(new Callable<NewStrategyAgentWizard>() {
-                @Override
-                public NewStrategyAgentWizard call() {
-                    NewStrategyAgentWizard wizard = new NewStrategyAgentWizard(engines, engine);
-                    WizardDialog dialog = new WizardDialog(shell,
-                            wizard);
-                    dialog.setBlockOnOpen(false);
-                    dialog.open();
-                    return wizard;
-                }
-            });
+            NewStrategyAgentWizard wizard = AbstractUIRunner
+                    .syncCall(new Callable<NewStrategyAgentWizard>() {
+                        @Override
+                        public NewStrategyAgentWizard call() {
+                            NewStrategyAgentWizard wizard = new NewStrategyAgentWizard(
+                                    engines, engine);
+                            WizardDialog dialog = new WizardDialog(shell,
+                                    wizard);
+                            dialog.setBlockOnOpen(false);
+                            dialog.open();
+                            return wizard;
+                        }
+                    });
             return new NewStrategyAgentWizardFixture(wizard);
         }
 

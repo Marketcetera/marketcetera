@@ -14,6 +14,7 @@ Import-Package: org.hamcrest,
  org.junit.runners,
  org.junit.runners.model,
  org.mockito,
+ org.mockito.invocation,
  org.mockito.stubbing
 Require-Bundle: org.eclipse.swtbot.junit4_x,
  org.eclipse.swtbot.swt.finder,

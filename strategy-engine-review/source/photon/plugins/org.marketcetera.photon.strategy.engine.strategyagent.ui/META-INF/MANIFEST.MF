@@ -16,6 +16,7 @@ Require-Bundle: org.marketcetera.photon.strategy.engine,
  org.eclipse.jface.databinding,
  org.eclipse.core.runtime,
  org.marketcetera.photon.strategy.engine.ui,
- org.eclipse.emf.databinding
+ org.eclipse.emf.databinding,
+ org.marketcetera.photon.core
 Eclipse-ExtensibleAPI: true
 Export-Package: org.marketcetera.photon.strategy.engine.strategyagent.ui
