@@ -8,7 +8,7 @@ import org.osgi.framework.BundleContext;
 /* $License$ */
 
 /**
- * The activator class controls the plug-in life cycle
+ * Manages the lifecycle for this plugin.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -17,58 +17,40 @@ import org.osgi.framework.BundleContext;
 @ClassVersion("$Id$")
 public class Activator extends AbstractUIPlugin {
 
-    // The plug-in ID
-    public static final String PLUGIN_ID = "org.marketcetera.photon.java"; //$NON-NLS-1$
+    private static volatile Activator sCurrent;
 
-    // The shared instance
-    private static Activator plugin;
+    private JavaColorManager mColorManager;
 
-    private JavaColorManager colorManager;
-
-    /**
-     * The constructor
-     */
-    public Activator() {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
-     * )
-     */
+    @Override
     public void start(BundleContext context) throws Exception {
-        super.start(context);
-        plugin = this;
+        synchronized (Activator.class) {
+            super.start(context);
+            sCurrent = this;
+        }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
-     * )
-     */
+    @Override
     public void stop(BundleContext context) throws Exception {
-        try {
-            plugin = null;
-            if (colorManager != null) {
-                colorManager.dispose();
-                colorManager = null;
+        synchronized (Activator.class) {
+            try {
+                sCurrent = null;
+                if (mColorManager != null) {
+                    mColorManager.dispose();
+                    mColorManager = null;
+                }
+            } finally {
+                super.stop(context);
             }
-        } finally {
-            super.stop(context);
         }
     }
 
     /**
-     * Returns the shared instance
+     * Returns the current instance
      * 
-     * @return the shared instance
+     * @return the current instance
      */
-    public static Activator getDefault() {
-        return plugin;
+    static Activator getCurrent() {
+        return sCurrent;
     }
 
     /**
@@ -76,11 +58,19 @@ public class Activator extends AbstractUIPlugin {
      * 
      * @return the color manager
      */
-    public synchronized JavaColorManager getColorManager() {
-        if (colorManager == null) {
-            colorManager = new JavaColorManager(true);
+    public JavaColorManager getColorManager() {
+        synchronized (Activator.class) {
+            if (sCurrent == null) {
+                /*
+                 * Bundle has been stopped.
+                 */
+                return null;
+            }
+            if (mColorManager == null) {
+                mColorManager = new JavaColorManager(true);
+            }
+            return mColorManager;
         }
-        return colorManager;
     }
 
 }
