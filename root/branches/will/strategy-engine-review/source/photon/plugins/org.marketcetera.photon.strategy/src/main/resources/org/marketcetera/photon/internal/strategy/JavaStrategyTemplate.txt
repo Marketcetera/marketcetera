@@ -1,0 +1,53 @@
+import org.marketcetera.strategy.java.Strategy;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.event.TradeEvent;
+
+/*
+ * Sample strategy template.
+ */
+public class __TEMPLATE_CLASS_NAME__ extends Strategy
+{
+    @Override
+    public void onStart() {
+    }
+    
+    @Override
+    public void onStop() {
+    }
+    
+    @Override
+    public void onAsk(AskEvent ask) {
+    }
+    
+    @Override
+    public void onBid(BidEvent bid) {
+    }
+    
+    @Override
+    public void onMarketstat(MarketstatEvent statistics) {
+    }
+    
+    @Override
+    public void onCallback(Object data) {
+    }
+
+    @Override
+    public void onExecutionReport(ExecutionReport executionReport) {
+    }  
+    
+    @Override
+    public void onCancelReject(OrderCancelReject cancel) {
+    }
+    
+    @Override
+    public void onTrade(TradeEvent trade) {
+    }
+    
+    @Override
+    public void onOther(Object data) {
+    }
+}

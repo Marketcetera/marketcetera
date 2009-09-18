@@ -36,7 +36,7 @@ public final class TradeSuggestionManager implements ISinkDataHandler {
 	 * @return the singleton instance
 	 */
 	public static TradeSuggestionManager getCurrent() {
-		return Activator.getDefault().getTradeSuggestionManager();
+		return Activator.getCurrent().getTradeSuggestionManager();
 	}
 
 	private final WritableList mSuggestions = WritableList
@@ -65,7 +65,7 @@ public final class TradeSuggestionManager implements ISinkDataHandler {
 	 * @param suggestion
 	 *            new suggestion to add.
 	 */
-	void addSuggestion(final OrderSingleSuggestion suggestion) {
+	public void addSuggestion(final OrderSingleSuggestion suggestion) {
 		final Date timestamp = new Date();
 		// Ensure the update is performed in the main UI thread
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
@@ -83,7 +83,7 @@ public final class TradeSuggestionManager implements ISinkDataHandler {
 	 * @param suggestion
 	 *            suggestion to remove
 	 */
-	void removeSuggestion(TradeSuggestion suggestion) {
+	public void removeSuggestion(TradeSuggestion suggestion) {
 		mSuggestions.remove(suggestion);
 	}
 
