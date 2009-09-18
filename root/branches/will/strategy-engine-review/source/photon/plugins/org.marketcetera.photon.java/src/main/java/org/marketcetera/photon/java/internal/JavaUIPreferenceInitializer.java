@@ -23,7 +23,7 @@ public class JavaUIPreferenceInitializer extends AbstractPreferenceInitializer {
 
     @Override
     public void initializeDefaultPreferences() {
-        IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+        IPreferenceStore store = Activator.getCurrent().getPreferenceStore();
         EditorsUI.useAnnotationsPreferencePage(store);
         EditorsUI.useQuickDiffPreferencePage(store);
         store.setToDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER);

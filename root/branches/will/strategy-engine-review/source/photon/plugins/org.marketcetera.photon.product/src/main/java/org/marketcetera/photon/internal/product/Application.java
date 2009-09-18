@@ -40,9 +40,7 @@ public final class Application implements IApplication {
                                     configurer) {
                                 @Override
                                 public void postWindowOpen() {
-                                    StrategyUI
-                                            .initializeStrategyEngines(Display
-                                                    .getCurrent());
+                                    StrategyUI.initializeStrategyEngines();
                                     super.postWindowOpen();
                                 }
                             };

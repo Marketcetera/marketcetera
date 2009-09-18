@@ -29,9 +29,9 @@ public class JavaEditor extends TextEditor {
     protected void initializeEditor() {
         super.initializeEditor();
         setPreferenceStore(new ChainedPreferenceStore(new IPreferenceStore[] {
-                Activator.getDefault().getPreferenceStore(),
+                Activator.getCurrent().getPreferenceStore(),
                 EditorsUI.getPreferenceStore() }));
-        JavaColorManager colorManager = Activator.getDefault()
+        JavaColorManager colorManager = Activator.getCurrent()
                 .getColorManager();
         JavaSourceViewerConfiguration configuration = new JavaSourceViewerConfiguration(
                 colorManager, getPreferenceStore(), this,

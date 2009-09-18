@@ -1,17 +1,14 @@
 package org.marketcetera.photon.internal.strategy;
 
-
 import javax.annotation.concurrent.GuardedBy;
 
 import org.eclipse.swt.widgets.Display;
-import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.photon.commons.ui.SWTUtils;
 import org.marketcetera.photon.strategy.engine.IStrategyEngines;
 import org.marketcetera.photon.strategy.engine.ui.AbstractStrategyEnginesSupport;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-
 
 /* $License$ */
 
@@ -99,20 +96,21 @@ public final class Activator implements BundleActivator {
         }
     }
 
-    private void internalInitEngines(final Display display) {
+    private void internalInitEngines() {
         synchronized (Activator.class) {
             mSupport = new StrategyEnginesSupport(mBundleContext);
         }
     }
 
     /**
-     * Initializes the {@link IStrategyEngines} service on the provided display.
+     * Initializes the {@link IStrategyEngines} service on the current display.
      * 
-     * @param display
-     *            the display managing the UI thread
+     * @throws IllegalStateException
+     *             if called from a non UI thread
      */
-    public static void initEngines(final Display display) {
-        Validate.notNull(display, "display"); //$NON-NLS-1$
+    public static void initEngines() {
+        SWTUtils.checkThread();
+        final Display display = Display.getCurrent();
         display.asyncExec(new Runnable() {
             public void run() {
                 if (display.isDisposed()) {
@@ -122,7 +120,7 @@ public final class Activator implements BundleActivator {
                     if (sIntance == null) {
                         return;
                     }
-                    sIntance.internalInitEngines(display);
+                    sIntance.internalInitEngines();
                 }
             }
         });
