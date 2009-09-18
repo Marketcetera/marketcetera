@@ -97,7 +97,7 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
         mLogoutService = new LogoutService();
         mMockSinkDataManager = mock(ISinkDataManager.class);
         mEngine = StrategyAgentEngineTestUtil.createStrategyAgentEngine("sa",
-                "strategy agent", "url", "host", 100);
+                "strategy agent", "url", "host", 1000);
         mFixture = new InternalStrategyAgentEngine(mEngine,
                 new ImmediateExecutorService(), mMockCredentials,
                 mLogoutService, mMockFactory, mMockSinkDataManager);
