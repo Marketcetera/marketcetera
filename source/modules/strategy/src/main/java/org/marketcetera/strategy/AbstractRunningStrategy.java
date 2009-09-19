@@ -1344,6 +1344,11 @@ public abstract class AbstractRunningStrategy
             //  and lamented passage of another order
             // the check for either ExecutionType or OrderStatus covers FIX versions
             //  4.2 and earlier (OrderStatus) and later than 4.2 (ExecutionType)
+            if(OrderStatus.Canceled.equals(inExecutionReport.getOrderStatus()) ||
+              (ExecutionType.Replace.equals(inExecutionReport.getExecutionType()) ||
+               OrderStatus.Replaced.equals(inExecutionReport.getOrderStatus()))) {
+                orders.add(inExecutionReport.getOriginalOrderID());
+            }
             return orders;
         }
         /**
