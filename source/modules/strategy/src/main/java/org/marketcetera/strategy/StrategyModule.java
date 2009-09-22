@@ -26,7 +26,6 @@ import org.marketcetera.client.ClientModuleFactory;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.Util;
-import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
@@ -34,6 +33,7 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEvent.Level;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -65,6 +65,9 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 /* $License$ */
 
@@ -164,8 +167,8 @@ final class StrategyModule
                                inData);
         if(inData instanceof EventBase) {
             EventBase event = (EventBase)inData;
-            synchronized(dataFlowsByRequest) {
-                event.setSource(requestsByDataFlow.get(inFlowID));
+            synchronized(dataFlows) {
+                event.setSource(dataFlows.get(inFlowID));
             }
         }
         strategy.dataReceived(inData);
@@ -205,11 +208,9 @@ final class StrategyModule
                                                                                                        inRequest),
                                                                                        new DataRequest(getURN()) },
                                                                    false);
-            synchronized(dataFlowsByRequest) {
-                dataFlowsByRequest.put(requestID,
-                                       dataFlowID);
-                requestsByDataFlow.put(dataFlowID,
-                                       requestID);
+            synchronized(dataFlows) {
+                dataFlows.put(dataFlowID,
+                              requestID);
             }
         } catch (Exception e) {
             StrategyModule.log(LogEvent.warn(MARKET_DATA_REQUEST_FAILED,
@@ -257,11 +258,9 @@ final class StrategyModule
                                                                                        new DataRequest(getURN()) },
                                                                    false);
             // add request to both counters
-            synchronized(dataFlowsByRequest) {
-                dataFlowsByRequest.put(requestID,
-                                       dataFlowID);
-                requestsByDataFlow.put(dataFlowID,
-                                       requestID);
+            synchronized(dataFlows) {
+                dataFlows.put(dataFlowID,
+                              requestID);
             }
             return requestID;
         } catch (Exception e) {
@@ -281,9 +280,9 @@ final class StrategyModule
     @Override
     public void cancelAllDataRequests()
     {
-        synchronized(dataFlowsByRequest) {
+        synchronized(dataFlows) {
             // create a copy of the list because the cancel call is going to modify the collection
-            List<Integer> activeRequests = new ArrayList<Integer>(dataFlowsByRequest.keySet());
+            List<Integer> activeRequests = new ArrayList<Integer>(dataFlows.inverse().keySet());
             for(int request : activeRequests) {
                 try {
                     cancelDataRequest(request);
@@ -303,8 +302,8 @@ final class StrategyModule
     @Override
     public void cancelDataRequest(int inDataRequestID)
     {
-        synchronized(dataFlowsByRequest) {
-            if(!dataFlowsByRequest.containsKey(inDataRequestID)) {
+        synchronized(dataFlows) {
+            if(!dataFlows.inverse().containsKey(inDataRequestID)) {
                 StrategyModule.log(LogEvent.warn(NO_DATA_HANDLE,
                                                  String.valueOf(strategy),
                                                  inDataRequestID),
@@ -344,16 +343,14 @@ final class StrategyModule
         ModuleURN providerURN = constructCepUrn(inSource,
                                                 inNamespace);
         try {
-            synchronized(dataFlowsByRequest) {
+            synchronized(dataFlows) {
                 DataFlowID flowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(providerURN,
                                                                                                        determineCepStatements(inSource,
                                                                                                                               inStatements)),
                                                                                        new DataRequest(getURN()) },
                                                                    false); 
-                dataFlowsByRequest.put(requestID,
-                                       flowID);
-                requestsByDataFlow.put(flowID,
-                                       requestID);
+                dataFlows.put(flowID,
+                              requestID);
             }
         } catch (Exception e) {
             StrategyModule.log(LogEvent.warn(CEP_REQUEST_FAILED,
@@ -694,8 +691,10 @@ final class StrategyModule
     public void cancelDataFlow(DataFlowID inDataFlowID)
         throws ModuleException
     {
-        dataFlowSupport.cancel(inDataFlowID);
-        dataFlows.remove(inDataFlowID);
+        synchronized(dataFlows) {
+            dataFlowSupport.cancel(inDataFlowID);
+            dataFlows.remove(inDataFlowID);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServicesProvider#createDataFlow(org.marketcetera.module.DataRequest[], boolean)
@@ -705,10 +704,13 @@ final class StrategyModule
                                      boolean inAppendDataSink)
         throws ModuleException
     {
-        DataFlowID dataFlowID = dataFlowSupport.createDataFlow(inRequests,
-                                                               inAppendDataSink); 
-        dataFlows.add(dataFlowID);
-        return dataFlowID;
+        synchronized(dataFlows) {
+            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(inRequests,
+                                                                   inAppendDataSink); 
+            dataFlows.put(dataFlowID,
+                          counter.incrementAndGet());
+            return dataFlowID;
+        }
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -957,9 +959,10 @@ final class StrategyModule
             }
             // request execution reports from the ORS client
             try {
-                dataFlows.add(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(ClientModuleFactory.INSTANCE_URN),
+                dataFlows.put(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(ClientModuleFactory.INSTANCE_URN),
                                                                                  new DataRequest(getURN()) },
-                                                             false));
+                                                                false),
+                              counter.incrementAndGet());
             } catch (Exception e) {
                 EXECUTION_REPORT_REQUEST_FAILED.warn(StrategyModule.class,
                                                      name,
@@ -989,8 +992,6 @@ final class StrategyModule
     protected void preStop()
             throws ModuleException
     {
-        cancelAllDataRequests();
-        disconnectORSRouting();
         try {
             strategy.stop();
         } catch (ModuleException e) {
@@ -1001,19 +1002,8 @@ final class StrategyModule
                             e,
                             strategy);
         }
-        synchronized(dataFlows) {
-            for(DataFlowID flow : dataFlows) {
-                try {
-                    dataFlowSupport.cancel(flow);
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.debug(StrategyModule.class,
-                                           e,
-                                           "Unable to cancel dataflow {} - continuing", //$NON-NLS-1$
-                                           flow);
-                }
-            }
-            dataFlows.clear();
-        }
+        cancelAllDataRequests();
+        disconnectORSRouting();
     }
     /**
      * Generates an instance URN guaranteed to be unique with the scope of this JVM.
@@ -1133,18 +1123,21 @@ final class StrategyModule
         // see if we have a connection to this module already
         DataEmitterSupport establishedConnection = internalDataFlows.get(inCEPModule);
         if(establishedConnection == null) {
-            // no connection exists yet to the CEP module.  create one.
-            dataFlows.add(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
-                                                                                             new InternalRequest(inCEPModule)),
-                                                                             new DataRequest(inCEPModule) },
-                                                         false));
-            establishedConnection = internalDataFlows.get(inCEPModule);
-            if(establishedConnection == null) {
-                StrategyModule.log(LogEvent.warn(CANNOT_CREATE_CONNECTION,
-                                                 String.valueOf(strategy),
-                                                 inCEPModule),
-                                   strategy);
-                return;
+            synchronized(dataFlows) {
+                // no connection exists yet to the CEP module.  create one.
+                dataFlows.put(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
+                                                                                                 new InternalRequest(inCEPModule)),
+                                                                                 new DataRequest(inCEPModule) },
+                                                             false),
+                              counter.incrementAndGet());
+                establishedConnection = internalDataFlows.get(inCEPModule);
+                if(establishedConnection == null) {
+                    StrategyModule.log(LogEvent.warn(CANNOT_CREATE_CONNECTION,
+                                                     String.valueOf(strategy),
+                                                     inCEPModule),
+                                       strategy);
+                    return;
+                }
             }
         }
         assert(establishedConnection != null);
@@ -1251,8 +1244,7 @@ final class StrategyModule
     private void doCancelDataRequest(int inRequest)
         throws ModuleException
     {
-        DataFlowID dataFlowID = dataFlowsByRequest.remove(inRequest);
-        requestsByDataFlow.remove(dataFlowID);
+        DataFlowID dataFlowID = dataFlows.inverse().remove(inRequest);
         if(dataFlowID != null) {
             dataFlowSupport.cancel(dataFlowID);
         }
@@ -1303,7 +1295,8 @@ final class StrategyModule
                                                                                              OutputType.ORDERS),
                                                                              new DataRequest(ClientModuleFactory.INSTANCE_URN) },
                                                          false);
-                dataFlows.add(orsFlow);
+                dataFlows.put(orsFlow,
+                              counter.incrementAndGet());
             }
         }
     }
@@ -1383,12 +1376,7 @@ final class StrategyModule
     /**
      * active data requests for this strategy 
      */
-    private final Map<Integer,DataFlowID> dataFlowsByRequest = new HashMap<Integer,DataFlowID>();
-    private final Map<DataFlowID,Integer> requestsByDataFlow = new HashMap<DataFlowID,Integer>();
-    /**
-     * the list of dataflows started during the lifetime of this strategy
-     */
-    private final List<DataFlowID> dataFlows = new ArrayList<DataFlowID>();
+    private final BiMap<DataFlowID,Integer> dataFlows = HashBiMap.create();
     /**
      * the collection of data flows created to send data to a specific URN
      */
