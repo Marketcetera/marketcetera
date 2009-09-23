@@ -43,11 +43,7 @@
       <artifactId>peaberry.eclipse</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.ops4j.peaberry.dependencies</groupId>
-      <artifactId>aopalliance</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.peaberry.dependencies</groupId>
+      <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
     </dependency>
     <dependency>
