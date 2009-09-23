@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Broker configuration: QuickFIX/J session settings.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!--
+    - See
+    - http://www.quickfixj.org/quickfixj/usermanual/usage/configuration.html
+    - for a complete list of standard options.
+    -->
+
+  <bean
+   id="metc_qsettings"
+   class="org.marketcetera.util.quickfix.SpringSessionSettings">
+    <property
+     name="defaults">
+      <map>
+        <!-- A non-standard option, setting the logging method. -->
+        <entry
+         key="metc.LogFactoryClass"
+         value="quickfix.SLF4JLogFactory"/>
+        <!-- A non-standard option, setting the message store method. -->
+        <entry
+         key="metc.MessageStoreFactoryClass"
+         value="quickfix.FileStoreFactory"/>
+        <entry
+         key="ConnectionType"
+         value="initiator"/>
+        <entry
+         key="HeartBtInt"
+         value="30"/>
+        <entry
+         key="StartTime"
+         value="00:00:00"/>
+        <entry
+         key="EndTime"
+         value="00:00:00"/>
+        <entry
+         key="UseDataDictionary"
+         value="Y"/>
+        <entry
+         key="ReconnectInterval"
+         value="15"/>
+        <entry
+         key="ResetOnLogout"
+         value="Y"/>
+        <entry
+         key="ResetOnDisconnect"
+         value="Y"/>
+        <entry
+         key="SLF4JLogHeartbeats"
+         value="N"/>
+      </map>
+    </property>
+  </bean>
+</beans>
