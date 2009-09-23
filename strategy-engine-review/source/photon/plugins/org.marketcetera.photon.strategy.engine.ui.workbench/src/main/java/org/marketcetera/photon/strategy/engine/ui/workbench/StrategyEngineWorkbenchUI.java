@@ -94,21 +94,9 @@ public class StrategyEngineWorkbenchUI {
     public static final String STOP_ALL_COMMAND_ID = PLUGIN_ID + ".stopAll"; //$NON-NLS-1$
 
     /**
-     * The declarative property tester namespace for strategy engines.
-     */
-    public static final String STRATEGY_ENGINE_PROPERTY_NAMESPACE = PLUGIN_ID
-            + ".strategyEngine"; //$NON-NLS-1$
-
-    /**
      * The declarative property for strategy engine connection state.
      */
     public static final String STRATEGY_ENGINE_CONNECTION_STATE_PROPERTY = "connectionState"; //$NON-NLS-1$
-
-    /**
-     * The declarative property tester namespace for deployed strategies.
-     */
-    public static final String DEPLOYED_STRATEGY_PROPERTY_NAMESPACE = PLUGIN_ID
-            + ".deployedStrategy"; //$NON-NLS-1$
 
     /**
      * The declarative property for deployed strategy state.

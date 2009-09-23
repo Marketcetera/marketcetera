@@ -61,7 +61,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id: StrategyPropertyPage.java 10387 2009-03-06 23:34:32Z will $")
-public class DeployedStrategyConfigurationPropertyPage extends DataBindingPropertyPage {
+public class DeployedStrategyConfigurationPropertyPage extends
+        DataBindingPropertyPage {
 
     private DeployedStrategy mOriginalStrategy;
 
@@ -153,24 +154,14 @@ public class DeployedStrategyConfigurationPropertyPage extends DataBindingProper
                 final TreeItem[] selection = ((Tree) mPage.getControl())
                         .getSelection();
                 // Add
-                if (selection.length <= 1) {
-                    manager.add(new Action(
-                            Messages.STRATEGY_PROPERTY_PAGE_ADD_MENU_ITEM__TEXT
-                                    .getText()) {
-                        @Override
-                        public void run() {
-                            NewPropertyInputDialog dialog = new NewPropertyInputDialog(
-                                    getShell());
-                            if (dialog.open() == IDialogConstants.OK_ID) {
-                                final String key = dialog.getPropertyKey();
-                                if (!getParameters().containsKey(key))
-                                    getParameters().put(key,
-                                            dialog.getPropertyValue());
-                                mPage.refresh();
-                            }
-                        }
-                    });
-                }
+                manager.add(new Action(
+                        Messages.STRATEGY_PROPERTY_PAGE_ADD_MENU_ITEM__TEXT
+                                .getText()) {
+                    @Override
+                    public void run() {
+                        addNewProperty();
+                    }
+                });
                 // Delete
                 if (selection.length >= 1) {
                     manager
@@ -214,19 +205,23 @@ public class DeployedStrategyConfigurationPropertyPage extends DataBindingProper
         addButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                NewPropertyInputDialog dialog = new NewPropertyInputDialog(
-                        getShell());
-                if (dialog.open() == IDialogConstants.OK_ID) {
-                    final String key = dialog.getPropertyKey();
-                    if (!getParameters().containsKey(key))
-                        getParameters().put(key, dialog.getPropertyValue());
-                    mPage.refresh();
-                }
+                addNewProperty();
             }
         });
         ((GridLayout) parent.getLayout()).numColumns++;
         if (mOriginalStrategy.getState().equals(StrategyState.RUNNING)) {
             addButton.setEnabled(false);
+        }
+    }
+
+    private void addNewProperty() {
+        NewPropertyInputDialog dialog = new NewPropertyInputDialog(
+                getShell());
+        if (dialog.open() == IDialogConstants.OK_ID) {
+            final String key = dialog.getPropertyKey();
+            if (!getParameters().containsKey(key))
+                getParameters().put(key, dialog.getPropertyValue());
+            mPage.refresh();
         }
     }
 
@@ -248,12 +243,6 @@ public class DeployedStrategyConfigurationPropertyPage extends DataBindingProper
                 dialog, operation, false, new I18NBoundMessage1P(
                         Messages.STRATEGY_PROPERTY_PAGE_UPDATE_FAILED, name));
         return success;
-    }
-    
-    @Override
-    public void dispose() {        
-        super.dispose();
-        getDataBindingContext().dispose();
     }
 
     /**

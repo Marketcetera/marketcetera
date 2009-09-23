@@ -98,7 +98,7 @@ public class WorkspaceScriptSelectionButtonTest {
         assertThat(mFixture.getOKButton().isEnabled(), is(false));
         assertThat(mFixture.getCancelButton().isEnabled(), is(true));
 
-        // test single selection
+        // test multiple selection not allowed
         mFixture.getTree().select(0, 1);
         assertThat(mFixture.getTree().selectionCount(), is(0));
 
@@ -158,6 +158,17 @@ public class WorkspaceScriptSelectionButtonTest {
     public void testUnrecognizedInitialSelection() throws Exception {
         initDummyData();
         mFixture.open("c:\\script.rb");
+        assertThat(mFixture.getOKButton().isEnabled(), is(false));
+        assertThat(mFixture.getCancelButton().isEnabled(), is(true));
+        mFixture.getCancelButton().click();
+        mFixture.awaitClose();
+        assertThat(mFixture.getResult(), nullValue());
+    }
+
+    @Test
+    public void testUnrecognizedWorkspaceURL() throws Exception {
+        initDummyData();
+        mFixture.open("platform:/resource/test/stratx.rb");
         assertThat(mFixture.getOKButton().isEnabled(), is(false));
         assertThat(mFixture.getCancelButton().isEnabled(), is(true));
         mFixture.getCancelButton().click();

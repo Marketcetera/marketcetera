@@ -18,9 +18,9 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id")
 public class DeployedStrategyAdapterFactory implements IAdapterFactory {
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Object getAdapter(Object adaptableObject, Class adapterType) {
+    public Object getAdapter(Object adaptableObject,
+            @SuppressWarnings("unchecked") Class adapterType) {
         if (adapterType.equals(IWorkbenchAdapter.class)
                 && adaptableObject instanceof DeployedStrategy) {
             return mAdapter;

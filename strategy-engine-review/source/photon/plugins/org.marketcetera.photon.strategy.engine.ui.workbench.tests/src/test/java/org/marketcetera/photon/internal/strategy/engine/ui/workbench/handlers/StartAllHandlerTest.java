@@ -1,28 +1,17 @@
 package org.marketcetera.photon.internal.strategy.engine.ui.workbench.handlers;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.buildEngines;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createConnectedEngine;
-import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createDeployedStrategy;
 
-import org.eclipse.core.databinding.observable.list.WritableList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
-import org.marketcetera.photon.strategy.engine.ui.tests.MockUIConnection;
-import org.marketcetera.photon.strategy.engine.ui.workbench.tests.StrategyEnginesViewFixture;
-import org.marketcetera.photon.test.AbstractUIRunner;
-import org.marketcetera.photon.test.ContextMenuHelper;
-import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.WorkbenchRunner;
-import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
-import org.marketcetera.photon.test.AbstractUIRunner.UI;
 
 /* $License$ */
 
@@ -34,47 +23,44 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * @since $Release$
  */
 @RunWith(WorkbenchRunner.class)
-public class StartAllHandlerTest extends PhotonTestBase {
+public class StartAllHandlerTest extends ChangeStrategyHandlerTestBase {
 
-    private volatile WritableList mEngines;
-    private volatile DeployedStrategy mStrategy1;
-    private volatile DeployedStrategy mStrategy2;
-    private volatile DeployedStrategy mStrategy3;
-    private volatile StrategyEnginesViewFixture mView;
+    private final StrategyEngine mEngine2;
 
-    @Before
-    @UI
-    public void before() throws Exception {
-        mStrategy1 = createDeployedStrategy("deployed");
-        mStrategy2 = createDeployedStrategy("deployed2");
-        mStrategy3 = createDeployedStrategy("deployed3");
-        mStrategy3.setState(StrategyState.RUNNING);
-        StrategyEngine engine = createConnectedEngine("My Engine");
-        engine.setConnection(new MockUIConnection());
-        mEngines = new WritableList(buildEngines(engine, mStrategy1,
-                mStrategy2, mStrategy3), StrategyEngine.class);
-        mView = StrategyEnginesViewFixture.openView();
-        mView.setModel(mEngines);
+    public StartAllHandlerTest() {
+        super("Start All", "Starting");
+        mStrategy1.setState(StrategyState.STOPPED);
+        mStrategy2.setState(StrategyState.RUNNING);
+        mStrategy3.setState(StrategyState.STOPPED);
+        mEngine2 = createConnectedEngine("My Engine 2");
+        BlockingConnection connection2 = new BlockingConnection();
+        mEngine2.setConnection(connection2);
     }
 
-    @After
-    public void after() throws Exception {
-        mView.close();
+    @Override
+    protected List<? extends StrategyEngine> createModel() {
+        return buildEngines(mEngine, mStrategy1, mEngine2, mStrategy2,
+                mStrategy3);
     }
 
-    @Test
-    public void test() throws Exception {
-        SWTBotTree tree = mView.getView().bot().tree();
+    @Override
+    protected void acceptChange(BlockingConnection connection, Object object)
+            throws Exception {
+        connection.acceptStart(object);
+    }
+
+    @Override
+    protected List<DeployedStrategy> getMultipleAffected() {
+        return Arrays.asList(mStrategy1, mStrategy3);
+    }
+
+    @Override
+    protected void selectSingle(SWTBotTree tree) {
         tree.select("My Engine");
-        ContextMenuHelper.clickContextMenu(tree, "Start All");
-        Thread.sleep(500);
-        AbstractUIRunner.syncRun(new ThrowableRunnable() {
-            @Override
-            public void run() throws Throwable {
-                assertThat(mStrategy1.getState(), is(StrategyState.RUNNING));
-                assertThat(mStrategy2.getState(), is(StrategyState.RUNNING));
-                assertThat(mStrategy3.getState(), is(StrategyState.RUNNING));
-            }
-        });
+    }
+
+    @Override
+    protected void selectMultiple(SWTBotTree tree) {
+        tree.select("My Engine", "My Engine 2");
     }
 }

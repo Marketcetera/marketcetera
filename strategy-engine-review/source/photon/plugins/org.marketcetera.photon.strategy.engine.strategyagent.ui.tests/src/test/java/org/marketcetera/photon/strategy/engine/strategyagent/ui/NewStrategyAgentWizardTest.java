@@ -2,11 +2,16 @@ package org.marketcetera.photon.strategy.engine.strategyagent.ui;
 
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.Callable;
 
-import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.swt.finder.SWTBot;
@@ -25,6 +30,8 @@ import org.marketcetera.photon.test.AbstractUIRunner;
 import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /* $License$ */
 
@@ -45,21 +52,15 @@ public class NewStrategyAgentWizardTest extends PhotonTestBase {
     @UI
     public void before() {
         mShell = new Shell();
-        mMockService = new IStrategyEngines() {
-            @Override
-            public void removeEngine(StrategyEngine engine) {
-            }
-
-            @Override
-            public IObservableList getStrategyEngines() {
-                return null;
-            }
-
-            @Override
-            public StrategyEngine addEngine(StrategyEngine engine) {
-                return (StrategyAgentEngine) engine;
-            }
-        };
+        mMockService = mock(IStrategyEngines.class);
+        when(mMockService.addEngine((StrategyEngine) anyObject())).thenAnswer(
+                new Answer<StrategyEngine>() {
+                    @Override
+                    public StrategyEngine answer(InvocationOnMock invocation)
+                            throws Throwable {
+                        return (StrategyEngine) invocation.getArguments()[0];
+                    }
+                });
     }
 
     @After
@@ -87,6 +88,7 @@ public class NewStrategyAgentWizardTest extends PhotonTestBase {
                 .waitForClose(), "My Engine", "My Strategy Agent Engine",
                 "tcp://localhost:123", "localhost", 456,
                 ConnectionState.DISCONNECTED);
+        verify(mMockService).addEngine((StrategyEngine) anyObject());
     }
 
     @Test
@@ -108,6 +110,16 @@ public class NewStrategyAgentWizardTest extends PhotonTestBase {
         StrategyAgentEngineTestUtil.assertStrategyAgentEngine(fixture
                 .waitForClose(), "abc", "xyz", "tcp://abc", "host", 8080,
                 ConnectionState.CONNECTED);
+        verify(mMockService).addEngine((StrategyEngine) anyObject());
+    }
+
+    @Test
+    public void testCancel() throws Exception {
+        NewStrategyAgentWizardFixture fixture = NewStrategyAgentWizardFixture
+                .create(mShell, mMockService, null);
+        fixture.cancel();
+        assertThat(fixture.waitForClose(), nullValue());
+        verify(mMockService, never()).addEngine((StrategyEngine) anyObject());
     }
 
     /**
@@ -169,6 +181,10 @@ public class NewStrategyAgentWizardTest extends PhotonTestBase {
 
         public void finish() {
             mBot.button("Finish").click();
+        }
+
+        public void cancel() {
+            mBot.button("Cancel").click();
         }
 
         public StrategyAgentEngine waitForClose() {

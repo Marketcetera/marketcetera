@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.operation.ModalContext;
@@ -24,7 +25,13 @@ import com.google.common.collect.Lists;
 
 /**
  * Handler for the {@code org.eclipse.ui.file.refresh} command that refreshes
- * any selected engines or strategies.
+ * any selected engines or strategies. The selection can contain both strategies
+ * and strategy engines, but the strategy will be ignored if its containing
+ * engine is also selected (since it will be refreshed with the engine). If one
+ * refresh fails, the operation will be aborted at that point.
+ * <p>
+ * Selected engines are assumed to be connected so this handler should only be
+ * enabled in that case.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -56,34 +63,42 @@ public final class RefreshHandler extends SafeHandler {
                 }
             }
         }
-        /*
-         * Guess that refreshing an engine will take roughly 3 times as long as
-         * refreshing a single strategy.
-         */
-        final int engineWork = 3;
+        if (engines.isEmpty() && strategies.isEmpty()) {
+            return;
+        }
         final IRunnableWithProgress operation = JFaceUtils
                 .safeRunnableWithProgress(new IUnsafeRunnableWithProgress() {
                     @Override
-                    public void run(SubMonitor monitor) throws Exception {
+                    public void run(IProgressMonitor monitor) throws Exception {
+                        /*
+                         * Guess that refreshing an engine will take roughly 3
+                         * times as long as refreshing a single strategy.
+                         */
+                        int engineWork = 3;
+                        SubMonitor progress = SubMonitor.convert(monitor, 3
+                                * engines.size() + strategies.size());
                         for (StrategyEngine engine : engines) {
-                            ModalContext.checkCanceled(monitor);
-                            monitor
+                            ModalContext.checkCanceled(progress);
+                            progress
                                     .setTaskName(Messages.REFRESH_HANDLER_REFRESH_ENGINE__TASK_NAME
                                             .getText(engine.getName()));
                             engine.getConnection().refresh();
-                            monitor.worked(engineWork);
+                            progress.worked(engineWork);
                         }
                         for (DeployedStrategy strategy : strategies) {
-                            ModalContext.checkCanceled(monitor);
-                            monitor
+                            ModalContext.checkCanceled(progress);
+                            progress
                                     .setTaskName(Messages.REFRESH_HANDLER_REFRESH_STRATEGY__TASK_NAME
-                                            .getText(strategy.getInstanceName()));
+                                            .getText(
+                                                    strategy.getInstanceName(),
+                                                    strategy.getEngine()
+                                                            .getName()));
                             strategy.getEngine().getConnection().refresh(
                                     strategy);
-                            monitor.worked(1);
+                            progress.worked(1);
                         }
                     }
-                }, engineWork * engines.size() + strategies.size());
+                });
         ProgressUtils.runModalWithErrorDialog(HandlerUtil
                 .getActiveWorkbenchWindowChecked(event), operation,
                 Messages.REFRESH_HANDLER_FAILED);

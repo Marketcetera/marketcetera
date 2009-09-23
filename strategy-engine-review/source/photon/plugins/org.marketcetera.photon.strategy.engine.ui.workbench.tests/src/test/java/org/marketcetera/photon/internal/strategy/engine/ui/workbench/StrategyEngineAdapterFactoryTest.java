@@ -2,6 +2,7 @@ package org.marketcetera.photon.internal.strategy.engine.ui.workbench;
 
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
 
@@ -23,14 +24,19 @@ public class StrategyEngineAdapterFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testAdapterList() {
-        assertThat(new StrategyEngineAdapterFactory().getAdapterList(), hasItemInArray((Class) IWorkbenchAdapter.class));
+        assertThat(new StrategyEngineAdapterFactory().getAdapterList(),
+                hasItemInArray((Class) IWorkbenchAdapter.class));
     }
-    
+
     @Test
     public void testAdapter() {
         StrategyEngine engine = createEngine("BogusEngine");
-        IWorkbenchAdapter adapter = (IWorkbenchAdapter) new StrategyEngineAdapterFactory()
-                .getAdapter(engine, IWorkbenchAdapter.class);
+        StrategyEngineAdapterFactory fixture = new StrategyEngineAdapterFactory();
+        IWorkbenchAdapter adapter = (IWorkbenchAdapter) fixture.getAdapter(
+                engine, IWorkbenchAdapter.class);
         assertThat(adapter.getLabel(engine), is("BogusEngine"));
+        assertThat(fixture.getAdapter(new Object(), IWorkbenchAdapter.class),
+                nullValue());
+        assertThat(fixture.getAdapter(engine, String.class), nullValue());
     }
 }

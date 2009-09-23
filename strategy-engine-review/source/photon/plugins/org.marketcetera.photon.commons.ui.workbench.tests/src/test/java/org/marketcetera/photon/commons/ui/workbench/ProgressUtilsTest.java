@@ -54,11 +54,10 @@ public class ProgressUtilsTest {
                         }, "Test operation"), mock(I18NBoundMessage.class)));
             }
         });
-        SWTBot bot = new SWTBot();
-        SWTBotShell shell = bot.shell("Progress Information");
-        bot.label("Test operation");
+        ProgressDialogFixture fixture = new ProgressDialogFixture();
+        fixture.assertTask("Test operation");
         latch.countDown();
-        bot.waitUntil(shellCloses(shell));
+        fixture.waitForClose();
         assertThat(result.get(), is(true));
     }
 
@@ -82,11 +81,10 @@ public class ProgressUtilsTest {
                         }, "Test operation"), mockFailureMessage));
             }
         });
-        SWTBot bot = new SWTBot();
-        SWTBotShell shell = bot.shell("Progress Information");
-        bot.label("Test operation");
+        ProgressDialogFixture fixture = new ProgressDialogFixture();
+        fixture.assertTask("Test operation");
         latch.countDown();
-        bot.waitUntil(shellCloses(shell));
+        fixture.waitForClose();
         verify(mockFailureMessage).error(JFaceUtils.class, exception);
         assertThat(result.get(), is(false));
     }
@@ -117,5 +115,27 @@ public class ProgressUtilsTest {
                         mock(IRunnableWithProgress.class), null);
             }
         };
+    }
+
+    public static class ProgressDialogFixture {
+
+        private final SWTBot mBot = new SWTBot();
+        private final SWTBotShell mShell;
+
+        public ProgressDialogFixture() {
+            mShell = mBot.shell("Progress Information");
+        }
+
+        public void assertTask(String taskName) {
+            mBot.label(taskName);
+        }
+
+        public void cancel() {
+            mBot.button("Cancel").click();
+        }
+
+        public void waitForClose() {
+            mBot.waitUntil(shellCloses(mShell));
+        }
     }
 }

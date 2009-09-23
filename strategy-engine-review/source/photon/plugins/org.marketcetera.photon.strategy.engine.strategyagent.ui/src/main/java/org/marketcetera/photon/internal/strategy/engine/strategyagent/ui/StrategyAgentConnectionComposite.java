@@ -133,11 +133,11 @@ public class StrategyAgentConnectionComposite extends ObservingComposite {
         Messages.STRATEGY_AGENT_CONNECTION_COMPOSITE_PORT.createLabel(this);
 
         {
-            Text hostnameText = new Text(this, textStyle);
+            Text portText = new Text(this, textStyle);
             GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.CENTER).hint(180,
-                    SWT.DEFAULT).applyTo(hostnameText);
+                    SWT.DEFAULT).applyTo(portText);
             final IObservableValue target = SWTObservables.observeText(
-                    hostnameText, SWT.Modify);
+                    portText, SWT.Modify);
             Binding binding = dataBindingContext
                     .bindValue(
                             target,

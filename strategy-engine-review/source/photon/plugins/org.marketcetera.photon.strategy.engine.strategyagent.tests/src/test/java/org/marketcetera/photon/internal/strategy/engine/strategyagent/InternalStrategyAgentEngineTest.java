@@ -18,7 +18,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ImmediateExecutorService;
-import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.core.Credentials;
@@ -36,7 +36,6 @@ import org.marketcetera.saclient.DataReceiver;
 import org.marketcetera.saclient.SAClient;
 import org.marketcetera.saclient.SAClientFactory;
 import org.marketcetera.saclient.SAClientParameters;
-import org.marketcetera.strategy.StrategyModuleFactory;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -166,7 +165,7 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
                 .toCharArray(), "url", "host", 1000);
         when(mMockFactory.create(parameters)).thenReturn(mMockClient);
         ModuleURN urn1 = new ModuleURN("metc:strategy:system:strat1");
-        when(mMockClient.getInstances(StrategyModuleFactory.PROVIDER_URN))
+        when(mMockClient.getInstances(new ModuleURN("metc:strategy:system")))
                 .thenReturn(Arrays.asList(urn1));
         when(mMockClient.getProperties(urn1)).thenReturn(
                 StrategyAgentConnectionTest.createParameters(false,

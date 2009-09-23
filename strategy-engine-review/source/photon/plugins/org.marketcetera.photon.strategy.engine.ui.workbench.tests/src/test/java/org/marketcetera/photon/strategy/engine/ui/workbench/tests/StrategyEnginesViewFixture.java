@@ -27,18 +27,6 @@ import org.osgi.framework.ServiceRegistration;
 public class StrategyEnginesViewFixture {
 
     public static StrategyEnginesViewFixture openView() throws Exception {
-        AbstractUIRunner.syncRun(new ThrowableRunnable() {
-            @Override
-            public void run() throws Throwable {
-                StrategyEngineColors.init();
-                PlatformUI
-                        .getWorkbench()
-                        .getActiveWorkbenchWindow()
-                        .getActivePage()
-                        .showView(
-                                StrategyEngineWorkbenchUI.STRATEGY_ENGINES_VIEW_ID);
-            }
-        });
         return new StrategyEnginesViewFixture();
     }
 

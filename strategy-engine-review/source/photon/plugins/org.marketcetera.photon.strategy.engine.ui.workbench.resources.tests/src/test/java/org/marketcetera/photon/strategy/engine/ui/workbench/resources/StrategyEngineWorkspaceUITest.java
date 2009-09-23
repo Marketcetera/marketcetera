@@ -3,8 +3,6 @@ package org.marketcetera.photon.strategy.engine.ui.workbench.resources;
 import org.junit.Test;
 import org.marketcetera.photon.test.OSGITestUtil;
 
-
-
 /* $License$ */
 
 /**

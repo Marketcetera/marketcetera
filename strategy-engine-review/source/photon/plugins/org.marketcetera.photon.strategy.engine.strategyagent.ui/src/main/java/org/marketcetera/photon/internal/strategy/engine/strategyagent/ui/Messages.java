@@ -26,6 +26,7 @@ final class Messages {
     static I18NMessage0P STRATEGY_AGENT_CONNECTION_COMPOSITE_INVALID_PORT;
     static I18NMessage0P NEW_STRATEGY_AGENT_WIZARD_PAGE__TITLE;
     static I18NMessage0P NEW_STRATEGY_AGENT_WIZARD_PAGE__DESCRIPTION;
+    static I18NMessage0P NEW_STRATEGY_AGENT_WIZARD_PAGE_CONFIGURATION_GROUP__LABEL;
 
     static {
         ReflectiveMessages.init(Messages.class);

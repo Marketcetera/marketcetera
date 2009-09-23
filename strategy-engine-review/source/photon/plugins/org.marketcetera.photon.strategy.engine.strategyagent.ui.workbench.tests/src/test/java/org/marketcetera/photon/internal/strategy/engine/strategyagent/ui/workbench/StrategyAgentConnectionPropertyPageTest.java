@@ -40,7 +40,7 @@ public class StrategyAgentConnectionPropertyPageTest {
     private volatile PropertyDialog mDialog;
 
     @Before
-    public void before() {
+    public void beforeClass() {
         /*
          * Hack to ensure this plugin is loaded since it's adapters are needed.
          * It a normal scenario the plugin will always be loaded before the

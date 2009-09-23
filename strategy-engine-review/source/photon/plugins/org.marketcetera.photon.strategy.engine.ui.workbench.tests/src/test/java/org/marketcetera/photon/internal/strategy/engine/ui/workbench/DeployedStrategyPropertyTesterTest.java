@@ -8,12 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
+import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.photon.test.ExpectedIllegalArgumentException;
 
 /* $License$ */
 
 /**
- * Tests {@link StrategyPropertyTester}.
+ * Tests {@link DeployedStrategyPropertyTester}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -21,11 +22,11 @@ import org.marketcetera.photon.test.ExpectedIllegalArgumentException;
  */
 public class DeployedStrategyPropertyTesterTest {
 
-    private StrategyPropertyTester mFixture;
+    private DeployedStrategyPropertyTester mFixture;
 
     @Before
     public void before() {
-        mFixture = new StrategyPropertyTester();
+        mFixture = new DeployedStrategyPropertyTester();
     }
 
     @Test
@@ -40,6 +41,12 @@ public class DeployedStrategyPropertyTesterTest {
             @Override
             protected void run() throws Exception {
                 mFixture.test(strategy, "abc", null, "xyz");
+            }
+        };
+        new ExpectedFailure<ClassCastException>(null) {
+            @Override
+            protected void run() throws Exception {
+                mFixture.test(new Object(), "state", null, "xyz");
             }
         };
     }

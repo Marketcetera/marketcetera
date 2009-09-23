@@ -1,10 +1,13 @@
 package org.marketcetera.photon.internal.strategy.engine.ui.workbench;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.assertDeployedStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createDeployedStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
+
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Tree;
@@ -21,8 +24,11 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.photon.commons.ui.JFaceUtilsTest.ErrorDialogFixture;
+import org.marketcetera.photon.commons.ui.workbench.ProgressUtilsTest.ProgressDialogFixture;
 import org.marketcetera.photon.internal.strategy.engine.ui.workbench.NewPropertyInputDialogTest.NewPropertyInputDialogTestFixture;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
+import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.photon.strategy.engine.ui.tests.MockUIConnection;
@@ -50,6 +56,7 @@ import com.google.common.collect.ImmutableMap;
 @RunWith(WorkbenchRunner.class)
 public class DeployedStrategyConfigurationPropertyPageTest {
 
+    private static final int WAIT_TIME = 800;
     private final SWTBot mBot = new SWTBot();
     private volatile DeployedStrategy mStrategy;
     private PropertyDialog mDialog;
@@ -107,7 +114,7 @@ public class DeployedStrategyConfigurationPropertyPageTest {
         mBot.button("Add New Property").click();
         new NewPropertyInputDialogTestFixture("key2", "value2").inputData();
         mBot.button("OK").click();
-        Thread.sleep(800);
+        Thread.sleep(WAIT_TIME);
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
@@ -169,7 +176,7 @@ public class DeployedStrategyConfigurationPropertyPageTest {
         mBot.button("Add New Property").click();
         new NewPropertyInputDialogTestFixture("key2", "value2").inputData();
         mBot.button("Cancel").click();
-        Thread.sleep(500);
+        Thread.sleep(WAIT_TIME);
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
@@ -191,7 +198,7 @@ public class DeployedStrategyConfigurationPropertyPageTest {
         mBot.sleep(500);
         mBot.text("value2").setText("value3");
         mBot.button("OK").click();
-        Thread.sleep(500);
+        Thread.sleep(WAIT_TIME);
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
@@ -213,8 +220,11 @@ public class DeployedStrategyConfigurationPropertyPageTest {
         new NewPropertyInputDialogTestFixture("keyz", "valuez").inputData();
         tree.getTreeItem("keyz").select();
         ContextMenuHelper.clickContextMenu(tree, "Delete");
+        tree.unselect();
+        // delete should not show up when the selection is empty
+        assertThat(SWTTestUtil.getMenuItems(tree).get("Delete"), nullValue());
         mBot.button("OK").click();
-        Thread.sleep(500);
+        Thread.sleep(WAIT_TIME);
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
@@ -223,6 +233,36 @@ public class DeployedStrategyConfigurationPropertyPageTest {
                         true, ImmutableMap.of("keyx", "valuex"));
             }
         });
+    }
+
+    @Test
+    public void testProgressAndErrorReported() throws Exception {
+        openDialog();
+        final CountDownLatch latch = new CountDownLatch(1);
+        try {
+            AbstractUIRunner.syncRun(new ThrowableRunnable() {
+                @Override
+                public void run() throws Throwable {
+                    mEngine.setConnection(new MockUIConnection() {
+                        @Override
+                        public void update(DeployedStrategy strategy,
+                                Strategy newConfiguration) throws Exception {
+                            latch.await();
+                            throw new Exception("Update Failed");
+                        }
+                    });
+                }
+            });
+            mBot.button("OK").click();
+            ProgressDialogFixture fixture = new ProgressDialogFixture();
+            fixture.assertTask("Updating strategy configuration on 'Engine'...");
+            latch.countDown();
+            ErrorDialogFixture errorDialog = new ErrorDialogFixture();
+            errorDialog.assertError("Update Failed");
+            errorDialog.dismiss();
+        } finally {
+            latch.countDown();
+        }
     }
 
     /**

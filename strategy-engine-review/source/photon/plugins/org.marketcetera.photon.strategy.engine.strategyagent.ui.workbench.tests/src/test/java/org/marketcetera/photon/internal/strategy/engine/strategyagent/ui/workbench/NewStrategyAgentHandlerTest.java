@@ -4,7 +4,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.eclipse.core.databinding.observable.list.WritableList;
-import org.eclipse.swtbot.swt.finder.utils.TableCollection;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotToolbarButton;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +20,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
 
 /**
  * Tests {@link NewStrategyAgentHandler}.
- *
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
@@ -34,8 +35,7 @@ public class NewStrategyAgentHandlerTest {
     @UI
     public void before() throws Exception {
         mEngines = WritableList.withElementType(StrategyEngine.class);
-        mView = StrategyEnginesViewFixture
-                .openView();
+        mView = StrategyEnginesViewFixture.openView();
         mView.setModel(mEngines);
     }
 
@@ -46,17 +46,27 @@ public class NewStrategyAgentHandlerTest {
 
     @Test
     public void test() throws Exception {
-        mView.getView().toolbarButton("Add a new strategy agent engine").click();
-        NewStrategyAgentWizardFixture fixture = new NewStrategyAgentWizardFixture(null);
+        SWTBotToolbarButton button = mView.getView().toolbarButton(
+                "Add a new strategy agent engine");
+        button.click();
+        NewStrategyAgentWizardFixture fixture = new NewStrategyAgentWizardFixture(
+                null);
         fixture.setName("My Engine");
         fixture.setJmsUrl("tcp://localhost:123");
         fixture.setHostname("localhost");
         fixture.setPort("456");
         fixture.finish();
         fixture.waitForClose();
-        TableCollection selection = mView.getView().bot().tree().selection();
-        assertThat(selection.rowCount(), is(1));
-        assertThat(selection.get(0).get(0), is("My Engine"));
+        SWTBotTree tree = mView.getView().bot().tree();
+        assertThat(tree.getAllItems().length, is(1));
+        assertThat(tree.selection().get(0).get(0), is("My Engine"));
+        // open the wizard again and cancel
+        button.click();
+        fixture = new NewStrategyAgentWizardFixture(null);
+        fixture.cancel();
+        fixture.waitForClose();
+        assertThat(tree.getAllItems().length, is(1));
+        assertThat(tree.selection().get(0).get(0), is("My Engine"));
     }
 
 }
