@@ -8,12 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
+import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.photon.test.ExpectedIllegalArgumentException;
 
 /* $License$ */
 
 /**
- * Tests {@link StrategyPropertyTester}.
+ * Tests {@link DeployedStrategyPropertyTester}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -44,6 +45,13 @@ public class StrategyEnginePropertyTesterTest {
             @Override
             protected void run() throws Exception {
                 mFixture.test(engine, "def", null, "123");
+            }
+        };
+        new ExpectedFailure<ClassCastException>(null) {
+            @Override
+            protected void run() throws Exception {
+                mFixture.test(new Object(), "connectionState", null,
+                        "CONNECTED");
             }
         };
     }

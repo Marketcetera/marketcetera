@@ -18,11 +18,12 @@ import org.marketcetera.util.misc.ClassVersion;
 final class Messages {
     
     static I18NMessage1P CONNECT_HANDLER__TASK_NAME;
-    static I18NMessage1P CONNECT_HANDLER_FAILED;
+    static I18NMessage0P CONNECT_HANDLER_FAILED;
     static I18NMessage1P DISCONNECT_HANDLER__TASK_NAME;
-    static I18NMessage1P DISCONNECT_HANDLER_FAILED;
+    static I18NMessage0P DISCONNECT_HANDLER_FAILED;
     static I18NMessage0P DELETE_HANDLER_CONFIRMATION__TITLE;
-    static I18NMessage1P DELETE_HANDLER_CONFIRMATION;
+    static I18NMessage1P DELETE_HANDLER_CONFIRMATION_SINGLE;
+    static I18NMessage0P DELETE_HANDLER_CONFIRMATION_MULTIPLE;
 
     static {
         ReflectiveMessages.init(Messages.class);

@@ -19,7 +19,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.marketcetera.photon.core,
  org.marketcetera.saclient,
  org.marketcetera.core,
- org.marketcetera.modules.strategy,
  org.marketcetera.photon.module
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true

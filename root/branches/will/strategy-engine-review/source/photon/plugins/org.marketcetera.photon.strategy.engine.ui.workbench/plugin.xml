@@ -17,7 +17,7 @@
             activeByDefault="true"
             contentProvider="org.marketcetera.photon.strategy.engine.ui.StrategyEnginesContentProvider"
             id="org.marketcetera.photon.strategy.engine.ui.workbench.engineContent"
-            labelProvider="org.marketcetera.photon.internal.strategy.engine.ui.workbench.StrategyEnginesView$LabelProvider"
+            labelProvider="org.marketcetera.photon.internal.strategy.engine.ui.workbench.StrategyEnginesCommonLabelProvider"
             name="%strategyEnginesContent.name">
          <triggerPoints>
             <instanceof
@@ -481,8 +481,8 @@
             type="org.marketcetera.photon.strategy.engine.model.core.StrategyEngine">
       </propertyTester>
       <propertyTester
-            class="org.marketcetera.photon.internal.strategy.engine.ui.workbench.StrategyPropertyTester"
-            id="org.marketcetera.photon.strategy.engine.ui.workbench.strategyPropertyTester"
+            class="org.marketcetera.photon.internal.strategy.engine.ui.workbench.DeployedStrategyPropertyTester"
+            id="org.marketcetera.photon.strategy.engine.ui.workbench.deployedStrategyPropertyTester"
             namespace="org.marketcetera.photon.strategy.engine.ui.workbench.deployedStrategy"
             properties="state"
             type="org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy">

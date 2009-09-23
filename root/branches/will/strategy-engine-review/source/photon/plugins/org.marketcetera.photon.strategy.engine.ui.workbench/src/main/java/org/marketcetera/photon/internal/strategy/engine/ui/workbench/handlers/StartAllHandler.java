@@ -1,70 +1,50 @@
 package org.marketcetera.photon.internal.strategy.engine.ui.workbench.handlers;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.operation.ModalContext;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.marketcetera.photon.commons.ui.JFaceUtils;
-import org.marketcetera.photon.commons.ui.JFaceUtils.IUnsafeRunnableWithProgress;
-import org.marketcetera.photon.commons.ui.workbench.ProgressUtils;
-import org.marketcetera.photon.commons.ui.workbench.SafeHandler;
+import org.marketcetera.photon.commons.ui.workbench.AbstractSelectionHandler;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Collections2;
 
 /**
  * Handler for the {@code
  * org.marketcetera.photon.strategy.engine.ui.workbench.startAll} command that
- * starts all stopped strategies deployed on the selected engines.
+ * starts all stopped strategies deployed on the selected {@link StrategyEngine}
+ * objects. If one fails, the operation will be aborted at that point.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public final class StartAllHandler extends SafeHandler {
+public final class StartAllHandler extends
+        AbstractSelectionHandler<StrategyEngine> {
+
+    /**
+     * Constructor.
+     */
+    public StartAllHandler() {
+        super(StrategyEngine.class, Messages.START_HANDLER_FAILED);
+    }
 
     @Override
-    protected void executeSafely(ExecutionEvent event)
-            throws ExecutionException {
-        IStructuredSelection selection = (IStructuredSelection) HandlerUtil
-                .getCurrentSelectionChecked(event);
-        final List<DeployedStrategy> strategies = Collections
-                .synchronizedList(Lists.<DeployedStrategy> newArrayList());
-        for (Object item : selection.toList()) {
-            StrategyEngine engine = (StrategyEngine) item;
-            for (DeployedStrategy strategy : engine.getDeployedStrategies()) {
-                if (strategy.getState() == StrategyState.STOPPED) {
-                    strategies.add(strategy);
-                }
-            }
+    protected void process(StrategyEngine item, IProgressMonitor monitor)
+            throws Exception {
+        Collection<DeployedStrategy> strategies = Collections2.filter(item
+                .getDeployedStrategies(), StartHandler.stoppedStrategies());
+        SubMonitor progress = SubMonitor.convert(monitor, strategies.size());
+        for (DeployedStrategy strategy : strategies) {
+            ModalContext.checkCanceled(progress);
+            progress.setTaskName(Messages.START_HANDLER__TASK_NAME.getText(
+                    strategy.getInstanceName(), item.getName()));
+            strategy.getEngine().getConnection().start(strategy);
+            progress.worked(1);
         }
-        final IRunnableWithProgress operation = JFaceUtils
-                .safeRunnableWithProgress(new IUnsafeRunnableWithProgress() {
-                    @Override
-                    public void run(SubMonitor monitor) throws Exception {
-                        for (DeployedStrategy strategy : strategies) {
-                            ModalContext.checkCanceled(monitor);
-                            monitor
-                                    .setTaskName(Messages.START_ALL_HANDLER__TASK_NAME
-                                            .getText(strategy.getInstanceName()));
-                            strategy.getEngine().getConnection()
-                                    .start(strategy);
-                            monitor.worked(1);
-                        }
-                    }
-                }, strategies.size());
-        ProgressUtils.runModalWithErrorDialog(HandlerUtil
-                .getActiveWorkbenchWindowChecked(event), operation,
-                Messages.START_ALL_HANDLER_FAILED);
     }
 }

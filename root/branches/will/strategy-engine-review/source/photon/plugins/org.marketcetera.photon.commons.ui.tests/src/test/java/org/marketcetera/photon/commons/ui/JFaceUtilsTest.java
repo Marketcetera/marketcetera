@@ -1,5 +1,6 @@
 package org.marketcetera.photon.commons.ui;
 
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -18,7 +19,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.swt.finder.SWTBot;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotList;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -137,10 +138,9 @@ public class JFaceUtilsTest extends PhotonTestBase {
                         }, false, failureMessage));
             }
         });
-        SWTBot bot = new SWTBot();
-        bot.shell("Operation Failed");
-        bot.label(text);
-        bot.button("OK").click();
+        ErrorDialogFixture fixture = new ErrorDialogFixture();
+        fixture.assertError(text);
+        fixture.dismiss();
         assertThat(result.get(), is(false));
         verify(failureMessage).error(JFaceUtils.class, exception);
     }
@@ -205,16 +205,10 @@ public class JFaceUtilsTest extends PhotonTestBase {
                         }, failureMessage));
             }
         });
-        SWTBot bot = new SWTBot();
-        bot.shell("Operation Failed");
-        bot.label(text);
-        if (details.length > 0) {
-            bot.button("Details >>").click();
-            SWTBotList list = bot.list();
-            assertThat(list.getItems(), is(details));
-
-        }
-        bot.button("OK").click();
+        ErrorDialogFixture fixture = new ErrorDialogFixture();
+        fixture.assertError(text);
+        fixture.assertDetails(details);
+        fixture.dismiss();
         assertThat(result.get(), is(false));
         verify(failureMessage).error(JFaceUtils.class, exception);
     }
@@ -288,15 +282,16 @@ public class JFaceUtilsTest extends PhotonTestBase {
         IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
         JFaceUtils.safeRunnableWithProgress(new IUnsafeRunnableWithProgress() {
             @Override
-            public void run(SubMonitor monitor)
+            public void run(IProgressMonitor monitor)
                     throws InvocationTargetException, Exception {
-                monitor.worked(990);
-                monitor.worked(20);
+                SubMonitor progress = SubMonitor.convert(monitor, "task", 100);
+                progress.worked(99);
+                progress.worked(2);
             }
-        }, 1000).run(mockMonitor);
-        verify(mockMonitor).beginTask("", 1000);
+        }).run(mockMonitor);
+        verify(mockMonitor).beginTask("task", 1000);
         verify(mockMonitor).worked(990);
-        // only 10 are used since only ten are left
+        // only 10 ticks left
         verify(mockMonitor).worked(10);
         verify(mockMonitor).done();
     }
@@ -310,37 +305,64 @@ public class JFaceUtilsTest extends PhotonTestBase {
                 JFaceUtils.safeRunnableWithProgress(
                         new IUnsafeRunnableWithProgress() {
                             @Override
-                            public void run(SubMonitor monitor)
+                            public void run(IProgressMonitor monitor)
                                     throws Exception {
                                 throw new InterruptedException();
                             }
-                        }, 1).run(mockMonitor);
+                        }).run(mockMonitor);
             }
         };
+        verify(mockMonitor).done();
     }
 
     @Test
     public void testSafeRunnableException() throws Exception {
         final IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
         final Exception exception = new Exception();
-        new ExpectedFailure<InvocationTargetException>(null) {
+        ExpectedFailure<InvocationTargetException> failure = new ExpectedFailure<InvocationTargetException>(
+                null) {
             @Override
             protected void run() throws Exception {
-                try {
-                    JFaceUtils.safeRunnableWithProgress(
-                            new IUnsafeRunnableWithProgress() {
-                                @Override
-                                public void run(SubMonitor monitor)
-                                        throws Exception {
-                                    throw exception;
-                                }
-                            }, 1).run(mockMonitor);
-                } catch (InvocationTargetException e) {
-                    assertThat(e.getCause(), is((Throwable) exception));
-                    throw e;
-                }
+                JFaceUtils.safeRunnableWithProgress(
+                        new IUnsafeRunnableWithProgress() {
+                            @Override
+                            public void run(IProgressMonitor monitor)
+                                    throws Exception {
+                                throw exception;
+                            }
+                        }).run(mockMonitor);
             }
         };
+        assertThat(failure.getException().getCause(), is((Throwable) exception));
+        verify(mockMonitor).done();
+    }
+
+    public static class ErrorDialogFixture {
+
+        private final SWTBot mBot;
+        private final SWTBotShell mShell;
+
+        public ErrorDialogFixture() {
+            mBot = new SWTBot();
+            mShell = mBot.shell("Operation Failed");
+        }
+
+        public void assertError(String message) {
+            mBot.label(message);
+        }
+
+        public void assertDetails(String[] details) {
+            if (details.length > 0) {
+                mBot.button("Details >>").click();
+                assertThat(mBot.list().getItems(), is(details));
+
+            }
+        }
+
+        public void dismiss() {
+            mBot.button("OK").click();
+            mBot.waitUntil(shellCloses(mShell));
+        }
     }
 
 }

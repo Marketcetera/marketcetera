@@ -6,22 +6,22 @@ import org.marketcetera.photon.test.WorkbenchRunner;
 /* $License$ */
 
 /**
- * Tests {@link UndeployHandler}.
+ * Tests {@link RefreshHandler}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @RunWith(WorkbenchRunner.class)
-public class UndeployHandlerTest extends ChangeStrategyHandlerTestBase {
+public class EngineRefreshHandlerTest extends ChangeEngineHandlerTestBase {
 
-    public UndeployHandlerTest() {
-        super("Undeploy", "Undeploying");
+    public EngineRefreshHandlerTest() {
+        super("Refresh", "Refreshing engine");
     }
 
     @Override
     protected void acceptChange(BlockingConnection connection, Object object)
             throws Exception {
-        connection.acceptUndeploy(object);
+        connection.acceptRefresh(object);
     }
 }

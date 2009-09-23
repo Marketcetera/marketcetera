@@ -4,39 +4,29 @@ import org.eclipse.core.databinding.observable.DisposeEvent;
 import org.eclipse.core.databinding.observable.IDisposeListener;
 import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.list.IObservableList;
-import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IMemento;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.navigator.CommonNavigator;
-import org.eclipse.ui.navigator.ICommonContentExtensionSite;
-import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.marketcetera.photon.commons.osgi.HighestRankedTracker;
 import org.marketcetera.photon.commons.osgi.HighestRankedTracker.IHighestRankedTrackerListener;
 import org.marketcetera.photon.commons.ui.IdentityComparer;
-import org.marketcetera.photon.commons.ui.databinding.PropertyWatcher;
-import org.marketcetera.photon.commons.ui.databinding.PropertyWatcher.IPropertiesChangedListener;
 import org.marketcetera.photon.commons.ui.workbench.WorkaroundGuiceExtensionFactory;
 import org.marketcetera.photon.strategy.engine.IStrategyEngines;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEngineColors;
-import org.marketcetera.photon.strategy.engine.ui.StrategyEngineStatusDecorator;
-import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesContentProvider;
-import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesLabelProvider;
 import org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /* $License$ */
@@ -189,7 +179,6 @@ public class StrategyEnginesView extends CommonNavigator implements
                 }
                 if (!mDisposed) {
                     if (input == null) {
-                        mInput = null;
                         if (mViewReadyContextToken != null) {
                             mViewReadyContextToken.getContextService()
                                     .deactivateContext(mViewReadyContextToken);
@@ -212,55 +201,5 @@ public class StrategyEnginesView extends CommonNavigator implements
                 }
             }
         });
-    }
-
-    /**
-     * This label provider enhances {@link StrategyEnginesLabelProvider} to
-     * support {@link ICommonLabelProvider}. It also hooks up label redecoration
-     * to the content provider's elements.
-     */
-    public final static class LabelProvider extends
-            StrategyEnginesLabelProvider implements ICommonLabelProvider {
-
-        private final PropertyWatcher mDecorationPropertyWatcher = new PropertyWatcher(
-                StrategyEngineStatusDecorator.PROPERTIES,
-                new IPropertiesChangedListener() {
-                    @Override
-                    public void propertiesChanged(
-                            ImmutableSet<?> affectedElements) {
-                        PlatformUI
-                                .getWorkbench()
-                                .getDecoratorManager()
-                                .update(
-                                        StrategyEngineWorkbenchUI.STRATEGY_ENGINES_STATUS_DECORATOR_ID);
-                    }
-                });
-
-        @Override
-        public void init(ICommonContentExtensionSite aConfig) {
-            final IObservableSet elements = ((StrategyEnginesContentProvider) aConfig
-                    .getExtension().getContentProvider()).getKnownElements();
-            track(elements);
-            mDecorationPropertyWatcher.watch(elements);
-        }
-
-        @Override
-        public void restoreState(IMemento aMemento) {
-        }
-
-        @Override
-        public void saveState(IMemento aMemento) {
-        }
-
-        @Override
-        public String getDescription(Object anElement) {
-            return getText(anElement);
-        }
-
-        @Override
-        public void dispose() {
-            mDecorationPropertyWatcher.dispose();
-            super.dispose();
-        }
     }
 }

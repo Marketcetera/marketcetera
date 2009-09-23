@@ -1,26 +1,26 @@
 package org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
-import org.eclipse.core.databinding.observable.list.WritableList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
+import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
+import org.eclipse.swtbot.swt.finder.waits.ICondition;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.marketcetera.photon.commons.ui.JFaceUtilsTest.ErrorDialogFixture;
+import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.StrategyAgentHandlerTestBase.BlockingEngine;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
-import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
-import org.marketcetera.photon.strategy.engine.model.strategyagent.impl.StrategyAgentEngineImpl;
-import org.marketcetera.photon.strategy.engine.ui.workbench.tests.StrategyEnginesViewFixture;
+import org.marketcetera.photon.strategy.engine.ui.workbench.tests.StrategyEnginesViewContextMenuTestBase;
 import org.marketcetera.photon.test.AbstractUIRunner;
-import org.marketcetera.photon.test.ContextMenuHelper;
 import org.marketcetera.photon.test.WorkbenchRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
-import org.marketcetera.photon.test.AbstractUIRunner.UI;
 
 import com.google.common.collect.Lists;
 
@@ -34,93 +34,169 @@ import com.google.common.collect.Lists;
  * @since $Release$
  */
 @RunWith(WorkbenchRunner.class)
-public class DeleteHandlerTest {
+public class DeleteHandlerTest extends StrategyEnginesViewContextMenuTestBase {
 
-    private volatile WritableList mEngines;
-    private volatile StrategyEnginesViewFixture mView;
-    private volatile StrategyAgentEngine mEngine;
+    protected final BlockingEngine mEngine1;
+    protected final BlockingEngine mEngine2;
+    protected final BlockingEngine mEngine3;
 
-    @Before
-    @UI
-    public void before() throws Exception {
-        mEngine = new StrategyAgentEngineImpl() {
-            @Override
-            public void disconnect() throws Exception {
-                setConnectionState(ConnectionState.DISCONNECTED);
-            }
-        };
-        mEngine.setName("My Engine");
-        mEngines = new WritableList(Lists.newArrayList(mEngine),
-                StrategyEngine.class);
-        mView = StrategyEnginesViewFixture.openView();
-        mView.setModel(mEngines);
+    public DeleteHandlerTest() {
+        super("Delete");
+        mEngine1 = new BlockingEngine("My Engine");
+        mEngine2 = new BlockingEngine("My Engine 2");
+        mEngine3 = new BlockingEngine("My Engine 3");
+        mEngine3.setConnectionState(ConnectionState.CONNECTED);
     }
 
-    @After
-    public void after() throws Exception {
-        mView.close();
+    @Override
+    protected List<? extends StrategyEngine> createModel() {
+        return Lists.newArrayList(mEngine1, mEngine2, mEngine3);
     }
 
     @Test
     public void testDelete() throws Exception {
-        SWTBotTree tree = mView.getView().bot().tree();
-        tree.select("My Engine");
-        ContextMenuHelper.clickContextMenu(tree, "Delete");
-        SWTBot bot = new SWTBot();
-        bot.shell("Confirm Delete");
-        bot.label("Do you want to delete 'My Engine'?");
-        bot.button("OK").click();
-        Thread.sleep(500);
-        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+        new TestTemplate() {
             @Override
-            public void run() throws Throwable {
-                assertThat(mEngines.size(), is(0));
+            protected void select(SWTBotTree tree) {
+                tree.select("My Engine");
             }
-        });
+
+            @Override
+            protected void validate() throws Exception {
+                SWTBot bot = new SWTBot();
+                bot.shell("Confirm Delete");
+                bot.label("Do you want to delete 'My Engine'?");
+                bot.button("OK").click();
+                bot.waitUntil(enginesSize(2));
+                AbstractUIRunner.syncRun(new ThrowableRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        assertThat(mEngines.get(0), is((Object) mEngine2));
+                        assertThat(mEngines.get(1), is((Object) mEngine3));
+                    }
+                });
+            }
+        };
     }
 
     @Test
     public void testCancel() throws Exception {
-        SWTBotTree tree = mView.getView().bot().tree();
-        tree.select("My Engine");
-        ContextMenuHelper.clickContextMenu(tree, "Delete");
-        SWTBot bot = new SWTBot();
-        bot.shell("Confirm Delete");
-        bot.label("Do you want to delete 'My Engine'?");
-        bot.button("Cancel").click();
-        Thread.sleep(500);
-        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+        new TestTemplate() {
             @Override
-            public void run() throws Throwable {
-                assertThat(mEngines.get(0), sameInstance((Object) mEngine));
+            protected void select(SWTBotTree tree) {
+                tree.select("My Engine");
             }
-        });
+
+            @Override
+            protected void validate() throws Exception {
+                SWTBot bot = new SWTBot();
+                bot.shell("Confirm Delete");
+                bot.label("Do you want to delete 'My Engine'?");
+                bot.button("Cancel").click();
+                Thread.sleep(SWTBotPreferences.DEFAULT_POLL_DELAY);
+                AbstractUIRunner.syncRun(new ThrowableRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        assertThat(mEngines.size(), is(3));
+                    }
+                });
+            }
+        };
     }
 
     @Test
     public void testConnected() throws Exception {
-        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+        new TestTemplate() {
             @Override
-            public void run() throws Throwable {
-                mEngine.setConnectionState(ConnectionState.CONNECTED);
+            protected void select(SWTBotTree tree) {
+                tree.select("My Engine 3");
             }
-        });
-        SWTBotTree tree = mView.getView().bot().tree();
-        tree.select("My Engine");
-        ContextMenuHelper.clickContextMenu(tree, "Delete");
-        SWTBot bot = new SWTBot();
-        bot.shell("Confirm Delete");
-        bot.label("Do you want to delete 'My Engine'?");
-        bot.button("OK").click();
-        Thread.sleep(500);
-        assertThat(mEngine.getConnectionState(),
-                is(ConnectionState.DISCONNECTED));
-        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+
             @Override
-            public void run() throws Throwable {
-                assertThat(mEngines.size(), is(0));
+            protected void validate() throws Exception {
+                SWTBot bot = new SWTBot();
+                bot.shell("Confirm Delete");
+                bot.label("Do you want to delete 'My Engine 3'?");
+                bot.button("OK").click();
+                mEngine3.acceptDisconnect(null);
+                bot.waitUntil(enginesSize(2));
+                AbstractUIRunner.syncRun(new ThrowableRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        assertThat(mEngines.get(0), is((Object) mEngine1));
+                        assertThat(mEngines.get(1), is((Object) mEngine2));
+                    }
+                });
             }
-        });
+        };
+    }
+
+    @Test
+    public void testMultipleSelection() throws Exception {
+        new TestTemplate() {
+            @Override
+            protected void select(SWTBotTree tree) {
+                tree.select("My Engine", "My Engine 2", "My Engine 3");
+            }
+
+            @Override
+            protected void validate() throws Exception {
+                SWTBot bot = new SWTBot();
+                bot.shell("Confirm Delete");
+                bot.label("Do you want to delete the selected engines?");
+                bot.button("OK").click();
+                mEngine3.acceptDisconnect(null);
+                bot.waitUntil(enginesSize(0));
+            }
+        };
+    }
+
+    @Test
+    public void testDisconnectError() throws Exception {
+        new TestTemplate() {
+            @Override
+            protected void select(SWTBotTree tree) {
+                tree.select("My Engine", "My Engine 2", "My Engine 3");
+            }
+
+            @Override
+            protected void validate() throws Exception {
+                SWTBot bot = new SWTBot();
+                bot.shell("Confirm Delete");
+                bot.label("Do you want to delete the selected engines?");
+                bot.button("OK").click();
+                mEngine3.acceptDisconnect(new Exception("Error"));
+                ErrorDialogFixture errorDialog = new ErrorDialogFixture();
+                errorDialog.assertError("Error");
+                errorDialog.dismiss();
+                bot.waitUntil(enginesSize(1));
+                AbstractUIRunner.syncRun(new ThrowableRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        assertThat(mEngines.get(0), is((Object) mEngine3));
+                    }
+                });
+            }
+        };
+    }
+
+    private ICondition enginesSize(final int i) {
+        return new DefaultCondition() {
+            @Override
+            public boolean test() throws Exception {
+                return AbstractUIRunner.syncCall(new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        return mEngines.size() == i;
+                    }
+                });
+            }
+
+            @Override
+            public String getFailureMessage() {
+                return "waiting for engine deletion";
+            }
+        };
     }
 
 }

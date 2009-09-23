@@ -137,11 +137,13 @@ public class StrategyEnginesViewTest {
         });
         allItems = mViewBot.tree().getAllItems();
         assertThat(allItems.length, is(2));
-        final SWTBotTreeItem widget = allItems[0];
-        assertText("Strategy Engine 2", widget);
-        assertText("Strategy Engine 3", allItems[1]);
-        allItems[1].expand();
-        SWTBotTreeItem[] children = allItems[1].getItems();
+        SWTBotTreeItem engine2 = allItems[0];
+        assertText("Strategy Engine 2", engine2);
+        assertThat(engine2.getItems().length, is(0));
+        SWTBotTreeItem engine3 = allItems[1];
+        assertText("Strategy Engine 3", engine3);
+        engine3.expand();
+        SWTBotTreeItem[] children = engine3.getItems();
         assertThat(children.length, is(1));
         assertText("strat1", children[0]);
 
@@ -151,7 +153,7 @@ public class StrategyEnginesViewTest {
                 ((StrategyEngine) mModel.get(0)).setName("Strategy Engine 2b");
             }
         });
-        mViewBot.waitUntil(widgetTextIs(widget, "Strategy Engine 2b"));
+        mViewBot.waitUntil(widgetTextIs(engine2, "Strategy Engine 2b"));
     }
 
     @Test

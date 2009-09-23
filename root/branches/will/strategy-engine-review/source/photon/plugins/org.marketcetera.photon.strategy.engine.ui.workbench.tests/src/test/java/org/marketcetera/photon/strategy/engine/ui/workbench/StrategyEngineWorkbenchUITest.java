@@ -1,7 +1,6 @@
 package org.marketcetera.photon.strategy.engine.ui.workbench;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.CONNECT_COMMAND_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.DEPLOY_COMMAND_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.DISCONNECT_COMMAND_ID;
@@ -11,6 +10,7 @@ import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngin
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.START_COMMAND_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.STOP_ALL_COMMAND_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.STOP_COMMAND_ID;
+import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.STRATEGY_ENGINES_COMMAND_CATEGORY_ID;
 import static org.marketcetera.photon.strategy.engine.ui.workbench.StrategyEngineWorkbenchUI.UNDEPLOY_COMMAND_ID;
 
 import org.eclipse.ui.PlatformUI;
@@ -43,12 +43,14 @@ public class StrategyEngineWorkbenchUITest {
     public void verifyCommands() {
         ImmutableList<String> commands = ImmutableList.of(CONNECT_COMMAND_ID,
                 DISCONNECT_COMMAND_ID, DEPLOY_COMMAND_ID, UNDEPLOY_COMMAND_ID,
-                START_COMMAND_ID, STOP_COMMAND_ID, RESTART_COMMAND_ID, START_ALL_COMMAND_ID,
-                STOP_ALL_COMMAND_ID);
+                START_COMMAND_ID, STOP_COMMAND_ID, RESTART_COMMAND_ID,
+                START_ALL_COMMAND_ID, STOP_ALL_COMMAND_ID);
         ICommandService service = (ICommandService) PlatformUI.getWorkbench()
                 .getService(ICommandService.class);
         for (String commandId : commands) {
-            assertThat(service.getCommand(commandId).isDefined(), is(true));
+            assertTrue(service.getCommand(commandId).isDefined());
         }
+        assertTrue(service.getCategory(STRATEGY_ENGINES_COMMAND_CATEGORY_ID)
+                .isDefined());
     }
 }

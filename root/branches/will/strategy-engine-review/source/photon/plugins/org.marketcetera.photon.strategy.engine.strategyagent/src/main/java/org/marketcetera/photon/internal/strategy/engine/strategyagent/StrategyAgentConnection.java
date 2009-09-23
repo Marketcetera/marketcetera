@@ -16,7 +16,6 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnecti
 import org.marketcetera.saclient.ConnectionException;
 import org.marketcetera.saclient.CreateStrategyParameters;
 import org.marketcetera.saclient.SAClient;
-import org.marketcetera.strategy.StrategyModuleFactory;
 import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.wrappers.RemoteProperties;
@@ -44,6 +43,8 @@ public class StrategyAgentConnection extends AbstractStrategyEngineConnection {
     private static final String LANGUAGE_KEY = "Language"; //$NON-NLS-1$
     private static final String PARAMETERS_KEY = "Parameters"; //$NON-NLS-1$
     private static final String ROUTING_ORDERS_TO_ORS_KEY = "RoutingOrdersToORS"; //$NON-NLS-1$
+    private static final ModuleURN STRATEGY_PROVIDER_URN = new ModuleURN(
+            "metc:strategy:system"); //$NON-NLS-1$
     private final SAClient mClient;
 
     /**
@@ -149,7 +150,7 @@ public class StrategyAgentConnection extends AbstractStrategyEngineConnection {
 
     @Override
     protected List<ModuleURN> getDeployed() throws ConnectionException {
-        return mClient.getInstances(StrategyModuleFactory.PROVIDER_URN);
+        return mClient.getInstances(STRATEGY_PROVIDER_URN);
     }
 
 }

@@ -224,20 +224,17 @@ public final class JFaceUtils {
      * 
      * @param runnable
      *            the code that does the actual work
-     * @param work
-     *            the amount of work to be done
      * @return a runnable that can safely be used
      */
     public static IRunnableWithProgress safeRunnableWithProgress(
-            final IUnsafeRunnableWithProgress runnable, final int work) {
+            final IUnsafeRunnableWithProgress runnable) {
         Validate.notNull(runnable, "runnable"); //$NON-NLS-1$
         return new IRunnableWithProgress() {
             @Override
             public void run(IProgressMonitor monitor)
                     throws InvocationTargetException, InterruptedException {
-                SubMonitor progress = SubMonitor.convert(monitor, work);
                 try {
-                    runnable.run(progress);
+                    runnable.run(monitor);
                 } catch (InterruptedException e) {
                     // propagate InterruptedException since it has special
                     // meaning, i.e. cancellation
@@ -267,9 +264,11 @@ public final class JFaceUtils {
          * <code>InterruptedException</code>.
          * 
          * @param monitor
-         *            the progress monitor to use to display progress and
-         *            receive requests for cancelation, implementers should not
-         *            call {@link IProgressMonitor#done()}.
+         *            the progress monitor to use for reporting progress to the
+         *            user. It is the caller's responsibility to call done() on
+         *            the given monitor. Accepts null, indicating that no
+         *            progress should be reported and that the operation cannot
+         *            be canceled.
          * @throws InterruptedException
          *             if the operation detects a request to cancel, using
          *             <code>IProgressMonitor.isCanceled()</code>, it should
@@ -277,7 +276,7 @@ public final class JFaceUtils {
          * @throws Exception
          *             if an exception occurs
          */
-        void run(SubMonitor monitor) throws Exception;
+        void run(IProgressMonitor monitor) throws Exception;
     }
 
     private JFaceUtils() {

@@ -7,6 +7,7 @@ import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workben
 import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.DisconnectHandlerTest;
 import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.NewStrategyAgentHandlerTest;
 import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.StrategyAgentConnectionPropertyPageTest;
+import org.marketcetera.photon.strategy.engine.strategyagent.ui.workbench.StrategyAgentEngineWorkbenchUITest;
 
 /* $License$ */
 
@@ -22,6 +23,7 @@ import org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workben
         org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench.MessagesTest.class,
         NewStrategyAgentHandlerTest.class, ConnectHandlerTest.class,
         DisconnectHandlerTest.class, DeleteHandlerTest.class,
-        StrategyAgentConnectionPropertyPageTest.class })
+        StrategyAgentConnectionPropertyPageTest.class,
+        StrategyAgentEngineWorkbenchUITest.class })
 public class StrategyAgentEngineWorkbenchUISuite {
 }

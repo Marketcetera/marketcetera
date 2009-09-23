@@ -19,9 +19,4 @@ public class StrategyAgentEngineUITest {
     public void testPlugin() throws Exception {
         OSGITestUtil.assertBundle(StrategyAgentEngineUI.PLUGIN_ID);
     }
-    
-    @Test
-    public void testCreateConnectionComposite() throws Exception {
-        
-    }
 }

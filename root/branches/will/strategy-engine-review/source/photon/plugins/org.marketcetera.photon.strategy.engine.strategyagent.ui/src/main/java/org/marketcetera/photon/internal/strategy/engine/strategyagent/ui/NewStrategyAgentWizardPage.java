@@ -1,14 +1,16 @@
 package org.marketcetera.photon.internal.strategy.engine.strategyagent.ui;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Group;
 import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.photon.commons.ui.databinding.CustomWizardPageSupport;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
+import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEngineUI;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEngineUI;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -53,9 +55,15 @@ public class NewStrategyAgentWizardPage extends WizardPage {
         Composite composite = new Composite(parent, SWT.NONE);
         StrategyEngineUI.createStrategyEngineIdentificationComposite(composite,
                 mDataBindingContext, mEngine);
-        new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-        new StrategyAgentConnectionComposite(composite, mDataBindingContext,
-                mEngine);
+        Group configurationGroup = new Group(composite, SWT.NONE);
+        GridLayoutFactory.swtDefaults().applyTo(configurationGroup);
+        GridDataFactory.swtDefaults().indent(5, SWT.DEFAULT).applyTo(
+                configurationGroup);
+        configurationGroup
+                .setText(Messages.NEW_STRATEGY_AGENT_WIZARD_PAGE_CONFIGURATION_GROUP__LABEL
+                        .getText());
+        StrategyAgentEngineUI.createStrategyAgentConnectionComposite(
+                configurationGroup, mDataBindingContext, mEngine);
         GridLayoutFactory.fillDefaults().generateLayout(composite);
         setControl(composite);
     }

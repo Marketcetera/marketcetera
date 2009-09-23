@@ -30,29 +30,25 @@ public class StrategyEnginesViewPropertyTester extends PropertyTester {
             Object expectedValue) {
         StrategyEnginesView view = (StrategyEnginesView) receiver;
         if (CONNECT_COMMAND_HANDLED_PROPERTY.equals(property)) {
-            ICommandService service = (ICommandService) view.getViewSite()
-                    .getService(ICommandService.class);
-            return Boolean.valueOf(
-                    service.getCommand(
-                            StrategyEngineWorkbenchUI.CONNECT_COMMAND_ID)
-                            .isHandled()).equals(expectedValue);
+            return isHandled(view,
+                    StrategyEngineWorkbenchUI.CONNECT_COMMAND_ID, expectedValue);
         } else if (DISCONNECT_COMMAND_HANDLED_PROPERTY.equals(property)) {
-            ICommandService service = (ICommandService) view.getViewSite()
-                    .getService(ICommandService.class);
-            return Boolean.valueOf(
-                    service.getCommand(
-                            StrategyEngineWorkbenchUI.DISCONNECT_COMMAND_ID)
-                            .isHandled()).equals(expectedValue);
+            return isHandled(view,
+                    StrategyEngineWorkbenchUI.DISCONNECT_COMMAND_ID,
+                    expectedValue);
         } else if (DELETE_COMMAND_HANDLED_PROPERTY.equals(property)) {
-            ICommandService service = (ICommandService) view.getViewSite()
-                    .getService(ICommandService.class);
-            return Boolean.valueOf(
-                    service.getCommand(
-                            DELETE_COMMAND_ID)
-                            .isHandled()).equals(expectedValue);
+            return isHandled(view, DELETE_COMMAND_ID, expectedValue);
         } else {
             throw new IllegalArgumentException(MessageFormat.format(
                     "unknown property [{0}]", property)); //$NON-NLS-1$
         }
+    }
+
+    private static boolean isHandled(StrategyEnginesView view,
+            String commandId, Object expectedValue) {
+        ICommandService service = (ICommandService) view.getViewSite()
+                .getService(ICommandService.class);
+        return Boolean.valueOf(service.getCommand(commandId).isHandled())
+                .equals(expectedValue);
     }
 }

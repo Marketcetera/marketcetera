@@ -1,18 +1,12 @@
 package org.marketcetera.photon.internal.strategy.engine.strategyagent.ui.workbench;
 
-import java.util.concurrent.Callable;
-
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.marketcetera.photon.commons.ui.JFaceUtils;
-import org.marketcetera.photon.commons.ui.workbench.ProgressUtils;
-import org.marketcetera.photon.commons.ui.workbench.SafeHandler;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.marketcetera.photon.commons.ui.workbench.AbstractSelectionHandler;
+import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.base.Predicate;
 
 /**
  * Handler for the {@code
@@ -24,25 +18,27 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public final class DisconnectHandler extends SafeHandler {
+public final class DisconnectHandler extends
+        AbstractSelectionHandler<StrategyAgentEngine> {
+
+    /**
+     * Constructor.
+     */
+    public DisconnectHandler() {
+        super(StrategyAgentEngine.class, Messages.DISCONNECT_HANDLER_FAILED,
+                new Predicate<StrategyAgentEngine>() {
+                    @Override
+                    public boolean apply(StrategyAgentEngine input) {
+                        return input.getConnectionState() == ConnectionState.CONNECTED;
+                    }
+                });
+    }
 
     @Override
-    public void executeSafely(ExecutionEvent event) throws ExecutionException {
-        final StrategyAgentEngine engine = (StrategyAgentEngine) ((StructuredSelection) HandlerUtil
-                .getCurrentSelectionChecked(event)).getFirstElement();
-        String name = engine.getName();
-        final IRunnableWithProgress operation = JFaceUtils.wrap(
-                new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        engine.disconnect();
-                        return null;
-                    }
-                }, Messages.DISCONNECT_HANDLER__TASK_NAME.getText(name));
-        ProgressUtils
-                .runModalWithErrorDialog(HandlerUtil
-                        .getActiveWorkbenchWindowChecked(event), operation,
-                        new I18NBoundMessage1P(
-                                Messages.DISCONNECT_HANDLER_FAILED, name));
+    protected void process(StrategyAgentEngine item, IProgressMonitor monitor)
+            throws Exception {
+        monitor.setTaskName(Messages.DISCONNECT_HANDLER__TASK_NAME.getText(item
+                .getName()));
+        item.disconnect();
     }
 }

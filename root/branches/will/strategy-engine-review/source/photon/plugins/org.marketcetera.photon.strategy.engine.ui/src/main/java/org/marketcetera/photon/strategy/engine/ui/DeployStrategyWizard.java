@@ -66,7 +66,7 @@ public final class DeployStrategyWizard extends Wizard {
      * @param engine
      *            seeded engine selection, can be null
      * @param availableEngines
-     *            the available engines
+     *            the available engines, must be non-null and non-empty
      * @param buttons
      *            the buttons used to assist in strategy script selection
      * @throws IllegalArgumentException

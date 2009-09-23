@@ -1,7 +1,6 @@
 package org.marketcetera.photon.internal.strategy.engine.ui.workbench;
 
 import org.eclipse.core.databinding.AggregateValidationStatus;
-import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.ObservablesManager;
 import org.eclipse.core.databinding.observable.value.ComputedValue;
@@ -78,7 +77,6 @@ final class NewPropertyInputDialog extends Dialog {
             Label label = new Label(composite, SWT.NONE);
             label.setText(Messages.NEW_PROPERTY_INPUT_DIALOG_KEY__LABEL
                     .getText());
-            label.setFont(parent.getFont());
         }
 
         {
@@ -94,14 +92,12 @@ final class NewPropertyInputDialog extends Dialog {
             Label label = new Label(composite, SWT.NONE);
             label.setText(Messages.NEW_PROPERTY_INPUT_DIALOG_VALUE__LABEL
                     .getText());
-            label.setFont(parent.getFont());
         }
 
         {
             Text valueText = new Text(composite, SWT.SINGLE | SWT.BORDER);
-            Binding binding = mDataBindingContext.bindValue(SWTObservables
+            mDataBindingContext.bindValue(SWTObservables
                     .observeText(valueText, SWT.Modify), mPropertyValue);
-            DataBindingUtils.initControlDecorationSupportFor(binding);
         }
 
         GridLayoutFactory.swtDefaults().numColumns(2).spacing(10, 10)

@@ -13,6 +13,6 @@ Import-Package: org.hamcrest,
  org.mockito.stubbing
 Require-Bundle: org.marketcetera.photon.test,
  org.marketcetera.util-test,
- org.marketcetera.core.tests,
- org.eclipse.emf.ecore.xmi
+ org.eclipse.emf.ecore.xmi,
+ org.marketcetera.core.tests
 Export-Package: org.marketcetera.photon.internal.strategy.engine.embedded.tests
