@@ -52,6 +52,29 @@ import java.util.Collections;
  *                    O
  *
  * </pre>
+ * <p>
+ * The following table specifies the module states for which
+ * various module framework operations can be invoked on a module. If
+ * a module operation is invoked while it's not in one of the states for
+ * that operation in the table below, the operation will fail.
+ * <p>
+ * <table border="1" cellspacing="0">
+ * <tr><th>Module Operation</th><th>Module State</th></tr>
+ * <tr><td>delete</td><td>{@link #CREATED}, {@link #START_FAILED}, {@link #STOPPED}</td>
+ * <tr><td>stop</td><td>{@link #STARTED}, {@link #STOP_FAILED}</td>
+ * <tr><td>start</td><td>{@link #CREATED}, {@link #START_FAILED}, {@link #STOPPED}</td>
+ * <tr><td>request data flow</td><td>{@link #STARTING}, {@link #STARTED}, {@link #STOP_FAILED}</td>
+ * <tr><td>cancel data flow</td><td>{@link #STARTED}, {@link #STOPPING}, {@link #STOP_FAILED}</td>
+ * <tr><td>participate data flow</td><td>{@link #STARTED}, {@link #STOP_FAILED}</td>
+ * </table>
+ * <p>
+ * <b>Note:</b>
+ * <ul>
+ * <li><i>request / cancel data flow</i> operations apply only to modules
+ * that implement {@link DataFlowRequester}.</li>
+ * <li><i>participate data flow</i> operation relates to a create data flow request
+ * operation that contains a reference to the module in question.</li>
+ * </ul> 
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -164,6 +187,10 @@ public enum ModuleState {
     static final Set<ModuleState> PARTICIPATE_FLOW_STATES;
     static final Set<ModuleState> CANCEL_FLOW_STATES;
     static{
+        /*
+         * NOTE: Make sure to update the class javadoc above
+         * when updating any of the collections below.
+         */
         DELETABLE_STATES = Collections.unmodifiableSet(
                 EnumSet.of(CREATED, START_FAILED, STOPPED));
         STOPPABLE_STATES = Collections.unmodifiableSet(
