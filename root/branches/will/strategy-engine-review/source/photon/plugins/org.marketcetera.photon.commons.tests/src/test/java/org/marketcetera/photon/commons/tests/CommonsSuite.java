@@ -2,7 +2,6 @@ package org.marketcetera.photon.commons.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.marketcetera.photon.commons.ComposedContainerClassInfoTest;
 import org.marketcetera.photon.commons.ExceptionUtilsTest;
 import org.marketcetera.photon.commons.ReflectiveMessagesTest;
 import org.marketcetera.photon.commons.SimpleExecutorServiceTest;
@@ -24,8 +23,7 @@ import org.marketcetera.photon.commons.osgi.HighestRankedTrackerTest;
 @Suite.SuiteClasses( { ReflectiveMessagesTest.class, ValidateTest.class,
         ExceptionUtilsTest.class,
         org.marketcetera.photon.commons.MessagesTest.class,
-        SimpleExecutorServiceTest.class, ComposedContainerClassInfoTest.class,
-        EMFFilePersistenceTest.class, HighestRankedTrackerTest.class,
-        SynchronizedProxyTest.class })
+        SimpleExecutorServiceTest.class, EMFFilePersistenceTest.class,
+        HighestRankedTrackerTest.class, SynchronizedProxyTest.class })
 public final class CommonsSuite {
 }

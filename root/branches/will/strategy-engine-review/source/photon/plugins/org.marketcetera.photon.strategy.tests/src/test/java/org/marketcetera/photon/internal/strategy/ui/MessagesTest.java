@@ -3,8 +3,7 @@ package org.marketcetera.photon.internal.strategy.ui;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.marketcetera.photon.commons.ComposedContainerClassInfo;
-import org.marketcetera.photon.commons.ui.LocalizedLabelMessageInfoProvider;
+import org.marketcetera.photon.commons.ui.LocalizedLabelContainerClassInfo;
 import org.marketcetera.photon.internal.strategy.Messages;
 import org.marketcetera.util.l10n.MessageComparator;
 
@@ -22,8 +21,7 @@ public class MessagesTest {
     @Test
     public void messagesMatch() throws Exception {
         MessageComparator comparator = new MessageComparator(
-                new ComposedContainerClassInfo(Messages.class,
-                        new LocalizedLabelMessageInfoProvider(Messages.class)));
+                new LocalizedLabelContainerClassInfo(Messages.class));
         assertTrue(comparator.getDifferences(), comparator.isMatch());
     }
 }
