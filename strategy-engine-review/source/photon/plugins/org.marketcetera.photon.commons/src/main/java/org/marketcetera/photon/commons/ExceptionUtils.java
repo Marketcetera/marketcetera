@@ -19,17 +19,19 @@ import org.marketcetera.util.misc.ClassVersion;
 public class ExceptionUtils {
 
     /**
-     * Safely casts a Throwable to RuntimeException.
+     * Safely casts a Throwable to RuntimeException. If the throwable is an
+     * error, it will be thrown. If the throwable is a checked exception, an
+     * IllegalStateException will be thrown.
      * 
      * @param throwable
      *            the throwable to launder
-     * @return the throwable if it is a runtime exception
+     * @return throwable if it is a runtime exception
      * @throws IllegalArgumentException
      *             if throwable is null
      * @throws Error
-     *             if t is an error
+     *             throwable, if throwable is an error
      * @throws IllegalStateException
-     *             if t is a checked exception
+     *             if throwable is a checked exception
      */
     public static RuntimeException launderThrowable(Throwable throwable) {
         Validate.notNull(throwable, "throwable"); //$NON-NLS-1$
