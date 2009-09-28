@@ -45,6 +45,7 @@
                  classpathref="photon.classpath"
                  destdir="${javadoc.destdir}" 
                  sourcepathref="photon.srcpath"
+                 additionalparam="-tag generated:X -tag ordered:X -tag model:X"
                  version="true">
             <link href="http://commons.apache.org/cli/api-release/"/>
             <link href="http://commons.apache.org/collections/api-release/"/>
