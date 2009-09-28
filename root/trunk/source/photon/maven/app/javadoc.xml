@@ -20,7 +20,9 @@
 
     <path id="photon.srcpath">
         <pathelement location="${plugins.dir}/org.marketcetera.photon/src/main/java"/>
-        <pathelement location="${plugins.dir}/org.marketcetera.photon.commons.ui/src"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.commons/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.commons.ui/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.commons.ui.workbench/src/main/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.marketdata/src/main/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.marketdata/src/model/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.marketdata.ui/src/main/java"/>
@@ -30,6 +32,9 @@
         <pathelement location="${plugins.dir}/org.marketcetera.photon.positions.ui/src/main/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.product/src/main/java"/>
         <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine/src/model/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine.ui/src/main/java"/>
     </path>
 
     <target name="javadoc">
