@@ -71,7 +71,7 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
                 }
             }).get();
         } catch (ExecutionException e) {
-            throw launderThrowable(e.getCause());
+            throw launderThrowable(e.getCause(), false);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
@@ -308,13 +308,7 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
 
         public void rethrow() throws Exception {
             if (mThrowable != null) {
-                if (mThrowable instanceof Error) {
-                    throw (Error) mThrowable;
-                } else if (mThrowable instanceof Exception) {
-                    throw (Exception) mThrowable;
-                } else {
-                    throw new RuntimeException(mThrowable);
-                }
+                throw launderThrowable(mThrowable, true);
             }
         }
     }
@@ -340,8 +334,28 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * Executes the runnable on the UI thread. This is only valid during tests
-     * being run with {@link AbstractUIRunner}.
+     * Executes the runnable asynchronously on the UI thread.
+     * 
+     * @param runnable
+     *            the runnable to run
+     */
+    public static void asyncRun(final ThrowableRunnable runnable) {
+        sDisplay.asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    runnable.run();
+                } catch (Throwable e) {
+                    throw launderThrowable(e, true);
+                }
+
+            }
+        });
+    }
+
+    /**
+     * Executes the runnable synchronously on the UI thread and propagates
+     * exceptions.
      * 
      * @param runnable
      *            the runnable to run
@@ -356,13 +370,12 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * Executes the callable on the UI thread. This is only valid during tests
-     * being run with {@link AbstractUIRunner}.
+     * Executes the callable synchronously on the UI thread.
      * 
      * @param callable
      *            the callable to run
      * @return the result of the callable
-     * @throws Throwable
+     * @throws Exception
      *             if the callable throws it
      */
     public static <T> T syncCall(final Callable<T> callable) throws Exception {
@@ -376,13 +389,20 @@ public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
         return ref.get();
     }
 
-    private static RuntimeException launderThrowable(Throwable throwable) {
+    private static RuntimeException launderThrowable(Throwable throwable,
+            boolean wrapChecked) {
         if (throwable instanceof RuntimeException)
             return (RuntimeException) throwable;
         else if (throwable instanceof Error)
             throw (Error) throwable;
+        else if (wrapChecked && throwable != null)
+            return new RuntimeException(throwable);
         else
             throw new IllegalStateException("Not unchecked", throwable); //$NON-NLS-1$
+    }
+    
+    public static Display getDisplay() {
+        return sDisplay;
     }
 
 }

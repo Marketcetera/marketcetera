@@ -35,10 +35,10 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author gmiller
  * @author andrei@lissovski.org
- * @version $Id$
+ * @version $Id: ApplicationActionBarAdvisor.java 10499 2009-04-18 02:25:18Z will $
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id: ApplicationActionBarAdvisor.java 10499 2009-04-18 02:25:18Z will $") //$NON-NLS-1$
 public class ApplicationActionBarAdvisor
     extends ActionBarAdvisor
 {

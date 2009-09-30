@@ -2,15 +2,12 @@ package org.marketcetera.photon.strategy.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.marketcetera.photon.internal.strategy.AbstractStrategyConnectionTest;
-import org.marketcetera.photon.internal.strategy.MessagesTest;
-import org.marketcetera.photon.internal.strategy.RemoteAgentManagerTest;
-import org.marketcetera.photon.internal.strategy.RemoteStrategyAgentTest;
-import org.marketcetera.photon.internal.strategy.StrategyManagerTest;
-import org.marketcetera.photon.internal.strategy.StrategyPropertyTesterTest;
-import org.marketcetera.photon.internal.strategy.StrategyTest;
-import org.marketcetera.photon.internal.strategy.StrategyValidationTest;
+import org.marketcetera.photon.internal.strategy.StrategyEnginesSupportTest;
+import org.marketcetera.photon.internal.strategy.StrategyTemplateTest;
 import org.marketcetera.photon.internal.strategy.TradeSuggestionManagerTest;
+import org.marketcetera.photon.internal.strategy.ui.NewJavaStrategyWizardTest;
+import org.marketcetera.photon.internal.strategy.ui.NewRubyStrategyWizardTest;
+import org.marketcetera.photon.internal.strategy.ui.UndeployDeleteParticipantTest;
 
 /* $License$ */
 
@@ -22,10 +19,11 @@ import org.marketcetera.photon.internal.strategy.TradeSuggestionManagerTest;
  * @since 1.1.0
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { AbstractStrategyConnectionTest.class,
-        StrategyTest.class, MessagesTest.class,
-        StrategyPropertyTesterTest.class, StrategyValidationTest.class,
-        RemoteStrategyAgentTest.class, StrategyManagerTest.class,
-        TradeSuggestionManagerTest.class, RemoteAgentManagerTest.class })
+@Suite.SuiteClasses( {
+        org.marketcetera.photon.internal.strategy.MessagesTest.class,
+        org.marketcetera.photon.internal.strategy.ui.MessagesTest.class,
+        TradeSuggestionManagerTest.class, NewRubyStrategyWizardTest.class,
+        NewJavaStrategyWizardTest.class, UndeployDeleteParticipantTest.class,
+        StrategyEnginesSupportTest.class, StrategyTemplateTest.class })
 public class StrategySuite {
 }

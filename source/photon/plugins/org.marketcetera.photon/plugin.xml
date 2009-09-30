@@ -3,16 +3,6 @@
 <plugin>
 
    <extension
-         id="application"
-         name="Photon"
-         point="org.eclipse.core.runtime.applications">
-      <application>
-         <run
-               class="org.marketcetera.photon.Application">
-         </run>
-      </application>
-   </extension>
-   <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.marketcetera.photon.ui.EquityPerspectiveFactory"
@@ -142,7 +132,7 @@
          id="Photon"
          point="org.eclipse.core.runtime.products">
       <product
-            application="org.marketcetera.photon.application"
+            application="org.marketcetera.photon.product.application"
             description="Marketcetera Photon 1.6.0 (Plugin)"
             name="Photon 1.6.0">
          <property

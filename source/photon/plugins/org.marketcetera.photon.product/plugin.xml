@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension
+         id="application"
+         name="%application.name"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="org.marketcetera.photon.internal.product.Application">
+         </run>
+      </application>
+   </extension>
    <extension point="org.eclipse.debug.core.sourceLocators">
 		<sourceLocator name="Null Ruby Source Locator"
 			class="org.marketcetera.photon.ruby.NullRubySourceLocator"
@@ -151,11 +161,6 @@
       </perspectiveExtension>
    </extension>
    <extension
-         point="org.eclipse.ui.startup">
-      <startup
-            class="org.marketcetera.photon.product.EarlyStartup"></startup>
-   </extension>
-   <extension
          point="org.eclipse.ui.commands">
       <command
             categoryId="org.marketcetera.photon.positions.ui.commands.category"
@@ -163,6 +168,12 @@
             description="%command.showPositionFills.description"
             id="org.marketcetera.photon.positions.ui.commands.showPositionFills"
             name="%command.showPositionFills.name">
+      </command>
+      <command
+            defaultHandler="org.marketcetera.photon.internal.product.LogoutHandler"
+            description="%logoutCommand.description"
+            id="org.marketcetera.photon.product.commands.logout"
+            name="%logoutCommand.name">
       </command>
    </extension>
    <extension
@@ -178,6 +189,17 @@
                      value="1">
                </count>
             </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <command
+               commandId="org.marketcetera.photon.product.commands.logout"
+               disabledIcon="icons/dtool16/logout.gif"
+               icon="icons/etool16/logout.gif"
+               label="%logoutCommand.name"
+               style="push"
+               tooltip="%logoutCommand.description">
          </command>
       </menuContribution>
    </extension>

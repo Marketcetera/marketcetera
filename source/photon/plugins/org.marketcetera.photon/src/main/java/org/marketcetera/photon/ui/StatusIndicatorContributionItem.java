@@ -76,8 +76,6 @@ public abstract class StatusIndicatorContributionItem extends
 	/**
 	 * Subclasses can override to provide additional cleanup, but must be sure
 	 * to call this method as well.
-	 * 
-	 * @see Workaround253082ContributionItem#dispose()
 	 */
 	@Override
 	public void dispose() {
