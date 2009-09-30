@@ -130,6 +130,20 @@ public class SinkDataManagerTest {
 	}
 	
 	/**
+	 * Test {@link SinkDataManager#sendData(String, Object)}.
+	 */
+	@Test
+	public void testManualSend() throws Exception {
+	    ISinkDataHandler mockHandler = mock(ISinkDataHandler.class);
+        fixture.register(mockHandler, String.class);
+        DataFlowID id = new DataFlowID("manual");
+        // send a string, should get handled
+        String data = "ABC";
+        fixture.sendData("manual", data);
+        verify(mockHandler).receivedData(id, data);
+	}
+	
+	/**
 	 * Test error handling.
 	 */
 	@Test

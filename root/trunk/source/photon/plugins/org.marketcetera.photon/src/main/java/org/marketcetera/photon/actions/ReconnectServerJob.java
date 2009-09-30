@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.progress.UIJob;
@@ -29,7 +28,10 @@ import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonPreferences;
-import org.marketcetera.photon.ui.LoginDialog;
+import org.marketcetera.photon.core.ICredentials;
+import org.marketcetera.photon.core.ICredentialsService;
+import org.marketcetera.photon.core.ILogoutService;
+import org.marketcetera.photon.core.ICredentialsService.IAuthenticationHelper;
 import org.marketcetera.photon.ui.ServerStatusIndicator;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NMessage;
@@ -49,211 +51,296 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class ReconnectServerJob extends UIJob {
 
-	private static final AtomicBoolean sScheduled = new AtomicBoolean();
+    private static final AtomicBoolean sScheduled = new AtomicBoolean();
 
-	/**
-	 * Constructor.
-	 */
-	public ReconnectServerJob() {
-		super(Messages.RECONNECT_SERVER_JOB_NAME.getText());
-		setUser(true);
-		// don't visualize progress for this job since it's modal
-		setSystem(true);
-	}
+    /**
+     * Constructor.
+     */
+    public ReconnectServerJob() {
+        super(Messages.RECONNECT_SERVER_JOB_NAME.getText());
+        setUser(true);
+        // don't visualize progress for this job since it's modal
+        setSystem(true);
+    }
 
-	@Override
-	public boolean shouldSchedule() {
-		// fails if already scheduled
-		return sScheduled.compareAndSet(false, true);
-	}
+    @Override
+    public boolean shouldSchedule() {
+        // fails if already scheduled
+        return sScheduled.compareAndSet(false, true);
+    }
 
-	@Override
-	public IStatus runInUIThread(IProgressMonitor monitor) {
-		try {
-			// load connection properties
-			ScopedPreferenceStore prefs = PhotonPlugin.getDefault().getPreferenceStore();
-			String url = prefs.getString(PhotonPreferences.JMS_URL);
-			String hostname = prefs.getString(PhotonPreferences.WEB_SERVICE_HOST);
-			int port = prefs.getInt(PhotonPreferences.WEB_SERVICE_PORT);
-			String idPrefix = prefs.getString(PhotonPreferences.ORDER_ID_PREFIX);
-			// try to login
-			LoginDialog loginDialog = new LoginDialog(getDisplay().getActiveShell());
-			while (loginDialog.open() == Window.OK) {
-				ConnectionDetails details = loginDialog.getConnectionDetails();
-				final ClientParameters parameters = new ClientParameters(details.getUserId(),
-						details.getPassword() == null ? null : details.getPassword().toCharArray(),
-						url, hostname, port, idPrefix);
-				IRunnableWithProgress op = new IRunnableWithProgress() {
+    private final static Runnable sClientCloser = new Runnable() {
+        @Override
+        public void run() {
+            if (sScheduled.compareAndSet(false, true)) {
+                try {
+                    ClientManager.getInstance().close();
+                } catch (ClientInitException e) {
+                    // ignore
+                } finally {
+                    sScheduled.set(false);
+                }
+            }
+        }
+    };
 
-					@Override
-					public void run(IProgressMonitor monitor) throws InvocationTargetException,
-							InterruptedException {
-						// invalidate position engine, it will be recreated if trading history is
-						// retrieved
-						PhotonPlugin.getDefault().disposePositionEngine();
+    @Override
+    public IStatus runInUIThread(IProgressMonitor monitor) {
+        try {
+            // load connection properties
+            ScopedPreferenceStore prefs = PhotonPlugin.getDefault()
+                    .getPreferenceStore();
+            final String url = prefs.getString(PhotonPreferences.JMS_URL);
+            final String hostname = prefs
+                    .getString(PhotonPreferences.WEB_SERVICE_HOST);
+            final int port = prefs.getInt(PhotonPreferences.WEB_SERVICE_PORT);
+            final String idPrefix = prefs
+                    .getString(PhotonPreferences.ORDER_ID_PREFIX);
 
-						ServerStatusIndicator.setDisconnected();
-						PhotonPlugin.getDefault().setSessionStartTime(null);
+            // try to login
+            ICredentialsService credentialsService = PhotonPlugin.getDefault()
+                    .getCredentialsService();
+            ILogoutService logoutService = PhotonPlugin.getDefault()
+                    .getLogoutService();
+            logoutService.addLogoutRunnable(sClientCloser);
+            boolean success = credentialsService
+                    .authenticateWithCredentials(new IAuthenticationHelper() {
+                        @Override
+                        public boolean authenticate(ICredentials credentials) {
+                            final ClientParameters parameters = new ClientParameters(
+                                    credentials.getUsername(), credentials
+                                            .getPassword() == null ? null
+                                            : credentials.getPassword()
+                                                    .toCharArray(), url,
+                                    hostname, port, idPrefix);
+                            IRunnableWithProgress op = new IRunnableWithProgress() {
+                                @Override
+                                public void run(IProgressMonitor monitor)
+                                        throws InvocationTargetException,
+                                        InterruptedException {
+                                    /*
+                                     * Invalidate position engine, it will be
+                                     * recreated if trading history is
+                                     * retrieved.
+                                     */
+                                    PhotonPlugin.getDefault()
+                                            .disposePositionEngine();
 
-						// connect
-						try {
-							Client client;
-							// if already initialized, reconnect
-							if (ClientManager.isInitialized()) {
-								ClientManager.getInstance().reconnect(parameters);
-								client = ClientManager.getInstance();
-							} else {
-								// first time initialization
-								ClientManager.init(parameters);
-								client = ClientManager.getInstance();
-								// add listeners
-								client.addExceptionListener(new ExceptionListener() {
-									@Override
-									public void exceptionThrown(Exception e) {
-										// When disconnected, client sends continual notifications,
-										// so we want
-										// to avoid cluttering the console.
-										if (getMessage(e) != org.marketcetera.client.Messages.ERROR_HEARTBEAT_FAILED) {
-											PhotonPlugin.getMainConsoleLogger().error(
-													Messages.CLIENT_EXCEPTION.getText(), e);
-										}
-									}
+                                    ServerStatusIndicator.setDisconnected();
+                                    PhotonPlugin.getDefault()
+                                            .setSessionStartTime(null);
 
-									private I18NMessage getMessage(Exception e) {
-										if (e instanceof ConnectionException) {
-											I18NBoundMessage bound = ((ConnectionException) e)
-													.getI18NBoundMessage();
-											if (bound != null) {
-												return bound.getMessage();
-											}
-										}
-										return null;
-									}
-								});
-								ServerNotificationListener serverNotificationListener = new ServerNotificationListener();
-								// simulate initial connection notification that
-								// we missed because it was issued during
-								// initialization, above.
-								serverNotificationListener.receiveServerStatus(true);
-								client.addServerStatusListener(serverNotificationListener);
-								client.addReportListener(PhotonPlugin.getDefault()
-										.getPhotonController());
-								client.addBrokerStatusListener(new BrokerNotificationListener(
-										client));
-							}
-							// Refresh Broker Status
-							try {
-								asyncUpdateBrokers(client.getBrokersStatus());
-							} catch (ConnectionException e) {
-								throw new InvocationTargetException(e);
-							}
-						} catch (ConnectionException e) {
-							throw new InvocationTargetException(e);
-						} catch (ClientInitException e) {
-							throw new InvocationTargetException(e);
-						}
-					}
-				};
-				try {
-					new ProgressMonitorDialog(getDisplay().getActiveShell()).run(true, false, op);
-					new RetrieveTradingHistoryJob().schedule();
-					return Status.OK_STATUS;
-				} catch (InterruptedException e) {
-					// Intentionally not restoring the interrupt status since this
-					// is the main UI thread where it will be ignored
-					Messages.RECONNECT_SERVER_JOB_CONNECTION_FAILED.error(this, e);
-					return Status.CANCEL_STATUS;
-				} catch (InvocationTargetException e) {
-					Throwable realException = e.getTargetException();
-					String message = realException.getLocalizedMessage();
-					if (message == null) {
-						message = Messages.RECONNECT_SERVER_JOB_CONNECTION_FAILED.getText();
-					}
-					MessageDialog.openError(getDisplay().getActiveShell(),
-							Messages.RECONNECT_SERVER_JOB_ERROR_DIALOG_TITLE.getText(), message);
-					Messages.RECONNECT_SERVER_JOB_CONNECTION_FAILED.error(this, realException);
-				}
-			}
-			return Status.CANCEL_STATUS;
-		} finally {
-			sScheduled.set(false);
-		}
-	}
+                                    // connect
+                                    try {
+                                        Client client;
+                                        // if already initialized, reconnect
+                                        if (ClientManager.isInitialized()) {
+                                            ClientManager.getInstance()
+                                                    .reconnect(parameters);
+                                            client = ClientManager
+                                                    .getInstance();
+                                        } else {
+                                            // first time initialization
+                                            ClientManager.init(parameters);
+                                            client = ClientManager
+                                                    .getInstance();
+                                            // add listeners
+                                            client
+                                                    .addExceptionListener(new ExceptionListener() {
+                                                        @Override
+                                                        public void exceptionThrown(
+                                                                Exception e) {
+                                                            /*
+                                                             * When
+                                                             * disconnected,
+                                                             * client sends
+                                                             * continual
+                                                             * notifications, so
+                                                             * we want to avoid
+                                                             * cluttering the
+                                                             * console.
+                                                             */
+                                                            if (getMessage(e) != org.marketcetera.client.Messages.ERROR_HEARTBEAT_FAILED) {
+                                                                PhotonPlugin
+                                                                        .getMainConsoleLogger()
+                                                                        .error(
+                                                                                Messages.CLIENT_EXCEPTION
+                                                                                        .getText(),
+                                                                                e);
+                                                            }
+                                                        }
 
-	private static void asyncUpdateBrokers(final BrokersStatus brokersStatus) {
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				BrokerManager.getCurrent().setBrokersStatus(brokersStatus);
-			}
-		});
-	}
+                                                        private I18NMessage getMessage(
+                                                                Exception e) {
+                                                            if (e instanceof ConnectionException) {
+                                                                I18NBoundMessage bound = ((ConnectionException) e)
+                                                                        .getI18NBoundMessage();
+                                                                if (bound != null) {
+                                                                    return bound
+                                                                            .getMessage();
+                                                                }
+                                                            }
+                                                            return null;
+                                                        }
+                                                    });
+                                            ServerNotificationListener serverNotificationListener = new ServerNotificationListener();
+                                            /*
+                                             * Simulate initial connection
+                                             * notification that we missed
+                                             * because it was issued during
+                                             * initialization, above.
+                                             */
+                                            serverNotificationListener
+                                                    .receiveServerStatus(true);
+                                            client
+                                                    .addServerStatusListener(serverNotificationListener);
+                                            client
+                                                    .addReportListener(PhotonPlugin
+                                                            .getDefault()
+                                                            .getPhotonController());
+                                            client
+                                                    .addBrokerStatusListener(new BrokerNotificationListener(
+                                                            client));
+                                        }
+                                        // Refresh Broker Status
+                                        try {
+                                            asyncUpdateBrokers(client
+                                                    .getBrokersStatus());
+                                        } catch (ConnectionException e) {
+                                            throw new InvocationTargetException(
+                                                    e);
+                                        }
+                                    } catch (ConnectionException e) {
+                                        throw new InvocationTargetException(e);
+                                    } catch (ClientInitException e) {
+                                        throw new InvocationTargetException(e);
+                                    }
+                                }
 
-	/**
-	 * Handles broker status updates.
-	 */
-	@ClassVersion("$Id$")
-	static final class BrokerNotificationListener implements BrokerStatusListener {
+                            };
+                            try {
+                                new ProgressMonitorDialog(getDisplay()
+                                        .getActiveShell()).run(true, false, op);
+                                new RetrieveTradingHistoryJob().schedule();
+                                return true;
+                            } catch (InterruptedException e) {
+                                /*
+                                 * Intentionally not restoring the interrupt
+                                 * status since this is the main UI thread where
+                                 * it will be ignored.
+                                 */
+                                Messages.RECONNECT_SERVER_JOB_CONNECTION_FAILED
+                                        .error(ReconnectServerJob.this, e);
+                                return false;
+                            } catch (InvocationTargetException e) {
+                                Throwable realException = e
+                                        .getTargetException();
+                                String message = realException
+                                        .getLocalizedMessage();
+                                if (message == null) {
+                                    message = Messages.RECONNECT_SERVER_JOB_CONNECTION_FAILED
+                                            .getText();
+                                }
+                                MessageDialog
+                                        .openError(
+                                                getDisplay().getActiveShell(),
+                                                Messages.RECONNECT_SERVER_JOB_ERROR_DIALOG_TITLE
+                                                        .getText(), message);
+                                Messages.RECONNECT_SERVER_JOB_CONNECTION_FAILED
+                                        .error(ReconnectServerJob.this,
+                                                realException);
+                                return false;
+                            }
+                        }
+                    });
+            return success ? Status.OK_STATUS : Status.CANCEL_STATUS;
+        } finally {
+            sScheduled.set(false);
+        }
+    }
 
-		private final Client mClient;
+    private static void asyncUpdateBrokers(final BrokersStatus brokersStatus) {
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                BrokerManager.getCurrent().setBrokersStatus(brokersStatus);
+            }
+        });
+    }
 
-		/**
-		 * @param client
-		 *            Client instance to use to refresh brokers status
-		 */
-		public BrokerNotificationListener(Client client) {
-			mClient = client;
-		}
+    /**
+     * Handles broker status updates.
+     */
+    @ClassVersion("$Id$")
+    static final class BrokerNotificationListener implements
+            BrokerStatusListener {
 
-		@Override
-		public void receiveBrokerStatus(final BrokerStatus status) {
-			try {
-				I18NMessage0P subject;
-				I18NMessage1P details;
-				if (status.getLoggedOn()) {
-					subject = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE;
-					details = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE_DETAILS;
-				} else {
-					subject = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE;
-					details = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS;
-				}
-				NotificationManager.getNotificationManager().publish(
-						Notification.high(subject.getText(), details
-								.getText(Messages.BROKER_LABEL_PATTERN.getText(status.getName(),
-										status.getId())), getClass().getName()));
-				asyncUpdateBrokers(mClient.getBrokersStatus());
-			} catch (Exception e) {
-				Messages.BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED.error(this, e, status);
-			}
-		}
-	}
+        private final Client mClient;
 
-	/**
-	 * Handles server status updates.
-	 */
-	@ClassVersion("$Id$")
-	static final class ServerNotificationListener implements ServerStatusListener {
+        /**
+         * @param client
+         *            Client instance to use to refresh brokers status
+         */
+        public BrokerNotificationListener(Client client) {
+            mClient = client;
+        }
 
-		@Override
-		public void receiveServerStatus(boolean status) {
-			try {
-				String text;
-				if (status) {
-					ServerStatusIndicator.setConnected();
-					text = Messages.SERVER_NOTIFICATION_SERVER_ALIVE.getText();
-				} else {
-					ServerStatusIndicator.setDisconnected();
-					text = Messages.SERVER_NOTIFICATION_SERVER_DEAD.getText();
-				}
-				// notifications are not necessary if the reconnect job is running
-				if (!sScheduled.get()) {
-					NotificationManager.getNotificationManager().publish(
-							Notification.high(text, text, getClass().getName()));
-				}
-			} catch (Exception e) {
-				Messages.SERVER_NOTIFICATION_SERVER_ERROR_OCCURRED.error(this, e);
-			}
-		}
-	}
+        @Override
+        public void receiveBrokerStatus(final BrokerStatus status) {
+            try {
+                I18NMessage0P subject;
+                I18NMessage1P details;
+                if (status.getLoggedOn()) {
+                    subject = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE;
+                    details = Messages.BROKER_NOTIFICATION_BROKER_AVAILABLE_DETAILS;
+                } else {
+                    subject = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE;
+                    details = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS;
+                }
+                NotificationManager.getNotificationManager().publish(
+                        Notification.high(subject.getText(), details
+                                .getText(Messages.BROKER_LABEL_PATTERN.getText(
+                                        status.getName(), status.getId())),
+                                getClass().getName()));
+                asyncUpdateBrokers(mClient.getBrokersStatus());
+            } catch (Exception e) {
+                Messages.BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED.error(this,
+                        e, status);
+            }
+        }
+    }
+
+    /**
+     * Handles server status updates.
+     */
+    @ClassVersion("$Id$")
+    static final class ServerNotificationListener implements
+            ServerStatusListener {
+
+        @Override
+        public void receiveServerStatus(boolean status) {
+            try {
+                String text;
+                if (status) {
+                    ServerStatusIndicator.setConnected();
+                    text = Messages.SERVER_NOTIFICATION_SERVER_ALIVE.getText();
+                } else {
+                    ServerStatusIndicator.setDisconnected();
+                    text = Messages.SERVER_NOTIFICATION_SERVER_DEAD.getText();
+                }
+                // notifications are not necessary if the reconnect job is
+                // running
+                if (!sScheduled.get()) {
+                    NotificationManager.getNotificationManager()
+                            .publish(
+                                    Notification.high(text, text, getClass()
+                                            .getName()));
+                }
+            } catch (Exception e) {
+                Messages.SERVER_NOTIFICATION_SERVER_ERROR_OCCURRED.error(this,
+                        e);
+            }
+        }
+    }
 
 }

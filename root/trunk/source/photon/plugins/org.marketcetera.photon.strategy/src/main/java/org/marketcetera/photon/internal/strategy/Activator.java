@@ -1,101 +1,128 @@
 package org.marketcetera.photon.internal.strategy;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import javax.annotation.concurrent.GuardedBy;
+
+import org.eclipse.swt.widgets.Display;
+import org.marketcetera.photon.commons.ui.SWTUtils;
+import org.marketcetera.photon.strategy.engine.IStrategyEngines;
+import org.marketcetera.photon.strategy.engine.ui.AbstractStrategyEnginesSupport;
 import org.marketcetera.util.misc.ClassVersion;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /* $License$ */
 
 /**
- * The activator class controls the plug-in life cycle. This class is single
- * threaded and all methods are expected to be called from the UI thread.
+ * The activator class controls the plug-in life cycle and manages services that
+ * are tied to that life cycle.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public final class Activator extends AbstractUIPlugin {
+public final class Activator implements BundleActivator {
 
-	/**
-	 * The plug-in ID
-	 */
-	public static final String PLUGIN_ID = "org.marketcetera.photon.strategy"; //$NON-NLS-1$
+    /**
+     * The current singleton instance.
+     */
+    private static volatile Activator sInstance;
 
-	/**
-	 * The shared instance
-	 */
-	private static Activator mPlugin;
+    /**
+     * The {@link TradeSuggestionManager}, confined to the UI thread.
+     */
+    private TradeSuggestionManager mTradeSuggestionManager;
 
-	/**
-	 * The {@link StrategyManager} singleton for this plug-in instance.
-	 */
-	private StrategyManager mStrategyManager;
+    /**
+     * The bundle's context, used for service registration.
+     */
+    @GuardedBy("Activator.class")
+    private BundleContext mBundleContext;
 
-	/**
-	 * The {@link TradeSuggestionManager} singleton for this plug-in instance.
-	 */
-	private TradeSuggestionManager mTradeSuggestionManager;
+    /**
+     * Manages the {@link IStrategyEngines} service provided by this bundle.
+     */
+    @GuardedBy("Activator.class")
+    private AbstractStrategyEnginesSupport mSupport;
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		mPlugin = this;
-	}
+    @Override
+    public void start(BundleContext context) throws Exception {
+        synchronized (Activator.class) {
+            mBundleContext = context;
+            sInstance = this;
+        }
+    }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		mPlugin = null;
-		super.stop(context);
-	}
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        synchronized (Activator.class) {
+            sInstance = null;
+            mBundleContext = null;
+            if (mSupport != null) {
+                mSupport.dispose();
+                mSupport = null;
+            }
+        }
+    }
 
-	/**
-	 * Returns the shared instance
-	 * 
-	 * @return the shared instance
-	 */
-	public static Activator getDefault() {
-		return mPlugin;
-	}
+    /**
+     * Returns the current instance
+     * 
+     * @return the current instance, or null if the bundle is not active
+     */
+    static Activator getCurrent() {
+        return sInstance;
+    }
 
-	/**
-	 * Returns an image descriptor for the image file at the given plug-in
-	 * relative path
-	 * 
-	 * @param path
-	 *            the path
-	 * @return the image descriptor
-	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
-	}
+    /**
+     * Returns the {@link TradeSuggestionManager} singleton for this plug-in.
+     * Typically, this should be accessed through
+     * {@link TradeSuggestionManager#getCurrent()}.
+     * <p>
+     * This must be called from the UI thread and the returned object is
+     * confined to the UI thread.
+     * 
+     * @return the current TradeSuggestionManager singleton
+     * @throws IllegalStateException
+     *             if called from a non UI thread
+     */
+    TradeSuggestionManager getTradeSuggestionManager() {
+        SWTUtils.checkThread();
+        synchronized (Activator.class) {
+            if (mTradeSuggestionManager == null) {
+                mTradeSuggestionManager = new TradeSuggestionManager();
+            }
+            return mTradeSuggestionManager;
+        }
+    }
 
-	/**
-	 * Returns the {@link StrategyManager} singleton for this plug-in.
-	 * Typically, this should be accessed through
-	 * {@link StrategyManager#getCurrent()}.
-	 * 
-	 * @return the StrategyManager singleton for this plug-in
-	 */
-	StrategyManager getStrategyManager() {
-		if (mStrategyManager == null) {
-			mStrategyManager = new StrategyManager();
-		}
-		return mStrategyManager;
-	}
+    private void internalInitEngines() {
+        synchronized (Activator.class) {
+            mSupport = new StrategyEnginesSupport(mBundleContext);
+        }
+    }
 
-	/**
-	 * Returns the {@link TradeSuggestionManager} singleton for this plug-in.
-	 * Typically, this should be accessed through
-	 * {@link TradeSuggestionManager#getCurrent()}.
-	 * 
-	 * @return the TradeSuggestionManager singleton for this plug-in
-	 */
-	TradeSuggestionManager getTradeSuggestionManager() {
-		if (mTradeSuggestionManager == null) {
-			mTradeSuggestionManager = new TradeSuggestionManager();
-		}
-		return mTradeSuggestionManager;
-	}
+    /**
+     * Initializes the {@link IStrategyEngines} service on the current display.
+     * 
+     * @throws IllegalStateException
+     *             if called from a non UI thread
+     */
+    public static void initEngines() {
+        SWTUtils.checkThread();
+        final Display display = Display.getCurrent();
+        display.asyncExec(new Runnable() {
+            public void run() {
+                if (display.isDisposed()) {
+                    return;
+                }
+                synchronized (Activator.class) {
+                    if (sInstance == null) {
+                        return;
+                    }
+                    sInstance.internalInitEngines();
+                }
+            }
+        });
+    }
 }

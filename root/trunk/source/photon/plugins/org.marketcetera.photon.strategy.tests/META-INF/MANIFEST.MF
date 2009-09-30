@@ -6,7 +6,10 @@ Bundle-Version: 1.6.0
 Fragment-Host: org.marketcetera.photon.strategy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.photon.test,
- org.marketcetera.core.tests
+ org.marketcetera.core.tests,
+ org.eclipse.swtbot.swt.finder,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.emf.ecore.xmi
 Import-Package: org.hamcrest,
  org.junit,
  org.junit.runner,

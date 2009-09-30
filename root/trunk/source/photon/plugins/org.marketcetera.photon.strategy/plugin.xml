@@ -17,13 +17,6 @@
             id="org.marketcetera.photon.strategy">
       </category>
       <view
-            name="%strategyView.name"
-            icon="icons/script_gear.png"
-            category="org.marketcetera.photon.strategy"
-            class="org.marketcetera.photon.internal.strategy.ui.StrategiesView"
-            id="org.marketcetera.photon.strategy.StrategiesView">
-      </view>
-      <view
             class="org.eclipse.ui.navigator.CommonNavigator"
             icon="icons/resource_persp.gif"
             id="org.marketcetera.photon.strategy.ProjectExplorer"
@@ -66,65 +59,6 @@
    <extension
          point="org.eclipse.ui.commands">
       <category
-            id="org.marketcetera.photon.strategy.commands.category"
-            name="%strategyCommandsCategory.name">
-      </category>
-      <command
-            categoryId="org.marketcetera.photon.strategy.commands.category"
-            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeSelectedHandler:RUNNING"
-            description="%startStrategies.description"
-            id="org.marketcetera.photon.strategy.commands.startStrategies"
-            name="%startStrategies.name">
-      </command>
-      <command
-            categoryId="org.marketcetera.photon.strategy.commands.category"
-            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeSelectedHandler:STOPPED"
-            description="%stopStrategies.description"
-            id="org.marketcetera.photon.strategy.commands.stopStrategies"
-            name="%stopStrategies.name">
-      </command>
-      <command
-            categoryId="org.marketcetera.photon.strategy.commands.category"
-            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeAllHandler:RUNNING"
-            description="%startAllStrategies.description"
-            id="org.marketcetera.photon.strategy.commands.startAllStrategies"
-            name="%startAllStrategies.name">
-      </command>
-      <command
-            categoryId="org.marketcetera.photon.strategy.commands.category"
-            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeAllHandler:STOPPED"
-            description="%stopAllStrategies.description"
-            id="org.marketcetera.photon.strategy.commands.stopAllStrategies"
-            name="%stopAllStrategies.name">
-      </command>
-      <command
-            categoryId="org.marketcetera.photon.strategy.commands.category"
-            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeRemoteAgentHandler:RUNNING"
-            description="%startAgent.description"
-            id="org.marketcetera.photon.strategy.commands.startAgent"
-            name="%startAgent.name">
-      </command>
-      <command
-            categoryId="org.marketcetera.photon.strategy.commands.category"
-            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeRemoteAgentHandler:STOPPED"
-            description="%stopAgent.description"
-            id="org.marketcetera.photon.strategy.commands.stopAgent"
-            name="%stopAgent.name">
-      </command>
-      <command
-            categoryId="org.marketcetera.photon.strategy.commands.category"
-            description="%registerStrategy.name"
-            id="org.marketcetera.photon.strategy.commands.registerStrategy"
-            name="%registerStrategy.label">
-      </command>
-      <command
-            categoryId="org.marketcetera.photon.strategy.commands.category"
-            defaultHandler="org.marketcetera.photon.internal.strategy.EnableRemoteAgentHandler"
-            description="Enables or disables the remote strategy agent"
-            id="org.marketcetera.photon.strategy.commands.enableRemoteAgent"
-            name="Enable Remote Agent">
-      </command>
-      <category
             id="org.marketcetera.photon.tradeSuggestion.commands"
             name="%tradeSuggestionCommands.name">
       </category>
@@ -150,138 +84,16 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.marketcetera.photon.strategy.StrategiesView">
-         <command
-               commandId="org.marketcetera.photon.strategy.commands.startStrategies"
-               icon="icons/greenled.gif"
-               style="push"
-               tooltip="%startStrategies.description">
-            <visibleWhen>
-               <iterate>
-                  <instanceof
-                        value="org.marketcetera.photon.internal.strategy.Strategy">
-                  </instanceof>
-                  <test
-                        property="org.marketcetera.photon.strategy.state"
-                        value="STOPPED">
-                  </test>
-               </iterate>   
-            </visibleWhen>
-         </command>
-         <command
-               commandId="org.marketcetera.photon.strategy.commands.stopStrategies"
-               icon="icons/grayled.gif"
-               style="push"
-               tooltip="%stopStrategies.description">
-               <visibleWhen>
-               <iterate>
-                  <instanceof
-                        value="org.marketcetera.photon.internal.strategy.Strategy">
-                  </instanceof>
-                  <test
-                        property="org.marketcetera.photon.strategy.state"
-                        value="RUNNING">
-                  </test>
-               </iterate>
-            </visibleWhen>
-         </command>
-         <command
-               commandId="org.marketcetera.photon.strategy.commands.startAgent"
-               icon="icons/greenled.gif"
-               style="push"
-               tooltip="%startAgent.description">
-            <visibleWhen>
-               <iterate>
-                  <instanceof
-                        value="org.marketcetera.photon.internal.strategy.RemoteStrategyAgent">
-                  </instanceof>
-                  <test
-                        property="org.marketcetera.photon.strategy.state"
-                        value="STOPPED">
-                  </test>
-               </iterate>   
-            </visibleWhen>
-         </command>
-         <command
-               commandId="org.marketcetera.photon.strategy.commands.stopAgent"
-               icon="icons/grayled.gif"
-               style="push"
-               tooltip="%stopAgent.description">
-               <visibleWhen>
-               <iterate>
-                  <instanceof
-                        value="org.marketcetera.photon.internal.strategy.RemoteStrategyAgent">
-                  </instanceof>
-                  <test
-                        property="org.marketcetera.photon.strategy.state"
-                        value="RUNNING">
-                  </test>
-               </iterate>
-            </visibleWhen>
-         </command>
-         <separator
-               name="org.marketcetera.photon.strategy.StrategiesView.separator"
-               visible="true">
-         </separator>
-         <command
-               commandId="org.eclipse.ui.edit.delete"
-               label="%deleteStrategy.label"
-               style="push">
-            <visibleWhen
-                  checkEnabled="false">
-               <reference
-                     definitionId="org.marketcetera.photon.strategy.expressions.strategiesSelected">
-               </reference>
-            </visibleWhen>
-         </command>
-         <separator
-               name="org.marketcetera.photon.strategy.StrategiesView.separator2"
-               visible="true">
-         </separator>
-         <command
-               commandId="org.eclipse.ui.file.properties"
-               style="push">
-            <visibleWhen
-                  checkEnabled="false">
-               <count
-                     value="1">
-               </count>
-            </visibleWhen>
-         </command>
-      </menuContribution>
-      <menuContribution
-            locationURI="toolbar:org.marketcetera.photon.strategy.StrategiesView">
-         <command
-               commandId="org.marketcetera.photon.strategy.commands.startAllStrategies"
-               icon="icons/greenled.gif"
-               style="push"
-               tooltip="%startAllStrategies.description">
-         </command>
-         <command
-               commandId="org.marketcetera.photon.strategy.commands.stopAllStrategies"
-               icon="icons/grayled.gif"
-               style="push"
-               tooltip="%stopAllStrategies.description">
-         </command>
-      </menuContribution>
-      <menuContribution
-            locationURI="menu:org.marketcetera.photon.strategy.StrategiesView">
-         <command
-               commandId="org.marketcetera.photon.strategy.commands.enableRemoteAgent"
-               style="toggle">
-         </command>
-      </menuContribution>
-      <menuContribution
             locationURI="popup:org.marketcetera.photon.strategy.ProjectExplorer">
          <command
-               commandId="org.marketcetera.photon.strategy.commands.registerStrategy"
-               label="%registerStrategy.label"
-               mnemonic="%registerStrategy.mnemonic"
+               commandId="org.marketcetera.photon.strategy.engine.ui.workbench.deploy"
+               label="Deploy..."
+               mnemonic="D"
                style="push">
             <visibleWhen
                   checkEnabled="false">
                <reference
-                     definitionId="org.marketcetera.photon.strategy.expressions.rubyFileSelected">
+                     definitionId="org.marketcetera.photon.strategy.expressions.fileSelected">
                </reference>
             </visibleWhen>
          </command>
@@ -328,64 +140,9 @@
       </menuContribution>
    </extension>
    <extension
-         point="org.eclipse.core.expressions.propertyTesters">
-      <propertyTester
-            class="org.marketcetera.photon.internal.strategy.StrategyPropertyTester"
-            id="org.marketcetera.photon.strategy.StrategyTester"
-            namespace="org.marketcetera.photon.strategy"
-            properties="state"
-            type="org.marketcetera.photon.internal.strategy.AbstractStrategyConnection">
-      </propertyTester>
-   </extension>
-   <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            class="org.marketcetera.photon.internal.strategy.ui.StrategyPropertyPage"
-            icon="icons/script_gear.png"
-            id="org.marketcetera.photon.StrategyPropertyPage"
-            name="%strategyProperties.name">
-         <enabledWhen>
-            <adapt
-                  type="org.marketcetera.photon.internal.strategy.Strategy">
-            </adapt></enabledWhen>
-      </page>
-      <page
-            class="org.marketcetera.photon.internal.strategy.ui.RemoteAgentPropertyPage"
-            icon="icons/script_gear.png"
-            id="org.marketcetera.photon.RemoteAgentPropertyPage"
-            name="%remoteAgentProperties.name">
-         <enabledWhen>
-            <adapt
-                  type="org.marketcetera.photon.internal.strategy.RemoteStrategyAgent">
-            </adapt></enabledWhen>
-      </page>
-   </extension>
-   <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.marketcetera.photon.internal.strategy.ruby.RegisterRubyHandler"
-            commandId="org.marketcetera.photon.strategy.commands.registerStrategy">
-         <activeWhen>
-            <reference
-                  definitionId="org.marketcetera.photon.strategy.expressions.rubyFileSelected">
-            </reference>
-            
-         </activeWhen>
-      </handler>
-      <handler
-            class="org.marketcetera.photon.internal.strategy.StrategyDeleteHandler"
-            commandId="org.eclipse.ui.edit.delete">
-         <activeWhen>
-            <with
-                  variable="activePartId">
-               <equals
-                     value="org.marketcetera.photon.strategy.StrategiesView">
-               </equals>
-            </with>
-         </activeWhen>
-      </handler>
-      <handler
-            class="org.marketcetera.photon.internal.strategy.TradeSuggestionDeleteHandler"
+            class="org.marketcetera.photon.internal.strategy.ui.TradeSuggestionDeleteHandler"
             commandId="org.eclipse.ui.edit.delete">
          <activeWhen>
             <with
@@ -397,7 +154,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="org.marketcetera.photon.internal.strategy.OpenSuggestionHandler"
+            class="org.marketcetera.photon.internal.strategy.ui.OpenSuggestionHandler"
             commandId="org.marketcetera.photon.tradeSuggestion.commands.open">
          <activeWhen>
             <with
@@ -421,7 +178,7 @@
          </enabledWhen>
       </handler>
       <handler
-            class="org.marketcetera.photon.internal.strategy.SendOrdersHandler"
+            class="org.marketcetera.photon.internal.strategy.ui.SendOrdersHandler"
             commandId="org.marketcetera.photon.tradeSuggestion.commands.send">
          <activeWhen>
             <with
@@ -441,7 +198,7 @@
          </enabledWhen>
       </handler>
       <handler
-            class="org.marketcetera.photon.internal.strategy.TradeSuggestionDeleteHandler"
+            class="org.marketcetera.photon.internal.strategy.ui.TradeSuggestionDeleteHandler"
             commandId="org.marketcetera.photon.tradeSuggestion.commands.delete">
          <activeWhen>
             <with
@@ -460,34 +217,44 @@
             </iterate>
          </enabledWhen>
       </handler>
+      <handler
+            class="org.marketcetera.photon.commons.ui.workbench.WorkaroundGuiceExtensionFactory:org.marketcetera.photon.internal.strategy.ui.DeployFileHandler"
+            commandId="org.marketcetera.photon.strategy.engine.ui.workbench.deploy">
+         <activeWhen>
+            <reference
+                  definitionId="org.marketcetera.photon.strategy.expressions.fileSelected">
+            </reference>
+         </activeWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.core.expressions.definitions">
       <definition
-            id="org.marketcetera.photon.strategy.expressions.rubyFileSelected">
+            id="org.marketcetera.photon.strategy.expressions.fileSelected">
             <and>
                <count
                      value="1">
                </count>
                <iterate>
                   <adapt
-                        type="org.eclipse.core.resources.IResource">
-                     <test
-                           property="org.eclipse.core.resources.name"
-                           value="*.rb">
-                     </test>
+                        type="org.eclipse.core.resources.IFile">
                   </adapt>
                </iterate>
             </and>
       </definition>
       <definition
-            id="org.marketcetera.photon.strategy.expressions.strategiesSelected">
-         <iterate
-               ifEmpty="false">
-            <instanceof
-                  value="org.marketcetera.photon.internal.strategy.Strategy">
-            </instanceof>
-         </iterate>
+            id="org.marketcetera.photon.strategy.expressions.containerSelected">
+         <or>
+            <adapt
+                  type="org.eclipse.core.resources.IFile">
+            </adapt>
+            <adapt
+                  type="org.eclipse.core.resources.IFolder">
+            </adapt>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+            </adapt>
+         </or>
       </definition>
    </extension>
    <extension
@@ -498,10 +265,17 @@
       </category>
       <wizard
             category="org.marketcetera.photon.strategy"
-            class="org.marketcetera.photon.internal.strategy.ruby.NewRubyStrategyWizard"
-            icon="icons/script_gear.png"
+            class="org.marketcetera.photon.internal.strategy.ui.NewRubyStrategyWizard"
+            icon="icons/new_ruby_strategy.gif"
             id="org.marketcetera.photon.strategy.ruby.NewRubyStrategyWizard"
             name="%newRubyStrategyWizard.name">
+      </wizard>
+      <wizard
+            category="org.marketcetera.photon.strategy"
+            class="org.marketcetera.photon.internal.strategy.ui.NewJavaStrategyWizard"
+            icon="icons/new_java_strategy.gif"
+            id="org.marketcetera.photon.strategy.java.NewJavaStrategyWizard"
+            name="%newJavaStrategyWizard.name">
       </wizard>
    </extension>
    <extension
@@ -511,23 +285,38 @@
             type="new"
             wizardId="org.marketcetera.photon.strategy.ruby.NewRubyStrategyWizard">
          <enablement>
-			<or>
-			   <adapt type="org.eclipse.core.resources.IFile" />	
-			   <adapt type="org.eclipse.core.resources.IFolder" />
-	           <adapt type="org.eclipse.core.resources.IProject" />	
-		    </or>
-		 </enablement>
+            <reference
+                  definitionId="org.marketcetera.photon.strategy.expressions.containerSelected">
+            </reference></enablement>
+      </commonWizard>
+      <commonWizard
+            associatedExtensionId="org.eclipse.ui.navigator.resourceContent"
+            type="new"
+            wizardId="org.marketcetera.photon.strategy.java.NewJavaStrategyWizard">
+         <enablement>
+            <reference
+                  definitionId="org.marketcetera.photon.strategy.expressions.containerSelected">
+            </reference></enablement>
       </commonWizard>
    </extension>
    <extension
-         point="org.eclipse.core.runtime.adapters">
-      <factory
-            adaptableType="org.marketcetera.photon.internal.strategy.AbstractStrategyConnection"
-            class="org.marketcetera.photon.internal.strategy.StrategyAdapterFactory">
-         <adapter
-               type="org.eclipse.ui.model.IWorkbenchAdapter">
-         </adapter>
-      </factory>
+         point="org.ops4j.peaberry.eclipse.modules">
+         <module class="org.marketcetera.photon.internal.strategy.Module"/>
+   </extension>
+   <extension
+         point="org.eclipse.ltk.core.refactoring.deleteParticipants">
+      <deleteParticipant
+            class="org.marketcetera.photon.commons.ui.workbench.WorkaroundGuiceExtensionFactory:org.marketcetera.photon.internal.strategy.ui.UndeployDeleteParticipant"
+            id="org.marketcetera.photon.strategy.undeployDeleteParticipant"
+            name="Undeploy Associated Strategies">
+         <enablement>
+            <with
+                  variable="element">
+               <instanceof
+                     value="org.eclipse.core.resources.IResource">
+               </instanceof>
+            </with></enablement>
+      </deleteParticipant>
    </extension>
 
 </plugin>

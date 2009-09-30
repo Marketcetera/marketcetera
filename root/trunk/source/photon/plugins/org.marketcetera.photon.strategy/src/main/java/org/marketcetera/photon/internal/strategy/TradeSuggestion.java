@@ -49,7 +49,7 @@ public class TradeSuggestion {
 	 * 
 	 * @return the underlying order
 	 */
-	OrderSingle getOrder() {
+	public OrderSingle getOrder() {
 		return mSuggestion.getOrder();
 	}
 

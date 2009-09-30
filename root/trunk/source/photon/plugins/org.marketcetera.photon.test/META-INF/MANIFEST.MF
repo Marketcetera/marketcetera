@@ -13,7 +13,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swtbot.swt.finder,
  org.eclipse.swtbot.junit4_x,
  org.marketcetera.util,
- org.marketcetera.util-test;visibility:=reexport
+ org.marketcetera.util-test;visibility:=reexport,
+ org.eclipse.emf.ecore,
+ org.eclipse.core.expressions
 Export-Package: org.marketcetera.photon.test
 Import-Package: org.hamcrest,
  org.junit,

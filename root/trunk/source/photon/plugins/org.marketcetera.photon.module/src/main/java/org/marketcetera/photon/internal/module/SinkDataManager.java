@@ -77,6 +77,11 @@ public class SinkDataManager implements SinkDataListener, ISinkDataManager {
 		Validate.notNull(handler);
 		defaultHandler.compareAndSet(handler, null);
 	}
+	
+	@Override
+	public void sendData(String source, Object data) {
+	    receivedData(new DataFlowID(source), data);
+	}
 
 	@Override
 	public void receivedData(DataFlowID inFlowID, Object inData) {
