@@ -60,7 +60,7 @@ public interface StrategyEngineConnection extends EObject {
      * <!-- begin-user-doc -->
      * Deploys a new strategy to the associated engine.
      * @param strategy the configuration for the new strategy
-     * @throw Exception if the operation fails
+     * @throws Exception if the operation fails
      * <!-- end-user-doc -->
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
@@ -71,7 +71,7 @@ public interface StrategyEngineConnection extends EObject {
      * <!-- begin-user-doc -->
      * Undeploys a deployed strategy from the associated engine.
      * @param strategy the strategy to undeploy
-     * @throw Exception if the operation fails
+     * @throws Exception if the operation fails
      * <!-- end-user-doc -->
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
@@ -82,7 +82,7 @@ public interface StrategyEngineConnection extends EObject {
      * <!-- begin-user-doc -->
      * Starts the given deployed strategy.
      * @param strategy the deployed strategy to start
-     * @throw Exception if the operation fails
+     * @throws Exception if the operation fails
      * <!-- end-user-doc -->
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
@@ -93,7 +93,7 @@ public interface StrategyEngineConnection extends EObject {
      * <!-- begin-user-doc -->
      * Stops the given deployed strategy.
      * @param strategy the deployed strategy to start
-     * @throw Exception if the operation fails
+     * @throws Exception if the operation fails
      * <!-- end-user-doc -->
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
@@ -105,7 +105,7 @@ public interface StrategyEngineConnection extends EObject {
      * Updates the configuration of the given deployed strategy.
      * @param strategy the deployed strategy to update
      * @param newConfiguration the new configuration
-     * @throw Exception if the operation fails
+     * @throws Exception if the operation fails
      * <!-- end-user-doc -->
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
@@ -115,6 +115,9 @@ public interface StrategyEngineConnection extends EObject {
 
     /**
      * <!-- begin-user-doc -->
+     * Refreshes the state of the given deployed strategy from the engine.
+     * @param strategy the deployed strategy to refresh
+     * @throws Exception if the operation fails
      * <!-- end-user-doc -->
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
@@ -123,6 +126,8 @@ public interface StrategyEngineConnection extends EObject {
 
     /**
      * <!-- begin-user-doc -->
+     * Refreshes the state of the entire engine.
+     * @throws Exception if the operation fails
      * <!-- end-user-doc -->
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception"
      * @generated

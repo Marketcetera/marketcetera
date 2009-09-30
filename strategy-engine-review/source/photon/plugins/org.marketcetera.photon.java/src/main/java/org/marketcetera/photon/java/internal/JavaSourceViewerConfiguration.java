@@ -41,6 +41,10 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * The source viewer configuration for {@link JavaEditor}. Based on
  * org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration.
+ * <p>
+ * The original class was modified to remove functionality that did not work
+ * without the core Java model, e.g. quick assist, text hover, auto edit
+ * strategies, etc.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -92,9 +96,7 @@ public class JavaSourceViewerConfiguration extends
      * Creates a Java source viewer configuration in the new setup without text
      * tools. Clients are allowed to call
      * {@link JavaSourceViewerConfiguration#handlePropertyChangeEvent(PropertyChangeEvent)}
-     * and disallowed to call
-     * {@link JavaSourceViewerConfiguration#getPreferenceStore()} on the
-     * resulting Java source viewer configuration.
+     * on the resulting Java source viewer configuration.
      * </p>
      * 
      * @param colorManager

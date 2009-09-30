@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since 1.0.0
+ * @since $Release$
  */
 @ClassVersion("$Id$")
 public class StrategyTemplate {
@@ -26,13 +26,17 @@ public class StrategyTemplate {
     /**
      * Returns an input stream containing a new script with a class named
      * according to the provided parameter.
+     * <p>
+     * Note the returned input stream will be empty if an error occurs while
+     * reading the template.
      * 
      * @param templateFile
      *            the name of the template file
      * @param className
      *            the name for the new strategy class
      * @return an input stream with the new script
-     * @throws IllegalArgumentException if any parameter is null
+     * @throws IllegalArgumentException
+     *             if any parameter is null
      */
     public static InputStream createNewScript(String templateFile,
             String className) {
@@ -41,12 +45,14 @@ public class StrategyTemplate {
         InputStream stream = StrategyTemplate.class
                 .getResourceAsStream(templateFile);
         String string = ""; //$NON-NLS-1$
-        try {
-            string = IOUtils.toString(stream);
-            string = string.replace(CLASS_NAME_PLACEHOLDER, className);
-        } catch (IOException e) {
-            // Ignore and return the empty string
-            ExceptUtils.swallow(e);
+        if (stream != null) {
+            try {
+                string = IOUtils.toString(stream);
+                string = string.replace(CLASS_NAME_PLACEHOLDER, className);
+            } catch (IOException e) {
+                // Ignore and return the empty string
+                ExceptUtils.swallow(e);
+            }
         }
         return new ByteArrayInputStream(string.getBytes());
     }

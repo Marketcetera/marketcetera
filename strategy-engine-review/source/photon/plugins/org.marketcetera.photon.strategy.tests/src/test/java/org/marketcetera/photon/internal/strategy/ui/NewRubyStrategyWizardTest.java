@@ -31,5 +31,13 @@ public class NewRubyStrategyWizardTest extends AbstractNewStrategyWizardTestBase
         return "my_strategy.rb";
     }
 
+    @Override
+    protected String[] getInvalidClassNames() {
+        return new String[] { "1234", "$$$$"};
+    }
     
+    @Override
+    protected String getInvalidClassNameError() {
+        return "The class name is invalid. It must begin with a letter or underscore, and contain only letters, digits, or underscores.";
+    }
 }

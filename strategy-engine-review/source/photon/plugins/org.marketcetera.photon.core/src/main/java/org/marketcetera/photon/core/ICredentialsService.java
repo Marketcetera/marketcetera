@@ -46,7 +46,9 @@ public interface ICredentialsService {
     boolean authenticateWithCredentials(IAuthenticationHelper helper);
 
     /**
-     * Invalidates any cached credentials.
+     * Invalidates any cached credentials. After this has been called, the next
+     * request to {@link #authenticateWithCredentials(IAuthenticationHelper)}
+     * must obtain fresh credentials.
      */
     void invalidate();
 }

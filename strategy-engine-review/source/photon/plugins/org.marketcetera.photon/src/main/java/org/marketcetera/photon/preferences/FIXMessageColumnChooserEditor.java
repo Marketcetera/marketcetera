@@ -446,7 +446,6 @@ public class FIXMessageColumnChooserEditor
 		return false;
 	}
 
-	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	protected void doStore() {
 		Set<String> loadedSubPageIDs = idToPageMap.keySet();
 		for (String subPageKey : loadedSubPageIDs) {
@@ -772,7 +771,6 @@ public class FIXMessageColumnChooserEditor
 		addPressedWithInput(input);
 	}
     
-	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	private void addAllPressed() {		
 		BasicEventList<String> input = getAllItemsAsInputList(availableFieldsTable);
 		addPressedWithInput(input);

@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 
 /**
  * Abstract handler that computes the selection (with an optional filter) and
- * calls the abstract {@link #process(Object, SubMonitor)} for each item in the
+ * calls the abstract {@link #process(T, SubMonitor)} for each item in the
  * selection.
  * <p>
  * If an exception is thrown, an error dialog will be presented to the user, see

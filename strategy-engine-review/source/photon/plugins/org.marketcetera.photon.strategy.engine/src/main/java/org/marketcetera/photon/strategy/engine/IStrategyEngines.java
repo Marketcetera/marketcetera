@@ -36,7 +36,7 @@ public interface IStrategyEngines {
      * 
      * @param engine
      *            the new engine
-     * @returns the new engine that was actually added, not necessarily the same
+     * @return the new engine that was actually added, not necessarily the same
      *          as the one passed in
      * @throws IllegalArgumentException
      *             if engine is null

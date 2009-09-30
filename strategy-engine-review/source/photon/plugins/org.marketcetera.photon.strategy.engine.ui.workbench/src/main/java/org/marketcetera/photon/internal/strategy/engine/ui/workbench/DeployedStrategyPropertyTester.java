@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Allows {@link DeployedStrategy} properties to be queried declaratively.
  * Supported properties are:
  * <ul>
- * <li>{@link StrategyEngineWorkbenchUI.DEPLOYED_STRATEGY_STATE_PROPERTY}</li>
+ * <li>{@link StrategyEngineWorkbenchUI#DEPLOYED_STRATEGY_STATE_PROPERTY}</li>
  * </ul>
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>

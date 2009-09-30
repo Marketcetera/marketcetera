@@ -165,7 +165,7 @@ public class ColorManager {
      * changed, in which case an IllegalStateException will be thrown. The
      * exception can be avoided by first calling {@link #disposeColors()};
      * <p>
-     * If this method completes successfully, {@link #getColor()} will return a
+     * If this method completes successfully, {@link #getColor(ColorDescriptor)} will return a
      * valid color for each ColorDescriptor that was used to instantiate this
      * manager.
      * 
@@ -194,7 +194,7 @@ public class ColorManager {
     }
 
     /**
-     * Disposes the colors. After this method completes, {@link #getColor()}
+     * Disposes the colors. After this method completes, {@link #getColor(ColorDescriptor)}
      * will return null for all ColorDescriptors and {@link #initColors()} may
      * be safely called again on any UI thread.
      * <p>

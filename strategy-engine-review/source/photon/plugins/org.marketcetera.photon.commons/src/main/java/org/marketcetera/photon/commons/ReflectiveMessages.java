@@ -23,7 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * /**
  *  * Messages for this package.
  *  &#42;/
- * &#064;ClassVersion(&quot;$Id$&quot;)
+ * &#064;ClassVersion(&quot;&#36;Id$&quot;)
  * final class Messages {
  * 
  *     static I18NMessage0P MY_MESSAGE;

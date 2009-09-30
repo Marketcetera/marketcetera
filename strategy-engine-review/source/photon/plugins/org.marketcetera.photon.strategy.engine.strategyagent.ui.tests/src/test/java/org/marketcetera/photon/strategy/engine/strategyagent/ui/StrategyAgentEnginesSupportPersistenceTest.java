@@ -107,7 +107,7 @@ public class StrategyAgentEnginesSupportPersistenceTest extends
     protected void assertNothingSaved() {
         assertThat(mSaved.size(), is(0));
     }
-    
+
     protected void prepareRestore(List<? extends EObject> toRestore) {
         mToRestore = toRestore;
     }
@@ -142,11 +142,27 @@ public class StrategyAgentEnginesSupportPersistenceTest extends
 
     @Test
     @UI
-    public void testUpdatePersists() {
+    public void testUpdateAfterRestore() {
         StrategyAgentEngine engine = createEngineToAdd();
         prepareRestore(Collections.singletonList(engine));
         createAndInit(mMockContext);
         StrategyAgentEngine toUpdate = assertRestored(engine);
+        toUpdate.setName("NewName");
+        toUpdate.setDescription("NewDescr");
+        toUpdate.setJmsUrl("NewUrl");
+        toUpdate.setWebServiceHostname("NewHost");
+        toUpdate.setWebServicePort(5);
+        assertSaved(createStrategyAgentEngine("NewName", "NewDescr", "NewUrl",
+                "NewHost", 5));
+    }
+
+    @Test
+    @UI
+    public void testUpdateAfterAddition() {
+        createAndInit(mMockContext);
+        StrategyAgentEngine engine = createEngineToAdd();
+        StrategyAgentEngine toUpdate = (StrategyAgentEngine) mRegisteredService
+                .addEngine(engine);
         toUpdate.setName("NewName");
         toUpdate.setDescription("NewDescr");
         toUpdate.setJmsUrl("NewUrl");
@@ -171,6 +187,7 @@ public class StrategyAgentEnginesSupportPersistenceTest extends
         assertNothingSaved();
         // now make a change
         toUpdate.setName("B");
+        // assert the change (need to set new name on engine for assertion)
         engine.setName("B");
         assertSaved(engine);
     }

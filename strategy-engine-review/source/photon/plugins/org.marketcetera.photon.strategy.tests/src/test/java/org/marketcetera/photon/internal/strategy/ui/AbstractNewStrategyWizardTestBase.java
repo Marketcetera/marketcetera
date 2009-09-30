@@ -1,6 +1,7 @@
 package org.marketcetera.photon.internal.strategy.ui;
 
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -22,6 +23,7 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotStyledText;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotText;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.eclipse.ui.PlatformUI;
@@ -60,6 +62,10 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
     protected abstract Fixture createFixture();
 
     protected abstract String getFileNameForMyStrategy();
+
+    protected abstract String[] getInvalidClassNames();
+
+    protected abstract String getInvalidClassNameError();
 
     @Before
     @UI
@@ -110,31 +116,39 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
             @Override
             protected void testWizard(Fixture fixture) throws Exception {
                 String containerMessage = RequiredFieldSupportTest
-                        .getRequiredValueMessage("Container");
+                        .getRequiredValueMessage("Folder");
                 String classNameMessage = RequiredFieldSupportTest
                         .getRequiredValueMessage("Class Name");
-                assertThat(fixture.getContainerText().getText(), is("/test"));
-                fixture.getContainerDecoration().assertHidden();
+                assertThat(fixture.getFolderText().getText(), is("/test"));
+                fixture.getFolderDecoration().assertHidden();
                 fixture.getClassNameDecoration().assertRequired(
                         classNameMessage);
                 assertThat(fixture.getFinishButton().isEnabled(), is(false));
-                fixture.getContainerText().setText("");
-                fixture.getContainerDecoration().assertRequired(
-                        containerMessage);
+                fixture.getFolderText().setText("");
+                fixture.getFolderDecoration().assertRequired(containerMessage);
+                fixture.getClassNameDecoration().assertRequired(
+                        classNameMessage);
                 assertThat(fixture.getFinishButton().isEnabled(), is(false));
-                fixture.getContainerText().setText("/test");
-                fixture.getContainerDecoration().assertHidden();
+                fixture.getFolderText().setText("/test");
+                fixture.getFolderDecoration().assertHidden();
                 fixture.getClassNameDecoration().assertRequired(
                         classNameMessage);
                 assertThat(fixture.getFinishButton().isEnabled(), is(false));
                 fixture.getClassNameText().setText("MyStrategy");
-                fixture.getContainerDecoration().assertHidden();
+                fixture.getFolderDecoration().assertHidden();
                 fixture.getClassNameDecoration().assertHidden();
                 assertThat(fixture.getFinishButton().isEnabled(), is(true));
+                fixture.getFolderText().setText("");
+                fixture.getFolderDecoration().assertRequired(containerMessage);
+                fixture.getClassNameDecoration().assertHidden();
+                assertThat(fixture.getFinishButton().isEnabled(), is(false));
+                fixture.getFolderText().setText("/test");
                 fixture.getFinishButton().click();
                 SWTWorkbenchBot bot = new SWTWorkbenchBot();
                 bot.waitUntil(shellCloses(fixture.getShell()), 10000, 500);
-                bot.editorByTitle(getFileNameForMyStrategy());
+                SWTBotStyledText editorText = bot.editorByTitle(
+                        getFileNameForMyStrategy()).bot().styledText();
+                assertThat(editorText.getText(), containsString("MyStrategy"));
             }
 
             protected void validateWorkspace(IWorkspace workspace)
@@ -143,7 +157,7 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
                         new Path("/test/" + getFileNameForMyStrategy()))
                         .exists(), is(true));
             };
-        }.run();
+        };
     }
 
     @Test
@@ -151,13 +165,13 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
         new TestTemplate() {
             @Override
             protected void testWizard(Fixture fixture) throws Exception {
-                fixture.getContainerText().setText("bogus");
+                fixture.getFolderText().setText("bogus");
                 fixture.getClassNameText().setText("MyStrategy");
                 fixture.getFinishButton().click();
                 fixture.dismissMissingContainerError();
                 fixture.getCancelButton().click();
             }
-        }.run();
+        };
     }
 
     @Test
@@ -165,17 +179,15 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
         new TestTemplate() {
             @Override
             protected void testWizard(Fixture fixture) throws Exception {
-                String error = "The class name is invalid. It must begin with a capital letter, and contain only letters, digits, or underscores.";
-                fixture.getContainerText().setText("bogus");
-                fixture.getClassNameText().setText("abc");
-                fixture.getClassNameDecoration().assertError(error);
-                fixture.getClassNameText().setText("1234");
-                fixture.getClassNameDecoration().assertError(error);
-                fixture.getClassNameText().setText("A___123asdf234");
-                fixture.getClassNameDecoration().assertHidden();
+                fixture.getFolderText().setText("bogus");
+                for (String string : getInvalidClassNames()) {
+                    fixture.getClassNameText().setText(string);
+                    fixture.getClassNameDecoration().assertError(
+                            getInvalidClassNameError());
+                }
                 fixture.getCancelButton().click();
             }
-        }.run();
+        };
     }
 
     @Test
@@ -193,13 +205,13 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
 
             @Override
             protected void testWizard(Fixture fixture) throws Exception {
-                fixture.getContainerText().setText("/test");
+                fixture.getFolderText().setText("/test");
                 fixture.getClassNameText().setText("MyStrategy");
                 fixture.getFinishButton().click();
                 fixture.dismissFileExistsError(getFileNameForMyStrategy());
-                fixture.getCancelButton();
+                fixture.getCancelButton().click();
             }
-        }.run();
+        };
     }
 
     @Test
@@ -225,10 +237,10 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
 
             @Override
             protected void testWizard(Fixture fixture) throws Exception {
-                assertThat(fixture.getContainerText().getText(), is("/test"));
+                assertThat(fixture.getFolderText().getText(), is("/test"));
                 fixture.getCancelButton().click();
             }
-        }.run();
+        };
     }
 
     @Test
@@ -251,21 +263,90 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
                 fixture.getBrowseButton().click();
                 SWTBot bot = new SWTBot();
                 bot.shell("Folder Selection");
-                bot.label("Select new file container:");
+                bot.label("Select new folder:");
                 SWTBotTreeItem item = bot.tree().getTreeItem("test2");
                 item.expand();
                 item.getNode("folder").select();
                 bot.button("OK").click();
-                assertThat(fixture.getContainerText().getText(),
+                assertThat(fixture.getFolderText().getText(),
                         is("/test2/folder"));
                 fixture.getCancelButton().click();
             }
-        }.run();
+        };
+    }
+
+    @Test
+    public void testCancel() throws Exception {
+        new TestTemplate() {
+            private IProject mTestProject;
+
+            @Override
+            protected void initWorkspace(IWorkspace workspace)
+                    throws CoreException {
+                mTestProject = workspace.getRoot().getProject("test");
+                mTestProject.create(null);
+                mTestProject.open(null);
+            }
+
+            @Override
+            protected IStructuredSelection getInitialSelection() {
+                return new StructuredSelection(mTestProject);
+            }
+
+            @Override
+            protected void testWizard(Fixture fixture) throws Exception {
+                fixture.getClassNameText().setText("MyStrategy");
+                fixture.getCancelButton().click();
+            }
+
+            @Override
+            protected void validateWorkspace(IWorkspace workspace)
+                    throws CoreException {
+                assertThat(workspace.getRoot().getFile(
+                        new Path("/test/" + getFileNameForMyStrategy()))
+                        .exists(), is(false));
+            }
+        };
+    }
+
+    @Test
+    public void testMultipleSelection() throws Exception {
+        new TestTemplate() {
+            private IProject mProject1;
+            private IProject mProject2;
+
+            @Override
+            protected void initWorkspace(IWorkspace workspace)
+                    throws CoreException {
+                mProject1 = workspace.getRoot().getProject("test");
+                mProject1.create(null);
+                mProject1.open(null);
+                mProject2 = workspace.getRoot().getProject("test2");
+                mProject2.create(null);
+                mProject2.open(null);
+            }
+
+            @Override
+            protected IStructuredSelection getInitialSelection() {
+                return new StructuredSelection(new Object[] { mProject1,
+                        mProject2 });
+            }
+
+            @Override
+            protected void testWizard(Fixture fixture) throws Exception {
+                assertThat(fixture.getFolderText().getText(), is("/test"));
+                fixture.getCancelButton().click();
+            }
+        };
     }
 
     protected abstract class TestTemplate {
 
-        public final void run() throws Exception {
+        public TestTemplate() throws Exception {
+            run();
+        }
+
+        private void run() throws Exception {
             mWorkspace.run(new IWorkspaceRunnable() {
                 @Override
                 public void run(IProgressMonitor monitor) throws CoreException {
@@ -316,8 +397,8 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
 
         private final SWTBot mBot = new SWTBot();
         private final SWTBotShell mShell;
-        private final SWTBotText mContainerText;
-        private final SWTBotControlDecoration mContainerDecoration;
+        private final SWTBotText mFolderText;
+        private final SWTBotControlDecoration mFolderDecoration;
         private final SWTBotText mClassNameText;
         private final SWTBotControlDecoration mClassNameDecoration;
         private final SWTBotButton mBrowseButton;
@@ -328,12 +409,12 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
             mShell = mBot.shell(title);
             mBot.label(title);
             mBot.text("Create a new strategy script from a template.");
-            assertThat(mBot.label("Container:").getToolTipText(),
+            assertThat(mBot.label("Folder:").getToolTipText(),
                     is("The project or folder in which to create the script"));
             assertThat(mBot.label("Class Name:").getToolTipText(),
                     is("The strategy class name to use"));
-            mContainerText = mBot.textWithLabel("Container:");
-            mContainerDecoration = new SWTBotControlDecoration(mContainerText);
+            mFolderText = mBot.textWithLabel("Folder:");
+            mFolderDecoration = new SWTBotControlDecoration(mFolderText);
             mClassNameText = mBot.textWithLabel("Class Name:");
             mClassNameDecoration = new SWTBotControlDecoration(mClassNameText);
             mBrowseButton = mBot.button("Browse...");
@@ -343,9 +424,8 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
 
         public void dismissMissingContainerError() {
             mBot.shell("Operation Failed");
-            mBot.label(MessageFormat.format(
-                    "Container ''{0}'' does not exist.", getContainerText()
-                            .getText()));
+            mBot.label(MessageFormat.format("Folder ''{0}'' does not exist.",
+                    getFolderText().getText()));
             mBot.button("OK").click();
         }
 
@@ -360,12 +440,12 @@ public abstract class AbstractNewStrategyWizardTestBase<T extends AbstractNewStr
             return mShell;
         }
 
-        public SWTBotText getContainerText() {
-            return mContainerText;
+        public SWTBotText getFolderText() {
+            return mFolderText;
         }
 
-        public SWTBotControlDecoration getContainerDecoration() {
-            return mContainerDecoration;
+        public SWTBotControlDecoration getFolderDecoration() {
+            return mFolderDecoration;
         }
 
         public SWTBotText getClassNameText() {

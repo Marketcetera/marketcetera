@@ -3,10 +3,12 @@ package org.marketcetera.photon.internal.strategy;
 import static org.eclipse.swtbot.swt.finder.SWTBotAssert.pass;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createStrategy;
 import static org.marketcetera.photon.strategy.engine.strategyagent.tests.StrategyAgentEngineTestUtil.assertStrategyAgentEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,10 +18,12 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
+import org.junit.Test;
 import org.marketcetera.photon.strategy.StrategyUI;
 import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
 import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEnginesSupport;
 import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEnginesSupportPersistenceTest;
+import org.marketcetera.photon.test.AbstractUIRunner.UI;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.collect.Lists;
@@ -105,7 +109,7 @@ public class StrategyEnginesSupportTest extends
 
     protected StrategyEnginesSupport createAndInitThrowingIOException(
             BundleContext bundleContext) {
-        return createAndInit(bundleContext);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -122,14 +126,34 @@ public class StrategyEnginesSupportTest extends
 
     @Override
     public void testUnexpectedObjectDuringRestore() {
-        // skip for this subclass - hard to mock with real persistence
-        pass();
+        EObject unexpected = createStrategy("ABC");
+        StrategyAgentEngine engine = createEngineToAdd();
+        prepareRestore(Arrays.asList(unexpected, engine));
+        createAndInit(mMockContext);
+        StrategyAgentEngine restored = (StrategyAgentEngine) mRegisteredService
+                .getStrategyEngines().get(1);
+        assertStrategyAgentEngine(restored, engine);
     }
 
     @Override
     public void testIOExceptionDuringSaveAndRestore() {
         // skip for this subclass - hard to mock with real persistence
         pass();
+    }
+
+    @Test
+    @UI
+    public void testMultipleEngines() throws Exception {
+        createAndInit(mMockContext);
+        StrategyAgentEngine engine1 = createEngineToAdd();
+        StrategyAgentEngine engine2 = createEngineToAdd();
+        engine2.setName("eng2");
+        mRegisteredService.addEngine(engine1);
+        mRegisteredService.addEngine(engine2);
+        List<? extends EObject> saved = getSaved();
+        assertThat(saved.size(), is(2));
+        assertStrategyAgentEngine((StrategyAgentEngine) saved.get(0), engine1);
+        assertStrategyAgentEngine((StrategyAgentEngine) saved.get(1), engine2);
     }
 
 }
