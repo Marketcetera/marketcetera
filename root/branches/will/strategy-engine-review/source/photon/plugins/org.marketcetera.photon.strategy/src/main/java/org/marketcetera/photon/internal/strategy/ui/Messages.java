@@ -14,18 +14,19 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: Messages.java 10387 2009-03-06 23:34:32Z will $
- * @since 1.0.0
+ * @since $Release$
  */
 @ClassVersion("$Id: Messages.java 10387 2009-03-06 23:34:32Z will $")//$NON-NLS-1$
 final class Messages {
 	
     static I18NMessage0P NEW_STRATEGY_WIZARD_PAGE_DESCRIPTION;
-    static LocalizedLabel NEW_STRATEGY_WIZARD_PAGE_CONTAINER;
+    static LocalizedLabel NEW_STRATEGY_WIZARD_PAGE_FOLDER;
     static LocalizedLabel NEW_STRATEGY_WIZARD_PAGE_CLASS_NAME;
     static I18NMessage0P NEW_STRATEGY_WIZARD_PAGE_BROWSE_BUTTON__TEXT;
-    static I18NMessage0P NEW_STRATEGY_WIZARD_PAGE_INVALID_CLASS_NAME;
     static I18NMessage0P NEW_STRATEGY_WIZARD_PAGE_CONTAINER_SELECTION_INSTRUCTIONS;
     static I18NMessage2P ABSTRACT_NEW_STRATEGY_WIZARD_CREATION_FAILED;
+    static I18NMessage0P NEW_JAVA_STRATEGY_WIZARD_INVALID_CLASS_NAME;
+    static I18NMessage0P NEW_RUBY_STRATEGY_WIZARD_INVALID_CLASS_NAME;
     
     static I18NMessage0P UNDEPLOY_DELETE_PARTICIPANT__NAME;
     static I18NMessage1P UNDEPLOY_DELETE_PARTICIPANT_CHANGE_GROUP__DESCRIPTION;

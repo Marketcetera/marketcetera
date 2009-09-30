@@ -3,6 +3,7 @@ package org.marketcetera.photon.strategy.tests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.marketcetera.photon.internal.strategy.StrategyEnginesSupportTest;
+import org.marketcetera.photon.internal.strategy.StrategyTemplateTest;
 import org.marketcetera.photon.internal.strategy.TradeSuggestionManagerTest;
 import org.marketcetera.photon.internal.strategy.ui.NewJavaStrategyWizardTest;
 import org.marketcetera.photon.internal.strategy.ui.NewRubyStrategyWizardTest;
@@ -23,6 +24,6 @@ import org.marketcetera.photon.internal.strategy.ui.UndeployDeleteParticipantTes
         org.marketcetera.photon.internal.strategy.ui.MessagesTest.class,
         TradeSuggestionManagerTest.class, NewRubyStrategyWizardTest.class,
         NewJavaStrategyWizardTest.class, UndeployDeleteParticipantTest.class,
-        StrategyEnginesSupportTest.class })
+        StrategyEnginesSupportTest.class, StrategyTemplateTest.class })
 public class StrategySuite {
 }

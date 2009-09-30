@@ -26,7 +26,7 @@ public final class Activator implements BundleActivator {
     /**
      * The current singleton instance.
      */
-    private static volatile Activator sIntance;
+    private static volatile Activator sInstance;
 
     /**
      * The {@link TradeSuggestionManager}, confined to the UI thread.
@@ -49,14 +49,14 @@ public final class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         synchronized (Activator.class) {
             mBundleContext = context;
-            sIntance = this;
+            sInstance = this;
         }
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         synchronized (Activator.class) {
-            sIntance = null;
+            sInstance = null;
             mBundleContext = null;
             if (mSupport != null) {
                 mSupport.dispose();
@@ -71,7 +71,7 @@ public final class Activator implements BundleActivator {
      * @return the current instance, or null if the bundle is not active
      */
     static Activator getCurrent() {
-        return sIntance;
+        return sInstance;
     }
 
     /**
@@ -117,10 +117,10 @@ public final class Activator implements BundleActivator {
                     return;
                 }
                 synchronized (Activator.class) {
-                    if (sIntance == null) {
+                    if (sInstance == null) {
                         return;
                     }
-                    sIntance.internalInitEngines();
+                    sInstance.internalInitEngines();
                 }
             }
         });

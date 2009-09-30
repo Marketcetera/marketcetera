@@ -41,7 +41,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since 1.0.0
+ * @since $Release$
  */
 @ClassVersion("$Id$")
 public abstract class AbstractNewStrategyWizard extends Wizard implements

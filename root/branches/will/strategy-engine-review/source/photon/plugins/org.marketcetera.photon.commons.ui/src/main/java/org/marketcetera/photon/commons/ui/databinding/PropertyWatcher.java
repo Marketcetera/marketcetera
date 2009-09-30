@@ -25,8 +25,9 @@ import com.google.common.collect.ImmutableSet;
  * with a static list of {@link IValueProperty} that define the properties to
  * watch. When an {@link IObservableSet} is {@link #watch(IObservableSet)
  * watched}, the {@link IPropertiesChangedListener} supplied in the constructor
- * will be notified via {@link #propertiesChanged(ImmutableSet)} every time one
- * or more of the properties changes for items in the set.
+ * will be notified via
+ * {@link IPropertiesChangedListener#propertiesChanged(ImmutableSet)} every time
+ * one or more of the properties changes for items in the set.
  * <p>
  * Currently this only supports value properties and not list properties.
  * <p>

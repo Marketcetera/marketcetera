@@ -1,6 +1,8 @@
 package org.marketcetera.photon.internal.strategy.ui;
 
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createDeployedStrategy;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
@@ -24,14 +26,15 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.marketcetera.photon.internal.strategy.ui.UndeployDeleteParticipant;
 import org.marketcetera.photon.strategy.engine.IStrategyEngines;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
+import org.marketcetera.photon.strategy.engine.ui.tests.MockUIConnection;
 import org.marketcetera.photon.test.AbstractUIRunner;
 import org.marketcetera.photon.test.CommandTestUtil;
 import org.marketcetera.photon.test.OSGITestUtil;
@@ -114,7 +117,7 @@ public class UndeployDeleteParticipantTest {
                 assertThat(engine.getDeployedStrategies().size(), is(0));
             }
 
-        }.run();
+        };
     }
 
     @Test
@@ -162,7 +165,7 @@ public class UndeployDeleteParticipantTest {
                 assertThat(engine.getDeployedStrategies().size(), is(1));
             }
 
-        }.run();
+        };
     }
 
     @Test
@@ -190,10 +193,12 @@ public class UndeployDeleteParticipantTest {
             @Override
             protected void initEngine(StrategyEngine engine) {
                 DeployedStrategy strategy = createDeployedStrategy("abc");
-                strategy.setScriptPath("platform:/resource/test/folder/abc.txt");
+                strategy
+                        .setScriptPath("platform:/resource/test/folder/abc.txt");
                 engine.getDeployedStrategies().add(strategy);
                 strategy = createDeployedStrategy("xyz");
-                strategy.setScriptPath("platform:/resource/test/folder/xyz.txt");
+                strategy
+                        .setScriptPath("platform:/resource/test/folder/xyz.txt");
                 engine.getDeployedStrategies().add(strategy);
             }
 
@@ -218,16 +223,130 @@ public class UndeployDeleteParticipantTest {
             @Override
             protected void validateEngine(StrategyEngine engine) {
                 assertThat(engine.getDeployedStrategies().size(), is(1));
-                assertThat(engine.getDeployedStrategies().get(0).getInstanceName(), is("abc"));
+                assertThat(engine.getDeployedStrategies().get(0)
+                        .getInstanceName(), is("abc"));
             }
 
-        }.run();
+        };
+    }
+
+    @Test
+    public void testNoStrategiesAffected() throws Exception {
+        new TestTemplate() {
+            private IFile mFile;
+
+            @Override
+            protected IStructuredSelection initWorkspace(IWorkspace workspace)
+                    throws CoreException {
+                IProject project = workspace.getRoot().getProject("test");
+                project.create(null);
+                project.open(null);
+                mFile = project.getFile("abc.txt");
+                mFile.create(new ByteArrayInputStream("abc".getBytes()), true,
+                        null);
+                return new StructuredSelection(mFile);
+            }
+
+            @Override
+            protected void initEngine(StrategyEngine engine) {
+                DeployedStrategy strategy = createDeployedStrategy("xyz");
+                strategy.setScriptPath("platform:/resource/test/xyz.txt");
+                engine.getDeployedStrategies().add(strategy);
+            }
+
+            @Override
+            protected void interactWithWizard(SWTBot bot)
+                    throws WidgetNotFoundException {
+                bot.button("Preview >").click();
+                SWTBotTreeItem[] items = bot.tree().getAllItems();
+                for (SWTBotTreeItem item : items) {
+                    assertThat(
+                            item.getText(),
+                            not(is("Undeploy strategies using '/test/xyz.txt'")));
+                }
+                bot.button("OK").click();
+            }
+
+            @Override
+            protected void validateWorkspace(IWorkspace workspace) {
+                assertThat(mFile.exists(), is(false));
+            }
+
+            @Override
+            protected void validateEngine(StrategyEngine engine) {
+                assertThat(engine.getDeployedStrategies().size(), is(1));
+            }
+
+        };
+    }
+
+    @Test
+    public void testUndeployFails() throws Exception {
+        new TestTemplate() {
+            private IFile mFile;
+
+            @Override
+            protected IStructuredSelection initWorkspace(IWorkspace workspace)
+                    throws CoreException {
+                IProject project = workspace.getRoot().getProject("test");
+                project.create(null);
+                project.open(null);
+                mFile = project.getFile("xyz.txt");
+                mFile.create(new ByteArrayInputStream("abc".getBytes()), true,
+                        null);
+                return new StructuredSelection(mFile);
+            }
+
+            @Override
+            protected void initEngine(StrategyEngine engine) {
+                DeployedStrategy strategy = createDeployedStrategy("abc");
+                strategy.setScriptPath("platform:/resource/test/xyz.txt");
+                engine.getDeployedStrategies().add(strategy);
+                engine.setConnection(new MockUIConnection() {
+                    @Override
+                    public void undeploy(DeployedStrategy strategy)
+                            throws Exception {
+                        if (strategy.getInstanceName().equals("abc")) {
+                            throw new Exception("Failed");
+                        }
+                        super.undeploy(strategy);
+                    }
+                });
+            }
+
+            @Override
+            protected void interactWithWizard(SWTBot bot)
+                    throws WidgetNotFoundException {
+                bot.button("OK").click();
+                SWTBotShell errorDialog = bot.shell("Refactoring");
+                bot
+                        .label("An exception has been caught while processing the refactoring 'Delete Resource'.\n\nReason:\nFailed");
+                bot.button("Undo").click();
+                bot.waitUntil(shellCloses(errorDialog));
+
+            }
+
+            @Override
+            protected void validateWorkspace(IWorkspace workspace) {
+                assertThat(mFile.exists(), is(true));
+            }
+
+            @Override
+            protected void validateEngine(StrategyEngine engine) {
+                assertThat(engine.getDeployedStrategies().size(), is(1));
+            }
+
+        };
     }
 
     private abstract class TestTemplate {
         private StrategyEngine mEngine;
 
-        public void run() throws Exception {
+        public TestTemplate() throws Exception {
+            run();
+        }
+
+        private void run() throws Exception {
             mWorkspace = ResourcesPlugin.getWorkspace();
             mEngine = createEngine("Engine");
             initEngine(mEngine);
@@ -262,9 +381,10 @@ public class UndeployDeleteParticipantTest {
                             selection.set(initWorkspace(mWorkspace));
                         }
                     }, null);
-                    CommandTestUtil.runCommand(
-                            "org.eclipse.ltk.ui.refactoring.commands.deleteResources",
-                            selection.get());
+                    CommandTestUtil
+                            .runCommand(
+                                    "org.eclipse.ltk.ui.refactoring.commands.deleteResources",
+                                    selection.get());
                     latch.countDown();
                 }
             });

@@ -13,6 +13,9 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Preferences used by {@link JavaEditor}. Based on
  * org.eclipse.jdt.internal.ui.JavaUIPreferenceInitializer.
+ * <p>
+ * Preferences related to the basic Java editing functionality provided by
+ * {@link JavaEditor} were retained.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -26,8 +29,10 @@ public class JavaUIPreferenceInitializer extends AbstractPreferenceInitializer {
         IPreferenceStore store = Activator.getCurrent().getPreferenceStore();
         EditorsUI.useAnnotationsPreferencePage(store);
         EditorsUI.useQuickDiffPreferencePage(store);
-        store.setToDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER);
-        store.setToDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER_COLOR);
+        store
+                .setToDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER);
+        store
+                .setToDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER_COLOR);
 
         store.setDefault(PreferenceConstants.EDITOR_MULTI_LINE_COMMENT_BOLD,
                 false);

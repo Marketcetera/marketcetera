@@ -20,6 +20,7 @@ import org.marketcetera.photon.strategy.engine.ui.AbstractStrategyEnginesSupport
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /* $License$ */
 
@@ -41,7 +42,8 @@ public class StrategyAgentEnginesSupport extends AbstractStrategyEnginesSupport 
     private final PersistenceHelper mPersistenceHelper;
 
     /**
-     * Constructor.
+     * Constructor. An instance of {@link ICredentialsService} and
+     * {@link ILogoutService} must be available or an exception will be thrown.
      * 
      * @param context
      *            the context with which to obtain and register services
@@ -51,16 +53,30 @@ public class StrategyAgentEnginesSupport extends AbstractStrategyEnginesSupport 
      * @throws IllegalArgumentException
      *             if context is null
      * @throws IllegalStateException
-     *             if called from a non UI thread
+     *             if {@link ICredentialsService} or {@link ILogoutService} is
+     *             unavailable, or if called from a non UI thread
      */
     public StrategyAgentEnginesSupport(BundleContext context,
             IEMFPersistence persistenceService) {
         Validate.notNull(context, "context"); //$NON-NLS-1$
         mPersistenceHelper = new PersistenceHelper(persistenceService);
-        mCredentialsService = (ICredentialsService) context.getService(context
-                .getServiceReference(ICredentialsService.class.getName()));
-        mLogoutService = (ILogoutService) context.getService(context
-                .getServiceReference(ILogoutService.class.getName()));
+        ServiceReference serviceReference = context
+                .getServiceReference(ICredentialsService.class.getName());
+        if (serviceReference == null) {
+            throw new IllegalStateException(ICredentialsService.class
+                    .getSimpleName()
+                    + " is unavailable"); //$NON-NLS-1$
+        }
+        mCredentialsService = (ICredentialsService) context
+                .getService(serviceReference);
+        serviceReference = context.getServiceReference(ILogoutService.class
+                .getName());
+        if (serviceReference == null) {
+            throw new IllegalStateException(ILogoutService.class
+                    .getSimpleName()
+                    + " is unavailable"); //$NON-NLS-1$
+        }
+        mLogoutService = (ILogoutService) context.getService(serviceReference);
         init(context);
     }
 
@@ -82,7 +98,7 @@ public class StrategyAgentEnginesSupport extends AbstractStrategyEnginesSupport 
         StrategyAgentEngine newEngine = StrategyAgentEngines
                 .createStrategyAgentEngine((StrategyAgentEngine) engine,
                         getGuiExecutor(), mCredentialsService, mLogoutService);
-        newEngine.eAdapters().add(mPersistenceHelper);
+        mPersistenceHelper.track(newEngine);
         engines.add(newEngine);
         return newEngine;
     }
@@ -90,7 +106,7 @@ public class StrategyAgentEnginesSupport extends AbstractStrategyEnginesSupport 
     @Override
     protected void doRemoveEngine(List<StrategyEngine> engines,
             final StrategyEngine engine) {
-        engine.eAdapters().remove(mPersistenceHelper);
+        mPersistenceHelper.untrack(engine);
         engines.remove(engine);
         mPersistenceHelper.save();
     }
@@ -163,5 +179,29 @@ public class StrategyAgentEnginesSupport extends AbstractStrategyEnginesSupport 
                 }
             }
         };
+
+        /**
+         * Tracks changes to an engine, and saving after each.
+         * 
+         * @param engine
+         *            the engine
+         */
+        public void track(StrategyEngine engine) {
+            if (mPersistenceService != null) {
+                engine.eAdapters().add(this);
+            }
+        }
+
+        /**
+         * Stops tracking changes to an engine.
+         * 
+         * @param engine
+         *            the engine
+         */
+        public void untrack(StrategyEngine engine) {
+            if (mPersistenceService != null) {
+                engine.eAdapters().remove(this);
+            }
+        }
     }
 }

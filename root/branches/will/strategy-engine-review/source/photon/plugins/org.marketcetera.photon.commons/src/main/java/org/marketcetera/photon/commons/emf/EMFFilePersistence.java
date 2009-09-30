@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
  * <p>
  * Warning: EMF generated objects are not typically thread safe. Clients are
  * responsible for guaranteeing that the objects are visible to the thread
- * calling {@link #save(List)}. Likewise, clients are responsible for safe
+ * calling {@link #save(Collection)}. Likewise, clients are responsible for safe
  * publication or EObjects returned from {@link #restore()}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>

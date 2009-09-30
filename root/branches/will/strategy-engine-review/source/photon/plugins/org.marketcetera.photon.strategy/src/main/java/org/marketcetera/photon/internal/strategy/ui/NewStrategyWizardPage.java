@@ -1,7 +1,5 @@
 package org.marketcetera.photon.internal.strategy.ui;
 
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -66,6 +64,8 @@ public class NewStrategyWizardPage extends WizardPage {
 
     private DialogPageSupport mWizardSupport;
 
+    private final IValidator mClassNameValidator;
+
     /**
      * Constructor.
      * 
@@ -73,11 +73,16 @@ public class NewStrategyWizardPage extends WizardPage {
      *            current workbench selection to initialize the container
      * @param title
      *            the page title
+     * @param classNameValidator
+     *            a validator that checks if strings are valid class names for
+     *            the strategy
      */
-    public NewStrategyWizardPage(ISelection selection, String title) {
+    public NewStrategyWizardPage(ISelection selection, String title,
+            IValidator classNameValidator) {
         super("page", title, null); //$NON-NLS-1$
         setDescription(Messages.NEW_STRATEGY_WIZARD_PAGE_DESCRIPTION.getText());
         initialize(selection);
+        mClassNameValidator = classNameValidator;
     }
 
     @Override
@@ -90,7 +95,7 @@ public class NewStrategyWizardPage extends WizardPage {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setFont(font);
 
-        Messages.NEW_STRATEGY_WIZARD_PAGE_CONTAINER.createLabel(composite);
+        Messages.NEW_STRATEGY_WIZARD_PAGE_FOLDER.createLabel(composite);
 
         {
             Text containerText = new Text(composite, SWT.BORDER);
@@ -98,14 +103,15 @@ public class NewStrategyWizardPage extends WizardPage {
                     containerText);
             DataBindingUtils.bindRequiredField(mDataBindingContext,
                     SWTObservables.observeText(containerText, SWT.Modify),
-                    mContainerName, Messages.NEW_STRATEGY_WIZARD_PAGE_CONTAINER
+                    mContainerName, Messages.NEW_STRATEGY_WIZARD_PAGE_FOLDER
                             .getRawLabel());
         }
 
         {
             Button button = new Button(composite, SWT.PUSH);
-            button.setText(Messages.NEW_STRATEGY_WIZARD_PAGE_BROWSE_BUTTON__TEXT
-                    .getText());
+            button
+                    .setText(Messages.NEW_STRATEGY_WIZARD_PAGE_BROWSE_BUTTON__TEXT
+                            .getText());
             button.addSelectionListener(new SelectionAdapter() {
                 public void widgetSelected(SelectionEvent e) {
                     handleBrowse();
@@ -122,13 +128,6 @@ public class NewStrategyWizardPage extends WizardPage {
             Binding binding = mDataBindingContext.bindValue(target, mClassName,
                     new UpdateValueStrategy()
                             .setBeforeSetValidator(new IValidator() {
-                                /**
-                                 * Start with a capital letter, followed only by
-                                 * letters, numbers, and underscores.
-                                 */
-                                private final Pattern CLASS_NAME_PATTERN = Pattern
-                                        .compile("^[A-Z]\\w*"); //$NON-NLS-1$
-
                                 @Override
                                 public IStatus validate(Object value) {
                                     final String string = (String) value;
@@ -137,13 +136,7 @@ public class NewStrategyWizardPage extends WizardPage {
                                         // RequiredFieldSupport kicks in
                                         return ValidationStatus.ok();
                                     }
-                                    if (!CLASS_NAME_PATTERN.matcher(string)
-                                            .matches()) {
-                                        return ValidationStatus
-                                                .error(Messages.NEW_STRATEGY_WIZARD_PAGE_INVALID_CLASS_NAME
-                                                        .getText());
-                                    }
-                                    return ValidationStatus.ok();
+                                    return mClassNameValidator.validate(value);
                                 }
                             }), null);
             RequiredFieldSupport.initFor(mDataBindingContext, target,
@@ -168,11 +161,9 @@ public class NewStrategyWizardPage extends WizardPage {
      *            the selection
      */
     private void initialize(ISelection selection) {
-        if (selection != null && selection.isEmpty() == false
+        if (selection != null && !selection.isEmpty()
                 && selection instanceof IStructuredSelection) {
             IStructuredSelection ssel = (IStructuredSelection) selection;
-            if (ssel.size() > 1)
-                return;
             Object obj = ssel.getFirstElement();
             if (obj instanceof IResource) {
                 IContainer container;

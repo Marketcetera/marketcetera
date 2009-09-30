@@ -1,13 +1,15 @@
 package org.marketcetera.photon.strategy.engine.ui;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
 
 import java.util.List;
 
+import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
+import org.marketcetera.photon.commons.ui.DisplayThreadExecutor;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
 import org.osgi.framework.BundleContext;
@@ -47,7 +49,8 @@ public class AbstractStrategyEnginesSupportTest extends
         new Fixture() {
             @Override
             protected void initList(List<StrategyEngine> engines) {
-                assertNotNull(getGuiExecutor());
+                assertThat(getGuiExecutor(), is(DisplayThreadExecutor
+                        .getInstance(Display.getCurrent())));
                 engines.add(engine);
             }
         }.init(mMockContext);

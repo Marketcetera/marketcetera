@@ -5,6 +5,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.photon.core.Credentials;
 import org.marketcetera.photon.core.ICredentials;
@@ -30,16 +32,18 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
     /**
-     * {@link ICredentialsService} that pops obtains credentials from a {@link LoginDialog}.
+     * {@link ICredentialsService} that pops obtains credentials from a
+     * {@link LoginDialog}.
      */
     @ClassVersion("$Id$")
     private static class LoginCredentialsService implements ICredentialsService {
-        private ICredentials mCredentials;
+        private volatile ICredentials mCredentials;
 
         @Override
         public synchronized boolean authenticateWithCredentials(
                 IAuthenticationHelper helper) {
-            if (mCredentials == null) {
+            ICredentials current = mCredentials;
+            if (current == null) {
                 Display display = PlatformUI.getWorkbench().getDisplay();
                 while (true) {
                     final AtomicBoolean cancelled = new AtomicBoolean();
@@ -47,13 +51,16 @@ public class Activator implements BundleActivator {
                     display.syncExec(new Runnable() {
                         @Override
                         public void run() {
-                            LoginDialog dialog = new LoginDialog(null);
+                            IWorkbenchWindow window = PlatformUI.getWorkbench()
+                                    .getActiveWorkbenchWindow();
+                            Shell parent = window == null ? null : window
+                                    .getShell();
+                            LoginDialog dialog = new LoginDialog(parent);
                             if (dialog.open() == Window.OK) {
                                 credentials.set(new Credentials(dialog
                                         .getConnectionDetails().getUserId(),
                                         dialog.getConnectionDetails()
                                                 .getPassword()));
-
                             } else {
                                 cancelled.set(true);
                             }
@@ -69,12 +76,12 @@ public class Activator implements BundleActivator {
                 }
                 return false;
             } else {
-                return helper.authenticate(mCredentials);
+                return helper.authenticate(current);
             }
         }
 
         @Override
-        public synchronized void invalidate() {
+        public void invalidate() {
             mCredentials = null;
         }
     }
