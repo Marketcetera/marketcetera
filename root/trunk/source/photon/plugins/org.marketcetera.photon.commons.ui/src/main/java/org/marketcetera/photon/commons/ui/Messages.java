@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 final class Messages {
 
-    static I18NMessage0P JFACE_UTILS_GENERIC_EXCEPTION_OCCURRED;
+    static I18NMessage1P JFACE_UTILS_SEE_LOG;
     static I18NMessage0P JFACE_UTILS_OPERATION_FAILED__DIALOG_TITLE;
     static I18NMessage1P COLOR_MANAGER_PROVIDER_NULL_DESCRIPTOR;
     static I18NMessage1P COLOR_MANAGER_UNKNOWN_DESCRIPTOR;

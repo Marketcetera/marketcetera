@@ -1,5 +1,6 @@
 package org.marketcetera.photon.commons.ui;
 
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -12,16 +13,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.log4j.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
+import org.marketcetera.photon.commons.ui.JFaceUtils.IUnsafeRunnableWithProgress;
+import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
@@ -109,8 +114,9 @@ public class JFaceUtilsTest extends PhotonTestBase {
 
     @Test
     public void testRunModalErrorNoMessage() {
-        testRunModalErrorHelper(new Exception(),
-                "A Java exception occurred during the operation.  See the log for details.");
+        testRunModalErrorHelper(
+                new Exception(),
+                "A problem occurred during the operation (Exception).  See the log for details.");
     }
 
     private void testRunModalErrorHelper(Exception exception, String text) {
@@ -132,11 +138,11 @@ public class JFaceUtilsTest extends PhotonTestBase {
                         }, false, failureMessage));
             }
         });
-        SWTBot bot = new SWTBot();
-        bot.shell("Operation Failed");
-        bot.label(text);
-        bot.button("OK").click();
+        ErrorDialogFixture fixture = new ErrorDialogFixture();
+        fixture.assertError(text);
+        fixture.dismiss();
         assertThat(result.get(), is(false));
+        verify(failureMessage).error(JFaceUtils.class, exception);
     }
 
     @Test
@@ -159,12 +165,32 @@ public class JFaceUtilsTest extends PhotonTestBase {
 
     @Test
     public void testRunWithErrorDialogErrorNoMessage() {
-        testRunWithErrorDialogErrorHelper(new Exception(),
-                "A Java exception occurred during the operation.  See the log for details.");
+        testRunWithErrorDialogErrorHelper(
+                new Exception(),
+                "A problem occurred during the operation (Exception).  See the log for details.");
+    }
+
+    @Test
+    public void testRunWithErrorDialogExceptionChain() {
+        Exception exception = new Exception("ABC", new Exception("XYZ"));
+        testRunWithErrorDialogErrorHelper(exception, "ABC", "XYZ");
+    }
+
+    @Test
+    public void testRunWithErrorDialogRootCause() {
+        /*
+         * Used initCause instead of Exception(Throwable) because the latter
+         * makes a message from Throwable#toString.
+         */
+        Exception nested = new Exception();
+        nested.initCause(new Exception("ABC"));
+        Exception exception = new Exception();
+        exception.initCause(new Exception("XYZ", nested));
+        testRunWithErrorDialogErrorHelper(exception, "XYZ", "ABC");
     }
 
     private void testRunWithErrorDialogErrorHelper(final Exception exception,
-            String text) {
+            String text, String... details) {
         final AtomicBoolean result = new AtomicBoolean(true);
         final I18NBoundMessage failureMessage = mock(I18NBoundMessage.class);
         mShell.getDisplay().asyncExec(new Runnable() {
@@ -179,11 +205,12 @@ public class JFaceUtilsTest extends PhotonTestBase {
                         }, failureMessage));
             }
         });
-        SWTBot bot = new SWTBot();
-        bot.shell("Operation Failed");
-        bot.label(text);
-        bot.button("OK").click();
+        ErrorDialogFixture fixture = new ErrorDialogFixture();
+        fixture.assertError(text);
+        fixture.assertDetails(details);
+        fixture.dismiss();
         assertThat(result.get(), is(false));
+        verify(failureMessage).error(JFaceUtils.class, exception);
     }
 
     @Test
@@ -248,6 +275,94 @@ public class JFaceUtilsTest extends PhotonTestBase {
                         mock(Callable.class), null);
             }
         };
+    }
+
+    @Test
+    public void testSafeRunnableParentMonitorDone() throws Exception {
+        IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
+        JFaceUtils.safeRunnableWithProgress(new IUnsafeRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor)
+                    throws InvocationTargetException, Exception {
+                SubMonitor progress = SubMonitor.convert(monitor, "task", 100);
+                progress.worked(99);
+                progress.worked(2);
+            }
+        }).run(mockMonitor);
+        verify(mockMonitor).beginTask("task", 1000);
+        verify(mockMonitor).worked(990);
+        // only 10 ticks left
+        verify(mockMonitor).worked(10);
+        verify(mockMonitor).done();
+    }
+
+    @Test
+    public void testSafeRunnableInterruptedException() throws Exception {
+        final IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
+        new ExpectedFailure<InterruptedException>(null) {
+            @Override
+            protected void run() throws Exception {
+                JFaceUtils.safeRunnableWithProgress(
+                        new IUnsafeRunnableWithProgress() {
+                            @Override
+                            public void run(IProgressMonitor monitor)
+                                    throws Exception {
+                                throw new InterruptedException();
+                            }
+                        }).run(mockMonitor);
+            }
+        };
+        verify(mockMonitor).done();
+    }
+
+    @Test
+    public void testSafeRunnableException() throws Exception {
+        final IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
+        final Exception exception = new Exception();
+        ExpectedFailure<InvocationTargetException> failure = new ExpectedFailure<InvocationTargetException>(
+                null) {
+            @Override
+            protected void run() throws Exception {
+                JFaceUtils.safeRunnableWithProgress(
+                        new IUnsafeRunnableWithProgress() {
+                            @Override
+                            public void run(IProgressMonitor monitor)
+                                    throws Exception {
+                                throw exception;
+                            }
+                        }).run(mockMonitor);
+            }
+        };
+        assertThat(failure.getException().getCause(), is((Throwable) exception));
+        verify(mockMonitor).done();
+    }
+
+    public static class ErrorDialogFixture {
+
+        private final SWTBot mBot;
+        private final SWTBotShell mShell;
+
+        public ErrorDialogFixture() {
+            mBot = new SWTBot();
+            mShell = mBot.shell("Operation Failed");
+        }
+
+        public void assertError(String message) {
+            mBot.label(message);
+        }
+
+        public void assertDetails(String[] details) {
+            if (details.length > 0) {
+                mBot.button("Details >>").click();
+                assertThat(mBot.list().getItems(), is(details));
+
+            }
+        }
+
+        public void dismiss() {
+            mBot.button("OK").click();
+            mBot.waitUntil(shellCloses(mShell));
+        }
     }
 
 }

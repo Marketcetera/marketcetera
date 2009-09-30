@@ -13,6 +13,7 @@ Export-Package: org.marketcetera.photon.strategy.engine,
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.databinding,
- org.marketcetera.core
+ org.marketcetera.core,
+ org.marketcetera.photon.commons
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true

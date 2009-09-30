@@ -1,17 +1,19 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
 package org.marketcetera.photon.strategy.engine.model.core;
 
 import org.eclipse.emf.common.util.EMap;
+
 import org.eclipse.emf.ecore.EObject;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Deployed Strategy</b></em>'.
+ * A representation of the model object '<em><b>Strategy</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
@@ -29,7 +31,9 @@ import org.eclipse.emf.ecore.EObject;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategy()
  * @model
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface Strategy extends EObject {
     /**
      * Returns the value of the '<em><b>Instance Name</b></em>' attribute.
@@ -42,7 +46,7 @@ public interface Strategy extends EObject {
      * @return the value of the '<em>Instance Name</em>' attribute.
      * @see #setInstanceName(String)
      * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategy_InstanceName()
-     * @model
+     * @model id="true" required="true"
      * @generated
      */
     String getInstanceName();
@@ -87,7 +91,7 @@ public interface Strategy extends EObject {
      * Returns the value of the '<em><b>Script Path</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of the '<em>File Path</em>' attribute isn't clear,
+     * If the meaning of the '<em>Script Path</em>' attribute isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
@@ -167,7 +171,7 @@ public interface Strategy extends EObject {
      * and the value is of type {@link java.lang.String},
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of the '<em>Parameters</em>' containment reference list isn't clear,
+     * If the meaning of the '<em>Parameters</em>' map isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
@@ -178,4 +182,4 @@ public interface Strategy extends EObject {
      */
     EMap<String, String> getParameters();
 
-} // DeployedStrategy
+} // Strategy

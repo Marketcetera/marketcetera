@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -12,6 +11,8 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.Enumerator;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /**
  * <!-- begin-user-doc -->
  * A representation of the literals of the enumeration '<em><b>Strategy State</b></em>',
@@ -20,7 +21,9 @@ import org.eclipse.emf.common.util.Enumerator;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyState()
  * @model
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public enum StrategyState implements Enumerator {
     /**
      * The '<em><b>Stopped</b></em>' literal object.

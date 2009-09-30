@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ $License#
+
+ Since: $Release$
+ Version: $Id$
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.marketcetera.org/photon/strategy/engine/strategyagent/1.0"
+            class="org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEnginePackage"
+            genModel="model/strategy-agent-engine.genmodel"/>
+   </extension>
+
+</plugin>

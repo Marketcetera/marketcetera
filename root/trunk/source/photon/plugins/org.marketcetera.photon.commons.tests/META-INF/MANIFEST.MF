@@ -9,7 +9,8 @@ Import-Package: org.hamcrest,
  org.junit,
  org.junit.runner,
  org.junit.runners,
- org.mockito
+ org.mockito,
+ org.mockito.stubbing
 Require-Bundle: org.marketcetera.util-test,
  org.marketcetera.photon.test
 Export-Package: org.marketcetera.photon.commons.tests

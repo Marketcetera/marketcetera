@@ -6,7 +6,8 @@ Bundle-Version: 1.6.0
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon.commons.ui.workbench
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.marketcetera.photon.test
+Require-Bundle: org.marketcetera.photon.test,
+ org.eclipse.swtbot.swt.finder
 Import-Package: org.hamcrest,
  org.junit,
  org.junit.runner,

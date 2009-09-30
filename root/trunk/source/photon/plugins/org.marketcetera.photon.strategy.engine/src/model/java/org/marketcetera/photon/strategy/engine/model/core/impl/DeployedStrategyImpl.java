@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -8,14 +7,20 @@ package org.marketcetera.photon.strategy.engine.model.core.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.marketcetera.module.ModuleURN;
+
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -31,7 +36,9 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
  * </p>
  *
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public class DeployedStrategyImpl extends StrategyImpl implements
         DeployedStrategy {
     /**
@@ -42,7 +49,7 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      * @ordered
      */
-    protected StrategyEngine engine;
+    protected volatile StrategyEngine engine;
 
     /**
      * The default value of the '{@link #getState() <em>State</em>}' attribute.
@@ -62,7 +69,7 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      * @ordered
      */
-    protected StrategyState state = STATE_EDEFAULT;
+    protected volatile StrategyState state = STATE_EDEFAULT;
 
     /**
      * The default value of the '{@link #getUrn() <em>Urn</em>}' attribute.
@@ -82,7 +89,7 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      * @ordered
      */
-    protected ModuleURN urn = URN_EDEFAULT;
+    protected volatile ModuleURN urn = URN_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
@@ -106,9 +113,9 @@ public class DeployedStrategyImpl extends StrategyImpl implements
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
+     * @generated NOT
      */
-    public StrategyEngine getEngine() {
+    public synchronized StrategyEngine getEngine() {
         if (engine != null && engine.eIsProxy()) {
             InternalEObject oldEngine = (InternalEObject) engine;
             engine = (StrategyEngine) eResolveProxy(oldEngine);

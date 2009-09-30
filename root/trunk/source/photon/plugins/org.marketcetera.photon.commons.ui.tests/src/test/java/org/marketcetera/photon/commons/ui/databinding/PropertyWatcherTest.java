@@ -229,7 +229,9 @@ public class PropertyWatcherTest extends PhotonTestBase {
         }
 
         public void setProp1(String prop1) {
-            mChangeSupport.firePropertyChange("prop1", mProp1, mProp1 = prop1);
+            String oldValue = mProp1;
+            mProp1 = prop1;
+            mChangeSupport.firePropertyChange("prop1", oldValue, mProp1);
         }
 
         public String getProp2() {
@@ -237,7 +239,9 @@ public class PropertyWatcherTest extends PhotonTestBase {
         }
 
         public void setProp2(String prop2) {
-            mChangeSupport.firePropertyChange("prop2", mProp2, mProp2 = prop2);
+            String oldValue = mProp2; 
+            mProp2 = prop2; 
+            mChangeSupport.firePropertyChange("prop2", oldValue, mProp2); 
         }
     }
 
@@ -250,7 +254,9 @@ public class PropertyWatcherTest extends PhotonTestBase {
         }
 
         public void setProp1(String prop1) {
-            mChangeSupport.firePropertyChange("prop1", mProp1, mProp1 = prop1);
+            String oldValue = mProp1; 
+            mProp1 = prop1; 
+            mChangeSupport.firePropertyChange("prop1", oldValue, mProp1); 
         }
 
         public String getProp3() {
@@ -258,7 +264,9 @@ public class PropertyWatcherTest extends PhotonTestBase {
         }
 
         public void setProp3(String prop3) {
-            mChangeSupport.firePropertyChange("prop3", mProp3, mProp3 = prop3);
+            String oldValue = mProp3; 
+            mProp3 = prop3; 
+            mChangeSupport.firePropertyChange("prop3", oldValue, mProp3); 
         }
     }
 

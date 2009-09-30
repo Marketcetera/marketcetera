@@ -14,6 +14,7 @@ import org.marketcetera.photon.strategy.engine.ui.StrategyEngineStatusDecoratorT
 import org.marketcetera.photon.strategy.engine.ui.StrategyEngineUITest;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesContentProviderTest;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesLabelProviderTest;
+import org.marketcetera.photon.strategy.engine.ui.AbstractStrategyEnginesSupportTest;
 
 /* $License$ */
 
@@ -36,6 +37,6 @@ import org.marketcetera.photon.strategy.engine.ui.StrategyEnginesLabelProviderTe
         DeployedStrategyConfigurationCompositeTest.class,
         org.marketcetera.photon.strategy.engine.ui.MessagesTest.class,
         org.marketcetera.photon.internal.strategy.engine.ui.MessagesTest.class,
-        StrategyEngineUITest.class })
+        StrategyEngineUITest.class, AbstractStrategyEnginesSupportTest.class })
 public final class StrategyEngineUISuite {
 }

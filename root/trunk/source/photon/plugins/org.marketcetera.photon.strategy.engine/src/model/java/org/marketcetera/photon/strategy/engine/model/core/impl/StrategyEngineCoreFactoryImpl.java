@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -12,23 +11,25 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
+
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
+
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
-import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
-import org.marketcetera.photon.strategy.engine.model.core.Strategy;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
+
+import org.marketcetera.photon.strategy.engine.model.core.*;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
  * An implementation of the model <b>Factory</b>.
  * <!-- end-user-doc -->
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
         StrategyEngineCoreFactory {
     /**

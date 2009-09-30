@@ -91,6 +91,8 @@ public class CustomWizardPageSupport extends DialogPageSupport {
                         }
                     }
                 }
+                // no regular error found
+                getDialogPage().setErrorMessage(null);
             } else {
                 // current status is a regular error
                 getDialogPage().setErrorMessage(currentStatus.getMessage());

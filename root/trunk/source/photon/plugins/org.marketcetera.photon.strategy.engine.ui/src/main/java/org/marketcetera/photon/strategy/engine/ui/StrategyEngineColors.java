@@ -26,7 +26,7 @@ public class StrategyEngineColors {
      * Initializes the {@link StrategyEngineColor} colors for the current
      * thread.
      * 
-     * @see ColorManager#initColors();
+     * @see ColorManager#initColors()
      */
     public static void init() {
         sColorManager.initColors();
@@ -35,7 +35,7 @@ public class StrategyEngineColors {
     /**
      * Disposes the {@link StrategyEngineColor} colors for the current thread.
      * 
-     * @see ColorManager#disposeColors();
+     * @see ColorManager#disposeColors()
      */
     public static void dispose() {
         sColorManager.disposeColors();

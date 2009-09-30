@@ -144,11 +144,17 @@ public class ProxyObservablesTest extends PhotonTestBase {
                 assertThat(proxy.getRealm(), is(Realm.getDefault()));
                 mProxyReady.countDown();
                 mModelUpdated.await();
-                // update should not happen immediately since the UI thread is
-                // in use
+                /*
+                 * Update cannot happen immediately since the UI thread is in
+                 * use by this method, and the UI thread is needed to do the
+                 * update.
+                 */
                 assertThat(proxy.size(), is(0));
-                // wait for the update
-                SWTTestUtil.conditionalDelay(1, TimeUnit.SECONDS,
+                /*
+                 * The update will happen here, or else a runtime exception will
+                 * be thrown by the timeout.
+                 */
+                SWTTestUtil.conditionalDelay(5, TimeUnit.SECONDS,
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() throws Exception {
@@ -182,10 +188,15 @@ public class ProxyObservablesTest extends PhotonTestBase {
                     assertThat(proxy.getRealm(), is((Realm) realm));
                     mProxyReady.countDown();
                     mModelUpdated.await();
-                    // update should not happen immediately since the
-                    // ThreadRealm is not blocking
+                    /*
+                     * Update cannot happen immediately since the ThreadRealm is
+                     * not blocking, and it is needed to do the update.
+                     */
                     assertThat(proxy.size(), is(0));
-                    // wait for the update
+                    /*
+                     * The update will happen here if it was correctly enqueued
+                     * on the realm.
+                     */
                     realm.processQueue();
                     assertThat(proxy.size(), is(1));
                     assertThat(proxy.get(0), is((Object) "ABC"));

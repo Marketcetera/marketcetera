@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -10,18 +9,26 @@ import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+
+import org.marketcetera.photon.commons.SynchronizedProxy;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -40,7 +47,9 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePack
  * </p>
  *
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     /**
      * The default value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -60,7 +69,7 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      * @ordered
      */
-    protected String name = NAME_EDEFAULT;
+    protected volatile String name = NAME_EDEFAULT;
 
     /**
      * The default value of the '{@link #getDescription() <em>Description</em>}' attribute.
@@ -80,7 +89,7 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      * @ordered
      */
-    protected String description = DESCRIPTION_EDEFAULT;
+    protected volatile String description = DESCRIPTION_EDEFAULT;
 
     /**
      * The default value of the '{@link #getConnectionState() <em>Connection State</em>}' attribute.
@@ -100,7 +109,7 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      * @ordered
      */
-    protected ConnectionState connectionState = CONNECTION_STATE_EDEFAULT;
+    protected volatile ConnectionState connectionState = CONNECTION_STATE_EDEFAULT;
 
     /**
      * The cached value of the '{@link #getConnection() <em>Connection</em>}' reference.
@@ -110,7 +119,7 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      * @ordered
      */
-    protected StrategyEngineConnection connection;
+    protected volatile StrategyEngineConnection connection;
 
     /**
      * The cached value of the '{@link #getDeployedStrategies() <em>Deployed Strategies</em>}' reference list.
@@ -120,7 +129,7 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      * @ordered
      */
-    protected EList<DeployedStrategy> deployedStrategies;
+    protected volatile EList<DeployedStrategy> deployedStrategies;
 
     /**
      * The default value of the '{@link #isReadOnly() <em>Read Only</em>}' attribute.
@@ -140,7 +149,7 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      * @ordered
      */
-    protected boolean readOnly = READ_ONLY_EDEFAULT;
+    protected volatile boolean readOnly = READ_ONLY_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
@@ -236,9 +245,9 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
+     * @generated NOT
      */
-    public StrategyEngineConnection getConnection() {
+    public synchronized StrategyEngineConnection getConnection() {
         if (connection != null && connection.eIsProxy()) {
             InternalEObject oldConnection = (InternalEObject) connection;
             connection = (StrategyEngineConnection) eResolveProxy(oldConnection);
@@ -317,15 +326,18 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
+     * @generated NOT
      */
-    public EList<DeployedStrategy> getDeployedStrategies() {
+    @SuppressWarnings("unchecked")
+    public synchronized EList<DeployedStrategy> getDeployedStrategies() {
         if (deployedStrategies == null) {
-            deployedStrategies = new EObjectWithInverseResolvingEList<DeployedStrategy>(
+            EList<DeployedStrategy> delegate = new EObjectWithInverseResolvingEList<DeployedStrategy>(
                     DeployedStrategy.class,
                     this,
                     StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
                     StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE);
+            deployedStrategies = (EList<DeployedStrategy>) SynchronizedProxy
+                    .proxy(delegate, InternalEList.class);
         }
         return deployedStrategies;
     }

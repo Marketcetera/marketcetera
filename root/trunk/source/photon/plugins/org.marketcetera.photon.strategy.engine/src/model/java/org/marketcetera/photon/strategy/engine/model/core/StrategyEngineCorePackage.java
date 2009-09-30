@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -12,6 +11,8 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -27,7 +28,9 @@ import org.eclipse.emf.ecore.EReference;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory
  * @model kind="package"
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface StrategyEngineCorePackage extends EPackage {
     /**
      * The package name.

@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -8,16 +7,24 @@ package org.marketcetera.photon.strategy.engine.model.core.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.EMap;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+
 import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.ecore.util.InternalEList;
+
+import org.marketcetera.photon.commons.SynchronizedProxy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -36,7 +43,9 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePack
  * </p>
  *
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public class StrategyImpl extends EObjectImpl implements Strategy {
     /**
      * The default value of the '{@link #getInstanceName() <em>Instance Name</em>}' attribute.
@@ -56,7 +65,7 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
      * @generated
      * @ordered
      */
-    protected String instanceName = INSTANCE_NAME_EDEFAULT;
+    protected volatile String instanceName = INSTANCE_NAME_EDEFAULT;
 
     /**
      * The default value of the '{@link #getLanguage() <em>Language</em>}' attribute.
@@ -76,7 +85,7 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
      * @generated
      * @ordered
      */
-    protected String language = LANGUAGE_EDEFAULT;
+    protected volatile String language = LANGUAGE_EDEFAULT;
 
     /**
      * The default value of the '{@link #getScriptPath() <em>Script Path</em>}' attribute.
@@ -96,7 +105,7 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
      * @generated
      * @ordered
      */
-    protected String scriptPath = SCRIPT_PATH_EDEFAULT;
+    protected volatile String scriptPath = SCRIPT_PATH_EDEFAULT;
 
     /**
      * The default value of the '{@link #getClassName() <em>Class Name</em>}' attribute.
@@ -116,7 +125,7 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
      * @generated
      * @ordered
      */
-    protected String className = CLASS_NAME_EDEFAULT;
+    protected volatile String className = CLASS_NAME_EDEFAULT;
 
     /**
      * The default value of the '{@link #isRouteOrdersToServer() <em>Route Orders To Server</em>}' attribute.
@@ -136,7 +145,7 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
      * @generated
      * @ordered
      */
-    protected boolean routeOrdersToServer = ROUTE_ORDERS_TO_SERVER_EDEFAULT;
+    protected volatile boolean routeOrdersToServer = ROUTE_ORDERS_TO_SERVER_EDEFAULT;
 
     /**
      * The cached value of the '{@link #getParameters() <em>Parameters</em>}' map.
@@ -146,7 +155,7 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
      * @generated
      * @ordered
      */
-    protected EMap<String, String> parameters;
+    protected volatile EMap<String, String> parameters;
 
     /**
      * <!-- begin-user-doc -->
@@ -285,14 +294,17 @@ public class StrategyImpl extends EObjectImpl implements Strategy {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
+     * @generated NOT
      */
-    public EMap<String, String> getParameters() {
+    @SuppressWarnings("unchecked")
+    public synchronized EMap<String, String> getParameters() {
         if (parameters == null) {
-            parameters = new EcoreEMap<String, String>(
+            EMap<String, String> delegate = new EcoreEMap<String, String>(
                     StrategyEngineCorePackage.Literals.STRING_TO_STRING_MAP_ENTRY,
                     StringToStringMapEntryImpl.class, this,
                     StrategyEngineCorePackage.STRATEGY__PARAMETERS);
+            parameters = (EMap<String, String>) SynchronizedProxy.proxy(
+                    delegate, EMap.class, InternalEList.class);
         }
         return parameters;
     }

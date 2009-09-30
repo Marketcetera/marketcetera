@@ -13,12 +13,8 @@ import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EcoreFactory;
-import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
@@ -26,6 +22,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotText;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.marketcetera.photon.test.EMFTestUtil;
 import org.marketcetera.photon.test.SimpleUIRunner;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
 
@@ -78,20 +75,12 @@ public class DataBindingUtilsTest {
     @Test
     @UI
     public void testObserveAndTrack() {
-        // create a dynamic EMF object
-        EPackage testPackage = EcoreFactory.eINSTANCE.createEPackage();
-        EClass testClass = EcoreFactory.eINSTANCE.createEClass();
-        testClass.setName("Test");
-        testPackage.getEClassifiers().add(testClass);
-        EAttribute testAttribute = EcoreFactory.eINSTANCE.createEAttribute();
-        testAttribute.setEType(EcorePackage.Literals.ESTRING);
-        testAttribute.setName("test");
-        testClass.getEStructuralFeatures().add(testAttribute);
-        EObject testObject = testPackage.getEFactoryInstance().create(testClass);
+        EObject testObject = EMFTestUtil.createDynamicEObject();
         ObservablesManager mockManager = mock(ObservablesManager.class);
+        EStructuralFeature testAttribute = testObject.eClass()
+                .getEStructuralFeature("test");
         IObservableValue observable = DataBindingUtils.observeAndTrack(
-                mockManager, testObject,
-                testAttribute); 
+                mockManager, testObject, testAttribute);
         verify(mockManager).addObservable(observable);
         observable.setValue("asdf");
         assertThat(testObject.eGet(testAttribute), is((Object) "asdf"));
@@ -103,7 +92,8 @@ public class DataBindingUtilsTest {
         Shell s = new Shell();
         try {
             Text t = new Text(s, SWT.NONE);
-            final IObservableValue value1 = SWTObservables.observeText(t, SWT.Modify);
+            final IObservableValue value1 = SWTObservables.observeText(t,
+                    SWT.Modify);
             MultiValidator validator = new MultiValidator() {
                 @Override
                 protected IStatus validate() {

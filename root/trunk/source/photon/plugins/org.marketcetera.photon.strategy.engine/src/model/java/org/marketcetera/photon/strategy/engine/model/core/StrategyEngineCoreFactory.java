@@ -1,12 +1,13 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
 package org.marketcetera.photon.strategy.engine.model.core;
 
 import org.eclipse.emf.ecore.EFactory;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -15,7 +16,9 @@ import org.eclipse.emf.ecore.EFactory;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface StrategyEngineCoreFactory extends EFactory {
     /**
      * The singleton instance of the factory.
