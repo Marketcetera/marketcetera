@@ -7,7 +7,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="connectionState" lowerBound="1"
-        eType="#//ConnectionState" defaultValueLiteral=""/>
+        eType="#//ConnectionState" transient="true" defaultValueLiteral=""/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="connection" eType="#//StrategyEngineConnection"
         transient="true" eOpposite="#//StrategyEngineConnection/engine"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="deployedStrategies" upperBound="-1"
@@ -32,16 +32,20 @@
       <eParameters name="strategy" lowerBound="1" eType="#//DeployedStrategy"/>
       <eParameters name="newConfiguration" eType="#//Strategy"/>
     </eOperations>
+    <eOperations name="refresh" eExceptions="#//Exception">
+      <eParameters name="strategy" lowerBound="1" eType="#//DeployedStrategy"/>
+    </eOperations>
+    <eOperations name="refresh" eExceptions="#//Exception"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="engine" lowerBound="1"
         eType="#//StrategyEngine" transient="true" eOpposite="#//StrategyEngine/connection"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="ConnectionState">
     <eLiterals name="Disconnected" literal="Disconnected"/>
-    <eLiterals name="Connecting" value="1" literal="Connecting"/>
-    <eLiterals name="Connected" value="2" literal="Connected"/>
+    <eLiterals name="Connected" value="1" literal="Connected"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Strategy">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="instanceName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="instanceName" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="language" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="scriptPath" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

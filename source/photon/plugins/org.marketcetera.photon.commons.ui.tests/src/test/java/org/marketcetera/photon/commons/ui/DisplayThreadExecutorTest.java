@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -47,7 +48,7 @@ public class DisplayThreadExecutorTest extends SimpleExecutorServiceTestBase {
             public void run() {
                 mDisplay = new Display();
                 latch.countDown();
-                while (!Thread.currentThread().isInterrupted()) {
+                while (!mDisplay.isDisposed() && !Thread.currentThread().isInterrupted()) {
                     mDisplay.readAndDispatch();
                     Thread.yield();
                 }
@@ -125,6 +126,19 @@ public class DisplayThreadExecutorTest extends SimpleExecutorServiceTestBase {
                 DisplayThreadExecutor.getInstance(null);
             }
         };
+    }
+
+    @Test
+    public void testSynchronousExecuteOnDisplayThread() throws Exception {
+        final ExecutorService fixture = createFixture();
+        mDisplay.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                Runnable mock = mock(Runnable.class);
+                fixture.execute(mock);
+                verify(mock).run();
+            }
+        });
     }
 
 }

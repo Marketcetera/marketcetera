@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.marketcetera.photon.commons.ui.ColorManagerTest;
 import org.marketcetera.photon.commons.ui.DisplayThreadExecutorTest;
 import org.marketcetera.photon.commons.ui.JFaceUtilsTest;
-import org.marketcetera.photon.commons.ui.LocalizedLabelMessageInfoProviderTest;
+import org.marketcetera.photon.commons.ui.LocalizedLabelContainerClassInfoTest;
 import org.marketcetera.photon.commons.ui.LocalizedLabelTest;
 import org.marketcetera.photon.commons.ui.SWTUtilsTest;
 import org.marketcetera.photon.commons.ui.databinding.CustomWizardPageSupportTest;
@@ -40,7 +40,7 @@ import org.marketcetera.photon.commons.ui.table.TableSupportTest;
         org.marketcetera.photon.commons.ui.MessagesTest.class,
         SWTUtilsTest.class, JFaceUtilsTest.class, LocalizedLabelTest.class,
         DisplayThreadExecutorTest.class, ObservingCompositeTest.class,
-        LocalizedLabelMessageInfoProviderTest.class,
+        LocalizedLabelContainerClassInfoTest.class,
         CustomWizardPageSupportTest.class, DataBindingUtilsTest.class })
 public class CommonsUISuite {
 }

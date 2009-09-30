@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -15,8 +14,11 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+
 import org.marketcetera.module.ModuleURN;
+
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
@@ -26,12 +28,16 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFact
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /**
  * <!-- begin-user-doc -->
  * An implementation of the model <b>Package</b>.
  * <!-- end-user-doc -->
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public class StrategyEngineCorePackageImpl extends EPackageImpl implements
         StrategyEngineCorePackage {
     /**
@@ -534,7 +540,7 @@ public class StrategyEngineCorePackageImpl extends EPackageImpl implements
                 !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getStrategyEngine_ConnectionState(), this
                 .getConnectionState(), "connectionState", "", 1, 1,
-                StrategyEngine.class, !IS_TRANSIENT, !IS_VOLATILE,
+                StrategyEngine.class, IS_TRANSIENT, !IS_VOLATILE,
                 IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
                 IS_ORDERED);
         initEReference(getStrategyEngine_Connection(), this
@@ -597,11 +603,21 @@ public class StrategyEngineCorePackageImpl extends EPackageImpl implements
                 IS_UNIQUE, IS_ORDERED);
         addEException(op, this.getException());
 
+        op = addEOperation(strategyEngineConnectionEClass, null, "refresh", 0,
+                1, IS_UNIQUE, IS_ORDERED);
+        addEParameter(op, this.getDeployedStrategy(), "strategy", 1, 1,
+                IS_UNIQUE, IS_ORDERED);
+        addEException(op, this.getException());
+
+        op = addEOperation(strategyEngineConnectionEClass, null, "refresh", 0,
+                1, IS_UNIQUE, IS_ORDERED);
+        addEException(op, this.getException());
+
         initEClass(strategyEClass, Strategy.class, "Strategy", !IS_ABSTRACT,
                 !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getStrategy_InstanceName(), ecorePackage.getEString(),
-                "instanceName", null, 0, 1, Strategy.class, !IS_TRANSIENT,
-                !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+                "instanceName", null, 1, 1, Strategy.class, !IS_TRANSIENT,
+                !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE,
                 !IS_DERIVED, IS_ORDERED);
         initEAttribute(getStrategy_Language(), ecorePackage.getEString(),
                 "language", null, 1, 1, Strategy.class, !IS_TRANSIENT,
@@ -658,7 +674,6 @@ public class StrategyEngineCorePackageImpl extends EPackageImpl implements
         initEEnum(connectionStateEEnum, ConnectionState.class,
                 "ConnectionState");
         addEEnumLiteral(connectionStateEEnum, ConnectionState.DISCONNECTED);
-        addEEnumLiteral(connectionStateEEnum, ConnectionState.CONNECTING);
         addEEnumLiteral(connectionStateEEnum, ConnectionState.CONNECTED);
 
         initEEnum(strategyStateEEnum, StrategyState.class, "StrategyState");

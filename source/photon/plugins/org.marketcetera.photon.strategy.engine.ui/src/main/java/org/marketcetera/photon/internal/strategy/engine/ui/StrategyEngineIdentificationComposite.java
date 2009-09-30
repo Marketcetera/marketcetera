@@ -49,7 +49,7 @@ public class StrategyEngineIdentificationComposite extends ObservingComposite {
 
         {
             Text nameText = new Text(this, textStyle);
-            GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.CENTER).hint(180,
+            GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.CENTER).hint(200,
                     SWT.DEFAULT).applyTo(nameText);
             DataBindingUtils
                     .bindRequiredField(
@@ -69,7 +69,7 @@ public class StrategyEngineIdentificationComposite extends ObservingComposite {
 
         {
             Text descriptionText = new Text(this, textStyle);
-            GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.CENTER).hint(180,
+            GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.CENTER).hint(200,
                     SWT.DEFAULT).applyTo(descriptionText);
             DataBindingUtils
                     .bindValue(

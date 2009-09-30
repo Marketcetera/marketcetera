@@ -1,13 +1,15 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
 package org.marketcetera.photon.strategy.engine.model.core;
 
 import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EObject;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -29,7 +31,9 @@ import org.eclipse.emf.ecore.EObject;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyEngine()
  * @model
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface StrategyEngine extends EObject {
     /**
      * Returns the value of the '<em><b>Name</b></em>' attribute.
@@ -97,7 +101,7 @@ public interface StrategyEngine extends EObject {
      * @see org.marketcetera.photon.strategy.engine.model.core.ConnectionState
      * @see #setConnectionState(ConnectionState)
      * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyEngine_ConnectionState()
-     * @model default="" required="true"
+     * @model default="" required="true" transient="true"
      * @generated
      */
     ConnectionState getConnectionState();

@@ -49,21 +49,21 @@ public final class LocalizedLabel {
     private static final String LABEL_ENTRY_ID = "label"; //$NON-NLS-1$
     private static final String TOOLTIP_ENTRY_ID = "tooltip"; //$NON-NLS-1$
 
-    private final String mLabel;
-    private final String mTooltip;
+    private final I18NMessage0P mLabel;
+    private final I18NMessage0P mTooltip;
 
     /**
      * Constructor. Typically LocalizedLabel objects are constructed
      * automatically for a Messages class.
      * 
      * @param label
-     *            the raw label
+     *            the raw label message
      * @param tooltip
-     *            the tooltip
+     *            the tooltip message
      * @throws IllegalArgumentException
      *             if label or tooltip is null
      */
-    public LocalizedLabel(String label, String tooltip) {
+    public LocalizedLabel(I18NMessage0P label, I18NMessage0P tooltip) {
         if (label == null) {
             throw new IllegalArgumentException("label must not be null"); //$NON-NLS-1$
         }
@@ -75,12 +75,12 @@ public final class LocalizedLabel {
     }
 
     /**
-     * Returns the raw unformatted label as provided in the constructor.
+     * Returns the raw unformatted label.
      * 
      * @return the raw label
      */
     public String getRawLabel() {
-        return mLabel;
+        return mLabel.getText();
     }
 
     /**
@@ -93,12 +93,12 @@ public final class LocalizedLabel {
     }
 
     /**
-     * Returns the tooltip as provided in the constructor.
+     * Returns the tooltip.
      * 
      * @return the tooltip
      */
     public String getTooltip() {
-        return mTooltip;
+        return mTooltip.getText();
     }
 
     /**
@@ -137,6 +137,24 @@ public final class LocalizedLabel {
     public static String formatLabel(String message) {
         return Messages.LOCALIZED_LABEL__FORMAT_PATTERN.getText(message);
     }
+    
+    /**
+     * Returns the underlying message object for the label.
+     * 
+     * @return the label message
+     */
+    I18NMessage0P getLabelMessage() {
+        return mLabel;
+    }
+    
+    /**
+     * Returns the underlying message object for the tooltip.
+     * 
+     * @return the tooltip message
+     */
+    I18NMessage0P getTooltipMessage() {
+        return mTooltip;
+    }
 
     /**
      * {@link ReflectiveMessages} extension method.
@@ -147,10 +165,11 @@ public final class LocalizedLabel {
      *            the logger to assist in {@link I18NMessage} construction
      * @return the LocalizedLabel to assign to the field
      */
-    static LocalizedLabel initReflectiveMessages(String fieldName, I18NLoggerProxy logger) {
+    static LocalizedLabel initReflectiveMessages(String fieldName,
+            I18NLoggerProxy logger) {
         String messageId = fieldName.toLowerCase();
         return new LocalizedLabel(new I18NMessage0P(logger, messageId,
-                LABEL_ENTRY_ID).getText(), new I18NMessage0P(logger, messageId,
-                TOOLTIP_ENTRY_ID).getText());
+                LABEL_ENTRY_ID), new I18NMessage0P(logger, messageId,
+                TOOLTIP_ENTRY_ID));
     }
 }

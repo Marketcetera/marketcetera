@@ -5,6 +5,8 @@ import org.junit.runners.Suite;
 import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenuTest;
 import org.marketcetera.photon.commons.ui.workbench.DataBindingPropertyPageTest;
 import org.marketcetera.photon.commons.ui.workbench.MessagesTest;
+import org.marketcetera.photon.commons.ui.workbench.ProgressUtilsTest;
+import org.marketcetera.photon.commons.ui.workbench.SafeHandlerTest;
 
 /* $License$ */
 
@@ -17,6 +19,6 @@ import org.marketcetera.photon.commons.ui.workbench.MessagesTest;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses( { MessagesTest.class, DataBindingPropertyPageTest.class,
-        ChooseColumnsMenuTest.class })
+        ChooseColumnsMenuTest.class, SafeHandlerTest.class, ProgressUtilsTest.class })
 public final class CommonsWorkbenchSuite {
 }

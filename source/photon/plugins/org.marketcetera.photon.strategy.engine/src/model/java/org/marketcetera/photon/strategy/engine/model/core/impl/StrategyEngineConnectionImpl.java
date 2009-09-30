@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * $License$
  *
  * $Id$
  */
@@ -8,15 +7,20 @@ package org.marketcetera.photon.strategy.engine.model.core.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * <!-- begin-user-doc -->
@@ -30,7 +34,9 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePack
  * </p>
  *
  * @generated
+ * @since $Release$
  */
+@ClassVersion("$Id$")
 public abstract class StrategyEngineConnectionImpl extends EObjectImpl
         implements StrategyEngineConnection {
     /**
@@ -41,7 +47,7 @@ public abstract class StrategyEngineConnectionImpl extends EObjectImpl
      * @generated
      * @ordered
      */
-    protected StrategyEngine engine;
+    protected volatile StrategyEngine engine;
 
     /**
      * <!-- begin-user-doc -->
@@ -65,9 +71,9 @@ public abstract class StrategyEngineConnectionImpl extends EObjectImpl
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
+     * @generated NOT
      */
-    public StrategyEngine getEngine() {
+    public synchronized StrategyEngine getEngine() {
         if (engine != null && engine.eIsProxy()) {
             InternalEObject oldEngine = (InternalEObject) engine;
             engine = (StrategyEngine) eResolveProxy(oldEngine);
@@ -142,59 +148,39 @@ public abstract class StrategyEngineConnectionImpl extends EObjectImpl
                     newEngine, newEngine));
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public DeployedStrategy deploy(Strategy strategy) throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public void undeploy(DeployedStrategy strategy) throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public void start(DeployedStrategy strategy) throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public void stop(DeployedStrategy strategy) throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
+    @Override
     public void update(DeployedStrategy strategy, Strategy newConfiguration)
             throws Exception {
-        // TODO: implement this method
-        // Ensure that you remove @generated or mark it @generated NOT
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void refresh(DeployedStrategy strategy) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void refresh() throws Exception {
         throw new UnsupportedOperationException();
     }
 

@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.ui,
  org.marketcetera.util
 Eclipse-ExtensibleAPI: true
 Export-Package: org.marketcetera.photon.commons.ui.workbench
+Import-Package: org.ops4j.peaberry.eclipse
