@@ -35,12 +35,16 @@
       <artifactId>photon-test-bundle</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google</groupId>
-      <artifactId>guice</artifactId>
+      <groupId>org.ops4j</groupId>
+      <artifactId>peaberry</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google</groupId>
-      <artifactId>guice-source</artifactId>
+      <groupId>org.ops4j</groupId>
+      <artifactId>peaberry.eclipse</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -206,6 +210,7 @@
                       <includes>
                         eclipse/plugins/org.eclipse.emf.common_*,
                         eclipse/plugins/org.eclipse.emf.ecore_*,
+                        eclipse/plugins/org.eclipse.emf.ecore.xmi_*,
                         eclipse/plugins/org.eclipse.emf.databinding_*
                       </includes>
                     </artifactItem>
@@ -217,6 +222,7 @@
                       <includes>
                         eclipse/plugins/org.eclipse.emf.common.source_*,
                         eclipse/plugins/org.eclipse.emf.ecore.source_*,
+                        eclipse/plugins/org.eclipse.emf.ecore.xmi.source_*,
                         eclipse/plugins/org.eclipse.emf.databinding.source_*
                       </includes>
                     </artifactItem>
