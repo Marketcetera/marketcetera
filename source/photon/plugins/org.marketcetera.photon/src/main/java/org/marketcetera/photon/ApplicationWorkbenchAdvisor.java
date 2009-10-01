@@ -38,7 +38,7 @@ import org.osgi.framework.Bundle;
  * @author gmiller
  * @author andrei@lissovski.org
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: ApplicationWorkbenchAdvisor.java 10532 2009-04-24 17:36:35Z will $
+ * @version $Id$
  * @since 1.0.0
  */
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {

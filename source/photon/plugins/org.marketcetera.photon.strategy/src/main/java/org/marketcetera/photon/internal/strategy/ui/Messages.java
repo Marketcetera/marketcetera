@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * The internationalization constants used by this package.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: Messages.java 10387 2009-03-06 23:34:32Z will $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: Messages.java 10387 2009-03-06 23:34:32Z will $")//$NON-NLS-1$
+@ClassVersion("$Id$")//$NON-NLS-1$
 final class Messages {
 	
     static I18NMessage0P NEW_STRATEGY_WIZARD_PAGE_DESCRIPTION;
