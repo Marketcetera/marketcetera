@@ -33,10 +33,10 @@ import org.marketcetera.photon.ui.PhotonConsole;
  * 
  * @author gmiller
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: ApplicationWorkbenchWindowAdvisor.java 10643 2009-07-13 17:48:29Z will $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ApplicationWorkbenchWindowAdvisor.java 10643 2009-07-13 17:48:29Z will $")
+@ClassVersion("$Id$")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements Messages {
 
 	/**

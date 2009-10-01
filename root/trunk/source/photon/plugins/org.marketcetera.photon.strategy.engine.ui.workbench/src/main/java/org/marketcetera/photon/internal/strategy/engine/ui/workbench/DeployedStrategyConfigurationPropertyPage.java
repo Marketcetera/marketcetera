@@ -57,10 +57,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * {@link PropertyPage} to edit {@link DeployedStrategy} properties.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: StrategyPropertyPage.java 10387 2009-03-06 23:34:32Z will $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: StrategyPropertyPage.java 10387 2009-03-06 23:34:32Z will $")
+@ClassVersion("$Id$")
 public class DeployedStrategyConfigurationPropertyPage extends
         DataBindingPropertyPage {
 
@@ -249,7 +249,7 @@ public class DeployedStrategyConfigurationPropertyPage extends
      * {@link IPropertySource} for adapting a DeployedStrategy parameters for
      * the standard property sheet.
      */
-    @ClassVersion("$Id: StrategyPropertyPage.java 10387 2009-03-06 23:34:32Z will $")
+    @ClassVersion("$Id$")
     private final static class StrategyPropertySource implements
             IPropertySource {
 
