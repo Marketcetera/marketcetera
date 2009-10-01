@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Commons
 Bundle-SymbolicName: org.marketcetera.photon.commons
-Bundle-Version: 1.6.0
+Bundle-Version: 1.7.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.marketcetera.photon.commons,
  org.marketcetera.photon.commons.emf,

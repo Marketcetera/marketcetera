@@ -31,7 +31,7 @@ public interface ClientVersion
      * The client's application ID: the version.
      */
 
-    public static final String APP_ID_VERSION=ApplicationVersion.VERSION_1_6_0;
+    public static final String APP_ID_VERSION=ApplicationVersion.VERSION_1_7_0;
 
     /**
      * The client's application ID: the ID.

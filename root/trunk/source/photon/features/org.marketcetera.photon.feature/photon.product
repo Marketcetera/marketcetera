@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Photon 1.6.0" id="org.marketcetera.photon.Photon" application="org.marketcetera.photon.product.application" version="1.6.0" useFeatures="true" includeLaunchers="true">
+<product name="Photon 1.7.0" id="org.marketcetera.photon.Photon" application="org.marketcetera.photon.product.application" version="1.7.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.marketcetera.photon/icons/marketcetera/logo-150x55.gif"/>
       <text>
          Marketcetera Photon
 
-Version: 1.6.0
+Version: 1.7.0
 Build: metc.build.number
 
 (c) Copyright Marketcetera Inc 2006-2009.  All rights reserved.
@@ -50,7 +50,7 @@ Visit http://www.marketcetera.org
    </plugins>
 
    <features>
-      <feature id="org.marketcetera.photon.feature" version="1.6.0"/>
+      <feature id="org.marketcetera.photon.feature" version="1.7.0"/>
    </features>
 
 

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Commons UI Tests
 Bundle-SymbolicName: org.marketcetera.photon.commons.ui.tests;singleton:=true
-Bundle-Version: 1.6.0
+Bundle-Version: 1.7.0
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon.commons.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
