@@ -86,11 +86,6 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
     </dependency> 
-    <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <resources>
