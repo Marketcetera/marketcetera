@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Global filter configuration: allowed orders.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.1.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_allowed_orders"
+   class="org.marketcetera.ors.filters.OrderLimitFilter">
+    <!--
+      - If true, orders with type 'MARKET' are rejected. If omitted, false
+      - is assumed.
+      -->
+    <property
+     name="disallowMarketOrders"
+     value="false"/>
+    <!--
+      - Minimum order price; it is checked only if a price is set.
+      - If omitted, no minimum price check is performed.
+      -->
+    <property
+     name="minPrice"
+     value="0"/>
+    <!--
+      - Maximum order price; it is checked only if a price is set.
+      - If omitted, no maximum price check is performed.
+      -->
+    <property
+     name="maxPrice"
+     value="100"/>
+    <!--
+      - Maximum order quantity; it is checked only if a quantity is set.
+      - If omitted, no maximum quantity check is performed.
+      -->
+    <property
+     name="maxQuantityPerOrder"
+     value="10000"/>
+    <!--
+      - Maximum order notional (product of price and quantity); it is
+      - checked only if both a price and a quantity are set. If omitted,
+      - no maximum notional check is performed.
+      -->
+    <property
+     name="maxNotionalPerOrder"
+     value="100000"/>
+  </bean>
+</beans>
