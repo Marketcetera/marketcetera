@@ -42,6 +42,6 @@ public interface PositionMetricsCalculator {
      *            the new trade
      * @return the updated metrics
      */
-    PositionMetrics trade(Trade trade);
+    PositionMetrics trade(Trade<?> trade);
 
 }

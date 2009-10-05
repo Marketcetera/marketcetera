@@ -6,7 +6,6 @@ import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqu
 import java.math.BigDecimal;
 
 import org.junit.Test;
-import org.marketcetera.core.position.impl.PositionKeyImpl;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -16,23 +15,25 @@ import com.google.common.collect.ImmutableMap;
  * Tests {@link ImmutablePositionSupport}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: ImmutablePositionSupportTest.java 10534 2009-04-25 00:38:38Z
+ *          klim $
  * @since 1.5.0
  */
 public class ImmutablePositionSupportTest {
 
     @Test
     public void testGetIncomingPositionFor() {
-        ImmutablePositionSupport fixture = new ImmutablePositionSupport(ImmutableMap.of(
-                new PositionKeyImpl("abc", "abc", "abc"), BigDecimal.ZERO, new PositionKeyImpl(
-                        "abc", "abc", null), BigDecimal.TEN));
-        assertThat(fixture.getIncomingPositionFor(new PositionKeyImpl("abc", "abc", "abc")),
-                comparesEqualTo(0));
-        assertThat(fixture.getIncomingPositionFor(new PositionKeyImpl("abc", "abc", null)),
-                comparesEqualTo(10));
+        ImmutablePositionSupport fixture = new ImmutablePositionSupport(
+                ImmutableMap.of(PositionKeyFactory.createEquityKey("abc",
+                        "abc", "abc"), BigDecimal.ZERO, PositionKeyFactory
+                        .createEquityKey("abc", "abc", null), BigDecimal.TEN));
+        assertThat(fixture.getIncomingPositionFor(PositionKeyFactory
+                .createEquityKey("abc", "abc", "abc")), comparesEqualTo(0));
+        assertThat(fixture.getIncomingPositionFor(PositionKeyFactory
+                .createEquityKey("abc", "abc", null)), comparesEqualTo(10));
         // if the key doesn't exist the result should be zero, not null
-        assertThat(fixture.getIncomingPositionFor(new PositionKeyImpl("xyz", "abc", "abc")),
-                comparesEqualTo(0));
+        assertThat(fixture.getIncomingPositionFor(PositionKeyFactory
+                .createEquityKey("xyz", "abc", "abc")), comparesEqualTo(0));
     }
 
 }

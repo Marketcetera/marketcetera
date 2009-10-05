@@ -12,6 +12,7 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.position.Equity;
 import org.marketcetera.core.position.PositionKey;
 
 /* $License$ */
@@ -100,7 +101,7 @@ public class ReportHistoryServices {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    public Map<PositionKey, BigDecimal> getPositionsAsOf
+    public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf
         (SimpleUser inUser,
          Date inDate)
         throws PersistenceException

@@ -32,8 +32,8 @@ import ca.odell.glazedlists.event.ListEventListener;
 @ClassVersion("$Id$")
 public final class PositionRowUpdater {
 
-    private final ListEventListener<Trade> mListChangeListener;
-    private EventList<Trade> mTrades;
+    private final ListEventListener<Trade<?>> mListChangeListener;
+    private EventList<Trade<?>> mTrades;
     private final PositionRowImpl mPositionRow;
     private final MarketDataSupport mMarketDataSupport;
     private final SymbolChangeListener mSymbolChangeListener;
@@ -66,16 +66,16 @@ public final class PositionRowUpdater {
      * @param marketData
      *            the market data provider
      */
-    public PositionRowUpdater(PositionRowImpl positionRow, EventList<Trade> trades,
+    public PositionRowUpdater(PositionRowImpl positionRow, EventList<Trade<?>> trades,
             MarketDataSupport marketData) {
         Validate.noNullElements(new Object[] { positionRow, marketData });
         mPositionRow = positionRow;
         mMarketDataSupport = marketData;
 
-        mListChangeListener = new ListEventListener<Trade>() {
+        mListChangeListener = new ListEventListener<Trade<?>>() {
 
             @Override
-            public void listChanged(ListEvent<Trade> listChanges) {
+            public void listChanged(ListEvent<Trade<?>> listChanges) {
                 PositionRowUpdater.this.listChanged(listChanges);
             }
         };
@@ -108,7 +108,7 @@ public final class PositionRowUpdater {
      * @throws IllegalStateException
      *             if this object is already connected to list of trades
      */
-    public void connect(EventList<Trade> trades) {
+    public void connect(EventList<Trade<?>> trades) {
         if (mTrades != null) {
             throw new IllegalStateException();
         }
@@ -139,7 +139,9 @@ public final class PositionRowUpdater {
                 @Override
                 public void run() {
                     mTickPending.set(false);
-                    mPositionRow.setPositionMetrics(mCalculator.tick(mLastTradePrice));
+                    if (mCalculator != null) {
+                        mPositionRow.setPositionMetrics(mCalculator.tick(mLastTradePrice));
+                    }
                 }
             });
         }
@@ -168,13 +170,13 @@ public final class PositionRowUpdater {
         }
     }
 
-    private void listChanged(ListEvent<Trade> listChanges) {
+    private void listChanged(ListEvent<Trade<?>> listChanges) {
         assert listChanges.getSourceList() == mTrades;
         while (listChanges.next()) {
             final int changeIndex = listChanges.getIndex();
             final int changeType = listChanges.getType();
             if (changeType == ListEvent.INSERT && mTrades.size() == changeIndex + 1) {
-                Trade trade = mTrades.get(changeIndex);
+                Trade<?> trade = mTrades.get(changeIndex);
                 mPositionRow.setPositionMetrics(mCalculator.trade(trade));
             } else {
                 mPositionRow.setPositionMetrics(recalculate());
@@ -187,7 +189,7 @@ public final class PositionRowUpdater {
                 .getIncomingPosition(), mClosePrice);
         PositionMetrics metrics = mCalculator.tick(mLastTradePrice);
         if (mTrades != null) {
-            for (Trade trade : mTrades) {
+            for (Trade<?> trade : mTrades) {
                 metrics = mCalculator.trade(trade);
             }
         }

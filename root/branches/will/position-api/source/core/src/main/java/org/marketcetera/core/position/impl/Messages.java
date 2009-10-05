@@ -21,7 +21,8 @@ public interface Messages {
     /**
      * The message provider
      */
-    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("core_position"); //$NON-NLS-1$
+    static final I18NMessageProvider PROVIDER = new I18NMessageProvider(
+            "core_position"); //$NON-NLS-1$
     /**
      * The message logger.
      */
@@ -30,8 +31,8 @@ public interface Messages {
     /**
      * The messages.
      */
-    static final I18NMessageNP EXECUTION_REPORT_ADAPTER_TO_STRING = new I18NMessageNP(LOGGER,
-            "execution_report_adapter.to_string"); //$NON-NLS-1$
-    static final I18NMessage1P VALIDATION_MATCHER_INVALID_TRADE = new I18NMessage1P(LOGGER,
-            "validation_matcher.invalid_trade"); //$NON-NLS-1$
+    static final I18NMessageNP EXECUTION_REPORT_ADAPTER_TO_STRING = new I18NMessageNP(
+            LOGGER, "execution_report_adapter.to_string"); //$NON-NLS-1$
+    static final I18NMessage1P VALIDATION_MATCHER_INVALID_EXECUTION_REPORT = new I18NMessage1P(
+            LOGGER, "validation_matcher.invalid_execution_report"); //$NON-NLS-1$
 }
