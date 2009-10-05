@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.position.MarketDataSupport;
@@ -37,17 +34,17 @@ public class PositionRowUpdaterConcurrencyTest {
     private static final String ACCOUNT = "A1";
     private static final String TRADER = "1";
     private PositionRowImpl mRow;
-    private BasicEventList<Trade> mTrades;
+    private BasicEventList<Trade<?>> mTrades;
     private final Object mSimulatedDataFlowLock = new Object();
     private MockMarketData mMockMarketData;
     private Lock mLock;
 
     @Before
     public void before() {
-        BasicConfigurator.configure();
-        Logger.getLogger("MarketData").setLevel(Level.TRACE);
-        Logger.getLogger("ListUpdate").setLevel(Level.TRACE);
-        mTrades = new BasicEventList<Trade>();
+//        BasicConfigurator.configure();
+//        Logger.getLogger("MarketData").setLevel(Level.TRACE);
+//        Logger.getLogger("ListUpdate").setLevel(Level.TRACE);
+        mTrades = new BasicEventList<Trade<?>>();
         mLock = mTrades.getReadWriteLock().writeLock();
         mRow = new PositionRowImpl(SYMBOL, ACCOUNT, TRADER, new BigDecimal(100));
         mMockMarketData = new MockMarketData();

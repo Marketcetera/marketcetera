@@ -4,6 +4,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.*;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.core.position.Equity;
 import org.marketcetera.core.position.PositionKey;
 
 import java.util.Date;
@@ -139,7 +140,7 @@ public interface Client {
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
-    public Map<PositionKey, BigDecimal> getPositionsAsOf(Date inDate)
+    public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf(Date inDate)
             throws ConnectionException;
 
     /**

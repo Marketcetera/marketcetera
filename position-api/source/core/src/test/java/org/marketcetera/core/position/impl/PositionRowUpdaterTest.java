@@ -33,11 +33,11 @@ public class PositionRowUpdaterTest {
     private SymbolChangeListener mListener;
     private PositionRowUpdater mFixture;
     private PositionRowImpl mRow;
-    private BasicEventList<Trade> mTrades;
+    private BasicEventList<Trade<?>> mTrades;
 
     @Before
     public void before() {
-        mTrades = new BasicEventList<Trade>();
+        mTrades = new BasicEventList<Trade<?>>();
         mRow = new PositionRowImpl(SYMBOL, ACCOUNT, TRADER, new BigDecimal(100));
         mFixture = new PositionRowUpdater(mRow, mTrades, new MockMarketData());
     }
@@ -121,7 +121,7 @@ public class PositionRowUpdaterTest {
         assertPosition(mFixture.getPosition(), "0", "50", "0", "50", "0", "50");
     }
 
-    private Trade createTrade(String quantity, String price) {
+    private Trade<?> createTrade(String quantity, String price) {
         return new MockTrade(SYMBOL, ACCOUNT, TRADER, new BigDecimal(price), new BigDecimal(
                 quantity), 1L);
     }

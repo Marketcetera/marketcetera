@@ -12,4 +12,5 @@
  * @version $Id$
  * @since 1.5.0
  */
+@javax.annotation.ParametersAreNonnullByDefault
 package org.marketcetera.core.position;

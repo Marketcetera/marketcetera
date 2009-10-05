@@ -1,5 +1,6 @@
 package org.marketcetera.client;
 
+import org.marketcetera.core.position.Equity;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.spring.SpringUtils;
@@ -27,7 +28,6 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
-import java.util.HashMap;
 import java.math.BigDecimal;
 import java.beans.ExceptionListener;
 
@@ -164,7 +164,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     @Override
-    public Map<PositionKey, BigDecimal> getPositionsAsOf
+    public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf
         (Date inDate)
         throws ConnectionException
     {
