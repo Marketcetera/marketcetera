@@ -2,6 +2,8 @@ package org.marketcetera.core.position;
 
 import java.math.BigDecimal;
 
+import javax.annotation.Nullable;
+
 import org.marketcetera.core.position.Option.Type;
 import org.marketcetera.core.position.impl.EquityImpl;
 import org.marketcetera.core.position.impl.OptionImpl;
@@ -33,7 +35,7 @@ public class PositionKeyFactory {
      *             if symbol is null or empty
      */
     public static PositionKey<Equity> createEquityKey(String symbol,
-            String account, String traderId) {
+            @Nullable String account, @Nullable String traderId) {
         return new PositionKeyImpl<Equity>(new EquityImpl(symbol), account,
                 traderId);
     }
@@ -53,8 +55,8 @@ public class PositionKeyFactory {
      *             if any argument is null, or if symbol or expiry is empty
      */
     public static PositionKey<Option> createOptionKey(String symbol, Type type,
-            String expiry, BigDecimal strikePrice, String account,
-            String traderId) {
+            String expiry, BigDecimal strikePrice, @Nullable String account,
+            @Nullable String traderId) {
         return new PositionKeyImpl<Option>(new OptionImpl(symbol, type, expiry,
                 strikePrice), account, traderId);
     }
