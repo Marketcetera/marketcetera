@@ -37,7 +37,7 @@ public interface StrategyAgentEnginePackage extends EPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    String eNAME = "strategyagent";
+    String eNAME = "sa";
 
     /**
      * The package namespace URI.
