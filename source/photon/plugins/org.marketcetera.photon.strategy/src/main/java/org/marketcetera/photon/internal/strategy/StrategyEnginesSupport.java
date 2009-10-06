@@ -12,8 +12,8 @@ import org.marketcetera.photon.strategy.StrategyUI;
 import org.marketcetera.photon.strategy.engine.IStrategyEngines;
 import org.marketcetera.photon.strategy.engine.embedded.EmbeddedEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
-import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
-import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEnginesSupport;
+import org.marketcetera.photon.strategy.engine.model.sa.StrategyAgentEngine;
+import org.marketcetera.photon.strategy.engine.sa.ui.StrategyAgentEnginesSupport;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleContext;
 

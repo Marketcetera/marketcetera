@@ -4,7 +4,7 @@ import static org.eclipse.swtbot.swt.finder.SWTBotAssert.pass;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createStrategy;
-import static org.marketcetera.photon.strategy.engine.strategyagent.tests.StrategyAgentEngineTestUtil.assertStrategyAgentEngine;
+import static org.marketcetera.photon.strategy.engine.sa.tests.StrategyAgentEngineTestUtil.assertStrategyAgentEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +20,9 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.junit.Test;
 import org.marketcetera.photon.strategy.StrategyUI;
-import org.marketcetera.photon.strategy.engine.model.strategyagent.StrategyAgentEngine;
-import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEnginesSupport;
-import org.marketcetera.photon.strategy.engine.strategyagent.ui.StrategyAgentEnginesSupportPersistenceTest;
+import org.marketcetera.photon.strategy.engine.model.sa.StrategyAgentEngine;
+import org.marketcetera.photon.strategy.engine.sa.ui.StrategyAgentEnginesSupport;
+import org.marketcetera.photon.strategy.engine.sa.ui.StrategyAgentEnginesSupportPersistenceTest;
 import org.marketcetera.photon.test.AbstractUIRunner.UI;
 import org.osgi.framework.BundleContext;
 
