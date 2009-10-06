@@ -7,10 +7,10 @@ Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.marketcetera.photon.strategy.engine.model.strategyagent,
- org.marketcetera.photon.strategy.engine.model.strategyagent.impl,
- org.marketcetera.photon.strategy.engine.model.strategyagent.util,
- org.marketcetera.photon.strategy.engine.strategyagent
+Export-Package: org.marketcetera.photon.strategy.engine.model.sa,
+ org.marketcetera.photon.strategy.engine.model.sa.impl,
+ org.marketcetera.photon.strategy.engine.model.sa.util,
+ org.marketcetera.photon.strategy.engine.sa
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.marketcetera.photon.strategy.engine;visibility:=reexport,

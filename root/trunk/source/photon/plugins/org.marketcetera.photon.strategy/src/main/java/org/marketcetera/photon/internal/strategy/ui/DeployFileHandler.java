@@ -13,7 +13,7 @@ import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory;
 import org.marketcetera.photon.strategy.engine.ui.DeployStrategyWizard;
 import org.marketcetera.photon.strategy.engine.ui.workbench.AbstractDeployWizardHandler;
-import org.marketcetera.photon.strategy.engine.ui.workbench.resources.StrategyEngineWorkspaceUI;
+import org.marketcetera.photon.strategy.engine.ui.workbench.ws.StrategyEngineWorkspaceUI;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.inject.Inject;
