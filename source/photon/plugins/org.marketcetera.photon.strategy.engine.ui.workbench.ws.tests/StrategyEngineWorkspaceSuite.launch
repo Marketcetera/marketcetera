@@ -15,7 +15,7 @@
 <booleanAttribute key="includeOptional" value="true"/>
 <stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/org.marketcetera.photon.strategy.engine.ui.workbench.resources.tests/src/test/java/org/marketcetera/photon/strategy/engine/ui/workbench/resources/tests/StrategyEngineWorkspaceSuite.java"/>
+<listEntry value="/org.marketcetera.photon.strategy.engine.ui.workbench.ws.tests/src/test/java/org/marketcetera/photon/strategy/engine/ui/workbench/resources/tests/StrategyEngineWorkspaceSuite.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -26,7 +26,7 @@
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.marketcetera.photon.strategy.engine.ui.workbench.resources.tests.StrategyEngineWorkspaceSuite"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.marketcetera.photon.strategy.engine.ui.workbench.resources.tests"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.marketcetera.photon.strategy.engine.ui.workbench.ws.tests"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="org.marketcetera.photon.Photon"/>
