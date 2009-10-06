@@ -1,7 +1,7 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
-import static org.marketcetera.trade.PutOrCall.*;
+import static org.marketcetera.trade.OptionType.*;
 import org.marketcetera.core.Pair;
 
 import java.util.Arrays;
@@ -9,40 +9,40 @@ import java.util.List;
 
 /* $License$ */
 /**
- * Tests {@link PutOrCall}
+ * Tests {@link OptionType}
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id")
-public class PutOrCallTest extends FIXEnumTestBase<Integer, PutOrCall> {
+public class OptionTypeTest extends FIXEnumTestBase<Integer, OptionType> {
     @Override
-    protected PutOrCall getInstanceForFIXValue(Integer inFIXValue) {
-        return PutOrCall.getInstanceForFIXValue(inFIXValue);
+    protected OptionType getInstanceForFIXValue(Integer inFIXValue) {
+        return OptionType.getInstanceForFIXValue(inFIXValue);
     }
 
     @Override
-    protected Integer getFIXValue(PutOrCall e) {
-        return e.getFIXValue();
+    protected Integer getFIXValue(OptionType inValue) {
+        return inValue.getFIXValue();
     }
 
     @Override
-    protected PutOrCall unknownInstance() {
+    protected OptionType unknownInstance() {
         return Unknown;
     }
 
     @Override
-    protected List<PutOrCall> getValues() {
+    protected List<OptionType> getValues() {
         return Arrays.asList(values());
     }
 
     @Override
-    protected List<Pair<PutOrCall, Integer>> knownValues() {
+    protected List<Pair<OptionType, Integer>> knownValues() {
         return Arrays.asList(
-                new Pair<PutOrCall, Integer>(Put,
+                new Pair<OptionType, Integer>(Put,
                         quickfix.field.PutOrCall.PUT),
-                new Pair<PutOrCall, Integer>(Call,
+                new Pair<OptionType, Integer>(Call,
                         quickfix.field.PutOrCall.CALL)
         );
     }

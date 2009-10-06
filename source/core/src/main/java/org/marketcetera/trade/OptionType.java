@@ -15,9 +15,9 @@ import java.util.Collections;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public enum PutOrCall {
+public enum OptionType {
     /**
-     * Sentinel value for PutOrCall that the system is not currently
+     * Sentinel value for OptionType that the system is not currently
      * aware of.
      */
     Unknown(Integer.MIN_VALUE),
@@ -40,14 +40,14 @@ public enum PutOrCall {
     }
 
     /**
-     * Gets the PutOrCall instance.
+     * Gets the OptionType instance.
      *
      * @param inValue the FIX int value.
      * 
-     * @return the PutOrCall instance.
+     * @return the OptionType instance.
      */
-    static PutOrCall getInstanceForFIXValue(int inValue) {
-        PutOrCall s = mFIXValueMap.get(inValue);
+    static OptionType getInstanceForFIXValue(int inValue) {
+        OptionType s = mFIXValueMap.get(inValue);
         return s == null
                 ? Unknown
                 : s;
@@ -58,16 +58,16 @@ public enum PutOrCall {
      *
      * @param inFIXValue the FIX int value for this instance.
      */
-    private PutOrCall(int inFIXValue) {
+    private OptionType(int inFIXValue) {
         mFIXValue = inFIXValue;
     }
 
     private final int mFIXValue;
-    private static final Map<Integer, PutOrCall> mFIXValueMap;
+    private static final Map<Integer, OptionType> mFIXValueMap;
 
     static {
-        Map<Integer, PutOrCall> table = new HashMap<Integer, PutOrCall>();
-        for (PutOrCall s : PutOrCall.values()) {
+        Map<Integer, OptionType> table = new HashMap<Integer, OptionType>();
+        for (OptionType s : OptionType.values()) {
             table.put(s.getFIXValue(), s);
         }
         mFIXValueMap = Collections.unmodifiableMap(table);
