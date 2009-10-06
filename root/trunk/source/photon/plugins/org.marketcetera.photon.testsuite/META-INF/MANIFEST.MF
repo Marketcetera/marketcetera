@@ -20,9 +20,9 @@ Require-Bundle: org.marketcetera.photon.commons,
  org.marketcetera.photon,
  org.marketcetera.photon.strategy.engine.ui,
  org.marketcetera.photon.strategy.engine.ui.workbench,
- org.marketcetera.photon.strategy.engine.ui.workbench.resources,
+ org.marketcetera.photon.strategy.engine.ui.workbench.ws,
  org.marketcetera.photon.strategy.engine.embedded,
- org.marketcetera.photon.strategy.engine.strategyagent,
- org.marketcetera.photon.strategy.engine.strategyagent.ui,
- org.marketcetera.photon.strategy.engine.strategyagent.ui.workbench
+ org.marketcetera.photon.strategy.engine.sa,
+ org.marketcetera.photon.strategy.engine.sa.ui,
+ org.marketcetera.photon.strategy.engine.sa.ui.workbench
 Bundle-Vendor: Marketcetera, Inc.
