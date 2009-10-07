@@ -21,6 +21,7 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
@@ -56,7 +57,7 @@ public class StrategyEnginesContentProviderTest extends PhotonTestBase {
 
     @Before
     @UI
-    public void before() throws Throwable {
+    public void before() throws Exception {
         // StrategyEnginesContentProvider must be attached to a
         // tree viewer to function
         mHelper = new StrategyEngineTreeTestHelper();
@@ -101,10 +102,10 @@ public class StrategyEnginesContentProviderTest extends PhotonTestBase {
     }
 
     @Test
-    public void testSelection() throws Throwable {
+    public void testSelection() throws Exception {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
-            public void run() throws Throwable {
+            public void run() throws Exception {
                 mHelper.getTreeViewer().setSelection(
                         new StructuredSelection(mStrategy1a));
             }
@@ -114,13 +115,13 @@ public class StrategyEnginesContentProviderTest extends PhotonTestBase {
     }
 
     @Test
-    public void testAddAndRemove() throws Throwable {
+    public void testAddAndRemove() throws Exception {
         SWTBot bot = new SWTBot();
         SWTBotTree tree = bot.tree();
         assertThat(tree.rowCount(), is(2));
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
-            public void run() throws Throwable {
+            public void run() throws Exception {
                 mHelper.getModel().remove(0);
             }
         });
@@ -128,7 +129,7 @@ public class StrategyEnginesContentProviderTest extends PhotonTestBase {
         assertThat(tree.getAllItems()[0].getText(), is("Strategy Engine 2"));
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
-            public void run() throws Throwable {
+            public void run() throws Exception {
                 mHelper.getModel().add(createEngine("ABC"));
             }
         });
@@ -136,7 +137,7 @@ public class StrategyEnginesContentProviderTest extends PhotonTestBase {
         assertThat(tree.getAllItems()[1].getText(), is("ABC"));
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
-            public void run() throws Throwable {
+            public void run() throws Exception {
                 mHelper.getTreeViewer().setInput(
                         new WritableList(buildEngines(mEngine1),
                                 StrategyEngine.class));
@@ -144,6 +145,21 @@ public class StrategyEnginesContentProviderTest extends PhotonTestBase {
         });
         assertThat(tree.rowCount(), is(1));
         assertThat(tree.getAllItems()[0].getText(), is("Strategy Engine 1"));
+    }
+
+    @Test
+    @Ignore("until Eclipse bug is fixed, see EMFPropertyListenerCaveatTest")
+    public void testClear() throws Exception {
+        SWTBot bot = new SWTBot();
+        SWTBotTree tree = bot.tree();
+        assertThat(tree.rowCount(), is(2));
+        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+            @Override
+            public void run() throws Exception {
+                mEngine1.getDeployedStrategies().clear();
+            }
+        });
+        assertThat(tree.rowCount(), is(0));
     }
 
     @Test

@@ -18,18 +18,17 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ImmediateExecutorService;
-import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.core.Credentials;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.LogoutService;
-import org.marketcetera.photon.internal.strategy.engine.sa.InternalStrategyAgentEngine;
 import org.marketcetera.photon.module.ISinkDataManager;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
 import org.marketcetera.photon.strategy.engine.model.sa.StrategyAgentEngine;
 import org.marketcetera.photon.strategy.engine.sa.tests.StrategyAgentEngineTestUtil;
+import org.marketcetera.photon.test.ExpectedFailure;
 import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.saclient.ConnectionException;
 import org.marketcetera.saclient.ConnectionStatusListener;
@@ -190,6 +189,17 @@ public class InternalStrategyAgentEngineTest extends PhotonTestBase {
         SAClientParameters parameters = new SAClientParameters("me", "pass"
                 .toCharArray(), "url", "host", 1000);
         when(mMockFactory.create(parameters)).thenReturn(mMockClient);
+        doAnswer(new Answer<Void>() {
+            private boolean once;
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                if (!once) {
+                    once = true;
+                    mConnectionStatusListener.receiveConnectionStatus(false);
+                }
+                return null;
+            }
+        }).when(mMockClient).close();
         mFixture.connect();
         mFixture.getDeployedStrategies().add(createDeployedStrategy("ABC"));
         mFixture.disconnect();

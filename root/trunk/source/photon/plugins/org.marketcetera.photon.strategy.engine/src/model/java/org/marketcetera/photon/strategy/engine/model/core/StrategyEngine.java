@@ -151,8 +151,9 @@ public interface StrategyEngine extends EObject {
      * It is bidirectional and its opposite is '{@link org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy#getEngine <em>Engine</em>}'.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of the '<em>Deployed Strategies</em>' reference list isn't clear,
-     * there really should be more of a description here...
+     * <b>WARNING:</b> Do not call {@link List#clear()} on the returned list if
+     * the object is bound to a UI using EMF Data Binding due to due to <a
+     * href="http://bugs.eclipse.org/291641">http://bugs.eclipse.org/291641</a>.
      * </p>
      * <!-- end-user-doc -->
      * @return the value of the '<em>Deployed Strategies</em>' reference list.
