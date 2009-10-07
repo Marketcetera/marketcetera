@@ -1,7 +1,7 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.core.position.Equity;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.UserID;

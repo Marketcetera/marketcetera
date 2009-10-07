@@ -1,6 +1,7 @@
 package org.marketcetera.core.position.impl;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.PositionKeyFactory.createEquityKey;
 import static org.marketcetera.core.position.PositionKeyFactory.createOptionKey;
@@ -16,12 +17,13 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.junit.Test;
-import org.marketcetera.core.position.Equity;
-import org.marketcetera.core.position.Option;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.PositionKeyTestBase;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.log.ActiveLocale;
 
 import com.google.common.collect.ImmutableList;
@@ -57,20 +59,20 @@ public class PositionKeyImplTest extends PositionKeyTestBase {
 
         createEquityKey("IBM", null, null),
 
-        createOptionKey("ABC", Option.Type.CALL, "20090101", BigDecimal.ONE,
+        createOptionKey("ABC", "20090101", BigDecimal.ONE, OptionType.Call,
                 null, null),
 
-        createOptionKey("ABC", Option.Type.CALL, "20090101", BigDecimal.ONE,
+        createOptionKey("ABC", "20090101", BigDecimal.ONE, OptionType.Call,
                 "Account", null),
 
-        createOptionKey("ABC", Option.Type.PUT, "20090101", BigDecimal.ONE,
+        createOptionKey("ABC", "20090101", BigDecimal.ONE, OptionType.Put,
                 null, null),
 
         createEquityKey("ABC", null, "Me"),
 
         createEquityKey("ABC", "Account", "Me"),
 
-        createOptionKey("ABC", Option.Type.CALL, "20090101", BigDecimal.ONE,
+        createOptionKey("ABC", "20090101", BigDecimal.ONE, OptionType.Call,
                 "Account", "Me"));
     }
 
@@ -82,6 +84,18 @@ public class PositionKeyImplTest extends PositionKeyTestBase {
                 new PositionKeyImpl<Equity>(null, "abc", "abc");
             }
         };
+    }
+
+    @Test
+    public void testWhitespaceAccountIsNull() throws Exception {
+        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "", "abc").getAccount());
+        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "     ", "abc").getAccount());
+    }
+
+    @Test
+    public void testWhitespaceTraderIdIsNull() throws Exception {
+        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "", "abc").getAccount());
+        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "  \n   ", "abc").getAccount());
     }
 
     @Test
@@ -99,7 +113,7 @@ public class PositionKeyImplTest extends PositionKeyTestBase {
     @Test
     public void testJAXBSerialize() throws Exception {
         JAXBContext jc = JAXBContext.newInstance(PositionKeyImpl.class,
-                EquityImpl.class, OptionImpl.class);
+                Equity.class, Option.class);
         Marshaller m = jc.createMarshaller();
         Unmarshaller u = jc.createUnmarshaller();
 
@@ -107,7 +121,7 @@ public class PositionKeyImplTest extends PositionKeyTestBase {
 
         createEquityKey("ABC", "Account", "Me"),
 
-        createOptionKey("ABC", Option.Type.CALL, "20090101", BigDecimal.ONE,
+        createOptionKey("ABC", "20090101", BigDecimal.ONE, OptionType.Call,
                 "Account", "Me"))
 
         ) {

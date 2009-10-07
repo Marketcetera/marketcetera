@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
 
-import org.marketcetera.core.position.Option.Type;
-import org.marketcetera.core.position.impl.EquityImpl;
-import org.marketcetera.core.position.impl.OptionImpl;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -23,42 +23,44 @@ import org.marketcetera.util.misc.ClassVersion;
 public class PositionKeyFactory {
 
     /**
-     * Creates an equity position key.
+     * Creates an equity position key. Note that account and traderId are
+     * converted to null if they only contain whitespace.
      * 
      * @param symbol
-     *            symbol, cannot be null or empty
+     *            symbol, cannot be null or whitespace
      * @param account
      *            account
      * @param traderId
      *            trader id
      * @throws IllegalArgumentException
-     *             if symbol is null or empty
+     *             if symbol is null or whitespace
      */
     public static PositionKey<Equity> createEquityKey(String symbol,
             @Nullable String account, @Nullable String traderId) {
-        return new PositionKeyImpl<Equity>(new EquityImpl(symbol), account,
+        return new PositionKeyImpl<Equity>(new Equity(symbol), account,
                 traderId);
     }
 
     /**
-     * Creates an option position key.
+     * Creates an option position key. Note that account and traderId are
+     * converted to null if they only contain whitespace.
      * 
      * @param symbol
      *            the option symbol
-     * @param type
-     *            the option type
      * @param expiry
      *            the option expiry
      * @param strikePrice
      *            the option strike price
+     * @param type
+     *            the option type
      * @throws IllegalArgumentException
-     *             if any argument is null, or if symbol or expiry is empty
+     *             if any argument is null, or if symbol or expiry is whitespace
      */
-    public static PositionKey<Option> createOptionKey(String symbol, Type type,
-            String expiry, BigDecimal strikePrice, @Nullable String account,
-            @Nullable String traderId) {
-        return new PositionKeyImpl<Option>(new OptionImpl(symbol, type, expiry,
-                strikePrice), account, traderId);
+    public static PositionKey<Option> createOptionKey(String symbol,
+            String expiry, BigDecimal strikePrice, OptionType type,
+            @Nullable String account, @Nullable String traderId) {
+        return new PositionKeyImpl<Option>(new Option(symbol, expiry,
+                strikePrice, type), account, traderId);
     }
 
     private PositionKeyFactory() {
