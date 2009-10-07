@@ -1,5 +1,6 @@
 package org.marketcetera.photon.internal.strategy.engine.sa;
 
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -30,7 +31,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * .
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: InternalStrategyAgentEngine.java 10795 2009-10-06 20:05:38Z
+ *          will $
  * @since $Release$
  */
 @ClassVersion("$Id$")
@@ -53,7 +55,7 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
         }
     };
 
-    private volatile SAClient mClient;
+    private final AtomicReference<SAClient> mClient = new AtomicReference<SAClient>();
 
     /**
      * Constructor.
@@ -105,13 +107,13 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
                     @Override
                     public boolean authenticate(ICredentials credentials) {
                         try {
-                            mClient = mClientFactory
+                            mClient.set(mClientFactory
                                     .create(new SAClientParameters(credentials
                                             .getUsername(), credentials
                                             .getPassword().toCharArray(),
                                             getJmsUrl(),
                                             getWebServiceHostname(),
-                                            getWebServicePort()));
+                                            getWebServicePort())));
                             return true;
                         } catch (ConnectionException e) {
                             exception.set(e);
@@ -126,7 +128,8 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
             }
         }
 
-        mClient.addConnectionStatusListener(new ConnectionStatusListener() {
+        SAClient client = mClient.get();
+        client.addConnectionStatusListener(new ConnectionStatusListener() {
             @Override
             public void receiveConnectionStatus(boolean inStatus) {
                 if (!inStatus) {
@@ -140,7 +143,7 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
         });
 
         if (mSinkDataManager != null) {
-            mClient.addDataReceiver(new DataReceiver() {
+            client.addDataReceiver(new DataReceiver() {
                 @Override
                 public void receiveData(Object inObject) {
                     mSinkDataManager.sendData(getName(), inObject);
@@ -150,7 +153,7 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
 
         mLogoutService.addLogoutRunnable(mLogoutRunnable);
         final StrategyAgentConnection newConnection = new StrategyAgentConnection(
-                mClient, mGUIExecutor);
+                client, mGUIExecutor);
         ExceptionUtils.launderedGet(mGUIExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -164,18 +167,22 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
 
     @Override
     public void disconnect() throws InterruptedException {
-        if (mClient == null) {
+        SAClient client = mClient.getAndSet(null);
+        if (client == null) {
             return;
         }
-        mClient.close();
-        mClient = null;
+        client.close();
         mLogoutService.removeLogoutRunnable(mLogoutRunnable);
         ExceptionUtils.launderedGet(mGUIExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 setConnection(null);
                 setConnectionState(ConnectionState.DISCONNECTED);
-                getDeployedStrategies().clear();
+                for (Iterator<?> iterator = getDeployedStrategies().iterator(); iterator
+                        .hasNext();) {
+                    iterator.next();
+                    iterator.remove();
+                }
             }
         }));
     }

@@ -7,6 +7,7 @@ import org.marketcetera.photon.internal.strategy.engine.ui.DeployStrategyComposi
 import org.marketcetera.photon.internal.strategy.engine.ui.DeployedStrategyConfigurationCompositeTest;
 import org.marketcetera.photon.internal.strategy.engine.ui.StrategyEngineIdentificationCompositeTest;
 import org.marketcetera.photon.strategy.engine.ui.DeployStrategyWizardTest;
+import org.marketcetera.photon.strategy.engine.ui.EMFPropertyListenerCaveatTest;
 import org.marketcetera.photon.strategy.engine.ui.ObservableListTreeContentProviderCaveatTest;
 import org.marketcetera.photon.strategy.engine.ui.ScriptSelectionButtonTest;
 import org.marketcetera.photon.strategy.engine.ui.StrategyEngineColorsTest;
@@ -30,6 +31,7 @@ import org.marketcetera.photon.strategy.engine.ui.AbstractStrategyEnginesSupport
         StrategyEnginesLabelProviderTest.class,
         StrategyEnginesContentProviderTest.class,
         ObservableListTreeContentProviderCaveatTest.class,
+        EMFPropertyListenerCaveatTest.class,
         StrategyEngineStatusDecoratorTest.class,
         DeployStrategyCompositeTest.class, ScriptSelectionButtonTest.class,
         DeployStrategyWizardTest.class,
