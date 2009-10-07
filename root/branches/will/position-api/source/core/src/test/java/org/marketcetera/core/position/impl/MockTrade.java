@@ -2,10 +2,10 @@ package org.marketcetera.core.position.impl;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.core.position.Equity;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.Trade;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

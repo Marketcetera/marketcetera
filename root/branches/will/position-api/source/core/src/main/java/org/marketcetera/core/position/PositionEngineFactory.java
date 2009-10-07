@@ -7,6 +7,7 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.impl.Messages;
 import org.marketcetera.core.position.impl.PositionEngineImpl;
 import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderStatus;
@@ -218,9 +219,8 @@ public class PositionEngineFactory {
              */
             UserID viewer = mReport.getViewerID();
             mKey = PositionKeyFactory.createEquityKey(mReport.getSymbol()
-                    .toString(), mReport.getAccount(), viewer == null ? null
-                    : viewer.toString());
-            System.out.println(this);
+                    .getFullSymbol(), mReport.getAccount(),
+                    viewer == null ? null : viewer.toString());
         }
 
         @Override
@@ -258,7 +258,7 @@ public class PositionEngineFactory {
         @Override
         public String toString() {
             return Messages.EXECUTION_REPORT_ADAPTER_TO_STRING.getText(String
-                    .valueOf(getPositionKey().getInstrument().getUnderlying()),
+                    .valueOf(getPositionKey().getInstrument().getSymbol()),
                     String.valueOf(getPositionKey().getAccount()), String
                             .valueOf(getPositionKey().getTraderId()), String
                             .valueOf(getPrice()),

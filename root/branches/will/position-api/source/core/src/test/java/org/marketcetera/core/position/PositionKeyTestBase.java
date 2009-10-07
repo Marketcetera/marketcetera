@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.junit.Test;
+import org.marketcetera.util.test.EqualityAssert;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -39,28 +40,17 @@ public abstract class PositionKeyTestBase {
     abstract protected PositionKey<?> createEqualFixture();
 
     /**
-     * Returns a set of unique keys in sorted order. The keys should not be
-     * equal to {@link #createFixture()}.
+     * Returns a list of unique instruments that are not equal to
+     * {@link #createFixture()}.
      * 
-     * @return sorted keys that are all unequal
+     * @return a list of unequal keys
      */
     abstract protected List<PositionKey<?>> createDifferentFixtures();
 
     @Test
-    public void testEquals() throws Exception {
-        EqualsTestHelper.testEquals(createFixture(), createEqualFixture(),
-                createDifferentFixtures());
-    }
-
-    @Test
-    public void testHashCode() throws Exception {
-        EqualsTestHelper.testHashCode(createFixture(), createEqualFixture(),
-                createDifferentFixtures());
-    }
-
-    @Test
-    public void testOrdering() throws Exception {
-        OrderingTestHelper.testOrdering(createDifferentFixtures());
+    public void testEqualsAndHashCode() throws Exception {
+        EqualityAssert.assertEquality(createFixture(), createEqualFixture(),
+                createDifferentFixtures().toArray());
     }
 
     @Test

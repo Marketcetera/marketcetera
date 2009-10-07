@@ -1,12 +1,12 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.core.position.Equity;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.UserID;

@@ -1,4 +1,4 @@
-package org.marketcetera.core.position;
+package org.marketcetera.trade;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
@@ -6,6 +6,8 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.junit.Test;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.test.EqualityAssert;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -19,7 +21,7 @@ import com.google.common.collect.Iterables;
  * @version $Id$
  * @since $Release$
  */
-public abstract class AbstractInstrumentTestBase<T extends Instrument> {
+public abstract class InstrumentTestBase<T extends Instrument> {
 
     /**
      * Returns an instance of the instrument.
@@ -37,28 +39,17 @@ public abstract class AbstractInstrumentTestBase<T extends Instrument> {
     abstract protected T createEqualFixture();
 
     /**
-     * Returns a set of unique instruments in sorted order. The keys should not
-     * be equal to {@link #createFixture()}.
+     * Returns a list of unique instruments that are not equal to
+     * {@link #createFixture()}.
      * 
-     * @return sorted keys that are all unequal
+     * @return a list of unequal items
      */
-    abstract protected List<? extends Instrument> createDifferentFixtures();
+    abstract protected List<T> createDifferentFixtures();
 
     @Test
-    public void testEquals() throws Exception {
-        EqualsTestHelper.testEquals(createFixture(), createEqualFixture(),
-                createDifferentFixtures());
-    }
-
-    @Test
-    public void testHashCode() throws Exception {
-        EqualsTestHelper.testHashCode(createFixture(), createEqualFixture(),
-                createDifferentFixtures());
-    }
-
-    @Test
-    public void testOrdering() throws Exception {
-        OrderingTestHelper.testOrdering(createDifferentFixtures());
+    public void testEqualsAndHashCode() throws Exception {
+        EqualityAssert.assertEquality(createFixture(), createEqualFixture(),
+                createDifferentFixtures().toArray());
     }
 
     @Test
@@ -66,7 +57,7 @@ public abstract class AbstractInstrumentTestBase<T extends Instrument> {
         for (Instrument instrument : Iterables.concat(ImmutableList.of(
                 createFixture(), createEqualFixture()),
                 createDifferentFixtures())) {
-            assertNullOrNotEmpty(instrument.getUnderlying());
+            assertNullOrNotEmpty(instrument.getSymbol());
         }
     }
 

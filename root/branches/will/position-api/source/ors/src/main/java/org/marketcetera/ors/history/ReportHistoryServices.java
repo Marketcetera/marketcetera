@@ -7,12 +7,12 @@ import java.util.Map;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.position.Equity;
 import org.marketcetera.core.position.PositionKey;
 
 /* $License$ */

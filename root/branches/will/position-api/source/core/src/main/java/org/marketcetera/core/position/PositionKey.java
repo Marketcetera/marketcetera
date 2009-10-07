@@ -3,6 +3,7 @@ package org.marketcetera.core.position;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -16,8 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 @Immutable
-public interface PositionKey<T extends Instrument> extends
-        Comparable<PositionKey<?>> {
+public interface PositionKey<T extends Instrument> {
 
     /**
      * Returns the instrument used by this position.
@@ -30,14 +30,14 @@ public interface PositionKey<T extends Instrument> extends
     /**
      * Returns the account of the key.
      * 
-     * @return the account of the key, never empty but null if unknown
+     * @return the account of the key, null if unknown
      */
     String getAccount();
 
     /**
      * Returns the trader id of the key.
      * 
-     * @return the trader id of the key, never empty but null if unknown
+     * @return the trader id of the key, null if unknown
      */
     String getTraderId();
 }

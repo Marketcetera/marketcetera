@@ -6,14 +6,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.core.position.Instrument;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -30,16 +30,17 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PositionKeyImpl<T extends Instrument> implements PositionKey<T> {
 
-    @XmlAnyElement(lax=true)
+    @XmlAnyElement(lax = true)
     private final T mInstrument;
     private final String mAccount;
     private final String mTraderId;
 
     /**
-     * Constructor.
+     * Constructor. Note that account and traderId are converted to null if they
+     * only contain whitespace.
      * 
-     * @param symbol
-     *            symbol, cannot be null or empty
+     * @param instrument
+     *            instrument, cannot be null
      * @param account
      *            account
      * @param traderId
@@ -51,8 +52,8 @@ public class PositionKeyImpl<T extends Instrument> implements PositionKey<T> {
             @Nullable String traderId) {
         Validate.notNull(instrument);
         mInstrument = instrument;
-        mAccount = account;
-        mTraderId = traderId;
+        mAccount = StringUtils.trimToNull(account);
+        mTraderId = StringUtils.trimToNull(traderId);
     }
 
     /**
@@ -106,16 +107,5 @@ public class PositionKeyImpl<T extends Instrument> implements PositionKey<T> {
                 .append("account", mAccount) //$NON-NLS-1$
                 .append("traderId", mTraderId) //$NON-NLS-1$
                 .toString();
-    }
-
-    @Override
-    public int compareTo(PositionKey<?> o) {
-        /*
-         * The order here affects the default order of positions returned by the
-         * engine.
-         */
-        return new CompareToBuilder().append(mTraderId, o.getTraderId())
-                .append(mInstrument, o.getInstrument()).append(mAccount,
-                        o.getAccount()).toComparison();
     }
 }

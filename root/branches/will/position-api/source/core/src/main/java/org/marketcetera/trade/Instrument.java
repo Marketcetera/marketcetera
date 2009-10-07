@@ -1,26 +1,26 @@
-package org.marketcetera.core.position;
+package org.marketcetera.trade;
 
-import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Identifies an equity.
+ * A financial instrument.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface Equity extends Instrument {
+@Immutable
+public interface Instrument {
 
     /**
-     * Returns equity symbol.
+     * Returns the symbol for the instrument, if any.
      * 
-     * @return the equity symbol, never null or empty string
+     * @return the symbol, null if the instrument has none
      */
-    @Nonnull
     String getSymbol();
 }

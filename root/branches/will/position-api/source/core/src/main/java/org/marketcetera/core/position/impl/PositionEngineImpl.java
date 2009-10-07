@@ -62,7 +62,8 @@ public final class PositionEngineImpl implements PositionEngine {
      * Supports grouping of trades by trader id, symbol, and account.
      */
     @ClassVersion("$Id$")
-    private final static class TradeGroupMatcher implements GroupMatcher<Trade<?>> {
+    private final static class TradeGroupMatcher implements
+            GroupMatcher<Trade<?>> {
 
         private final PositionKey<?> mKey;
 
@@ -82,7 +83,8 @@ public final class PositionEngineImpl implements PositionEngine {
         }
 
         private int internalCompare(PositionKey<?> key) {
-            return mKey.compareTo(key);
+            return new CompareToBuilder().append(mKey, key,
+                    PositionKeyComparator.INSTANCE).toComparison();
         }
     }
 
@@ -280,7 +282,7 @@ public final class PositionEngineImpl implements PositionEngine {
 
     private void addPosition(PositionKey<?> key, EventList<Trade<?>> trades) {
         PositionRowImpl positionRow = new PositionRowImpl(key.getInstrument()
-                .getUnderlying(), key.getAccount(), key.getTraderId(),
+                .getSymbol(), key.getAccount(), key.getTraderId(),
                 mIncomingPositionSupport.getIncomingPositionFor(key));
         PositionRowUpdater updater = new PositionRowUpdater(positionRow,
                 trades, mMarketDataSupport);

@@ -1,6 +1,5 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.core.position.Equity;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.util.misc.ClassVersion;

@@ -1,23 +1,21 @@
-package org.marketcetera.core.position.impl;
+package org.marketcetera.trade;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.core.position.AbstractInstrument;
-import org.marketcetera.core.position.Equity;
-import org.marketcetera.core.position.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Implementation of {@link Equity}.
+ * Identifies an equity.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -26,9 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EquityImpl extends AbstractInstrument implements Equity {
-
-    private static final int TYPE_ID = 10;
+public class Equity implements Instrument {
 
     private final String mSymbol;
 
@@ -38,45 +34,47 @@ public class EquityImpl extends AbstractInstrument implements Equity {
      * @param symbol
      *            symbol
      * @throws IllegalArgumentException
-     *             if symbol is null or empty
+     *             if symbol is null or whitespace
      */
-    public EquityImpl(String symbol) {
-        Validate.notEmpty(symbol);
+    public Equity(String symbol) {
+        symbol = StringUtils.trimToNull(symbol);
+        Validate.notNull(symbol);
         mSymbol = symbol;
     }
 
     /**
      * Parameterless constructor for use only by JAXB.
      */
-    protected EquityImpl() {
+    protected Equity() {
         mSymbol = null;
     }
 
-    @Override
-    public String getUnderlying() {
-        return mSymbol;
-    }
-
-    @Override
-    public int getTypeId() {
-        return TYPE_ID;
-    }
-
+    /**
+     * Returns equity symbol.
+     * 
+     * @return the equity symbol, never null
+     */
     @Override
     public String getSymbol() {
         return mSymbol;
     }
-    
+
     @Override
-    protected void enhanceHashCode(HashCodeBuilder builder) {
-        builder.append(mSymbol);
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof Equity))
+            return false;
+        Equity otherEquity = (Equity) obj;
+        return new EqualsBuilder().append(mSymbol, otherEquity.getSymbol())
+                .isEquals();
     }
 
     @Override
-    protected void refineCompareTo(CompareToBuilder builder,
-            Instrument otherInstrument) {
-        Equity otherEquity = (Equity) otherInstrument;
-        builder.append(mSymbol, otherEquity.getSymbol());
+    public int hashCode() {
+        return new HashCodeBuilder().append(mSymbol).toHashCode();
     }
 
     @Override
