@@ -1,15 +1,16 @@
 package org.marketcetera.client;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import javax.jws.WebService;
+
 import javax.jws.WebParam;
+import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.UserID;
@@ -32,7 +33,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
 
 @WebService(targetNamespace = "http://marketcetera.org/services")
 @ClassVersion("$Id$")
-@XmlSeeAlso({PositionKeyImpl.class})
+@XmlSeeAlso({PositionKeyImpl.class,Equity.class})
 public interface Service
     extends ServiceBase
 {
@@ -148,7 +149,7 @@ public interface Service
      * completed.
      */
 
-    MapWrapper<PositionKey,BigDecimal> getPositionsAsOf
+    MapWrapper<PositionKey<Equity>,BigDecimal> getPositionsAsOf
         (@WebParam(name= "context")ClientContext context,
          @WebParam(name= "date")DateWrapper date)
         throws RemoteException;

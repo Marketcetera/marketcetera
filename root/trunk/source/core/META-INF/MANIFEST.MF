@@ -6,7 +6,8 @@ Bundle-Name: Marketcetera Core Library
 Bundle-Version: 1.7.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.util;visibility:=reexport,
- org.marketcetera.util-test;resolution:=optional
+ org.marketcetera.util-test;resolution:=optional,
+ org.marketcetera.test.thirdparty;resolution:=optional
 Export-Package: org.marketcetera.core,
  org.marketcetera.core.notifications,
  org.marketcetera.core.position,

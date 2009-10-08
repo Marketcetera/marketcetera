@@ -60,7 +60,7 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
     }
 
     @Override
-    public synchronized PositionMetrics trade(final Trade trade) {
+    public synchronized PositionMetrics trade(final Trade<?> trade) {
         processTrade(trade.getQuantity(), trade.getPrice());
         return createPositionMetrics();
     }

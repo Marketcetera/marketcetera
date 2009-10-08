@@ -1,25 +1,31 @@
 package org.marketcetera.core.position;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * The tuple that identifies a unique position.
- *
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public interface PositionKey {
-    
+@Immutable
+public interface PositionKey<T extends Instrument> {
+
     /**
-     * Returns the symbol of the key.
+     * Returns the instrument used by this position.
      * 
-     * @return the symbol of the key, should never be null
+     * @return the instrument, never null
      */
-    String getSymbol();
+    @Nonnull
+    T getInstrument();
 
     /**
      * Returns the account of the key.
@@ -34,5 +40,4 @@ public interface PositionKey {
      * @return the trader id of the key, null if unknown
      */
     String getTraderId();
-
 }

@@ -1,11 +1,12 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.impl.PositionKeyImpl;
+import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.UserID;
@@ -138,16 +139,16 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    static Map<PositionKey, BigDecimal> getPositionsAsOf
+    static Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf
         (final SimpleUser inUser,
          final Date inDate)
         throws PersistenceException
     {
-        return executeRemote(new Transaction<Map<PositionKey, BigDecimal>>() {
+        return executeRemote(new Transaction<Map<PositionKey<Equity>, BigDecimal>>() {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Map<PositionKey, BigDecimal> execute(EntityManager em,
+            public Map<PositionKey<Equity>, BigDecimal> execute(EntityManager em,
                                                     PersistContext context) {
                 Query query = em.createNamedQuery(
                         "allPositions");  //$NON-NLS-1$
@@ -156,8 +157,8 @@ class ExecutionReportSummary extends EntityBase {
                 query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
                 query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
                         TemporalType.TIMESTAMP);
-                HashMap<PositionKey, BigDecimal> map =
-                        new HashMap<PositionKey, BigDecimal>();
+                HashMap<PositionKey<Equity>, BigDecimal> map =
+                        new HashMap<PositionKey<Equity>, BigDecimal>();
                 List<?> list = query.getResultList();
                 Object[] columns;
                 for(Object o: list) {
@@ -168,7 +169,7 @@ class ExecutionReportSummary extends EntityBase {
                         //second one is the account
                         //third one is the actor ID
                         //fourth one is the position
-                        map.put(new PositionKeyImpl
+                        map.put(PositionKeyFactory.createEquityKey
                                 ((String)columns[0],
                                  (String)columns[1],
                                  ((columns[2]==null)?null:

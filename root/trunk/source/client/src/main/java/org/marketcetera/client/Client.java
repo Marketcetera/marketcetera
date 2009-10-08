@@ -139,7 +139,7 @@ public interface Client {
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
-    public Map<PositionKey, BigDecimal> getPositionsAsOf(Date inDate)
+    public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf(Date inDate)
             throws ConnectionException;
 
     /**

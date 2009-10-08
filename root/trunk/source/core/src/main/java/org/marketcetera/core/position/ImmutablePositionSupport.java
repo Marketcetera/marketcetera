@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableMap;
 @ClassVersion("$Id$")
 public class ImmutablePositionSupport implements IncomingPositionSupport {
 
-    private final ImmutableMap<? extends PositionKey, BigDecimal> mPositions;
+    private final ImmutableMap<? extends PositionKey<?>, BigDecimal> mPositions;
 
     /**
      * Constructor.
@@ -27,18 +27,18 @@ public class ImmutablePositionSupport implements IncomingPositionSupport {
      * @param positions
      *            a map of positions, cannot be null, cannot have any null keys or values
      */
-    public ImmutablePositionSupport(Map<? extends PositionKey, BigDecimal> positions) {
+    public ImmutablePositionSupport(Map<? extends PositionKey<?>, BigDecimal> positions) {
         mPositions = ImmutableMap.copyOf(positions);
     }
 
     @Override
-    public BigDecimal getIncomingPositionFor(PositionKey key) {
+    public BigDecimal getIncomingPositionFor(PositionKey<?> key) {
         BigDecimal position = mPositions.get(key);
         return position != null ? position : BigDecimal.ZERO;
     }
 
     @Override
-    public ImmutableMap<? extends PositionKey, BigDecimal> getIncomingPositions() {
+    public ImmutableMap<? extends PositionKey<?>, BigDecimal> getIncomingPositions() {
         return mPositions;
     }
 

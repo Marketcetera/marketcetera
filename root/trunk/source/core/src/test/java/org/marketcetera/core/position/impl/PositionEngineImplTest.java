@@ -16,9 +16,9 @@ import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionEngineFactory;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.messagehistory.ReportHolder;
-import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.Side;
@@ -44,7 +44,6 @@ public class PositionEngineImplTest {
     private abstract class PositionEngineTestTemplate implements Runnable {
 
         EventList<ReportHolder> reports = new BasicEventList<ReportHolder>();
-        Factory factory = Factory.getInstance();
         long tradeCounter = 0;
 
         @Override
@@ -59,7 +58,7 @@ public class PositionEngineImplTest {
             validatePositions(positions);
         }
 
-        protected Map<? extends PositionKey, BigDecimal> getIncomingPositions() {
+        protected Map<? extends PositionKey<?>, BigDecimal> getIncomingPositions() {
             return Maps.newHashMap();
         }
 
@@ -81,10 +80,6 @@ public class PositionEngineImplTest {
 
         protected void clearReports() {
             reports.clear();
-        }
-
-        protected void addReport(ReportBase report) {
-            add(report);
         }
 
         protected void addTrade(String symbol, String account, long traderId, Side side,
@@ -522,8 +517,8 @@ public class PositionEngineImplTest {
             }
 
             @Override
-            protected Map<? extends PositionKey, BigDecimal> getIncomingPositions() {
-                return ImmutableMap.of(new PositionKeyImpl("METC", "personal", "1"),
+            protected Map<? extends PositionKey<?>, BigDecimal> getIncomingPositions() {
+                return ImmutableMap.of(PositionKeyFactory.createEquityKey("METC", "personal", "1"),
                         new BigDecimal("100"));
             }
             

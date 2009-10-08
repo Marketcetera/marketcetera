@@ -1,14 +1,19 @@
 package org.marketcetera.core.position.impl;
 
-import javax.xml.bind.annotation.XmlAccessorType;
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -21,46 +26,48 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PositionKeyImpl implements PositionKey {
+public class PositionKeyImpl<T extends Instrument> implements PositionKey<T> {
 
-    private final String mSymbol;
+    @XmlAnyElement(lax = true)
+    private final T mInstrument;
     private final String mAccount;
     private final String mTraderId;
 
     /**
-     * Constructor.
+     * Constructor. Note that account and traderId are converted to null if they
+     * only contain whitespace.
      * 
-     * @param symbol
-     *            symbol, cannot be null or empty
+     * @param instrument
+     *            instrument, cannot be null
      * @param account
      *            account
      * @param traderId
      *            trader id
      * @throws IllegalArgumentException
-     *             if symbol is null or empty
+     *             if instrument is null
      */
-    public PositionKeyImpl(String symbol, String account, String traderId) {
-        Validate.notEmpty(symbol);
-        mSymbol = symbol;
-        mAccount = account;
-        mTraderId = traderId;
+    public PositionKeyImpl(T instrument, @Nullable String account,
+            @Nullable String traderId) {
+        Validate.notNull(instrument);
+        mInstrument = instrument;
+        mAccount = StringUtils.trimToNull(account);
+        mTraderId = StringUtils.trimToNull(traderId);
     }
 
     /**
-     * Creates a new ID. This empty constructor is intended for use
-     * by JAXB.
+     * Parameterless constructor for use only by JAXB.
      */
-
     protected PositionKeyImpl() {
-        mSymbol = null;
+        mInstrument = null;
         mAccount = null;
         mTraderId = null;
     }
 
     @Override
-    public String getSymbol() {
-        return mSymbol;
+    public T getInstrument() {
+        return mInstrument;
     }
 
     @Override
@@ -75,24 +82,28 @@ public class PositionKeyImpl implements PositionKey {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(mSymbol).append(mAccount).append(mTraderId)
-                .toHashCode();
+        return new HashCodeBuilder().append(mInstrument).append(mAccount)
+                .append(mTraderId).toHashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        PositionKeyImpl other = (PositionKeyImpl) obj;
-        return new EqualsBuilder().append(mSymbol, other.mSymbol).append(mAccount, other.mAccount)
-                .append(mTraderId, other.mTraderId).isEquals();
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PositionKeyImpl<?> other = (PositionKeyImpl<?>) obj;
+        return new EqualsBuilder().append(mInstrument, other.mInstrument)
+                .append(mAccount, other.mAccount).append(mTraderId,
+                        other.mTraderId).isEquals();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("symbol", mSymbol) //$NON-NLS-1$
+                .appendToString(mInstrument.toString()) //$NON-NLS-1$
                 .append("account", mAccount) //$NON-NLS-1$
                 .append("traderId", mTraderId) //$NON-NLS-1$
                 .toString();
