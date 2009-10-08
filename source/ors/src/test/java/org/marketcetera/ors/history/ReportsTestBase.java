@@ -1,7 +1,7 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.impl.PositionKeyImpl;
+import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.persist.PersistTestBase;
@@ -297,11 +297,11 @@ public class ReportsTestBase extends TestCaseBase {
         return sServices.getPositionAsOf(inViewer, inDate, new MSymbol(inSymbol));
     }
 
-    protected static Map<PositionKey,BigDecimal> getPositions(Date inDate)
+    protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate)
             throws Exception {
         return getPositions(inDate, sViewer);
     }
-    protected static Map<PositionKey,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
+    protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
             throws Exception {
         return sServices.getPositionsAsOf(inViewer, inDate);
     }
@@ -350,14 +350,14 @@ public class ReportsTestBase extends TestCaseBase {
         return report;
     }
 
-    protected static PositionKey pos(String inSymbol) {
+    protected static PositionKey<Equity> pos(String inSymbol) {
         return pos(inSymbol,ACCOUNT,sActorID);
     }
-    protected static PositionKey pos(String inSymbol, String inAccount, UserID inActor) {
-        return new PositionKeyImpl(inSymbol,inAccount,Long.toString(inActor.getValue()));
+    protected static PositionKey<Equity> pos(String inSymbol, String inAccount, UserID inActor) {
+        return PositionKeyFactory.createEquityKey(inSymbol,inAccount,Long.toString(inActor.getValue()));
     }
-    protected static PositionKey pos(String inSymbol, String inAccount, String inActor) {
-        return new PositionKeyImpl(inSymbol,inAccount,inActor);
+    protected static PositionKey<Equity> pos(String inSymbol, String inAccount, String inActor) {
+        return PositionKeyFactory.createEquityKey(inSymbol,inAccount,inActor);
     }
 
     protected static Matcher<Map> isOfSize(int inLength) {

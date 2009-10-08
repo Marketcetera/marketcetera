@@ -2,6 +2,9 @@ package org.marketcetera.core.position;
 
 import java.math.BigDecimal;
 
+import javax.annotation.Nonnull;
+
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -14,34 +17,22 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public interface Trade {
-
+public interface Trade<T extends Instrument> {
+    
     /**
-     * Return the symbol that was traded.
+     * Return the position that this trade is associated with.
      * 
-     * @return the symbol, cannot be null or empty
+     * @return the position key, never null
      */
-    String getSymbol();
-
-    /**
-     * Return the account in which the trade was made.
-     * 
-     * @return the account, may be null
-     */
-    String getAccount();
-
-    /**
-     * Return the id of the trader who performed the trade.
-     * 
-     * @return the trader id, may be null
-     */
-    String getTraderId();
+    @Nonnull
+    PositionKey<T> getPositionKey();
 
     /**
      * Return the price of the trade.
      * 
      * @return the price, must be greater than zero
      */
+    @Nonnull
     BigDecimal getPrice();
 
     /**
@@ -50,6 +41,7 @@ public interface Trade {
      * 
      * @return the quantity, cannot be null or zero
      */
+    @Nonnull
     BigDecimal getQuantity();
 
     /**

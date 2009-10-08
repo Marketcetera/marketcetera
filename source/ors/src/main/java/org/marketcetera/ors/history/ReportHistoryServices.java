@@ -7,6 +7,7 @@ import java.util.Map;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
@@ -100,7 +101,7 @@ public class ReportHistoryServices {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    public Map<PositionKey, BigDecimal> getPositionsAsOf
+    public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf
         (SimpleUser inUser,
          Date inDate)
         throws PersistenceException

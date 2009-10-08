@@ -7,6 +7,7 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.impl.Messages;
 import org.marketcetera.core.position.impl.PositionEngineImpl;
 import org.marketcetera.messagehistory.ReportHolder;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderStatus;
@@ -45,14 +46,16 @@ public class PositionEngineFactory {
      * @throws IllegalArgumentException
      *             if any parameter is null
      */
-    public static PositionEngine create(EventList<Trade> trades,
-            IncomingPositionSupport incomingPositionSupport, MarketDataSupport marketDataSupport) {
-        Validate.noNullElements(new Object[] { trades, incomingPositionSupport });
+    public static PositionEngine create(EventList<Trade<?>> trades,
+            IncomingPositionSupport incomingPositionSupport,
+            MarketDataSupport marketDataSupport) {
+        Validate
+                .noNullElements(new Object[] { trades, incomingPositionSupport });
         Lock readLock = trades.getReadWriteLock().readLock();
         readLock.lock();
         try {
-            FilterList<Trade> validTrades = new FilterList<Trade>(trades, new ValidationMatcher());
-            return new PositionEngineImpl(validTrades, incomingPositionSupport, marketDataSupport);
+            return new PositionEngineImpl(trades, incomingPositionSupport,
+                    marketDataSupport);
         } finally {
             readLock.unlock();
         }
@@ -69,15 +72,19 @@ public class PositionEngineFactory {
      * @throws IllegalArgumentException
      *             if any parameter is null
      */
-    public static PositionEngine createFromReports(EventList<ReportBase> reports,
-            IncomingPositionSupport incomingPositionSupport, MarketDataSupport marketDataSupport) {
-        Validate.noNullElements(new Object[] { reports, incomingPositionSupport });
+    public static PositionEngine createFromReports(
+            EventList<ReportBase> reports,
+            IncomingPositionSupport incomingPositionSupport,
+            MarketDataSupport marketDataSupport) {
+        Validate
+                .noNullElements(new Object[] { reports, incomingPositionSupport });
         Lock readLock = reports.getReadWriteLock().readLock();
         readLock.lock();
         try {
-            FilterList<ReportBase> fills = new FilterList<ReportBase>(reports, new FillMatcher());
-            FunctionList<ReportBase, Trade> trades = new FunctionList<ReportBase, Trade>(fills,
-                    new TradeFunction());
+            FilterList<ReportBase> validFills = new FilterList<ReportBase>(
+                    reports, new ValidFillsMatcher());
+            FunctionList<ReportBase, Trade<?>> trades = new FunctionList<ReportBase, Trade<?>>(
+                    validFills, new TradeFunction());
             return create(trades, incomingPositionSupport, marketDataSupport);
         } finally {
             readLock.unlock();
@@ -95,15 +102,19 @@ public class PositionEngineFactory {
      * @throws IllegalArgumentException
      *             if any parameter is null
      */
-    public static PositionEngine createFromReportHolders(EventList<ReportHolder> holders,
-            IncomingPositionSupport incomingPositionSupport, MarketDataSupport marketDataSupport) {
-        Validate.noNullElements(new Object[] { holders, incomingPositionSupport });
+    public static PositionEngine createFromReportHolders(
+            EventList<ReportHolder> holders,
+            IncomingPositionSupport incomingPositionSupport,
+            MarketDataSupport marketDataSupport) {
+        Validate
+                .noNullElements(new Object[] { holders, incomingPositionSupport });
         Lock readLock = holders.getReadWriteLock().readLock();
         readLock.lock();
         try {
             FunctionList<ReportHolder, ReportBase> reports = new FunctionList<ReportHolder, ReportBase>(
                     holders, new ReportExtractor());
-            return createFromReports(reports, incomingPositionSupport, marketDataSupport);
+            return createFromReports(reports, incomingPositionSupport,
+                    marketDataSupport);
         } finally {
             readLock.unlock();
         }
@@ -113,7 +124,8 @@ public class PositionEngineFactory {
      * Function extracting reports from report holders.
      */
     @ClassVersion("$Id$")
-    private final static class ReportExtractor implements Function<ReportHolder, ReportBase> {
+    private final static class ReportExtractor implements
+            Function<ReportHolder, ReportBase> {
 
         @Override
         public ReportBase evaluate(ReportHolder sourceValue) {
@@ -123,42 +135,39 @@ public class PositionEngineFactory {
     }
 
     /**
-     * Matcher that matches fills and partial fills.
+     * Matcher that matches fills and partial fills that contain sufficient
+     * information to implement the {@link Trade} interface.
+     * <p>
+     * Invalid reports are logged and ignored.
      */
     @ClassVersion("$Id$")
-    private final static class FillMatcher implements Matcher<ReportBase> {
+    private final static class ValidFillsMatcher implements Matcher<ReportBase> {
 
         @Override
         public boolean matches(ReportBase item) {
             OrderStatus orderStatus = item.getOrderStatus();
             return item instanceof ExecutionReport
+                    && isValid((ExecutionReport) item)
                     && (orderStatus == OrderStatus.PartiallyFilled || orderStatus == OrderStatus.Filled);
         }
-    }
 
-    /**
-     * Matcher that matches valid trades, as specified by the {@link Trade} interface.
-     */
-    @ClassVersion("$Id$")
-    private final static class ValidationMatcher implements Matcher<Trade> {
-
-        @Override
-        public boolean matches(Trade item) {
-            if (notEmpty(item.getSymbol()) && positive(item.getPrice())
-                    && notZero(item.getQuantity())) {
+        private boolean isValid(ExecutionReport report) {
+            if (notEmpty(report.getSymbol()) && positive(report.getLastPrice())
+                    && notZero(report.getLastQuantity())) {
                 return true;
             } else {
-                Messages.VALIDATION_MATCHER_INVALID_TRADE.error(this, item);
+                Messages.VALIDATION_MATCHER_INVALID_EXECUTION_REPORT.error(
+                        this, report);
                 return false;
             }
         }
 
-        private boolean notEmpty(String string) {
-            return StringUtils.isNotEmpty(string);
-        }
-
         private boolean notNull(Object object) {
             return object != null;
+        }
+
+        private boolean notEmpty(MSymbol symbol) {
+            return notNull(symbol) && StringUtils.isNotEmpty(symbol.toString());
         }
 
         private boolean notZero(BigDecimal number) {
@@ -173,28 +182,28 @@ public class PositionEngineFactory {
     /**
      * Function mapping execution reports to trades.
      * <p>
-     * Note that even though the parameter type is ReportBase, the source elements must be
-     * ExecutionReport that represent fills or partial fills. Use {@link FillMatcher} to ensure
-     * this.
+     * Note that even though the parameter type is ReportBase, the source
+     * elements must be ExecutionReport that represent fills or partial fills.
+     * Use {@link ValidFillsMatcher} to ensure this.
      */
     @ClassVersion("$Id$")
-    private final static class TradeFunction implements Function<ReportBase, Trade> {
+    private final static class TradeFunction implements
+            Function<ReportBase, Trade<?>> {
 
         @Override
-        public Trade evaluate(ReportBase sourceValue) {
+        public Trade<?> evaluate(ReportBase sourceValue) {
             return new ExecutionReportAdapter((ExecutionReport) sourceValue);
         }
     }
 
     /**
      * Adapts an {@link ExecutionReport} to be used as a Trade.
-     * 
-     * Note: this class may break the contract of Trade, knowing that invalid trades will be
-     * filtered out in {@link PositionEngineFactory#create(EventList, IncomingPositionSupport)}.
      */
-    private final static class ExecutionReportAdapter implements Trade {
+    @ClassVersion("$Id$")
+    private final static class ExecutionReportAdapter implements Trade<Equity> {
 
         private final ExecutionReport mReport;
+        private final PositionKey<Equity> mKey;
 
         /**
          * Constructor.
@@ -204,25 +213,19 @@ public class PositionEngineFactory {
          */
         public ExecutionReportAdapter(ExecutionReport report) {
             mReport = report;
-        }
-
-        @Override
-        public String getSymbol() {
-            MSymbol symbol = mReport.getSymbol();
-            return symbol == null ? null : symbol.toString();
-        }
-
-        @Override
-        public String getAccount() {
-            return mReport.getAccount();
-        }
-
-        @Override
-        public String getTraderId() {
-            // use viewer id since the viewer is the originator, the one the position is associated
-            // with
+            /*
+             * Use viewer id since the viewer is the originator, the one the
+             * position is associated with.
+             */
             UserID viewer = mReport.getViewerID();
-            return viewer == null ? null : viewer.toString();
+            mKey = PositionKeyFactory.createEquityKey(mReport.getSymbol()
+                    .getFullSymbol(), mReport.getAccount(),
+                    viewer == null ? null : viewer.toString());
+        }
+
+        @Override
+        public PositionKey<Equity> getPositionKey() {
+            return mKey;
         }
 
         @Override
@@ -254,9 +257,12 @@ public class PositionEngineFactory {
 
         @Override
         public String toString() {
-            return Messages.EXECUTION_REPORT_ADAPTER_TO_STRING.getText(String.valueOf(getSymbol()),
-                    String.valueOf(getAccount()), String.valueOf(getTraderId()), String
-                            .valueOf(getPrice()), String.valueOf(getQuantity()), String
+            return Messages.EXECUTION_REPORT_ADAPTER_TO_STRING.getText(String
+                    .valueOf(getPositionKey().getInstrument().getSymbol()),
+                    String.valueOf(getPositionKey().getAccount()), String
+                            .valueOf(getPositionKey().getTraderId()), String
+                            .valueOf(getPrice()),
+                    String.valueOf(getQuantity()), String
                             .valueOf(getSequenceNumber()), mReport.toString());
         }
 

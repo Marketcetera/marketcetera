@@ -21,7 +21,7 @@ import org.marketcetera.core.position.Trade;
  */
 public class BasicCalculator implements PositionMetricsCalculator {
 
-    private List<Trade> mTrades = new ArrayList<Trade>();
+    private List<Trade<?>> mTrades = new ArrayList<Trade<?>>();
     private BigDecimal mTick;
     private final BigDecimal mIncomingPosition;
     private final BigDecimal mClosingPrice;
@@ -42,7 +42,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
     }
 
     @Override
-    public PositionMetrics trade(Trade trade) {
+    public PositionMetrics trade(Trade<?> trade) {
         mTrades.add(trade);
         return createPositionMetrics();
     }
@@ -60,7 +60,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
 
     private BigDecimal getPosition() {
         BigDecimal position = mIncomingPosition;
-        for (Trade trade : mTrades) {
+        for (Trade<?> trade : mTrades) {
             position = position.add(trade.getQuantity());
         }
         return position;
@@ -78,7 +78,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
             return null;
         }
         BigDecimal trading = BigDecimal.ZERO;
-        for (Trade trade : mTrades) {
+        for (Trade<?> trade : mTrades) {
             BigDecimal single = mTick.subtract(trade.getPrice()).multiply(trade.getQuantity());
             trading = trading.add(single);
         }
@@ -90,7 +90,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
         Queue<PositionElement> longs = new LinkedList<PositionElement>();
         Queue<PositionElement> shorts = new LinkedList<PositionElement>();
         adjustIncomingPosition(longs, shorts);
-        for (Trade trade : mTrades) {
+        for (Trade<?> trade : mTrades) {
             total = total.add(processTrade(longs, shorts, trade));
         }
         return total;
@@ -100,7 +100,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
      * Helper method that updates two arrays of long and short position elements based on a trade.
      */
     private BigDecimal processTrade(Queue<PositionElement> longs, Queue<PositionElement> shorts,
-            Trade trade) {
+            Trade<?> trade) {
         BigDecimal total = BigDecimal.ZERO;
         Queue<PositionElement> source, dest;
         BigDecimal remaining;
@@ -155,7 +155,7 @@ public class BasicCalculator implements PositionMetricsCalculator {
         Queue<PositionElement> shorts = new LinkedList<PositionElement>();
 
         adjustIncomingPosition(longs, shorts);
-        for (Trade trade : mTrades) {
+        for (Trade<?> trade : mTrades) {
             processTrade(longs, shorts, trade);
         }
         BigDecimal total = BigDecimal.ZERO;

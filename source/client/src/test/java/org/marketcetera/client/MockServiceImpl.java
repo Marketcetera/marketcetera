@@ -1,14 +1,19 @@
 package org.marketcetera.client;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.impl.PositionKeyImpl;
+import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.ReportBaseImpl;
@@ -19,9 +24,9 @@ import org.marketcetera.util.ws.stateful.RemoteCaller;
 import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
-import org.marketcetera.util.ws.wrappers.RemoteException;
-import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
+import org.marketcetera.util.ws.wrappers.MapWrapper;
+import org.marketcetera.util.ws.wrappers.RemoteException;
 
 /**
  * A test service implementation to aid testing of client via {@link
@@ -87,10 +92,10 @@ public class MockServiceImpl
         return new BigDecimal(date.getTime());
     }
 
-    private MapWrapper<PositionKey,BigDecimal> getPositionsAsOfImpl
+    private MapWrapper<PositionKey<Equity>,BigDecimal> getPositionsAsOfImpl
         (Date date)
     {
-        return new MapWrapper<PositionKey, BigDecimal>(POSITIONS);
+        return new MapWrapper<PositionKey<Equity>, BigDecimal>(POSITIONS);
     }
 
     private String getNextOrderIDImpl()
@@ -181,15 +186,15 @@ public class MockServiceImpl
     }
 
     @Override
-    public MapWrapper<PositionKey,BigDecimal> getPositionsAsOf
+    public MapWrapper<PositionKey<Equity>,BigDecimal> getPositionsAsOf
         (ClientContext context,
          final DateWrapper date)
         throws RemoteException
     {
-        return (new RemoteCaller<Object,MapWrapper<PositionKey,BigDecimal>>
+        return (new RemoteCaller<Object,MapWrapper<PositionKey<Equity>,BigDecimal>>
                 (getSessionManager()) {
             @Override
-            protected MapWrapper<PositionKey,BigDecimal> call
+            protected MapWrapper<PositionKey<Equity>,BigDecimal> call
                 (ClientContext context,
                  SessionHolder<Object> sessionHolder)
             {
@@ -233,13 +238,13 @@ public class MockServiceImpl
 
     static ReportBaseImpl[] sReports = null;
     static boolean sActive = true;
-    static final Map<PositionKey, BigDecimal> POSITIONS;
+    static final Map<PositionKey<Equity>, BigDecimal> POSITIONS;
     static {
-        Map<PositionKey, BigDecimal> positions =
-            new HashMap<PositionKey, BigDecimal>();
-        positions.put(new PositionKeyImpl("A","acme","bob"),
+        Map<PositionKey<Equity>, BigDecimal> positions =
+            new HashMap<PositionKey<Equity>, BigDecimal>();
+        positions.put(PositionKeyFactory.createEquityKey("A","acme","bob"),
                       BigDecimal.TEN);
-        positions.put(new PositionKeyImpl("B","wally","sue"),
+        positions.put(PositionKeyFactory.createEquityKey("B","wally","sue"),
                       BigDecimal.ONE.negate());
         POSITIONS = Collections.unmodifiableMap(positions);
     }

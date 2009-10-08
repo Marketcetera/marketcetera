@@ -1,7 +1,11 @@
 package org.marketcetera.core.position.impl;
+
 import java.math.BigDecimal;
 
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.Trade;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -14,11 +18,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class MockTrade implements Trade {
+public class MockTrade implements Trade<Equity> {
 
-    protected final String symbol;
-    protected final String account;
-    protected final String traderId;
+    protected final PositionKey<Equity> mKey;
     protected final BigDecimal price;
     protected final BigDecimal quantity;
     protected final long sequence;
@@ -33,11 +35,9 @@ public class MockTrade implements Trade {
      * @param quantity
      * @param sequence
      */
-    public MockTrade(String symbol, String account, String traderId,BigDecimal price,
-            BigDecimal quantity, long sequence) {
-        this.symbol = symbol;
-        this.account = account;
-        this.traderId = traderId;
+    public MockTrade(String symbol, String account, String traderId,
+            BigDecimal price, BigDecimal quantity, long sequence) {
+        mKey = PositionKeyFactory.createEquityKey(symbol, account, traderId);
         this.price = price;
         this.quantity = quantity;
         this.sequence = sequence;
@@ -59,18 +59,8 @@ public class MockTrade implements Trade {
     }
 
     @Override
-    public String getAccount() {
-        return account;
-    }
-
-    @Override
-    public String getSymbol() {
-        return symbol;
-    }
-
-    @Override
-    public String getTraderId() {
-        return traderId;
+    public PositionKey<Equity> getPositionKey() {
+        return mKey;
     }
 
 }

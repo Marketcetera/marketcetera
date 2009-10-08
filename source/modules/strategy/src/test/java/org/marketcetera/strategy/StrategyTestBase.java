@@ -85,6 +85,7 @@ import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
@@ -733,7 +734,7 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#getPositionsAsOf(java.util.Date)
          */
         @Override
-        public Map<PositionKey, BigDecimal> getPositionsAsOf(Date inDate)
+        public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf(Date inDate)
                 throws ConnectionException
         {
             throw new UnsupportedOperationException("This API is unsupported");

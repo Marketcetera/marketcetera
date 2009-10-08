@@ -1,9 +1,9 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Side;
-import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.UserID;
 import org.junit.Test;
 import static org.junit.Assert.assertThat;
@@ -307,7 +307,7 @@ public class PositionsTest extends ReportsTestBase {
         assertThat(getPositions(inBefore), allOf(isOfSize(2), hasAandB()));
     }
 
-    private static Matcher<Map<PositionKey, BigDecimal>> hasAandB() {
+    private static Matcher<Map<PositionKey<Equity>, BigDecimal>> hasAandB() {
         return allOf(hasEntry(pos("A"), FINAL_POSITION_A.setScale(SCALE)),
                 hasEntry(pos("B"), FINAL_POSITION_B.setScale(SCALE)));
     }

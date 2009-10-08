@@ -68,7 +68,7 @@ public class BasicCalculatorTest {
         assertPNL(pnl.trade(createTrade("-15", "17")), "5", "20", "10", "25", "5", "30");
     }
 
-	private Trade createTrade(String quantity, String price) {
+	private Trade<?> createTrade(String quantity, String price) {
 		return new MockTrade("ABC", "asdf", "Yoram", 
 				new BigDecimal(price), new BigDecimal(quantity), ++counter );
 	}

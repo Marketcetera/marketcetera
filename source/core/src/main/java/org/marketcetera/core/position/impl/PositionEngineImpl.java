@@ -47,46 +47,43 @@ public final class PositionEngineImpl implements PositionEngine {
      * Comparator for PositionRows that imposes a default ordering of the data.
      */
     @ClassVersion("$Id$")
-    private final static class PositionRowComparator implements Comparator<PositionRow> {
+    private final static class PositionRowComparator implements
+            Comparator<PositionRow> {
 
         @Override
         public int compare(PositionRow o1, PositionRow o2) {
-            return new CompareToBuilder().append(o1.getTraderId(), o2.getTraderId()).append(
-                    o1.getSymbol(), o2.getSymbol()).append(o1.getAccount(), o2.getAccount())
-                    .toComparison();
+            return new CompareToBuilder().append(o1.getTraderId(),
+                    o2.getTraderId()).append(o1.getSymbol(), o2.getSymbol())
+                    .append(o1.getAccount(), o2.getAccount()).toComparison();
         }
     }
-    
+
     /**
      * Supports grouping of trades by trader id, symbol, and account.
      */
     @ClassVersion("$Id$")
-    private final static class TradeGroupMatcher implements GroupMatcher<Trade> {
+    private final static class TradeGroupMatcher implements
+            GroupMatcher<Trade<?>> {
 
-        private final String mTraderId;
-        private final String mSymbol;
-        private final String mAccount;
+        private final PositionKey<?> mKey;
 
-        public TradeGroupMatcher(Trade trade) {
-            this.mTraderId = trade.getTraderId();
-            this.mSymbol = trade.getSymbol();
-            this.mAccount = trade.getAccount();
+        public TradeGroupMatcher(Trade<?> trade) {
+            mKey = trade.getPositionKey();
         }
 
         @Override
-        public boolean matches(Trade item) {
-            return internalCompare(item.getTraderId(), item.getSymbol(), item.getAccount()) == 0;
+        public boolean matches(Trade<?> item) {
+            return internalCompare(item.getPositionKey()) == 0;
         }
 
         @Override
-        public int compareTo(GroupMatcher<Trade> o) {
+        public int compareTo(GroupMatcher<Trade<?>> o) {
             TradeGroupMatcher rhs = (TradeGroupMatcher) o;
-            return internalCompare(rhs.mTraderId, rhs.mSymbol, rhs.mAccount);
+            return internalCompare(rhs.mKey);
         }
 
-        private int internalCompare(String traderId, String symbol, String account) {
-            return new CompareToBuilder().append(mTraderId, traderId).append(mSymbol, symbol)
-                    .append(mAccount, account).toComparison();
+        private int internalCompare(PositionKey<?> key) {
+            return PositionKeyComparator.INSTANCE.compare(mKey, key);
         }
     }
 
@@ -95,10 +92,10 @@ public final class PositionEngineImpl implements PositionEngine {
      */
     @ClassVersion("$Id$")
     private final static class TradeGroupMatcherFactory implements
-            GroupMatcherFactory<Trade, GroupMatcher<Trade>> {
+            GroupMatcherFactory<Trade<?>, GroupMatcher<Trade<?>>> {
 
         @Override
-        public TradeGroupMatcher createGroupMatcher(final Trade element) {
+        public TradeGroupMatcher createGroupMatcher(final Trade<?> element) {
             return new TradeGroupMatcher(element);
         }
     };
@@ -107,7 +104,8 @@ public final class PositionEngineImpl implements PositionEngine {
      * Supports grouping of positions by a number of grouping criteria.
      */
     @ClassVersion("$Id$")
-    private final static class GroupingMatcher implements GroupMatcher<PositionRow> {
+    private final static class GroupingMatcher implements
+            GroupMatcher<PositionRow> {
 
         private final String[] mValues;
         private final Grouping[] mGrouping;
@@ -133,7 +131,8 @@ public final class PositionEngineImpl implements PositionEngine {
         @Override
         public int compareTo(GroupMatcher<PositionRow> o) {
             GroupingMatcher other = (GroupingMatcher) o;
-            return new CompareToBuilder().append(mValues, other.mValues).toComparison();
+            return new CompareToBuilder().append(mValues, other.mValues)
+                    .toComparison();
         }
     }
 
@@ -157,8 +156,8 @@ public final class PositionEngineImpl implements PositionEngine {
     }
 
     /**
-     * Converts an {@link EventList} of positions into a dynamically updated summary
-     * {@link PositionRow}. Used by {@link FunctionList}.
+     * Converts an {@link EventList} of positions into a dynamically updated
+     * summary {@link PositionRow}. Used by {@link FunctionList}.
      */
     @ClassVersion("$Id$")
     private final static class SummarizeFunction implements
@@ -172,7 +171,8 @@ public final class PositionEngineImpl implements PositionEngine {
         }
 
         @Override
-        public void dispose(EventList<PositionRow> sourceValue, PositionRow transformedValue) {
+        public void dispose(EventList<PositionRow> sourceValue,
+                PositionRow transformedValue) {
             SummaryRowUpdater calc = map.remove(sourceValue);
             calc.dispose();
         }
@@ -186,10 +186,10 @@ public final class PositionEngineImpl implements PositionEngine {
         @Override
         public PositionRow evaluate(EventList<PositionRow> sourceValue) {
             PositionRow row = sourceValue.get(0);
-            // use the key data from the first row...it won't exactly match all rows, but it's
-            // sufficient for further grouping
-            PositionRowImpl summary = new PositionRowImpl(row.getSymbol(), row.getAccount(), row.getTraderId(),
-                    mGrouping, sourceValue);
+            // use the key data from the first row...it won't exactly match all
+            // rows, but it's sufficient for further grouping
+            PositionRowImpl summary = new PositionRowImpl(row.getSymbol(), row
+                    .getAccount(), row.getTraderId(), mGrouping, sourceValue);
             SummaryRowUpdater calculator = new SummaryRowUpdater(summary);
             map.put(sourceValue, calculator);
             return calculator.getSummary();
@@ -198,62 +198,74 @@ public final class PositionEngineImpl implements PositionEngine {
 
     private final MarketDataSupport mMarketDataSupport;
     private final IncomingPositionSupport mIncomingPositionSupport;
-    private final SortedList<Trade> mSorted;
-    private final GroupingList<Trade> mGrouped;
+    private final SortedList<Trade<?>> mSorted;
+    private final GroupingList<Trade<?>> mGrouped;
     private final EventList<PositionRow> mPositionsBase;
     private final EventList<PositionRow> mFlatView;
-    private final Map<PositionKey, PositionRowUpdater> mPositions = Maps.newHashMap();
+    private final Map<PositionKey<?>, PositionRowUpdater> mPositions = Maps
+            .newHashMap();
 
     /**
      * Constructor.
      * 
      * @param trades
-     *            base list of reports to drive the positions lists, cannot be null
+     *            base list of reports to drive the positions lists, cannot be
+     *            null
      * @param incomingPositionSupport
      *            support for incoming positions, cannot be null
      * @throws IllegalArgumentException
      *             if any parameter is null
      */
-    public PositionEngineImpl(EventList<Trade> trades,
-            IncomingPositionSupport incomingPositionSupport, MarketDataSupport marketDataSupport) {
-        Validate
-                .noNullElements(new Object[] { trades, incomingPositionSupport, marketDataSupport });
+    public PositionEngineImpl(EventList<Trade<?>> trades,
+            IncomingPositionSupport incomingPositionSupport,
+            MarketDataSupport marketDataSupport) {
+        Validate.noNullElements(new Object[] { trades, incomingPositionSupport,
+                marketDataSupport });
         mMarketDataSupport = marketDataSupport;
         mIncomingPositionSupport = incomingPositionSupport;
-        mSorted = new SortedList<Trade>(trades, new Comparator<Trade>() {
+        mSorted = new SortedList<Trade<?>>(trades, new Comparator<Trade<?>>() {
 
             @Override
-            public int compare(Trade o1, Trade o2) {
-                return new Long(o1.getSequenceNumber()).compareTo(new Long(o2.getSequenceNumber()));
+            public int compare(Trade<?> o1, Trade<?> o2) {
+                return new Long(o1.getSequenceNumber()).compareTo(new Long(o2
+                        .getSequenceNumber()));
             }
         });
-        mGrouped = new GroupingList<Trade>(mSorted, new TradeGroupMatcherFactory());
-        mPositionsBase = new BasicEventList<PositionRow>(mGrouped.getReadWriteLock());
-        for (PositionKey key : mIncomingPositionSupport.getIncomingPositions().keySet()) {
+        mGrouped = new GroupingList<Trade<?>>(mSorted,
+                new TradeGroupMatcherFactory());
+        mPositionsBase = new BasicEventList<PositionRow>(mGrouped
+                .getReadWriteLock());
+        for (PositionKey<?> key : mIncomingPositionSupport
+                .getIncomingPositions().keySet()) {
             addPosition(key, null);
         }
-        for (EventList<Trade> trade : mGrouped) {
+        for (EventList<Trade<?>> trade : mGrouped) {
             addPosition(trade);
         }
-        mGrouped.addListEventListener(new ListEventListener<EventList<Trade>>() {
-            @Override
-            public void listChanged(ListEvent<EventList<Trade>> listChanges) {
-                while (listChanges.next()) {
-                    if (listChanges.getType() == ListEvent.INSERT) {
-                        EventList<Trade> newTrades = listChanges.getSourceList().get(
-                                listChanges.getIndex());
-                        addPosition(newTrades);
+        mGrouped
+                .addListEventListener(new ListEventListener<EventList<Trade<?>>>() {
+                    @Override
+                    public void listChanged(
+                            ListEvent<EventList<Trade<?>>> listChanges) {
+                        while (listChanges.next()) {
+                            if (listChanges.getType() == ListEvent.INSERT) {
+                                EventList<Trade<?>> newTrades = listChanges
+                                        .getSourceList().get(
+                                                listChanges.getIndex());
+                                addPosition(newTrades);
+                            }
+                        }
                     }
-                }
-            }
-        });
-        mFlatView = new ObservableElementList<PositionRow>(new SortedList<PositionRow>(
-                mPositionsBase, new PositionRowComparator()), GlazedLists.beanConnector(
-                PositionRow.class, true, "positionMetrics")); //$NON-NLS-1$
+                });
+        mFlatView = new ObservableElementList<PositionRow>(
+                new SortedList<PositionRow>(mPositionsBase,
+                        new PositionRowComparator()), GlazedLists
+                        .beanConnector(PositionRow.class, true,
+                                "positionMetrics")); //$NON-NLS-1$
     }
 
-    private void addPosition(EventList<Trade> trades) {
-        PositionKey key = getKey(trades);
+    private void addPosition(EventList<Trade<?>> trades) {
+        PositionKey<?> key = getKey(trades);
         PositionRowUpdater updater = mPositions.get(key);
         if (updater == null) {
             addPosition(key, trades);
@@ -262,16 +274,17 @@ public final class PositionEngineImpl implements PositionEngine {
         }
     }
 
-    private PositionKey getKey(EventList<Trade> sourceValue) {
-        Trade trade = sourceValue.get(0);
-        return new PositionKeyImpl(trade.getSymbol(), trade.getAccount(), trade.getTraderId());
+    private PositionKey<?> getKey(EventList<Trade<?>> sourceValue) {
+        Trade<?> trade = sourceValue.get(0);
+        return trade.getPositionKey();
     }
 
-    private void addPosition(PositionKey key, EventList<Trade> trades) {
-        PositionRowImpl positionRow = new PositionRowImpl(key.getSymbol(), key.getAccount(),
-                key.getTraderId(), mIncomingPositionSupport.getIncomingPositionFor(key));
-        PositionRowUpdater updater = new PositionRowUpdater(positionRow, trades,
-                mMarketDataSupport);
+    private void addPosition(PositionKey<?> key, EventList<Trade<?>> trades) {
+        PositionRowImpl positionRow = new PositionRowImpl(key.getInstrument()
+                .getSymbol(), key.getAccount(), key.getTraderId(),
+                mIncomingPositionSupport.getIncomingPositionFor(key));
+        PositionRowUpdater updater = new PositionRowUpdater(positionRow,
+                trades, mMarketDataSupport);
         mPositions.put(key, updater);
         mPositionsBase.add(positionRow);
     }
@@ -301,8 +314,8 @@ public final class PositionEngineImpl implements PositionEngine {
         Lock lock = mFlatView.getReadWriteLock().readLock();
         lock.lock();
         try {
-            final GroupingList<PositionRow> grouped = new GroupingList<PositionRow>(mFlatView,
-                    new GroupingMatcherFactory(groupings));
+            final GroupingList<PositionRow> grouped = new GroupingList<PositionRow>(
+                    mFlatView, new GroupingMatcherFactory(groupings));
             final FunctionList<EventList<PositionRow>, PositionRow> summarized = new FunctionList<EventList<PositionRow>, PositionRow>(
                     grouped, new SummarizeFunction(groupings));
             final GroupingList<PositionRow> groupedAgain = new GroupingList<PositionRow>(

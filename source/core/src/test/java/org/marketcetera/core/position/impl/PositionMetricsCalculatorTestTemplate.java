@@ -50,7 +50,7 @@ public abstract class PositionMetricsCalculatorTestTemplate implements Runnable 
                 assertPositionMetrics(basicCalculator.tick(tradePrice),
                         calculator.tick(tradePrice), i);
             } else {
-                Trade trade = createTrade(random.nextBoolean(), randomBigDecimal(random),
+                Trade<?> trade = createTrade(random.nextBoolean(), randomBigDecimal(random),
                         randomBigDecimal(random), i);
                 SLF4JLoggerProxy.debug(this, MessageFormat.format(
                         "Iteration {0}: Trade of {1} ${2}", i, trade.getQuantity(), trade
@@ -70,7 +70,7 @@ public abstract class PositionMetricsCalculatorTestTemplate implements Runnable 
         return new BigDecimal(random.nextInt(10000)).divide(new BigDecimal("100"));
     }
 
-    private Trade createTrade(boolean buy, BigDecimal quantity, BigDecimal price, int counter) {
+    private Trade<?> createTrade(boolean buy, BigDecimal quantity, BigDecimal price, int counter) {
         return new MockTrade("ABC", "asdf", "Yoram", price, buy ? quantity : quantity.negate(),
                 counter);
     }
