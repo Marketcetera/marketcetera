@@ -4,12 +4,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.util.log.ActiveLocale;
 
 import com.google.common.collect.ImmutableList;
 
@@ -36,8 +33,8 @@ public class EquityTest extends InstrumentTestBase<Equity> {
 
     @Override
     protected List<Equity> createDifferentFixtures() {
-        return ImmutableList.<Equity> of(new Equity("ABC"), new Equity(
-                "IBM"), new Equity("MSFT"));
+        return ImmutableList.<Equity> of(new Equity("ABC"), new Equity("IBM"),
+                new Equity("MSFT"));
     }
 
     @Test
@@ -68,13 +65,7 @@ public class EquityTest extends InstrumentTestBase<Equity> {
 
     @Test
     public void testToString() throws Exception {
-        ActiveLocale.pushLocale(Locale.ROOT);
-        try {
-            assertThat(createFixture().toString(),
-                    is("Equity[symbol=METC]"));
-        } finally {
-            ActiveLocale.popLocale();
-        }
+        assertThat(createFixture().toString(), is("Equity[symbol=METC]"));
     }
 
 }

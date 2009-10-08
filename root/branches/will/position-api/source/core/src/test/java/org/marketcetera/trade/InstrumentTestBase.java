@@ -53,7 +53,7 @@ public abstract class InstrumentTestBase<T extends Instrument> {
     }
 
     @Test
-    public void underlyingNotEmpty() throws Exception {
+    public void symbolNotEmpty() throws Exception {
         for (Instrument instrument : Iterables.concat(ImmutableList.of(
                 createFixture(), createEqualFixture()),
                 createDifferentFixtures())) {

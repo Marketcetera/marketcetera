@@ -83,8 +83,7 @@ public final class PositionEngineImpl implements PositionEngine {
         }
 
         private int internalCompare(PositionKey<?> key) {
-            return new CompareToBuilder().append(mKey, key,
-                    PositionKeyComparator.INSTANCE).toComparison();
+            return PositionKeyComparator.INSTANCE.compare(mKey, key);
         }
     }
 
