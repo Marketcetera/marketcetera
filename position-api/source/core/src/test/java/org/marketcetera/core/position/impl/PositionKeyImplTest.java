@@ -10,7 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -24,7 +23,6 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
-import org.marketcetera.util.log.ActiveLocale;
 
 import com.google.common.collect.ImmutableList;
 
@@ -88,26 +86,24 @@ public class PositionKeyImplTest extends PositionKeyTestBase {
 
     @Test
     public void testWhitespaceAccountIsNull() throws Exception {
-        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "", "abc").getAccount());
-        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "     ", "abc").getAccount());
+        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "", "abc")
+                .getAccount());
+        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "     ",
+                "abc").getAccount());
     }
 
     @Test
     public void testWhitespaceTraderIdIsNull() throws Exception {
-        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "", "abc").getAccount());
-        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "  \n   ", "abc").getAccount());
+        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "", "abc")
+                .getTraderId());
+        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "  \n   ",
+                "abc").getTraderId());
     }
 
     @Test
     public void testToString() throws Exception {
-        ActiveLocale.pushLocale(Locale.ROOT);
-        try {
-            assertThat(
-                    createFixture().toString(),
-                    is("PositionKeyImpl[symbol=ABC,account=MyAccount,traderId=Me]"));
-        } finally {
-            ActiveLocale.popLocale();
-        }
+        assertThat(createFixture().toString(),
+                is("PositionKeyImpl[symbol=ABC,account=MyAccount,traderId=Me]"));
     }
 
     @Test

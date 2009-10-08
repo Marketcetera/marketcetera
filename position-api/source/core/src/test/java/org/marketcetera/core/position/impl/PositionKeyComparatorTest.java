@@ -55,6 +55,9 @@ public class PositionKeyComparatorTest {
         createEquityKey("ABC", "Account", "Me"),
 
         createOptionKey("ABC", "20090101", BigDecimal.ONE, OptionType.Put,
+                null, "Me"),
+
+        createOptionKey("ABC", "20090101", BigDecimal.ONE, OptionType.Put,
                 "Account", "Me")),
 
         new PositionKeyComparator());
