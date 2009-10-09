@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<fragment>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenuTest$MockColumnView"
+            id="org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenuTest$MockColumnView"
+            name="Mock Column View">
+      </view>
+   </extension>
+
+</fragment>

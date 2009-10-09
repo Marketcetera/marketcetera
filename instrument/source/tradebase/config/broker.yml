@@ -1,0 +1,33 @@
+#
+# broker.yml
+#
+# Simple yaml file for the env specific configuration of the broker connections.
+# See the wiki for more information: http://code.google.com/p/activemessaging/wiki/Configuration
+#
+development:
+    ############################
+    # Stomp Adapter Properties #
+    ############################
+    adapter: stomp
+    login: "admin"
+    passcode: "admin"
+    # properties below are all defaults for this adapter
+    # host: localhost
+    # port: 61613
+    # reliable: true
+    # reconnectDelay: 5
+
+test:
+    adapter: test
+    reliable: false
+
+production:
+    adapter: stomp
+    reliable: true
+    login: "admin"
+    passcode: "admin"
+    # properties below are all defaults for this adapter
+    # host: localhost
+    # port: 61613
+    # reliable: true
+    # reconnectDelay: 5

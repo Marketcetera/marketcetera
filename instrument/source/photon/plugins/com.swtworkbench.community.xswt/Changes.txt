@@ -1,0 +1,307 @@
+Nov. 30, 2004, By Yu You
+========================
+- SWTSourceBuilder.java
+  Added zero-argument getter support
+  <getShell x:id="myShell" text="New Title 2">
+    <layout x:class="fillLayout" />
+  </getShell>
+   will be converted to
+   Shell shell2 = shell1.getShell();
+   FillLayout fillLayout1 = new FillLayout();
+   shell2.setLayout(fillLayout1);
+
+
+Nov. 28, 2004, By Yu You
+========================
+- StyleParser.java
+  Added new style support like
+  accelerator="SWT.ALT | SWT.SHIFT | 'N'"
+  
+Nov. 25, 2004, by Yu You
+========================
+- Added zero-argument getter support.
+  From now on, under any SWT control node (not limited to the top node), you can define a 
+  zero-argument method which returning value is an Object.
+  For example,
+  <getShell x:id="shell1" menuBar="menubar1">
+  		<text x:p0="New title bar text, Cool?" />
+  </getShell>
+  
+  You can use the concept to get almost any getter methods that returns a valid object.
+  
+  translate to Java code:
+      org.eclipse.swt.widgets.Shell _temp_Shell = control.getShell();
+      _temp_Shell.setText("New title bar text, Cool?");
+  
+  So changed classes are:
+  - XSWT.java (processNodeProperty)
+  - ILayoutBuilder.java (added new methods "resolveAttributeGetMethod", "getProperty")
+  - SWTLayoutBuilder.java (implements the new methods defined in ILayoutBuilder.java)
+  
+  TODO:
+  - implement the same semantics in SWTSourceBuilder.java and GUIEditorLayoutBuilder.java
+  
+ 
+Nov. 22, 2004 by Yu You
+========================
+- XSWT.java
+	now duplicated names in "x:id" will throw a XSWTException.
+
+Oct. 12, 2004 by Yu You
+========================
+- support forward referneces
+	* support single,duplicated, or multiple forward references.
+	
+- XSWTException.java
+	* Add row and column info
+	* Add toString() method
+	
+- Redesign the XML parsing process
+	* Not use DOM tree anymore.
+
+Sep. 30, 2004 by Yu You
+========================
+-clean up memory resource after XSWT.create()
+	* LinkedList and resolvedclasssMap in MapClassBuilder:
+	
+Sep. 29, 2004 by Yu You
+========================
+Resource Management
+- now support Color, Font and Image
+- supported syntax:
+  	<!-- Two construction types work in Color attiribute: CSS constants and SWT.COLOR_XXX 
+    <label text="Hello World:" foreground="SWT.COLOR_BLUE">
+    -->
+    <label text="Hello World:" foreground="DarkGreen" font="Dialog, 12, SWT.BOLD|SWT.ITALIC">
+    	<background x:p0="null" x:p1="200" x:p2="200" x:p3="0xff" />
+    </label>
+
+
+XSWT Syntax suggestions:
+- requires FQNS in all nodes like
+	<x.import>
+	<x.children>
+	...
+	
+IntDataParser.java
+-  use Integer.decode to replace Integer.parseInt to support all decimal, hexadecimal, and octal numbers.
+	e.g. <background x:p0="null" x:p1="200" x:p2="100" x:p3="0xff" />
+	Ori. code:
+            int intermediate = Integer.parseInt(source);
+            result = new Integer(intermediate);
+    New code:
+        	result = Integer.decode(source);
+	
+LayoutBuilder.java
+- rolled back the change made before in Sep. 24, 2004.
+	The change requires is too strict to be error-prone
+	It requires all possible data parsers must be registered.
+	TODO: at least let us log or show some errors to the user.	
+            //}catch (XSWTException e1) {
+            //	throw e1;
+            } catch (Exception e) {
+            	logger.
+                // If we didn't succeed, try the next constructor...
+                result.constructor = null;
+                result.args = null;
+                continue;
+            }
+
+
+Sep. 28, 2004, by Yu You
+========================
+
+Changed
+XSWT.java
+- processChildren
+	// TODO: process IMPORT children too, so IMPORT elements are proceeded
+	// twice!!
+	That's a problem. explicitly ignore the <import> node.
+	
+
+- added the support at the top nodes for parent composite. Now
+nodes between <import> and <children> will be parsed as nodeproperties for top-level composite.
+	orig.
+				if (nodeChild.getName().endsWith("children")) {
+					processChildControls(composite, (Element) nodeChild);
+				}
+	New:
+					if (nodeChild.getName().endsWith("children")) {
+					processChildControls(composite, (Element) nodeChild);
+				}
+				// Added by Yu You
+				// Process other nodes as child nodes of parent composite
+				else processNodeProperty(composite, nodeChild);
+	
+ClassBuilder.java
+	- getClass
+        throw new XSWTException("Unable to resolve class: " + className);
+	added more hint information
+	changed to
+		throw new XSWTException("Unable to resolve class: " + className + "\nCheck the import node for the necessary package name");
+		
+XSWT.java
+- removed IColorManager in XSWT constructor XSWT()
+	* Rational:
+		- add global ResourceManager
+		- for beginners, they need only use XSWT.create() to create UI;
+		- for advanced developers, they could implement custom IResourceManager and relevant Color/Font managers.
+- removed IColorManager from XSWT create methods
+- removed setColorManager()
+	* changed to setResourceManager
+	Rational:
+		- lots of NULL arguments in many create methods seems weird;
+		- use a resourcemanager to manager Color and Font, or any future skin resources.
+
+Sep 27, 2004 by Yu Yu
+=====================
+Need to fix
+XSWTPreview.java
+
+	- compositeFrame.setBackground(new Color(compositeFrame.getDisplay(), 250, 140, 140)); 
+	new Color must be disposed manually. 
+	Changed to Display.getSystemColor(SWT.Red);
+
+Fixed
+- duplicated ID nows reports error
+
+Design
+- a API to get a SWT control position in a XML:
+	Element getElement(Control control);
+
+
+Sep. 26, 2004 by Yu You
+=========================
+New Added
+ResourceManager.java
+the default IResourceManager implementation.
+
+ImageResourceManager.java
+The Image resource manager
+
+
+Sep. 25, 2004 by Yu You
+=========================
+Changed:
+IColorManager.java
+- moved license explanation to where it should be. Re-write the javadoc.
+- changed "Display" to "Device".
+	* Both Printer and Display are Devices.
+- add IResourceManager as its father class
+
+New added:
+IFontManager.java
+- like IColorManager.java
+
+IResourceManager.java
+- top interface to manage all resources
+
+
+Sep. 24, 2004 by Yu You
+=========================
+
+Correct some javadoc typos
+	* ImageDataParser
+	*
+	
+Add DeviceParser for Color and Font types of classes that require Device as argument
+- Added relevant parsers in XSWT.java static{} section	
+	* DataParser.registerDataParser(Font.class, new FontDataParser());
+	* DataParser.registerDataParser(Device.class, new DeviceDataParser());
+
+
+FontDataParser.java (without considering FontManager yet)
+- now support syntax:
+	exmaple: <font x:p0="null" x:p1="Dialog" x:p2="10" x:p3="SWT.ITALIC"/>
+	TODO: get rid of x:p0="null" for Display and use FontManager API
+	
+- changed teh parse()
+	old code:
+		return name != null && height >= 0 ? new Font(display, name, height, style) : null;
+	new code:
+		if (display == null)
+			display = Display.getCurrent();
+		Font f = null;
+		try {
+			f = new Font(display, name, height, style);
+		} catch (Exception e) {
+			f = display.getSystemFont();
+		}
+		return f;
+			
+ClassBuilder.java
+- added exception error constants
+
+layoutBuilder.java
+- getConstructorInfo()
+	* add throw XSWTException because XSWTException happens when no proper Paser is registered.
+	ori. code:
+            } catch (Exception e) {   
+            
+    new code:
+	        }catch (XSWTException e1) {
+            	throw e1;
+            } catch (Exception e) {   
+    
+    
+SWTLayoutBuilder.java
+-       in method construct ()
+		if constructorInfo.args is NULL, constructorInfo.args.length will cause a runtime exception.
+		ori. code:
+        if (constructorInfo.constructor == null || constructorInfo.args == null)
+            throw new XSWTException("Unable to locate a constructor for type" +
+                valueType.getName() +" with " + constructorInfo.args.length + " parameters.");
+		changed "constructorInfo.args.length" to "argList.size()"
+
+Sep. 20, 2004 By Yu You
+=========================
+XSWT.java
+
+- tide up the code little bit
+  * e.g. use "upperCaseFirstLetter" method in all place, i.e. in method "processChild"
+  * in method "processBuiltInAttr", not error catch for nodeName.subString(2,3)
+  		// Constructor parameters have already been processed
+		if ("p".equals(nodeName.substring(2, 3)))
+		
+  
+- constructor changes
+  * delete    ErrorHandler and EntityResolver
+  
+  * 	String xswt_tag = element.getNamespace();
+		if (xswt_tag != null)  //-> changed to && xswt_tag.length()!=0
+			xswt_tag += ":XSWT";
+		else
+  
+- Removed methods
+  * getDocumentBuilder()
+  * isElement
+  * isChildElement
+  * processAttributeProperty
+  * processAttributeField
+
+- Modified methods
+  * processImportList(NodeList imports) -> processImportList(Node imports)  
+  * processChildAttributes (no JFace View support)
+  * processBuiltInAttr(Objetc, Node) -> processBuiltInAttr (Object, string, string, String)
+    
+- kXML parser syntax changes
+  * element.getPrefix -> element.getNamespace
+  * element.getTagName -> element.getName
+  * element.getChildNodes -> element.getChildCount()
+  * in method "processBuiltInAttr"
+  	Question: it assumes nodeName format is like "x:p0" but kXML returns "p0" without namespace prefix
+  	  		if ("p".equals(nodeName.substring(2, 3)))
+				return true;
+	Solution: an ugly hack to get rid of namespace prefix
+		int index = nodeName.indexOf(':');
+		nodeName = (index==-1)?nodeName:nodeName.substring(index+1);
+		
+
+- Removed unsupported XML syntax
+  * DOMException
+  
+XSWTException.java
+
+- Modified constructors 
+   * Chained exceptions (Throwable as arguments) is not supported by J2ME CLDC 1.1/MIDP 2.0 and CDC1.0/FP1.0.
+   CDC 1.1 afterwards will support it.
