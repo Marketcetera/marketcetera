@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+    <import xmlns="http://sweet_swt.sf.net/xswt">
+        <package name="java.lang"/>
+        <package name="org.eclipse.swt.widgets"/>
+        <package name="org.eclipse.swt.layout"/>
+    </import>
+
+    <!-- Starter XSWT file -->
+    
+    <!-- Give the parent a GridLayout.  If it already has a layout, you don't need this -->
+    <layout x:class="gridLayout" marginHeight="0" marginWidth="0"/>
+    
+    <!-- x:children nodes are optional unless the parent has a property with
+         the same name as one of the child controls.  Since Shells have a "text"
+         property, we put this example inside x:children nodes. -->
+    <x:children>
+        <!-- Put your layout here.  For example: -->
+        <text x:style="BORDER">
+	        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+	        	horizontalAlignment="GridData.FILL"/>
+        </text>
+    </x:children>
+</xswt>
