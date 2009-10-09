@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderCapacity;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
@@ -90,12 +90,12 @@ public class TradeSuggestion {
 	}
 
 	/**
-	 * Returns the symbol.
+	 * Returns the instrument.
 	 * 
-	 * @return the symbol
+	 * @return the instrument
 	 */
-	public MSymbol getSymbol() {
-		return getOrder().getSymbol();
+	public Instrument getInstrument() {
+		return getOrder().getInstrument();
 	}
 
 	/**

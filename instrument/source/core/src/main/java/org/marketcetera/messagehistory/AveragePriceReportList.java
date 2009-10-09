@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Originator;
@@ -89,7 +89,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                         ReportBase deltaReport = deltaReportHolder.getReport();
                         String symbol = deltaMessage.getString(Symbol.FIELD);
                         String side = deltaMessage.getString(Side.FIELD);
-                        SymbolSide symbolSide = new SymbolSide(new MSymbol(symbol), side);
+                        SymbolSide symbolSide = new SymbolSide(new Equity(symbol), side);
                         averagePriceIndex = mAveragePriceIndexes.get(symbolSide);
 
                         if(averagePriceIndex != null) {

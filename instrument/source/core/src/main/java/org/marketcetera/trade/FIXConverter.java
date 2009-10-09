@@ -34,33 +34,34 @@ public final class FIXConverter
     // CLASS METHODS.
 
     /**
-     * Adds the given symbol to the given QuickFIX/J message (of the
+     * Adds the given instrument to the given QuickFIX/J message (of the
      * given FIX version).
      *
-     * @param symbol The symbol. It may be null.
+     * @param instrument The instrument. It may be null.
      * @param fixVersion The FIX version. 
      * @param msg The QuickFIX/J message. 
-     * @param required True if the symbol is required but is not set.
+     * @param required True if the instrument is required but is not set.
      *
-     * @throws I18NException Thrown if the symbol is required but is
+     * @throws I18NException Thrown if the instrument is required but is
      * not set.
      */
 
-    private static void addSymbol
-        (MSymbol symbol,
+    private static void addInstrument
+        (Instrument instrument,
          FIXVersion fixVersion,
          Message msg,
          boolean required)
         throws I18NException
     {
-        if ((symbol==null) ||
-            (symbol.getFullSymbol()==null)) {
+    	//todo handle instruments other than equity
+        if ((instrument==null) ||
+            (instrument.getSymbol()==null)) {
             if (required) {
                 throw new I18NException
-                    (new I18NBoundMessage1P(Messages.NO_SYMBOL,symbol));
+                    (new I18NBoundMessage1P(Messages.NO_SYMBOL,instrument));
             }
         } else{
-            msg.setField(new Symbol(symbol.getFullSymbol()));
+            msg.setField(new Symbol(instrument.getSymbol()));
         }
     }
 
@@ -522,7 +523,7 @@ public final class FIXConverter
     {
         Message msg=fixFactory.newOrderEmpty();
         addOrderID(o.getOrderID(),fixVersion,msg,true);
-        addSymbol(o.getSymbol(),fixVersion,msg,true);
+        addInstrument(o.getInstrument(),fixVersion,msg,true);
         addSide(o.getSide(),fixVersion,msg,true);
         addOrderType(o.getOrderType(),fixVersion,msg,true);
         addSecurityType(o.getSecurityType(),fixVersion,msg,false);
@@ -562,7 +563,7 @@ public final class FIXConverter
         Message msg=fixFactory.newCancelEmpty();
         addOriginalOrderID(o.getOriginalOrderID(),fixVersion,msg,true);
         addOrderID(o.getOrderID(),fixVersion,msg,true);
-        addSymbol(o.getSymbol(),fixVersion,msg,true);
+        addInstrument(o.getInstrument(),fixVersion,msg,true);
         addSide(o.getSide(),fixVersion,msg,true);
         addQuantity(o.getQuantity(),fixVersion,msg,false);
         addBrokerOrderID(o.getBrokerOrderID(),fixVersion,msg,false);
@@ -596,7 +597,7 @@ public final class FIXConverter
         Message msg=fixFactory.newCancelReplaceEmpty();
         addOriginalOrderID(o.getOriginalOrderID(),fixVersion,msg,true);
         addOrderID(o.getOrderID(),fixVersion,msg,true);
-        addSymbol(o.getSymbol(),fixVersion,msg,true);
+        addInstrument(o.getInstrument(),fixVersion,msg,true);
         addSide(o.getSide(),fixVersion,msg,true);
         addOrderType(o.getOrderType(),fixVersion,msg,true);
         addQuantity(o.getQuantity(),fixVersion,msg,false);

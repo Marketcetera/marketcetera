@@ -6,7 +6,8 @@ import java.util.Date;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderCapacity;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
@@ -14,6 +15,7 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.PositionEffect;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.UserID;
@@ -31,7 +33,7 @@ public class MockExecutionReport implements ExecutionReport {
 
 	private static final long serialVersionUID = 1L;
 	private final String account;
-	private final MSymbol symbol;
+	private final Instrument instrument;
 	private final Side side;
 	private final BigDecimal price;
 	private final BigDecimal quantity;
@@ -39,10 +41,10 @@ public class MockExecutionReport implements ExecutionReport {
 	private final ReportID id;
 	private UserID viewer;	
 	
-	public MockExecutionReport(String account, String symbol, long trader, Side side,
+	public MockExecutionReport(String account, String equitySymbol, long trader, Side side,
 			String price, String quantity, long sequence, OrderStatus status) {
 		this.account = account;
-		this.symbol = new MSymbol(symbol);
+		this.instrument = equitySymbol == null? null: new Equity(equitySymbol);
 		this.side = side;
 		this.price = new BigDecimal(price);
 		this.quantity = new BigDecimal(quantity);
@@ -57,8 +59,8 @@ public class MockExecutionReport implements ExecutionReport {
 	}
 
 	@Override
-	public MSymbol getSymbol() {
-		return symbol;
+	public Instrument getInstrument() {
+		return instrument;
 	}
 
 	@Override
@@ -195,5 +197,4 @@ public class MockExecutionReport implements ExecutionReport {
 	public String getText() {
 		return null;
 	}
-
 }

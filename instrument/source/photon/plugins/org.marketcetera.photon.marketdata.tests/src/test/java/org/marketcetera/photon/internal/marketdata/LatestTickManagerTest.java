@@ -18,7 +18,7 @@ import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 /* $License$ */
 
@@ -86,7 +86,7 @@ public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick,
 	}
 
 	private Object createEvent(String symbol, int price, int size) {
-		return new TradeEvent(1L, System.currentTimeMillis(), new MSymbol(symbol), "Q",
+		return new TradeEvent(1L, System.currentTimeMillis(), new Equity(symbol), "Q",
 				new BigDecimal(price), new BigDecimal(size));
 	}
 

@@ -31,7 +31,7 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
@@ -612,7 +612,7 @@ public abstract class AbstractRunningStrategy
             cancelRequest.setOriginalOrderID(inOrderID);
             cancelRequest.setBrokerID(order.getUnderlyingOrder().getBrokerID());
             cancelRequest.setQuantity(order.getUnderlyingOrder().getQuantity());
-            cancelRequest.setSymbol(order.getUnderlyingOrder().getSymbol());
+            cancelRequest.setInstrument(order.getUnderlyingOrder().getInstrument());
             cancelRequest.setSide(order.getUnderlyingOrder().getSide());
         } else {
             // use the most recent execution report to seed the cancel request
@@ -714,7 +714,7 @@ public abstract class AbstractRunningStrategy
             replaceOrder = Factory.getInstance().createOrderReplace(null);
             replaceOrder.setOriginalOrderID(inOrderID);
             replaceOrder.setBrokerID(order.getUnderlyingOrder().getBrokerID());
-            replaceOrder.setSymbol(order.getUnderlyingOrder().getSymbol());
+            replaceOrder.setInstrument(order.getUnderlyingOrder().getInstrument());
             replaceOrder.setSide(order.getUnderlyingOrder().getSide());
             replaceOrder.setOrderType(order.getUnderlyingOrder().getOrderType());
         } else {
@@ -944,7 +944,7 @@ public abstract class AbstractRunningStrategy
         }
         try {
             BigDecimal result = strategy.getInboundServicesProvider().getPositionAsOf(inDate,
-                                                                                      new MSymbol(inSymbol)); 
+                                                                                      new Equity(inSymbol)); 
             StrategyModule.log(LogEvent.debug(RECEIVED_POSITION,
                                               String.valueOf(strategy),
                                               result,

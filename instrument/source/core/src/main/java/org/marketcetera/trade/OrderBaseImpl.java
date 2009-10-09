@@ -29,7 +29,8 @@ import java.util.HashMap;
 @XmlSeeAlso
     ({OrderCancelImpl.class,
       OrderReplaceImpl.class,
-      OrderSingleImpl.class})
+      OrderSingleImpl.class,
+      Equity.class})
 public class OrderBaseImpl implements OrderBase {
     @Override
     public OrderID getOrderID() {
@@ -52,13 +53,13 @@ public class OrderBaseImpl implements OrderBase {
     }
 
     @Override
-    public MSymbol getSymbol() {
-        return mSymbol;
+    public Instrument getInstrument() {
+        return mInstrument;
     }
 
     @Override
-    public void setSymbol(MSymbol inSymbol) {
-        mSymbol = inSymbol;
+    public void setInstrument(Instrument inInstrument) {
+        mInstrument = inInstrument;
     }
 
     @Override
@@ -87,9 +88,7 @@ public class OrderBaseImpl implements OrderBase {
 
     @Override
     public SecurityType getSecurityType() {
-        return mSymbol == null
-                ? null
-                : mSymbol.getSecurityType(); 
+        return mInstrument == null? null: mInstrument.getSecurityType(); 
     }
 
     @Override
@@ -117,6 +116,6 @@ public class OrderBaseImpl implements OrderBase {
     private Map<String,String> mCustomFields;
     private BrokerID mBrokerID;
     private String mAccount;
-    private MSymbol mSymbol;
+    private Instrument mInstrument;
     private static final long serialVersionUID = 1L;
 }

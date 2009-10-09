@@ -200,7 +200,7 @@ public class ReportsTestBase extends TestCaseBase {
                 "exec1", inOrderStatus.getFIXValue(), inSide.getFIXValue(),
                 new BigDecimal("23.234"), new BigDecimal("343.343"),
                 inLastQty, inLastPrice, inCumQuantity, inAvgPrice,
-                new MSymbol(inSymbol), inAccount);
+                new Equity(inSymbol), inAccount);
         if (inOrigOrderID != null) {
             msg.setField(new OrigClOrdID(inOrigOrderID));
         }
@@ -294,7 +294,7 @@ public class ReportsTestBase extends TestCaseBase {
     }
     protected static BigDecimal getPosition(Date inDate, String inSymbol, SimpleUser inViewer)
             throws Exception {
-        return sServices.getPositionAsOf(inViewer, inDate, new MSymbol(inSymbol));
+        return sServices.getPositionAsOf(inViewer, inDate, new Equity(inSymbol));
     }
 
     protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate)

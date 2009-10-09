@@ -8,7 +8,6 @@ import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
@@ -80,7 +79,7 @@ public class ReportHistoryServices {
     public BigDecimal getPositionAsOf
         (SimpleUser inUser,
          Date inDate,
-         MSymbol inSymbol)
+         Equity inSymbol)
         throws PersistenceException
     {
         return ExecutionReportSummary.getPositionForSymbol

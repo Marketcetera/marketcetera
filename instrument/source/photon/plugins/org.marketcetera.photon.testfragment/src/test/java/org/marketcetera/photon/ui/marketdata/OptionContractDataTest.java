@@ -6,7 +6,7 @@ import java.text.ParseException;
 import junit.framework.TestCase;
 
 import org.marketcetera.photon.ui.marketdata.OptionContractData;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.FieldNotFound;
 import quickfix.field.MaturityMonthYear;
@@ -24,7 +24,7 @@ public class OptionContractDataTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		dataFull = new OptionContractData(new MSymbol("IBM"), new MSymbol("IBM+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.CALL);
+		dataFull = new OptionContractData(new Equity("IBM"), new Equity("IBM+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.CALL);
 	}
 
 	public void testGetPutOrCall() {
@@ -40,7 +40,7 @@ public class OptionContractDataTest extends TestCase {
 	}
 
 	public void testGetOptionSymbol() {
-		assertEquals(new MSymbol("IBM+RE"), dataFull.getOptionSymbol());
+		assertEquals(new Equity("IBM+RE"), dataFull.getOptionSymbol());
 	}
 
 	public void testGetOptionRoot() {
@@ -52,23 +52,23 @@ public class OptionContractDataTest extends TestCase {
 	}
 
 	public void testGetUnderlyingSymbol() {
-		assertEquals(new MSymbol("IBM"), dataFull.getUnderlyingSymbol());
+		assertEquals(new Equity("IBM"), dataFull.getUnderlyingSymbol());
 	}
 
 	public void testEqualsObject() {
-		OptionContractData equalObject = new OptionContractData(new MSymbol("IBM"), new MSymbol("IBM+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.CALL);
+		OptionContractData equalObject = new OptionContractData(new Equity("IBM"), new Equity("IBM+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.CALL);
 		assertTrue(equalObject.equals(dataFull));
-		OptionContractData notEqualObject = new OptionContractData(new MSymbol("IBR"), new MSymbol("IBM+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.CALL);
+		OptionContractData notEqualObject = new OptionContractData(new Equity("IBR"), new Equity("IBM+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.CALL);
 		assertFalse(notEqualObject.equals(dataFull));
-		notEqualObject = new OptionContractData(new MSymbol("IBM"), new MSymbol("IBR+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.CALL);
+		notEqualObject = new OptionContractData(new Equity("IBM"), new Equity("IBR+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.CALL);
 		assertFalse(notEqualObject.equals(dataFull));
-		notEqualObject = new OptionContractData(new MSymbol("IBM"), new MSymbol("IBM+RE"), 2008, 7, BigDecimal.TEN, PutOrCall.CALL);
+		notEqualObject = new OptionContractData(new Equity("IBM"), new Equity("IBM+RE"), 2008, 7, BigDecimal.TEN, PutOrCall.CALL);
 		assertFalse(notEqualObject.equals(dataFull));
-		notEqualObject = new OptionContractData(new MSymbol("IBM"), new MSymbol("IBM+RE"), 2007, 9, BigDecimal.TEN, PutOrCall.CALL);
+		notEqualObject = new OptionContractData(new Equity("IBM"), new Equity("IBM+RE"), 2007, 9, BigDecimal.TEN, PutOrCall.CALL);
 		assertFalse(notEqualObject.equals(dataFull));
-		notEqualObject = new OptionContractData(new MSymbol("IBM"), new MSymbol("IBM+RE"), 2007, 7, BigDecimal.ONE, PutOrCall.CALL);
+		notEqualObject = new OptionContractData(new Equity("IBM"), new Equity("IBM+RE"), 2007, 7, BigDecimal.ONE, PutOrCall.CALL);
 		assertFalse(notEqualObject.equals(dataFull));
-		notEqualObject = new OptionContractData(new MSymbol("IBM"), new MSymbol("IBM+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.PUT);
+		notEqualObject = new OptionContractData(new Equity("IBM"), new Equity("IBM+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.PUT);
 		assertFalse(notEqualObject.equals(dataFull));
 	}
 
@@ -78,6 +78,6 @@ public class OptionContractDataTest extends TestCase {
 		optionMessage.setField(new Symbol("IBM+RE"));
 		optionMessage.setField(new MaturityMonthYear("200707"));
 		optionMessage.setField(new PutOrCall(PutOrCall.CALL));
-		assertTrue(dataFull.equals(OptionContractData.fromFieldMap(new MSymbol("IBM"), optionMessage)));
+		assertTrue(dataFull.equals(OptionContractData.fromFieldMap(new Equity("IBM"), optionMessage)));
 	}
 }

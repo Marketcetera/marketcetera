@@ -7,9 +7,8 @@ import org.junit.Test;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.SecurityType;
 
 import static org.junit.Assert.*;
 
@@ -24,8 +23,8 @@ import static org.junit.Assert.*;
 public class ServiceTest
     extends ORSTestBase
 {
-    private static final MSymbol TEST_SYMBOL=new MSymbol
-        ("IBM",SecurityType.CommonStock);
+    private static final Equity TEST_SYMBOL=new Equity
+        ("IBM");
 
     @Test
     public void services()

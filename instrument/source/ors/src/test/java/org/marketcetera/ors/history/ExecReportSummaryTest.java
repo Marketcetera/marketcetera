@@ -112,7 +112,7 @@ public class ExecReportSummaryTest extends ReportsTestBase {
                 report1.getLastQuantity(), report1.getOrderID(),
                 report1.getOrderStatus(), null, reportQuery.fetch().get(0),
                 report1.getOrderID(), report1.getSendingTime(),
-                report1.getSide(), report1.getSymbol().getFullSymbol());
+                report1.getSide(), report1.getInstrument().getSymbol());
 
         String orderID2 = "ord2";
         // A report with orig ID set to previous order. The root ID should be set to orderID1
@@ -132,7 +132,7 @@ public class ExecReportSummaryTest extends ReportsTestBase {
                 report2.getOrderStatus(), report2.getOriginalOrderID(),
                 reportQuery.fetch().get(1),
                 report1.getOrderID(), report2.getSendingTime(),
-                report2.getSide(), report2.getSymbol().getFullSymbol());
+                report2.getSide(), report2.getInstrument().getSymbol());
 
         String orderID3 = "ord3";
         // A report with orig ID set to previous order. The root ID should be set to orderID1
@@ -152,7 +152,7 @@ public class ExecReportSummaryTest extends ReportsTestBase {
                 report3.getOrderStatus(), report3.getOriginalOrderID(),
                 reportQuery.fetch().get(2),
                 report1.getOrderID(), report3.getSendingTime(),
-                report3.getSide(), report3.getSymbol().getFullSymbol());
+                report3.getSide(), report3.getInstrument().getSymbol());
     }
 
     /**
@@ -184,7 +184,7 @@ public class ExecReportSummaryTest extends ReportsTestBase {
                 report.getOrderStatus(), report.getOriginalOrderID(),
                 reportQuery.fetch().get(0),
                 report.getOriginalOrderID(), report.getSendingTime(),
-                report.getSide(), report.getSymbol().getFullSymbol());
+                report.getSide(), report.getInstrument().getSymbol());
     }
     
     @Test
@@ -268,7 +268,7 @@ public class ExecReportSummaryTest extends ReportsTestBase {
     public void nullSymbolFail() throws Exception {
         final ExecutionReport report = removeField(createDummyExecReport(),
                 Symbol.FIELD);
-        assertNull(report.getSymbol());
+        assertNull(report.getInstrument());
         nonNullCVCheck("symbol", new Callable<Object>(){
             public Object call() throws Exception {
                 PersistentReport.save(report);

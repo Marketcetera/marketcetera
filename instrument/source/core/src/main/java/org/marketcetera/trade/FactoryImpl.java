@@ -47,7 +47,7 @@ class FactoryImpl extends Factory {
             order.setOriginalOrderID(inLatestReport.getOrderID());
             order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
-            order.setSymbol(inLatestReport.getSymbol());
+            order.setInstrument(inLatestReport.getInstrument());
         }
         return order;
     }
@@ -65,7 +65,7 @@ class FactoryImpl extends Factory {
             order.setPrice(inLatestReport.getLastPrice());
             order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
-            order.setSymbol(inLatestReport.getSymbol());
+            order.setInstrument(inLatestReport.getInstrument());
             order.setTimeInForce(inLatestReport.getTimeInForce());
             order.setOrderCapacity(inLatestReport.getOrderCapacity());
             order.setPositionEffect(inLatestReport.getPositionEffect());
@@ -162,7 +162,7 @@ class FactoryImpl extends Factory {
         order.setPrice(FIXUtil.getPrice(inMessage));
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
-        order.setSymbol(FIXUtil.getSymbol(inMessage));
+        order.setInstrument(FIXUtil.getInstrument(inMessage));
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));
         order.setOrderCapacity(FIXUtil.getOrderCapacity(inMessage));
         order.setPositionEffect(FIXUtil.getPositionEffect(inMessage));
@@ -188,7 +188,7 @@ class FactoryImpl extends Factory {
         order.setOriginalOrderID(FIXUtil.getOriginalOrderID(inMessage));
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
-        order.setSymbol(FIXUtil.getSymbol(inMessage));
+        order.setInstrument(FIXUtil.getInstrument(inMessage));
         assignOrderID(order);
         return order;
     }
@@ -214,7 +214,7 @@ class FactoryImpl extends Factory {
         order.setPrice(FIXUtil.getPrice(inMessage));
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
-        order.setSymbol(FIXUtil.getSymbol(inMessage));
+        order.setInstrument(FIXUtil.getInstrument(inMessage));
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));
         order.setOrderCapacity(FIXUtil.getOrderCapacity(inMessage));
         order.setPositionEffect(FIXUtil.getPositionEffect(inMessage));

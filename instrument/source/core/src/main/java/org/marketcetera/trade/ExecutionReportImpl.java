@@ -44,8 +44,8 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
     }
 
     @Override
-    public synchronized MSymbol getSymbol() {
-        return FIXUtil.getSymbol(getMessage());
+    public synchronized Instrument getInstrument() {
+        return FIXUtil.getInstrument(getMessage());
     }
 
     @Override
@@ -139,7 +139,7 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
                 String.valueOf(getReportID()),
                 String.valueOf(getSendingTime()),
                 String.valueOf(getSide()),
-                String.valueOf(getSymbol()),
+                String.valueOf(getInstrument()),
                 String.valueOf(getText()),
                 String.valueOf(getTimeInForce()),
                 String.valueOf(getTransactTime()),

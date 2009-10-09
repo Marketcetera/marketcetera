@@ -30,7 +30,7 @@ import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -47,7 +47,7 @@ public class AbstractMarketDataFeedTest
     extends MarketDataFeedTestBase
     implements Messages
 {
-    private final MSymbol metc = new MSymbol("METC");
+    private final Equity metc = new Equity("METC");
     private final String exchange = "TEST";
     @Test
     public void testConstructor()

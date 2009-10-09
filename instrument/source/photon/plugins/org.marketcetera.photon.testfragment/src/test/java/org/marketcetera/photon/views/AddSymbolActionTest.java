@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 /* $License$ */
 
@@ -35,17 +35,17 @@ public class AddSymbolActionTest {
 	public void singleSymbol() {
 		when(mMockText.getText()).thenReturn("ABC");
 		mFixture.run();
-		verify(mMockListener).onAssertSymbol(new MSymbol("ABC"));
+		verify(mMockListener).onAssertSymbol(new Equity("ABC"));
 	}
 
 	@Test
 	public void multipleSymbols() {
 		when(mMockText.getText()).thenReturn("ABC, IBM,GOOG , MSFT      ");
 		mFixture.run();
-		verify(mMockListener).onAssertSymbol(new MSymbol("ABC"));
-		verify(mMockListener).onAssertSymbol(new MSymbol("IBM"));
-		verify(mMockListener).onAssertSymbol(new MSymbol("GOOG"));
-		verify(mMockListener).onAssertSymbol(new MSymbol("MSFT"));
+		verify(mMockListener).onAssertSymbol(new Equity("ABC"));
+		verify(mMockListener).onAssertSymbol(new Equity("IBM"));
+		verify(mMockListener).onAssertSymbol(new Equity("GOOG"));
+		verify(mMockListener).onAssertSymbol(new Equity("MSFT"));
 	}
 
 }

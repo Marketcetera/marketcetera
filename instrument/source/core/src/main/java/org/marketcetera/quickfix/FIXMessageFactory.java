@@ -7,7 +7,8 @@ import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -170,7 +171,7 @@ public class FIXMessageFactory {
      * @return a <code>Message</code> value
      */
     public Message newMarketDataRequest(String reqID,
-                                        List<MSymbol> symbols,
+                                        List<Equity> symbols,
                                         String inExchange)
     {
         Message request = msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST);
@@ -187,10 +188,10 @@ public class FIXMessageFactory {
         if (numSymbols == 0){
             request.setInt(NoRelatedSym.FIELD, numSymbols);
         }
-        for (MSymbol oneSymbol : symbols) {
+        for (Equity oneSymbol : symbols) {
             if(oneSymbol != null) {
                 Group symbolGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
-                symbolGroup.setField(new Symbol(oneSymbol.getFullSymbol()));
+                symbolGroup.setField(new Symbol(oneSymbol.getSymbol()));
                 if(inExchange != null &&
                    !inExchange.isEmpty()) {
                     symbolGroup.setField(new SecurityExchange(inExchange));
@@ -206,7 +207,7 @@ public class FIXMessageFactory {
      * @param symbols   List of symbols, or an empty list to get all available
      * @return Message corresponding to the market data request
      */
-    public Message newMarketDataRequest(String reqID, List<MSymbol> symbols) {
+    public Message newMarketDataRequest(String reqID, List<Equity> symbols) {
         return newMarketDataRequest(reqID,
                                     symbols,
                                     null);
@@ -253,13 +254,13 @@ public class FIXMessageFactory {
             String clOrderID,
             char side,
             BigDecimal quantity,
-            MSymbol symbol,
+            Instrument instrument,
             BigDecimal price,
             char timeInForce,
             String account
     ) {
 
-        Message newMessage = newOrderHelper(clOrderID, side, quantity, symbol, timeInForce, account);
+        Message newMessage = newOrderHelper(clOrderID, side, quantity, instrument, timeInForce, account);
         newMessage.setField(new OrdType(OrdType.LIMIT));
         newMessage.setField(new Price(price));
 
@@ -270,11 +271,11 @@ public class FIXMessageFactory {
             String clOrderID,
             char side,
             BigDecimal quantity,
-            MSymbol symbol,
+            Instrument instrument,
             char timeInForce,
             String account
     ) {
-        Message newMessage = newOrderHelper(clOrderID, side, quantity, symbol, timeInForce, account);
+        Message newMessage = newOrderHelper(clOrderID, side, quantity, instrument, timeInForce, account);
         newMessage.setField(new OrdType(OrdType.MARKET));
         return newMessage;
     }
@@ -286,20 +287,22 @@ public class FIXMessageFactory {
      *                    uniquely identifies this orderlater
      * @param side        Buy/Sell side
      * @param quantity    # of shares being bought/sold
-     * @param symbol      Stock symbol
+     * @param instrument      instrument
      * @param timeInForce How long the order is in effect
      * @param account     Account ID
      * @return Message representing this new order
      */
-    private Message newOrderHelper(String clOrderID, char side, BigDecimal quantity, MSymbol symbol,
-                                  char timeInForce, String account) {
+    private Message newOrderHelper(String clOrderID, char side, BigDecimal quantity, 
+    		Instrument instrument, char timeInForce, String account) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
         aMessage.setField(new ClOrdID(clOrderID));
         addHandlingInst(aMessage);
-        aMessage.setField(new Symbol(symbol.getFullSymbol()));
-        if(symbol.getSecurityType() != null &&
-                org.marketcetera.trade.SecurityType.Unknown != symbol.getSecurityType()) {
-            aMessage.setField(new SecurityType(symbol.getSecurityType().getFIXValue()));
+        //todo handle instruments other than equity.
+        aMessage.setField(new Symbol(instrument.getSymbol()));
+        if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(beginString))) &&
+                instrument.getSecurityType() != null &&
+                org.marketcetera.trade.SecurityType.Unknown != instrument.getSecurityType()) {
+            aMessage.setField(new SecurityType(instrument.getSecurityType().getFIXValue()));
         }
         aMessage.setField(new Side(side));
 
@@ -321,7 +324,7 @@ public class FIXMessageFactory {
      * that we gave to it the first time we ack'ed
      * @param side           Buy/Sell side of the initial order
      * @param quantity       Initial quantity
-     * @param symbol         Stock symbol of initial order
+     * @param instrument         instrument for the initial order
      * @param counterpartyOrderID The counterpartyOrderID. can be null. this is the ID given to this order
      * by the "counterparty" financial institution
      * @return Message representing the new order
@@ -331,7 +334,7 @@ public class FIXMessageFactory {
             String origClOrderID,
             char side,
             BigDecimal quantity,
-            MSymbol symbol,
+            Instrument instrument,
             String counterpartyOrderID
     ) {
         Message aMessage = msgFactory.create(beginString,MsgType.ORDER_CANCEL_REQUEST);
@@ -340,10 +343,12 @@ public class FIXMessageFactory {
         aMessage.setField(new ClOrdID(clOrderId));
         aMessage.setField(new OrigClOrdID(origClOrderID));
         aMessage.setField(new Side(side));
-        aMessage.setField(new Symbol(symbol.getFullSymbol()));
-        if(symbol.getSecurityType() != null &&
-                org.marketcetera.trade.SecurityType.Unknown != symbol.getSecurityType()) {
-            aMessage.setField(new SecurityType(symbol.getSecurityType().getFIXValue()));
+        //todo handle instruments other than equity.
+        aMessage.setField(new Symbol(instrument.getSymbol()));
+        if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(beginString))) &&
+                instrument.getSecurityType() != null &&
+                org.marketcetera.trade.SecurityType.Unknown != instrument.getSecurityType()) {
+            aMessage.setField(new SecurityType(instrument.getSecurityType().getFIXValue()));
         }
         aMessage.setField(new OrderQty(quantity));
         if (counterpartyOrderID != null) {
@@ -354,9 +359,9 @@ public class FIXMessageFactory {
     }
 
     /** Incoming price may be null for MARKET orders
-     * @param inAccount Account name of the institution that's sending the order. may be null
      * @param orderQty  Original order qty
      * @param orderPrice    Original order price
+     * @param inAccount Account name of the institution that's sending the order. may be null
      * */
     public Message newExecutionReport(
             String orderID,
@@ -370,7 +375,7 @@ public class FIXMessageFactory {
             BigDecimal lastPrice,
             BigDecimal cumQty,
             BigDecimal avgPrice,
-            MSymbol symbol,
+            Instrument instrument,
             String inAccount) throws FieldNotFound {
         Message aMessage = msgFactory.create(beginString, MsgType.EXECUTION_REPORT);
         addTransactionTimeIfNeeded(aMessage);
@@ -387,10 +392,12 @@ public class FIXMessageFactory {
         if (lastPrice != null) aMessage.setField(new LastPx(lastPrice));
         aMessage.setField(new CumQty(cumQty));
         aMessage.setField(new AvgPx(avgPrice));
-        aMessage.setField(new Symbol(symbol.getFullSymbol()));
-        if(symbol.getSecurityType() != null &&
-                org.marketcetera.trade.SecurityType.Unknown != symbol.getSecurityType()) {
-            aMessage.setField(new SecurityType(symbol.getSecurityType().getFIXValue()));
+        //todo handle instruments other than equity.
+        aMessage.setField(new Symbol(instrument.getSymbol()));
+        if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(beginString))) &&
+                instrument.getSecurityType() != null &&
+                org.marketcetera.trade.SecurityType.Unknown != instrument.getSecurityType()) {
+            aMessage.setField(new SecurityType(instrument.getSecurityType().getFIXValue()));
         }
         if(inAccount != null) {
             aMessage.setField(new Account(inAccount));
@@ -406,11 +413,11 @@ public class FIXMessageFactory {
      * @param orderID   OrderID for the new report (can be null)
      * @param clOrderID OrderID of the original (client) order that got rejected
      * @param execID    Execution ID for this order (can be null)
-     * @param side      {@link Side} of the transaction
+     * @param side      {@link quickfix.field.Side} of the transaction
      * @param orderQty  Original order quantity
      * @param cumQty    Cumuluative order qty       (can be 0)
      * @param avgPrice  Average price for the order (can be 0)
-     * @param symbol    Stock symbol for the order
+     * @param instrument instrument for the order
      * @return A new {@link Message} signifying a reject
      */
     public Message newRejectExecutionReport(
@@ -421,13 +428,13 @@ public class FIXMessageFactory {
             BigDecimal orderQty,
             BigDecimal cumQty,
             BigDecimal avgPrice,
-            MSymbol symbol,
+            Instrument instrument,
             OrdRejReason rejReason,
             String inAccount
     ) throws FieldNotFound {
         Message execReport = newExecutionReport(orderID, clOrderID, execID,
                 OrdStatus.REJECTED, side, orderQty, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                cumQty, avgPrice, symbol, inAccount);
+                cumQty, avgPrice, instrument, inAccount);
         addTransactionTimeIfNeeded(execReport);
         execReport.setField(rejReason);
         return execReport;

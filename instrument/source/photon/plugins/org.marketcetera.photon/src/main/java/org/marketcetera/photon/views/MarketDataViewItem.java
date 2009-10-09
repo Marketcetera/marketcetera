@@ -10,7 +10,7 @@ import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.ui.ISymbolProvider;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -28,7 +28,7 @@ public class MarketDataViewItem implements ISymbolProvider {
 	private static final MessageFormat FORMAT = new MessageFormat(
 			"{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}"); //$NON-NLS-1$
 
-	private MSymbol mSymbol;
+	private Equity mEquity;
 	private IMarketDataReference<MDLatestTick> mLatestTick;
 	private IMarketDataReference<MDTopOfBook> mTopOfBook;
 
@@ -39,19 +39,19 @@ public class MarketDataViewItem implements ISymbolProvider {
 	/**
 	 * Constructor. Will throw an exception if symbol is null.
 	 * 
-	 * @param symbol
-	 *            symbol for item, cannot be null
+	 * @param equity
+	 *            equity for item, cannot be null
 	 */
-	public MarketDataViewItem(IMarketData marketData, MSymbol symbol) {
-		Validate.noNullElements(new Object[] { marketData, symbol });
-		mSymbol = symbol;
+	public MarketDataViewItem(IMarketData marketData, Equity equity) {
+		Validate.noNullElements(new Object[] { marketData, equity });
+		mEquity = equity;
 		mMarketData = marketData;
 		init();
 	}
 
 	@Override
-	public MSymbol getSymbol() {
-		return mSymbol;
+	public Equity getEquity() {
+		return mEquity;
 	}
 
 	public MDLatestTick getLatestTick() {
@@ -63,21 +63,21 @@ public class MarketDataViewItem implements ISymbolProvider {
 	}
 
 	/**
-	 * Changes the underlying symbol of this item. All data will be reset if the symbol changes.
+	 * Changes the underlying equity of this item. All data will be reset if the equity changes.
 	 * 
-	 * @param symbol
-	 *            the new symbol, cannot be null
+	 * @param equity
+	 *            the new equity, cannot be null
 	 */
-	public void setSymbol(MSymbol symbol) {
-		Validate.notNull(symbol);
-		MSymbol oldSymbol = getSymbol();
-		if (!oldSymbol.equals(symbol)) {
+	public void setEquity(Equity equity) {
+		Validate.notNull(equity);
+		Equity oldSymbol = getEquity();
+		if (!oldSymbol.equals(equity)) {
 			MDLatestTick oldLatestTick = getLatestTick();
 			MDTopOfBook oldTopOfBook = getTopOfBook();
 			dispose();
-			mSymbol = symbol;
+			mEquity = equity;
 			init();
-			propertyChangeSupport.firePropertyChange("symbol", oldSymbol, getSymbol()); //$NON-NLS-1$
+			propertyChangeSupport.firePropertyChange("symbol", oldSymbol, getEquity()); //$NON-NLS-1$
 			propertyChangeSupport.firePropertyChange("latestTick", oldLatestTick, getLatestTick()); //$NON-NLS-1$
 			propertyChangeSupport.firePropertyChange("topOfBook", oldTopOfBook, getTopOfBook()); //$NON-NLS-1$
 		}
@@ -89,8 +89,8 @@ public class MarketDataViewItem implements ISymbolProvider {
 	}
 
 	private void init() {
-		mLatestTick = mMarketData.getLatestTick(mSymbol.getFullSymbol());
-		mTopOfBook = mMarketData.getTopOfBook(mSymbol.getFullSymbol());
+		mLatestTick = mMarketData.getLatestTick(mEquity.getSymbol());
+		mTopOfBook = mMarketData.getTopOfBook(mEquity.getSymbol());
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class MarketDataViewItem implements ISymbolProvider {
 	 */
 	@Override
 	public String toString() {
-		return FORMAT.format(new Object[] { getSymbol(), getLatestTick().getPrice(),
+		return FORMAT.format(new Object[] { getEquity(), getLatestTick().getPrice(),
 				getLatestTick().getSize(), getTopOfBook().getBidSize(),
 				getTopOfBook().getBidPrice(), getTopOfBook().getAskPrice(),
 				getTopOfBook().getAskSize() });

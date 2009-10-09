@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 import org.marketcetera.photon.ui.databinding.OptionSpecifierMatcherEditor;
 import org.marketcetera.photon.ui.marketdata.OptionContractData;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.field.PutOrCall;
 import ca.odell.glazedlists.BasicEventList;
@@ -20,8 +20,8 @@ public class OptionSpecifierMatcherTest extends TestCase {
 		EventList<OptionContractData> list = new BasicEventList<OptionContractData>();
 		FilterList<OptionContractData> filteredList = new FilterList<OptionContractData>(list, matcherEditor);
 		OptionContractData contractData = new OptionContractData(
-				new MSymbol("MSFT"),
-				new MSymbol("MSQ+RE"),
+				new Equity("MSFT"),
+				new Equity("MSQ+RE"),
 				2008,
 				1,
 				BigDecimal.TEN,
@@ -31,8 +31,8 @@ public class OptionSpecifierMatcherTest extends TestCase {
 		list.add(contractData);
 
 		OptionContractData contractData2 = new OptionContractData(
-				new MSymbol("MSFT"),
-				new MSymbol("MSQ+RF"),
+				new Equity("MSFT"),
+				new Equity("MSQ+RF"),
 				2008,
 				1,
 				BigDecimal.ONE,
@@ -42,8 +42,8 @@ public class OptionSpecifierMatcherTest extends TestCase {
 		list.add(contractData2);
 
 		OptionContractData contractData3 = new OptionContractData(
-				new MSymbol("MSFT"),
-				new MSymbol("MSF+FD"),
+				new Equity("MSFT"),
+				new Equity("MSF+FD"),
 				2008,
 				1,
 				BigDecimal.TEN,

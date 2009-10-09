@@ -1,6 +1,6 @@
 require 'java'
 include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.trade.Equity"
 include_class "java.lang.Long"
 include_class "java.lang.System"
 include_class "java.util.Arrays"
@@ -49,7 +49,7 @@ class WidthStrategy < Strategy
        side = EQUITIES[symbol]
        price = get_limit_price(side, bid, ask)
        order = message_factory.newLimitOrder(getIDFactory().next, side, PER_ORDER_LIMIT, 
-          Marketcetera::MSymbol.new(symbol), java.math.BigDecimal.new(price.to_s), 
+          Marketcetera::Equity.new(symbol), java.math.BigDecimal.new(price.to_s), 
           QF::TimeInForce::GOOD_TILL_CANCEL, ACCOUNT)
        @cancels[symbol] = message_factory.newCancelFromMessage(order)
        registerTimedCallback(DELAY_TILL_CANCEL, @cancels[symbol])

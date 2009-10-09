@@ -6,7 +6,7 @@ import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -48,7 +48,7 @@ public class MessageRouteManagerTest extends TestCase
         Message message =msgFactory.newLimitOrder("12345", //$NON-NLS-1$
             Side.BUY,
             new BigDecimal(1000),
-            new MSymbol("BRK/A.N"), //$NON-NLS-1$
+            new Equity("BRK/A.N"), //$NON-NLS-1$
             new BigDecimal("123.45"), //$NON-NLS-1$
             TimeInForce.DAY,
             null
@@ -66,7 +66,7 @@ public class MessageRouteManagerTest extends TestCase
         message =msgFactory.newLimitOrder("12346", //$NON-NLS-1$
             Side.SELL,
             new BigDecimal(100),
-            new MSymbol("BRK/B"), //$NON-NLS-1$
+            new Equity("BRK/B"), //$NON-NLS-1$
             new BigDecimal("54.32"), //$NON-NLS-1$
             TimeInForce.DAY,
             null
@@ -88,7 +88,7 @@ public class MessageRouteManagerTest extends TestCase
         message =msgFactory.newLimitOrder("12347", //$NON-NLS-1$
             Side.SELL_SHORT,
             new BigDecimal(2000),
-            new MSymbol("VOD/.LN"), //$NON-NLS-1$
+            new Equity("VOD/.LN"), //$NON-NLS-1$
             new BigDecimal("111.11"), //$NON-NLS-1$
             TimeInForce.AT_THE_OPENING,
             null
@@ -124,7 +124,7 @@ public class MessageRouteManagerTest extends TestCase
         Message message =msgFactory.newLimitOrder("12345", //$NON-NLS-1$
             Side.BUY,
             new BigDecimal(1000),
-            new MSymbol("BRK/A.N"), //$NON-NLS-1$
+            new Equity("BRK/A.N"), //$NON-NLS-1$
             new BigDecimal("123.45"), //$NON-NLS-1$
             TimeInForce.DAY,
             null
@@ -147,7 +147,7 @@ public class MessageRouteManagerTest extends TestCase
         message =msgFactory.newLimitOrder("12346", //$NON-NLS-1$
             Side.SELL,
             new BigDecimal(100),
-            new MSymbol("BRK/B"), //$NON-NLS-1$
+            new Equity("BRK/B"), //$NON-NLS-1$
             new BigDecimal("54.32"), //$NON-NLS-1$
             TimeInForce.DAY,
             null
@@ -173,7 +173,7 @@ public class MessageRouteManagerTest extends TestCase
         message =msgFactory.newLimitOrder("12347", //$NON-NLS-1$
             Side.SELL_SHORT,
             new BigDecimal(2000),
-            new MSymbol("IBM"), //$NON-NLS-1$
+            new Equity("IBM"), //$NON-NLS-1$
             new BigDecimal("111.11"), //$NON-NLS-1$
             TimeInForce.AT_THE_OPENING,
             null
@@ -199,7 +199,7 @@ public class MessageRouteManagerTest extends TestCase
         message =msgFactory.newLimitOrder("12347", //$NON-NLS-1$
             Side.SELL_SHORT,
             new BigDecimal(2000),
-            new MSymbol("VOD/"), //$NON-NLS-1$
+            new Equity("VOD/"), //$NON-NLS-1$
             new BigDecimal("111.11"), //$NON-NLS-1$
             TimeInForce.AT_THE_OPENING,
             null
@@ -315,7 +315,7 @@ public class MessageRouteManagerTest extends TestCase
     public void testModifyMessageNoSecurityType() throws Exception {
         MessageRouteManager routeManager = new MessageRouteManager();
         routeManager.setSeparateSuffix(true);
-        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("ABCD"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("ABCD"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // remove SecurityType altogether
         msg.removeField(SecurityType.FIELD);
@@ -327,7 +327,7 @@ public class MessageRouteManagerTest extends TestCase
     public void testModifyMessageWithSecurityType() throws Exception {
         MessageRouteManager routeManager = new MessageRouteManager();
         routeManager.setSeparateSuffix(true);
-        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("ABCD"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("ABCD"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // change it to be common stock
         msg.setField(new SecurityType(SecurityType.COMMON_STOCK));
@@ -338,7 +338,7 @@ public class MessageRouteManagerTest extends TestCase
     public void testModifyMessageForex() throws Exception {
         MessageRouteManager routeManager = new MessageRouteManager();
         routeManager.setSeparateSuffix(true);
-        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("EUR/USD"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // change it to be forex
         msg.setField(new SecurityType(SecurityType.FOREIGN_EXCHANGE_CONTRACT));
@@ -350,7 +350,7 @@ public class MessageRouteManagerTest extends TestCase
     public void testModifyMessageStock() throws Exception {
         MessageRouteManager routeManager = new MessageRouteManager();
         routeManager.setSeparateSuffix(true);
-        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("BRK/B"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("BRK/B"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // run it without security type first
         assertTrue(routeManager.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
@@ -358,7 +358,7 @@ public class MessageRouteManagerTest extends TestCase
         assertEquals("B", msg.getString(SymbolSfx.FIELD)); //$NON-NLS-1$
 
         // now do the same but set the SecurityType
-        msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("BRK/B"), //$NON-NLS-1$ //$NON-NLS-2$
+        msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("BRK/B"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         msg.setField(new SecurityType(SecurityType.COMMON_STOCK));
         assertTrue(routeManager.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
