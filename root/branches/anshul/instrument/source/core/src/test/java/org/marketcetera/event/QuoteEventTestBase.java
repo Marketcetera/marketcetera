@@ -22,7 +22,8 @@ import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.QuoteEvent.Action;
 import org.marketcetera.event.QuoteEvent.PriceAndSizeComparator;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -60,7 +61,7 @@ public abstract class QuoteEventTestBase
         throws Exception
     {
         final long[] longValues = new long[] { -1l, 0l, 1l };
-        final MSymbol[] symbols = new MSymbol[] { null, new MSymbol("METC") };
+        final Instrument[] symbols = new Instrument[] { null, new Equity("METC") };
         final String[] exchanges = new String[] { null, "", "Q" };
         final BigDecimal[] bigValues = new BigDecimal[] { null, new BigDecimal("-1"), ZERO, TEN };
         // note that there are currently no restrictions on values < 0, not sure enough to impose that restriction yet
@@ -75,7 +76,7 @@ public abstract class QuoteEventTestBase
                                         final long id = longValues[idCounter];
                                         final long timestamp = longValues[timestampCounter];
                                         final long newTimestamp = longValues[newTimestampCounter];
-                                        final MSymbol symbol = symbols[symbolCounter];
+                                        final Instrument symbol = symbols[symbolCounter];
                                         final String exchange = exchanges[exchangeCounter];
                                         final BigDecimal price = bigValues[priceCounter];
                                         final BigDecimal size = bigValues[sizeCounter];
@@ -298,7 +299,7 @@ public abstract class QuoteEventTestBase
         // delete from add
         QuoteEvent event = constructObject(System.nanoTime(),
                                            System.currentTimeMillis(),
-                                           new MSymbol("metc"),
+                                           new Equity("metc"),
                                            "Q",
                                            ONE,
                                            TEN);
@@ -307,7 +308,7 @@ public abstract class QuoteEventTestBase
         verifyEvent(QuoteEvent.deleteEvent(event),
                     event.getMessageId(),
                     event.getTimeMillis(),
-                    event.getSymbol(),
+                    event.getInstrument(),
                     event.getExchange(),
                     event.getPrice(),
                     event.getSize(),
@@ -322,7 +323,7 @@ public abstract class QuoteEventTestBase
         verifyEvent(QuoteEvent.deleteEvent(event),
                     event.getMessageId(),
                     event.getTimeMillis(),
-                    event.getSymbol(),
+                    event.getInstrument(),
                     event.getExchange(),
                     event.getPrice(),
                     event.getSize(),
@@ -335,7 +336,7 @@ public abstract class QuoteEventTestBase
         verifyEvent(QuoteEvent.deleteEvent(event),
                     event.getMessageId(),
                     event.getTimeMillis(),
-                    event.getSymbol(),
+                    event.getInstrument(),
                     event.getExchange(),
                     event.getPrice(),
                     event.getSize(),
@@ -356,7 +357,7 @@ public abstract class QuoteEventTestBase
         // add from add
         QuoteEvent event = constructObject(System.nanoTime(),
                                            System.currentTimeMillis(),
-                                           new MSymbol("metc"),
+                                           new Equity("metc"),
                                            "Q",
                                            ONE,
                                            TEN);
@@ -365,7 +366,7 @@ public abstract class QuoteEventTestBase
         verifyEvent(QuoteEvent.addEvent(event),
                     event.getMessageId(),
                     event.getTimeMillis(),
-                    event.getSymbol(),
+                    event.getInstrument(),
                     event.getExchange(),
                     event.getPrice(),
                     event.getSize(),
@@ -380,7 +381,7 @@ public abstract class QuoteEventTestBase
         verifyEvent(QuoteEvent.addEvent(event),
                     event.getMessageId(),
                     event.getTimeMillis(),
-                    event.getSymbol(),
+                    event.getInstrument(),
                     event.getExchange(),
                     event.getPrice(),
                     event.getSize(),
@@ -393,7 +394,7 @@ public abstract class QuoteEventTestBase
         verifyEvent(QuoteEvent.addEvent(event),
                     event.getMessageId(),
                     event.getTimeMillis(),
-                    event.getSymbol(),
+                    event.getInstrument(),
                     event.getExchange(),
                     event.getPrice(),
                     event.getSize(),
@@ -411,7 +412,7 @@ public abstract class QuoteEventTestBase
     {
         final QuoteEvent quote1 = constructObject(System.nanoTime(),
                                                   System.currentTimeMillis(),
-                                                  new MSymbol("metc"),
+                                                  new Equity("metc"),
                                                   "Q",
                                                   ONE,
                                                   TEN);
@@ -462,7 +463,7 @@ public abstract class QuoteEventTestBase
         // comparator works on price then timestamp
         QuoteEvent quote2 = constructObject(System.nanoTime(),
                                             System.currentTimeMillis(),
-                                            new MSymbol("metc"),
+                                            new Equity("metc"),
                                             "Q",
                                             quote1.getPrice().add(ONE),
                                             TEN);
@@ -484,7 +485,7 @@ public abstract class QuoteEventTestBase
         // e1 price == e2 price (and timestamp)
         quote2 = constructObject(System.nanoTime(),
                                  quote1.getTimeMillis(),
-                                 new MSymbol("metc"),
+                                 new Equity("metc"),
                                  "Q",
                                  quote1.getPrice(),
                                  TEN);
@@ -506,7 +507,7 @@ public abstract class QuoteEventTestBase
         // e1 timestamp < e2 timestamp
         quote2 = constructObject(System.nanoTime(),
                                  quote1.getTimeMillis() + 1000,
-                                 new MSymbol("metc"),
+                                 new Equity("metc"),
                                  "Q",
                                  quote1.getPrice(),
                                  TEN);
@@ -538,7 +539,7 @@ public abstract class QuoteEventTestBase
     {
         final QuoteEvent quote1 = constructObject(System.nanoTime(),
                                                   System.currentTimeMillis(),
-                                                  new MSymbol("metc"),
+                                                  new Equity("metc"),
                                                   "Q",
                                                   ONE,
                                                   TEN);
@@ -568,7 +569,7 @@ public abstract class QuoteEventTestBase
         // comparator works on price then size
         QuoteEvent quote2 = constructObject(System.nanoTime(),
                                             System.currentTimeMillis(),
-                                            new MSymbol("metc"),
+                                            new Equity("metc"),
                                             "Q",
                                             quote1.getPrice().add(ONE),
                                             TEN);
@@ -584,7 +585,7 @@ public abstract class QuoteEventTestBase
         // e1 price == e2 price (and size)
         quote2 = constructObject(System.nanoTime(),
                                  System.currentTimeMillis(),
-                                 new MSymbol("metc"),
+                                 new Equity("metc"),
                                  "Q",
                                  quote1.getPrice(),
                                  quote1.getSize());
@@ -602,7 +603,7 @@ public abstract class QuoteEventTestBase
         // e1 size < e2 size
         quote2 = constructObject(System.nanoTime(),
                                  System.currentTimeMillis(),
-                                 new MSymbol("metc"),
+                                 new Equity("metc"),
                                  "Q",
                                  quote1.getPrice(),
                                  quote1.getSize().add(TEN));
@@ -623,7 +624,7 @@ public abstract class QuoteEventTestBase
      * @param inActualEvent a <code>QuoteEvent</code> value
      * @param inExpectedId a <code>long</code> value
      * @param inExpectedTimestamp a <code>long</code> value
-     * @param inExpectedSymbol an <code>MSymbol</code> value
+     * @param inExpectedInstrument an <code>Instrument</code> value
      * @param inExpectedExchange a <code>String</code> value
      * @param inExpectedPrice a <code>BigDecimal</code> value
      * @param inExpectedSize a <code>BigDecimal</code> value
@@ -634,7 +635,7 @@ public abstract class QuoteEventTestBase
     private void verifyEvent(QuoteEvent inActualEvent,
                              long inExpectedId,
                              long inExpectedTimestamp,
-                             MSymbol inExpectedSymbol,
+                             Instrument inExpectedInstrument,
                              String inExpectedExchange,
                              BigDecimal inExpectedPrice,
                              BigDecimal inExpectedSize,
@@ -647,8 +648,8 @@ public abstract class QuoteEventTestBase
         assertEquals(inExpectedTimestamp,
                      inActualEvent.getTimeMillis());
         assertNotNull(inActualEvent.getTimestampAsDate());
-        assertEquals(inExpectedSymbol,
-                     inActualEvent.getSymbol());
+        assertEquals(inExpectedInstrument,
+                     inActualEvent.getInstrument());
         assertEquals(inExpectedExchange,
                      inActualEvent.getExchange());
         assertEquals(inExpectedType,
@@ -748,7 +749,7 @@ public abstract class QuoteEventTestBase
         {
             super(System.nanoTime(),
                   System.currentTimeMillis(),
-                  new MSymbol("METC"),
+                  new Equity("METC"),
                   "Q",
                   ONE,
                   ONE,

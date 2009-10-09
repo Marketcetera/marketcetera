@@ -327,7 +327,8 @@ public class PositionEngineImplTest {
 
             @Override
             protected void initReports() {
-                addTrade("", "personal", Side.Buy, "1000", "500");
+                //TODO: Test options too
+                addTrade(null, "personal", Side.Buy, "1000", "500");
                 addTrade("METC", "personal", Side.Buy, "1000", "0");
                 addTrade("METC", "personal", Side.Buy, "0", "500");
             }

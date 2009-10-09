@@ -3,7 +3,7 @@ package org.marketcetera.event;
 import java.math.BigDecimal;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -17,7 +17,7 @@ import org.marketcetera.trade.MSymbol;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class SymbolExchangeEvent
     extends EventBase
-    implements HasSymbol
+    implements HasInstrument
 {
     /**
      * Create a new SymbolExchangeEvent instance.
@@ -25,25 +25,25 @@ public abstract class SymbolExchangeEvent
      * @param inMessageID a <code>long</code> value uniquely identifying this event
      * @param inTimestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code>
      *   in GMT
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol quoted in this event
-     * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred 
+     * @param inInstrument an <code>Instrument</code> value specifying the instrument quoted in this event
+     * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred
      * @param inPrice a <code>BigDecimal</code> value containing the price of this event
      * @param inSize a <code>BigDecimal</code> value containing the size of this event
      * @throws IllegalArgumentException if <code>inMessageID</code> or <code>inTimestamp</code> &lt; 0
-     * @throws IllegalArgumentException if <code>inExchange</code> is non-null but empty
+     * OR if <code>inExchange</code> is non-null but empty
      * @throws NullPointerException if <code>inSymbol</code>, <code>inExchange</code>, <code>inPrice</code>, or
      *  <code>inSize</code> is null
      */    
     protected SymbolExchangeEvent(long inMessageID,
                                   long inTimestamp,
-                                  MSymbol inSymbol,
+                                  Instrument inInstrument,
                                   String inExchange,
                                   BigDecimal inPrice,
                                   BigDecimal inSize)
     {
         super(inMessageID, 
               inTimestamp);
-        if(inSymbol == null ||
+        if(inInstrument == null ||
            inExchange == null ||
            inPrice == null ||
            inSize == null) {
@@ -52,19 +52,20 @@ public abstract class SymbolExchangeEvent
         if(inExchange.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        mSymbol = inSymbol;
+        mInstrument = inInstrument;
         mExchange = inExchange;
         mPrice = inPrice;
         mSize = inSize;
     }
     /**
-     * Gets the symbol associated with this event.
+     * Gets the instrument associated with this event.
      *
-     * @return an <code>MSymbol</code> value
+     * @return an <code>Instrument</code> value
      */
-    public MSymbol getSymbol()
+    @Override
+    public Instrument getInstrument()
     {
-        return mSymbol;
+        return mInstrument;
     }
     /**
      * Gets the symbol associated with this event expressed as a <code>String</code>. 
@@ -73,7 +74,7 @@ public abstract class SymbolExchangeEvent
      */
     public String getSymbolAsString()
     {
-        return mSymbol.getFullSymbol();
+        return mInstrument.getSymbol();
     }
     /**
      * Gets the exchange associated with this event.
@@ -142,9 +143,9 @@ public abstract class SymbolExchangeEvent
         return NO_QUANTITY;
     }
     /**
-     * the symbol for this event
+     * the instrument for this event
      */
-    private final MSymbol mSymbol;
+    private final Instrument mInstrument;
     /**
      * the exchange on which the event occurred
      */
@@ -161,5 +162,5 @@ public abstract class SymbolExchangeEvent
      * value displayed for a number if there is no entry on that side of the book
      */
     private static String NO_QUANTITY = "---"; //$NON-NLS-1$
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 }

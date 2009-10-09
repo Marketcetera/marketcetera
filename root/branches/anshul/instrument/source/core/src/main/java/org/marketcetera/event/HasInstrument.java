@@ -1,24 +1,24 @@
 package org.marketcetera.event;
 
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Has an <code>MSymbol</code> attribute.
+ * Has an {@link Instrument} attribute.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public interface HasSymbol
+public interface HasInstrument
 {
     /**
-     * Gets the symbol value.
+     * Gets the instrument value.
      *
-     * @return an <code>MSymbol</code> value
+     * @return an <code>Instrument</code> value
      */
-    public MSymbol getSymbol();
+    public Instrument getInstrument();
 }

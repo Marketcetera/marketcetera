@@ -20,7 +20,7 @@ import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.FieldNotFound;
@@ -81,7 +81,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertEquals("", view.getOrderTicket().getTifCombo().getText());
 
 		Message message = msgFactory.newLimitOrder("1",
-				Side.BUY, BigDecimal.TEN, new MSymbol("QWER"), BigDecimal.ONE,
+				Side.BUY, BigDecimal.TEN, new Equity("QWER"), BigDecimal.ONE,
 				TimeInForce.DAY, null);
 		controller.setOrderMessage(message);
 		assertEquals("10", view.getOrderTicket().getQuantityText().getText());
@@ -91,7 +91,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertEquals("DAY", view.getOrderTicket().getTifCombo().getText());
 
 		message = msgFactory.newMarketOrder("2",
-				Side.SELL_SHORT, BigDecimal.ONE, new MSymbol("QWER"),
+				Side.SELL_SHORT, BigDecimal.ONE, new Equity("QWER"),
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		controller.setOrderMessage(message);
 		assertEquals("1", view.getOrderTicket().getQuantityText().getText());
@@ -103,7 +103,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
 		// bug #393 - verify quantity doesn't have commas in them
 		message = msgFactory.newMarketOrder("3",
-				Side.SELL_SHORT, new BigDecimal(2000), new MSymbol("QWER"),
+				Side.SELL_SHORT, new BigDecimal(2000), new Equity("QWER"),
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		controller.setOrderMessage(message);
 		assertEquals("2000", view.getOrderTicket().getQuantityText().getText());
@@ -126,7 +126,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		OrderTicketModel model = this.controller.getOrderTicketModel();
 		
 		Message message = msgFactory.newLimitOrder("1",
-				Side.BUY, BigDecimal.TEN, new MSymbol("QWER"), BigDecimal.ONE,
+				Side.BUY, BigDecimal.TEN, new Equity("QWER"), BigDecimal.ONE,
 				TimeInForce.DAY, null);
 		controller.setOrderMessage(message);
 
@@ -229,7 +229,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		((CustomField) stockOrderTicketModel.getCustomFieldsList().get(0)).setEnabled(true);
 		
 		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
-				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
+				Side.BUY, BigDecimal.TEN, new Equity("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
 		stockOrderTicketModel.setOrderMessage(newMessage);
 
@@ -252,7 +252,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	 */
 	public void testEnabledCustomFieldsAddedToMessage() throws Exception {
 		doTestEnabledCustomFieldsAddedToMessage(msgFactory.newLimitOrder("1",  //$NON-NLS-1$
-				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
+				Side.BUY, BigDecimal.TEN, new Equity("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null));
 	}
 	private void doTestEnabledCustomFieldsAddedToMessage(Message message) throws Exception {
@@ -302,7 +302,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 				msgFactory.newCancelReplaceFromMessage(
 						msgFactory.newLimitOrder("1",  //$NON-NLS-1$
 						Side.BUY, BigDecimal.TEN, 
-						new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
+						new Equity("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 						TimeInForce.DAY, null)));
 		//The message already has custom fields, try and complete the
 		//message again. This shouldn't cause an exception in 
@@ -367,7 +367,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		item1.setChecked(false);
 		
 		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
-				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
+				Side.BUY, BigDecimal.TEN, new Equity("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
 		stockOrderTicketModel.setOrderMessage(newMessage);
 		
@@ -445,7 +445,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
         assertFalse(ticket.getPriceText().isFocusControl());
         
         Message buy = msgFactory.newLimitOrder("1",
-                Side.BUY, BigDecimal.TEN, new MSymbol("QWER"), BigDecimal.ONE,
+                Side.BUY, BigDecimal.TEN, new Equity("QWER"), BigDecimal.ONE,
                 TimeInForce.DAY, null);
         Message cxr = msgFactory.newCancelReplaceFromMessage(buy);
         controller.setOrderMessage(cxr);
@@ -498,7 +498,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		BrokersStatus statuses =  new BrokersStatus(Arrays.asList(status1, status2));
     	BrokerManager.getCurrent().setBrokersStatus(statuses);
         Message buy = msgFactory.newLimitOrder("1",
-                Side.BUY, BigDecimal.TEN, new MSymbol("QWER"), BigDecimal.ONE,
+                Side.BUY, BigDecimal.TEN, new Equity("QWER"), BigDecimal.ONE,
                 TimeInForce.DAY, null);
         controller.setOrderMessage(buy);
         controller.setBrokerId("gs");

@@ -4,7 +4,7 @@ include_class "org.marketcetera.trade.Factory"
 include_class "org.marketcetera.trade.OrderType"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
-include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.trade.Equity"
 
 class SuggestTrades < Strategy
     def on_start
@@ -38,7 +38,7 @@ class SuggestTrades < Strategy
             end
             symbol = get_parameter("symbol")
             if(symbol != nil)
-                suggestedOrder.setSymbol(MSymbol.new(symbol))
+                suggestedOrder.setInstrument(Equity.new(symbol))
             end
             timeInForce = get_parameter("timeInForce")
             if(timeInForce != nil)

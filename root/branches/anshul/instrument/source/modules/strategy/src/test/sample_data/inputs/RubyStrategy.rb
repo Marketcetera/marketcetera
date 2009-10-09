@@ -1,7 +1,7 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.marketdata.MarketDataRequest"
 include_class "org.marketcetera.trade.Factory"
-include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.trade.Equity"
 include_class 'org.marketcetera.util.test.UnicodeData'
 include_class "java.math.BigDecimal"
 include_class "java.lang.System"
@@ -249,7 +249,7 @@ class RubyStrategy < Strategy
   def suggestion_from_event(event)
       suggestedOrder = Factory.getInstance().createOrderSingle()
       suggestedOrder.setPrice event.getPrice
-      suggestedOrder.setSymbol event.getSymbol
+      suggestedOrder.setInstrument event.getInstrument
       suggestedOrder.setQuantity event.getSize
       suggest_trade suggestedOrder, BigDecimal.new("1.0"), "CEP Event Received" 
   end

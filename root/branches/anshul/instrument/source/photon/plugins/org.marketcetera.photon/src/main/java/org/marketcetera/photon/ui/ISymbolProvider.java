@@ -1,6 +1,6 @@
 package org.marketcetera.photon.ui;
 
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -18,6 +18,6 @@ public interface ISymbolProvider {
 	/**
 	 * @return a string ticker symbol, should not be null
 	 */
-	MSymbol getSymbol();
+	Equity getEquity();
 
 }

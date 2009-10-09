@@ -133,28 +133,17 @@ class FIXUtil {
         }
         return null;
     }
-    static MSymbol getSymbol(Message inMessage) {
+    static Instrument getInstrument(Message inMessage) {
         String symbol = null;
-        String securityType = null;
+        //todo handle instruments other than Equity
         if (inMessage.isSetField(Symbol.FIELD)) {
             try {
                 symbol = inMessage.getString(Symbol.FIELD);
             } catch (FieldNotFound ignore) {
             }
         }
-        if (inMessage.isSetField(quickfix.field.SecurityType.FIELD)) {
-            try {
-                securityType = inMessage.getString(
-                        quickfix.field.SecurityType.FIELD);
-            } catch (FieldNotFound ignore) {
-            }
-        }
         if(symbol != null) {
-            if(securityType != null) {
-                return new MSymbol(symbol, SecurityType.getInstanceForFIXValue(securityType));
-            } else {
-                return new MSymbol(symbol);
-            }
+            return new Equity(symbol);
         }
         return null;
     }

@@ -6,7 +6,7 @@ include_class "org.marketcetera.trade.OrderSingle"
 include_class "org.marketcetera.trade.OrderReplace"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
-include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.trade.Equity"
 include_class "java.math.BigDecimal"
 include_class "java.util.List"
 include_class "java.lang.System"
@@ -138,7 +138,7 @@ class Orders < Strategy
             end
             symbol = get_property("symbol")
             if(symbol != nil)
-                order.setSymbol(MSymbol.new(symbol))
+                order.setInstrument(Equity.new(symbol))
             end
             timeInForce = get_property("timeInForce")
             if(timeInForce != nil)

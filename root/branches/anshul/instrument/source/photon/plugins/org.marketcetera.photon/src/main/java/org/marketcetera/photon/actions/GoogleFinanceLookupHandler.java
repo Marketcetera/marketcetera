@@ -15,7 +15,7 @@ import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.ISymbolProvider;
 import org.marketcetera.photon.views.WebBrowserView;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -38,7 +38,7 @@ public class GoogleFinanceLookupHandler extends AbstractHandler {
 			IStructuredSelection sselection = (IStructuredSelection) selection;
 			Object obj = sselection.getFirstElement();
 			if (obj instanceof ISymbolProvider) {
-				MSymbol symbol = ((ISymbolProvider) obj).getSymbol();
+				Equity symbol = ((ISymbolProvider) obj).getEquity();
 				IWorkbenchWindow window = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();

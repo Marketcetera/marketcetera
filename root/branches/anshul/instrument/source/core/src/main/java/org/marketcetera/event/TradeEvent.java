@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -27,25 +27,25 @@ public class TradeEvent
      * @param inMessageID a <code>long</code> value uniquely identifying this event
      * @param inTimestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code>
      *   in GMT
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol quoted in this event
-     * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred 
+     * @param inInstrument a <code>Instrument</code> value specifying the instrument on which this quote occured.
+     * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred
      * @param inPrice a <code>BigDecimal</code> value containing the price of this event
      * @param inSize a <code>BigDecimal</code> value containing the size of this event
      * @throws IllegalArgumentException if <code>inMessageID</code> or <code>inTimestamp</code> &lt; 0
-     * @throws IllegalArgumentException if <code>inExchange</code> is non-null but empty
+     * OR if <code>inExchange</code> is non-null but empty
      * @throws NullPointerException if <code>inSymbol</code>, <code>inExchange</code>, <code>inPrice</code>, or
      *  <code>inSize</code> is null
     */
     public TradeEvent(long inMessageID, 
                       long inTimestamp, 
-                      MSymbol inSymbol,
+                      Instrument inInstrument,
                       String inExchange,
                       BigDecimal inPrice,
                       BigDecimal inSize) 
     {
         super(inMessageID, 
               inTimestamp,
-              inSymbol,
+              inInstrument,
               inExchange,
               inPrice,
               inSize);
@@ -57,8 +57,8 @@ public class TradeEvent
     public String toString()
     {
         StringBuffer output = new StringBuffer();
-        output.append("Trade for ").append(getSymbol()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        output.append(" ").append(getSymbol()).append(" ").append(getExchange()).append(" at ").append(DateUtils.dateToString(getTimestampAsDate())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        output.append("Trade for ").append(getInstrument()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        output.append(" ").append(getInstrument()).append(" ").append(getExchange()).append(" at ").append(DateUtils.dateToString(getTimestampAsDate())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return output.toString();
     }
 }

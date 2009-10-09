@@ -20,7 +20,7 @@ import org.marketcetera.photon.ui.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.ui.marketdata.OptionMessageHolder.OptionPairKey;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 
 import quickfix.FieldNotFound;
@@ -140,7 +140,7 @@ public class OptionOrderTicketController
 				try {
 					messageUnderlyingSymbolStr = derivativeSecurityListMessage
 							.getString(UnderlyingSymbol.FIELD);
-					MSymbol messageUnderlyingSymbol = new MSymbol(
+					Equity messageUnderlyingSymbol = new Equity(
 							messageUnderlyingSymbolStr);
 					getOptionContractDataFromMessage(messageUnderlyingSymbol,
 							derivativeSecurityListMessage, optionContractDataList, optionRootList);
@@ -166,7 +166,7 @@ public class OptionOrderTicketController
 	 * @throws FieldNotFound if a required field is missing
 	 * @throws MarketceteraFIXException 
 	 */
-	private void getOptionContractDataFromMessage(MSymbol underlyingSymbol,
+	private void getOptionContractDataFromMessage(Equity underlyingSymbol,
 			Message message, List<OptionContractData> optionExpirations, Set<String> optionRootSet)
 			throws FieldNotFound, MarketceteraFIXException {
 		int numDerivs = 0;
@@ -216,7 +216,7 @@ public class OptionOrderTicketController
 				numDerivs = derivativeSecurityList.getInt(NoRelatedSym.FIELD);
 			}
 			HashMap<OptionPairKey, OptionMessageHolder> optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
-			HashMap<MSymbol, OptionPairKey> optionSymbolToKeyMap = new HashMap<MSymbol, OptionPairKey>();
+			HashMap<Equity, OptionPairKey> optionSymbolToKeyMap = new HashMap<Equity, OptionPairKey>();
 
 			for (int i = 1; i <= numDerivs; i++)
 			{
@@ -226,7 +226,7 @@ public class OptionOrderTicketController
 
 					int putOrCall = OptionMarketDataUtils.getOptionType(info);
 					String optionSymbolString = info.getString(Symbol.FIELD);
-					MSymbol optionSymbol = new MSymbol(optionSymbolString);
+					Equity optionSymbol = new Equity(optionSymbolString);
 					OptionPairKey optionKey;
 						optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
 					optionSymbolToKeyMap.put(optionSymbol, optionKey);
@@ -242,7 +242,7 @@ public class OptionOrderTicketController
 					
 					holder.setExtraInfo(putOrCall, info);
 				} catch (ParseException e) {
-					MSymbol underlying =new MSymbol(derivativeSecurityList.getString(Symbol.FIELD));
+					Equity underlying =new Equity(derivativeSecurityList.getString(Symbol.FIELD));
 					PhotonPlugin.getDefault().getMainLogger().error(CANNOT_PARSE_OPTION_INFO_SPECIFIED.getText(underlying),
 					                                                      e);
 				}

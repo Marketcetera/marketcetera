@@ -2,7 +2,7 @@ package org.marketcetera.quickfix;
 
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -40,7 +40,7 @@ public class DecimalFieldTest extends TestCase {
         BigDecimal originalPrice = new BigDecimal("10.3000"); //$NON-NLS-1$
         assertEquals(4, originalPrice.scale());
         FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
-        Message newOrder = msgFactory.newLimitOrder("ASDF", Side.BUY, new BigDecimal("100"), new MSymbol("FOO"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        Message newOrder = msgFactory.newLimitOrder("ASDF", Side.BUY, new BigDecimal("100"), new Equity("FOO"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 originalPrice, TimeInForce.DAY, "123"); //$NON-NLS-1$
         BigDecimal extractedPrice = newOrder.getDecimal(Price.FIELD);
         assertEquals(4, extractedPrice.scale());
@@ -54,7 +54,7 @@ public class DecimalFieldTest extends TestCase {
 
     public void testZero() throws Exception {
         FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
-        Message newOrder = msgFactory.newLimitOrder("ASDF", Side.BUY, new BigDecimal(0), new MSymbol("FOO"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message newOrder = msgFactory.newLimitOrder("ASDF", Side.BUY, new BigDecimal(0), new Equity("FOO"), //$NON-NLS-1$ //$NON-NLS-2$
                 BigDecimal.ZERO, TimeInForce.DAY, "123"); //$NON-NLS-1$
         assertEquals(BigDecimal.ZERO, newOrder.getDecimal(Price.FIELD));
         assertEquals(BigDecimal.ZERO, newOrder.getDecimal(OrderQty.FIELD));

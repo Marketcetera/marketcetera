@@ -8,7 +8,7 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.OutputType;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 /* $License$ */
 
@@ -42,7 +42,7 @@ public class SendEvent
     {
         TradeEvent trade = new TradeEvent(1,
                                           1,
-                                          new MSymbol("METC"),
+                                          new Equity("METC"),
                                           "exchange",
                                           BigDecimal.ONE,
                                           BigDecimal.TEN);

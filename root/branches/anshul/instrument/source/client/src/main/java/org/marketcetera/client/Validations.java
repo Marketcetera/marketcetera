@@ -44,8 +44,8 @@ public final class Validations {
                 Messages.VALIDATION_ORDER_QUANTITY);
         validate(inOrderSingle.getSide() == null,
                 Messages.VALIDATION_ORDER_SIDE);
-        validate(inOrderSingle.getSymbol() == null,
-                Messages.VALIDATION_ORDER_SYMBOL);
+        validate(inOrderSingle.getInstrument() == null,
+                Messages.VALIDATION_ORDER_INSTRUMENT);
     }
 
     /**
@@ -98,8 +98,8 @@ public final class Validations {
                 Messages.VALIDATION_ORDER_QUANTITY);
         validate(inOrderReplace.getSide() == null,
                 Messages.VALIDATION_ORDER_SIDE);
-        validate(inOrderReplace.getSymbol() == null,
-                Messages.VALIDATION_ORDER_SYMBOL);
+        validate(inOrderReplace.getInstrument() == null,
+                Messages.VALIDATION_ORDER_INSTRUMENT);
     }
 
     /**
@@ -132,8 +132,8 @@ public final class Validations {
                 Messages.VALIDATION_ORDER_QUANTITY);
         validate(inOrderCancel.getSide() == null,
                 Messages.VALIDATION_ORDER_SIDE);
-        validate(inOrderCancel.getSymbol() == null,
-                Messages.VALIDATION_ORDER_SYMBOL);
+        validate(inOrderCancel.getInstrument() == null,
+                Messages.VALIDATION_ORDER_INSTRUMENT);
     }
 
     /**

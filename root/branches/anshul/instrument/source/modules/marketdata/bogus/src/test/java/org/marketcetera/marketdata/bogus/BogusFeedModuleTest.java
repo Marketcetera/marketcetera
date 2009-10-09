@@ -5,13 +5,14 @@ import static org.junit.Assert.assertTrue;
 import static org.marketcetera.marketdata.Capability.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
-import org.marketcetera.event.HasSymbol;
+import org.marketcetera.event.HasInstrument;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MarketDataModuleTestBase;
@@ -45,7 +46,7 @@ public class BogusFeedModuleTest
     public void deadlock()
         throws Exception
     {
-        final Set<String> symbols = new HashSet<String>();
+        final Set<String> symbols = Collections.synchronizedSet(new HashSet<String>());
         moduleManager.addSinkListener(new SinkDataListener() {
             @Override
             public void receivedData(DataFlowID inFlowID,
@@ -55,8 +56,8 @@ public class BogusFeedModuleTest
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                if(inData instanceof HasSymbol) {
-                    symbols.add(((HasSymbol)inData).getSymbol().getFullSymbol());
+                if(inData instanceof HasInstrument) {
+                    symbols.add(((HasInstrument)inData).getInstrument().getSymbol());
                 }
             }
         });

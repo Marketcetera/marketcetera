@@ -2,7 +2,7 @@ package org.marketcetera.event;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -22,14 +22,14 @@ public class TradeEventTest
     @Override
     protected SymbolExchangeEvent getObject(long inMessageID,
                                             long inTimestamp,
-                                            MSymbol inSymbol,
+                                            Instrument inInstrument,
                                             String inExchange,
                                             BigDecimal inPrice,
                                             BigDecimal inSize)
     {
         return new TradeEvent(inMessageID,
                               inTimestamp,
-                              inSymbol,
+                              inInstrument,
                               inExchange,
                               inPrice,
                               inSize);

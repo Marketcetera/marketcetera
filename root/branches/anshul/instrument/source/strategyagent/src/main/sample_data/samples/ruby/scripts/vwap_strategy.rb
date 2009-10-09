@@ -13,7 +13,7 @@ include_class "org.marketcetera.trade.Factory"
 include_class "org.marketcetera.trade.OrderType"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
-include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.trade.Equity"
 include_class "org.marketcetera.marketdata.MarketDataRequest"
 include_class "java.math.BigDecimal"
 
@@ -62,7 +62,7 @@ class VWAPStrategy < Strategy
           order = Factory.instance.createOrderSingle()
           order.side = Side::Buy
           order.quantity = BigDecimal.new("1000.0")
-          order.symbol = MSymbol.new(symbol)
+          order.instrument = Equity.new(symbol)
           order.order_type = OrderType::Limit
           order.time_in_force = TimeInForce::Day
           order.price = BigDecimal.new(@vwaps[symbol])

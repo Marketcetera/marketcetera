@@ -10,7 +10,7 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.trade.Factory"
 include_class "org.marketcetera.trade.OrderType"
-include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.trade.Equity"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
 include_class "java.math.BigDecimal"
@@ -75,7 +75,7 @@ class OrderSlicer < Strategy
       order.order_type = OrderType::Market
       order.quantity = BigDecimal.new(Float(size).to_s)
       order.side = Side::Buy
-      order.symbol = MSymbol.new(symbol)
+      order.instrument = Equity.new(symbol)
       order.time_in_force = TimeInForce::Day
       # request a callback for each order at a random time (up to 10 seconds)
       request_callback_after(1000*rand(10), order)

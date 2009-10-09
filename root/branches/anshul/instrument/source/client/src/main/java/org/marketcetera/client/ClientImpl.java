@@ -149,7 +149,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     @Override
     public BigDecimal getPositionAsOf
         (Date inDate,
-         MSymbol inSymbol)
+         Equity inSymbol)
         throws ConnectionException
     {
         failIfClosed();

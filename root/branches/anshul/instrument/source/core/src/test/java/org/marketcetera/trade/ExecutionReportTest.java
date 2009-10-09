@@ -92,7 +92,7 @@ public class ExecutionReportTest extends TypesTestBase {
         BigDecimal lastPrice = new BigDecimal("9.234");
         BigDecimal cumQty = new BigDecimal("984.34");
         BigDecimal avgPrice = new BigDecimal("34.234");
-        MSymbol symbol = new MSymbol("METC", SecurityType.Option);
+        Instrument instrument = new Equity("METC");
         String account= "yes";
         UserID actorID = new UserID(2);
         UserID viewerID = new UserID(3);
@@ -101,7 +101,7 @@ public class ExecutionReportTest extends TypesTestBase {
         msg = getSystemMessageFactory().newExecutionReport(destOrderID,
                 orderID.getValue(), execID, orderStatus.getFIXValue(),
                 side.getFIXValue(), orderQty, orderPrice, lastShares,
-                lastPrice, cumQty, avgPrice, symbol, account );
+                lastPrice, cumQty, avgPrice, instrument, account );
         OrderID origOrderID = new OrderID("or1");
         ExecutionType execType = ExecutionType.PendingNew;
         String lastMarket = "XDES";
@@ -133,7 +133,7 @@ public class ExecutionReportTest extends TypesTestBase {
                                Originator.Broker, actorID, viewerID);
         assertExecReportValues(report, account, avgPrice, cumQty, execID,
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
-                orderQty, orderType, side, symbol, timeInForce,
+                orderQty, orderType, side, instrument, timeInForce,
                 transactTime,
                 OrderCapacity.Proprietary, PositionEffect.Close, true);
         assertNull(report.getReportID());
@@ -154,11 +154,11 @@ public class ExecutionReportTest extends TypesTestBase {
         expected.put(ClOrdID.FIELD, orderID.getValue());
         expected.put(OrigClOrdID.FIELD, origOrderID.getValue());
         expected.put(quickfix.field.SecurityType.FIELD,
-                symbol.getSecurityType().getFIXValue());
+                instrument.getSecurityType().getFIXValue());
         expected.put(Price.FIELD, DecimalConverter.convert(orderPrice));
         expected.put(CumQty.FIELD, DecimalConverter.convert(cumQty));
         expected.put(ExecID.FIELD, execID);
-        expected.put(Symbol.FIELD, symbol.getFullSymbol());
+        expected.put(Symbol.FIELD, instrument.getSymbol());
         expected.put(quickfix.field.Side.FIELD,
                 String.valueOf(side.getFIXValue()));
         expected.put(quickfix.field.TimeInForce.FIELD,

@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Represents the set of available statistics of a specific {@link MSymbol}.
+ * Represents the set of available statistics of a specific {@link Instrument}.
  * 
  * <p>The data contained in this event represent the best-effort result of a request
  * to retrieve available statistics for a specific symbol at a specific time.  Some
@@ -23,13 +23,13 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class MarketstatEvent
         extends EventBase
-        implements Messages, HasSymbol
+        implements Messages, HasInstrument
 {
     /**
      * Create a new MarketstatEvent instance.
      * 
-     * @param inSymbol an <code>MSymbol</code> value
-     * @param timestamp a <code>Date</code> value expressing the time this event occurred
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inTimestamp a <code>Date</code> value expressing the time this event occurred
      * @param inOpen a <code>BigDecimal</code> value or null
      * @param inHigh a <code>BigDecimal</code> value or null
      * @param inLow a <code>BigDecimal</code> value or null
@@ -46,7 +46,7 @@ public class MarketstatEvent
      * @param inCloseExchange a <code>String</code> value or null
      * @throws IllegalArgumentException if <code>timestamp</code> &lt; 0
      */
-    public MarketstatEvent(MSymbol inSymbol,
+    public MarketstatEvent(Instrument inInstrument,
                            Date inTimestamp,
                            BigDecimal inOpen,
                            BigDecimal inHigh,
@@ -65,7 +65,7 @@ public class MarketstatEvent
     {
         super(EventBase.assignCounter(),
               inTimestamp.getTime());
-        if(inSymbol == null) {
+        if(inInstrument == null) {
             throw new NullPointerException();
         }
         open = inOpen;
@@ -76,7 +76,7 @@ public class MarketstatEvent
         volume = inVolume;
         closeDate = inCloseDate;
         previousCloseDate = inPreviousCloseDate;
-        symbol = inSymbol;
+        instrument = inInstrument;
         highTime = inTradeHighTime;
         lowTime = inTradeLowTime;
         closeExchange = inCloseExchange;
@@ -157,13 +157,13 @@ public class MarketstatEvent
         return previousCloseDate;
     }
     /**
-     * Get the symbol value.
+     * Get the instrument value.
      *
-     * @return a <code>MSymbol</code> value
+     * @return a <code>instrument</code> value
      */
-    public MSymbol getSymbol()
+    public Instrument getInstrument()
     {
-        return symbol;
+        return instrument;
     }
     /**
      * Get the highTime value.
@@ -236,7 +236,7 @@ public class MarketstatEvent
                                                              DateUtils.DAYS);
         }
         return String.format("Statistics for %s -> Open: %s High: %s Low: %s Close: %s (%s) Previous Close: %s (%s) Volume: %s", //$NON-NLS-1$
-                             getSymbol(),
+                             getInstrument(),
                              open,
                              high,
                              low,
@@ -247,9 +247,9 @@ public class MarketstatEvent
                              volume);
     }
     /**
-     * symbol for the event
+     * instrument for the event
      */
-    private final MSymbol symbol;
+    private final Instrument instrument;
     /**
      * open price
      */
@@ -306,5 +306,5 @@ public class MarketstatEvent
      * the exchange for the low price
      */
     private final String lowExchange;
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 }

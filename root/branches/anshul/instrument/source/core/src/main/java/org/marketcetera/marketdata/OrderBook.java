@@ -18,7 +18,7 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DepthOfBook;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TopOfBook;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -62,11 +62,11 @@ public class OrderBook
      * <p>The resulting <code>OrderBook</code> will have an
      * unlimited maximum depth.
      * 
-     * @param inSymbol a <code>MSymbol</code> instance
+     * @param inInstrument an <code>Instrument</code> instance
      */
-    public OrderBook(MSymbol inSymbol)
+    public OrderBook(Instrument inInstrument)
     {
-        this(inSymbol,
+        this(inInstrument,
              UNLIMITED_DEPTH);
     }
     /**
@@ -82,13 +82,13 @@ public class OrderBook
         }
     }
     /**
-     * Get the symbol value.
+     * Get the instrument value.
      *
-     * @return a <code>OrderBook</code> value
+     * @return an <code>Instrument</code> value
      */
-    public final MSymbol getSymbol()
+    public final Instrument getInstrument()
     {
-        return mSymbol;
+        return mInstrument;
     }
     /**
      * Get the maxDepth value.
@@ -111,7 +111,7 @@ public class OrderBook
         return new TopOfBook(bidBook.isEmpty() ? null : bidBook.get(0),
                              askBook.isEmpty() ? null : askBook.get(0),
                              new Date(),
-                             getSymbol());
+                             getInstrument());
     }
     /**
      * Returns the {@link DepthOfBook} view of the order book. 
@@ -123,7 +123,7 @@ public class OrderBook
         return new DepthOfBook(getBidBook(),
                                getAskBook(),
                                new Date(),
-                               getSymbol());
+                               getInstrument());
     }
     /**
      * Gets the current state of the <code>Bid</code> book. 
@@ -185,7 +185,7 @@ public class OrderBook
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((mSymbol == null) ? 0 : mSymbol.hashCode());
+        result = prime * result + ((mInstrument == null) ? 0 : mInstrument.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -201,10 +201,10 @@ public class OrderBook
         if (getClass() != obj.getClass())
             return false;
         final OrderBook other = (OrderBook) obj;
-        if (mSymbol == null) {
-            if (other.mSymbol != null)
+        if (mInstrument == null) {
+            if (other.mInstrument != null)
                 return false;
-        } else if (!mSymbol.equals(other.mSymbol))
+        } else if (!mInstrument.equals(other.mInstrument))
             return false;
         return true;
     }
@@ -215,7 +215,7 @@ public class OrderBook
     public String toString()
     {
         StringBuilder book = new StringBuilder();
-        book.append(getSymbol()).append(SystemUtils.LINE_SEPARATOR);
+        book.append(getInstrument()).append(SystemUtils.LINE_SEPARATOR);
         book.append(printBook(getBidBook().iterator(),
                               getAskBook().iterator(),
                               false));
@@ -323,18 +323,18 @@ public class OrderBook
      * <p>An <code>OrderBook</code> with a maximum depth will 
      * never grow larger than the specified depth. 
      *
-     * @param inSymbol a <code>MSymbol</code> instance
-     * @param inMaxDepth an <code>int</code> instance
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inMaxDepth an <code>int</code> instance  
      * @throws IllegalArgumentException if the given depth is invalid
      */
-    OrderBook(MSymbol inSymbol,
+    OrderBook(Instrument inInstrument,
               int inMaxDepth)
     {
-        if(inSymbol == null) {
+        if(inInstrument == null) {
             throw new NullPointerException();
         }
         validateMaximumBookDepth(inMaxDepth);
-        mSymbol = inSymbol;
+        mInstrument = inInstrument;
         mAskBook = new BookCollection<AskEvent>(inMaxDepth);
         mBidBook = new BookCollection<BidEvent>(inMaxDepth);
         mMaxDepth = inMaxDepth;
@@ -365,9 +365,9 @@ public class OrderBook
      */
     private void checkEvent(QuoteEvent inEvent)
     {
-        if(!inEvent.getSymbol().equals(getSymbol())) {
-            throw new IllegalArgumentException(SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL.getText(inEvent.getSymbol(),
-                                                                                               getSymbol()));
+        if(!inEvent.getInstrument().equals(getInstrument())) {
+            throw new IllegalArgumentException(SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL.getText(inEvent.getInstrument(),
+                                                                                               getInstrument()));
         }
     }
     /**
@@ -538,9 +538,9 @@ public class OrderBook
         }
     }
     /**
-     * the symbol for this book
+     * the instrument for this book
      */
-    private final MSymbol mSymbol;
+    private final Instrument mInstrument;
     /**
      * the ask side of the book
      */

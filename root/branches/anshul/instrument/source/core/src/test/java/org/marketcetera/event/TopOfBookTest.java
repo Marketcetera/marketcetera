@@ -10,7 +10,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.EqualityAssert;
 
@@ -25,8 +26,8 @@ import org.marketcetera.util.test.EqualityAssert;
  */
 public class TopOfBookTest
 {
-    private final MSymbol metc = new MSymbol("metc");
-    private final MSymbol goog = new MSymbol("goog");
+    private final Equity metc = new Equity("metc");
+    private final Equity goog = new Equity("goog");
     private final String exchange1 = "TEST1";
     private final String exchange2 = "TEST2";
     /**
@@ -57,7 +58,7 @@ public class TopOfBookTest
                                            EventBaseTest.generateAskEvent(goog,
                                                                           exchange2) };
         Date[] timestamps = new Date[] { null, new Date(-1), new Date(0), new Date(1), new Date(), new Date(System.currentTimeMillis() + 10000) };
-        MSymbol[] symbols = new MSymbol[] { null, metc, goog };
+        Instrument[] symbols = new Instrument[] { null, metc, goog };
         for(int bidCounter=0;bidCounter<bids.length;bidCounter++) {
             for(int askCounter=0;askCounter<asks.length;askCounter++) {
                 for(int timestampCounter=0;timestampCounter<timestamps.length;timestampCounter++) {
@@ -65,7 +66,7 @@ public class TopOfBookTest
                         final BidEvent bid = bids[bidCounter];
                         final AskEvent ask = asks[askCounter];
                         final Date timestamp = timestamps[timestampCounter];
-                        final MSymbol symbol = symbols[symbolCounter];
+                        final Instrument symbol = symbols[symbolCounter];
                         SLF4JLoggerProxy.debug(this,
                                                "{} {} {} {}",
                                                bid,
@@ -103,9 +104,9 @@ public class TopOfBookTest
                             continue;
                         }
                         if((bid != null &&
-                            !bid.getSymbol().equals(symbol)) ||
+                            !bid.getInstrument().equals(symbol)) ||
                            (ask != null &&
-                            !ask.getSymbol().equals(symbol))) {
+                            !ask.getInstrument().equals(symbol))) {
                             new ExpectedFailure<IllegalArgumentException>(null) {
                                 @Override
                                 protected void run()
@@ -130,7 +131,7 @@ public class TopOfBookTest
                         assertEquals(timestamp,
                                      top.getTimestampAsDate());
                         assertEquals(symbol,
-                                     top.getSymbol());
+                                     top.getInstrument());
                         assertNotNull(top.toString());
                         List<EventBase> expectedEvents = new LinkedList<EventBase>();
                         if(bid != null) {

@@ -16,6 +16,7 @@ import org.marketcetera.trade.*;
 import static org.marketcetera.trade.TypesTestBase.*;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Util;
 import org.junit.*;
 
@@ -65,6 +66,7 @@ public class ClientTest
     private static final int NUM_REPEAT = 5;
     @BeforeClass
     public static void setup() throws Exception {
+    	LoggerConfiguration.logSetup();
         FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
                 FIXVersion.FIX42.getDataDictionaryURL());
         initServer();
@@ -397,7 +399,7 @@ public class ClientTest
             order.setPrice(new BigDecimal("83.43"));
             order.setQuantity(new BigDecimal("823.443"));
             order.setSide(Side.Buy);
-            order.setSymbol(new MSymbol("IBM", SecurityType.CommonStock));
+            order.setInstrument(new Equity("IBM"));
             order.setTimeInForce(TimeInForce.AtTheClose);
 
             //Create an execution report for the mock server to send back
@@ -1066,7 +1068,7 @@ public class ClientTest
                 new BigDecimal("4343.49"), new BigDecimal("498.34"),
                 new BigDecimal("783343.49"), new BigDecimal("598.34"),
                 new BigDecimal("234343.49"), new BigDecimal("798.34"),
-                new MSymbol("IBM", SecurityType.CommonStock), "my acc"),
+                new Equity("IBM"), "my acc"),
                 new BrokerID("bro"), Originator.Broker, null, null);
     }
 
@@ -1110,7 +1112,7 @@ public class ClientTest
         order.setPrice(new BigDecimal("834.34"));
         order.setQuantity(new BigDecimal("833.343"));
         order.setSide(Side.Buy);
-        order.setSymbol(new MSymbol("IBN", SecurityType.CommonStock));
+        order.setInstrument(new Equity("IBN"));
         return order;
     }
 
@@ -1130,7 +1132,7 @@ public class ClientTest
         return Factory.getInstance().createOrder(
                 FIXVersion.FIX42.getMessageFactory().newLimitOrder("clOrd1",
                         quickfix.field.Side.BUY, new BigDecimal("8934.234"),
-                        new MSymbol("IBM", SecurityType.Option),
+                        new Equity("IBM"),
                         new BigDecimal("9834.23"),
                         quickfix.field.TimeInForce.DAY, "no"),
                 new BrokerID("bro"));

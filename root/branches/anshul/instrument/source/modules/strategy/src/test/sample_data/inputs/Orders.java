@@ -1,6 +1,6 @@
 import java.math.BigDecimal;
 
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
@@ -208,7 +208,7 @@ public class Orders
             }
             String symbol = getProperty("symbol");
             if(symbol != null) {
-                order.setSymbol(new MSymbol(symbol));
+                order.setInstrument(new Equity(symbol));
             }
             String timeInForce = getProperty("timeInForce");
             if(timeInForce != null) {

@@ -33,7 +33,7 @@ import org.marketcetera.event.QuoteEvent.Action;
 import org.marketcetera.marketdata.SimulatedExchange.Status;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.test.TestCaseBase;
 
 /* $License$ */
@@ -49,8 +49,8 @@ public class SimulatedExchangeTest
     extends TestCaseBase
 {
     private SimulatedExchange exchange;
-    private final MSymbol metc = new MSymbol("METC");
-    private final MSymbol goog = new MSymbol("GOOG");
+    private final Equity metc = new Equity("METC");
+    private final Equity goog = new Equity("GOOG");
     private BidEvent bid;
     private AskEvent ask;
     /**
@@ -1089,7 +1089,7 @@ public class SimulatedExchangeTest
             long currentTime = System.currentTimeMillis();
             int counter = 0;
             while(currentTime-startTime < 10000) {
-                MSymbol symbol = new MSymbol(String.format("symbol-%d",
+                Equity symbol = new Equity(String.format("symbol-%d",
                                                            counter++));
                 exchange.getStatistics(symbol);
                 exchange.getDepthOfBook(symbol);
@@ -1149,7 +1149,7 @@ public class SimulatedExchangeTest
      * @throws Exception if an error occurs
      */
     private void verifyStatistics(MarketstatEvent inStatistics,
-                                  MSymbol inSymbol)
+                                  Equity inSymbol)
         throws Exception
     {
         assertNotNull(inStatistics.getOpen());
@@ -1177,7 +1177,7 @@ public class SimulatedExchangeTest
      * @throws Exception if an error occurs
      */
     private void verifySnapshots(SimulatedExchange inExchange,
-                                 MSymbol inSymbol,
+                                 Equity inSymbol,
                                  List<AskEvent> inExpectedAsks,
                                  List<BidEvent> inExpectedBids,
                                  TradeEvent inExpectedLatestTick)
@@ -1264,7 +1264,7 @@ public class SimulatedExchangeTest
             TopOfBook newTop = new TopOfBook(newBid,
                                              newAsk,
                                              quote.getTimestampAsDate(),
-                                             quote.getSymbol());
+                                             quote.getInstrument());
             tops.add(newTop);
             lastBid = newBid;
             lastAsk = newAsk;

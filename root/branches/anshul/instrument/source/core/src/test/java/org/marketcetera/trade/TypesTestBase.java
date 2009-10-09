@@ -144,7 +144,7 @@ public class TypesTestBase {
         assertEquals(inReport1.getOrderQuantity(), inReport2.getOrderQuantity());
         assertEquals(inReport1.getOrderType(), inReport2.getOrderType());
         assertEquals(inReport1.getSide(), inReport2.getSide());
-        assertEquals(inReport1.getSymbol(), inReport2.getSymbol());
+        assertEquals(inReport1.getInstrument(), inReport2.getInstrument());
         assertEquals(inReport1.getTimeInForce(), inReport2.getTimeInForce());
         assertEquals(inReport1.getTransactTime(), inReport2.getTransactTime());
         assertEquals(inReport1.isCancelable(), inReport2.isCancelable());
@@ -212,7 +212,7 @@ public class TypesTestBase {
         assertEquals(inOrder1.getQuantity(), inOrder2.getQuantity());
         assertEquals(inOrder1.getSecurityType(), inOrder2.getSecurityType());
         assertEquals(inOrder1.getSide(), inOrder2.getSide());
-        assertEquals(inOrder1.getSymbol(), inOrder2.getSymbol());
+        assertEquals(inOrder1.getInstrument(), inOrder2.getInstrument());
     }
 
     protected static void assertNROrderEquals(NewOrReplaceOrder inOrder1,
@@ -322,16 +322,12 @@ public class TypesTestBase {
         inOrder.setQuantity(null);
         assertEquals(null, inOrder.getQuantity());
 
-        MSymbol symbol = new MSymbol("IBM");
-        inOrder.setSymbol(symbol);
-        assertEquals(symbol, inOrder.getSymbol());
-        assertEquals(null, inOrder.getSecurityType());
-        symbol = new MSymbol("IBM", SecurityType.CommonStock);
-        inOrder.setSymbol(symbol);
-        assertEquals(symbol, inOrder.getSymbol());
+        Equity instrument = new Equity("IBM");
+        inOrder.setInstrument(instrument);
+        assertEquals(instrument, inOrder.getInstrument());
         assertEquals(SecurityType.CommonStock, inOrder.getSecurityType());
-        inOrder.setSymbol(null);
-        assertEquals(null, inOrder.getSymbol());
+        inOrder.setInstrument(null);
+        assertEquals(null, inOrder.getInstrument());
         assertEquals(null, inOrder.getSecurityType());
     }
 
@@ -398,7 +394,7 @@ public class TypesTestBase {
                                                 Map<String, String> inCustomFields,
                                                 BigDecimal inQuantity,
                                                 Side inSide,
-                                                MSymbol inSymbol) {
+                                                Instrument inInstrument) {
         if (NOT_NULL == inOrderID) {
             assertNotNull(inOrder.getOrderID());
         } else {
@@ -417,7 +413,7 @@ public class TypesTestBase {
         assertEquals(inCustomFields, map);
         assertEquals(inQuantity, inOrder.getQuantity());
         assertEquals(inSide, inOrder.getSide());
-        assertEquals(inSymbol, inOrder.getSymbol());
+        assertEquals(inInstrument, inOrder.getInstrument());
     }
 
     protected static void assertOrderValues(Order inOrder,
@@ -499,7 +495,7 @@ public class TypesTestBase {
          BigDecimal inOrderQty,
          OrderType inOrderType,
          Side inSide,
-         MSymbol inSymbol,
+         Instrument inInstrument,
          TimeInForce inTimeInForce,
          OrderCapacity inOrderCapacity,
          PositionEffect inPositionEffect,
@@ -516,7 +512,7 @@ public class TypesTestBase {
         assertEquals(inOrderQty, inReport.getOrderQuantity());
         assertEquals(inOrderType, inReport.getOrderType());
         assertEquals(inSide, inReport.getSide());
-        assertEquals(inSymbol, inReport.getSymbol());
+        assertEquals(inInstrument, inReport.getInstrument());
         assertEquals(inTimeInForce, inReport.getTimeInForce());
         assertEquals(inOrderCapacity, inReport.getOrderCapacity());
         assertEquals(inPositionEffect, inReport.getPositionEffect());
@@ -536,7 +532,7 @@ public class TypesTestBase {
                                                  BigDecimal inOrderQty,
                                                  OrderType inOrderType,
                                                  Side inSide,
-                                                 MSymbol inSymbol,
+                                                 Instrument inInstrument,
                                                  TimeInForce inTimeInForce,
                                                  Date inTransactTime,
                                                  OrderCapacity inOrderCapacity,
@@ -554,7 +550,7 @@ public class TypesTestBase {
                                inOrderQty,
                                inOrderType,
                                inSide,
-                               inSymbol,
+                               inInstrument,
                                inTimeInForce,
                                inOrderCapacity,
                                inPositionEffect,
@@ -592,7 +588,7 @@ public class TypesTestBase {
                                          BigDecimal inPrice,
                                          TimeInForce inTimeInForce,
                                          OrderType inOrderType,
-                                         MSymbol inSymbol,
+                                         Instrument inSymbol,
                                          SecurityType inSecurityType,
                                          String inAccount,
                                          OrderCapacity inOrderCapacity,
@@ -612,7 +608,7 @@ public class TypesTestBase {
                                          OrderID inOrderID,
                                          OrderID inOriginalOrderID,
                                          Side inSide,
-                                         MSymbol inSymbol,
+                                         Instrument inInstrument,
                                          SecurityType inSecurityType,
                                          BigDecimal inQty,
                                          String inDestOrderID,
@@ -622,7 +618,7 @@ public class TypesTestBase {
         assertNotNull(inOrder);
         assertOrderValues(inOrder, inBrokerID, inSecurityType);
         assertOrderBaseValues(inOrder, inOrderID, inAccount,
-                inCustomFields, inQty, inSide, inSymbol);
+                inCustomFields, inQty, inSide, inInstrument);
         assertRelatedOrderValues(inOrder, inOriginalOrderID, inDestOrderID);
     }
 
@@ -634,7 +630,7 @@ public class TypesTestBase {
                                           Side inSide,
                                           BigDecimal inQty,
                                           BigDecimal inPrice,
-                                          MSymbol inSymbol,
+                                          Instrument inInstrument,
                                           SecurityType inSecurityType,
                                           TimeInForce inTif,
                                           String inAccount,
@@ -644,7 +640,7 @@ public class TypesTestBase {
                                           Map<String, String> inCustomFields) {
         assertOrderValues(inOrder, inBrokerID, inSecurityType);
         assertOrderBaseValues(inOrder, inOrderID, inAccount, inCustomFields, inQty,
-                inSide, inSymbol);
+                inSide, inInstrument);
         assertNROrderValues(inOrder, inOrderType,
                 inPrice,
                 inTif, inOrderCapacity,

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.lang.Override;
 
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;

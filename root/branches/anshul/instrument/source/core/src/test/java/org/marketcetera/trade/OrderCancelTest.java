@@ -58,21 +58,19 @@ public class OrderCancelTest extends TypesTestBase {
         String orderID = "clorder-2";
         String destOrderID = "brokerder-2";
         Side side = Side.Buy;
-        MSymbol symbol = new MSymbol("IBM",
-                SecurityType.Option);
+        Instrument instrument = new Equity("IBM");
         String account = "what?";
         BigDecimal orderQty = new BigDecimal("34.5");
         BrokerID cID = new BrokerID("iam");
         //Create an exec report.
         report = createExecReport(orderID, side,
-                symbol, account, destOrderID, orderQty);
+                instrument, account, destOrderID, orderQty);
         //Create the order from the report.
         order = sFactory.createOrderCancel(
                 sFactory.createExecutionReport
                 (report, cID, Originator.Server, null, null));
         assertOrderCancel(order, NOT_NULL, new OrderID(orderID), side,
-                symbol, symbol.getSecurityType(),
-                orderQty,
+                instrument, instrument.getSecurityType(), orderQty,
                 destOrderID, account, cID, null);
         //Verify toString() doesn't fail
         order.toString();
@@ -86,7 +84,7 @@ public class OrderCancelTest extends TypesTestBase {
         //Test a cancel for a partial fill
         //Create an exec report.
         report = createExecReport(orderID, side,
-                symbol, account, destOrderID, orderQty);
+                instrument, account, destOrderID, orderQty);
         report.setDecimal(AvgPx.FIELD, new BigDecimal("23.2"));
         report.setDecimal(CumQty.FIELD, new BigDecimal("10"));
         report.setDecimal(LeavesQty.FIELD, new BigDecimal("9"));
@@ -97,8 +95,7 @@ public class OrderCancelTest extends TypesTestBase {
                 sFactory.createExecutionReport
                 (report, cID, Originator.Server, null, null));
         assertOrderCancel(order, NOT_NULL, new OrderID(orderID), side,
-                symbol, symbol.getSecurityType(),
-                orderQty,
+                instrument, instrument.getSecurityType(), orderQty,
                 destOrderID, account, cID, null);
         //Verify toString() doesn't fail
         order.toString();
@@ -154,17 +151,17 @@ public class OrderCancelTest extends TypesTestBase {
         String origOrderID = "testOrderID";
         BigDecimal qty = new BigDecimal("23434.56989");
         SecurityType securityType = SecurityType.CommonStock;
-        MSymbol symbol = new MSymbol("IBM", securityType);
+        Instrument instrument = new Equity("IBM");
         String account = "nonplus";
         Side side = Side.Buy;
         msg = factory.newCancel("order",origOrderID,
-                side.getFIXValue(), qty, symbol, null);
+                side.getFIXValue(), qty, instrument, null);
         msg.setField(new Account(account));
         msg.setField(new quickfix.field.OrderID(destOrderID));
         order = sFactory.createOrderCancel(msg, brokerID);
         assertOrderValues(order, brokerID, securityType);
         assertOrderBaseValues(order, expectedOrderID, account, null,
-                qty, side, symbol);
+                qty, side, instrument);
         OrderID originalOrderID = new OrderID(origOrderID);
         assertRelatedOrderValues(order, originalOrderID, destOrderID);
         //Verify toString() doesn't fail
@@ -202,7 +199,7 @@ public class OrderCancelTest extends TypesTestBase {
         order = sFactory.createOrderCancel(msg, brokerID);
 
         assertOrderCancel(order, expectedOrderID, originalOrderID, side,
-                symbol, securityType, qty, destOrderID, account,
+                instrument, securityType, qty, destOrderID, account,
                 brokerID, expectedMap);
 
         assertNotSame(order, sFactory.createOrderCancel(msg, brokerID));
@@ -295,7 +292,7 @@ public class OrderCancelTest extends TypesTestBase {
 
     private Message createExecReport(String inOrderID,
                                      Side inSide,
-                                     MSymbol inSymbol,
+                                     Instrument inInstrument,
                                      String inAccount,
                                      String inDestOrderID,
                                      BigDecimal inQty)
@@ -306,7 +303,7 @@ public class OrderCancelTest extends TypesTestBase {
                 inSide.getFIXValue(), inQty,
                 new BigDecimal("45.67"), new BigDecimal("23.53"),
                 new BigDecimal("983.43"), new BigDecimal("98.34"),
-                new BigDecimal("34.32"), inSymbol, inAccount);
+                new BigDecimal("34.32"), inInstrument, inAccount);
     }
 
     private void checkSetters(OrderCancel inOrder) {

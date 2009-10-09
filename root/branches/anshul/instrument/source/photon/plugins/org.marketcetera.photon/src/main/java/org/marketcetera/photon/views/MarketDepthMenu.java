@@ -18,7 +18,7 @@ import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.ui.MarketDataUI;
 import org.marketcetera.photon.ui.ISymbolProvider;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.ImmutableMap;
@@ -43,22 +43,22 @@ public class MarketDepthMenu extends CompoundContributionItem {
 			IStructuredSelection structured = (IStructuredSelection) selection;
 			Object selected = structured.getFirstElement();
 			if (selected instanceof ISymbolProvider) {
-				MSymbol symbol = ((ISymbolProvider) selected).getSymbol();
+				Equity symbol = ((ISymbolProvider) selected).getEquity();
 				Set<Capability> capabilities = PhotonPlugin.getDefault().getMarketDataManager()
 						.getActiveFeedCapabilities();
 				List<IContributionItem> items = new ArrayList<IContributionItem>(3);
 				if (capabilities.contains(Capability.LEVEL_2)) {
-					items.add(createCommand(window, symbol.getFullSymbol(), Capability.LEVEL_2,
+					items.add(createCommand(window, symbol.getSymbol(), Capability.LEVEL_2,
 							Messages.MARKET_DEPTH_LEVEL_2_LABEL.getText(),
 							Messages.MARKET_DEPTH_LEVEL_2_MNEMONIC.getText()));
 				}
 				if (capabilities.contains(Capability.TOTAL_VIEW)) {
-					items.add(createCommand(window, symbol.getFullSymbol(), Capability.TOTAL_VIEW,
+					items.add(createCommand(window, symbol.getSymbol(), Capability.TOTAL_VIEW,
 							Messages.MARKET_DEPTH_TOTAL_VIEW_LABEL.getText(),
 							Messages.MARKET_DEPTH_TOTAL_VIEW_MNEMONIC.getText()));
 				}
 				if (capabilities.contains(Capability.OPEN_BOOK)) {
-					items.add(createCommand(window, symbol.getFullSymbol(), Capability.OPEN_BOOK,
+					items.add(createCommand(window, symbol.getSymbol(), Capability.OPEN_BOOK,
 							Messages.MARKET_DEPTH_OPEN_BOOK_LABEL.getText(),
 							Messages.MARKET_DEPTH_OPEN_BOOK_MNEMONIC.getText()));
 				}
