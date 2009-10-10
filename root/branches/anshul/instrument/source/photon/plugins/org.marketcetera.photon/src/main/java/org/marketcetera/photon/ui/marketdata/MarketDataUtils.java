@@ -51,7 +51,7 @@ public class MarketDataUtils {
 		message.setField(new NoMDEntryTypes(0));
 		Group relatedSymGroup = messageFactory.createGroup(
 				MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
-		relatedSymGroup.setField(new Symbol(instrument.toString()));
+		relatedSymGroup.setField(new Symbol(instrument.getSymbol()));
 		if (securityType != null && !"".equals(securityType)){ //$NON-NLS-1$
 			relatedSymGroup.setField(new SecurityType(securityType));
 		}
@@ -72,7 +72,7 @@ public class MarketDataUtils {
 		relatedSymGroup.setString(Symbol.FIELD, "[N/A]"); //$NON-NLS-1$
 		relatedSymGroup.setField(new SecurityType(SecurityType.OPTION));
 
-		underlyingGroup.setString(UnderlyingSymbol.FIELD, underlying.toString());
+		underlyingGroup.setString(UnderlyingSymbol.FIELD, underlying.getSymbol());
 
 		relatedSymGroup.addGroup(underlyingGroup);
 		message.addGroup(relatedSymGroup);

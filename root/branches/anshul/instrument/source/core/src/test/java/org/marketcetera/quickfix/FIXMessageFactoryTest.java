@@ -43,7 +43,7 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         assertEquals(quantity, limitOrder.getDecimal(OrderQty.FIELD));
         assertEquals(equity.getSymbol(), limitOrder.getString(Symbol.FIELD));
         if(FIXVersion.FIX40.equals(fixVersion)) {
-        	assertFalse(limitOrder.isSetField(SecurityType.FIELD));
+            assertFalse(limitOrder.isSetField(SecurityType.FIELD));
         } else {
             assertEquals(equity.getSecurityType().getFIXValue(), limitOrder.getString(SecurityType.FIELD));
         }
@@ -68,7 +68,7 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         assertEquals(quantity, marketOrder.getDecimal(OrderQty.FIELD));
         assertEquals(equity.getSymbol(), marketOrder.getString(Symbol.FIELD));
         if(FIXVersion.FIX40.equals(fixVersion)) {
-        	assertFalse(marketOrder.isSetField(SecurityType.FIELD));
+            assertFalse(marketOrder.isSetField(SecurityType.FIELD));
         } else {
             assertEquals(equity.getSecurityType().getFIXValue(), marketOrder.getString(SecurityType.FIELD));
         }

@@ -83,6 +83,11 @@ public class Option extends Instrument {
     }
     
 
+    /**
+     * Always returns {@link SecurityType#Option}.
+     *
+     * @return {@link SecurityType#Option}
+     */
     @Override
 	public SecurityType getSecurityType() {
 		return SecurityType.Option;

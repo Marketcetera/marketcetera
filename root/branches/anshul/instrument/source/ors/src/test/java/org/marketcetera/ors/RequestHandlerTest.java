@@ -58,7 +58,7 @@ public class RequestHandlerTest
     {
         /*
     	RequestHandler handler = new MyRequestHandler();
-    	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+    	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // add symbol sfx
         newOrder.setField(new SymbolSfx(SymbolSfx.WHEN_ISSUED));
@@ -73,7 +73,7 @@ public class RequestHandlerTest
 
         // on a non-single order should get back null
         assertNull(handler.executionReportFromNewOrder(msgFactory.newCancel("bob", "bob", //$NON-NLS-1$ //$NON-NLS-2$
-                                                                  Side.BUY, new BigDecimal(100), new MSymbol("IBM"), "counterparty"))); //$NON-NLS-1$ //$NON-NLS-2$
+                                                                  Side.BUY, new BigDecimal(100), new Equity("IBM"), "counterparty"))); //$NON-NLS-1$ //$NON-NLS-2$
         */
     }
 
@@ -82,7 +82,7 @@ public class RequestHandlerTest
     public void testSendingTimeChanges() throws Exception {
         /*
         RequestHandler handler = new MyRequestHandler();
-        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         Message execReport = handler.executionReportFromNewOrder(newOrder);
         //        Message reject1 = handler.createRejectionMessage(new Exception(), newOrder);
@@ -104,7 +104,7 @@ public class RequestHandlerTest
     {
         /*
     	RequestHandler handler = new MyRequestHandler();
-        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // remove account ID
         newOrder.removeField(Account.FIELD);

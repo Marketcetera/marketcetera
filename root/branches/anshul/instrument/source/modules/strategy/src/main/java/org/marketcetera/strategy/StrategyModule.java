@@ -610,12 +610,12 @@ final class StrategyModule
      */
     @Override
     public BigDecimal getPositionAsOf(Date inDate,
-                                      Equity inSymbol)
+                                      Equity inEquity)
         throws ConnectionException
     {
         assert(orsClient != null);
         return orsClient.getPositionAsOf(inDate,
-                                         inSymbol);
+                                         inEquity);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyMXBean#getStatus()

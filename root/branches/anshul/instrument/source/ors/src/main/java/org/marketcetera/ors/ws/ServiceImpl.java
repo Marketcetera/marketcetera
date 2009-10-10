@@ -141,11 +141,11 @@ public class ServiceImpl
     private BigDecimal getPositionAsOfImpl
         (ClientSession session,
          Date date,
-         Equity symbol)
+         Equity equity)
         throws PersistenceException
     {
         return getHistoryServices().getPositionAsOf
-            (session.getUser(),date,symbol);
+            (session.getUser(),date,equity);
     }
 
     private MapWrapper<PositionKey<Equity>,BigDecimal> getPositionsAsOfImpl
@@ -224,7 +224,7 @@ public class ServiceImpl
     public BigDecimal getPositionAsOf
         (ClientContext context,
          final DateWrapper date,
-         final Equity symbol)
+         final Equity equity)
         throws RemoteException
     {
         return (new RemoteCaller<ClientSession,BigDecimal>
@@ -236,7 +236,7 @@ public class ServiceImpl
                 throws PersistenceException
             {
                 return getPositionAsOfImpl
-                    (sessionHolder.getSession(),date.getRaw(),symbol);
+                    (sessionHolder.getSession(),date.getRaw(),equity);
             }}).execute(context);
     }
 

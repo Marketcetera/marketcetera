@@ -324,7 +324,7 @@ abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? super T>> i
 		protected final boolean validateSymbol(final String expected, final Instrument instrument) {
 			Validate.notNull(expected);
 			final String newSymbol = instrument == null ? null : instrument.getSymbol();
-			//todo update to handle instruments other than equity.
+			//TODO update to handle instruments other than equity.
 			if (expected.equals(newSymbol)) {
 				return true;
 			} else {

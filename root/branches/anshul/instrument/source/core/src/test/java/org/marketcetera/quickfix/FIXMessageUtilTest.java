@@ -342,9 +342,9 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         throws Exception
     {
         List<Equity> list = Arrays.asList(new Equity("TOLI"),
-                                           new Equity("GRAHAM"),
-                                           new Equity("LENA"),
-                                           new Equity("COLIN"));
+                                          new Equity("GRAHAM"),
+                                          new Equity("LENA"),
+                                          new Equity("COLIN"));
         verifyMDR(msgFactory.newMarketDataRequest("toliID",
                                                   list),
                   list,
@@ -360,7 +360,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
      * Verifies that the given <code>Message</code> represents the given symbols and exchange.
      *
      * @param inActualMessage a <code>Message</code> containing the message to test
-     * @param inExpectedSymbols a <code>&lt;MSymbol&gt;</code> value containing the expected symbols
+     * @param inExpectedSymbols a list of expected <code>&lt;Equity&gt;</code> values
      * @param inExpectedExchange a <code>String</code> value containing the expected exchange or null for no exchange 
      * @throws Exception if an error occurs
      */

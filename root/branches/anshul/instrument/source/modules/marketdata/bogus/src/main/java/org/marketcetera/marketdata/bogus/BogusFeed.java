@@ -386,14 +386,14 @@ public class BogusFeed
          * Executes a statistics request for the given symbol using the
          * given exchange code.
          *
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inEquity an <code>Equity</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doStatistics(Equity inSymbol,
+        private void doStatistics(Equity inEquity,
                                   String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getStatistics(inSymbol,
+                exchangeTokens.add(exchange.getStatistics(inEquity,
                                                           subscriber));
             }
         }
@@ -401,14 +401,14 @@ public class BogusFeed
          * Executes a depth-of-book request for the given symbol using the
          * given exchange code.
          *
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inEquity an <code>Equity</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doDepthOfBook(Equity inSymbol,
+        private void doDepthOfBook(Equity inEquity,
                                    String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getDepthOfBook(inSymbol,
+                exchangeTokens.add(exchange.getDepthOfBook(inEquity,
                                                            subscriber));
             }
         }
@@ -416,14 +416,14 @@ public class BogusFeed
          * Executes a top-of-book request for the given symbol using the
          * given exchange code.
          *
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inEquity an <code>Equity</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doTopOfBook(Equity inSymbol,
+        private void doTopOfBook(Equity inEquity,
                                  String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getTopOfBook(inSymbol,
+                exchangeTokens.add(exchange.getTopOfBook(inEquity,
                                                          subscriber));
             }
         }
@@ -431,14 +431,14 @@ public class BogusFeed
          * Executes a latest-tick request for the given symbol using the given
          * exchange code.
          *
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inEquity an <code>Equity</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doLatestTick(Equity inSymbol,
+        private void doLatestTick(Equity inEquity,
                                   String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getLatestTick(inSymbol,
+                exchangeTokens.add(exchange.getLatestTick(inEquity,
                                                           subscriber));
             }
         }

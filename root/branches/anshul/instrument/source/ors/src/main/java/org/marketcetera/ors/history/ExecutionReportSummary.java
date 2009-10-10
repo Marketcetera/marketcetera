@@ -6,13 +6,7 @@ import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.UserID;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -95,7 +89,7 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position.
      */
-    static BigDecimal getPositionForSymbol
+    static BigDecimal getPositionForEquity
         (final SimpleUser inUser,
          final Date inDate,
          final Equity inEquity)
@@ -194,9 +188,9 @@ class ExecutionReportSummary extends EntityBase {
         setReport(inSavedReport);
         mOrderID = inReport.getOrderID();
         mOrigOrderID = inReport.getOriginalOrderID();
-        Instrument symbol = inReport.getInstrument();
-        mSymbol = symbol == null? null: symbol.getSymbol();
-        //todo handle instruments other than Equity
+        Instrument instrument = inReport.getInstrument();
+        mSymbol = instrument == null? null: instrument.getSymbol();
+        //TODO handle instruments other than Equity
         mAccount = inReport.getAccount();
         mSide = inReport.getSide();
         mCumQuantity = inReport.getCumulativeQuantity();

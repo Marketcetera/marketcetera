@@ -17,14 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.Account;
-import quickfix.field.AvgPx;
-import quickfix.field.CumQty;
-import quickfix.field.LeavesQty;
-import quickfix.field.MsgType;
-import quickfix.field.OrderQty;
-import quickfix.field.Side;
-import quickfix.field.Symbol;
+import quickfix.field.*;
 import ca.odell.glazedlists.AbstractEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -89,6 +82,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                         ReportBase deltaReport = deltaReportHolder.getReport();
                         String symbol = deltaMessage.getString(Symbol.FIELD);
                         String side = deltaMessage.getString(Side.FIELD);
+                        //TODO handle instruments other than equity.
                         SymbolSide symbolSide = new SymbolSide(new Equity(symbol), side);
                         averagePriceIndex = mAveragePriceIndexes.get(symbolSide);
 

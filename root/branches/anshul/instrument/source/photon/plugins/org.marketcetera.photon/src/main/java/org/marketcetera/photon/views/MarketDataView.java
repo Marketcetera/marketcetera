@@ -212,7 +212,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		mViewer.setContentProvider(content);
 		IObservableSet domain = content.getKnownElements();
 		IObservableMap[] maps = new IObservableMap[] {
-				BeansObservables.observeMap(domain, MarketDataViewItem.class, "symbol"), //$NON-NLS-1$
+				BeansObservables.observeMap(domain, MarketDataViewItem.class, "equity.symbol"), //$NON-NLS-1$
 				createCompositeMap(domain, "latestTick", MDPackage.Literals.MD_LATEST_TICK__PRICE), //$NON-NLS-1$
 				createCompositeMap(domain, "latestTick", MDPackage.Literals.MD_LATEST_TICK__SIZE), //$NON-NLS-1$
 				createCompositeMap(domain, "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__BID_SIZE), //$NON-NLS-1$
@@ -364,8 +364,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			int compare;
 			switch (mIndex) {
 			case 0:
-				String symbol1 = item1.getEquity().toString();
-				String symbol2 = item2.getEquity().toString();
+				String symbol1 = item1.getEquity().getSymbol();
+				String symbol2 = item2.getEquity().getSymbol();
 				compare = compareNulls(symbol1, symbol2);
 				if (compare == 0) {
 					compare = symbol1.compareTo(symbol2);
@@ -459,12 +459,12 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 				return;
 			final MarketDataViewItem item = (MarketDataViewItem) element;
 			final Equity symbol = item.getEquity();
-			if (symbol.toString().equals(value))
+			if (symbol.getSymbol().equals(value))
 				return;
 			final Equity newSymbol = new Equity(value.toString());
 			if (mItemMap.containsKey(newSymbol)) {
 				PhotonPlugin.getMainConsoleLogger().warn(
-						DUPLICATE_SYMBOL.getText(symbol));
+						DUPLICATE_SYMBOL.getText(newSymbol.getSymbol()));
 				return;
 			}
 			busyRun(new Runnable() {
@@ -479,7 +479,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 		@Override
 		protected Object getValue(Object element) {
-			return ((MarketDataViewItem) element).getEquity().toString();
+			return ((MarketDataViewItem) element).getEquity().getSymbol();
 		}
 
 		@Override

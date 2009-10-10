@@ -75,7 +75,7 @@ public class OptionSpecifierMatcherEditor extends AbstractMatcherEditor<OptionCo
 		}
 		
 		public boolean matches(OptionContractData contractData){
-			return contractData.getOptionSymbol().toString().equals(optionSymbol);
+			return contractData.getOptionSymbol().getSymbol().equals(optionSymbol);
 		}
 	}
 	

@@ -2,7 +2,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.BidEvent;

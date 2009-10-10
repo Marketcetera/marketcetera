@@ -1145,11 +1145,11 @@ public class SimulatedExchangeTest
      * Verifies symbol statistical data.
      *
      * @param inStatistics a <code>MarketstatEvent</code> value containing the actual value
-     * @param inSymbol an <code>MSymbol</code> value containing the expected symbol
+     * @param inEquity an <code>Equity</code> value containing the expected symbol
      * @throws Exception if an error occurs
      */
     private void verifyStatistics(MarketstatEvent inStatistics,
-                                  Equity inSymbol)
+                                  Equity inEquity)
         throws Exception
     {
         assertNotNull(inStatistics.getOpen());
@@ -1171,26 +1171,26 @@ public class SimulatedExchangeTest
      * Verifies that the given exchange and symbol will produce the expected snapshots. 
      *
      * @param inExchange a <code>SimulatedExchange</code> value
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inEquity an <code>Equity</code> value
      * @param inExpectedAsks a <code>List&lt;AskEvent&gt;</code> value
      * @param inExpectedBids a <code>List&lt;BidEvent&gt;</code> value
      * @throws Exception if an error occurs
      */
     private void verifySnapshots(SimulatedExchange inExchange,
-                                 Equity inSymbol,
+                                 Equity inEquity,
                                  List<AskEvent> inExpectedAsks,
                                  List<BidEvent> inExpectedBids,
                                  TradeEvent inExpectedLatestTick)
         throws Exception
     {
-        DepthOfBookTest.verifyDepthOfBook(inExchange.getDepthOfBook(inSymbol),
+        DepthOfBookTest.verifyDepthOfBook(inExchange.getDepthOfBook(inEquity),
                                           inExpectedAsks,
                                           inExpectedBids);
-        verifyTopOfBook(inExchange.getTopOfBook(inSymbol),
+        verifyTopOfBook(inExchange.getTopOfBook(inEquity),
                         inExpectedAsks.isEmpty() ? null : inExpectedAsks.get(0),
                         inExpectedBids.isEmpty() ? null : inExpectedBids.get(0));
         assertEquals(OrderBookTest.convertEvent(inExpectedLatestTick),
-                     OrderBookTest.convertEvent(exchange.getLatestTick(inSymbol)));
+                     OrderBookTest.convertEvent(exchange.getLatestTick(inEquity)));
     }
     /**
      * Verifies the given actual<code>TopOfBook</code> contains the expected values. 
