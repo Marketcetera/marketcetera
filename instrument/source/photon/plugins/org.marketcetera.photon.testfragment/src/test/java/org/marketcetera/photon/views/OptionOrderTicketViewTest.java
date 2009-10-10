@@ -472,7 +472,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 
         responseMessage.setField(new UnderlyingSymbol(symbol));
         for (int i = 0; i < callSuffixes.length; i++) {
-        	Equity putSymbol = new Equity(symbol+"+"+putSuffixes[i]);
+            Equity putSymbol = new Equity(symbol+"+"+putSuffixes[i]);
             // put first
             Group optionGroup = new DerivativeSecurityList.NoRelatedSym();
             optionGroup.setField(new Symbol(putSymbol.getSymbol()));

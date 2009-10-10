@@ -228,7 +228,7 @@ public class SystemProcessorTest {
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(1),
                 TypesTestBase.NOT_NULL, Side.Buy, new BigDecimal("9.99"),
                 new BigDecimal("22.2"), TimeInForce.FillOrKill, OrderType.Limit,
-                //todo fix when options are added 
+                //TODO test options when they are added 
                 new Equity("soft"),
                 SecurityType.CommonStock, "yours", OrderCapacity.Individual,
                 PositionEffect.Close, brokerID, map);

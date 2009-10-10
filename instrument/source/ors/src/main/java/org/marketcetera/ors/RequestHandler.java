@@ -230,9 +230,8 @@ public class RequestHandler
         if (str==null) {
             return null;
         }
-        //todo update to handle instruments other than equity
-        return new Equity
-            (str);
+        //TODO update to handle instruments other than equity
+        return new Equity(str);
     }
 
     private static void addRequiredFields

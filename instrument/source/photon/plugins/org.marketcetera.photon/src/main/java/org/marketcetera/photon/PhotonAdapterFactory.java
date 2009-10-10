@@ -117,7 +117,7 @@ public class PhotonAdapterFactory
 
 		public String getLabel(Object o) {
 			Instrument instrument = (Instrument) o;
-			return instrument.toString();
+			return instrument.getSymbol();
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {

@@ -2,7 +2,6 @@ package org.marketcetera.core.position;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.impl.Messages;
 import org.marketcetera.core.position.impl.PositionEngineImpl;
@@ -167,7 +166,7 @@ public class PositionEngineFactory {
         }
 
         private boolean notEmpty(Instrument instrument) {
-            return notNull(instrument) && StringUtils.isNotEmpty(instrument.getSymbol());
+            return notNull(instrument);
         }
 
         private boolean notZero(BigDecimal number) {

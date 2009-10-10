@@ -12,7 +12,6 @@ import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.photon.ui.marketdata.OptionContractData;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

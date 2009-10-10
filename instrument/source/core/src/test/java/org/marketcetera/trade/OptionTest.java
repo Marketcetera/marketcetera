@@ -49,7 +49,7 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Override
 	protected SecurityType getSecurityType() {
-		return SecurityType.Option;
+        return SecurityType.Option;
 	}
 
 	@Test

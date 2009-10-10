@@ -17,7 +17,7 @@ public class TradeEventTest
     extends SymbolExchangeEventTest
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.event.SymbolExchangeEventTest#getObject(long, long, org.marketcetera.trade.MSymbol, java.lang.String, java.math.BigDecimal, java.math.BigDecimal)
+     * @see org.marketcetera.event.SymbolExchangeEventTest#getObject(long, long, org.marketcetera.trade.Instrument, java.lang.String, java.math.BigDecimal, java.math.BigDecimal)
      */
     @Override
     protected SymbolExchangeEvent getObject(long inMessageID,

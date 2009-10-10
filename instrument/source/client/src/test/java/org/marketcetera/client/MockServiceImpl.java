@@ -86,7 +86,7 @@ public class MockServiceImpl
 
     private BigDecimal getPositionAsOfImpl
         (Date date,
-         Equity symbol)
+         Equity equity)
     {
         return new BigDecimal(date.getTime());
     }
@@ -170,7 +170,7 @@ public class MockServiceImpl
     public BigDecimal getPositionAsOf
         (ClientContext context,
          final DateWrapper date,
-         final Equity symbol)
+         final Equity equity)
         throws RemoteException
     {
         return (new RemoteCaller<Object,BigDecimal>
@@ -180,7 +180,7 @@ public class MockServiceImpl
                 (ClientContext context,
                  SessionHolder<Object> sessionHolder)
             {
-                return getPositionAsOfImpl(date.getRaw(),symbol);
+                return getPositionAsOfImpl(date.getRaw(),equity);
             }}).execute(context);
     }
 

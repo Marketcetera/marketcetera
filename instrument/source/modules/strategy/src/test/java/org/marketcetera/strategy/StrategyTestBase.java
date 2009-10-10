@@ -718,13 +718,13 @@ public class StrategyTestBase
          */
         @Override
         public BigDecimal getPositionAsOf(Date inDate,
-                                          Equity inSymbol)
+                                          Equity inEquity)
                 throws ConnectionException
         {
             if(getPositionFails) {
                 throw new NullPointerException("This exception is expected");
             }
-            Position position = positions.get(inSymbol);
+            Position position = positions.get(inEquity);
             if(position == null) {
                 return null;
             }
@@ -1131,9 +1131,9 @@ public class StrategyTestBase
     {
         Map<Equity,Position> positions = new HashMap<Equity,Position>();
         for(String symbol : inSymbols) {
-            Equity mSymbol = new Equity(symbol);
-            positions.put(mSymbol,
-                          new Position(mSymbol));
+            Equity equity = new Equity(symbol);
+            positions.put(equity,
+                          new Position(equity));
         }
         return positions;
     }

@@ -118,14 +118,14 @@ public interface Client {
      * generated and received until the supplied date in UTC.
      *
      * @param inDate the date in UTC. Cannot be null.
-     * @param inSymbol The symbol. Cannot be null.
+     * @param inEquity The symbol. Cannot be null.
      *
      * @return the current position of the symbol.
      *
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
-    public BigDecimal getPositionAsOf(Date inDate, Equity inSymbol)
+    public BigDecimal getPositionAsOf(Date inDate, Equity inEquity)
             throws ConnectionException;
 
     /**

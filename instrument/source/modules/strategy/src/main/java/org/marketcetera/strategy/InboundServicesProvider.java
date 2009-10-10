@@ -34,12 +34,12 @@ public interface InboundServicesProvider
      * Gets the position in the given security at the given point in time.
      *
      * @param inDate a <code>Date</code> value
-     * @param inSymbol a <code>Equity</code> value
+     * @param inEquity an <code>Equity</code> value
      * @return a <code>BigDecimal</code> value
      * @throws ConnectionException if the information could not be retrieved 
      */
     public BigDecimal getPositionAsOf(Date inDate,
-                                      Equity inSymbol)
+                                      Equity inEquity)
         throws ConnectionException;
     /**
      * Gets the {@link ModuleURN} for this strategy.

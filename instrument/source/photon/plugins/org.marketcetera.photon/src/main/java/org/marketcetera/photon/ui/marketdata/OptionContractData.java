@@ -22,6 +22,7 @@ import quickfix.field.Symbol;
  *
  */
 public class OptionContractData {
+	//TODO: Update class to use Option Instruments
 
 	private Instrument underlyingSymbol;
 	private Instrument optionSymbol;

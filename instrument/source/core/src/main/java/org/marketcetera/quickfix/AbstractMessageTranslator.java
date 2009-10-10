@@ -46,7 +46,7 @@ public abstract class AbstractMessageTranslator<T>
      * Gets the <code>Symbol</code> specified in the given <code>Group</code>.
      *
      * @param inGroup a <code>Group</code> value
-     * @return a <code>MSymbol</code> value containing the symbol
+     * @return an <code>Equity</code> value containing the symbol
      * @throws CoreException if the symbol could not be extracted
      */
     public static Equity getSymbol(Group inGroup) 

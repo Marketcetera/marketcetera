@@ -24,8 +24,9 @@ public abstract class QuoteEvent
     /**
      * Create a new QuoteEvent instance.
      *
-     * @param inMessageID the message ID
-     * @param inTimestamp the timestamp
+     * @param inMessageID a <code>long</code> value uniquely identifying this market event
+     * @param inTimestamp a <code>long</code> value expressing the time this event occurred in milliseconds since
+     *   EPOCH in GMT
      * @param inInstrument a <code>Instrument</code> value specifying the instrument for which the quote occured.
      * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred
      * @param inPrice a <code>BigDecimal</code> value containing the price of this event

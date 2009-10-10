@@ -31,11 +31,11 @@ final class SymbolProcessor implements FieldProcessor {
                         inOrder.setInstrument(new Equity(symbol));
                         break;
                     case Option:
-                        //todo fix when adding option support
+                        //TODO fix when adding option support
                         inOrder.setInstrument(new Equity(symbol));
                         break;
                     default:
-                        //todo fail
+                        //TODO fail
                         inOrder.setInstrument(new Equity(symbol));
                         break;
                 }

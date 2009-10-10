@@ -40,14 +40,14 @@ public class MarketceteraFeedTest extends TestCase {
     }
 
 //    public void testSubscribe() throws Exception {
-//        ISubscription sub1 = feed.asyncQuery(MarketDataUtils.newSubscribeBBO(new MSymbol("XYZ")));
-//        ISubscription sub2 = feed.asyncQuery(MarketDataUtils.newSubscribeBBO(new MSymbol("ABC")));
+//        ISubscription sub1 = feed.asyncQuery(MarketDataUtils.newSubscribeBBO(new Equity("XYZ")));
+//        ISubscription sub2 = feed.asyncQuery(MarketDataUtils.newSubscribeBBO(new Equity("ABC")));
 //        assertNotSame("same subscriptions", sub1, sub2);
 //    }
 
 //    public void testUnsubscribe() throws Exception {
 //    	feed.start();
-//        ISubscription sub = feed.asyncQuery(MarketDataUtils.newSubscribeBBO(new MSymbol("XYZ")));
+//        ISubscription sub = feed.asyncQuery(MarketDataUtils.newSubscribeBBO(new Equity("XYZ")));
 //        feed.messages.clear();
 //        feed.asyncUnsubscribe(sub);
 //        Message unsubMsg = feed.messages.get(0);

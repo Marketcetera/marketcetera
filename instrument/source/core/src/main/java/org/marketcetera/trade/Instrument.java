@@ -9,9 +9,6 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * A financial instrument.
  * <p>
- * This interface is implemented by any instrument that is traded on
- * the platform.
- * <p>
  * Each instrument has a symbol attribute. Sub-types may add more
  * attributes as needed to uniquely identify the instrument being traded.
  * 
