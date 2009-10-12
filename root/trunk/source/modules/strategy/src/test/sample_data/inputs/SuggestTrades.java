@@ -1,6 +1,6 @@
 import java.math.BigDecimal;
 
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.strategy.java.Strategy;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
@@ -65,7 +65,7 @@ public class SuggestTrades
             }
             String symbol = getParameter("symbol");
             if(symbol != null) {
-                suggestedOrder.setSymbol(new MSymbol(symbol));
+                suggestedOrder.setInstrument(new Equity(symbol));
             }
             String timeInForce = getParameter("timeInForce");
             if(timeInForce != null) {

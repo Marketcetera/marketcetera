@@ -3,7 +3,7 @@ package org.marketcetera.event;
 import java.math.BigDecimal;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -23,25 +23,25 @@ public class BidEvent
      *
      * @param inMessageID a <code>long</code> value containing the unique identifier for this event
      * @param inTimestamp a <code>long</code> value containing the timestamp for this event
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol for this event
+     * @param inInstrument an <code>Instrument</code> value specifying the instrument for this event
      * @param inExchange a <code>String</code> value containing the exchange code for this event
      * @param inPrice a <code>BigDecimal</code> value containing the price of the bid event
      * @param inSize a <code>BigDecimal</code> value containing the size of the bid event
      * @throws IllegalArgumentException if <code>inMessageID</code> or <code>inTimestamp</code> &lt; 0
-     * @throws IllegalArgumentException if <code>inExchange</code> is non-null but empty
+     * OR if <code>inExchange</code> is non-null but empty
      * @throws NullPointerException if <code>inSymbol</code>, <code>inExchange</code>, <code>inPrice</code>,
      *  or <code>inSize</code> is null
      */
     public BidEvent(long inMessageID,
                     long inTimestamp,
-                    MSymbol inSymbol,
+                    Instrument inInstrument,
                     String inExchange,
                     BigDecimal inPrice,
                     BigDecimal inSize)
     {
         this(inMessageID,
              inTimestamp,
-             inSymbol,
+             inInstrument,
              inExchange,
              inPrice,
              inSize,
@@ -89,7 +89,7 @@ public class BidEvent
     {
         return new BidEvent(inBid.getMessageId(),
                             inNewTimestamp,
-                            inBid.getSymbol(),
+                            inBid.getInstrument(),
                             inBid.getExchange(),
                             inBid.getPrice(),
                             inNewSize,
@@ -100,8 +100,7 @@ public class BidEvent
      *
      * @param inMessageID a <code>long</code> value containing the unique identifier for this event
      * @param inTimestamp a <code>long</code> value containing the timestamp for this event
-     * @param inSource an <code>Object</code> value containing information pointing to the source of the event, may be null
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol for this event
+     * @param inInstrument an <code>Instrument</code> value specifying the instrument for this event
      * @param inExchange a <code>String</code> value containing the exchange code for this event
      * @param inPrice a <code>BigDecimal</code> value containing the price of the bid event
      * @param inSize a <code>BigDecimal</code> value containing the size of the bid event
@@ -109,7 +108,7 @@ public class BidEvent
      */
     private BidEvent(long inMessageID,
                      long inTimestamp,
-                     MSymbol inSymbol,
+                     Instrument inInstrument,
                      String inExchange,
                      BigDecimal inPrice,
                      BigDecimal inSize,
@@ -117,7 +116,7 @@ public class BidEvent
     {
         super(inMessageID,
               inTimestamp,
-              inSymbol,
+              inInstrument,
               inExchange,
               inPrice,
               inSize, 
@@ -134,7 +133,7 @@ public class BidEvent
     {
         this(inBid.getMessageId(),
              inBid.getTimeMillis(),
-             inBid.getSymbol(),
+             inBid.getInstrument(),
              inBid.getExchange(),
              inBid.getPrice(),
              inBid.getSize(),

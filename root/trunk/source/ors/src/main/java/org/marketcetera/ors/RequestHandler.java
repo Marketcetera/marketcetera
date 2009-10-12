@@ -24,7 +24,8 @@ import org.marketcetera.quickfix.IQuickFIXSender;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
@@ -59,7 +60,6 @@ import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
-import quickfix.field.SecurityType;
 import quickfix.field.SenderCompID;
 import quickfix.field.SendingTime;
 import quickfix.field.Side;
@@ -223,16 +223,15 @@ public class RequestHandler
         return new BigDecimal(str);
     }
 
-    private static MSymbol getOptFieldSymbol
+    private static Instrument getInstrument
         (Message msg)
     {
         String str=getOptFieldStr(msg,Symbol.FIELD);
         if (str==null) {
             return null;
         }
-        return new MSymbol
-            (str,org.marketcetera.trade.SecurityType.getInstanceForFIXValue
-             (getOptFieldStr(msg,SecurityType.FIELD)));
+        //TODO update to handle instruments other than equity
+        return new Equity(str);
     }
 
     private static void addRequiredFields
@@ -393,7 +392,7 @@ public class RequestHandler
              BigDecimal.ZERO,
              BigDecimal.ZERO,
              BigDecimal.ZERO,
-             getOptFieldSymbol(qMsg),
+             getInstrument(qMsg),
              getOptFieldStr(qMsg,Account.FIELD));
 
         // Add all the fields of the incoming message.

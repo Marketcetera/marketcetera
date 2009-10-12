@@ -5,7 +5,8 @@ import java.math.BigDecimal;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -30,19 +31,19 @@ public class SymbolExchangeEventTest
     {
         long[] ids = new long[] { -1, 0, 1, System.nanoTime() };
         long[] timestamps = new long[] { -1, 0, 1, System.currentTimeMillis() };
-        MSymbol[] symbols = new MSymbol[] { null, new MSymbol("METC") };
+        Equity[] instruments = new Equity[] { null, new Equity("METC") };
         String[] exchanges = new String[] { null, "", "Q" };
         BigDecimal[] prices = new BigDecimal[] { null, new BigDecimal(-1), BigDecimal.ZERO, BigDecimal.TEN };
         BigDecimal[] sizes = new BigDecimal[] { null, new BigDecimal(-1), BigDecimal.ZERO, BigDecimal.TEN };
         for(int idCounter=0;idCounter<ids.length;idCounter++) {
             for(int timestampCounter=0;timestampCounter<timestamps.length;timestampCounter++) {
-                for(int symbolCounter=0;symbolCounter<symbols.length;symbolCounter++) {
+                for(int symbolCounter=0;symbolCounter<instruments.length;symbolCounter++) {
                     for(int exchangeCounter=0;exchangeCounter<exchanges.length;exchangeCounter++) {
                         for(int priceCounter=0;priceCounter<prices.length;priceCounter++) {
                             for(int sizeCounter=0;sizeCounter<sizes.length;sizeCounter++) {
                                 final long id = ids[idCounter];
                                 final long timestamp = timestamps[timestampCounter];
-                                final MSymbol symbol = symbols[symbolCounter];
+                                final Equity symbol = instruments[symbolCounter];
                                 final String exchange = exchanges[exchangeCounter];
                                 final BigDecimal price = prices[priceCounter];
                                 final BigDecimal size = sizes[sizeCounter];
@@ -117,8 +118,8 @@ public class SymbolExchangeEventTest
                                 assertEquals(timestamp,
                                              event.getTimeMillis());
                                 assertEquals(symbol,
-                                             event.getSymbol());
-                                assertEquals(symbol.getFullSymbol(),
+                                             event.getInstrument());
+                                assertEquals(symbol.getSymbol(),
                                              event.getSymbolAsString());
                                 assertEquals(exchange,
                                              event.getExchange());
@@ -143,22 +144,22 @@ public class SymbolExchangeEventTest
      * @param inMessageID a <code>long</code> value uniquely identifying this event
      * @param inTimestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code>
      *   in GMT
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol quoted in this event
-     * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred 
+     * @param inInstrument a <code>Instrument</code> value specifying the instrument on which the quote occurred
+     * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred
      * @param inPrice a <code>BigDecimal</code> value containing the price of this event
-     * @param inSize a <code>BigDecimal</code> value containing the size of this event
+     * @param inSize a <code>BigDecimal</code> value containing the size of this event   
      * @return a <code>SymbolExchange</code> value
      */
     protected SymbolExchangeEvent getObject(long inMessageID,
                                             long inTimestamp,
-                                            MSymbol inSymbol,
+                                            Instrument inInstrument,
                                             String inExchange,
                                             BigDecimal inPrice,
                                             BigDecimal inSize)
     {
         return new MockSymbolExchangeEvent(inMessageID,
                                            inTimestamp,
-                                           inSymbol,
+                                           inInstrument,
                                            inExchange,
                                            inPrice,
                                            inSize);
@@ -180,7 +181,7 @@ public class SymbolExchangeEventTest
         {
             this(System.nanoTime(),
                  System.currentTimeMillis(),
-                 new MSymbol("METC"),
+                 new Equity("METC"),
                  "TEST",
                  BigDecimal.ONE,
                  BigDecimal.TEN);
@@ -191,21 +192,21 @@ public class SymbolExchangeEventTest
          * @param inMessageID a <code>long</code> value uniquely identifying this event
          * @param inTimestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code>
          *   in GMT
-         * @param inSymbol an <code>MSymbol</code> value containing the symbol quoted in this event
-         * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred 
+         * @param inInstrument a <code>Instrument</code> value specifying the instrument on which the quote occurred
+         * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred
          * @param inPrice a <code>BigDecimal</code> value containing the price of this event
          * @param inSize a <code>BigDecimal</code> value containing the size of this event
          */
         public MockSymbolExchangeEvent(long inMessageID,
                                        long inTimestamp,
-                                       MSymbol inSymbol,
+                                       Instrument inInstrument,
                                        String inExchange,
                                        BigDecimal inPrice,
                                        BigDecimal inSize)
         {
             super(inMessageID,
                   inTimestamp,
-                  inSymbol,
+                  inInstrument,
                   inExchange,
                   inPrice,
                   inSize);

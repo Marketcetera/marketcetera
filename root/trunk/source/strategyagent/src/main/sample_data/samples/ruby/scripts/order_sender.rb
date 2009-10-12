@@ -12,7 +12,7 @@ include_class "org.marketcetera.trade.Factory"
 include_class "org.marketcetera.trade.OrderType"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
-include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.trade.Equity"
 include_class "org.marketcetera.marketdata.MarketDataRequest"
 include_class "java.math.BigDecimal"
 
@@ -54,7 +54,7 @@ class OrderSender < Strategy
       order.setPrice bid.price
       order.setQuantity bid.size
       order.setSide Side::Buy
-      order.setSymbol bid.symbol
+      order.setInstrument bid.instrument
       order.setTimeInForce TimeInForce::Day
       warn "Sending Order " + order.to_s
 
@@ -82,7 +82,7 @@ class OrderSender < Strategy
       order.setPrice ask.price
       order.setQuantity ask.size
       order.setSide Side::Sell
-      order.setSymbol ask.symbol
+      order.setInstrument ask.instrument
       order.setTimeInForce TimeInForce::Day
       warn "Sending Order " + order.to_s
 

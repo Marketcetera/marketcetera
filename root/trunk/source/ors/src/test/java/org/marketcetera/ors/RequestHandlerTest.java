@@ -6,7 +6,7 @@ import org.marketcetera.quickfix.*;
 import org.marketcetera.ors.filters.*;
 import org.marketcetera.ors.filters.DefaultMessageModifier.MessageFieldType;
 import org.marketcetera.spring.MockJmsTemplate;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import quickfix.*;
@@ -58,7 +58,7 @@ public class RequestHandlerTest
     {
         /*
     	RequestHandler handler = new MyRequestHandler();
-    	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+    	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // add symbol sfx
         newOrder.setField(new SymbolSfx(SymbolSfx.WHEN_ISSUED));
@@ -73,7 +73,7 @@ public class RequestHandlerTest
 
         // on a non-single order should get back null
         assertNull(handler.executionReportFromNewOrder(msgFactory.newCancel("bob", "bob", //$NON-NLS-1$ //$NON-NLS-2$
-                                                                  Side.BUY, new BigDecimal(100), new MSymbol("IBM"), "counterparty"))); //$NON-NLS-1$ //$NON-NLS-2$
+                                                                  Side.BUY, new BigDecimal(100), new Equity("IBM"), "counterparty"))); //$NON-NLS-1$ //$NON-NLS-2$
         */
     }
 
@@ -82,7 +82,7 @@ public class RequestHandlerTest
     public void testSendingTimeChanges() throws Exception {
         /*
         RequestHandler handler = new MyRequestHandler();
-        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         Message execReport = handler.executionReportFromNewOrder(newOrder);
         //        Message reject1 = handler.createRejectionMessage(new Exception(), newOrder);
@@ -104,7 +104,7 @@ public class RequestHandlerTest
     {
         /*
     	RequestHandler handler = new MyRequestHandler();
-        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // remove account ID
         newOrder.removeField(Account.FIELD);
@@ -145,7 +145,7 @@ public class RequestHandlerTest
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
         RequestHandler handler = new MyRequestHandler(quickFIXSender);
 
-        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         Message response = null; //handler.replyToMessage(msg);
 
@@ -181,7 +181,7 @@ public class RequestHandlerTest
         MessageRouteManager routeManager = new MessageRouteManager();
         routeManager.setSeparateSuffix(true);
 
-        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("EUR/USD"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         Message response = null; //handler.replyToMessage(msg);
         assertNotNull(quickFIXSender.getCapturedMessages().get(0));
@@ -201,7 +201,7 @@ public class RequestHandlerTest
         MessageRouteManager routeManager = new MessageRouteManager();
         routeManager.setSeparateSuffix(true);
 
-        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"), //$NON-NLS-1$ //$NON-NLS-2$
+        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("EUR/USD"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // change it to be forex
         msg.setField(new SecurityType(SecurityType.FOREIGN_EXCHANGE_CONTRACT));
@@ -231,10 +231,10 @@ public class RequestHandlerTest
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
         RequestHandler handler = new MyRequestHandler(quickFIXSender);
 
-		Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+		Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         Message cancelOrder = msgFactory.newCancel("bob", "bob", //$NON-NLS-1$ //$NON-NLS-2$
-                                                    Side.SELL, new BigDecimal(7), new MSymbol("TOLI"), "redParty"); //$NON-NLS-1$ //$NON-NLS-2$
+                                                    Side.SELL, new BigDecimal(7), new Equity("TOLI"), "redParty"); //$NON-NLS-1$ //$NON-NLS-2$
 
         List<Message> orderList = Arrays.asList(newOrder, cancelOrder);
         List<Message> responses = new LinkedList<Message>();
@@ -316,7 +316,7 @@ public class RequestHandlerTest
 		Message newOrder = msgFactory.newCancelReplaceShares("bob", "orig", new BigDecimal(100)); //$NON-NLS-1$ //$NON-NLS-2$
 		newOrder.setField(new Symbol("ASDF")); //$NON-NLS-1$
 		Message cancelOrder = msgFactory.newCancel("bob", "bob", //$NON-NLS-1$ //$NON-NLS-2$
-                                                    Side.SELL, new BigDecimal(7), new MSymbol("TOLI"), "redParty"); //$NON-NLS-1$ //$NON-NLS-2$
+                                                    Side.SELL, new BigDecimal(7), new Equity("TOLI"), "redParty"); //$NON-NLS-1$ //$NON-NLS-2$
         //handler.replyToMessage(newOrder);
         //handler.replyToMessage(cancelOrder);
 
@@ -334,7 +334,7 @@ public class RequestHandlerTest
         SessionID sessionID = new SessionID(msgFactory.getBeginString(), "no-sender", "no-target"); //$NON-NLS-1$ //$NON-NLS-2$
         //        handler.setDefaultSessionID(sessionID);
 
-	    Message newOrder = msgFactory.newMarketOrder("123", Side.BUY, new BigDecimal(100), new MSymbol("SUNW"), //$NON-NLS-1$ //$NON-NLS-2$
+	    Message newOrder = msgFactory.newMarketOrder("123", Side.BUY, new BigDecimal(100), new Equity("SUNW"), //$NON-NLS-1$ //$NON-NLS-2$
                 TimeInForce.DAY, "dummyaccount"); //$NON-NLS-1$
 
         // verify we got an execReport that's a rejection with the sessionNotfound error message
@@ -354,7 +354,7 @@ public class RequestHandlerTest
 
     	
         // 1. create a "incoming JMS buy" order and verify that it doesn't have routing in it
-        final Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+        final Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new Equity("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
                                                       TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // verify there's no route info
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -479,7 +479,7 @@ public class RequestHandlerTest
                                          String expectedExchange, String shareClass)
             throws Exception {
         final Message qfMsg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), //$NON-NLS-1$
-                new MSymbol(symbol),  TimeInForce.DAY, "bob"); //$NON-NLS-1$
+                new Equity(symbol),  TimeInForce.DAY, "bob"); //$NON-NLS-1$
         NullQuickFIXSender nullQuickFIXSender = ((NullQuickFIXSender)handler.getSender());
 		nullQuickFIXSender.getCapturedMessages().clear();
         Message result = null; //handler.replyToMessage(qfMsg);

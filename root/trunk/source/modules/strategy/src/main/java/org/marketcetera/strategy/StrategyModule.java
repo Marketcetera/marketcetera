@@ -53,7 +53,7 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
@@ -606,16 +606,16 @@ final class StrategyModule
         return orsClient.getBrokersStatus().getBrokers();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.InboundServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.trade.MSymbol)
+     * @see org.marketcetera.strategy.InboundServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
      */
     @Override
     public BigDecimal getPositionAsOf(Date inDate,
-                                      MSymbol inSymbol)
+                                      Equity inEquity)
         throws ConnectionException
     {
         assert(orsClient != null);
         return orsClient.getPositionAsOf(inDate,
-                                         inSymbol);
+                                         inEquity);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyMXBean#getStatus()

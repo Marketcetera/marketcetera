@@ -16,7 +16,7 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.UnsupportedEventException;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.FieldNotFound;
@@ -98,7 +98,7 @@ public class MarketceteraFeedEventTranslator
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
                             BidEvent bid = new BidEvent(System.nanoTime(),
                                                         System.currentTimeMillis(),
-                                                        new MSymbol(symbol),
+                                                        new Equity(symbol),
                                                         exchange,
                                                         new BigDecimal(price),
                                                         new BigDecimal(size));
@@ -109,7 +109,7 @@ public class MarketceteraFeedEventTranslator
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
                             AskEvent ask = new AskEvent(System.nanoTime(),
                                                         System.currentTimeMillis(),
-                                                        new MSymbol(symbol),
+                                                        new Equity(symbol),
                                                         exchange,
                                                         new BigDecimal(price),
                                                         new BigDecimal(size));
@@ -120,7 +120,7 @@ public class MarketceteraFeedEventTranslator
                         if(requestedContent.contains(Content.LATEST_TICK)) {
                             TradeEvent trade = new TradeEvent(System.nanoTime(),
                                                               System.currentTimeMillis(),
-                                                              new MSymbol(symbol),
+                                                              new Equity(symbol),
                                                               exchange,
                                                               new BigDecimal(price),
                                                               new BigDecimal(size));

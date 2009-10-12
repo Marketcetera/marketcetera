@@ -9,7 +9,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
 
@@ -44,7 +45,7 @@ public class MarketstatEventTest
     public void construction()
         throws Exception
     {
-        MSymbol[] symbols = new MSymbol[] { null, new MSymbol("metc") };
+        Instrument[] symbols = new Instrument[] { null, new Equity("metc") };
         Date[] dates = new Date[] { null, new Date(-1), new Date(0), new Date(), new Date(System.currentTimeMillis() + 1000l*60l*60l*24l*7l) };
         BigDecimal[] bigDecimals = new BigDecimal[] { null, new BigDecimal(-100), BigDecimal.ZERO, BigDecimal.TEN };
         String[] strings = new String[] { null, "", "exchange", UnicodeData.GOODBYE_JA };
@@ -52,7 +53,7 @@ public class MarketstatEventTest
             for(int dateCounter=0;dateCounter<dates.length;dateCounter++) {
                 for(int symbolCounter=0;symbolCounter<symbols.length;symbolCounter++) {
                     for(int stringCounter=0;stringCounter<strings.length;stringCounter++) {
-                        final MSymbol symbol = symbols[symbolCounter];
+                        final Instrument symbol = symbols[symbolCounter];
                         final Date timestamp = dates[dateCounter];
                         final BigDecimal open = bigDecimals[bigDecimalCounter];
                         final BigDecimal high = bigDecimals[bigDecimalCounter];
@@ -190,7 +191,7 @@ public class MarketstatEventTest
      * @param inExpectedCloseDate a <code>Date</code> value
      * @param inExpectedPreviousCloseDate a <code>Date</code> value
      * @param inExpectedTimestamp a <code>Date</code> value
-     * @param inExpectedSymbol an <code>MSymbol</code> value
+     * @param inExpectedInstrument an <code>Instrument</code> value
      * @param inExpectedHighTime a <code>Date</code> value
      * @param inExpectedLowTime a <code>Date</code> value
      * @param inExpectedCloseExchange a <code>String</code> value
@@ -208,7 +209,7 @@ public class MarketstatEventTest
                                               Date inExpectedCloseDate,
                                               Date inExpectedPreviousCloseDate,
                                               Date inExpectedTimestamp,
-                                              MSymbol inExpectedSymbol,
+                                              Instrument inExpectedInstrument,
                                               Date inExpectedHighTime,
                                               Date inExpectedLowTime,
                                               String inExpectedCloseExchange,
@@ -232,7 +233,7 @@ public class MarketstatEventTest
                      inActualMarketstatEvent.getPreviousCloseDate());
         assertEquals(inExpectedTimestamp,
                      inActualMarketstatEvent.getTimestampAsDate());
-        assertEquals(inExpectedSymbol,
-                     inActualMarketstatEvent.getSymbol());
+        assertEquals(inExpectedInstrument,
+                     inActualMarketstatEvent.getInstrument());
     }
 }

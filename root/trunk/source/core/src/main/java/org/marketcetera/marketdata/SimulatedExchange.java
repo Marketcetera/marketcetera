@@ -19,24 +19,24 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DepthOfBook;
 import org.marketcetera.event.EventBase;
-import org.marketcetera.event.HasSymbol;
+import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Simulates an exchange with managed order books for multiple symbols.
+ * Simulates an exchange with managed order books for multiple instruments.
  * 
- * <p>This exchange manages a separate order book for each symbol for which requests are made.
- * If a request is made for a symbol which is not yet managed, an order book seeded with a random
- * starting price will be added.  The order book for a symbol will continue to be maintained until
+ * <p>This exchange manages a separate order book for each instrument for which requests are made.
+ * If a request is made for a instrument which is not yet managed, an order book seeded with a random
+ * starting price will be added.  The order book for a instrument will continue to be maintained until
  * the exchange is stopped via {@link SimulatedExchange#stop()}.
  * 
  * <p>To begin simulating an exchange, instantiate the exchange with a specified book depth.  The
@@ -70,7 +70,7 @@ public final class SimulatedExchange
      * @param inName a <code>String</code> value containing the name to associate with the exchange
      * @param inCode a <code>String</code> value containing the exchange code of this exchange
      * @param inMaxBookDepth an <code>int</code> value containing the maximum depth to maintain for the order books.  This value
-     *  must conform to the requirements established for {@link OrderBook#OrderBook(MSymbol, int)}.
+     *  must conform to the requirements established for {@link OrderBook#OrderBook(org.marketcetera.trade.Instrument,int)}.
      * @throws IllegalArgumentException if the given <code>inMaxBookDepth</code> does not correspond to a valid {@link OrderBook} maximum depth
      */
     public SimulatedExchange(String inName,
@@ -120,46 +120,46 @@ public final class SimulatedExchange
         return code;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getDepthOfBook(org.marketcetera.trade.MSymbol, int)
+     * @see org.marketcetera.marketdata.Exchange#getDepthOfBook(org.marketcetera.trade.Instrument, int)
      */
     @Override
-    public DepthOfBook getDepthOfBook(MSymbol inSymbol)
+    public DepthOfBook getDepthOfBook(Instrument inInstrument)
     {
-        validateSymbolAndState(inSymbol);
-        return getBookWrapper(inSymbol).getBook().getDepthOfBook();
+        validateSymbolAndState(inInstrument);
+        return getBookWrapper(inInstrument).getBook().getDepthOfBook();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getTopOfBook(org.marketcetera.trade.MSymbol)
+     * @see org.marketcetera.marketdata.Exchange#getTopOfBook(org.marketcetera.trade.Instrument)
      */
     @Override
-    public TopOfBook getTopOfBook(MSymbol inSymbol)
+    public TopOfBook getTopOfBook(Instrument inInstrument)
     {
-        validateSymbolAndState(inSymbol);
-        return getBookWrapper(inSymbol).getBook().getTopOfBook();
+        validateSymbolAndState(inInstrument);
+        return getBookWrapper(inInstrument).getBook().getTopOfBook();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getLatestTick(org.marketcetera.trade.MSymbol)
+     * @see org.marketcetera.marketdata.Exchange#getLatestTick(org.marketcetera.trade.Instrument)
      */
     @Override
-    public TradeEvent getLatestTick(MSymbol inSymbol)
+    public TradeEvent getLatestTick(Instrument inInstrument)
     {
-        validateSymbolAndState(inSymbol);
-        return getBookWrapper(inSymbol).getLatestTick();
+        validateSymbolAndState(inInstrument);
+        return getBookWrapper(inInstrument).getLatestTick();
     }
     /**
-     * Returns statistical data for the given symbol.
+     * Returns statistical data for the given instrument.
      *
      * <p>The data returned by this method are random.  Though the data returned will be
      * consistent with respect to itself, subsequent calls to this method will return
      * unrelated random data.
      * 
-     * @param inSymbol an <code>MSymbol</code> value
+     * @param inInstrument an <code>Instrument</code> value
      * @return a <code>MarketstatEvent</code> value
      */
     @Override
-    public MarketstatEvent getStatistics(MSymbol inSymbol)
+    public MarketstatEvent getStatistics(Instrument inInstrument)
     {
-        if(inSymbol == null) {
+        if(inInstrument == null) {
             throw new NullPointerException();
         }
         if(!status.isRunning()) {
@@ -170,7 +170,7 @@ public final class SimulatedExchange
         //  in this simulated exchange because the cost (memory and performance) does not
         //  justify the benefit
         // for now, we'll just return some blatantly random data
-        OrderBookWrapper wrapper = getBookWrapper(inSymbol);
+        OrderBookWrapper wrapper = getBookWrapper(inInstrument);
         // this is the timestamp we will use for determining the current date
         long currentTime = System.currentTimeMillis();
         // create a value clustered around the current book value just to make the data a little
@@ -196,7 +196,7 @@ public final class SimulatedExchange
         // calculate low price (the min of current, open, and close - 0.00-4.99 inclusive)
         BigDecimal lowPrice = currentValue.min(openPrice).min(closePrice).subtract(randomDecimalDifference(5).abs());
         // ready to return the data
-        return new MarketstatEvent(inSymbol,
+        return new MarketstatEvent(inInstrument,
                                         new Date(currentTime),
                                         openPrice,
                                         highPrice,
@@ -214,79 +214,79 @@ public final class SimulatedExchange
                                         getCode());
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getStatistics(org.marketcetera.trade.MSymbol, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.Exchange#getStatistics(org.marketcetera.trade.Instrument, org.marketcetera.core.publisher.ISubscriber)
      */
     @Override
-    public Token getStatistics(MSymbol inSymbol,
+    public Token getStatistics(Instrument inInstrument,
                                ISubscriber inSubscriber)
     {
         SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                "{} received statistics subscription request for {}", //$NON-NLS-1$
                                getCode(),
-                               inSymbol);
+                               inInstrument);
         if(status == Status.RANDOM) {
-            getBookWrapper(inSymbol);
+            getBookWrapper(inInstrument);
         }
         return FilteringSubscriber.subscribe(inSubscriber,
                                              Type.STATISTICS,
-                                             inSymbol,
+                                             inInstrument,
                                              this); 
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getDepthOfBook(org.marketcetera.trade.MSymbol, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.Exchange#getDepthOfBook(org.marketcetera.trade.Instrument, org.marketcetera.core.publisher.ISubscriber)
      */
     @Override
-    public Token getDepthOfBook(MSymbol inSymbol,
+    public Token getDepthOfBook(Instrument inInstrument,
                                 ISubscriber inSubscriber)
     {
         SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                "{} received depth-of-book subscription request for {}", //$NON-NLS-1$
                                getCode(),
-                               inSymbol);
+                               inInstrument);
         if(status == Status.RANDOM) {
-            getBookWrapper(inSymbol);
+            getBookWrapper(inInstrument);
         }
         return FilteringSubscriber.subscribe(inSubscriber,
                                              Type.DEPTH_OF_BOOK,
-                                             inSymbol,
+                                             inInstrument,
                                              this); 
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getLatestTick(org.marketcetera.trade.MSymbol, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.Exchange#getLatestTick(org.marketcetera.trade.Instrument, org.marketcetera.core.publisher.ISubscriber)
      */
     @Override
-    public Token getLatestTick(MSymbol inSymbol,
+    public Token getLatestTick(Instrument inInstrument,
                                ISubscriber inSubscriber)
     {
         SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                "{} received latest-tick subscription request for {}", //$NON-NLS-1$
                                getCode(),
-                               inSymbol);
+                               inInstrument);
         if(status == Status.RANDOM) {
-            getBookWrapper(inSymbol);
+            getBookWrapper(inInstrument);
           }
         return FilteringSubscriber.subscribe(inSubscriber,
                                              Type.LATEST_TICK,
-                                             inSymbol,
+                                             inInstrument,
                                              this); 
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getTopOfBook(org.marketcetera.trade.MSymbol, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.Exchange#getTopOfBook(org.marketcetera.trade.Instrument, org.marketcetera.core.publisher.ISubscriber)
      */
     @Override
-    public Token getTopOfBook(MSymbol inSymbol,
+    public Token getTopOfBook(Instrument inInstrument,
                               ISubscriber inSubscriber)
     {
         SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                "{} received top-of-book subscription request for {}", //$NON-NLS-1$
                                getCode(),
-                               inSymbol);
+                               inInstrument);
         if(status == Status.RANDOM) {
-            getBookWrapper(inSymbol);
+            getBookWrapper(inInstrument);
           }
         return FilteringSubscriber.subscribe(inSubscriber,
                                              Type.TOP_OF_BOOK,
-                                             inSymbol,
+                                             inInstrument,
                                              this); 
     }
     /* (non-Javadoc)
@@ -339,8 +339,8 @@ public final class SimulatedExchange
                                           getName());
             status = Status.RANDOM;
             synchronized(seedBooks) {
-                for(MSymbol symbol : seedBooks) {
-                    getBookWrapper(symbol);
+                for(Instrument instrument : seedBooks) {
+                    getBookWrapper(instrument);
                 }
                 seedBooks.clear();
             }
@@ -449,63 +449,63 @@ public final class SimulatedExchange
                                             random.nextInt(100)));
     }
     /**
-     * Gets the latest symbol value across all exchanges, if any.
+     * Gets the latest instrument value across all exchanges, if any.
      *
-     * @param inSymbol an <code>MSymbol</code> value
+     * @param inInstrument an <code>Instrument</code> value
      * @return a <code>BigDecimal</code> value or null if no current value exists
      */
-    private static BigDecimal getSymbolValue(MSymbol inSymbol)
+    private static BigDecimal getSymbolValue(Instrument inInstrument)
     {
         synchronized(latestSymbolValues) {
-            return latestSymbolValues.get(inSymbol);
+            return latestSymbolValues.get(inInstrument);
         }
     }
     /**
-     * Updates the symbol value for the given symbol across all exchanges.
+     * Updates the instrument value for the given instrument across all exchanges.
      *
-     * @param inSymbol an <code>MSymbol</code> value
+     * @param inInstrument an <code>Instrument</code> value
      * @param inValue a <code>BigDecimal</code> value
      */
-    private static void updateSymbolValue(MSymbol inSymbol,
+    private static void updateSymbolValue(Instrument inInstrument,
                                           BigDecimal inValue)
     {
         synchronized(latestSymbolValues) {
-            latestSymbolValues.put(inSymbol,
+            latestSymbolValues.put(inInstrument,
                              inValue);
         }
     }
     /**
-     * Adds the given symbol to the exchange's order books if not already present.
+     * Adds the given instrument to the exchange's order books if not already present.
      * 
-     * <p>If the given symbol is already represented in the exchange's order books,
+     * <p>If the given instrument is already represented in the exchange's order books,
      * this method does nothing.
      *
-     * @param inSymbol an <code>MSymbol</code> value
+     * @param inInstrument inInstrument an <code>Instrument</code> value.
      * @return an <code>OrderBookWrapper</code> value
      */
-    private OrderBookWrapper addSymbol(MSymbol inSymbol)
+    private OrderBookWrapper addSymbol(Instrument inInstrument)
     {
         synchronized(books) {
-            OrderBookWrapper book = books.get(inSymbol);
+            OrderBookWrapper book = books.get(inInstrument);
             if(book == null) {
-                book = new OrderBookWrapper(inSymbol,
+                book = new OrderBookWrapper(inInstrument,
                                             maxDepth,
                                             this); 
-                books.put(inSymbol,
+                books.put(inInstrument,
                           book);
             }
             return book;
         }
     }
     /**
-     * Guarantees that the given symbol is valid and the exchange is in a state to
+     * Guarantees that the given instrument is valid and the exchange is in a state to
      * process requests.
      *
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inInstrument an <code>Instrument</code> value
      */
-    private void validateSymbolAndState(MSymbol inSymbol)
+    private void validateSymbolAndState(Instrument inInstrument)
     {
-        if(inSymbol == null) {
+        if(inInstrument == null) {
             throw new NullPointerException();
         }
         if(!status.isRunning()) {
@@ -513,32 +513,32 @@ public final class SimulatedExchange
         }
     }
     /**
-     * Returns the helper object representing the given symbol.
+     * Returns the helper object representing the given instrument.
      *
-     * <p>If a helper object does not exist for this symbol, one
+     * <p>If a helper object does not exist for this instrument, one
      * will be created.
      *
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inInstrument an <code>Instrument</code> value.
      * @return an <code>OrderBookWrapper</code> value
      */
-    private OrderBookWrapper getBookWrapper(MSymbol inSymbol)
+    private OrderBookWrapper getBookWrapper(Instrument inInstrument)
     {
         synchronized(books) {
-            OrderBookWrapper book = books.get(inSymbol);
+            OrderBookWrapper book = books.get(inInstrument);
             if(book == null) {
-                book = addSymbol(inSymbol);
+                book = addSymbol(inInstrument);
                 if(!status.isScripted()) {
                     // set some initial data in the book
                     doRandomBookTick(book);
                 }
-                return books.get(inSymbol);
+                return books.get(inInstrument);
             } else {
                 return book;
             }
         }
     }
     /**
-     * Executes one round of processing for all symbols.
+     * Executes one round of processing for all instruments.
      */
     private void executeTick() 
     {
@@ -584,7 +584,7 @@ public final class SimulatedExchange
                                                                                                 getCode()));
                 }
                 // find the book that goes with the event
-                OrderBookWrapper book = getBookWrapper(event.getSymbol());
+                OrderBookWrapper book = getBookWrapper(event.getInstrument());
                 SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                        "{} executing scripted event {}", //$NON-NLS-1$
                                        this,
@@ -617,13 +617,13 @@ public final class SimulatedExchange
         inBook.publish(OrderBookSettler.settleBook(inBook,
                                                    maxDepth));
         // produce statistics
-        inBook.publish(Arrays.asList(new EventBase[] { getStatistics(inBook.getBook().getSymbol()) } ));
+        inBook.publish(Arrays.asList(new EventBase[] { getStatistics(inBook.getBook().getInstrument()) } ));
     }
     /**
      * Unique identifier for a specific subscription request to the {@link SimulatedExchange}.
      * 
      * <p>This object is used to identify a market data request.  When
-     * executing a subscription request, as in to {@link SimulatedExchange#getDepthOfBook(MSymbol, ISubscriber)},
+     * executing a subscription request, as in to {@link Exchange#getDepthOfBook(org.marketcetera.trade.Instrument,org.marketcetera.core.publisher.ISubscriber)},
      * for instance, a <code>Token</code> value will be returned.  Updates will be published to the
      * given {@link ISubscriber} until the exchange is stopped or the request is canceled via
      * {@link SimulatedExchange#cancel(Token)}.
@@ -696,23 +696,23 @@ public final class SimulatedExchange
         /**
          * Create a new OrderBookWrapper instance.
          *
-         * @param inSymbol a <code>MSymbol</code> value
+         * @param inInstrument inInstrument an <code>Instrument</code> value
          * @param inMaxDepth an <code>int</code> value containing the maximum depth to maintain
          * @param inExchange a <code>SimulatedExchange</code> value containing the owning exchange
          */
-        private OrderBookWrapper(MSymbol inSymbol,
+        private OrderBookWrapper(Instrument inInstrument,
                                  int inMaxDepth,
                                  SimulatedExchange inExchange)
         {
             exchange = inExchange;
-            book = new OrderBook(inSymbol,
+            book = new OrderBook(inInstrument,
                                   inMaxDepth);
             // check to see if there is already a value we should use to seed the book
-            value = getSymbolValue(inSymbol);
+            value = getSymbolValue(inInstrument);
             if(value == null) {
                 // add PENNY just in case ZERO comes up as the random number
                 value = randomDecimal(100).add(PENNY);
-                updateSymbolValue(inSymbol,
+                updateSymbolValue(inInstrument,
                                   value);
             }
         }
@@ -768,13 +768,13 @@ public final class SimulatedExchange
             // take the modified value and add a bid and an ask based on it
             process(new AskEvent(System.nanoTime(),
                                  System.currentTimeMillis(),
-                                 getBook().getSymbol(),
+                                 getBook().getInstrument(),
                                  exchange.getCode(),
                                  getValue().add(PENNY),
                                  randomInteger(10000)));
             process(new BidEvent(System.nanoTime(),
                                  System.currentTimeMillis(),
-                                 getBook().getSymbol(),
+                                 getBook().getInstrument(),
                                  exchange.getCode(),
                                  getValue().subtract(PENNY),
                                  randomInteger(10000)));
@@ -906,7 +906,7 @@ public final class SimulatedExchange
                             // create the new trade
                             TradeEvent trade = new TradeEvent(System.nanoTime(),
                                                               tradeTime,
-                                                              bid.getSymbol(),
+                                                              bid.getInstrument(),
                                                               bid.getExchange(),
                                                               tradePrice,
                                                               tradeSize);
@@ -964,7 +964,7 @@ public final class SimulatedExchange
     }
     /**
      * <code>ISubscriber</code> that filters publications to an enclosed <code>ISubscriber</code>
-     * based on the original type of market data request and symbol.
+     * based on the original type of market data request and instrument.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -983,9 +983,9 @@ public final class SimulatedExchange
          */
         private final Type type;
         /**
-         * the symbol for which the request was made
+         * the instrument for which the request was made
          */
-        private final MSymbol symbol;
+        private final Instrument instrument;
         /**
          * the subscription token returned to the caller
          */
@@ -996,25 +996,25 @@ public final class SimulatedExchange
         private final SimulatedExchange exchange;
         /**
          * Subscribes the given <code>ISubscriber</code> to market data updates of the given
-         * type for the given symbol. 
+         * type for the given instrument. 
          *
          * @param inOriginalSubscriber an <code>ISubscriber</code> value
          * @param inType a <code>Type</code> value
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inInstrument an <code>Instrument</code> value
          * @param inExchange a <code>SimulatedExchange</code> value
          * @return a <code>Token</code> value representing the subscription
          */
         private static Token subscribe(ISubscriber inOriginalSubscriber,
                                        Type inType,
-                                       MSymbol inSymbol,
+                                       Instrument inInstrument,
                                        SimulatedExchange inExchange)
         {
             synchronized(inExchange.seedBooks) {
-                inExchange.seedBooks.add(inSymbol);
+                inExchange.seedBooks.add(inInstrument);
             }
             FilteringSubscriber subscriber = new FilteringSubscriber(inOriginalSubscriber,
                                                                      inType,
-                                                                     inSymbol,
+                    inInstrument,
                                                                      inExchange);
             publisher.subscribe(subscriber);
             return subscriber.getToken();
@@ -1024,16 +1024,16 @@ public final class SimulatedExchange
          *
          * @param inSubscriber an <code>ISubscriber</code> value
          * @param inType a <code>Type</code> value
-         * @param inSymbol a <code>MSymbol</code> value
+         * @param inInstrument an <code>Instrument</code> value
          */
         private FilteringSubscriber(ISubscriber inSubscriber,
                                     Type inType,
-                                    MSymbol inSymbol,
+                                    Instrument inInstrument,
                                     SimulatedExchange inExchange)
         {
             originalSubscriber = inSubscriber;
             type = inType;
-            symbol = inSymbol;
+            instrument = inInstrument;
             token = new Token(this);
             exchange = inExchange;
         }
@@ -1053,9 +1053,9 @@ public final class SimulatedExchange
                     return false;
                 }
             }
-            // verify the object has a relevant symbol (if it has has one)
-            if(inData instanceof HasSymbol) {
-                if(!((HasSymbol)inData).getSymbol().equals(symbol)) {
+            // verify the object has a relevant instrument (if it has has one)
+            if(inData instanceof HasInstrument) {
+                if(!((HasInstrument)inData).getInstrument().equals(instrument)) {
                     return false;
                 }
             }
@@ -1090,7 +1090,7 @@ public final class SimulatedExchange
                 //  for the exchange; an opportunity but *not* a guarantee
                 // first, check to see if there is, in fact, a new top-of-book state for the
                 //  exchange
-                TopOfBook currentState = exchange.getTopOfBook(symbol);
+                TopOfBook currentState = exchange.getTopOfBook(instrument);
                 try {
                     // we are guaranteed that this object is non-null, but its components may be null
                     // check to see if the quote event caused a change in the top-of-book state
@@ -1209,9 +1209,9 @@ public final class SimulatedExchange
      */
     private Status status = Status.STOPPED;
     /**
-     * the order books for the symbols managed by this exchange
+     * the order books for the instruments managed by this exchange
      */
-    private final Map<MSymbol,OrderBookWrapper> books = new HashMap<MSymbol,OrderBookWrapper>();
+    private final Map<Instrument,OrderBookWrapper> books = new HashMap<Instrument,OrderBookWrapper>();
     /**
      * the name of this exchange
      */
@@ -1229,9 +1229,9 @@ public final class SimulatedExchange
      */
     private ScheduledFuture<?> updateTask = null;
     /**
-     * tracks the symbols for which requests have been made before the exchange starts
+     * tracks the instruments for which requests have been made before the exchange starts
      */
-    private final List<MSymbol> seedBooks = new ArrayList<MSymbol>();
+    private final List<Instrument> seedBooks = new ArrayList<Instrument>();
     /**
      * the list of events to use in SCRIPTED mode - may be empty
      */
@@ -1253,7 +1253,7 @@ public final class SimulatedExchange
      */
     private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
     /**
-     * tracks the latest reported symbol value across all simulated exchanges - can be used to sync values if desired
+     * tracks the latest reported instrument value across all simulated exchanges - can be used to sync values if desired
      */
-    private static final Map<MSymbol,BigDecimal> latestSymbolValues = new HashMap<MSymbol,BigDecimal>();
+    private static final Map<Instrument,BigDecimal> latestSymbolValues = new HashMap<Instrument,BigDecimal>();
 }

@@ -24,9 +24,9 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Option implements Instrument {
+public class Option extends Instrument {
 
-    private final String mSymbol;
+	private final String mSymbol;
 
     private final OptionType mType;
 
@@ -81,8 +81,19 @@ public class Option implements Instrument {
     public String getSymbol() {
         return mSymbol;
     }
+    
 
     /**
+     * Always returns {@link SecurityType#Option}.
+     *
+     * @return {@link SecurityType#Option}
+     */
+    @Override
+    public SecurityType getSecurityType() {
+        return SecurityType.Option;
+    }
+
+	/**
      * Returns the option expiry.
      * 
      * @return the option expiry, never null
@@ -146,4 +157,5 @@ public class Option implements Instrument {
                 .append("strikePrice", mStrikePrice) //$NON-NLS-1$
                 .toString();
     }
+    private static final long serialVersionUID = 1L;
 }

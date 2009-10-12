@@ -14,7 +14,8 @@ import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.views.WebBrowserView;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -67,7 +68,7 @@ public class ViewSecurityActionDelegate implements IObjectActionDelegate {
 	 * Executes this action, by finding the {@link quickfix.Message}
 	 * referenced by the current selection, extracting the {@link quickfix.field.Symbol}
 	 * field, and if it is present and not null, calling 
-	 * {@link WebBrowserView#browseToGoogleFinanceForSymbol(MSymbol)}
+	 * {@link WebBrowserView#browseToGoogleFinanceForSymbol(Equity)}
 	 * 
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
@@ -77,7 +78,7 @@ public class ViewSecurityActionDelegate implements IObjectActionDelegate {
 		}
 		try {
 			Object firstElement = selection.getFirstElement();
-			MSymbol symbol = null;
+			Equity symbol = null;
 			
 			Message message;
 			if (firstElement instanceof Message) {
@@ -89,7 +90,7 @@ public class ViewSecurityActionDelegate implements IObjectActionDelegate {
 				return;
 			}
 			try {
-				symbol = new MSymbol(message.getString(Symbol.FIELD));
+				symbol = new Equity(message.getString(Symbol.FIELD));
 				if (symbol != null){
 					IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow(); 
 					IWorkbenchPage page = window.getActivePage();

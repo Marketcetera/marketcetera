@@ -20,7 +20,7 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.model.marketdata.impl.MDItemImpl;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -307,7 +307,7 @@ abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? super T>> i
 		 */
 		protected final boolean validateSymbol(final String expected, final SymbolExchangeEvent event) {
 			Validate.noNullElements(new Object[] { expected, event });
-			return validateSymbol(expected, event.getSymbol());
+			return validateSymbol(expected, event.getInstrument());
 		}
 
 		/**
@@ -315,15 +315,16 @@ abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? super T>> i
 		 * 
 		 * @param expected
 		 *            the expected symbol
-		 * @param symbol
-		 *            the symbol on the event
+		 * @param instrument
+		 *            the instrument on the event
 		 * @return true if the symbols match, false otherwise
 		 * @throws IllegalArgumentException
 		 *             if expected is null
 		 */
-		protected final boolean validateSymbol(final String expected, final MSymbol symbol) {
+		protected final boolean validateSymbol(final String expected, final Instrument instrument) {
 			Validate.notNull(expected);
-			final String newSymbol = symbol == null ? null : symbol.getFullSymbol();
+			final String newSymbol = instrument == null ? null : instrument.getSymbol();
+			//TODO update to handle instruments other than equity.
 			if (expected.equals(newSymbol)) {
 				return true;
 			} else {

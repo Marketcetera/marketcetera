@@ -76,7 +76,7 @@ public class VWAPStrategy extends Strategy {
                 OrderSingle order = Factory.getInstance().createOrderSingle();
                 order.setSide(Side.Buy);
                 order.setQuantity(new BigDecimal("1000.0"));
-                order.setSymbol(new MSymbol(symbol));
+                order.setInstrument(new Equity(symbol));
                 order.setOrderType(OrderType.Limit);
                 order.setTimeInForce(TimeInForce.Day);
                 order.setPrice(new BigDecimal(vwap));

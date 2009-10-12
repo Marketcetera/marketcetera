@@ -53,13 +53,13 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
      * @return the side for the report.
      */
     public Side getSide();
-
+    
     /**
-     * Returns the symbol of the security being traded.
+     * Returns the instrument being traded.
      *
-     * @return the symbol of the security being traded.
+     * @return the instrument being traded.
      */
-    public MSymbol getSymbol();
+    public Instrument getInstrument();
 
     /**
      * Quantity of shares bought or sold.

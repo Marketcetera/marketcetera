@@ -11,7 +11,7 @@ import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.photon.ui.marketdata.OptionContractData;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -38,7 +38,7 @@ public class OptionOrderTicketModelTest extends FIXVersionedTestCase {
 	public void testClearOrderMessage() throws FieldNotFound {
 		OptionOrderTicketModel model = new OptionOrderTicketModel(this.msgFactory);
 		
-		Message newOrder = this.msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.TEN, new MSymbol("FOO"), BigDecimal.ONE, TimeInForce.DAY, "123");
+		Message newOrder = this.msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.TEN, new Equity("FOO"), BigDecimal.ONE, TimeInForce.DAY, "123");
 		model.setOrderMessage(newOrder);
 		
 		model.clearOrderMessage();
@@ -77,7 +77,7 @@ public class OptionOrderTicketModelTest extends FIXVersionedTestCase {
 		OptionOrderTicketModel model = new OptionOrderTicketModel(this.msgFactory);
 		model.updateOptionInfo();
 
-		Message newOrder = this.msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.TEN, new MSymbol("FOO"), BigDecimal.ONE, TimeInForce.DAY, "123");
+		Message newOrder = this.msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.TEN, new Equity("FOO"), BigDecimal.ONE, TimeInForce.DAY, "123");
 		newOrder.setDecimal(StrikePrice.FIELD, new BigDecimal("25"));
 		newOrder.setField(new PutOrCall(PutOrCall.PUT));
 		newOrder.setField(new MaturityMonthYear("200811"));
@@ -115,24 +115,24 @@ public class OptionOrderTicketModelTest extends FIXVersionedTestCase {
 	private List<OptionContractData> getContractData() {
 		List<OptionContractData> contractData = new LinkedList<OptionContractData>();
 		OptionContractData ocd;
-		ocd = new OptionContractData(new MSymbol("FOO"), new MSymbol("FOO+FE"), 2008, 11, new BigDecimal(25), PutOrCall.PUT);
+		ocd = new OptionContractData(new Equity("FOO"), new Equity("FOO+FE"), 2008, 11, new BigDecimal(25), PutOrCall.PUT);
 		contractData.add(ocd);
-		ocd = new OptionContractData(new MSymbol("FOO"), new MSymbol("FOO+RE"), 2008, 11, new BigDecimal(25), PutOrCall.CALL);
+		ocd = new OptionContractData(new Equity("FOO"), new Equity("FOO+RE"), 2008, 11, new BigDecimal(25), PutOrCall.CALL);
 		contractData.add(ocd);
 		
-		ocd = new OptionContractData(new MSymbol("FOO"), new MSymbol("FOO+FA"), 2008, 11, new BigDecimal(20), PutOrCall.PUT);
+		ocd = new OptionContractData(new Equity("FOO"), new Equity("FOO+FA"), 2008, 11, new BigDecimal(20), PutOrCall.PUT);
 		contractData.add(ocd);
-		ocd = new OptionContractData(new MSymbol("FOO"), new MSymbol("FOO+RA"), 2008, 11, new BigDecimal(20), PutOrCall.CALL);
-		contractData.add(ocd);
-
-		ocd = new OptionContractData(new MSymbol("FOO"), new MSymbol("FOO+FD"), 2008, 10, new BigDecimal(20), PutOrCall.PUT);
-		contractData.add(ocd);
-		ocd = new OptionContractData(new MSymbol("FOO"), new MSymbol("FOO+RD"), 2008, 10, new BigDecimal(20), PutOrCall.CALL);
+		ocd = new OptionContractData(new Equity("FOO"), new Equity("FOO+RA"), 2008, 11, new BigDecimal(20), PutOrCall.CALL);
 		contractData.add(ocd);
 
-		ocd = new OptionContractData(new MSymbol("BAR"), new MSymbol("BAR+FD"), 2009, 1, new BigDecimal(10), PutOrCall.PUT);
+		ocd = new OptionContractData(new Equity("FOO"), new Equity("FOO+FD"), 2008, 10, new BigDecimal(20), PutOrCall.PUT);
 		contractData.add(ocd);
-		ocd = new OptionContractData(new MSymbol("BAR"), new MSymbol("BAR+RD"), 2009, 1, new BigDecimal(10), PutOrCall.CALL);
+		ocd = new OptionContractData(new Equity("FOO"), new Equity("FOO+RD"), 2008, 10, new BigDecimal(20), PutOrCall.CALL);
+		contractData.add(ocd);
+
+		ocd = new OptionContractData(new Equity("BAR"), new Equity("BAR+FD"), 2009, 1, new BigDecimal(10), PutOrCall.PUT);
+		contractData.add(ocd);
+		ocd = new OptionContractData(new Equity("BAR"), new Equity("BAR+RD"), 2009, 1, new BigDecimal(10), PutOrCall.CALL);
 		contractData.add(ocd);
 		return contractData;
 	}
@@ -141,7 +141,7 @@ public class OptionOrderTicketModelTest extends FIXVersionedTestCase {
 		OptionOrderTicketModel model = new OptionOrderTicketModel(this.msgFactory);
 		model.updateOptionInfo();
 
-		Message newOrder = this.msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.TEN, new MSymbol("FOO"), BigDecimal.ONE, TimeInForce.DAY, "123");
+		Message newOrder = this.msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.TEN, new Equity("FOO"), BigDecimal.ONE, TimeInForce.DAY, "123");
 		newOrder.setDecimal(StrikePrice.FIELD, new BigDecimal("25"));
 		newOrder.setField(new PutOrCall(PutOrCall.PUT));
 		newOrder.setField(new MaturityMonthYear("200811"));

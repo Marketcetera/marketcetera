@@ -47,20 +47,20 @@ public interface OrderBase extends Order {
      * @param inSide the order Side.
      */
     void setSide(Side inSide);
+    
+    /**
+     * Gets the instrument.
+     *
+     * @return the instrument.
+     */
+    public Instrument getInstrument();
 
     /**
-     * Gets the security's symbol.
+     * Sets the instrument.
      *
-     * @return the security's symbol.
+     * @param inInstrument the instrument.
      */
-    public MSymbol getSymbol();
-
-    /**
-     * Sets the security's symbol.
-     *
-     * @param inSymbol the security's symbol.
-     */
-    public void setSymbol(MSymbol inSymbol);
+    public void setInstrument(Instrument inInstrument);
 
     /**
      * Gets the quantity for the Order.

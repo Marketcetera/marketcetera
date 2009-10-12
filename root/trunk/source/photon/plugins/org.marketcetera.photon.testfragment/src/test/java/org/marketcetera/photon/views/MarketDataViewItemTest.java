@@ -23,7 +23,7 @@ import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 /* $License$ */
 
@@ -36,8 +36,8 @@ import org.marketcetera.trade.MSymbol;
  */
 public class MarketDataViewItemTest {
 
-    private static final MSymbol symbol1 = new MSymbol("MSFT");
-    private static final MSymbol symbol2 = new MSymbol("GOOG");
+    private static final Equity symbol1 = new Equity("MSFT");
+    private static final Equity symbol2 = new Equity("GOOG");
 
     private MarketDataViewItem mFixture;
     private PropertyChangeListener mMockListener;
@@ -58,25 +58,25 @@ public class MarketDataViewItemTest {
         mTick2 = createTick(symbol2);
         mMockTick1Reference = createReference(mTick1);
         mMockTick2Reference = createReference(mTick2);
-        when(mMockMarketData.getLatestTick(symbol1.getFullSymbol())).thenReturn(mMockTick1Reference);
-        when(mMockMarketData.getLatestTick(symbol2.getFullSymbol())).thenReturn(mMockTick2Reference);
+        when(mMockMarketData.getLatestTick(symbol1.getSymbol())).thenReturn(mMockTick1Reference);
+        when(mMockMarketData.getLatestTick(symbol2.getSymbol())).thenReturn(mMockTick2Reference);
         mTOB1 = createTOB(symbol1);
         mTOB2 = createTOB(symbol2);
         mMockTOB1Reference = createReference(mTOB1);
         mMockTOB2Reference = createReference(mTOB2);
-        when(mMockMarketData.getTopOfBook(symbol1.getFullSymbol())).thenReturn(mMockTOB1Reference);
-        when(mMockMarketData.getTopOfBook(symbol2.getFullSymbol())).thenReturn(mMockTOB2Reference);
+        when(mMockMarketData.getTopOfBook(symbol1.getSymbol())).thenReturn(mMockTOB1Reference);
+        when(mMockMarketData.getTopOfBook(symbol2.getSymbol())).thenReturn(mMockTOB2Reference);
         mFixture = new MarketDataViewItem(mMockMarketData, symbol1);
-        assertEquals(symbol1, mFixture.getSymbol());
+        assertEquals(symbol1, mFixture.getEquity());
         mMockListener = mock(PropertyChangeListener.class);
         mFixture.addPropertyChangeListener("symbol", mMockListener);
         mFixture.addPropertyChangeListener("latestTick", mMockListener);
         mFixture.addPropertyChangeListener("topOfBook", mMockListener);
     }
 
-    private MDTopOfBook createTOB(MSymbol symbol) {
+    private MDTopOfBook createTOB(Equity symbol) {
         MDTopOfBook item = MDFactory.eINSTANCE.createMDTopOfBook();
-        item.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, symbol.getFullSymbol());
+        item.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, symbol.getSymbol());
         return item;
     }
 
@@ -87,9 +87,9 @@ public class MarketDataViewItemTest {
         return mock;
     }
 
-    private MDLatestTick createTick(MSymbol symbol) {
+    private MDLatestTick createTick(Equity symbol) {
         MDLatestTick tick = MDFactory.eINSTANCE.createMDLatestTick();
-        tick.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, symbol.getFullSymbol());
+        tick.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, symbol.getSymbol());
         return tick;
     }
 
@@ -114,15 +114,15 @@ public class MarketDataViewItemTest {
         new ExpectedFailure<IllegalArgumentException>(null) {
             @Override
             protected void run() throws Exception {
-                mFixture.setSymbol(null);
+                mFixture.setEquity(null);
             }
         };
     }
 
     @Test
     public void testSetSymbol() {
-        mFixture.setSymbol(symbol2);
-        assertEquals(symbol2, mFixture.getSymbol());
+        mFixture.setEquity(symbol2);
+        assertEquals(symbol2, mFixture.getEquity());
         verify(mMockTick1Reference).dispose();
         verify(mMockTOB1Reference).dispose();
         verify(mMockListener).propertyChange(argThat(isPropertyChange("symbol", is(symbol1), is(symbol2))));
@@ -130,17 +130,17 @@ public class MarketDataViewItemTest {
         verify(mMockListener).propertyChange(argThat(isPropertyChange("topOfBook", hasSymbol(symbol1), hasSymbol(symbol2))));
     }
 
-    public static Matcher<?> hasSymbol(final MSymbol symbol) {
+    public static Matcher<?> hasSymbol(final Equity symbol) {
         return new BaseMatcher<MDItem>() {
 
             @Override
             public boolean matches(Object item) {
-                return ((MDItem) item).getSymbol().equals(symbol.getFullSymbol());
+                return ((MDItem) item).getSymbol().equals(symbol.getSymbol());
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("has symbol ").appendValue(symbol.getFullSymbol());
+                description.appendText("has symbol ").appendValue(symbol.getSymbol());
             }
         };
     }

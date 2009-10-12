@@ -25,7 +25,8 @@ import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.event.TopOfBook;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -41,7 +42,7 @@ public class OrderBookTest
     /**
      * test symbol
      */
-    private final MSymbol symbol = new MSymbol("GOOG");
+    private final Equity symbol = new Equity("GOOG");
     /**
      * test order book (reset each test)
      */
@@ -91,8 +92,8 @@ public class OrderBookTest
     public void equalsAndHashCode()
         throws Exception
     {
-        MSymbol otherSymbol = new MSymbol("YHOO");
-        MSymbol duplicateSymbol = new MSymbol("GOOG");
+        Equity otherSymbol = new Equity("YHOO");
+        Equity duplicateSymbol = new Equity("GOOG");
         assertEquals(symbol,
                      duplicateSymbol);
         assertFalse(symbol.equals(otherSymbol));
@@ -385,9 +386,9 @@ public class OrderBookTest
                 book.process(null);
             }
         };
-        final AskEvent badAsk = EventBaseTest.generateAskEvent(new MSymbol("METC"),
+        final AskEvent badAsk = EventBaseTest.generateAskEvent(new Equity("METC"),
                                                                exchange);
-        assertFalse(badAsk.getSymbol().equals(symbol));
+        assertFalse(badAsk.getInstrument().equals(symbol));
         new ExpectedFailure<IllegalArgumentException>(null) {
             @Override
             protected void run()
@@ -505,14 +506,14 @@ public class OrderBookTest
     /**
      * Verifies that the given {@link OrderBook} contains the given expected values.
      *
-     * @param inExpectedSymbol
+     * @param inExpectedInstrument
      * @param inExpectedBids
      * @param inExpectedAsks
      * @param inExpectedMaxDepth
      * @param inActualBook
      * @throws Exception
      */
-    private void verifyBook(MSymbol inExpectedSymbol,
+    private void verifyBook(Instrument inExpectedInstrument,
                             QuantityTupleList<BidEvent> inExpectedBids,
                             QuantityTupleList<AskEvent> inExpectedAsks,
                             int inExpectedMaxDepth,
@@ -523,8 +524,8 @@ public class OrderBookTest
         inExpectedBids.sort(QuantityTuple.PriceComparator.DESCENDING);
         List<QuantityTuple> convertedBids = convertEvents(inActualBook.getBidBook());
         List<QuantityTuple> convertedAsks = convertEvents(inActualBook.getAskBook());
-        assertEquals(inExpectedSymbol,
-                     inActualBook.getSymbol());
+        assertEquals(inExpectedInstrument,
+                     inActualBook.getInstrument());
         assertEquals(inExpectedBids.getList(),
                      convertedBids);
         assertEquals(inExpectedAsks.getList(),

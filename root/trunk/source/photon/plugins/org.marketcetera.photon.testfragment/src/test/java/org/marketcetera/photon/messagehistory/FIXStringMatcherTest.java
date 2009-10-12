@@ -7,7 +7,7 @@ import java.util.List;
 import junit.framework.Test;
 
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -55,7 +55,7 @@ public class FIXStringMatcherTest
         final Message buyOrder = sMessageFactory.newMarketOrder(Long.toString(System.currentTimeMillis()),
                                                                 Side.BUY,
                                                                 new BigDecimal("100.00"),
-                                                                new MSymbol("GOOG"),
+                                                                new Equity("GOOG"),
                                                                 TimeInForce.GOOD_TILL_CANCEL,
                                                                 "account");
         final List<MatchTuple> conditions = new ArrayList<MatchTuple>();

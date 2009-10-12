@@ -9,7 +9,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Originator;
 
 import quickfix.Message;
@@ -33,7 +33,7 @@ public class ReportHolderTest {
                 .newExecutionReport("asdf", "asdf", "asdf", OrdStatus.CANCELED,
                         Side.BUY, BigDecimal.TEN, BigDecimal.ONE,
                         BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                        BigDecimal.ONE, new MSymbol("123"), "asdf");
+                        BigDecimal.ONE, new Equity("123"), "asdf");
         ExecutionReport report = Factory.getInstance().createExecutionReport(
                 message, new BrokerID("ABC"), Originator.Server, null, null);
         ReportHolder holder = new ReportHolder(report);

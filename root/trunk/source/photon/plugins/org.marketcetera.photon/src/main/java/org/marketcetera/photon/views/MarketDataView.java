@@ -59,7 +59,7 @@ import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnPro
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.field.BidPx;
@@ -88,7 +88,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	 */
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; //$NON-NLS-1$
 
-	private Map<MSymbol, MarketDataViewItem> mItemMap = new HashMap<MSymbol, MarketDataViewItem>();
+	private Map<Equity, MarketDataViewItem> mItemMap = new HashMap<Equity, MarketDataViewItem>();
 
 	private TextContributionItem mSymbolEntryText;
 
@@ -212,7 +212,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		mViewer.setContentProvider(content);
 		IObservableSet domain = content.getKnownElements();
 		IObservableMap[] maps = new IObservableMap[] {
-				BeansObservables.observeMap(domain, MarketDataViewItem.class, "symbol"), //$NON-NLS-1$
+				BeansObservables.observeMap(domain, MarketDataViewItem.class, "equity.symbol"), //$NON-NLS-1$
 				createCompositeMap(domain, "latestTick", MDPackage.Literals.MD_LATEST_TICK__PRICE), //$NON-NLS-1$
 				createCompositeMap(domain, "latestTick", MDPackage.Literals.MD_LATEST_TICK__SIZE), //$NON-NLS-1$
 				createCompositeMap(domain, "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__BID_SIZE), //$NON-NLS-1$
@@ -270,12 +270,12 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	@Override
-	public boolean isListeningSymbol(MSymbol symbol) {
+	public boolean isListeningSymbol(Equity symbol) {
 		return false;
 	}
 
 	@Override
-	public void onAssertSymbol(MSymbol symbol) {
+	public void onAssertSymbol(Equity symbol) {
 		addSymbol(symbol);
 	}
 
@@ -286,7 +286,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	 * @param symbol
 	 *            symbol to add to view
 	 */
-	public void addSymbol(final MSymbol symbol) {
+	public void addSymbol(final Equity symbol) {
 		if (mItemMap.containsKey(symbol)) {
 			PhotonPlugin.getMainConsoleLogger().warn(
 					DUPLICATE_SYMBOL.getText(symbol));
@@ -308,7 +308,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	private void remove(final MarketDataViewItem item) {
-		mItemMap.remove(item.getSymbol());
+		mItemMap.remove(item.getEquity());
 		mItems.remove(item);
 		item.dispose();
 	}
@@ -364,8 +364,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			int compare;
 			switch (mIndex) {
 			case 0:
-				String symbol1 = item1.getSymbol().toString();
-				String symbol2 = item2.getSymbol().toString();
+				String symbol1 = item1.getEquity().getSymbol();
+				String symbol2 = item2.getEquity().getSymbol();
 				compare = compareNulls(symbol1, symbol2);
 				if (compare == 0) {
 					compare = symbol1.compareTo(symbol2);
@@ -458,20 +458,20 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			if (StringUtils.isBlank(value.toString()))
 				return;
 			final MarketDataViewItem item = (MarketDataViewItem) element;
-			final MSymbol symbol = item.getSymbol();
-			if (symbol.toString().equals(value))
+			final Equity symbol = item.getEquity();
+			if (symbol.getSymbol().equals(value))
 				return;
-			final MSymbol newSymbol = new MSymbol(value.toString());
+			final Equity newSymbol = new Equity(value.toString());
 			if (mItemMap.containsKey(newSymbol)) {
 				PhotonPlugin.getMainConsoleLogger().warn(
-						DUPLICATE_SYMBOL.getText(symbol));
+						DUPLICATE_SYMBOL.getText(newSymbol.getSymbol()));
 				return;
 			}
 			busyRun(new Runnable() {
 				@Override
 				public void run() {
 					mItemMap.remove(symbol);
-					item.setSymbol(newSymbol);
+					item.setEquity(newSymbol);
 					mItemMap.put(newSymbol, item);
 				}
 			});
@@ -479,7 +479,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 		@Override
 		protected Object getValue(Object element) {
-			return ((MarketDataViewItem) element).getSymbol().toString();
+			return ((MarketDataViewItem) element).getEquity().getSymbol();
 		}
 
 		@Override

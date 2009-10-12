@@ -2,14 +2,13 @@ package org.marketcetera.core.position;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.impl.Messages;
 import org.marketcetera.core.position.impl.PositionEngineImpl;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportID;
@@ -152,7 +151,7 @@ public class PositionEngineFactory {
         }
 
         private boolean isValid(ExecutionReport report) {
-            if (notEmpty(report.getSymbol()) && positive(report.getLastPrice())
+            if (notEmpty(report.getInstrument()) && positive(report.getLastPrice())
                     && notZero(report.getLastQuantity())) {
                 return true;
             } else {
@@ -166,8 +165,8 @@ public class PositionEngineFactory {
             return object != null;
         }
 
-        private boolean notEmpty(MSymbol symbol) {
-            return notNull(symbol) && StringUtils.isNotEmpty(symbol.toString());
+        private boolean notEmpty(Instrument instrument) {
+            return notNull(instrument);
         }
 
         private boolean notZero(BigDecimal number) {
@@ -218,8 +217,8 @@ public class PositionEngineFactory {
              * position is associated with.
              */
             UserID viewer = mReport.getViewerID();
-            mKey = PositionKeyFactory.createEquityKey(mReport.getSymbol()
-                    .getFullSymbol(), mReport.getAccount(),
+            mKey = PositionKeyFactory.createEquityKey(mReport.getInstrument()
+                    .getSymbol(), mReport.getAccount(),
                     viewer == null ? null : viewer.toString());
         }
 

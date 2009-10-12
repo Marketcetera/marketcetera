@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -46,10 +46,10 @@ public abstract class AbstractMessageTranslator<T>
      * Gets the <code>Symbol</code> specified in the given <code>Group</code>.
      *
      * @param inGroup a <code>Group</code> value
-     * @return a <code>MSymbol</code> value containing the symbol
+     * @return an <code>Equity</code> value containing the symbol
      * @throws CoreException if the symbol could not be extracted
      */
-    public static MSymbol getSymbol(Group inGroup) 
+    public static Equity getSymbol(Group inGroup) 
         throws CoreException
     {
         String securityType;
@@ -58,7 +58,7 @@ public abstract class AbstractMessageTranslator<T>
         } catch (FieldNotFound e) {
             securityType = SecurityType.COMMON_STOCK;
         }
-        MSymbol symbol;
+        Equity symbol;
         try {
             if(SecurityType.OPTION.equals(securityType) && 
                inGroup.isSetField(NoUnderlyings.FIELD)) {
@@ -66,9 +66,9 @@ public abstract class AbstractMessageTranslator<T>
                                                                     NoUnderlyings.FIELD);
                 inGroup.getGroup(1, 
                                  underlyingGroup);
-                symbol = new MSymbol(underlyingGroup.getString(UnderlyingSymbol.FIELD));
+                symbol = new Equity(underlyingGroup.getString(UnderlyingSymbol.FIELD));
             } else {
-                symbol = new MSymbol(inGroup.getString(Symbol.FIELD));
+                symbol = new Equity(inGroup.getString(Symbol.FIELD));
             }
         } catch (FieldNotFound e) {
             throw new CoreException(e, 

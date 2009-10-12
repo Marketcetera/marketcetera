@@ -6,12 +6,12 @@ import java.util.Set;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
 /**
- * Common class for {@link Bid} and {@link Ask} events.
+ * Common class for {@link BidEvent} and {@link AskEvent} events.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -24,22 +24,23 @@ public abstract class QuoteEvent
     /**
      * Create a new QuoteEvent instance.
      *
-     * @param messageId a <code>long</code> value uniquely identifying this market event
-     * @param timestamp a <code>long</code> value expressing the time this event occurred in milliseconds since
+     * @param inMessageID a <code>long</code> value uniquely identifying this market event
+     * @param inTimestamp a <code>long</code> value expressing the time this event occurred in milliseconds since
      *   EPOCH in GMT
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol quoted in this event
-     * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred 
+     * @param inInstrument a <code>Instrument</code> value specifying the instrument for which the quote occured.
+     * @param inExchange a <code>String</code> value containing the exchange on which the quote occurred
      * @param inPrice a <code>BigDecimal</code> value containing the price of this event
      * @param inSize a <code>BigDecimal</code> value containing the size of this event
      * @param inAction an <code>Action</code> value
+     *  
      * @throws IllegalArgumentException if <code>inMessageID</code> or <code>inTimestamp</code> &lt; 0
-     * @throws IllegalArgumentException if <code>inExchange</code> is non-null but empty
+     * OR if <code>inExchange</code> is non-null but empty
      * @throws NullPointerException if <code>inSymbol</code>, <code>inExchange</code>, <code>inPrice</code>,
      *  <code>inSize</code>, or <code>inAction</code> is null
      */
     protected QuoteEvent(long inMessageID,
                          long inTimestamp,
-                         MSymbol inSymbol,
+                         Instrument inInstrument,
                          String inExchange,
                          BigDecimal inPrice,
                          BigDecimal inSize, 
@@ -47,7 +48,7 @@ public abstract class QuoteEvent
     {
         super(inMessageID,
               inTimestamp,
-              inSymbol,
+              inInstrument,
               inExchange,
               inPrice,
               inSize);
@@ -72,8 +73,8 @@ public abstract class QuoteEvent
     public String toString()
     {
         StringBuffer output = new StringBuffer();
-        output.append(getDescription()).append("(").append(getAction()).append("-").append(getMessageId()).append(") for ").append(getSymbol()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        output.append(" ").append(getSymbol()).append(" ").append(getExchange()).append(" at ").append(DateUtils.dateToString(getTimestampAsDate())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        output.append(getDescription()).append("(").append(getAction()).append("-").append(getMessageId()).append(") for ").append(getInstrument()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        output.append(" ").append(getInstrument()).append(" ").append(getExchange()).append(" at ").append(DateUtils.dateToString(getTimestampAsDate())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return output.toString();
     }
     /**

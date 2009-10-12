@@ -19,7 +19,7 @@ import org.marketcetera.photon.model.marketdata.MDQuote;
 import org.marketcetera.photon.ui.EquityPerspectiveFactory;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicketView;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -52,7 +52,7 @@ public class CreateEquityOrderFromQuote extends AbstractHandler {
 			}
 			String symbol = ((MDItem) quote.eContainer()).getSymbol();
 			Message order = PhotonPlugin.getDefault().getMessageFactory().newLimitOrder("", side, //$NON-NLS-1$
-					quote.getSize(), new MSymbol(symbol), quote.getPrice(), TimeInForce.DAY, ""); //$NON-NLS-1$
+					quote.getSize(), new Equity(symbol), quote.getPrice(), TimeInForce.DAY, ""); //$NON-NLS-1$
 			StockOrderTicketController controller = PhotonPlugin.getDefault()
 					.getStockOrderTicketController();
 			controller.setOrderMessage(order);

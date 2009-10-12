@@ -23,7 +23,7 @@ import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXValueExtractor;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
@@ -276,8 +276,8 @@ public class UnderlyingSymbolInfoComposite
 		return convertExtractedValue(value, fieldID);
 	}
 
-	protected boolean hasSymbol(final MSymbol symbol) {
-		return (underlyingSymbolInfoMap.get(symbol.getFullSymbol()) != null);
+	protected boolean hasSymbol(final Equity symbol) {
+		return (underlyingSymbolInfoMap.get(symbol.getSymbol()) != null);
 	}
 
 	protected boolean hasUnderlyingSymbolInfo() {

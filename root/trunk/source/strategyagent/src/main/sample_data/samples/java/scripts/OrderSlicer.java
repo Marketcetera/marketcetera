@@ -59,7 +59,7 @@ public class OrderSlicer extends Strategy {
             order.setOrderType(OrderType.Market);
             order.setQuantity(new BigDecimal(size));
             order.setSide(Side.Buy);
-            order.setSymbol(new MSymbol(symbol));
+            order.setInstrument(new Equity(symbol));
             order.setTimeInForce(TimeInForce.Day);
             // request a callback for each order at a random time (up to 10 seconds)
             requestCallbackAfter(1000 * sRandom.nextInt(10), order);

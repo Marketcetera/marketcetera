@@ -47,7 +47,12 @@ public class OptionTest extends InstrumentTestBase<Option> {
         new Option("METC", "20091011", new BigDecimal("5"), OptionType.Call));
     }
 
-    @Test
+    @Override
+    protected SecurityType getSecurityType() {
+        return SecurityType.Option;
+    }
+
+	@Test
     public void testStrikePriceTrailingZerosTrimmed() throws Exception {
         Option option1 = new Option("ABC", "20091010", new BigDecimal("5"),
                 OptionType.Call);

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -31,7 +31,7 @@ public class TopOfBook
      * @param inBid a <code>BidEvent</code> value or null
      * @param inAsk an <code>AskEvent</code> value or null
      * @param inTimestamp a <code>Date</code> value indicating when the event occurred
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol for which the event occurred
+     * @param inInstrument an <code>Instrument</code> value specifying the instrument for which the event occurred
      * @throws IllegalArgumentException if <code>inTimestamp</code> &lt; 0
      * @throws IllegalArgumentException if the symbol of <code>inBid</code> or <code>inAsk</code> does not match <code>inSymbol</code>
      * @throws NullPointerException if <code>inSymbol</code> or <code>inTimestamp</code> is null
@@ -39,16 +39,16 @@ public class TopOfBook
     public TopOfBook(BidEvent inBid,
                      AskEvent inAsk,
                      Date inTimestamp,
-                     MSymbol inSymbol)
+                     Instrument inInstrument)
     {
         super(inTimestamp,
-              inSymbol);
+              inInstrument);
         bid = inBid;
         ask = inAsk;
         if((bid != null &&
-            !bid.getSymbol().equals(inSymbol)) ||
+            !bid.getInstrument().equals(inInstrument)) ||
            (ask != null &&
-            !ask.getSymbol().equals(inSymbol))) {
+            !ask.getInstrument().equals(inInstrument))) {
             throw new IllegalArgumentException();
         }
     }
@@ -129,7 +129,7 @@ public class TopOfBook
     public String toString()
     {
         return String.format("TopOfBook for %s at %s: %s %s-%s %sx%s %s", //$NON-NLS-1$
-                             getSymbol(),
+                             getInstrument(),
                              DateUtils.dateToString(getTimestampAsDate()),
                              SymbolExchangeEvent.getExchange(bid),
                              SymbolExchangeEvent.getPriceAsString(bid),

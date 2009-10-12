@@ -9,7 +9,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.test.CollectionAssert;
 
 /* $License$ */
@@ -33,7 +34,7 @@ public class AggregateEventTest
         throws Exception
     {
         final Date now = new Date();
-        final MSymbol metc = new MSymbol("METC");
+        final Instrument metc = new Equity("METC");
         new ExpectedFailure<NullPointerException>(null) {
             @Override
             protected void run()
@@ -55,16 +56,16 @@ public class AggregateEventTest
         MockAggregateEvent test = new MockAggregateEvent(now,
                                                          metc);
         assertEquals(metc,
-                     test.getSymbol());
+                     test.getInstrument());
         assertEquals(now,
                      test.getTimestampAsDate());
-        MSymbol returnedSymbol = test.getSymbol();
+        Instrument returnedSymbol = test.getInstrument();
         assertEquals(metc,
                      returnedSymbol);
-        returnedSymbol = new MSymbol("goog");
+        returnedSymbol = new Equity("goog");
         assertFalse(metc.equals(returnedSymbol));
         assertEquals(metc,
-                     test.getSymbol());
+                     test.getInstrument());
     }
     /**
      * Verifies that the given <code>AggregateEvent</code> decomposes into the
@@ -97,13 +98,13 @@ public class AggregateEventTest
          * Create a new TestEvent instance.
          *
          * @param inTimestamp a <code>Date</code> value
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inInstrument an <code>Instrument</code> value
          */
         public MockAggregateEvent(Date inTimestamp,
-                                  MSymbol inSymbol)
+                                  Instrument inInstrument)
         {
             super(inTimestamp,
-                  inSymbol);
+                  inInstrument);
         }
         /**
          * Create a new MockAggregateEvent instance.
@@ -113,7 +114,7 @@ public class AggregateEventTest
         public MockAggregateEvent(List<EventBase> inCompositeEvents)
         {
             this(new Date(),
-                 new MSymbol("METC"));
+                 new Equity("METC"));
             compositeEvents.addAll(inCompositeEvents);
         }
         /* (non-Javadoc)

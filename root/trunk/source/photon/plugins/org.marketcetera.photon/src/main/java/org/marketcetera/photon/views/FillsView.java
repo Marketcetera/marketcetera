@@ -133,7 +133,7 @@ public class FillsView extends AbstractFIXMessagesView {
 				EqualsBuilder builder = new EqualsBuilder();
 				// only need to match fields that are being filtered
 				if (filters.containsKey(Grouping.Symbol)) {
-					builder.append(filters.get(Grouping.Symbol), report.getSymbol().toString());
+					builder.append(filters.get(Grouping.Symbol), report.getInstrument().getSymbol());
 				}
 				if (filters.containsKey(Grouping.Account)) {
 					builder.append(filters.get(Grouping.Account), report.getAccount());

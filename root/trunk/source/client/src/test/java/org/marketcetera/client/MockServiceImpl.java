@@ -14,7 +14,6 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.UserID;
@@ -87,7 +86,7 @@ public class MockServiceImpl
 
     private BigDecimal getPositionAsOfImpl
         (Date date,
-         MSymbol symbol)
+         Equity equity)
     {
         return new BigDecimal(date.getTime());
     }
@@ -171,7 +170,7 @@ public class MockServiceImpl
     public BigDecimal getPositionAsOf
         (ClientContext context,
          final DateWrapper date,
-         final MSymbol symbol)
+         final Equity equity)
         throws RemoteException
     {
         return (new RemoteCaller<Object,BigDecimal>
@@ -181,7 +180,7 @@ public class MockServiceImpl
                 (ClientContext context,
                  SessionHolder<Object> sessionHolder)
             {
-                return getPositionAsOfImpl(date.getRaw(),symbol);
+                return getPositionAsOfImpl(date.getRaw(),equity);
             }}).execute(context);
     }
 

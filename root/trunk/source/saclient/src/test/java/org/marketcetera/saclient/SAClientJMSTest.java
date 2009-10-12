@@ -338,9 +338,9 @@ public class SAClientJMSTest extends SAClientTestBase {
      */
     private Object[] createTestObjects() throws Exception {
         return new Object[]{
-                new AskEvent(1, 2, new MSymbol("asym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
-                new BidEvent(3, 4, new MSymbol("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
-                new TradeEvent(5, 6, new MSymbol("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                new AskEvent(1, 2, new Equity("asym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                new BidEvent(3, 4, new Equity("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                new TradeEvent(5, 6, new Equity("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
                 ClientTest.createOrderSingle(),
                 ClientTest.createOrderReplace(),
                 ClientTest.createOrderCancel(),

@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -21,9 +22,10 @@ import quickfix.field.Symbol;
  *
  */
 public class OptionContractData {
+	//TODO: Update class to use Option Instruments
 
-	private MSymbol underlyingSymbol;
-	private MSymbol optionSymbol;
+	private Instrument underlyingSymbol;
+	private Instrument optionSymbol;
 	private String optionRoot;
 	private Integer expirationYear;
 	private Integer expirationMonth;
@@ -41,7 +43,7 @@ public class OptionContractData {
 	 * @param putOrCall {@link PutOrCall#PUT} if put, {@link PutOrCall#CALL} if call
 	 * 
 	 */
-	public OptionContractData(MSymbol underlyingSymbol, MSymbol optionSymbol, Integer expirationYear, Integer expirationMonth, BigDecimal strikePrice, int putOrCall) {
+	public OptionContractData(Instrument underlyingSymbol, Instrument optionSymbol, Integer expirationYear, Integer expirationMonth, BigDecimal strikePrice, int putOrCall) {
 		this.underlyingSymbol = underlyingSymbol;
 		this.optionSymbol = optionSymbol;
 		this.expirationYear = expirationYear;
@@ -49,7 +51,7 @@ public class OptionContractData {
 		this.strikePrice = strikePrice;
 		this.putOrCall = putOrCall;
 		
-		optionRoot = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol.getFullSymbol());
+		optionRoot = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol.getSymbol());
 	}
 
 
@@ -83,7 +85,7 @@ public class OptionContractData {
 	 * 
 	 * @return the option symbol for the specific contract, e.g. MSQ+FN
 	 */
-	public MSymbol getOptionSymbol() {
+	public Instrument getOptionSymbol() {
 		return optionSymbol;
 	}
 
@@ -105,9 +107,9 @@ public class OptionContractData {
 
 	/**
 	 * Get the underlying symbol
-	 * @return the underlying symbol as an {@link MSymbol}
+	 * @return the underlying symbol as an {@link Equity}
 	 */
-	public MSymbol getUnderlyingSymbol() {
+	public Instrument getUnderlyingSymbol() {
 		return underlyingSymbol;
 	}
 
@@ -200,7 +202,7 @@ public class OptionContractData {
 	 * @throws FieldNotFound if a required field is missing from the field map
 	 * @throws ParseException if a required field is incorrectly formatted
 	 */
-	public static OptionContractData fromFieldMap(MSymbol underlyingSymbol, FieldMap fieldMap) throws FieldNotFound, ParseException{
+	public static OptionContractData fromFieldMap(Instrument underlyingSymbol, FieldMap fieldMap) throws FieldNotFound, ParseException{
 
 		String optionSymbolStr = fieldMap.getString(Symbol.FIELD);
 
@@ -215,7 +217,7 @@ public class OptionContractData {
 		String strikeStr = fieldMap.getString(StrikePrice.FIELD);
 		BigDecimal strike = new BigDecimal(strikeStr);
 
-		MSymbol optionSymbol = new MSymbol(optionSymbolStr);
+		Instrument optionSymbol = new Equity(optionSymbolStr);
 		return new OptionContractData(
 				underlyingSymbol, optionSymbol, expirationYear, expirationMonth, strike,
 				putOrCall);

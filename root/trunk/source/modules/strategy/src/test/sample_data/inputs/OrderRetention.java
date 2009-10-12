@@ -3,7 +3,7 @@ import java.math.BigDecimal;
 import org.marketcetera.strategy.java.Strategy;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
@@ -60,7 +60,7 @@ public class OrderRetention
         order.setPrice(BigDecimal.ONE);
         order.setQuantity(BigDecimal.TEN);
         order.setSide(Side.Buy);
-        order.setSymbol(new MSymbol("METC"));
+        order.setInstrument(new Equity("METC"));
         order.setTimeInForce(TimeInForce.GoodTillCancel);
         if(send(order)) {
             recordOrderID(order.getOrderID());

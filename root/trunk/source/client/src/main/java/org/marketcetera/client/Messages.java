@@ -80,8 +80,8 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "validation_order_quantity");   //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_ORDER_SIDE =
             new I18NMessage0P(LOGGER, "validation_order_side");   //$NON-NLS-1$
-    static final I18NMessage0P VALIDATION_ORDER_SYMBOL =
-            new I18NMessage0P(LOGGER, "validation_order_symbol");   //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_ORDER_INSTRUMENT =
+            new I18NMessage0P(LOGGER, "validation_order_instrument");   //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_ORIG_ORDERID =
             new I18NMessage0P(LOGGER, "validation_orig_orderid");   //$NON-NLS-1$
     static final I18NMessage2P SEND_ORDER_VALIDATION_FAILED =

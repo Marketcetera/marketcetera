@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Test;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -159,18 +159,18 @@ public class EventBaseTest
      * current time.  The timestamp is not guaranteed to be unique or consistent for
      * all the events in the list.
      *
-     * @param inSymbol an <code>MSymbol</code> value
+     * @param inInstrument an <code>Instrument</code> value
      * @param inExchange a <code>String</code> value
      * @param inCount an <code>int</code> value
      * @return a <code>List&lt;AskEvent&gt;</code> value
      */
-    public static List<AskEvent> generateAskEvents(MSymbol inSymbol,
+    public static List<AskEvent> generateAskEvents(Instrument inInstrument,
                                                    String inExchange,
                                                    int inCount)
     {
         List<AskEvent> asks = new ArrayList<AskEvent>();
         for(int i=0;i<inCount;i++) {
-            asks.add(generateAskEvent(inSymbol,
+            asks.add(generateAskEvent(inInstrument,
                                       inExchange));
         }
         return asks;
@@ -182,126 +182,126 @@ public class EventBaseTest
      * current time.  The timestamp is not guaranteed to be unique or consistent for
      * all the events in the list. 
      *
-     * @param inSymbol an <code>MSymbol</code> value
+     * @param inInstrument an <code>Instrument</code> value
      * @param inExchange a <code>String</code> value
      * @param inCount an <code>int</code> value
      * @return a <code>List&lt;BidEvent&gt;</code> value
      */
-    public static List<BidEvent> generateBidEvents(MSymbol inSymbol,
+    public static List<BidEvent> generateBidEvents(Instrument inInstrument,
                                                    String inExchange,
                                                    int inCount)
     {
         List<BidEvent> bids = new ArrayList<BidEvent>();
         for(int i=0;i<inCount;i++) {
-            bids.add(generateBidEvent(inSymbol,
+            bids.add(generateBidEvent(inInstrument,
                                       inExchange));
         }
         return bids;
     }
     /**
-     * Generates an {@link AskEvent} using the given symbol and exchange.
+     * Generates an {@link AskEvent} using the given instrument and exchange.
      *
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inInstrument a <code>Instrument</code> value
      * @param inExchange a <code>String</code> value
      * @return an <code>AskEvent</code> value
      */
-    public static AskEvent generateAskEvent(MSymbol inSymbol,
+    public static AskEvent generateAskEvent(Instrument inInstrument,
                                             String inExchange)
     {
         return new AskEvent(counter.incrementAndGet(),
                             System.currentTimeMillis(),
-                            inSymbol,
+                            inInstrument,
                             inExchange,
                             generateDecimalValue(),
                             generateIntegerValue());
     }
     /**
-     * Generates an {@link AskEvent} using the given symbol, exchange, and price.
+     * Generates an {@link AskEvent} using the given instrument, exchange, and price.
      *
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inInstrument a <code>Instrument</code> value
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @return an <code>AskEvent</code> value
      */
-    public static AskEvent generateAskEvent(MSymbol inSymbol,
+    public static AskEvent generateAskEvent(Instrument inInstrument,
                                             String inExchange,
                                             BigDecimal inPrice)
     {
         return new AskEvent(counter.incrementAndGet(),
                             System.currentTimeMillis(),
-                            inSymbol,
+                            inInstrument,
                             inExchange,
                             inPrice,
                             generateIntegerValue());
     }
     /**
-     * Generates a {@link BidEvent} using the given symbol and exchange.
+     * Generates a {@link BidEvent} using the given instrument and exchange.
      *
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inInstrument a <code>Instrument</code> value
      * @param inExchange a <code>String</code> value
      * @return a <code>BidEvent</code> value
      */
-    public static BidEvent generateBidEvent(MSymbol inSymbol,
+    public static BidEvent generateBidEvent(Instrument inInstrument,
                                             String inExchange)
     {
         return new BidEvent(counter.incrementAndGet(),
                             System.currentTimeMillis(),
-                            inSymbol,
+                            inInstrument,
                             inExchange,
                             generateDecimalValue(),
                             generateIntegerValue());
     }
     /**
-     * Generates a {@link BidEvent} using the given symbol, exchange, and price.
+     * Generates a {@link BidEvent} using the given instrument, exchange, and price.
      *
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inInstrument a <code>Instrument</code> value
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @return a <code>BidEvent</code> value
      */
-    public static BidEvent generateBidEvent(MSymbol inSymbol,
+    public static BidEvent generateBidEvent(Instrument inInstrument,
                                             String inExchange,
                                             BigDecimal inPrice)
     {
         return new BidEvent(counter.incrementAndGet(),
                             System.currentTimeMillis(),
-                            inSymbol,
+                            inInstrument,
                             inExchange,
                             inPrice,
                             generateIntegerValue());
     }
     /**
-     * Generates a {@link TradeEvent} using the given symbol and exchange.
+     * Generates a {@link TradeEvent} using the given instrument and exchange.
      *
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inInstrument a <code>Instrument</code> value
      * @param inExchange a <code>String</code> value
      * @return a <code>TradeEvent</code> value
      */
-    public static TradeEvent generateTradeEvent(MSymbol inSymbol,
+    public static TradeEvent generateTradeEvent(Instrument inInstrument,
                                                 String inExchange)
     {
         return new TradeEvent(counter.incrementAndGet(),
                               System.currentTimeMillis(),
-                              inSymbol,
+                              inInstrument,
                               inExchange,
                               generateDecimalValue(),
                               generateIntegerValue());
     }
     /**
-     * Generates a {@link TradeEvent} using the given symbol, exchange, and price.
+     * Generates a {@link TradeEvent} using the given instrument, exchange, and price.
      *
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inInstrument a <code>Instrument</code> value
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @return a <code>TradeEvent</code> value
      */
-    public static TradeEvent generateTradeEvent(MSymbol inSymbol,
+    public static TradeEvent generateTradeEvent(Instrument inInstrument,
                                                 String inExchange,
                                                 BigDecimal inPrice)
     {
         return new TradeEvent(counter.incrementAndGet(),
                               System.currentTimeMillis(),
-                              inSymbol,
+                              inInstrument,
                               inExchange,
                               inPrice,
                               generateIntegerValue());

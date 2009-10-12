@@ -27,7 +27,7 @@ import org.marketcetera.photon.marketdata.MockMarketDataModuleFactory.MockMarket
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.photon.test.PhotonTestBase;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.except.I18NException;
 
 /* $License$ */
@@ -354,12 +354,12 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	}
 
 	protected AskEvent createAskEvent(String symbol, String exchange, int price, int size) {
-		return new AskEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new MSymbol(symbol), exchange,
+		return new AskEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
 				new BigDecimal(price), new BigDecimal(size));
 	}
 
 	protected BidEvent createBidEvent(String symbol, String exchange, int price, int size) {
-		return new BidEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new MSymbol(symbol), exchange,
+		return new BidEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
 				new BigDecimal(price), new BigDecimal(size));
 	}
 }

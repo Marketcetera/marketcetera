@@ -1,7 +1,6 @@
 package org.marketcetera.client;
 
 import java.math.BigDecimal;
-
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -11,7 +10,6 @@ import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
@@ -121,7 +119,7 @@ public interface Service
      *
      * @param context The context.
      * @param date The date, in UTC.
-     * @param symbol The symbol.
+     * @param equity The equity instrument.
      *
      * @return The position.
      *
@@ -132,7 +130,7 @@ public interface Service
     BigDecimal getPositionAsOf
         (@WebParam(name= "context")ClientContext context,
          @WebParam(name= "date")DateWrapper date,
-         @WebParam(name= "symbol")MSymbol symbol)
+         @WebParam(name= "equity")Equity equity)
         throws RemoteException;
 
     /**

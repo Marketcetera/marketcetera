@@ -51,7 +51,7 @@ public class OrderSender extends Strategy {
         order.setPrice(inBid.getPrice());
         order.setQuantity(inBid.getSize());
         order.setSide(Side.Buy);
-        order.setSymbol(inBid.getSymbol());
+        order.setInstrument(inBid.getInstrument());
         order.setTimeInForce(TimeInForce.Day);
         warn("Sending Order " + order);
 
@@ -80,7 +80,7 @@ public class OrderSender extends Strategy {
         order.setPrice(inAsk.getPrice());
         order.setQuantity(inAsk.getSize());
         order.setSide(Side.Sell);
-        order.setSymbol(inAsk.getSymbol());
+        order.setInstrument(inAsk.getInstrument());
         order.setTimeInForce(TimeInForce.Day);
         warn("Sending Order " + order);
 

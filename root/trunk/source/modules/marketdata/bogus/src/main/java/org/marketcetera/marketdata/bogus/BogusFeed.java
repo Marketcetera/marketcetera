@@ -29,7 +29,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.SimulatedExchange;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -334,11 +334,11 @@ public class BogusFeed
                 throw new IllegalStateException();
             }
             try {
-                List<MSymbol> symbols = new ArrayList<MSymbol>();
+                List<Equity> symbols = new ArrayList<Equity>();
                 for(String symbol : request.getSymbols()) {
-                    symbols.add(new MSymbol(symbol));
+                    symbols.add(new Equity(symbol));
                 }
-                for(MSymbol symbol : symbols) {
+                for(Equity symbol : symbols) {
                     // all symbols for which we want data are collected in the symbols list
                     // each type of subscription is managed differently
                     for(Content content : request.getContent()) {
@@ -386,14 +386,14 @@ public class BogusFeed
          * Executes a statistics request for the given symbol using the
          * given exchange code.
          *
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inEquity an <code>Equity</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doStatistics(MSymbol inSymbol,
+        private void doStatistics(Equity inEquity,
                                   String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getStatistics(inSymbol,
+                exchangeTokens.add(exchange.getStatistics(inEquity,
                                                           subscriber));
             }
         }
@@ -401,14 +401,14 @@ public class BogusFeed
          * Executes a depth-of-book request for the given symbol using the
          * given exchange code.
          *
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inEquity an <code>Equity</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doDepthOfBook(MSymbol inSymbol,
+        private void doDepthOfBook(Equity inEquity,
                                    String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getDepthOfBook(inSymbol,
+                exchangeTokens.add(exchange.getDepthOfBook(inEquity,
                                                            subscriber));
             }
         }
@@ -416,14 +416,14 @@ public class BogusFeed
          * Executes a top-of-book request for the given symbol using the
          * given exchange code.
          *
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inEquity an <code>Equity</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doTopOfBook(MSymbol inSymbol,
+        private void doTopOfBook(Equity inEquity,
                                  String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getTopOfBook(inSymbol,
+                exchangeTokens.add(exchange.getTopOfBook(inEquity,
                                                          subscriber));
             }
         }
@@ -431,14 +431,14 @@ public class BogusFeed
          * Executes a latest-tick request for the given symbol using the given
          * exchange code.
          *
-         * @param inSymbol an <code>MSymbol</code> value
+         * @param inEquity an <code>Equity</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doLatestTick(MSymbol inSymbol,
+        private void doLatestTick(Equity inEquity,
                                   String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getLatestTick(inSymbol,
+                exchangeTokens.add(exchange.getLatestTick(inEquity,
                                                           subscriber));
             }
         }

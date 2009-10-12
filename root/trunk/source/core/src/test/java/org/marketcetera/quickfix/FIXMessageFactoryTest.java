@@ -3,7 +3,7 @@ package org.marketcetera.quickfix;
 import junit.framework.Test;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -31,18 +31,22 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         String clOrderID = "1"; //$NON-NLS-1$
         char side = Side.BUY;
         BigDecimal quantity = BigDecimal.TEN;
-        MSymbol symbol = new MSymbol("MRKT", org.marketcetera.trade.SecurityType.CommonStock); //$NON-NLS-1$
+        Equity equity = new Equity("MRKT"); //$NON-NLS-1$
         BigDecimal price = BigDecimal.ONE;
         char timeInForce = TimeInForce.GOOD_TILL_CROSSING;
         String account = "ASDF"; //$NON-NLS-1$
 
-        Message limitOrder = this.msgFactory.newLimitOrder(clOrderID, side, quantity, symbol, price, timeInForce, account);
+        Message limitOrder = this.msgFactory.newLimitOrder(clOrderID, side, quantity, equity, price, timeInForce, account);
 
         assertEquals(clOrderID, limitOrder.getString(ClOrdID.FIELD));
         assertEquals(side, limitOrder.getChar(Side.FIELD));
         assertEquals(quantity, limitOrder.getDecimal(OrderQty.FIELD));
-        assertEquals(symbol.toString(), limitOrder.getString(Symbol.FIELD));
-        assertEquals(symbol.getSecurityType().getFIXValue(), limitOrder.getString(SecurityType.FIELD));
+        assertEquals(equity.getSymbol(), limitOrder.getString(Symbol.FIELD));
+        if(FIXVersion.FIX40.equals(fixVersion)) {
+            assertFalse(limitOrder.isSetField(SecurityType.FIELD));
+        } else {
+            assertEquals(equity.getSecurityType().getFIXValue(), limitOrder.getString(SecurityType.FIELD));
+        }
         assertEquals(OrdType.LIMIT, limitOrder.getChar(OrdType.FIELD));
         assertEquals(price, limitOrder.getDecimal(Price.FIELD));
         assertEquals(timeInForce, limitOrder.getChar(TimeInForce.FIELD));
@@ -53,17 +57,21 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         String clOrderID = "1"; //$NON-NLS-1$
         char side = Side.BUY;
         BigDecimal quantity = BigDecimal.TEN;
-        MSymbol symbol = new MSymbol("MRKT", org.marketcetera.trade.SecurityType.Option); //$NON-NLS-1$
+        Equity equity = new Equity("MRKT"); //$NON-NLS-1$
         char timeInForce = TimeInForce.GOOD_TILL_CROSSING;
         String account = "ASDF"; //$NON-NLS-1$
 
-        Message marketOrder = this.msgFactory.newMarketOrder(clOrderID, side, quantity, symbol, timeInForce, account);
+        Message marketOrder = this.msgFactory.newMarketOrder(clOrderID, side, quantity, equity, timeInForce, account);
 
         assertEquals(clOrderID, marketOrder.getString(ClOrdID.FIELD));
         assertEquals(side, marketOrder.getChar(Side.FIELD));
         assertEquals(quantity, marketOrder.getDecimal(OrderQty.FIELD));
-        assertEquals(symbol.toString(), marketOrder.getString(Symbol.FIELD));
-        assertEquals(symbol.getSecurityType().getFIXValue(), marketOrder.getString(SecurityType.FIELD));
+        assertEquals(equity.getSymbol(), marketOrder.getString(Symbol.FIELD));
+        if(FIXVersion.FIX40.equals(fixVersion)) {
+            assertFalse(marketOrder.isSetField(SecurityType.FIELD));
+        } else {
+            assertEquals(equity.getSecurityType().getFIXValue(), marketOrder.getString(SecurityType.FIELD));
+        }
         assertEquals(OrdType.MARKET, marketOrder.getChar(OrdType.FIELD));
         assertEquals(timeInForce, marketOrder.getChar(TimeInForce.FIELD));
         assertEquals(account, marketOrder.getString(Account.FIELD));

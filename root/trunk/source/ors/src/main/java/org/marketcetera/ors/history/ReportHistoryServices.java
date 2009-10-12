@@ -8,7 +8,6 @@ import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
@@ -70,7 +69,7 @@ public class ReportHistoryServices {
      * that were received prior to this date will be used in this calculation.
      * Cannot be null.
      *
-     * @param inSymbol the symbol whose position is desired. Cannot be null.
+     * @param inEquity the equity whose position is desired. Cannot be null.
      *
      * @return the symbol position.
      *
@@ -80,11 +79,11 @@ public class ReportHistoryServices {
     public BigDecimal getPositionAsOf
         (SimpleUser inUser,
          Date inDate,
-         MSymbol inSymbol)
+         Equity inEquity)
         throws PersistenceException
     {
-        return ExecutionReportSummary.getPositionForSymbol
-            (inUser,inDate,inSymbol);
+        return ExecutionReportSummary.getPositionForEquity
+            (inUser,inDate,inEquity);
     }
     /**
      * Returns the aggregate position of each (symbol,account,actor)

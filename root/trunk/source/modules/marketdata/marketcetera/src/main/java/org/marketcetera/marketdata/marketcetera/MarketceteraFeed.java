@@ -32,7 +32,7 @@ import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Application;
@@ -181,11 +181,11 @@ public class MarketceteraFeed
                              sessionID);
     }
 
-    public MSymbol symbolFromString(String symbolString) {
+    public Equity symbolFromString(String symbolString) {
 		if (MarketceteraOptionSymbol.matchesPattern(symbolString)){
 			return new MarketceteraOptionSymbol(symbolString);
 		}
-		return new MSymbol(symbolString);
+		return new Equity(symbolString);
 	}
 
 	public boolean isRunning() 

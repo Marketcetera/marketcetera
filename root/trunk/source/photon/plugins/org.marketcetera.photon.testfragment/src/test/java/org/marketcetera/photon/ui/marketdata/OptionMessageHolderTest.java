@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.photon.ui.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.ui.marketdata.OptionMessageHolder.OptionPairKey;
-import org.marketcetera.trade.MSymbol;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -23,7 +22,6 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
 public class OptionMessageHolderTest extends TestCase {
 
 	public void testGetKey() throws ParseException, FieldNotFound, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-		MSymbol symbol = new MSymbol("IBM");
 		FieldMap strikeInfo = new DerivativeSecurityList.NoRelatedSym();
 		strikeInfo.setField(new StrikePrice(new BigDecimal("72.5")));
 		strikeInfo.setField(new MaturityMonthYear("200711"));
@@ -45,7 +43,6 @@ public class OptionMessageHolderTest extends TestCase {
 	}
 
 	public void testGetMarketDataForSymbol() throws ParseException, FieldNotFound {
-		MSymbol symbol = new MSymbol("IBM");
 		FieldMap strikeInfo = new DerivativeSecurityList.NoRelatedSym();
 		strikeInfo.setField(new StrikePrice(new BigDecimal("72.5")));
 		strikeInfo.setField(new MaturityMonthYear("200711"));
@@ -89,7 +86,6 @@ public class OptionMessageHolderTest extends TestCase {
 		OptionMessageHolder holder1 = new OptionMessageHolder("IBM", strikeInfo, callExtraInfo, putExtraInfo);
 		OptionMessageHolder holder2 = new OptionMessageHolder("IBM", strikeInfo, callExtraInfo, putExtraInfo);
 
-		FieldMap strikeInfo3 = new DerivativeSecurityList.NoRelatedSym();
 		strikeInfo.setField(new StrikePrice(new BigDecimal("80")));
 		strikeInfo.setField(new MaturityMonthYear("200711"));
 		

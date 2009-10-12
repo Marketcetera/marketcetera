@@ -1,6 +1,6 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.trade.Factory"
-include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.trade.Equity"
 include_class "org.marketcetera.trade.OrderType"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
@@ -43,7 +43,7 @@ class OrderRetention < Strategy
         order.setPrice BigDecimal::ONE
         order.setQuantity BigDecimal::TEN
         order.setSide Side::Buy
-        order.setSymbol MSymbol.new("METC")
+        order.setInstrument Equity.new("METC")
         order.setTimeInForce TimeInForce::GoodTillCancel
         if(send(order))
             record_orderid order.getOrderID

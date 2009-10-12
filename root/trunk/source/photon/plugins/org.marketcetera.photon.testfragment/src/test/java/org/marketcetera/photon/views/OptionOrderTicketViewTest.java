@@ -21,7 +21,7 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -185,7 +185,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		
 		// bug #393 - verify quantity doesn't have commas in them
 		message = msgFactory.newMarketOrder("3",
-				Side.SELL_SHORT, new BigDecimal(2000), new MSymbol(callContractSymbol),
+				Side.SELL_SHORT, new BigDecimal(2000), new Equity(callContractSymbol),
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		message.setField(new MaturityDate());
 		message.setField(new PutOrCall(PutOrCall.CALL));
@@ -325,7 +325,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		((CustomField) optionOrderTicketModel.getCustomFieldsList().get(1)).setEnabled(true);
 
 		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
-				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
+				Side.BUY, BigDecimal.TEN, new Equity("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
 		optionOrderTicketModel.setOrderMessage(newMessage);
 		optionOrderTicketModel.completeMessage();
@@ -422,7 +422,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		((CustomField) optionOrderTicketModel.getCustomFieldsList().get(1)).setEnabled(false);
 
 		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
-				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
+				Side.BUY, BigDecimal.TEN, new Equity("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
 		optionOrderTicketModel.setOrderMessage(newMessage);
 		
@@ -472,19 +472,19 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 
         responseMessage.setField(new UnderlyingSymbol(symbol));
         for (int i = 0; i < callSuffixes.length; i++) {
-        	MSymbol putSymbol = new MSymbol(symbol+"+"+putSuffixes[i]);
+            Equity putSymbol = new Equity(symbol+"+"+putSuffixes[i]);
             // put first
             Group optionGroup = new DerivativeSecurityList.NoRelatedSym();
-            optionGroup.setField(new Symbol(putSymbol.toString()));
+            optionGroup.setField(new Symbol(putSymbol.getSymbol()));
             optionGroup.setField(new StrikePrice(strikePrices[i]));
             optionGroup.setField(new CFICode("OPASPS"));
             optionGroup.setField(new MaturityMonthYear("200801"));
             optionGroup.setField(new MaturityDate("20080122"));
             responseMessage.addGroup(optionGroup);
 
-            MSymbol callSymbol = new MSymbol(symbol + "+" + callSuffixes[i]);
+            Equity callSymbol = new Equity(symbol + "+" + callSuffixes[i]);
             // now call
-            optionGroup.setField(new Symbol(callSymbol.toString()));
+            optionGroup.setField(new Symbol(callSymbol.getSymbol()));
             optionGroup.setField(new StrikePrice(strikePrices[i]));
             optionGroup.setField(new CFICode("OCASPS"));
             optionGroup.setField(new MaturityMonthYear("200801"));

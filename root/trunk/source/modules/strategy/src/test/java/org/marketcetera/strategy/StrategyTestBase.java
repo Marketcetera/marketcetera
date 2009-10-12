@@ -89,7 +89,7 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
@@ -476,19 +476,19 @@ public class StrategyTestBase
                 dataToSend.clear();
                 dataToSend.add(new TradeEvent(System.nanoTime(),
                                               System.currentTimeMillis(),
-                                              new MSymbol("GOOG"),
+                                              new Equity("GOOG"),
                                               "Exchange",
                                               new BigDecimal("100"),
                                               new BigDecimal("10000")));
                 dataToSend.add(new BidEvent(System.nanoTime(),
                                             System.currentTimeMillis(),
-                                            new MSymbol("GOOG"),
+                                            new Equity("GOOG"),
                                             "Exchange",
                                             new BigDecimal("200"),
                                             new BigDecimal("20000")));
                 dataToSend.add(new AskEvent(System.nanoTime(),
                                             System.currentTimeMillis(),
-                                            new MSymbol("GOOG"),
+                                            new Equity("GOOG"),
                                             "Exchange",
                                             new BigDecimal("200"),
                                             new BigDecimal("20000")));
@@ -507,7 +507,7 @@ public class StrategyTestBase
                                                                                                   new BigDecimal(400),
                                                                                                   new BigDecimal(500),
                                                                                                   new BigDecimal(600),
-                                                                                                  new MSymbol("Symbol"),
+                                                                                                  new Equity("Symbol"),
                                                                                                   "account");
                 dataToSend.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
                                                                                                   new BrokerID("some-broker"),
@@ -633,7 +633,7 @@ public class StrategyTestBase
          */
         public static boolean getBrokersFails = false;
         /**
-         * indicates whether calls to {@link #getPositionAsOf(Date, MSymbol)} should fail automatically
+         * indicates whether calls to {@link #getPositionAsOf(Date, Equity)} should fail automatically
          */
         public static boolean getPositionFails = false;
         /* (non-Javadoc)
@@ -714,17 +714,17 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getPositionAsOf(java.util.Date, org.marketcetera.trade.MSymbol)
+         * @see org.marketcetera.client.Client#getPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
          */
         @Override
         public BigDecimal getPositionAsOf(Date inDate,
-                                          MSymbol inSymbol)
+                                          Equity inEquity)
                 throws ConnectionException
         {
             if(getPositionFails) {
                 throw new NullPointerException("This exception is expected");
             }
-            Position position = positions.get(inSymbol);
+            Position position = positions.get(inEquity);
             if(position == null) {
                 return null;
             }
@@ -990,15 +990,15 @@ public class StrategyTestBase
         /**
          * the symbol for which this position is define
          */
-        private final MSymbol symbol;
+        private final Equity symbol;
         /**
          * Create a new Position instance.
          * 
          * <p>The initial position is randomly generated.
          *
-         * @param inSymbol a <code>MSymbol</code> value
+         * @param inSymbol a <code>Equity</code> value
          */
-        public Position(MSymbol inSymbol)
+        public Position(Equity inSymbol)
         {
             this(inSymbol,
                  generateRandomPosition());
@@ -1006,10 +1006,10 @@ public class StrategyTestBase
         /**
          * Create a new Position instance.
          *
-         * @param inSymbol a <code>MSymbol</code> value
+         * @param inSymbol a <code>Equity</code> value
          * @param inStartingPosition a <code>List&lt;Interval&lt;BigDecimal&gt;&gt;</code> value as the initial position
          */
-        public Position(MSymbol inSymbol,
+        public Position(Equity inSymbol,
                         List<Interval<BigDecimal>> inStartingPosition)
         {
             assert(inSymbol != null);
@@ -1070,9 +1070,9 @@ public class StrategyTestBase
         /**
          * The symbol for this position.
          *
-         * @return a <code>MSymbol</code> value
+         * @return a <code>Equity</code> value
          */
-        public MSymbol getSymbol()
+        public Equity getSymbol()
         {
             return symbol;
         }
@@ -1125,15 +1125,15 @@ public class StrategyTestBase
      * Generates positions for the given symbols. 
      *
      * @param inSymbols a <code>String[]</code> value contains the strings for which to generate positions
-     * @return a <code>Map&lt;MSymbol,Position&gt;</code> value containing the generated positions
+     * @return a <code>Map&lt;Equity,Position&gt;</code> value containing the generated positions
      */
-    public static final Map<MSymbol,Position> generatePositions(String[] inSymbols)
+    public static final Map<Equity,Position> generatePositions(String[] inSymbols)
     {
-        Map<MSymbol,Position> positions = new HashMap<MSymbol,Position>();
+        Map<Equity,Position> positions = new HashMap<Equity,Position>();
         for(String symbol : inSymbols) {
-            MSymbol mSymbol = new MSymbol(symbol);
-            positions.put(mSymbol,
-                          new Position(mSymbol));
+            Equity equity = new Equity(symbol);
+            positions.put(equity,
+                          new Position(equity));
         }
         return positions;
     }
@@ -1184,13 +1184,13 @@ public class StrategyTestBase
         setPropertiesToNull();
         tradeEvent = new TradeEvent(System.nanoTime(),
                                     System.currentTimeMillis(),
-                                    new MSymbol("METC"),
+                                    new Equity("METC"),
                                     "Q",
                                     new BigDecimal("1000.25"),
                                     new BigDecimal("1000"));
         askEvent = new AskEvent(System.nanoTime(),
                                 System.currentTimeMillis(),
-                                new MSymbol("METC"),
+                                new Equity("METC"),
                                 "Q",
                                 new BigDecimal("100.00"),
                                 new BigDecimal("10000"));
@@ -1398,7 +1398,7 @@ public class StrategyTestBase
                                                                                 inOrder.getPrice(),
                                                                                 inOrder.getQuantity(),
                                                                                 inOrder.getPrice(),
-                                                                                inOrder.getSymbol(),
+                                                                                inOrder.getInstrument(),
                                                                                 inOrder.getAccount());
         exeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
         return exeReport;
@@ -1419,7 +1419,7 @@ public class StrategyTestBase
         order.setPrice(new BigDecimal("100.23"));
         order.setQuantity(new BigDecimal("10000"));
         order.setSide(org.marketcetera.trade.Side.Buy);
-        order.setSymbol(new MSymbol("METC"));
+        order.setInstrument(new Equity("METC"));
         if(inOrderID != null) {
             order.setOrderID(inOrderID);
         }
@@ -1779,7 +1779,7 @@ public class StrategyTestBase
     /**
      * positions for a set of symbols
      */
-    protected final static Map<MSymbol,Position> positions = new HashMap<MSymbol,Position>();
+    protected final static Map<Equity,Position> positions = new HashMap<Equity,Position>();
     /**
      * a set of test brokers
      */
