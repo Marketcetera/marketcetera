@@ -64,7 +64,8 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
@@ -1114,7 +1115,7 @@ public abstract class LanguageTestBase
         // add symbol
         parameters.setProperty("symbol",
                                "METC");
-        suggestedOrder.setSymbol(new MSymbol("METC"));        
+        suggestedOrder.setInstrument(new Equity("METC"));        
         expectedSuggestion.setOrder(suggestedOrder);
         doSuggestionTest(parameters,
                          new OrderSingleSuggestion[] { expectedSuggestion });
@@ -1560,7 +1561,7 @@ public abstract class LanguageTestBase
         // add symbol
         AbstractRunningStrategy.setProperty("symbol",
                                             "METC");
-        expectedOrder.setSymbol(new MSymbol("METC"));   
+        expectedOrder.setInstrument(new Equity("METC"));   
         doOrderTest(strategy,
                     new OrderSingle[] { expectedOrder },
                     cumulativeOrders);
@@ -1579,7 +1580,7 @@ public abstract class LanguageTestBase
         expectedOrder2.setPrice(new BigDecimal("400.50"));
         AbstractRunningStrategy.setProperty("symbol",
                                             "GOOG");
-        expectedOrder2.setSymbol(new MSymbol("GOOG"));
+        expectedOrder2.setInstrument(new Equity("GOOG"));
         AbstractRunningStrategy.setProperty("side",
                                             Side.SellShort.name());
         expectedOrder2.setSide(Side.SellShort);
@@ -1604,7 +1605,7 @@ public abstract class LanguageTestBase
         expectedOrder3.setPrice(new BigDecimal("10000.25"));
         AbstractRunningStrategy.setProperty("symbol",
                                             "JAVA");
-        expectedOrder3.setSymbol(new MSymbol("JAVA"));
+        expectedOrder3.setInstrument(new Equity("JAVA"));
         AbstractRunningStrategy.setProperty("side",
                                             Side.Sell.name());
         expectedOrder3.setSide(Side.Sell);
@@ -2165,16 +2166,12 @@ public abstract class LanguageTestBase
     public void positions()
         throws Exception
     {
-        String validSymbol = positions.keySet().iterator().next().toString();
-        Position position = positions.get(new MSymbol(validSymbol));
+        String validSymbol = positions.keySet().iterator().next().getSymbol();
+        Position position = positions.get(new Equity(validSymbol));
         String invalidSymbol = "there-is-no-position-for-this-symbol-" + System.nanoTime();
-        assertFalse(positions.containsKey(new MSymbol(invalidSymbol)));
+        assertFalse(positions.containsKey(new Equity(invalidSymbol)));
         // null symbol
         doPositionTest(null,
-                       new Date(),
-                       null);
-        // empty symbol
-        doPositionTest("",
                        new Date(),
                        null);
         // invalid symbol
@@ -2335,12 +2332,12 @@ public abstract class LanguageTestBase
         String validSystemStatement1 = "select * from trade";
         String validSystemStatement2 = "select * from ask";
         String invalidStatement = "this statement is not syntactically valid";
-        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
-                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
         String[] sources = new String[] { null, "esper", "system" };
         String[][] statements = new String[][] { { null }, { }, { invalidStatement },
                                                  { validSystemStatement1, validSystemStatement2 }, { validSystemStatement1 },
@@ -2492,12 +2489,12 @@ public abstract class LanguageTestBase
     public void cancelSingleCep()
         throws Exception
     {
-        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
-                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
         assertNull(AbstractRunningStrategy.getProperty("requestID"));
         // create a strategy that creates some suggestions
         List<OrderSingleSuggestion> suggestions = doCEPTest("esper",
@@ -2550,12 +2547,12 @@ public abstract class LanguageTestBase
     public void cancelAllCep()
         throws Exception
     {
-        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
-                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new MSymbol("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
         assertEquals(2,
                      doCEPTest("esper",
                                new String[] { "select * from trade" },
@@ -3459,7 +3456,7 @@ public abstract class LanguageTestBase
         throws Exception
     {
         assertEquals(inSymbol,
-                     inSuggestion.getOrder().getSymbol().getFullSymbol());
+                     inSuggestion.getOrder().getInstrument().getSymbol());
         assertEquals(inPrice,
                      inSuggestion.getOrder().getPrice());
         assertEquals(inQuantity,
@@ -3610,7 +3607,7 @@ public abstract class LanguageTestBase
     /**
      * Executes a single iteration of the get-current-position test.
      *
-     * @param inSymbol a <code>String</code> value containing the symbol for which to search or null
+     * @param inSymbol a <code>String</code> value containing the equity symbol for which to search or null
      * @param inDate a <code>Date</code> value containing the time-point at which to search or null
      * @param inExpectedPosition a <code>BigDecimal</code> value containing the expected result
      * @throws Exception if an error occurs
@@ -3621,12 +3618,12 @@ public abstract class LanguageTestBase
         throws Exception
     {
         StrategyCoordinates strategy = getStrategyCompiles();
-        MSymbol symbol = null;
+        Instrument instrument = null;
         // set up data
         if(inSymbol != null) {
-            symbol = new MSymbol(inSymbol);
+            instrument = new Equity(inSymbol);
             AbstractRunningStrategy.setProperty("symbol",
-                                                symbol.toString());
+                                                instrument.getSymbol());
         } else {
             AbstractRunningStrategy.setProperty("symbol",
                                                 null);
@@ -3802,7 +3799,7 @@ public abstract class LanguageTestBase
             expectedOrder.setPrice(new BigDecimal("1000"));
             expectedOrder.setQuantity(new BigDecimal("500"));
             expectedOrder.setSide(Side.Sell);
-            expectedOrder.setSymbol(new MSymbol("METC"));
+            expectedOrder.setInstrument(new Equity("METC"));
             expectedOrder.setOrderType(OrderType.Market);
             expectedOrder.setQuantity(new BigDecimal(10000));
             String orderIDString = AbstractRunningStrategy.getProperty("orderID");
@@ -3816,7 +3813,7 @@ public abstract class LanguageTestBase
         }
         runningStrategy.dataReceived(new BidEvent(System.nanoTime(),
                                                   System.currentTimeMillis(),
-                                                  new MSymbol("METC"),
+                                                  new Equity("METC"),
                                                   "Q",
                                                   new BigDecimal("100.00"),
                                                   new BigDecimal("10000")));

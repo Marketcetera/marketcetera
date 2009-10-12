@@ -52,7 +52,7 @@ public class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderRepl
                 String.valueOf(getQuantity()),
                 String.valueOf(getSecurityType()),
                 String.valueOf(getSide()),
-                String.valueOf(getSymbol()),
+                String.valueOf(getInstrument()),
                 String.valueOf(getTimeInForce()),
                 String.valueOf(getBrokerOrderID())
         );

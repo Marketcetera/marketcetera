@@ -15,7 +15,8 @@ import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -62,7 +63,7 @@ public class OptionMarketDataUtils
 	 * @param underlyingSymbol the underlying symbol for the options query
 	 * @return a message representing the query
 	 */
-	public static Message newRelatedOptionsQuery(MSymbol underlyingSymbol) {
+	public static Message newRelatedOptionsQuery(Instrument underlyingSymbol) {
 		Message requestMessage = messageFactory
 				.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
 		/**
@@ -72,7 +73,7 @@ public class OptionMarketDataUtils
 		requestMessage.setField(new SecurityListRequestType(SecurityListRequestType.SECURITYTYPE_AND_OR_CFICODE));
 //		requestMessage.setField(new SecurityType(SecurityType.OPTION));
 		requestMessage.setField(new UnderlyingSymbol(underlyingSymbol
-				.getFullSymbol()));
+				.getSymbol()));
 		return requestMessage;
 	}
 
@@ -140,9 +141,9 @@ public class OptionMarketDataUtils
 	 * todo: This will not work for symbol schemes other than SymbolScheme.BASIC
 	 * </p>
 	 */
-	public static MSymbol getOptionRootSymbol(MSymbol symbol) {
-		String underlier = getOptionRootSymbol(symbol.getFullSymbol());
-		return new MSymbol(underlier);
+	public static Instrument getOptionRootSymbol(Instrument symbol) {
+		String underlier = getOptionRootSymbol(symbol.getSymbol());
+		return new Equity(underlier);
 	}
 
 

@@ -102,8 +102,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 Factory.getInstance().createOrder(
                         FIXVersion.FIX44.getMessageFactory().newLimitOrder(
                                 "ord1", quickfix.field.Side.BUY,
-                                new BigDecimal(4.3), new MSymbol("IBM",
-                                SecurityType.Option), new BigDecimal("93.23"),
+                                new BigDecimal(4.3), new Equity("IBM"), new BigDecimal("93.23"),
                                 quickfix.field.TimeInForce.AT_THE_OPENING,
                                 "acc"), new BrokerID("broke"))
         };

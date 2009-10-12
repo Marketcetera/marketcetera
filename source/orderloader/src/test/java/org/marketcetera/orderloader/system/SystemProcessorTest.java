@@ -126,11 +126,11 @@ public class SystemProcessorTest {
         assertEquals(2, list.size());
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(0),
                 TypesTestBase.NOT_NULL, Side.Buy, new BigDecimal("34.34"),
-                null, null, OrderType.Market, new MSymbol("ubm"), null, null,
+                null, null, OrderType.Market, new Equity("ubm"), SecurityType.CommonStock, null,
                 null, null, null, null);
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(1),
                 TypesTestBase.NOT_NULL, Side.Sell, new BigDecimal("12.23"),
-                null, null, OrderType.Limit, new MSymbol("nubm"), null, null,
+                null, null, OrderType.Limit, new Equity("nubm"), SecurityType.CommonStock, null,
                 null, null, null, null);
     }
 
@@ -159,21 +159,21 @@ public class SystemProcessorTest {
 
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(0),
                 TypesTestBase.NOT_NULL, Side.SellShort, BigDecimal.ONE,
-                null, null, OrderType.Market, new MSymbol("zoog"), null, null,
+                null, null, OrderType.Market, new Equity("zoog"), SecurityType.CommonStock, null,
                 null, null, null, map);
         map.clear();
         map.put("4001", "");
         map.put("5001", "no");
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(1),
                 TypesTestBase.NOT_NULL, Side.SellShort, BigDecimal.TEN,
-                null, null, OrderType.Market, new MSymbol("zoo"), null, null,
+                null, null, OrderType.Market, new Equity("zoo"), SecurityType.CommonStock, null,
                 null, null, null, map);
         map.clear();
         map.put("4001", "moo");
         map.put("5001", null);
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(2),
                 TypesTestBase.NOT_NULL, Side.Sell, BigDecimal.TEN,
-                null, null, OrderType.Limit, new MSymbol("moog"), null, null,
+                null, null, OrderType.Limit, new Equity("moog"), SecurityType.CommonStock, null,
                 null, null, null, map);
     }
     @Test
@@ -220,7 +220,7 @@ public class SystemProcessorTest {
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(0),
                 TypesTestBase.NOT_NULL, Side.SellShortExempt,
                 new BigDecimal("3.33"), null, TimeInForce.Day, OrderType.Market,
-                new MSymbol("vsft", SecurityType.CommonStock),
+                new Equity("vsft"),
                 SecurityType.CommonStock, "mine", null, null, brokerID, map);
         map.clear();
         map.put("666", "number");
@@ -228,8 +228,9 @@ public class SystemProcessorTest {
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(1),
                 TypesTestBase.NOT_NULL, Side.Buy, new BigDecimal("9.99"),
                 new BigDecimal("22.2"), TimeInForce.FillOrKill, OrderType.Limit,
-                new MSymbol("soft", SecurityType.Option),
-                SecurityType.Option, "yours", OrderCapacity.Individual,
+                //TODO test options when they are added 
+                new Equity("soft"),
+                SecurityType.CommonStock, "yours", OrderCapacity.Individual,
                 PositionEffect.Close, brokerID, map);
         //Verify failures.
         List<FailedOrderInfo> failed = processor.getFailedOrders();

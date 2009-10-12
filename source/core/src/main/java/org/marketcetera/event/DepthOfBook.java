@@ -9,7 +9,7 @@ import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.OrderBook;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -30,22 +30,22 @@ public class DepthOfBook
      * @param inBids a <code>List&lt;BidEvent&gt;</code> value
      * @param inAsks a <code>List&lt;AskEvent&gt;</code> value
      * @param inTimestamp a <code>Date</code> value indicating when the event occurred
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol for which the event occurred
-     * @throws IllegalArgumentException if any of the events passed are for a symbol other than the given symbol
+     * @param inInstrument an <code>Instrument</code> value specifying the instrument for which the event occurred
+     * @throws IllegalArgumentException if any of the events passed are for a instrument other than the given instrument
      * @throws NullPointerException if the lists or any entries in the lists are null
      */
     public DepthOfBook(List<BidEvent> inBids,
                        List<AskEvent> inAsks,
                        Date inTimestamp,
-                       MSymbol inSymbol)
+                       Instrument inInstrument)
     {
         super(inTimestamp,
-              inSymbol);
+              inInstrument);
         validateList(inBids,
-                     inSymbol);
+                     inInstrument);
         bids.addAll(inBids);
         validateList(inAsks,
-                     inSymbol);
+                     inInstrument);
         asks.addAll(inAsks);
     }
     /**
@@ -85,7 +85,7 @@ public class DepthOfBook
         if(this == other) {
             return true;
         }
-        if(!getSymbol().equals(other.getSymbol())) {
+        if(!getInstrument().equals(other.getInstrument())) {
             return false;
         }
         return compareList(asks,
@@ -111,7 +111,7 @@ public class DepthOfBook
     public String toString()
     {
         StringBuilder output = new StringBuilder();
-        output.append("Depth of book for ").append(getSymbol()).append(" at ").append(DateUtils.dateToString(getTimestampAsDate())).append(SystemUtils.LINE_SEPARATOR); //$NON-NLS-1$ //$NON-NLS-2$
+        output.append("Depth of book for ").append(getInstrument()).append(" at ").append(DateUtils.dateToString(getTimestampAsDate())).append(SystemUtils.LINE_SEPARATOR); //$NON-NLS-1$ //$NON-NLS-2$
         output.append(OrderBook.printBook(bids.iterator(),
                                           asks.iterator(),
                                           true));
@@ -122,18 +122,18 @@ public class DepthOfBook
      *
      *
      * @param inQuotes a <code>List&lt;? extends QuoteEvent&gt;</code> value
-     * @param inSymbol an <code>MSymbol</code> value
+     * @param inInstrument an <code>Instrument</code> value
      * @throws NullPointerException if the list or any entry in the list is null
-     * @throws IllegalArgumentException if an entry in the list is for a different symbol than the one given
+     * @throws IllegalArgumentException if an entry in the list is for a different instrument than the one given
      */
     private static void validateList(List<? extends QuoteEvent> inQuotes,
-                                     MSymbol inSymbol)
+                                     Instrument inInstrument)
     {
         for(QuoteEvent quote : inQuotes) {
             if(quote == null) {
                 throw new NullPointerException();
             }
-            if(!inSymbol.equals(quote.getSymbol())) {
+            if(!inInstrument.equals(quote.getInstrument())) {
                 throw new IllegalArgumentException();
             }
         }

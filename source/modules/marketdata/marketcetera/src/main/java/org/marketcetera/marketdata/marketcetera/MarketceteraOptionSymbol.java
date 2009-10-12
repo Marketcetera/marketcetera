@@ -5,11 +5,11 @@ import java.util.regex.Pattern;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.symbology.IEquityOptionSymbol;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraOptionSymbol 
-    extends MSymbol 
+    extends Equity 
     implements IEquityOptionSymbol, Messages
 {
 

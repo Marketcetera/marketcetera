@@ -81,16 +81,16 @@ public class OrderSingleTest extends TypesTestBase {
         BigDecimal qty = new BigDecimal("23434.56989");
         BigDecimal price = new BigDecimal("98923.2345");
         SecurityType securityType = SecurityType.CommonStock;
-        MSymbol symbol = new MSymbol("IBM", securityType);
+        Instrument instrument = new Equity("IBM");
         String account = "walloween";
         msg = factory.newLimitOrder(orderID.getValue(),
-                Side.Buy.getFIXValue(), qty, symbol, price,
+                Side.Buy.getFIXValue(), qty, instrument, price,
                 TimeInForce.AtTheClose.getFIXValue(), account);
         msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.INDIVIDUAL));
         msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
         order = sFactory.createOrderSingle(msg, brokerID);
         assertOrderValues(order, brokerID, securityType);
-        assertOrderBaseValues(order, expectedOrderID, account, null, qty, Side.Buy, symbol);
+        assertOrderBaseValues(order, expectedOrderID, account, null, qty, Side.Buy, instrument);
         OrderCapacity orderCapacity = OrderCapacity.Individual;
         PositionEffect positionEffect = PositionEffect.Close;
         assertNROrderValues(order, OrderType.Limit, price,
@@ -101,7 +101,7 @@ public class OrderSingleTest extends TypesTestBase {
         order = check(order);
         //verify the clone
         assertOrderSingle(order, expectedOrderID, Side.Buy, qty, price,
-                TimeInForce.AtTheClose, OrderType.Limit, symbol, securityType,
+                TimeInForce.AtTheClose, OrderType.Limit, instrument, securityType,
                 account, orderCapacity, positionEffect, brokerID, null);
 
         //A market order with all fields set.
@@ -109,20 +109,20 @@ public class OrderSingleTest extends TypesTestBase {
         OrderType orderType = OrderType.Market;
         TimeInForce tif = TimeInForce.FillOrKill;
         msg = factory.newMarketOrder(orderID.getValue(),
-                side.getFIXValue(), qty, symbol,
+                side.getFIXValue(), qty, instrument,
                 tif.getFIXValue(), account);
         msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.INDIVIDUAL));
         msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
         order = sFactory.createOrderSingle(msg, null);
         assertOrderSingle(order, expectedOrderID, side, qty, null, tif,
-                orderType, symbol, securityType, account, orderCapacity,
+                orderType, instrument, securityType, account, orderCapacity,
                 positionEffect, null, null);
         //Verify toString() doesn't fail
         order.toString();
         order = check(order);
         //Verify the clone
         assertOrderSingle(order, expectedOrderID, side, qty, null, tif,
-                orderType, symbol, securityType, account, orderCapacity,
+                orderType, instrument, securityType, account, orderCapacity,
                 positionEffect, null, null);
 
         //Check custom fields
@@ -157,14 +157,14 @@ public class OrderSingleTest extends TypesTestBase {
 
         BigDecimal expectedPrice = null;
         assertOrderSingle(order, expectedOrderID, side, qty, expectedPrice,
-                tif, orderType, symbol, securityType, account, orderCapacity,
+                tif, orderType, instrument, securityType, account, orderCapacity,
                 positionEffect, brokerID, expectedMap);
         //Verify toString() doesn't fail
         order.toString();
         order = check(order);
         //Verify the clone
         assertOrderSingle(order, expectedOrderID, side, qty, expectedPrice,
-                tif, orderType, symbol, securityType, account, orderCapacity,
+                tif, orderType, instrument, securityType, account, orderCapacity,
                 positionEffect, brokerID, expectedMap);
         
         assertNotSame(order, sFactory.createOrderSingle(msg, brokerID));

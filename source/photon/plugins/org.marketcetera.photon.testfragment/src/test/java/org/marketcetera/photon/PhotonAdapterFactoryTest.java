@@ -9,7 +9,8 @@ import org.marketcetera.core.AccountID;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
@@ -35,7 +36,7 @@ public class PhotonAdapterFactoryTest extends TestCase {
 		PhotonAdapterFactory fact = new PhotonAdapterFactory();
 		Message aMessage = msgFactory.newExecutionReport("456", OrderManagerTest.CL_ORD_ID, "987", 
 				OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(100), 
-				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal("12.3"), OrderManagerTest.SYMBOL, null);
+				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal("12.3"), OrderManagerTest.INSTRUMENT, null);
 		aMessage.setUtcTimeStamp(TransactTime.FIELD, OrderManagerTest.THE_TRANSACT_TIME);
 		ReportHolder holder = new ReportHolder(OrderManagerTest.createReport(aMessage));
 		
@@ -58,11 +59,11 @@ public class PhotonAdapterFactoryTest extends TestCase {
 	}
 	public void testSymbolAdapter() {
 		PhotonAdapterFactory fact = new PhotonAdapterFactory();
-		MSymbol symbol = new MSymbol("Q");
-		IWorkbenchAdapter adapter = (IWorkbenchAdapter)fact.getAdapter(symbol, IWorkbenchAdapter.class);
-		assertEquals("Q", adapter.getLabel(symbol));
-		assertNull(adapter.getParent(symbol));
-		Object[] children = adapter.getChildren(symbol);
+		Instrument instrument = new Equity("Q");
+		IWorkbenchAdapter adapter = (IWorkbenchAdapter)fact.getAdapter(instrument, IWorkbenchAdapter.class);
+		assertEquals("Q", adapter.getLabel(instrument));
+		assertNull(adapter.getParent(instrument));
+		Object[] children = adapter.getChildren(instrument);
 		assertEquals(0, children.length);
 	}
 

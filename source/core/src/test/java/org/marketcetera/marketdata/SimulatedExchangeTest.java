@@ -33,7 +33,7 @@ import org.marketcetera.event.QuoteEvent.Action;
 import org.marketcetera.marketdata.SimulatedExchange.Status;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.test.TestCaseBase;
 
 /* $License$ */
@@ -49,8 +49,8 @@ public class SimulatedExchangeTest
     extends TestCaseBase
 {
     private SimulatedExchange exchange;
-    private final MSymbol metc = new MSymbol("METC");
-    private final MSymbol goog = new MSymbol("GOOG");
+    private final Equity metc = new Equity("METC");
+    private final Equity goog = new Equity("GOOG");
     private BidEvent bid;
     private AskEvent ask;
     /**
@@ -1089,7 +1089,7 @@ public class SimulatedExchangeTest
             long currentTime = System.currentTimeMillis();
             int counter = 0;
             while(currentTime-startTime < 10000) {
-                MSymbol symbol = new MSymbol(String.format("symbol-%d",
+                Equity symbol = new Equity(String.format("symbol-%d",
                                                            counter++));
                 exchange.getStatistics(symbol);
                 exchange.getDepthOfBook(symbol);
@@ -1145,11 +1145,11 @@ public class SimulatedExchangeTest
      * Verifies symbol statistical data.
      *
      * @param inStatistics a <code>MarketstatEvent</code> value containing the actual value
-     * @param inSymbol an <code>MSymbol</code> value containing the expected symbol
+     * @param inEquity an <code>Equity</code> value containing the expected symbol
      * @throws Exception if an error occurs
      */
     private void verifyStatistics(MarketstatEvent inStatistics,
-                                  MSymbol inSymbol)
+                                  Equity inEquity)
         throws Exception
     {
         assertNotNull(inStatistics.getOpen());
@@ -1171,26 +1171,26 @@ public class SimulatedExchangeTest
      * Verifies that the given exchange and symbol will produce the expected snapshots. 
      *
      * @param inExchange a <code>SimulatedExchange</code> value
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inEquity an <code>Equity</code> value
      * @param inExpectedAsks a <code>List&lt;AskEvent&gt;</code> value
      * @param inExpectedBids a <code>List&lt;BidEvent&gt;</code> value
      * @throws Exception if an error occurs
      */
     private void verifySnapshots(SimulatedExchange inExchange,
-                                 MSymbol inSymbol,
+                                 Equity inEquity,
                                  List<AskEvent> inExpectedAsks,
                                  List<BidEvent> inExpectedBids,
                                  TradeEvent inExpectedLatestTick)
         throws Exception
     {
-        DepthOfBookTest.verifyDepthOfBook(inExchange.getDepthOfBook(inSymbol),
+        DepthOfBookTest.verifyDepthOfBook(inExchange.getDepthOfBook(inEquity),
                                           inExpectedAsks,
                                           inExpectedBids);
-        verifyTopOfBook(inExchange.getTopOfBook(inSymbol),
+        verifyTopOfBook(inExchange.getTopOfBook(inEquity),
                         inExpectedAsks.isEmpty() ? null : inExpectedAsks.get(0),
                         inExpectedBids.isEmpty() ? null : inExpectedBids.get(0));
         assertEquals(OrderBookTest.convertEvent(inExpectedLatestTick),
-                     OrderBookTest.convertEvent(exchange.getLatestTick(inSymbol)));
+                     OrderBookTest.convertEvent(exchange.getLatestTick(inEquity)));
     }
     /**
      * Verifies the given actual<code>TopOfBook</code> contains the expected values. 
@@ -1264,7 +1264,7 @@ public class SimulatedExchangeTest
             TopOfBook newTop = new TopOfBook(newBid,
                                              newAsk,
                                              quote.getTimestampAsDate(),
-                                             quote.getSymbol());
+                                             quote.getInstrument());
             tops.add(newTop);
             lastBid = newBid;
             lastAsk = newAsk;

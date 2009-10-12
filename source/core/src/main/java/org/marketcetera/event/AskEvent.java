@@ -2,7 +2,7 @@ package org.marketcetera.event;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -23,25 +23,26 @@ public class AskEvent
      *
      * @param inMessageID a <code>long</code> value containing the unique identifier for this event
      * @param inTimestamp a <code>long</code> value containing the timestamp for this event
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol for this event
+     * @param inInstrument an <code>Instrument</code> value specifying the instrument for this event
      * @param inExchange a <code>String</code> value containing the exchange code for this event
      * @param inPrice a <code>BigDecimal</code> value containing the price of the ask event
      * @param inSize a <code>BigDecimal</code> value containing the size of the ask event
+     *
      * @throws IllegalArgumentException if <code>inMessageID</code> or <code>inTimestamp</code> &lt; 0
-     * @throws IllegalArgumentException if <code>inExchange</code> is non-null but empty
+     * OR if <code>inExchange</code> is non-null but empty
      * @throws NullPointerException if <code>inSymbol</code>, <code>inExchange</code>, <code>inPrice</code>,
      *  or <code>inSize</code> is null
      */
     public AskEvent(long inMessageID,
                     long inTimestamp,
-                    MSymbol inSymbol,
+                    Instrument inInstrument,
                     String inExchange,
                     BigDecimal inPrice,
                     BigDecimal inSize)
     {
         this(inMessageID,
              inTimestamp,
-             inSymbol,
+             inInstrument,
              inExchange,
              inPrice,
              inSize, 
@@ -89,7 +90,7 @@ public class AskEvent
     {
         return new AskEvent(inAsk.getMessageId(),
                             inNewTimestamp,
-                            inAsk.getSymbol(),
+                            inAsk.getInstrument(),
                             inAsk.getExchange(),
                             inAsk.getPrice(),
                             inNewSize,
@@ -100,7 +101,7 @@ public class AskEvent
      *
      * @param inMessageID a <code>long</code> value containing the unique identifier for this event
      * @param inTimestamp a <code>long</code> value containing the timestamp for this event
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol for this event
+     * @param inInstrument an <code>Instrument</code> value specifying the instrument for this event
      * @param inExchange a <code>String</code> value containing the exchange code for this event
      * @param inPrice a <code>BigDecimal</code> value containing the price of the ask event
      * @param inSize a <code>BigDecimal</code> value containing the size of the ask event
@@ -108,7 +109,7 @@ public class AskEvent
      */
     private AskEvent(long inMessageID,
                      long inTimestamp,
-                     MSymbol inSymbol,
+                     Instrument inInstrument,
                      String inExchange,
                      BigDecimal inPrice,
                      BigDecimal inSize,
@@ -116,7 +117,7 @@ public class AskEvent
     {
         super(inMessageID,
               inTimestamp,
-              inSymbol,
+              inInstrument,
               inExchange,
               inPrice,
               inSize,
@@ -133,7 +134,7 @@ public class AskEvent
     {
         this(inAsk.getMessageId(),
              inAsk.getTimeMillis(),
-             inAsk.getSymbol(),
+             inAsk.getInstrument(),
              inAsk.getExchange(),
              inAsk.getPrice(),
              inAsk.getSize(),

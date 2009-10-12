@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.marketdata.Exchange;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -20,33 +20,33 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public abstract class AggregateEvent
     extends EventBase
-    implements Serializable, HasSymbol
+    implements Serializable, HasInstrument
 {
     /**
      * Create a new AggregateEvent instance.
      *
      * @param inTimestamp a <code>Date</code> value indicating when the event occurred
-     * @param inSymbol an <code>MSymbol</code> value containing the symbol for which the event occurred
+     * @param inInstrument an <code>Instrument</code> value specifying the instrument for which the event occurred
      * @throws IllegalArgumentException if <code>inTimestamp</code> &lt; 0
      * @throws NullPointerException if <code>inSymbol</code> is null
      */
     protected AggregateEvent(Date inTimestamp,
-                             MSymbol inSymbol)
+                             Instrument inInstrument)
     {
         super(EventBase.assignCounter(),
               inTimestamp.getTime());
-        if(inSymbol == null) {
+        if(inInstrument == null) {
             throw new NullPointerException();
         }
-        symbol = inSymbol;
+        instrument = inInstrument;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.HasSymbol#getSymbol()
+     * @see org.marketcetera.event.HasInstrument#getInstrument()
      */
     @Override
-    public MSymbol getSymbol()
+    public Instrument getInstrument()
     {
-        return symbol;
+        return instrument;
     }
     /**
      * Produces a list of <code>EventBase</code> objects that describe
@@ -56,8 +56,8 @@ public abstract class AggregateEvent
      */
     public abstract List<EventBase> decompose();
     /**
-     * the symbol of this event
+     * the instrument of this event
      */
-    private final MSymbol symbol;
-    private static final long serialVersionUID = 1L;
+    private final Instrument instrument;
+    private static final long serialVersionUID = 2L;
 }

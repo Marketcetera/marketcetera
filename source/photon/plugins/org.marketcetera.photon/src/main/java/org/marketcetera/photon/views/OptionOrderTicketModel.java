@@ -263,7 +263,7 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 							}
 						}
 						if (filteredOptionList.size() == 1){
-							currentOptionSymbol.setValue(filteredOptionList.get(0).getOptionSymbol().toString());
+							currentOptionSymbol.setValue(filteredOptionList.get(0).getOptionSymbol().getSymbol());
 						} else {
 							currentOptionSymbol.setValue(null);
 						}

@@ -1,5 +1,5 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.MSymbol"
+include_class "org.marketcetera.trade.Equity"
 include_class "java.math.BigDecimal"
 include_class "java.lang.System"
 include_class "java.lang.Boolean"

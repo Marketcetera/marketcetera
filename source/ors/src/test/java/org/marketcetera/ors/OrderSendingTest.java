@@ -6,7 +6,7 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
@@ -37,13 +37,13 @@ public class OrderSendingTest
         ORSTestClient c=getAdminClient();
 
         // Compose order.
-        MSymbol ibm=new MSymbol("IBM");
+        Equity ibm=new Equity("IBM");
         OrderSingle order=Factory.getInstance().createOrderSingle();
         order.setOrderID(new OrderID("ID1"));
         order.setOrderType(OrderType.Limit);
         order.setQuantity(new BigDecimal("1"));
         order.setSide(Side.Buy);
-        order.setSymbol(ibm);
+        order.setInstrument(ibm);
         order.setPrice(new BigDecimal("10"));
         c.getClient().sendOrder(order);
 

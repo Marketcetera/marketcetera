@@ -26,7 +26,7 @@ import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.RCPUtils;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 /* $License$ */
 
@@ -122,7 +122,8 @@ public class WebBrowserView
 			// maybe it's a symbol
 			// just check to see if it's 10 characters or less
 			if (newLocation.length()>0 && newLocation.length()<=10){
-				browseToGoogleFinanceForSymbol(new MSymbol(newLocation));
+				//TODO: update to handle options?
+				browseToGoogleFinanceForSymbol(new Equity(newLocation));
 			}
 		}
 	}
@@ -136,11 +137,11 @@ public class WebBrowserView
 		}
 	}
 
-	public String formatGoogleURL(MSymbol symbol) {
-		return GOOGLE_URL_FORMAT.format(new Object[] { symbol.getFullSymbol() });
+	public String formatGoogleURL(Equity symbol) {
+		return GOOGLE_URL_FORMAT.format(new Object[] { symbol.getSymbol() });
 	}
 
-	public void browseToGoogleFinanceForSymbol(MSymbol symbol) {
+	public void browseToGoogleFinanceForSymbol(Equity symbol) {
 		if (browser != null){
 			String location = formatGoogleURL(symbol);
 			setUrl(location);

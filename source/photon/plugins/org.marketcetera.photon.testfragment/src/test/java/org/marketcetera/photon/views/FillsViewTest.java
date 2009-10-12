@@ -289,7 +289,7 @@ public class FillsViewTest
 		for (Map.Entry<Grouping, String> entry : currentTest.entrySet()) {
 			switch (entry.getKey()) {
 			case Symbol:
-				assertThat(report.getSymbol().toString(), is(entry.getValue()));
+				assertThat(report.getInstrument().getSymbol(), is(entry.getValue()));
 				break;
 			case Account:
 				assertThat(report.getAccount(), is(entry.getValue()));

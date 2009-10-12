@@ -21,7 +21,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 /**
  * @author toli@marketcetera.com
@@ -89,9 +89,9 @@ public class CEPSystemProcessorTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                                new BidEvent(1, 2, new MSymbol("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                                new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                                new AskEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                                new BidEvent(1, 2, new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                                new TradeEvent(3, 4, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                                new AskEvent(5, 6, new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(TEST_URN, new String[]{"select * from bob", "select * from fred"})
@@ -108,9 +108,9 @@ public class CEPSystemProcessorTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                                new BidEvent(1, 2, new MSymbol("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                                new TradeEvent(3, 4, new MSymbol("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                                new AskEvent(5, 6, new MSymbol("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                                new BidEvent(1, 2, new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                                new TradeEvent(3, 4, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                                new AskEvent(5, 6, new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(TEST_URN, "select * from bob")

@@ -12,7 +12,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Originator;
 
@@ -56,7 +56,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
         Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(10), null,
                 new BigDecimal(10), new BigDecimal(11), new BigDecimal(10),
-                new BigDecimal(11), new MSymbol("IBM"), "account");
+                new BigDecimal(11), new Equity("IBM"), "account");
         message.setField(new LeavesQty(90.0));
         source.add(new ReportHolder(createReport(message)));
 
@@ -71,7 +71,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 "clordid1", "execido1", OrdStatus.NEW, Side.BUY,
                 new BigDecimal(10), null, new BigDecimal(110), new BigDecimal(
                         111), new BigDecimal(110), new BigDecimal(111),
-                new MSymbol("IBM"), "account");
+                new Equity("IBM"), "account");
         message2.setField(new LeavesQty(190.0));
         source.add(new ReportHolder(createReport(message2)));
 
@@ -85,7 +85,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
         Message message3 = msgFactory.newExecutionReport("clordid1",
                 "clordid1", "execido1", OrdStatus.PENDING_NEW, Side.BUY,
                 new BigDecimal(1000), null, new BigDecimal(0), null,
-                new BigDecimal(100), new BigDecimal(3), new MSymbol("IBM"),
+                new BigDecimal(100), new BigDecimal(3), new Equity("IBM"),
                 "account");
         message3.setField(new OrderQty(1000));
         source.add(new ReportHolder(createReport(message3)));
@@ -107,7 +107,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
         Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.PENDING_NEW, Side.BUY, new BigDecimal(
                         1000), null, new BigDecimal(0), null, new BigDecimal(
-                        100), new BigDecimal(3), new MSymbol("IBM"), "account");
+                        100), new BigDecimal(3), new Equity("IBM"), "account");
         message.setField(new LeavesQty(0));
         message.setField(new ExecTransType(ExecTransType.NEW));
         message.setField(new ExecType(ExecType.NEW));
@@ -127,10 +127,10 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 FIXVersion.FIX_SYSTEM.getMessageFactory(), source);
         Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
-                        10), new BigDecimal(11), new MSymbol("IBM"), "account");
+                        10), new BigDecimal(11), new Equity("IBM"), "account");
         Message message2 = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
-                        10), new BigDecimal(11), new MSymbol("MSFT"), "account");
+                        10), new BigDecimal(11), new Equity("MSFT"), "account");
         message.setField(new LeavesQty(90.0));
         source.add(new ReportHolder(createReport(message)));
         source.add(new ReportHolder(createReport(message2)));
@@ -150,7 +150,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 FIXVersion.FIX_SYSTEM.getMessageFactory(), source);
         final Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
-                        10), new BigDecimal(11), new MSymbol("IBM"), "account");
+                        10), new BigDecimal(11), new Equity("IBM"), "account");
         message.setField(new LeavesQty(90.0));
         source.add(new ReportHolder(createReport(message)));
 

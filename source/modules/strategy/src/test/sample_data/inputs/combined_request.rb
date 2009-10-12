@@ -20,11 +20,11 @@ class CombinedRequest < Strategy
       end
   end
   def on_ask ask
-      record_symbol ask.getSymbol.to_s, @asks
+      record_symbol ask.getInstrument.to_s, @asks
       transcribe_collection "ask", @asks
   end
   def on_bid bid
-      record_symbol bid.getSymbol.to_s, @bids
+      record_symbol bid.getInstrument.to_s, @bids
       transcribe_collection "bid", @bids
   end
   def record_symbol symbol, collection

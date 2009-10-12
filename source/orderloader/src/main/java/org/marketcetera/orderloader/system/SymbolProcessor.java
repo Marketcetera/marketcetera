@@ -1,8 +1,9 @@
 package org.marketcetera.orderloader.system;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.SecurityType;
 import org.marketcetera.orderloader.OrderParsingException;
 
 /**
@@ -23,11 +24,25 @@ final class SymbolProcessor implements FieldProcessor {
             return;
         }
         if (mSecurityProcessor != null) {
-            inOrder.setSymbol(new MSymbol(symbol,
-                    mSecurityProcessor.getEnumValue(inRow)));
-        } else {
-            inOrder.setSymbol(new MSymbol(symbol));
+            SecurityType secType = mSecurityProcessor.getEnumValue(inRow);
+            if (secType != null) {
+                switch(secType) {
+                    case CommonStock:
+                        inOrder.setInstrument(new Equity(symbol));
+                        break;
+                    case Option:
+                        //TODO fix when adding option support
+                        inOrder.setInstrument(new Equity(symbol));
+                        break;
+                    default:
+                        //TODO fail
+                        inOrder.setInstrument(new Equity(symbol));
+                        break;
+                }
+                return;
+            }
         }
+        inOrder.setInstrument(new Equity(symbol));
     }
 
     /**

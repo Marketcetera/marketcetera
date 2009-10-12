@@ -20,7 +20,7 @@ import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 /* $License$ */
 
@@ -99,7 +99,7 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 
 	private Object createEvent(String symbol, int close, int previousClose, Date closeDate,
 			Date previousCloseDate) {
-		return new MarketstatEvent(new MSymbol(symbol), new Date(), null, null, null,
+		return new MarketstatEvent(new Equity(symbol), new Date(), null, null, null,
 				new BigDecimal(close), new BigDecimal(previousClose), null, closeDate,
 				previousCloseDate, null, null, null, null, null, null);
 	}
@@ -125,7 +125,7 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 	}
 
 	protected Object createNullEvent(MarketstatKey key) {
-		return new MarketstatEvent(new MSymbol(key.getSymbol()), new Date(), null, null, null,
+		return new MarketstatEvent(new Equity(key.getSymbol()), new Date(), null, null, null,
 				null, null, null, null, null, null, null, null, null, null, null);
 	}
 

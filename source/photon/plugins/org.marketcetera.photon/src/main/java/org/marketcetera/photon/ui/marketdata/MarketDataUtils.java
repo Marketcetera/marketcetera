@@ -2,7 +2,7 @@ package org.marketcetera.photon.ui.marketdata;
 
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 
 import quickfix.Group;
 import quickfix.Message;
@@ -24,26 +24,26 @@ public class MarketDataUtils {
 	static FIXMessageFactory messageFactory = FIXVersion.FIX44
 			.getMessageFactory();
 
-	public static Message newSubscribeLevel2(MSymbol symbol) {
-		Message message = newSubscribeHelper(symbol, null);
+	public static Message newSubscribeLevel2(Instrument instrument) {
+		Message message = newSubscribeHelper(instrument, null);
 		message.setField(new MarketDepth(0)); // full book
 
 		return message;
 	}
 
-	public static Message newSubscribeBBO(MSymbol symbol) {
-		Message message = newSubscribeHelper(symbol, null);
+	public static Message newSubscribeBBO(Instrument instrument) {
+		Message message = newSubscribeHelper(instrument, null);
 		message.setField(new MarketDepth(1)); // top-of-book
 		return message;
 	}
 
-	public static Message newSubscribeBBO(MSymbol symbol, String securityType) {
-		Message message = newSubscribeHelper(symbol, securityType);
+	public static Message newSubscribeBBO(Instrument instrument, String securityType) {
+		Message message = newSubscribeHelper(instrument, securityType);
 		message.setField(new MarketDepth(1)); // top-of-book
 		return message;
 	}
 
-	private static Message newSubscribeHelper(MSymbol symbol, String securityType) {
+	private static Message newSubscribeHelper(Instrument instrument, String securityType) {
 		Message message = messageFactory
 				.createMessage(MsgType.MARKET_DATA_REQUEST);
 		message.setField(new SubscriptionRequestType(
@@ -51,7 +51,7 @@ public class MarketDataUtils {
 		message.setField(new NoMDEntryTypes(0));
 		Group relatedSymGroup = messageFactory.createGroup(
 				MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
-		relatedSymGroup.setField(new Symbol(symbol.toString()));
+		relatedSymGroup.setField(new Symbol(instrument.getSymbol()));
 		if (securityType != null && !"".equals(securityType)){ //$NON-NLS-1$
 			relatedSymGroup.setField(new SecurityType(securityType));
 		}
@@ -59,7 +59,7 @@ public class MarketDataUtils {
 		return message;
 	}
 	
-	public static Message newSubscribeOptionUnderlying(MSymbol underlying){
+	public static Message newSubscribeOptionUnderlying(Instrument underlying){
 		Message message = messageFactory.createMessage(MsgType.MARKET_DATA_REQUEST);
 		message.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
 		message.setField(new NoMDEntryTypes(0));
@@ -72,7 +72,7 @@ public class MarketDataUtils {
 		relatedSymGroup.setString(Symbol.FIELD, "[N/A]"); //$NON-NLS-1$
 		relatedSymGroup.setField(new SecurityType(SecurityType.OPTION));
 
-		underlyingGroup.setString(UnderlyingSymbol.FIELD, underlying.toString());
+		underlyingGroup.setString(UnderlyingSymbol.FIELD, underlying.getSymbol());
 
 		relatedSymGroup.addGroup(underlyingGroup);
 		message.addGroup(relatedSymGroup);

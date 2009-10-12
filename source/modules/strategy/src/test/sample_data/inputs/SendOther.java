@@ -1,6 +1,5 @@
 import java.math.BigDecimal;
 
-import org.marketcetera.trade.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.java.Strategy;

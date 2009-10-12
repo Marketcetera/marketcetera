@@ -49,8 +49,8 @@ public class OrderValidationFailureTest {
         verifySingle(order, VALIDATION_ORDER_SIDE);
 
         order = ClientTest.createOrderSingle();
-        order.setSymbol(null);
-        verifySingle(order, VALIDATION_ORDER_SYMBOL);
+        order.setInstrument(null);
+        verifySingle(order, VALIDATION_ORDER_INSTRUMENT);
         
     }
     @Test
@@ -83,8 +83,8 @@ public class OrderValidationFailureTest {
         verifyReplace(order, VALIDATION_ORDER_SIDE);
 
         order = ClientTest.createOrderReplace();
-        order.setSymbol(null);
-        verifyReplace(order, VALIDATION_ORDER_SYMBOL);
+        order.setInstrument(null);
+        verifyReplace(order, VALIDATION_ORDER_INSTRUMENT);
     }
     @Test
     public void orderCancel() throws Exception {
@@ -112,8 +112,8 @@ public class OrderValidationFailureTest {
         verifyCancel(order, VALIDATION_ORDER_SIDE);
 
         order = ClientTest.createOrderCancel();
-        order.setSymbol(null);
-        verifyCancel(order, VALIDATION_ORDER_SYMBOL);
+        order.setInstrument(null);
+        verifyCancel(order, VALIDATION_ORDER_INSTRUMENT);
 
     }
     @Test

@@ -32,7 +32,7 @@ import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
 import org.marketcetera.photon.views.OptionDateHelper;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
@@ -245,10 +245,10 @@ public class CommandParser
 					Message message=null;
 					if (PriceImage.MKT.equals(priceImage))	{
 						message = messageFactory.newMarketOrder("", //$NON-NLS-1$ 
-								sideImage.getFIXCharValue(), quantity, new MSymbol(symbol), timeInForce.getFIXValue(), accountID);
+								sideImage.getFIXCharValue(), quantity, new Equity(symbol), timeInForce.getFIXValue(), accountID);
 					} else {
 						message = messageFactory.newLimitOrder("", //$NON-NLS-1$
-								sideImage.getFIXCharValue(), quantity, new MSymbol(symbol), new BigDecimal(priceImage.getImage()), timeInForce.getFIXValue(), accountID);
+								sideImage.getFIXCharValue(), quantity, new Equity(symbol), new BigDecimal(priceImage.getImage()), timeInForce.getFIXValue(), accountID);
 					}
 					if (optionSpecifier != null || optionSymbolPattern.matcher(symbol).matches()){
 						if (optionSpecifier != null){

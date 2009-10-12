@@ -149,14 +149,14 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     @Override
     public BigDecimal getPositionAsOf
         (Date inDate,
-         MSymbol inSymbol)
+         Equity inEquity)
         throws ConnectionException
     {
         failIfClosed();
         failIfDisconnected();
         try {
             return mService.getPositionAsOf
-                (getServiceContext(),new DateWrapper(inDate),inSymbol);
+                (getServiceContext(),new DateWrapper(inDate),inEquity);
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
         }

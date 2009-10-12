@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.marketdata.OrderBookTest;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 /* $License$ */
 
@@ -28,8 +28,8 @@ import org.marketcetera.trade.MSymbol;
  */
 public class DepthOfBookTest
 {
-    private final MSymbol metc = new MSymbol("METC");
-    private final MSymbol goog = new MSymbol("GOOG");
+    private final Equity metc = new Equity("METC");
+    private final Equity goog = new Equity("GOOG");
     private final String exchange1 = "TEST1";
     private final String exchange2 = "TEST2";
     private List<BidEvent> bids;
@@ -328,7 +328,7 @@ public class DepthOfBookTest
         // compare lists that differ by an element aside from the first one
         List<BidEvent> newBids = new ArrayList<BidEvent>(bids);
         newBids.remove(newBids.size()-1);
-        newBids.add(EventBaseTest.generateBidEvent(newBids.get(0).getSymbol(),
+        newBids.add(EventBaseTest.generateBidEvent(newBids.get(0).getInstrument(),
                                                    newBids.get(0).getExchange()));
         assertEquals(bids.size(),
                      newBids.size());

@@ -15,7 +15,6 @@ import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.MSymbol;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -142,11 +141,11 @@ public class ServiceImpl
     private BigDecimal getPositionAsOfImpl
         (ClientSession session,
          Date date,
-         MSymbol symbol)
+         Equity equity)
         throws PersistenceException
     {
         return getHistoryServices().getPositionAsOf
-            (session.getUser(),date,symbol);
+            (session.getUser(),date,equity);
     }
 
     private MapWrapper<PositionKey<Equity>,BigDecimal> getPositionsAsOfImpl
@@ -225,7 +224,7 @@ public class ServiceImpl
     public BigDecimal getPositionAsOf
         (ClientContext context,
          final DateWrapper date,
-         final MSymbol symbol)
+         final Equity equity)
         throws RemoteException
     {
         return (new RemoteCaller<ClientSession,BigDecimal>
@@ -237,7 +236,7 @@ public class ServiceImpl
                 throws PersistenceException
             {
                 return getPositionAsOfImpl
-                    (sessionHolder.getSession(),date.getRaw(),symbol);
+                    (sessionHolder.getSession(),date.getRaw(),equity);
             }}).execute(context);
     }
 

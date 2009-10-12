@@ -32,7 +32,7 @@ import java.beans.ExceptionListener;
  *      <li>{@link #addReportListener(ReportListener) receive reports}</li>
  *      <li>{@link #addBrokerStatusListener(BrokerStatusListener) receive broker status updates}</li>
  *      <li>{@link #getReportsSince(Date) fetch past reports} </li>
- *      <li>{@link #getPositionAsOf(Date, MSymbol)}  fetch positions} </li> 
+ *      <li>{@link #getPositionAsOf(Date, Equity)}  fetch positions} </li> 
  *      <li>{@link #getPositionsAsOf(java.util.Date)}  fetch all open positions} </li> 
  * </ul>
  *
@@ -114,18 +114,18 @@ public interface Client {
     public ReportBase[] getReportsSince(Date inDate) throws ConnectionException;
 
     /**
-     * Returns the position of the supplied symbol based on reports,
+     * Returns the position of the supplied equity based on reports,
      * generated and received until the supplied date in UTC.
      *
      * @param inDate the date in UTC. Cannot be null.
-     * @param inSymbol The symbol. Cannot be null.
+     * @param inEquity The symbol. Cannot be null.
      *
      * @return the current position of the symbol.
      *
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
-    public BigDecimal getPositionAsOf(Date inDate, MSymbol inSymbol)
+    public BigDecimal getPositionAsOf(Date inDate, Equity inEquity)
             throws ConnectionException;
 
     /**

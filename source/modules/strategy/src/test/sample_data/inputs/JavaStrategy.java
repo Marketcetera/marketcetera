@@ -2,7 +2,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.trade.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.BidEvent;
@@ -341,12 +340,12 @@ public class JavaStrategy
         if(inEvent instanceof QuoteEvent) {
             QuoteEvent event = (QuoteEvent)inEvent;
             suggestedOrder.setPrice(event.getPrice());
-            suggestedOrder.setSymbol(event.getSymbol());
+            suggestedOrder.setInstrument(event.getInstrument());
             suggestedOrder.setQuantity(event.getSize());
         } else if(inEvent instanceof TradeEvent) {
             TradeEvent event = (TradeEvent)inEvent;
             suggestedOrder.setPrice(event.getPrice());
-            suggestedOrder.setSymbol(event.getSymbol());
+            suggestedOrder.setInstrument(event.getInstrument());
             suggestedOrder.setQuantity(event.getSize());
         }
         suggestTrade(suggestedOrder,

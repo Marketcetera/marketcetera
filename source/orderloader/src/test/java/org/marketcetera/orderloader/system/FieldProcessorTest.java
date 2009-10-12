@@ -193,22 +193,22 @@ public class FieldProcessorTest {
     public void symbolNoSecurityType() throws Exception {
         final SymbolProcessor proc = new SymbolProcessor();
         proc.setSymbolIdx(1);
-        assertEquals(null, apply(proc, "java", null, "mava").getSymbol());
-        assertEquals(null, apply(proc, "java", "", "mava").getSymbol());
-        assertEquals(new MSymbol("kava"), apply(proc, "java", "kava", "mava").getSymbol());
+        assertEquals(null, apply(proc, "java", null, "mava").getInstrument());
+        assertEquals(null, apply(proc, "java", "", "mava").getInstrument());
+        assertEquals(new Equity("kava"), apply(proc, "java", "kava", "mava").getInstrument());
     }
     @Test
     public void symbolWithSecurityType() throws Exception {
         final SymbolProcessor proc = new SymbolProcessor();
         proc.setSymbolIdx(0);
         proc.setSecurityTypeIdx(1);
-        assertEquals(null, apply(proc, null, null, "mava").getSymbol());
-        assertEquals(null, apply(proc, "", null, "mava").getSymbol());
-        assertEquals(null, apply(proc, null, SecurityType.CommonStock.toString(), "mava").getSymbol());
-        assertEquals(null, apply(proc, "", SecurityType.CommonStock.toString(), "mava").getSymbol());
-        assertEquals(new MSymbol("java"), apply(proc, "java", null, "mava").getSymbol());
-        assertEquals(new MSymbol("java"), apply(proc, "java", "", "mava").getSymbol());
-        assertEquals(new MSymbol("java", SecurityType.Option), apply(proc, "java", SecurityType.Option.toString(), "mava").getSymbol());
+        assertEquals(null, apply(proc, null, null, "mava").getInstrument());
+        assertEquals(null, apply(proc, "", null, "mava").getInstrument());
+        assertEquals(null, apply(proc, null, SecurityType.CommonStock.toString(), "mava").getInstrument());
+        assertEquals(null, apply(proc, "", SecurityType.CommonStock.toString(), "mava").getInstrument());
+        assertEquals(new Equity("java"), apply(proc, "java", null, "mava").getInstrument());
+        assertEquals(new Equity("java"), apply(proc, "java", "", "mava").getInstrument());
+        assertEquals(new Equity("java"), apply(proc, "java", SecurityType.Option.toString(), "mava").getInstrument());
     }
     @Test
     public void timeInForce() throws Exception {

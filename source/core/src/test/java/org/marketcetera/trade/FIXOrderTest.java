@@ -115,7 +115,7 @@ public class FIXOrderTest extends TypesTestBase {
         //Test map of fields
         String account = "myacc";
         BigDecimal qty = new BigDecimal("234.34");
-        MSymbol symbol = new MSymbol("IBM", SecurityType.CommonStock);
+        Equity symbol = new Equity("IBM");
         BigDecimal price = new BigDecimal("3498.343");
         msg = FIXVersion.FIX44.getMessageFactory().newLimitOrder("blah",
                 quickfix.field.Side.BUY, qty, symbol, price,
@@ -130,7 +130,7 @@ public class FIXOrderTest extends TypesTestBase {
         assertNotNull(clOrdID);
         HashMap<Integer,String> expected = new HashMap<Integer, String>();
         expected.put(Account.FIELD, account);
-        expected.put(Symbol.FIELD, symbol.getFullSymbol());
+        expected.put(Symbol.FIELD, symbol.getSymbol());
         expected.put(OrderQty.FIELD, qty.toString());
         expected.put(quickfix.field.Side.FIELD, String.valueOf(
                 quickfix.field.Side.BUY));

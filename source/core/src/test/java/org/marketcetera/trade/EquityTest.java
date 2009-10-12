@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
  * Tests {@link Equity}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: EquityTest.java 10804 2009-10-08 18:00:15Z will $
  * @since $Release$
  */
 public class EquityTest extends InstrumentTestBase<Equity> {
@@ -36,8 +36,14 @@ public class EquityTest extends InstrumentTestBase<Equity> {
         return ImmutableList.<Equity> of(new Equity("ABC"), new Equity("IBM"),
                 new Equity("MSFT"));
     }
+    
 
-    @Test
+    @Override
+    protected SecurityType getSecurityType() {
+        return SecurityType.CommonStock;
+    }
+
+	@Test
     public void testNullSymbol() throws Exception {
         new ExpectedFailure<IllegalArgumentException>(null) {
             @Override

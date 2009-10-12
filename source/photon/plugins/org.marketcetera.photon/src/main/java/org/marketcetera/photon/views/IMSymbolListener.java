@@ -1,9 +1,9 @@
 package org.marketcetera.photon.views;
 
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 public interface IMSymbolListener {
-	void onAssertSymbol(MSymbol symbol);
+	void onAssertSymbol(Equity symbol);
 	
-	boolean isListeningSymbol(MSymbol symbol);
+	boolean isListeningSymbol(Equity symbol);
 }

@@ -8,7 +8,7 @@ import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 /* $License$ */
 
@@ -34,12 +34,12 @@ public interface InboundServicesProvider
      * Gets the position in the given security at the given point in time.
      *
      * @param inDate a <code>Date</code> value
-     * @param inSymbol a <code>MSymbol</code> value
+     * @param inEquity an <code>Equity</code> value
      * @return a <code>BigDecimal</code> value
      * @throws ConnectionException if the information could not be retrieved 
      */
     public BigDecimal getPositionAsOf(Date inDate,
-                                      MSymbol inSymbol)
+                                      Equity inEquity)
         throws ConnectionException;
     /**
      * Gets the {@link ModuleURN} for this strategy.

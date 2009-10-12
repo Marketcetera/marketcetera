@@ -24,7 +24,7 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderCancel;
@@ -150,9 +150,9 @@ public class PhotonController
 			
 			org.marketcetera.trade.OrderID orderID = inReport.getOrderID();
 			
-			MSymbol symbol = inReport.getSymbol();
+			Instrument instrument = inReport.getInstrument();
 			String rejectMsg = REJECT_MESSAGE.getText(orderID.getValue(),
-			                                          symbol == null ? Messages.UNKNOWN_VALUE.getText() : symbol.getFullSymbol(),
+			                                          instrument == null ? Messages.UNKNOWN_VALUE.getText() : instrument.getSymbol(),
 			                                          rejectReason);
 			internalMainLogger.error(rejectMsg);
 		}

@@ -16,13 +16,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * Identifies an equity.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: Equity.java 10804 2009-10-08 18:00:15Z will $
  * @since $Release$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: Equity.java 10804 2009-10-08 18:00:15Z will $")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Equity implements Instrument {
+public class Equity extends Instrument {
 
     private final String mSymbol;
 
@@ -57,6 +57,16 @@ public class Equity implements Instrument {
         return mSymbol;
     }
 
+    /**
+     * Always returns {@link SecurityType#CommonStock}.
+     * 
+     * @return {@link SecurityType#CommonStock}
+     */
+    @Override
+    public SecurityType getSecurityType() {
+        return SecurityType.CommonStock;
+    }
+
     @Override
     public int hashCode() {
         return  mSymbol.hashCode();
@@ -83,4 +93,5 @@ public class Equity implements Instrument {
                 .append("symbol", mSymbol) //$NON-NLS-1$
                 .toString();
     }
+    private static final long serialVersionUID = 1L;
 }

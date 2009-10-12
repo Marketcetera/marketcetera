@@ -84,7 +84,7 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 				synchronized (item) {
 					if (inData instanceof MarketstatEvent) {
 						MarketstatEvent data = (MarketstatEvent) inData;
-						if (!validateSymbol(symbol, data.getSymbol())) {
+						if (!validateSymbol(symbol, data.getInstrument())) {
 							return;
 						}
 						BigDecimal close = data.getClose();

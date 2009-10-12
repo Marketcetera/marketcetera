@@ -6,7 +6,8 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.ReportHolder;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 
 /**
  * The PhotonAdapterFactory produces adapters that the RCP uses to 
@@ -48,7 +49,7 @@ public class PhotonAdapterFactory
 	/**
 	 * Returns an adapter of the specified class for the specified object.
 	 * Currently the only valid values for adaptableObject are
-	 * {@link ReportHolder}, {@link AccountID}, and {@link MSymbol}.
+	 * {@link ReportHolder}, {@link AccountID}, and {@link Equity}.
 	 * Currently the only valid value of adapterType is
 	 * {@link IWorkbenchAdapter}. All others will return null.
 	 * 
@@ -70,7 +71,7 @@ public class PhotonAdapterFactory
 				&& adaptableObject instanceof AccountID)
 			return accountAdapter;
 		if (adapterType == IWorkbenchAdapter.class
-				&& adaptableObject instanceof MSymbol)
+				&& adaptableObject instanceof Equity)
 			return symbolAdapter;
 
 		return null;
@@ -115,8 +116,8 @@ public class PhotonAdapterFactory
 		}
 
 		public String getLabel(Object o) {
-			MSymbol aSymbol = (MSymbol) o;
-			return aSymbol.toString();
+			Instrument instrument = (Instrument) o;
+			return instrument.getSymbol();
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {

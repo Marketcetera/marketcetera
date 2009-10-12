@@ -15,7 +15,7 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDQuote;
 import org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDQuoteImpl;
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.base.Function;
@@ -132,8 +132,8 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 			public void receiveData(final Object inData) {
 				if (inData instanceof QuoteEvent) {
 					QuoteEvent data = (QuoteEvent) inData;
-					MSymbol msymbol = data.getSymbol();
-					if (!validateSymbol(symbol, msymbol)) {
+					Instrument instrument = data.getInstrument();
+					if (!validateSymbol(symbol, instrument)) {
 						return;
 					}
 					final MDDepthOfBookImpl item = getItem(key);

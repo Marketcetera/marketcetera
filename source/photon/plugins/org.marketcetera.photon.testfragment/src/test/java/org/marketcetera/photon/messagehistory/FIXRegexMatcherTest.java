@@ -6,7 +6,7 @@ import java.util.List;
 
 import junit.framework.Test;
 
-import org.marketcetera.trade.MSymbol;
+import org.marketcetera.trade.Equity;
 
 import quickfix.Message;
 import quickfix.field.Side;
@@ -74,7 +74,7 @@ public class FIXRegexMatcherTest
         final Message buyOrder = sMessageFactory.newMarketOrder(Long.toString(System.currentTimeMillis()),
                                                                 Side.BUY,
                                                                 new BigDecimal("100.00"),
-                                                                new MSymbol("GOOG"),
+                                                                new Equity("GOOG"),
                                                                 TimeInForce.GOOD_TILL_CANCEL,
                                                                 "ACCT-1");
         List<MatchTuple> conditions = new ArrayList<MatchTuple>();

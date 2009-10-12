@@ -6,13 +6,7 @@ import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.MSymbol;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.UserID;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -88,17 +82,17 @@ class ExecutionReportSummary extends EntityBase {
      * @param inUser the user making the query. Cannot be null.
      * @param inDate the time. execution reports with sending time values less
      * than this time are included in this calculation.
-     * @param inSymbol the symbol for which this position needs to be computed
+     * @param inEquity the equity for which this position needs to be computed
      *
-     * @return the aggreget position for the symbol.
+     * @return the aggregate position for the symbol.
      *
      * @throws PersistenceException if there were errors retrieving the
      * position.
      */
-    static BigDecimal getPositionForSymbol
+    static BigDecimal getPositionForEquity
         (final SimpleUser inUser,
          final Date inDate,
-         final MSymbol inSymbol)
+         final Equity inEquity)
         throws PersistenceException
     {
         BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
@@ -112,7 +106,7 @@ class ExecutionReportSummary extends EntityBase {
                 query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
                 query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
                 query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("symbol", inSymbol.getFullSymbol());  //$NON-NLS-1$
+                query.setParameter("symbol", inEquity.getSymbol());  //$NON-NLS-1$
                 query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
                         TemporalType.TIMESTAMP);
                 return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
@@ -194,8 +188,9 @@ class ExecutionReportSummary extends EntityBase {
         setReport(inSavedReport);
         mOrderID = inReport.getOrderID();
         mOrigOrderID = inReport.getOriginalOrderID();
-        MSymbol symbol = inReport.getSymbol();
-        mSymbol = symbol == null? null: symbol.getFullSymbol();
+        Instrument instrument = inReport.getInstrument();
+        mSymbol = instrument == null? null: instrument.getSymbol();
+        //TODO handle instruments other than Equity
         mAccount = inReport.getAccount();
         mSide = inReport.getSide();
         mCumQuantity = inReport.getCumulativeQuantity();
