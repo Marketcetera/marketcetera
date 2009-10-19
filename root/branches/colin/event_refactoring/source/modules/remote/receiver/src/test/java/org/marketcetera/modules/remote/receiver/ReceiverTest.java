@@ -1,25 +1,40 @@
 package org.marketcetera.modules.remote.receiver;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.test.LogTestAssist;
-import org.marketcetera.module.*;
-import org.marketcetera.event.LogEvent;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.Before;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Level;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.ConnectException;
+import java.net.Socket;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 import javax.management.JMX;
 import javax.security.auth.login.Configuration;
-import java.util.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.Socket;
-import java.net.ConnectException;
-import java.io.IOException;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.module.CopierModule;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowInfo;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.MockConfigProvider;
+import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.test.LogTestAssist;
 
 /* $License$ */
 /**
@@ -157,7 +172,7 @@ public class ReceiverTest extends ModuleTestBase {
         //Verify setters and getters
         assertEquals(DEFAULT_URL, bean.getURL());
         assertEquals(false, bean.isSkipJAASConfiguration());
-        assertLogLevel(bean, LogEvent.Level.WARN);
+        assertLogLevel(bean, LogEventLevel.WARN);
         //url cannot be updated when the module is running.
         new ExpectedFailure<IllegalStateException>(
                 Messages.ILLEGAL_STATE_SET_URL.getText()){
@@ -172,7 +187,7 @@ public class ReceiverTest extends ModuleTestBase {
             }
         };
         //log level can be updated any time.
-        LogEvent.Level logLevel = LogEvent.Level.INFO;
+        LogEventLevel logLevel = LogEventLevel.INFO;
         bean.setLogLevel(logLevel);
         assertLogLevel(bean, logLevel);
         //Stop the module
@@ -189,13 +204,13 @@ public class ReceiverTest extends ModuleTestBase {
         assertEquals(null, bean.getURL());
         //verify that we can set the log level as well
         verifyLogLevels(bean);
-        logLevel = LogEvent.Level.ERROR;
+        logLevel = LogEventLevel.ERROR;
         bean.setLogLevel(logLevel);
         assertLogLevel(bean, logLevel);
         //Verify log level validations
         new ExpectedFailure<IllegalArgumentException>(
                 Messages.NULL_LEVEL_VALUE.getText(EnumSet.allOf(
-                        LogEvent.Level.class))){
+                        LogEventLevel.class))){
             protected void run() throws Exception {
                 bean.setLogLevel(null);
             }
@@ -277,7 +292,7 @@ public class ReceiverTest extends ModuleTestBase {
         final ReceiverModuleMXBean bean = JMX.newMXBeanProxy(getMBeanServer(),
                 ReceiverFactory.INSTANCE_URN.toObjectName(),
                 ReceiverModuleMXBean.class);
-        assertLogLevel(bean, LogEvent.Level.DEBUG);
+        assertLogLevel(bean, LogEventLevel.DEBUG);
     }
 
     /**
@@ -365,7 +380,7 @@ public class ReceiverTest extends ModuleTestBase {
      * @param inBean the bean for the module
      */
     private void verifyLogLevels(ReceiverModuleMXBean inBean) {
-        for(LogEvent.Level level: LogEvent.Level.values()) {
+        for(LogEventLevel level: LogEventLevel.values()) {
             inBean.setLogLevel(level);
             assertLogLevel(inBean, level);
         }
@@ -380,7 +395,7 @@ public class ReceiverTest extends ModuleTestBase {
      * @param inLogLevel the expected log level.
      */
     private void assertLogLevel(ReceiverModuleMXBean inMBean,
-                                LogEvent.Level inLogLevel) {
+                                LogEventLevel inLogLevel) {
         assertEquals(inLogLevel,  inMBean.getLogLevel());
         Level level = LogManager.getLogger(
                 org.marketcetera.core.Messages.USER_MSG_CATEGORY).getLevel();

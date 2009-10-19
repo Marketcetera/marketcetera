@@ -21,15 +21,17 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.BookEntryTuple;
-import org.marketcetera.event.DepthOfBook;
+import org.marketcetera.event.DepthOfBookEvent;
 import org.marketcetera.event.DepthOfBookTest;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuantityTuple;
+import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.TopOfBook;
+import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.TopOfBookEventBuilder;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.QuoteEvent.Action;
 import org.marketcetera.marketdata.SimulatedExchange.Status;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
 import org.marketcetera.module.ExpectedFailure;
@@ -76,19 +78,19 @@ public class SimulatedExchangeTest
        exchange = new SimulatedExchange("Test exchange",
                                         "TEST");
        assertFalse(metc.equals(goog));
-       bid = new BidEvent(System.nanoTime(),
-                          System.currentTimeMillis(),
-                          metc,
-                          exchange.getCode(),
-                          new BigDecimal("100"),
-                          new BigDecimal("1000"));
+       bid = EventTestBase.generateEquityBidEvent(System.nanoTime(),
+                                                  System.currentTimeMillis(),
+                                                  metc,
+                                                  exchange.getCode(),
+                                                  new BigDecimal("100"),
+                                                  new BigDecimal("1000"));
        // intentionally creating a large spread to make sure no trades get executed
-       ask = new AskEvent(System.nanoTime(),
-                          System.currentTimeMillis(),
-                          metc,
-                          exchange.getCode(),
-                          new BigDecimal("150"),
-                          new BigDecimal("500"));
+       ask = EventTestBase.generateEquityAskEvent(System.nanoTime(),
+                                                  System.currentTimeMillis(),
+                                                  metc,
+                                                  exchange.getCode(),
+                                                  new BigDecimal("150"),
+                                                  new BigDecimal("500"));
     }
     /**
      * Execute after each test. 
@@ -273,58 +275,64 @@ public class SimulatedExchangeTest
             }
         };
         // start the exchange with a script with only one event for each side of the book
-        List<QuoteEvent> script = new ArrayList<QuoteEvent>(Arrays.asList(new QuoteEvent[] { bid, ask }));
+        List<QuoteEvent> script = new ArrayList<QuoteEvent>();
+        script.add(bid);
+        script.add(ask);
         exchange.start(script);
         // get the depth-of-book for the symbol
+        List<AskEvent> asks = new ArrayList<AskEvent>();
+        asks.add(ask);
+        List<BidEvent> bids = new ArrayList<BidEvent>();
+        bids.add(bid);
         verifySnapshots(exchange,
                         metc,
-                        Arrays.asList(new AskEvent[] { ask } ),
-                        Arrays.asList(new BidEvent[] { bid } ),
+                        asks,
+                        bids,
                         null);
         // re-execute the same query (book already exists, make sure we're reading from the already existing book)
         verifySnapshots(exchange,
                         metc,
-                        Arrays.asList(new AskEvent[] { ask } ),
-                        Arrays.asList(new BidEvent[] { bid } ),
+                        asks,
+                        bids,
                         null);
         // execute a request for an empty book
         verifySnapshots(exchange,
                         goog,
-                        Arrays.asList(new AskEvent[] { } ),
-                        Arrays.asList(new BidEvent[] { } ),
+                        new ArrayList<AskEvent>(),
+                        new ArrayList<BidEvent>(),
                         null);
         exchange.stop();
         // start the exchange again in scripted mode, this time with events in opposition to each other
-        script.add(new BidEvent(System.nanoTime(),
-                                System.currentTimeMillis(),
-                                metc,
-                                exchange.getCode(),
-                                ask.getPrice(),
-                                ask.getSize()));
-        script.add(new AskEvent(System.nanoTime(),
-                                System.currentTimeMillis(),
-                                metc,
-                                exchange.getCode(),
-                                bid.getPrice(),
-                                bid.getSize()));
+        script.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
+                                                        System.currentTimeMillis(),
+                                                        metc,
+                                                        exchange.getCode(),
+                                                        ask.getPrice(),
+                                                        ask.getSize()));
+        script.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
+                                                        System.currentTimeMillis(),
+                                                        metc,
+                                                        exchange.getCode(),
+                                                        bid.getPrice(),
+                                                        bid.getSize()));
         exchange.start(script);
         // verify that the book is empty (but there should be an existing trade)
         verifySnapshots(exchange,
                         metc,
-                        Arrays.asList(new AskEvent[] { } ),
-                        Arrays.asList(new BidEvent[] { } ),
-                        new TradeEvent(1,
-                                       1,
-                                       metc,
-                                       exchange.getCode(),
-                                       bid.getPrice(),
-                                       bid.getSize()));
+                        new ArrayList<AskEvent>(),
+                        new ArrayList<BidEvent>(),
+                        EventTestBase.generateEquityTradeEvent(1,
+                                                               1,
+                                                               metc,
+                                                               exchange.getCode(),
+                                                               bid.getPrice(),
+                                                               bid.getSize()));
         exchange.stop();
         // restart exchange in random mode
         exchange.start();
         // books are empty
         // make new dob request (adds a book for this symbol)
-        DepthOfBook dob = exchange.getDepthOfBook(metc);
+        DepthOfBookEvent dob = exchange.getDepthOfBook(metc);
         // note that since the exchange was started this time in random mode we don't know exactly what the
         //  values will be, but there should be at least one entry on each side of the book
         assertFalse(dob.getAsks().isEmpty());
@@ -416,7 +424,7 @@ public class SimulatedExchangeTest
         List<BidEvent> bids = new ArrayList<BidEvent>();
         List<AskEvent> asks = new ArrayList<AskEvent>();
         for(int i=0;i<5;i++) {
-            bids.add(new BidEvent(System.nanoTime(),
+            bids.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
                                   System.currentTimeMillis(),
                                   metc,
                                   exchange.getCode(),
@@ -424,7 +432,7 @@ public class SimulatedExchangeTest
                                   bidSize));
         }
         for(int i=4;i>=0;i--) {
-            asks.add(new AskEvent(System.nanoTime(),
+            asks.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
                                   System.currentTimeMillis(),
                                   metc,
                                   exchange.getCode(),
@@ -476,283 +484,281 @@ public class SimulatedExchangeTest
         100 104.00 |
         */
         // next will be the asks interleaved with trades and corrections as the books are settled after each ask
-        allExpectedEvents.addAll(Arrays.asList(new QuantityTuple[] { 
-            new QuantityTuple(new BigDecimal("104.00"), // 1st of 5 asks
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // 1st of 5 asks
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+        100 104.00 | 104.00 50
+        100 103.00 | 
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 |
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // resulting trade
+                                                        new BigDecimal("50"),
+                                                        TradeEvent.class));
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // bid correction (change)
                               new BigDecimal("50"),
-                              AskEvent.class),
-                              /*
-                              bid        | ask
-                              -----------+-----------
-                              100 104.00 | 104.00 50
-                              100 103.00 | 
-                              100 102.00 | 
-                              100 101.00 | 
-                              100 100.00 |
-                              */
-            new QuantityTuple(new BigDecimal("104.00"), // resulting trade
-                              new BigDecimal("50"),
-                              TradeEvent.class),
-            new QuantityTuple(new BigDecimal("104.00"), // bid correction (change)
-                              new BigDecimal("50"),
-                              BidEvent.class),
-                              /*
-                              bid        | ask
-                              -----------+-----------
-                               50 104.00 | 104.00 50
-                              100 103.00 | 
-                              100 102.00 | 
-                              100 101.00 | 
-                              100 100.00 |
-                              */
-            new QuantityTuple(new BigDecimal("104.00"), // ask correction (delete)
-                              new BigDecimal("50"),
-                              AskEvent.class),
-                              /*
-                              bid        | ask
-                              -----------+-----------
-                               50 104.00 |
-                              100 103.00 | 
-                              100 102.00 | 
-                              100 101.00 | 
-                              100 100.00 |
-                              */
-            new QuantityTuple(new BigDecimal("103.00"), // 2nd of 5 asks
-                              new BigDecimal("50"),
-                              AskEvent.class),
-                              /*
-                              bid        | ask
-                              -----------+-----------
-                               50 104.00 | 103.00 50
-                              100 103.00 | 
-                              100 102.00 | 
-                              100 101.00 | 
-                              100 100.00 |
-                              */
-            new QuantityTuple(new BigDecimal("103.00"), // resulting trade
-                              new BigDecimal("50"),
-                              TradeEvent.class),
-            new QuantityTuple(new BigDecimal("104.00"), // bid correction (delete of fully consumed bid)
-                              new BigDecimal("50"),
-                              BidEvent.class),
-                              /*
-                              bid        | ask
-                              -----------+-----------
-                              100 103.00 | 103.00 50
-                              100 102.00 | 
-                              100 101.00 | 
-                              100 100.00 | 
-                              */
-            new QuantityTuple(new BigDecimal("103.00"), // ask correction (delete of fully consumed ask)
-                              new BigDecimal("50"),
-                              AskEvent.class),
-                              /*
-                              bid        | ask
-                              -----------+-----------
-                              100 103.00 |
-                              100 102.00 | 
-                              100 101.00 | 
-                              100 100.00 | 
-                              */
-            new QuantityTuple(new BigDecimal("102.00"), // 3rd of 5 asks
-                              new BigDecimal("50"),
-                              AskEvent.class),
-                              /*
-                              bid        | ask
-                              -----------+-----------
-                              100 103.00 | 102.00 50
-                              100 102.00 | 
-                              100 101.00 | 
-                              100 100.00 | 
-                              */
-            new QuantityTuple(new BigDecimal("102.00"), // resulting trade
-                              new BigDecimal("50"),
-                              TradeEvent.class),
-            new QuantityTuple(new BigDecimal("103.00"), // bid correction (change of partially consumed bid)
-                              new BigDecimal("50"),
-                              BidEvent.class),
-                              /*
-                              bid        | ask
-                              -----------+-----------
-                               50 103.00 | 102.00 50
-                              100 102.00 | 
-                              100 101.00 | 
-                              100 100.00 | 
-                              */
-            new QuantityTuple(new BigDecimal("102.00"), // ask correction (delete of fully consumed ask)
-                              new BigDecimal("50"),
-                              AskEvent.class),
-                              /*
-                              bid        | ask
-                              -----------+-----------
-                               50 103.00 | 
-                              100 102.00 | 
-                              100 101.00 | 
-                              100 100.00 | 
-                              */
-           new QuantityTuple(new BigDecimal("101.00"), // 4th of 5 asks
-                             new BigDecimal("50"),
-                             AskEvent.class),
-                             /*
-                             bid        | ask
-                             -----------+-----------
-                              50 103.00 | 101.00 50 
-                             100 102.00 | 
-                             100 101.00 | 
-                             100 100.00 | 
-                             */
-           new QuantityTuple(new BigDecimal("101.00"), // resulting trade
-                             new BigDecimal("50"),
-                             TradeEvent.class),
-           new QuantityTuple(new BigDecimal("103.00"), // bid correction (delete of fully consumed bid)
-                             new BigDecimal("50"),
-                             BidEvent.class),
-                             /*
-                             bid        | ask
-                             -----------+-----------
-                             100 102.00 | 101.00 50 
-                             100 101.00 | 
-                             100 100.00 | 
-                             */
-          new QuantityTuple(new BigDecimal("101.00"), // ask correction (delete of fully consumed ask)
-                            new BigDecimal("50"),
-                            AskEvent.class),
-                            /*
-                            bid        | ask
-                            -----------+-----------
-                            100 102.00 | 
-                            100 101.00 | 
-                            100 100.00 | 
-                            */
-          new QuantityTuple(new BigDecimal("100.00"), // 5th of 5 asks
-                            new BigDecimal("50"),
-                            AskEvent.class),
-                            /*
-                            bid        | ask
-                            -----------+-----------
-                            100 102.00 | 100.00 50 
-                            100 101.00 | 
-                            100 100.00 | 
-                            */
-         new QuantityTuple(new BigDecimal("100.00"), // resulting trade
-                           new BigDecimal("50"),
-                           TradeEvent.class),
-         new QuantityTuple(new BigDecimal("102.00"), // bid correction (change of partially consumed bid)
-                           new BigDecimal("50"),
-                           BidEvent.class),
-                           /*
-                           bid        | ask
-                           -----------+-----------
-                            50 102.00 | 100.00 50 
-                           100 101.00 | 
-                           100 100.00 | 
-                           */
-         new QuantityTuple(new BigDecimal("100.00"), // ask correction (delete of fully consumed ask)
-                           new BigDecimal("50"),
-                           AskEvent.class),
-                           /*
-                           bid        | ask
-                           -----------+-----------
-                            50 102.00 | 
-                           100 101.00 | 
-                           100 100.00 | 
-                           */
-        } ));
+                              BidEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+         50 104.00 | 104.00 50
+        100 103.00 | 
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 |
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // ask correction (delete)
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+         50 104.00 |
+        100 103.00 | 
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 |
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // 2nd of 5 asks
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+         50 104.00 | 103.00 50
+        100 103.00 | 
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 |
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // resulting trade
+                                                        new BigDecimal("50"),
+                                                        TradeEvent.class));
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // bid correction (delete of fully consumed bid)
+                                                        new BigDecimal("50"),
+                                                        BidEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+        100 103.00 | 103.00 50
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // ask correction (delete of fully consumed ask)
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+        100 103.00 |
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("102.00"), // 3rd of 5 asks
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+        100 103.00 | 102.00 50
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("102.00"), // resulting trade
+                                                        new BigDecimal("50"),
+                                                        TradeEvent.class));
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // bid correction (change of partially consumed bid)
+                                                        new BigDecimal("50"),
+                                                        BidEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+         50 103.00 | 102.00 50
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("102.00"), // ask correction (delete of fully consumed ask)
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+         50 103.00 | 
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("101.00"), // 4th of 5 asks
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+         50 103.00 | 101.00 50 
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("101.00"), // resulting trade
+                                                        new BigDecimal("50"),
+                                                        TradeEvent.class));
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // bid correction (delete of fully consumed bid)
+                                                        new BigDecimal("50"),
+                                                        BidEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+        100 102.00 | 101.00 50 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("101.00"), // ask correction (delete of fully consumed ask)
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+        100 102.00 | 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("100.00"), // 5th of 5 asks
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+        100 102.00 | 100.00 50 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("100.00"), // resulting trade
+                                                        new BigDecimal("50"),
+                                                        TradeEvent.class));
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("102.00"), // bid correction (change of partially consumed bid)
+                                                        new BigDecimal("50"),
+                                                        BidEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+         50 102.00 | 100.00 50 
+        100 101.00 | 
+        100 100.00 | 
+         */
+        allExpectedEvents.add(new QuantityTuple(new BigDecimal("100.00"), // ask correction (delete of fully consumed ask)
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class));
+        /*
+        bid        | ask
+        -----------+-----------
+         50 102.00 | 
+        100 101.00 | 
+        100 100.00 | 
+         */
         // prepare the expected top-of-book results
         expectedTopOfBook.addAll(Arrays.asList(new BookEntryTuple[] { 
             /* 100 104.00 | 104.00 50 */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
-                                                 new BigDecimal("100"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("100"),
+                                                         BidEvent.class),
                                new QuantityTuple(new BigDecimal("104.00"),
-                                                 new BigDecimal("50"),
-                                                 AskEvent.class)),
+                                                         new BigDecimal("50"),
+                                                         AskEvent.class)),
             /* 50 104.00 | 104.00 50 */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
-                                                 new BigDecimal("50"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("50"),
+                                                         BidEvent.class),
                                new QuantityTuple(new BigDecimal("104.00"),
-                                                 new BigDecimal("50"),
-                                                 AskEvent.class)),
+                                                         new BigDecimal("50"),
+                                                         AskEvent.class)),
             /*  50 104.00 | */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
-                                                 new BigDecimal("50"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("50"),
+                                                         BidEvent.class),
                                null),
             /* 50 104.00 | 103.00 50 */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
-                                                 new BigDecimal("50"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("50"),
+                                                         BidEvent.class),
                                new QuantityTuple(new BigDecimal("103.00"),
-                                                 new BigDecimal("50"),
-                                                 AskEvent.class)),
+                                                         new BigDecimal("50"),
+                                                         AskEvent.class)),
             /* 100 103.00 | 103.00 50 */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
-                                                 new BigDecimal("100"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("100"),
+                                                         BidEvent.class),
                                new QuantityTuple(new BigDecimal("103.00"),
-                                                 new BigDecimal("50"),
-                                                 AskEvent.class)),
+                                                         new BigDecimal("50"),
+                                                         AskEvent.class)),
             /* 100 103.00 | */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
-                                                 new BigDecimal("100"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("100"),
+                                                         BidEvent.class),
                                null),
             /* 100 103.00 | 102.00 50 */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
-                                                 new BigDecimal("100"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("100"),
+                                                         BidEvent.class),
                                new QuantityTuple(new BigDecimal("102.00"),
-                                                 new BigDecimal("50"),
-                                                 AskEvent.class)),
+                                                         new BigDecimal("50"),
+                                                         AskEvent.class)),
             /* 50 103.00 | 102.00 50  */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
-                                                 new BigDecimal("50"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("50"),
+                                                         BidEvent.class),
                                new QuantityTuple(new BigDecimal("102.00"),
-                                                 new BigDecimal("50"),
-                                                 AskEvent.class)),
+                                                         new BigDecimal("50"),
+                                                         AskEvent.class)),
             /* 50 103.00 | */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
-                                                 new BigDecimal("50"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("50"),
+                                                         BidEvent.class),
                                null),
             /* 50 103.00 | 101.00 50 */ 
             new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
-                                                 new BigDecimal("50"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("50"),
+                                                         BidEvent.class),
                                new QuantityTuple(new BigDecimal("101.00"),
-                                                 new BigDecimal("50"),
-                                                 AskEvent.class)),
+                                                         new BigDecimal("50"),
+                                                         AskEvent.class)),
             /* 100 102.00 | 101.00 50 */ 
             new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
-                                                 new BigDecimal("100"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("100"),
+                                                         BidEvent.class),
                                new QuantityTuple(new BigDecimal("101.00"),
-                                                 new BigDecimal("50"),
-                                                 AskEvent.class)),
+                                                         new BigDecimal("50"),
+                                                         AskEvent.class)),
             /* 100 102.00 | */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
-                                                 new BigDecimal("100"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("100"),
+                                                         BidEvent.class),
                                null),
             /* 100 102.00 | 100.00 50 */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
-                                                 new BigDecimal("100"),
-                                                 BidEvent.class),
+                                                         new BigDecimal("100"),
+                                                         BidEvent.class),
                                new QuantityTuple(new BigDecimal("100.00"),
-                                                 new BigDecimal("50"),
-                                                 AskEvent.class)),
+                                                         new BigDecimal("50"),
+                                                         AskEvent.class)),
            /* 50 102.00 | 100.00 50 */
            new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
-                                                new BigDecimal("50"),
-                                                BidEvent.class),
+                                                        new BigDecimal("50"),
+                                                        BidEvent.class),
                               new QuantityTuple(new BigDecimal("100.00"),
-                                                new BigDecimal("50"),
-                                                AskEvent.class)),
+                                                        new BigDecimal("50"),
+                                                        AskEvent.class)),
            /* 50 102.00 | */
            new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
-                                                new BigDecimal("50"),
-                                                BidEvent.class),
+                                                        new BigDecimal("50"),
+                                                        BidEvent.class),
                               null),
         }));
         // prepare the expected latest tick results
@@ -797,23 +803,29 @@ public class SimulatedExchangeTest
         exchange2.getTopOfBook(metc,
                                sub2);
         // create an event targeted to the second exchange
-        AskEvent ask2 = new AskEvent(System.nanoTime(),
-                                     System.currentTimeMillis(),
-                                     metc,
-                                     exchange2.getCode(),
-                                     new BigDecimal("150"),
-                                     new BigDecimal("500"));
+        AskEvent ask2 = EventTestBase.generateEquityAskEvent(System.nanoTime(),
+                                                                     System.currentTimeMillis(),
+                                                                     metc,
+                                                                     exchange2.getCode(),
+                                                                     new BigDecimal("150"),
+                                                                     new BigDecimal("500"));
         // create an event targeted to the second exchange but with the wrong symbol
-        AskEvent ask3 = new AskEvent(System.nanoTime(),
-                                     System.currentTimeMillis(),
-                                     goog,
-                                     exchange2.getCode(),
-                                     new BigDecimal("150"),
-                                     new BigDecimal("500"));
+        AskEvent ask3 = EventTestBase.generateEquityAskEvent(System.nanoTime(),
+                                                                     System.currentTimeMillis(),
+                                                                     goog,
+                                                                     exchange2.getCode(),
+                                                                     new BigDecimal("150"),
+                                                                     new BigDecimal("500"));
         // create two different scripts
         // the events that are targeted to the wrong exchange or symbol should get skipped
-        List<QuoteEvent> script1 = Arrays.asList(new QuoteEvent[] { bid, ask2, ask3 } );
-        List<QuoteEvent> script2 = Arrays.asList(new QuoteEvent[] { ask2, bid, ask3 } );
+        List<QuoteEvent> script1 = new ArrayList<QuoteEvent>();
+        script1.add(bid);
+        script1.add(ask2);
+        script1.add(ask3);
+        List<QuoteEvent> script2 = new ArrayList<QuoteEvent>();
+        script2.add(ask2);
+        script2.add(bid);
+        script2.add(ask3);
         // start the exchanges
         exchange.start(script1);
         exchange2.start(script2);
@@ -846,18 +858,18 @@ public class SimulatedExchangeTest
        List<AskEvent> asks = new ArrayList<AskEvent>();
        List<BidEvent> bids = new ArrayList<BidEvent>();
        for(int i=0;i<3;i++) {
-           bids.add(new BidEvent(System.nanoTime(),
-                                 System.currentTimeMillis(),
-                                 metc,
-                                 exchange.getCode(),
-                                 new BigDecimal(10-i),
-                                 new BigDecimal("1000")));
-           asks.add(new AskEvent(System.nanoTime(),
-                                 System.currentTimeMillis(),
-                                 metc,
-                                 exchange.getCode(),
-                                 new BigDecimal(100+i),
-                                 new BigDecimal("1000")));
+           bids.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
+                                                         System.currentTimeMillis(),
+                                                         metc,
+                                                         exchange.getCode(),
+                                                         new BigDecimal(10-i),
+                                                         new BigDecimal("1000")));
+           asks.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
+                                                         System.currentTimeMillis(),
+                                                         metc,
+                                                         exchange.getCode(),
+                                                         new BigDecimal(100+i),
+                                                         new BigDecimal("1000")));
        }
        script.addAll(bids);
        script.addAll(asks);
@@ -987,7 +999,10 @@ public class SimulatedExchangeTest
         throws Exception
     {
         // start the exchange in scripted mode with two events for METC
-        exchange.start(Arrays.asList(new QuoteEvent[] { bid, ask } ));
+        List<QuoteEvent> script = new ArrayList<QuoteEvent>();
+        script.add(bid);
+        script.add(ask);
+        exchange.start(script);
         // allow the exchange the opportunity to do something off the script, if it's going to
         Thread.sleep(5000);
         // verify the top for METC
@@ -1024,37 +1039,37 @@ public class SimulatedExchangeTest
             public Boolean call()
                     throws Exception
             {
-                TopOfBook top = exchange.getTopOfBook(metc);
+                TopOfBookEvent top = exchange.getTopOfBook(metc);
                 return top.getAsk() != null &&
                        top.getBid() != null;
             }
         });
         // the book for METC has at least an ask and bid in it, grab the value
-        TopOfBook top1 = exchange.getTopOfBook(metc);
+        TopOfBookEvent top1 = exchange.getTopOfBook(metc);
         // now, issue the same request for exchange2
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
                     throws Exception
             {
-                TopOfBook top = exchange2.getTopOfBook(metc);
+                TopOfBookEvent top = exchange2.getTopOfBook(metc);
                 return top.getAsk() != null &&
                        top.getBid() != null;
             }
         });
-        TopOfBook top2 = exchange2.getTopOfBook(metc);
+        TopOfBookEvent top2 = exchange2.getTopOfBook(metc);
         // and exchange3
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
                     throws Exception
             {
-                TopOfBook top = exchange3.getTopOfBook(metc);
+                TopOfBookEvent top = exchange3.getTopOfBook(metc);
                 return top.getAsk() != null &&
                        top.getBid() != null;
             }
         });
-        TopOfBook top3 = exchange3.getTopOfBook(metc);
+        TopOfBookEvent top3 = exchange3.getTopOfBook(metc);
         // we cannot guarantee how many ticks (if any) have happened during the course of these
         //  instructions.  regardless, each of the exchanges has
         //  a book for METC with at least a bid and ask.  it's unlikely they're exactly the same, but
@@ -1114,11 +1129,11 @@ public class SimulatedExchangeTest
      * @param inExpectedDepthOfBook a <code>List&lt;QuantityTuple&gt;</code> value
      * @throws Exception if an error occurs
      */
-    private void verifySubscriptions(List<TopOfBook> inActualTopOfBook,
+    private void verifySubscriptions(List<TopOfBookEvent> inActualTopOfBook,
                                      List<BookEntryTuple> inExpectedTopOfBook,
-                                     List<EventBase> inActualTicks,
+                                     List<Event> inActualTicks,
                                      List<QuantityTuple> inExpectedTicks,
-                                     List<EventBase> inActualDepthOfBook,
+                                     List<Event> inActualDepthOfBook,
                                      List<QuantityTuple> inExpectedDepthOfBook)
         throws Exception
     {
@@ -1126,7 +1141,7 @@ public class SimulatedExchangeTest
         assertEquals(inExpectedTopOfBook.size(),
                      inActualTopOfBook.size());
         List<BookEntryTuple> actualTopOfBook = new ArrayList<BookEntryTuple>();
-        for(TopOfBook event : inActualTopOfBook) {
+        for(TopOfBookEvent event : inActualTopOfBook) {
             actualTopOfBook.add(new BookEntryTuple(OrderBookTest.convertEvent(event.getBid()),
                                                    OrderBookTest.convertEvent(event.getAsk())));
         }
@@ -1160,8 +1175,8 @@ public class SimulatedExchangeTest
         assertNotNull(inStatistics.getVolume());
         assertNotNull(inStatistics.getCloseDate());
         assertNotNull(inStatistics.getPreviousCloseDate());
-        assertNotNull(inStatistics.getHighTime());
-        assertNotNull(inStatistics.getLowTime());
+        assertNotNull(inStatistics.getTradeHighTime());
+        assertNotNull(inStatistics.getTradeLowTime());
         assertNotNull(inStatistics.getOpenExchange());
         assertNotNull(inStatistics.getCloseExchange());
         assertNotNull(inStatistics.getHighExchange());
@@ -1200,7 +1215,7 @@ public class SimulatedExchangeTest
      * @param inBid a <code>BidEvent</code> value
      * @throws Exception if an error occurs
      */
-    private void verifyTopOfBook(TopOfBook inActualTopOfBook,
+    private void verifyTopOfBook(TopOfBookEvent inActualTopOfBook,
                                  AskEvent inExpectedAsk,
                                  BidEvent inExpectedBid)
         throws Exception
@@ -1241,7 +1256,7 @@ public class SimulatedExchangeTest
         /**
          * the events received
          */
-        private final List<TopOfBook> tops = new ArrayList<TopOfBook>();
+        private final List<TopOfBookEvent> tops = new ArrayList<TopOfBookEvent>();
         private AskEvent lastAsk = null;
         private BidEvent lastBid = null;
         /* (non-Javadoc)
@@ -1259,12 +1274,12 @@ public class SimulatedExchangeTest
         public void publishTo(Object inData)
         {
             QuoteEvent quote = (QuoteEvent)inData;
-            BidEvent newBid = (quote instanceof BidEvent ? quote.getAction() == Action.DELETE ? null : (BidEvent)quote : lastBid);
-            AskEvent newAsk = (quote instanceof AskEvent ? quote.getAction() == Action.DELETE ? null : (AskEvent)quote : lastAsk);
-            TopOfBook newTop = new TopOfBook(newBid,
-                                             newAsk,
-                                             quote.getTimestampAsDate(),
-                                             quote.getInstrument());
+            BidEvent newBid = (quote instanceof BidEvent ? quote.getAction() == QuoteAction.DELETE ? null : (BidEvent)quote : lastBid);
+            AskEvent newAsk = (quote instanceof AskEvent ? quote.getAction() == QuoteAction.DELETE ? null : (AskEvent)quote : lastAsk);
+            TopOfBookEvent newTop = TopOfBookEventBuilder.newTopOfBook()
+                                             .withBid(newBid)
+                                             .withAsk(newAsk)
+                                             .withTimestamp(quote.getTimestamp()).create();
             tops.add(newTop);
             lastBid = newBid;
             lastAsk = newAsk;
@@ -1283,7 +1298,7 @@ public class SimulatedExchangeTest
        /**
         * the events received
         */
-       private final List<EventBase> events = new ArrayList<EventBase>();
+       private final List<Event> events = new ArrayList<Event>();
        /* (non-Javadoc)
         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
         */
@@ -1298,7 +1313,7 @@ public class SimulatedExchangeTest
        @Override
        public void publishTo(Object inData)
        {
-           events.add((EventBase)inData);
+           events.add((Event)inData);
        }
    }
 }

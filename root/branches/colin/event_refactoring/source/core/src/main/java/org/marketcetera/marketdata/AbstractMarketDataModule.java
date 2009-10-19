@@ -18,9 +18,9 @@ import javax.management.NotificationListener;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
-import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
+import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -91,7 +91,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                                    e);
             throw new IllegalArgumentException(e);
         }
-        if(feed instanceof AbstractMarketDataFeed) {
+        if(feed instanceof AbstractMarketDataFeed<?,?,?,?,?,?>) {
             ((AbstractMarketDataFeed<?,?,?,?,?,?>)feed).doReconnectToFeed();
         } else {
             throw new UnsupportedOperationException();
@@ -148,17 +148,17 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                 @Override
                 public boolean isInteresting(Object inData)
                 {
-                    return inData instanceof EventBase;
+                    return inData instanceof Event;
                 }
                 @Override
                 public void publishTo(final Object inEvent)
                 {
-                    if(inEvent instanceof EventBase) {
+                    if(inEvent instanceof Event) {
                         requestLock.executeRead(new Runnable() {
                             @Override
                             public void run()
                             {
-                                EventBase event = (EventBase)inEvent;
+                                Event event = (Event)inEvent;
                                 Object token = event.getSource();
                                 RequestID requestID = requests.get(token);
                                 event.setSource(requestID);

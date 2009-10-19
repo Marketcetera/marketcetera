@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.concurrent.Executor;
 
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.EventTestBase;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
@@ -64,12 +64,12 @@ public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick,
 	}
 
 	@Override
-	protected Object createEvent1(LatestTickKey key) {
+	protected Object createEvent1(LatestTickKey key) throws Exception {
 		return createEvent(key.getSymbol(), 1, 6);
 	}
 
 	@Override
-	protected Object createEvent2(LatestTickKey key) {
+	protected Object createEvent2(LatestTickKey key) throws Exception {
 		return createEvent(key.getSymbol(), 10, 7);
 	}
 
@@ -85,8 +85,8 @@ public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick,
 		assertThat(item.getSize(), comparesEqualTo(7));
 	}
 
-	private Object createEvent(String symbol, int price, int size) {
-		return new TradeEvent(1L, System.currentTimeMillis(), new Equity(symbol), "Q",
+	private Object createEvent(String symbol, int price, int size) throws Exception {
+		return EventTestBase.generateEquityTradeEvent(1L, System.currentTimeMillis(), new Equity(symbol), "Q",
 				new BigDecimal(price), new BigDecimal(size));
 	}
 

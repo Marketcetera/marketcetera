@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.marketcetera.core.ImmediateExecutorService;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.EventTestBase;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -70,13 +71,15 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 
 	/**
 	 * @return an event to send
+	 * @throws Exception 
 	 */
-	protected abstract Object createEvent1(K key);
+	protected abstract Object createEvent1(K key) throws Exception;
 
 	/**
 	 * @return another event to send
+	 * @throws Exception 
 	 */
-	protected abstract Object createEvent2(K key);
+	protected abstract Object createEvent2(K key) throws Exception;
 	
 	/**
 	 * @return capabilities that this feed supports
@@ -177,7 +180,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	}
 
 	@Test
-	public void testDataOnlyReceivedWhenStarted() {
+	public void testDataOnlyReceivedWhenStarted() throws Exception {
 		// emit first event
 		emit(createEvent1(mKey1));
 		// item should not have changed
@@ -211,7 +214,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	}
 
 	@Test
-	public void testDataStopsWhenSourceSetToNull() {
+	public void testDataStopsWhenSourceSetToNull() throws Exception {
 		// start flow
 		mFixture.startFlow(mKey1);
 		// emit second event
@@ -353,13 +356,13 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		mMockMarketDataModule.emitData(object);
 	}
 
-	protected AskEvent createAskEvent(String symbol, String exchange, int price, int size) {
-		return new AskEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
+	protected AskEvent createAskEvent(String symbol, String exchange, int price, int size) throws Exception {
+		return EventTestBase.generateEquityAskEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
 				new BigDecimal(price), new BigDecimal(size));
 	}
 
-	protected BidEvent createBidEvent(String symbol, String exchange, int price, int size) {
-		return new BidEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
+	protected BidEvent createBidEvent(String symbol, String exchange, int price, int size) throws Exception {
+		return EventTestBase.generateEquityBidEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
 				new BigDecimal(price), new BigDecimal(size));
 	}
 }

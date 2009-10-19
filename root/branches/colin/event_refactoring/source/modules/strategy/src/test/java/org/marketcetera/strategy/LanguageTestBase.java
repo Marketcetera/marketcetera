@@ -6,10 +6,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.marketcetera.event.LogEvent.Level.DEBUG;
-import static org.marketcetera.event.LogEvent.Level.ERROR;
-import static org.marketcetera.event.LogEvent.Level.INFO;
-import static org.marketcetera.event.LogEvent.Level.WARN;
+import static org.marketcetera.event.LogEventLevel.DEBUG;
+import static org.marketcetera.event.LogEventLevel.ERROR;
+import static org.marketcetera.event.LogEventLevel.INFO;
+import static org.marketcetera.event.LogEventLevel.WARN;
 import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
 import static org.marketcetera.strategy.Status.FAILED;
@@ -39,9 +39,8 @@ import org.junit.Test;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventTest;
 import org.marketcetera.event.TradeEvent;
@@ -61,10 +60,10 @@ import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
@@ -2332,12 +2331,12 @@ public abstract class LanguageTestBase
         String validSystemStatement1 = "select * from trade";
         String validSystemStatement2 = "select * from ask";
         String invalidStatement = "this statement is not syntactically valid";
-        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
-                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        Event[] events = new Event[] { EventTestBase.generateEquityTradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                       EventTestBase.generateEquityTradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                       EventTestBase.generateEquityAskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                       EventTestBase.generateEquityAskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                       EventTestBase.generateEquityBidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                       EventTestBase.generateEquityBidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
         String[] sources = new String[] { null, "esper", "system" };
         String[][] statements = new String[][] { { null }, { }, { invalidStatement },
                                                  { validSystemStatement1, validSystemStatement2 }, { validSystemStatement1 },
@@ -2489,12 +2488,12 @@ public abstract class LanguageTestBase
     public void cancelSingleCep()
         throws Exception
     {
-        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
-                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        Event[] events = new Event[] { EventTestBase.generateEquityTradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                       EventTestBase.generateEquityTradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                       EventTestBase.generateEquityAskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                       EventTestBase.generateEquityAskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                       EventTestBase.generateEquityBidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                       EventTestBase.generateEquityBidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
         assertNull(AbstractRunningStrategy.getProperty("requestID"));
         // create a strategy that creates some suggestions
         List<OrderSingleSuggestion> suggestions = doCEPTest("esper",
@@ -2547,12 +2546,12 @@ public abstract class LanguageTestBase
     public void cancelAllCep()
         throws Exception
     {
-        EventBase[] events = new EventBase[] { new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
-                                               new TradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
-                                               new AskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
-                                               new BidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
+        Event[] events = new Event[] { EventTestBase.generateEquityTradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("1"), new BigDecimal("100")),
+                                               EventTestBase.generateEquityTradeEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("2"), new BigDecimal("200")),
+                                               EventTestBase.generateEquityAskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("3"), new BigDecimal("300")),
+                                               EventTestBase.generateEquityAskEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("4"), new BigDecimal("400")),
+                                               EventTestBase.generateEquityBidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("METC"), "Q", new BigDecimal("5"), new BigDecimal("500")),
+                                               EventTestBase.generateEquityBidEvent(System.nanoTime(), System.currentTimeMillis(), new Equity("ORCL"), "Q", new BigDecimal("6"), new BigDecimal("600")) };
         assertEquals(2,
                      doCEPTest("esper",
                                new String[] { "select * from trade" },
@@ -3481,12 +3480,12 @@ public abstract class LanguageTestBase
     /**
      * Feeds the given events to the given <code>CEP</code> module. 
      *
-     * @param inEvents an <code>EventBase[]</code> value
+     * @param inEvents an <code>Event[]</code> value
      * @param inCEPModule a <code>ModuleURN</code> value containing a CEP module
      * @return a <code>DataFlowID</code> value representing the channel by which the events are fed
      * @throws Exception if an error occurs
      */
-    private DataFlowID feedEventsToCEP(EventBase[] inEvents,
+    private DataFlowID feedEventsToCEP(Event[] inEvents,
                                        ModuleURN inCEPModule)
         throws Exception
     {
@@ -3525,14 +3524,14 @@ public abstract class LanguageTestBase
      *
      * @param inProvider a <code>String</code> value containing the provider to whom to make the request
      * @param inStatements a <code>String[]</code> value containing the statements to pass to the CEP module
-     * @param inEvents an <code>EventBase[]</code> value containing the events to cause to be passed to the CEP module
+     * @param inEvents an <code>Event[]</code> value containing the events to cause to be passed to the CEP module
      * @param inCleanup a <code>boolean</code> value indicating whether the strategy started during the test should be stopped or not
      * @return a <code>List&lt;OrderSingleSuggestion&gt;</code> value containing the suggestions received
      * @throws Exception if an error occurs
      */
     private List<OrderSingleSuggestion> doCEPTest(String inProvider,
                                                   String[] inStatements,
-                                                  EventBase[] inEvents,
+                                                  Event[] inEvents,
                                                   boolean inCleanup)
         throws Exception
     {
@@ -3811,12 +3810,12 @@ public abstract class LanguageTestBase
                 expectedExecutionReports.addAll(generateExecutionReports(expectedOrder));
             }
         }
-        runningStrategy.dataReceived(new BidEvent(System.nanoTime(),
-                                                  System.currentTimeMillis(),
-                                                  new Equity("METC"),
-                                                  "Q",
-                                                  new BigDecimal("100.00"),
-                                                  new BigDecimal("10000")));
+        runningStrategy.dataReceived(EventTestBase.generateEquityBidEvent(System.nanoTime(),
+                                                                          System.currentTimeMillis(),
+                                                                          new Equity("METC"),
+                                                                          "Q",
+                                                                          new BigDecimal("100.00"),
+                                                                          new BigDecimal("10000")));
         assertEquals(inExecutionReportCount,
                      Integer.parseInt(AbstractRunningStrategy.getProperty("executionReportCount")));
         ExecutionReport[] actualExecutionReports = ((AbstractRunningStrategy)runningStrategy.getRunningStrategy()).getExecutionReports(orderID);

@@ -11,10 +11,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.MockEventTranslator;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -71,7 +71,7 @@ public class MockMarketDataFeed
     
     private Set<String> mCanceledHandles = new LinkedHashSet<String>();
     private Set<String> mCreatedHandles = new LinkedHashSet<String>();
-    private final List<EventBase> eventsToReturn = new ArrayList<EventBase>();
+    private final List<Event> eventsToReturn = new ArrayList<Event>();
     
     public MockMarketDataFeed()
         throws NoMoreIDsException
@@ -122,9 +122,9 @@ public class MockMarketDataFeed
     /**
      * Sets the events to return for a market data request.
      *
-     * @param inEvents a <code>List&lt;EventBase&gt;</code> value
+     * @param inEvents a <code>List&lt;Event&gt;</code> value
      */
-    public void setEventsToReturn(List<EventBase> inEvents)
+    public void setEventsToReturn(List<Event> inEvents)
     {
         eventsToReturn.clear();
         eventsToReturn.addAll(inEvents);
@@ -187,7 +187,7 @@ public class MockMarketDataFeed
                 dataReceived(handle,
                              inToken.getTokenSpec().getDataRequest());
             } else {
-                for(EventBase event : eventsToReturn) {
+                for(Event event : eventsToReturn) {
                     dataReceived(handle,
                                  event);
                 }

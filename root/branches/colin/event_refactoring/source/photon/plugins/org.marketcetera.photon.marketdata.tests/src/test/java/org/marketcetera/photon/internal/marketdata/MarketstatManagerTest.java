@@ -13,7 +13,7 @@ import java.util.EnumSet;
 import java.util.concurrent.Executor;
 
 import org.junit.Test;
-import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.EventTestBase;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
@@ -72,12 +72,12 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 	}
 
 	@Override
-	protected Object createEvent1(MarketstatKey key) {
+	protected Object createEvent1(MarketstatKey key) throws Exception {
 		return createEvent(key.getSymbol(), 34, 33, DATE1, DATE2);
 	}
 
 	@Override
-	protected Object createEvent2(MarketstatKey key) {
+	protected Object createEvent2(MarketstatKey key) throws Exception {
 		return createEvent(key.getSymbol(), 1, 2, DATE2, DATE1);
 	}
 
@@ -98,8 +98,8 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 	}
 
 	private Object createEvent(String symbol, int close, int previousClose, Date closeDate,
-			Date previousCloseDate) {
-		return new MarketstatEvent(new Equity(symbol), new Date(), null, null, null,
+			Date previousCloseDate) throws Exception {
+		return EventTestBase.generateEquityMarketstatEvent(new Equity(symbol), new Date(), null, null, null,
 				new BigDecimal(close), new BigDecimal(previousClose), null, closeDate,
 				previousCloseDate, null, null, null, null, null, null);
 	}
@@ -124,8 +124,8 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 		validateState1(mItem1);
 	}
 
-	protected Object createNullEvent(MarketstatKey key) {
-		return new MarketstatEvent(new Equity(key.getSymbol()), new Date(), null, null, null,
+	protected Object createNullEvent(MarketstatKey key) throws Exception {
+		return EventTestBase.generateEquityMarketstatEvent(new Equity(key.getSymbol()), new Date(), null, null, null,
 				null, null, null, null, null, null, null, null, null, null, null);
 	}
 

@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 
 import org.junit.Assert;
@@ -20,17 +19,12 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.event.AggregateEvent;
-import org.marketcetera.event.EventBase;
-import org.marketcetera.event.EventBaseTest;
+import org.marketcetera.event.MockEquityEvent;
 import org.marketcetera.event.MockEventTranslator;
-import org.marketcetera.event.AggregateEventTest.MockAggregateEvent;
-import org.marketcetera.event.EventBaseTest.MockEvent;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -47,8 +41,6 @@ public class AbstractMarketDataFeedTest
     extends MarketDataFeedTestBase
     implements Messages
 {
-    private final Equity metc = new Equity("METC");
-    private final String exchange = "TEST";
     @Test
     public void testConstructor()
         throws Exception
@@ -391,7 +383,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeedToken token = feed.execute(spec);
         waitForPublication(s1);
         assertEquals(token,
-                     ((MockEvent)s1.getData()).getSource());
+                     ((MockEquityEvent)s1.getData()).getSource());
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(Status.ACTIVE,
@@ -428,7 +420,7 @@ public class AbstractMarketDataFeedTest
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(token,
-                     ((MockEvent)s1.getData()).getSource());
+                     ((MockEquityEvent)s1.getData()).getSource());
         assertEquals(Status.ACTIVE,
                      token.getStatus());
         // now check to make sure that the resubmitted query has a new handle
@@ -456,7 +448,7 @@ public class AbstractMarketDataFeedTest
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(token,
-                     ((MockEvent)s1.getPublications().get(0)).getSource());
+                     ((MockEquityEvent)s1.getPublications().get(0)).getSource());
         // bonus testing - make a resubmission fail and verify that the token status is set correctly
         // there is already one active query represented by "spec" and "token" - add another one that
         //  we can set to fail when it is resubmitted
@@ -466,7 +458,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeedToken token2 = feed.execute(spec2);
         waitForPublication(s1);
         assertEquals(token2,
-                     ((MockEvent)s1.getData()).getSource());
+                     ((MockEquityEvent)s1.getData()).getSource());
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(Status.ACTIVE,
@@ -506,7 +498,7 @@ public class AbstractMarketDataFeedTest
         // create an invalid request
         final MarketDataRequest invalidRequest = MarketDataRequest.newRequest();
         // prove that it's invalid
-        new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(NEITHER_SYMBOLS_NOR_UNDERLYING_SYMBOLS_SPECIFIED.getText(invalidRequest)) {
             @Override
             protected void run()
                     throws Exception
@@ -702,55 +694,6 @@ public class AbstractMarketDataFeedTest
         feed.setCapabilities(capabilities);
         Assert.assertArrayEquals(capabilities.toArray(),
                                  feed.getCapabilities().toArray());
-    }
-    /**
-     * Verifies that {@link AggregateEvent} objects are properly decomposed.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void decomposition()
-        throws Exception
-    {
-        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
-        feed.start();
-        feed.login(new MockMarketDataFeedCredentials());
-        // set up a subscriber to receive events
-        final MockSubscriber s = new MockSubscriber();
-        // a market data request (doesn't matter what)
-        MarketDataRequest request = new MarketDataRequest().fromProvider("not-a-real-provider").withSymbols("METC");
-        // first, have the feed return a non-aggregate event
-        MockEvent e = new MockEvent();
-        assertTrue(EventBase.class.isAssignableFrom(e.getClass()));
-        assertFalse(AggregateEvent.class.isAssignableFrom(e.getClass()));
-        feed.setEventsToReturn(Arrays.asList(new EventBase[] { e } ));
-        feed.execute(MarketDataFeedTokenSpec.generateTokenSpec(request,
-                                                               s));
-        waitForPublication(s);
-        assertEquals(1,
-                     s.getPublishCount());
-        assertEquals(e,
-                     s.getPublications().get(0));
-        // next, send in an aggregate event and make sure it gets properly decomposed
-        List<EventBase> expectedEvents = Arrays.asList(new EventBase[] { EventBaseTest.generateAskEvent(metc,
-                                                                                                        exchange),
-                                                                         EventBaseTest.generateBidEvent(metc,
-                                                                                                        exchange) } );
-        MockAggregateEvent mae = new MockAggregateEvent(expectedEvents);
-        feed.setEventsToReturn(Arrays.asList(new EventBase[] { mae } ));
-        s.reset();
-        feed.execute(MarketDataFeedTokenSpec.generateTokenSpec(request,
-                                                               s));
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return s.getPublishCount() == 2;
-            }
-        });
-        assertEquals(expectedEvents,
-                     s.getPublications());
     }
     @Test
     public void testExecuteFailures()

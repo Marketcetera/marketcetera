@@ -8,6 +8,7 @@ import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqu
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -16,6 +17,7 @@ import org.apache.log4j.Level;
 import org.junit.Test;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.QuoteEventBuilder;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
@@ -70,12 +72,12 @@ public class DepthOfBookManagerTest extends DataFlowManagerTestBase<MDDepthOfBoo
 	}
 
 	@Override
-	protected Object createEvent1(DepthOfBookKey key) {
+	protected Object createEvent1(DepthOfBookKey key) throws Exception {
 		return createAskEvent(key.getSymbol(), "B", 6, 3);
 	}
 
 	@Override
-	protected Object createEvent2(DepthOfBookKey key) {
+	protected Object createEvent2(DepthOfBookKey key) throws Exception {
 		return createBidEvent(key.getSymbol(), "A", 1, 2);
 	}
 
@@ -163,10 +165,10 @@ public class DepthOfBookManagerTest extends DataFlowManagerTestBase<MDDepthOfBoo
 		emit(changeAsk(ask1, 6));
 		validateQuotes(mItem2.getBids(), "B", "1", "3");
 		validateQuotes(mItem2.getAsks(), "A", "3", "6");
-		emit(AskEvent.deleteEvent(ask1));
+		emit(QuoteEventBuilder.delete(ask1));
 		validateQuotes(mItem2.getBids(), "B", "1", "3");
 		validateQuotes(mItem2.getAsks());
-		emit(BidEvent.deleteEvent(bid1));
+		emit(QuoteEventBuilder.delete(bid1));
 		validateQuotes(mItem2.getBids());
 		validateQuotes(mItem2.getAsks());
 	}
@@ -214,11 +216,11 @@ public class DepthOfBookManagerTest extends DataFlowManagerTestBase<MDDepthOfBoo
 		emit(unexpected);
 		assertLastEvent(Level.WARN, mFixture.getClass().getName(),
 				Messages.DATA_FLOW_MANAGER_UNEXPECTED_MESSAGE_ID.getText(unexpected, getLastRequest()), null);
-		unexpected = BidEvent.deleteEvent(unexpectedBid);
+		unexpected = QuoteEventBuilder.delete(unexpectedBid);
 		emit(unexpected);
 		assertLastEvent(Level.WARN, mFixture.getClass().getName(),
 				Messages.DATA_FLOW_MANAGER_UNEXPECTED_MESSAGE_ID.getText(unexpected, getLastRequest()), null);
-		unexpected = AskEvent.deleteEvent(unexpectedAsk);
+		unexpected = QuoteEventBuilder.delete(unexpectedAsk);
 		emit(unexpected);
 		assertLastEvent(Level.WARN, mFixture.getClass().getName(),
 				Messages.DATA_FLOW_MANAGER_UNEXPECTED_MESSAGE_ID.getText(unexpected, getLastRequest()), null);
@@ -226,11 +228,11 @@ public class DepthOfBookManagerTest extends DataFlowManagerTestBase<MDDepthOfBoo
 	}
 
 	private BidEvent changeBid(BidEvent bid, int size) {
-		return BidEvent.changeEvent(bid, System.currentTimeMillis(), new BigDecimal(size));
+		return QuoteEventBuilder.change(bid, new Date(), new BigDecimal(size));
 	}
 
 	private AskEvent changeAsk(AskEvent ask, int size) {
-		return AskEvent.changeEvent(ask, System.currentTimeMillis(), new BigDecimal(size));
+		return QuoteEventBuilder.change(ask, new Date(), new BigDecimal(size));
 	}
 
 }

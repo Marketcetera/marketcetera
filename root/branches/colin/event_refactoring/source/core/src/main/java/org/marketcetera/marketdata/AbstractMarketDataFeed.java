@@ -12,21 +12,20 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.metrics.ThreadedMetric;
-import org.marketcetera.metrics.ConditionsFactory;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
-import org.marketcetera.event.AggregateEvent;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTranslator;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
+import org.marketcetera.metrics.ConditionsFactory;
+import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
 
 /* $License$ */
@@ -388,7 +387,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * Returns an instance of {@link EventTranslator} appropriate for this feed.
      *
      * <p>The {@link EventTranslator} translates data-types appropriate for this feed
-     * to subclasses of {@link EventBase}.
+     * to subclasses of {@link OldEventBase}.
      * 
      * @return an <code>E</code> value
      */
@@ -516,23 +515,11 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             } else {
                 try {
                     E eventTranslator = getEventTranslator();
-                    List<EventBase> events = eventTranslator.toEvent(inData,
-                                                                     inHandle);
-                    // events returned may contain aggregate events, which further need to be decomposed
-                    // create a list of actual events
-                    List<EventBase> actualEvents = new ArrayList<EventBase>();
-                    // check the events returned to find aggregate events, if any
-                    for(EventBase event : events) {
-                        if(event instanceof AggregateEvent) {
-                            AggregateEvent ae = (AggregateEvent)event;
-                            actualEvents.addAll(ae.decompose());
-                        } else {
-                            actualEvents.add(event);
-                        }
-                    }
+                    List<Event> events = eventTranslator.toEvent(inData,
+                                                                                       inHandle);
                     ThreadedMetric.event("mdata-translated");  //$NON-NLS-1$
                     // now publish the complete list of events in the proper order
-                    for(EventBase event : actualEvents) {
+                    for(Event event : events) {
                         event.setSource(token);
                         token.publish(event);
                     }
