@@ -1,1 +1,0 @@
-sqlplus %1
