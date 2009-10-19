@@ -1,9 +1,9 @@
 package org.marketcetera.marketdata;
 
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.DepthOfBook;
+import org.marketcetera.event.DepthOfBookEvent;
 import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.TopOfBook;
+import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
@@ -45,7 +45,7 @@ public interface Exchange<T>
      * @param inInstrument an <code>Instrument</code> value
      * @return a <code>TopOfBook</code> value
      */
-    public TopOfBook getTopOfBook(Instrument inInstrument);
+    public TopOfBookEvent getTopOfBook(Instrument inInstrument);
     /**
      * Establishes a subscription to the top of the exchange book for the given instrument.
      * 
@@ -64,7 +64,7 @@ public interface Exchange<T>
      * @param inInstrument an <code>Instrument</code> value
      * @return a <code>DepthOfBook</code> value
      */
-    public DepthOfBook getDepthOfBook(Instrument inInstrument);
+    public DepthOfBookEvent getDepthOfBook(Instrument inInstrument);
     /**
      * Establishes a subscription to the depth of the exchange book for the given instrument.
      *

@@ -6,7 +6,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * Translates to and from {@link EventBase} format.
+ * Translates to and from {@link OldEventBase} format.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -24,13 +24,13 @@ public interface EventTranslator
      * @param inData an <code>Object</code> value
      * @param inHandle a <code>String</code> value containing the handle indicating the request to which
      *   the response applies
-     * @return a <code>List&lt;EventBase&gt;</code> value
+     * @return a <code>List&lt;Event&gt;</code> value
      * @throws UnsupportedEventException if the object cannot be translated to an object
      *   of type <code>EventBase</code>
      * @throws CoreException if another error occurs
      */
-    public List<EventBase> toEvent(Object inData,
-                                   String inHandle)
+    public List<Event> toEvent(Object inData,
+                               String inHandle)
         throws CoreException;
     /**
      * Translates from <code>EventBase</code> format to a format specified by the implementer.
@@ -44,10 +44,10 @@ public interface EventTranslator
      * public FooFormat translate(EventBase inEvent)
      * </pre>
      *
-     * @param inEvent an <code>EventBase</code> value
+     * @param inEvent an <code>Event</code> value
      * @return an <code>Object</code> value
      * @throws CoreException
      */
-    public Object fromEvent(EventBase inEvent)
+    public Object fromEvent(Event inEvent)
         throws CoreException;
 }

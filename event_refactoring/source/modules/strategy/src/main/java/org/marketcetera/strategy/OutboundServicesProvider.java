@@ -1,7 +1,7 @@
 package org.marketcetera.strategy;
 
 import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataEmitter;
@@ -65,7 +65,7 @@ interface OutboundServicesProvider
      * @param inNamespace a <code>String</code> value containing the namespace of an existing CEP query or null to
      *   send the event to subscribers only 
      */
-    void sendEvent(EventBase inEvent,
+    void sendEvent(Event inEvent,
                    String inProvider,
                    String inNamespace);
     /**

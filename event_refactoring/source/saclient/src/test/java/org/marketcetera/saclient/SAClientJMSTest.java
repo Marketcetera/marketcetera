@@ -1,23 +1,32 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.CopierModuleFactory;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.modules.remote.receiver.ReceiverFactory;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.trade.*;
-import org.marketcetera.client.ClientTest;
-import org.junit.Test;
-import org.junit.After;
-import static org.junit.Assert.*;
-import org.hamcrest.Matchers;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Test;
+import org.marketcetera.client.ClientTest;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.modules.remote.receiver.ReceiverFactory;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.TypesTestBase;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -338,9 +347,9 @@ public class SAClientJMSTest extends SAClientTestBase {
      */
     private Object[] createTestObjects() throws Exception {
         return new Object[]{
-                new AskEvent(1, 2, new Equity("asym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
-                new BidEvent(3, 4, new Equity("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
-                new TradeEvent(5, 6, new Equity("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                EventTestBase.generateEquityAskEvent(1, 2, new Equity("asym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                EventTestBase.generateEquityBidEvent(3, 4, new Equity("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                EventTestBase.generateEquityTradeEvent(5, 6, new Equity("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
                 ClientTest.createOrderSingle(),
                 ClientTest.createOrderReplace(),
                 ClientTest.createOrderCancel(),

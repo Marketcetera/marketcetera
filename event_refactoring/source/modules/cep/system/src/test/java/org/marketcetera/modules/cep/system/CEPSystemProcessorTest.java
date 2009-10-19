@@ -4,15 +4,15 @@ import static junit.framework.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.EventBase;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.CopierModuleFactory;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -20,15 +20,14 @@ import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
-import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
 
 /**
  * @author toli@marketcetera.com
  * @version $Id$
  * @since 1.0.0
  */
-@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class CEPSystemProcessorTest extends CEPTestBase {
     private static ModuleURN TEST_URN = new ModuleURN(CEPSystemFactory.PROVIDER_URN, "toli");
 
@@ -43,7 +42,7 @@ public class CEPSystemProcessorTest extends CEPTestBase {
     }
 
     @Override
-    protected Class getIncorrectQueryException() {
+    protected Class<?> getIncorrectQueryException() {
         return RequestDataException.class;
     }
 
@@ -67,7 +66,7 @@ public class CEPSystemProcessorTest extends CEPTestBase {
     public void testBasicFlow() throws Exception {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> System: send 3 events
-                new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] { bid1, trade1, trade2}),
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] { bid1, trade1, trade2}),
                 // System -> Sink: only get 2 trade events
                 new DataRequest(TEST_URN, "select * from trade")
         });
@@ -88,10 +87,10 @@ public class CEPSystemProcessorTest extends CEPTestBase {
             protected void execute() throws Exception {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
-                        new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                                new BidEvent(1, 2, new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                                new TradeEvent(3, 4, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                                new AskEvent(5, 6, new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
+                                EventTestBase.generateEquityBidEvent(1, new Date(2), new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), DateUtils.dateToString(new Date())),
+                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), DateUtils.dateToString(new Date())),
+                                EventTestBase.generateEquityAskEvent(5, new Date(6), new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), DateUtils.dateToString(new Date()))
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(TEST_URN, new String[]{"select * from bob", "select * from fred"})
@@ -107,10 +106,10 @@ public class CEPSystemProcessorTest extends CEPTestBase {
             protected void execute() throws Exception {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
-                        new DataRequest(CopierModuleFactory.INSTANCE_URN, new EventBase[] {
-                                new BidEvent(1, 2, new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                                new TradeEvent(3, 4, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                                new AskEvent(5, 6, new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
+                                EventTestBase.generateEquityBidEvent(1, new Date(2), new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), DateUtils.dateToString(new Date())),
+                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), DateUtils.dateToString(new Date())),
+                                EventTestBase.generateEquityAskEvent(5, new Date(6), new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), DateUtils.dateToString(new Date()))
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(TEST_URN, "select * from bob")
