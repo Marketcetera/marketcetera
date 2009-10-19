@@ -1,0 +1,252 @@
+<body>
+
+<p>Multi-tiered logging and internationalization (i18n) framework.</p>
+
+
+<h3>Lowest tier: {@link
+org.marketcetera.util.log.SLF4JLoggerProxy}</h3>
+
+<p>At the lowest layer, the framework offers a simple proxy to SLF4J
+via {@link org.marketcetera.util.log.SLF4JLoggerProxy}, wherein the
+proxy automatically determines the right category under which a
+message should be logged. At this level, string are directly logged
+(there is no i18n). Calls to logging methods can be guarded via the
+provided {@link
+org.marketcetera.util.log.SLF4JLoggerProxy#isErrorEnabled(Object)}
+method and its counterparts for other logging levels. But such guards
+are not essential because the logging methods allow for a placeholder
+string and varargs object arguments (e.g. a message such
+as <code>Hello {}!</code> and argument <code>world</code> is logged
+as <code>Hello world!</code>). If the numbers of placeholders and
+arguments are unequal, then all extra occurences of <code>{}</code>
+are displayed as <code>{}</code>, or extra arguments are ignored.</p>
+
+
+<h3>Middle tier: {@link org.marketcetera.util.log.I18NMessage}</h3>
+
+<p>At the next layer, strings are not directly used. Instead, message
+handles are used, and they are translated into strings at run-time;
+this is the basis for composing i18n code that is localized at
+run-time. Message handles are instances of {@link
+org.marketcetera.util.log.I18NMessage}. The translation into strings
+is done via {@link org.marketcetera.util.log.I18NMessageProvider}, at
+which time the varargs object arguments are also supplied. That is,
+retrieving the actual localized string and replacing placeholders with
+their actual values is done in a single step. Similarly, i18n messages
+can be logged via {@link org.marketcetera.util.log.I18NLoggerProxy} by
+supplying a message handle and the varargs object arguments to the
+logger.</p>
+
+<p>Calls to logging methods need not be guarded; if guarding is
+desired, use the methods of the {@link
+org.marketcetera.util.log.SLF4JLoggerProxy} tier.</p>
+
+
+<h3>Top tier (unbound): <code>I18NMessage<i>x</i>P</code></h3>
+
+<p>{@link org.marketcetera.util.log.I18NMessage0P}, {@link
+org.marketcetera.util.log.I18NMessage1P}, ..., {@link
+org.marketcetera.util.log.I18NMessageNP} are classes that enable the
+compiler to confirm that the number of arguments supplied at
+localization matches the number of placeholders. That is, the message
+handle is created as an instance of
+a <code>I18NMessage<i>x</i>P</code> class instead of the generic
+{@link org.marketcetera.util.log.I18NMessage}; and localization and
+logging is done via methods of the
+same <code>I18NMessage<i>x</i>P</code> class. The methods
+of <code>I18NMessage<i>x</i>P</code> accept exactly <i>x</i>
+arguments. {@link org.marketcetera.util.log.I18NMessageNP} is a
+special case that accepts an arbitrary number of arguments (to allow
+for a large <i>x</i> for which no
+class <code>I18NMessage<i>x</i>P</code> is provided).</p>
+
+
+<h3>Top tier (bound): <code>I18NBoundMessage<i>x</i>P</code></h3>
+
+<p>{@link org.marketcetera.util.log.I18NBoundMessage0P}, {@link
+org.marketcetera.util.log.I18NBoundMessage1P}, ..., {@link
+org.marketcetera.util.log.I18NBoundMessageNP} are classes that combine
+a corresponding <code>I18NMessage<i>x</i>P</code> instance and the
+message arguments into a single
+object. A <code>I18NBoundMessage<i>x</i>P</code> instance is not
+localized yet, but the arguments to the message are fixed. These
+instances are used when a message and its arguments need to be
+supplied to another object for delayed localization (e.g. the message
+of an exception). Localization is done via methods of the {@link
+org.marketcetera.util.log.I18NBoundMessage} interface, which all
+the <code>I18NBoundMessage<i>x</i>P</code> implement.</p>
+
+<p>Note that {@link org.marketcetera.util.log.I18NBoundMessage0P} is
+conceptually identical to a {@link
+org.marketcetera.util.log.I18NMessage0P} because there are no
+placeholders in such a message. This is why {@link
+org.marketcetera.util.log.I18NMessage0P} also implements the {@link
+org.marketcetera.util.log.I18NBoundMessage} interface, and can thus be
+used directly where an {@link
+org.marketcetera.util.log.I18NBoundMessage} is needed.</p>
+
+
+<h3>Design pattern</h3>
+
+<p>The following design pattern is recommended for users of this
+framework.</p>
+
+<p>First, define an interface called <code>Messages</code> in each of
+your packages. This is what such an interface looks like; note that
+all message-related fields must be static and non-null (otherwise the
+localization utilities in {@link org.marketcetera.util.l10n} will
+ignore them):</p>
+
+<pre>
+public interface Messages
+{
+    static final I18NMessageProvider PROVIDER=
+        new I18NMessageProvider("util_file");
+
+    static final I18NLoggerProxy LOGGER=
+        new I18NLoggerProxy(PROVIDER);
+
+    static final I18NMessage0P CLOSING_FAILED=
+        new I18NMessage0P(LOGGER,"closing_failed");
+    static final I18NMessage1P CANNOT_GET_TYPE=
+        new I18NMessage1P(LOGGER,"cannot_get_type");
+
+    ... more messages
+}
+</pre>
+
+<p>The <code>util_file</code> string above points to a file that
+contains the localized messages, in the commons-i18n syntax (in which
+placeholders are of the form <code>{<i>n</i>}</code>,
+not <code>{}</code> as we saw earlier for SLF4J). The full file name sought
+is <code>util_file_messages.properties</code>, and it should reside in
+your project's <code>src/main/resources</code>. Here is a sample
+file:</p>
+
+<pre>
+closing_failed.msg=Closing failed
+cannot_get_type.msg=Cannot determine type of file ''{0}''
+</pre>
+
+<p>The odd syntax <code>''{0}''</code> (two single quotes on each
+side) produces a message that reads <code>'a'</code> when the first
+message parameter is the
+string <code>a</code>. Similarly, <code>'{0}'</code>
+produces <code>{0}</code>; <code>"{0}"</code> (one double quote on
+each side) produces <code>"a"</code> (because a double quote is not a
+special character); and <code>{0}</code> produces <code>a</code>. If
+the numbers of placeholders and arguments are unequal, then all extra
+occurences of <code>{<i>n</i>}</code> are displayed
+as <code>{<i>n</i>}</code>, or extra arguments are ignored.
+
+<p>Additional files can be provided for additional locales, using the
+standard Java resource bundle system. For example, the
+file <code>util_file_messages_fr.properties</code> can contain
+messages in French;
+or <code>util_file_messages_fr_CA.properties</code> can be used for
+French in Canada and <code>util_file_messages_fr_FR.properties</code>
+for French in France.</p>
+
+<p>You should also define a test class
+called <code>MessagesTest</code>, which ensures each of your message
+handles can be resolved in the fallback locale; see the {@link
+org.marketcetera.util.l10n} package for the recommended approach.</p>
+
+<p>Here is sample code to localize or log a message:</p>
+
+<pre>
+class MyClass {
+ ...
+ // Lowest tier.
+ SLF4JLoggerProxy.debug(this,"My message is {}","hello");
+
+ // Middle tier.
+ String text=Messages.PROVIDER.getText(Messages.CANNOT_GET_TYPE,"myfile.xml");
+ Messages.LOGGER.error(this,Messages.CANNOT_GET_TYPE,"myfile.xml");
+
+ // Top tier (unbound).
+ text=Messages.CANNOT_GET_TYPE.getText("myfile.xml");
+ Messages.CANNOT_GET_TYPE.error(this,"myfile.xml");
+
+ // Top tier (bound).
+ myMethod(new I18NBoundMessage1P(Messages.CANNOT_GET_TYPE,"myfile.xml"));
+ ...
+ void myMethod(I18NBoundMessage message) {
+   String text=message.getText();
+   message.error(this);
+ }
+ ...
+}
+</pre>
+
+
+<h3>Active locale</h3>
+
+<p>Another aspect of i18n is proper handling of locales. In
+single-threaded client environment, a process-wide JVM locale is
+typically sufficent. But in multi-threaded server applications, where
+different threads may be servicing clients in different locales, a
+per-thread active locale is essential. Generalizing this concept
+further, the active locale can be <i>scoped</i> in the same manner
+that permissions checks are scoped, with a locale stack that mirrors
+the call stack.</p>
+
+<p>The {@link org.marketcetera.util.log.ActiveLocale} class manages
+the active locale in this scoped fashion. {@link
+org.marketcetera.util.log.I18NMessageProvider} uses that class to
+determine the right translation of a handle into a string (when an
+explicit locale is not supplied). Similarly, all code that needs to
+get/set the active locale should use that class.</p>
+
+
+<h3>De/serialization</h3>
+
+<p>Messages and their providers can be serialized. Upon successful
+deserialization, they are guaranteed to be resolvable (localizable)
+insofar as the message files are guaranteed to exist: that is, if the
+appropriate localization message files do not exist in the
+deserialization context (e.g. the classloader employed by {@link
+org.marketcetera.util.log.I18NMessageProvider} is not be the right
+one), or the message parameters are instances of classes that are not
+available, deserialization will fail. Note that there is no guarantee
+that the message handle will be correctly mapped to text within the
+existing message file: deserialization will succeed even if the handle
+cannot be mapped. The implied simplifying assumption is that, if the
+message file can be located in the deserialization context, it is
+assumed to be complete.</p>
+
+<p>Conduct under deserialization demonstrates a certain asymmetry. A
+message and its provider can be created and used even when the
+necessary message files are not available or the message is not mapped
+therein; the system will simply translate the message to a string
+containing the raw (unlocalized) message handle and its
+parameters. However, deserialization of messages and their providers
+fails altogether if the message file/handle cannot be located. Why the
+asymmetry? For one, the asymmetry is unavoidable when the message
+parameters are instances of classes that are not available in the
+deserialization context; however, there is more to this asymmetry than
+this unavoidable scenario.</p>
+
+<p>The reason is that in both cases we want to achieve the same
+end-goal: maximize the information available to the end-user, and to
+do so with minimal disruption to the system's operation. In the former
+case, the only information we have on a message is its handle and
+parameters, so, if we cannot localize, we log an error message and do
+the best we can to translate the message. In the latter case, a
+failure is desirable because this enables the deserializer to provide
+a more meaningful translation than the above simplistic
+handle-and-parameters text. Specifically, deserialization occurs in
+the context of client/server communications, and it is possible that
+the client may not have access to the server's message files. However,
+the server typically does have access to its message files (as well as
+the classes used by the message parameters). So, if the client cannot
+localize a message received from the server, the best fallback is to
+use the server's localization of the same message: to do this, the
+deserialization must fail (and, in the case of parameters whose
+classes are unavailable on the client, deserialization will certainly
+fail), so that the client can use the server's localization. The
+{@link org.marketcetera.util.ws.wrappers} package offers proxy objects
+for messages (or exceptions which can contain messages) that implement
+this fallback transparently.</p>
+
+</body>
