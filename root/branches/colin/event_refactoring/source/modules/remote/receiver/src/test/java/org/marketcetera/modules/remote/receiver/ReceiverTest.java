@@ -21,7 +21,7 @@ import org.apache.log4j.LogManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.event.util.LogEventLevel;
 import org.marketcetera.module.CopierModule;
 import org.marketcetera.module.CopierModuleFactory;
 import org.marketcetera.module.DataFlowID;

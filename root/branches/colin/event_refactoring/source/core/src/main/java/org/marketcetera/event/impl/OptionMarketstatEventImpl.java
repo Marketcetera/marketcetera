@@ -3,7 +3,8 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.event.OptionMarketstatEvent;
+import org.marketcetera.event.HasOption;
+import org.marketcetera.event.OptionEvent;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
@@ -20,7 +21,7 @@ import org.marketcetera.trade.OptionType;
  */
 class OptionMarketstatEventImpl
         extends MarketstatEventImpl
-        implements OptionMarketstatEvent
+        implements HasOption, OptionEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.OptionEvent#getExpirationType()

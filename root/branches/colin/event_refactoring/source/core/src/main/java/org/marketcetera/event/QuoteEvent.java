@@ -1,5 +1,6 @@
 package org.marketcetera.event;
 
+import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

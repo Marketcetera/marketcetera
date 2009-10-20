@@ -8,7 +8,7 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.event.LogEvent;
-import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.event.util.LogEventLevel;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.photon.module.ISinkDataHandler;
 import org.marketcetera.photon.module.ISinkDataManager;

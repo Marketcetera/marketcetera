@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import java.io.Serializable;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.marketcetera.event.util.LogEventLevel;
 import org.marketcetera.util.log.I18NMessage;
 
 /* $License$ */

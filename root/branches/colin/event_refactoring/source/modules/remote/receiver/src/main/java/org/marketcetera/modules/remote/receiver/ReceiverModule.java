@@ -6,7 +6,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.marketcetera.event.LogEvent;
-import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.event.util.LogEventLevel;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.Module;

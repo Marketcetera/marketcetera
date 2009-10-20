@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.DividendFrequency;
-import org.marketcetera.event.DividendStatus;
-import org.marketcetera.event.DividendType;
+import org.marketcetera.event.util.DividendFrequency;
+import org.marketcetera.event.util.DividendStatus;
+import org.marketcetera.event.util.DividendType;
 import org.marketcetera.trade.Equity;
 
 /* $License$ */

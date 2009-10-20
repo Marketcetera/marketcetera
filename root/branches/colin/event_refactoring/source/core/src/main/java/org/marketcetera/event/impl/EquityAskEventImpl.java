@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.HasEquity;
-import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.trade.Equity;
 
 /* $License$ */

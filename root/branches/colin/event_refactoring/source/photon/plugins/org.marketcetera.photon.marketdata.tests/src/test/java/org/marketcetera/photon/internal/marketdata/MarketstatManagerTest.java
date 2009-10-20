@@ -13,7 +13,7 @@ import java.util.EnumSet;
 import java.util.concurrent.Executor;
 
 import org.junit.Test;
-import org.marketcetera.event.MarketstatEventBuilder;
+import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
