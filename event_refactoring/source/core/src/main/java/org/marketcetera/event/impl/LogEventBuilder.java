@@ -3,6 +3,8 @@ package org.marketcetera.event.impl;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.util.LogEventLevel;
 import org.marketcetera.util.log.I18NMessage;
@@ -14,26 +16,33 @@ import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessage5P;
 import org.marketcetera.util.log.I18NMessage6P;
 import org.marketcetera.util.log.I18NMessageNP;
-import org.marketcetera.util.ws.wrappers.RemoteProperties;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Constructs {@link LogEvent} objects.
+ * 
+ * <p>Construct a <code>LogEvent</code> by getting a <code>LogEventBuilder</code>,
+ * setting the appropriate attributes on the builder, and calling {@link #create()}.  Note that
+ * the builder does no validation.  The object does its own validation with {@link #create()} is
+ * called.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@NotThreadSafe
+@ClassVersion("$Id$")
 public abstract class LogEventBuilder
         extends EventBuilderImpl
         implements EventBuilder<LogEvent>
 {
     /**
-     * 
+     * Returns a <code>LogEventBuilder</code> suitable for constructing a new <code>LogEvent</code> object
+     * of type <code>debug</code>.
      *
-     *
-     * @return
+     * @return a <code>LogEventBuilder</code> value
      */
     public static LogEventBuilder debug()
     {
@@ -51,10 +60,10 @@ public abstract class LogEventBuilder
         };
     }
     /**
-     * 
+     * Returns a <code>LogEventBuilder</code> suitable for constructing a new <code>LogEvent</code> object
+     * of type <code>info</code>.
      *
-     *
-     * @return
+     * @return a <code>LogEventBuilder</code> value
      */
     public static LogEventBuilder info()
     {
@@ -72,10 +81,10 @@ public abstract class LogEventBuilder
         };
     }
     /**
-     * 
+     * Returns a <code>LogEventBuilder</code> suitable for constructing a new <code>LogEvent</code> object
+     * of type <code>warn</code>.
      *
-     *
-     * @return
+     * @return a <code>LogEventBuilder</code> value
      */
     public static LogEventBuilder warn()
     {
@@ -93,10 +102,10 @@ public abstract class LogEventBuilder
         };
     }
     /**
-     * 
+     * Returns a <code>LogEventBuilder</code> suitable for constructing a new <code>LogEvent</code> object
+     * of type <code>error</code>.
      *
-     *
-     * @return
+     * @return a <code>LogEventBuilder</code> value
      */
     public static LogEventBuilder error()
     {
@@ -117,7 +126,7 @@ public abstract class LogEventBuilder
      * @see org.marketcetera.event.AbstractEventBuilder#withMessageId(long)
      */
     @Override
-    public LogEventBuilder withMessageId(long inMessageId)
+    public final LogEventBuilder withMessageId(long inMessageId)
     {
         super.withMessageId(inMessageId);
         return this;
@@ -126,41 +135,95 @@ public abstract class LogEventBuilder
      * @see org.marketcetera.event.AbstractEventBuilder#withTimestamp(java.util.Date)
      */
     @Override
-    public LogEventBuilder withTimestamp(Date inTimestamp)
+    public final LogEventBuilder withTimestamp(Date inTimestamp)
     {
         super.withTimestamp(inTimestamp);
         return this;
     }
-    public LogEventBuilder withException(Throwable inException)
+    /**
+     * Sets the exception to use in the new <code>LogEvent</code> value. 
+     *
+     * <p>Setting this value to <code>null</code> will remove the existing
+     * <code>Throwable</code> value from the builder, if any.
+     *
+     * @param inException a <code>Throwable</code> value or <code>null</code>
+     * @return a <code>LogEventBuilder</code> value
+     */
+    public final LogEventBuilder withException(Throwable inException)
     {
         exception = inException;
         return this;
     }
-    public LogEventBuilder withMessage(I18NMessage0P inMessage)
+    /**
+     * Sets the message to use in the new <code>LogEvent</code> value. 
+     *
+     * <p>Setting this value to <code>null</code> will remove the existing
+     * message value from the builder, if any.
+     *
+     * @param inMessage an <code>I18NMessage0P</code> value or <code>null</code>
+     * @return a <code>LogEventBuilder</code> value
+     */
+    public final LogEventBuilder withMessage(I18NMessage0P inMessage)
     {
         message = inMessage;
         return this;
     }
-    public LogEventBuilder withMessage(I18NMessage1P inMessage,
-                                       Serializable inP1)
+    /**
+     * Sets the message to use in the new <code>LogEvent</code> value. 
+     *
+     * <p>Setting this value to <code>null</code> will remove the existing
+     * message value from the builder, if any.  The given parameters will replace
+     * the existing parameters.
+     *
+     * @param inMessage an <code>I18NMessage1P</code> value or <code>null</code>
+     * @param inP1 a <code>Serializable</code> value to use as a parameter to the given message
+     * @return a <code>LogEventBuilder</code> value
+     */
+    public final LogEventBuilder withMessage(I18NMessage1P inMessage,
+                                             Serializable inP1)
     {
         message = inMessage;
         setParameters(inP1);
         return this;
     }
-    public LogEventBuilder withMessage(I18NMessage2P inMessage,
-                                       Serializable inP1,
-                                       Serializable inP2)
+    /**
+     * Sets the message to use in the new <code>LogEvent</code> value. 
+     *
+     * <p>Setting this value to <code>null</code> will remove the existing
+     * message value from the builder, if any.  The given parameters will replace
+     * the existing parameters.
+     *
+     * @param inMessage an <code>I18NMessage1P</code> value or <code>null</code>
+     * @param inP1 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP2 a <code>Serializable</code> value to use as a parameter to the given message
+     * @return a <code>LogEventBuilder</code> value
+     */
+    public final LogEventBuilder withMessage(I18NMessage2P inMessage,
+                                             Serializable inP1,
+                                             Serializable inP2)
     {
         message = inMessage;
         setParameters(inP1,
                       inP2);
         return this;
     }
-    public LogEventBuilder withMessage(I18NMessage3P inMessage,
-                                       Serializable inP1,
-                                       Serializable inP2,
-                                       Serializable inP3)
+    /**
+     * Sets the message to use in the new <code>LogEvent</code> value. 
+     *
+     * <p>Setting this value to <code>null</code> will remove the existing
+     * message value from the builder, if any.  The given parameters will replace
+     * the existing parameters.
+     *
+     * @param inMessage an <code>I18NMessage1P</code> value or <code>null</code>
+     * @param inP1 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP2 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP3 a <code>Serializable</code> value to use as a parameter to the given message
+     * @return a <code>LogEventBuilder</code> value
+     */
+    public final LogEventBuilder withMessage(I18NMessage3P inMessage,
+                                             Serializable inP1,
+                                             Serializable inP2,
+                                             Serializable inP3)
     {
         message = inMessage;
         setParameters(inP1,
@@ -168,11 +231,25 @@ public abstract class LogEventBuilder
                       inP3);
         return this;
     }
-    public LogEventBuilder withMessage(I18NMessage4P inMessage,
-                                       Serializable inP1,
-                                       Serializable inP2,
-                                       Serializable inP3,
-                                       Serializable inP4)
+    /**
+     * Sets the message to use in the new <code>LogEvent</code> value. 
+     *
+     * <p>Setting this value to <code>null</code> will remove the existing
+     * message value from the builder, if any.  The given parameters will replace
+     * the existing parameters.
+     *
+     * @param inMessage an <code>I18NMessage1P</code> value or <code>null</code>
+     * @param inP1 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP2 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP3 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP4 a <code>Serializable</code> value to use as a parameter to the given message
+     * @return a <code>LogEventBuilder</code> value
+     */
+    public final LogEventBuilder withMessage(I18NMessage4P inMessage,
+                                             Serializable inP1,
+                                             Serializable inP2,
+                                             Serializable inP3,
+                                             Serializable inP4)
     {
         message = inMessage;
         setParameters(inP1,
@@ -181,12 +258,27 @@ public abstract class LogEventBuilder
                       inP4);
         return this;
     }
-    public LogEventBuilder withMessage(I18NMessage5P inMessage,
-                                       Serializable inP1,
-                                       Serializable inP2,
-                                       Serializable inP3,
-                                       Serializable inP4,
-                                       Serializable inP5)
+    /**
+     * Sets the message to use in the new <code>LogEvent</code> value. 
+     *
+     * <p>Setting this value to <code>null</code> will remove the existing
+     * message value from the builder, if any.  The given parameters will replace
+     * the existing parameters.
+     *
+     * @param inMessage an <code>I18NMessage1P</code> value or <code>null</code>
+     * @param inP1 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP2 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP3 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP4 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP5 a <code>Serializable</code> value to use as a parameter to the given message
+     * @return a <code>LogEventBuilder</code> value
+     */
+    public final LogEventBuilder withMessage(I18NMessage5P inMessage,
+                                             Serializable inP1,
+                                             Serializable inP2,
+                                             Serializable inP3,
+                                             Serializable inP4,
+                                             Serializable inP5)
     {
         message = inMessage;
         setParameters(inP1,
@@ -196,13 +288,29 @@ public abstract class LogEventBuilder
                       inP5);
         return this;
     }
-    public LogEventBuilder withMessage(I18NMessage6P inMessage,
-                                       Serializable inP1,
-                                       Serializable inP2,
-                                       Serializable inP3,
-                                       Serializable inP4,
-                                       Serializable inP5,
-                                       Serializable inP6)
+    /**
+     * Sets the message to use in the new <code>LogEvent</code> value. 
+     *
+     * <p>Setting this value to <code>null</code> will remove the existing
+     * message value from the builder, if any.  The given parameters will replace
+     * the existing parameters.
+     *
+     * @param inMessage an <code>I18NMessage1P</code> value or <code>null</code>
+     * @param inP1 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP2 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP3 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP4 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP5 a <code>Serializable</code> value to use as a parameter to the given message
+     * @param inP6 a <code>Serializable</code> value to use as a parameter to the given message
+     * @return a <code>LogEventBuilder</code> value
+     */
+    public final LogEventBuilder withMessage(I18NMessage6P inMessage,
+                                             Serializable inP1,
+                                             Serializable inP2,
+                                             Serializable inP3,
+                                             Serializable inP4,
+                                             Serializable inP5,
+                                             Serializable inP6)
     {
         message = inMessage;
         setParameters(inP1,
@@ -213,8 +321,19 @@ public abstract class LogEventBuilder
                       inP6);
         return this;
     }
-    public LogEventBuilder withMessage(I18NMessageNP inMessage,
-                                       Serializable...inParameters)
+    /**
+     * Sets the message to use in the new <code>LogEvent</code> value. 
+     *
+     * <p>Setting this value to <code>null</code> will remove the existing
+     * message value from the builder, if any.  The given parameters will replace
+     * the existing parameters.
+     *
+     * @param inMessage an <code>I18NMessage1P</code> value or <code>null</code>
+     * @param inParameters a <code>Serializable...</code> value to use as parameters to the given message
+     * @return
+     */
+    public final LogEventBuilder withMessage(I18NMessageNP inMessage,
+                                             Serializable...inParameters)
     {
         message = inMessage;
         setParameters(inParameters);
@@ -239,48 +358,43 @@ public abstract class LogEventBuilder
         return message;
     }
     /**
-     * Get the remoteProperties value.
+     * Gets the parameters. 
      *
-     * @return a <code>RemoteProperties</code> value
-     */
-    protected final RemoteProperties getRemoteProperties()
-    {
-        return remoteProperties;
-    }
-    /**
-     * 
-     *
-     *
-     * @return
+     * @return a <code>Serializable[]</code> value
      */
     protected final Serializable[] getParameters()
     {
         return parameters;
     }
     /**
-     * 
+     * Sets the parameters, replacing the existing parameters.
      *
-     *
-     * @param inParameters
+     * @param inParameters a <code>Serializable...</code> value
      */
     private void setParameters(Serializable...inParameters)
     {
-        parameters = inParameters;
+        if(inParameters == null ||
+           inParameters.length == 0) {
+            parameters = new Serializable[0];
+            return;
+        }
+        parameters = new Serializable[inParameters.length];
+        System.arraycopy(inParameters,
+                         0,
+                         parameters,
+                         0,
+                         inParameters.length);
     }
     /**
-     * 
+     * the log exception 
      */
     private Throwable exception;
     /**
-     * 
+     * the log message
      */
     private I18NMessage message;
     /**
-     * 
-     */
-    private RemoteProperties remoteProperties;
-    /**
-     * 
+     * the log parameters
      */
     private Serializable[] parameters = new Serializable[0];
 }

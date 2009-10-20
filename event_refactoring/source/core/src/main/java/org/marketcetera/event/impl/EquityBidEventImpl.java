@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.HasEquity;
+import org.marketcetera.event.EquityEvent;
 import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.trade.Equity;
 
@@ -18,7 +18,7 @@ import org.marketcetera.trade.Equity;
  * @since $Release$
  */
 class EquityBidEventImpl
-        implements BidEvent, HasEquity
+        implements BidEvent, EquityEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getExchange()
@@ -40,9 +40,9 @@ class EquityBidEventImpl
      * @see org.marketcetera.event.QuoteEvent#getQuoteTime()
      */
     @Override
-    public String getEventTime()
+    public String getExchangeTimestamp()
     {
-        return quote.getEventTime();
+        return quote.getExchangeTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getSize()

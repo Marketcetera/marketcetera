@@ -44,5 +44,5 @@ public interface MarketDataEvent
      *
      * @return a <code>String</code> value
      */
-    public String getEventTime();
+    public String getExchangeTimestamp();
 }

@@ -2,24 +2,39 @@ package org.marketcetera.event.impl;
 
 import java.util.Date;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Constructs {@link TopOfBookEvent} objects.
+ * 
+ * <p>Construct a <code>TopOfBookEvent</code> by getting a <code>TopOfBookEventBuilder</code>,
+ * setting the appropriate attributes on the builder, and calling {@link #create()}.  Note that
+ * the builder does no validation.  The object does its own validation with {@link #create()} is
+ * called.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@NotThreadSafe
+@ClassVersion("$Id$")
 public abstract class TopOfBookEventBuilder
         extends EventBuilderImpl
         implements EventBuilder<TopOfBookEvent>
 {
-    public static TopOfBookEventBuilder newTopOfBook()
+    /**
+     * Returns a <code>TopOfBookEventBuilder</code> suitable for constructing a new <code>TopOfBookEvent</code> object.
+     *
+     * @return a <code>TopOfBookEventBuilder</code> value
+     */
+    public static TopOfBookEventBuilder topOfBookEvent()
     {
         return new TopOfBookEventBuilder(){
             @Override
@@ -53,7 +68,8 @@ public abstract class TopOfBookEventBuilder
     /**
      * Sets the ask value.
      *
-     * @param a <code>AskEvent</code> value
+     * @param an <code>AskEvent</code> value
+     * @return a <code>TopOfBookEventBuilder</code> value
      */
     public final TopOfBookEventBuilder withAsk(AskEvent inAsk)
     {
@@ -64,6 +80,7 @@ public abstract class TopOfBookEventBuilder
      * Sets the bid value.
      *
      * @param a <code>BidEvent</code> value
+     * @return a <code>TopOfBookEventBuilder</code> value
      */
     public final TopOfBookEventBuilder withBid(BidEvent inBid)
     {
@@ -73,7 +90,7 @@ public abstract class TopOfBookEventBuilder
     /**
      * Get the ask value.
      *
-     * @return a <code>AskEvent</code> value
+     * @return an <code>AskEvent</code> value
      */
     protected final AskEvent getAsk()
     {
@@ -89,11 +106,11 @@ public abstract class TopOfBookEventBuilder
         return bid;
     }
     /**
-     * 
+     * the ask event
      */
     private AskEvent ask;
     /**
-     * 
+     * the bid event
      */
     private BidEvent bid;
 }

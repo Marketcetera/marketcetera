@@ -99,7 +99,7 @@ public class MarketceteraFeedEventTranslator
                 switch(type){
                     case MDEntryType.BID :
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
-                            BidEvent bid = QuoteEventBuilder.newEquityBidEvent().withMessageId(System.nanoTime())
+                            BidEvent bid = QuoteEventBuilder.equityBidEvent().withMessageId(System.nanoTime())
                                                                                 .withTimestamp(new Date())
                                                                                 .withInstrument(new Equity(symbol))
                                                                                 .withExchange(exchange)
@@ -110,7 +110,7 @@ public class MarketceteraFeedEventTranslator
                         break;
                     case MDEntryType.OFFER :
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
-                            AskEvent ask = QuoteEventBuilder.newEquityAskEvent().withMessageId(System.nanoTime())
+                            AskEvent ask = QuoteEventBuilder.equityAskEvent().withMessageId(System.nanoTime())
                                                                                 .withTimestamp(new Date())
                                                                                 .withInstrument(new Equity(symbol))
                                                                                 .withExchange(exchange)
@@ -121,7 +121,7 @@ public class MarketceteraFeedEventTranslator
                         break;
                     case MDEntryType.TRADE:
                         if(requestedContent.contains(Content.LATEST_TICK)) {
-                            TradeEvent trade = TradeEventBuilder.newEquityTradeEvent().withMessageId(System.nanoTime())
+                            TradeEvent trade = TradeEventBuilder.equityTradeEvent().withMessageId(System.nanoTime())
                                                                                       .withTimestamp(new Date())
                                                                                       .withInstrument(new Equity(symbol))
                                                                                       .withExchange(exchange)

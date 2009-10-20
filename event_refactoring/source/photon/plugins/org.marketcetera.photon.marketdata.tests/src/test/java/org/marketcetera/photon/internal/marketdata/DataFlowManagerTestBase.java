@@ -359,12 +359,12 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	}
 
 	protected AskEvent createAskEvent(String symbol, String exchange, int price, int size) throws Exception {
-		return QuoteEventBuilder.newEquityAskEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
+		return QuoteEventBuilder.equityAskEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
         .withPrice(new BigDecimal(price)).withSize(new BigDecimal(size)).withAction(QuoteAction.ADD).create();
 	}
 
 	protected BidEvent createBidEvent(String symbol, String exchange, int price, int size) throws Exception {
-		return QuoteEventBuilder.newEquityBidEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
+		return QuoteEventBuilder.equityBidEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
         .withPrice(new BigDecimal(price)).withSize(new BigDecimal(size)).withAction(QuoteAction.ADD).create();
 	}
 }

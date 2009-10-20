@@ -40,9 +40,9 @@ class QuoteEventImpl
      * @see org.marketcetera.event.QuoteEvent#getQuoteTime()
      */
     @Override
-    public String getEventTime()
+    public String getExchangeTimestamp()
     {
-        return quote.getQuoteTime();
+        return quote.getExchangeTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getSize()
@@ -137,7 +137,7 @@ class QuoteEventImpl
         quote.setExchange(inExchange);
         quote.setPrice(inPrice);
         quote.setSize(inSize);
-        quote.setQuoteTime(inQuoteTime);
+        quote.setExchangeTimestamp(inQuoteTime);
      }
     /**
      * 

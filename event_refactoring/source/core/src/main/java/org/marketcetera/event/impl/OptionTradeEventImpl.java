@@ -3,8 +3,10 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.beans.MarketDataBean;
+import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
@@ -20,8 +22,8 @@ import org.marketcetera.trade.OptionType;
  * @version $Id$
  * @since $Release$
  */
-class OptionBidEventImpl
-        implements BidEvent, OptionEvent
+final class OptionTradeEventImpl
+        implements TradeEvent, OptionEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getExchange()
@@ -29,7 +31,7 @@ class OptionBidEventImpl
     @Override
     public String getExchange()
     {
-        return quote.getExchange();
+        return marketData.getExchange();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getPrice()
@@ -37,7 +39,7 @@ class OptionBidEventImpl
     @Override
     public BigDecimal getPrice()
     {
-        return quote.getPrice();
+        return marketData.getPrice();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getQuoteTime()
@@ -45,7 +47,7 @@ class OptionBidEventImpl
     @Override
     public String getExchangeTimestamp()
     {
-        return quote.getExchangeTimestamp();
+        return marketData.getExchangeTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getSize()
@@ -53,7 +55,7 @@ class OptionBidEventImpl
     @Override
     public BigDecimal getSize()
     {
-        return quote.getSize();
+        return marketData.getSize();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getInstrument()
@@ -61,7 +63,7 @@ class OptionBidEventImpl
     @Override
     public Option getInstrument()
     {
-        return (Option)quote.getInstrument();
+        return option.getInstrument();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getMessageId()
@@ -69,7 +71,7 @@ class OptionBidEventImpl
     @Override
     public long getMessageId()
     {
-        return quote.getMessageId();
+        return marketData.getMessageId();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getTimestamp()
@@ -77,7 +79,7 @@ class OptionBidEventImpl
     @Override
     public Date getTimestamp()
     {
-        return quote.getTimestamp();
+        return marketData.getTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
@@ -85,7 +87,7 @@ class OptionBidEventImpl
     @Override
     public long getTimeMillis()
     {
-        return quote.getTimeMillis();
+        return marketData.getTimeMillis();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.OptionEvent#getExpirationType()
@@ -136,6 +138,14 @@ class OptionBidEventImpl
         return option.hasDeliverable();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.HasOption#getOption()
+     */
+    @Override
+    public Option getOption()
+    {
+        return option.getInstrument();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.event.HasUnderlyingEquity#getUnderlyingEquity()
      */
     @Override
@@ -144,20 +154,12 @@ class OptionBidEventImpl
         return option.getUnderlyingEquity();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.HasOption#getOption()
+     * @see org.marketcetera.event.Event#getSource()
      */
     @Override
-    public Option getOption()
+    public Object getSource()
     {
-        return option.getOption();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getAction()
-     */
-    @Override
-    public QuoteAction getAction()
-    {
-        return quote.getAction();
+        return marketData.getSource();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#setSource(java.lang.Object)
@@ -165,18 +167,10 @@ class OptionBidEventImpl
     @Override
     public void setSource(Object inSource)
     {
-        quote.setSource(inSource);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getSource()
-     */
-    @Override
-    public Object getSource()
-    {
-        return quote.getSource();
+        marketData.setSource(inSource);
     }
     /**
-     * Create a new OptionBidEventImpl instance.
+     * Create a new OptionAskEventImpl instance.
      *
      * @param inMessageId
      * @param inTimestamp
@@ -192,48 +186,30 @@ class OptionBidEventImpl
      * @param inHasDeliverable
      * @param inMultiplier
      * @param inExpirationType
-     * @param inAction TODO
      */
-    OptionBidEventImpl(long inMessageId,
-                       Date inTimestamp,
-                       Option inInstrument,
-                       String inExchange,
-                       BigDecimal inPrice,
-                       BigDecimal inSize,
-                       String inQuoteTime,
-                       Equity inUnderlyingEquity,
-                       BigDecimal inStrike,
-                       OptionType inOptionType,
-                       String inExpiry,
-                       boolean inHasDeliverable,
-                       int inMultiplier,
-                       ExpirationType inExpirationType,
-                       QuoteAction inAction)
+    OptionTradeEventImpl(long inMessageId,
+                         Date inTimestamp,
+                         Option inInstrument,
+                         String inExchange,
+                         BigDecimal inPrice,
+                         BigDecimal inSize,
+                         String inQuoteTime,
+                         Equity inUnderlyingEquity,
+                         BigDecimal inStrike,
+                         OptionType inOptionType,
+                         String inExpiry,
+                         boolean inHasDeliverable,
+                         int inMultiplier,
+                         ExpirationType inExpirationType)
     {
-        quote = new QuoteEventImpl(inMessageId,
-                                           inTimestamp,
-                                           inInstrument,
-                                           inExchange,
-                                           inPrice,
-                                           inSize,
-                                           inQuoteTime,
-                                           inAction);
-        option = new OptionEventImpl(inInstrument,
-                                     inUnderlyingEquity,
-                                     inStrike,
-                                     inOptionType,
-                                     inExpiry,
-                                     inHasDeliverable,
-                                     inMultiplier,
-                                     inExpirationType);
     }
     /**
      * 
      */
-    private final QuoteEventImpl quote;
+    private final MarketDataBean marketData = new MarketDataBean();
     /**
      * 
      */
-    private final OptionEventImpl option;
+    private final OptionBean option = new OptionBean();
     private static final long serialVersionUID = 1L;
 }

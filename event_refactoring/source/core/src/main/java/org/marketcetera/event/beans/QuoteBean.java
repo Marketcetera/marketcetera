@@ -1,93 +1,25 @@
 package org.marketcetera.event.beans;
 
-import java.math.BigDecimal;
+import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.util.QuoteAction;
-import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Stores the attributes necessary for {@link QuoteEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class QuoteBean
+@ThreadSafe
+@ClassVersion("$Id$")
+public final class QuoteBean
+        extends MarketDataBean
 {
-    /**
-     * Get the price value.
-     *
-     * @return a <code>BigDecimal</code> value
-     */
-    public BigDecimal getPrice()
-    {
-        return marketData.getPrice();
-    }
-    /**
-     * Sets the price value.
-     *
-     * @param a <code>BigDecimal</code> value
-     */
-    public void setPrice(BigDecimal inPrice)
-    {
-        marketData.setPrice(inPrice);
-    }
-    /**
-     * Get the size value.
-     *
-     * @return a <code>BigDecimal</code> value
-     */
-    public BigDecimal getSize()
-    {
-        return marketData.getSize();
-    }
-    /**
-     * Sets the size value.
-     *
-     * @param a <code>BigDecimal</code> value
-     */
-    public void setSize(BigDecimal inSize)
-    {
-        marketData.setSize(inSize);
-    }
-    /**
-     * Get the quoteTime value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getQuoteTime()
-    {
-        return marketData.getExchangeTimestamp();
-    }
-    /**
-     * Sets the quoteTime value.
-     *
-     * @param a <code>String</code> value
-     */
-    public void setQuoteTime(String inQuoteTime)
-    {
-        marketData.setExchangeTimestamp(inQuoteTime);
-    }
-    /**
-     * Get the exchange value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getExchange()
-    {
-        return marketData.getExchange();
-    }
-    /**
-     * Sets the exchange value.
-     *
-     * @param a <code>String</code> value
-     */
-    public void setExchange(String inExchange)
-    {
-        marketData.setExchange(inExchange);
-    }
     /**
      * Get the action value.
      *
@@ -107,33 +39,8 @@ public class QuoteBean
         action = inAction;
     }
     /**
-     * Get the instrument value.
-     *
-     * @return an <code>Instrument</code> value
+     * the action of the quote
      */
-    public Instrument getInstrument()
-    {
-        return instrument.getInstrument();
-    }
-    /**
-     * Sets the instrument value.
-     *
-     * @param an <code>Instrument</code> value
-     */
-    public void setInstrument(Instrument inInstrument)
-    {
-        instrument.setInstrument(inInstrument);
-    }
-    /**
-     * 
-     */
-    private QuoteAction action;
-    /**
-     * 
-     */
-    private final InstrumentBean instrument = new InstrumentBean();
-    /**
-     * 
-     */
-    private final MarketDataBean marketData = new MarketDataBean();
+    private volatile QuoteAction action;
+    private static final long serialVersionUID = 1L;
 }

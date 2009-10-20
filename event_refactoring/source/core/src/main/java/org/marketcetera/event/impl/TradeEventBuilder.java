@@ -3,62 +3,103 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.beans.InstrumentBean;
 import org.marketcetera.event.beans.MarketDataBean;
+import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Constructs {@link TradeEvent} objects.
+ * 
+ * <p>Construct a <code>TradeEvent</code> by getting a <code>TradeEventBuilder</code>,
+ * setting the appropriate attributes on the builder, and calling {@link #create()}.  Note that
+ * the builder does no validation.  The object does its own validation with {@link #create()} is
+ * called.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@NotThreadSafe
+@ClassVersion("$Id$")
 public abstract class TradeEventBuilder
         extends EventBuilderImpl
         implements EventBuilder<TradeEvent>
 {
     /**
+     * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.
+     *
+     * <p>The type of <code>TradeEvent</code> returned will match the type of the given <code>Instrument</code>,
+     * i.e., an Equity-type <code>TradeEvent</code> for an {@link Equity}, an Option-type <code>TradeEvent</code> for an
+     * {@link Option}, etc.
      * 
-     *
-     *
-     * @param inInstrument
-     * @return
+     * @param inInstrument an <code>Instrument</code> value indicating the type of {@link TradeEvent} to create
+     * @return a <code>QuoteEventBuilder&lt;TradeEvent&gt;</code> value
+     * @throws UnsupportedOperationException if the asset class of the given <code>Instrument</code> isn't supported
      */
-    public static TradeEventBuilder newTradeEvent(Instrument inInstrument)
+    public static TradeEventBuilder tradeEvent(Instrument inInstrument)
     {
         if(inInstrument instanceof Equity) {
-            return newEquityTradeEvent().withInstrument(inInstrument);
+            return equityTradeEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Option) {
-            return newOptionTradeEvent().withInstrument(inInstrument);
+            return optionTradeEvent().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
     }
     /**
-     * 
+     * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Equity <code>TradeEvent</code> object.
      *
-     *
-     * @return
+     * @return a <code>TradeEventBuilder</code> value
+     * @throw IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Equity}
      */
-    public static TradeEventBuilder newEquityTradeEvent()
+    public static TradeEventBuilder equityTradeEvent()
     {
-        return new EquityTradeEventBuilder();
+        return new TradeEventBuilder() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public TradeEvent create()
+            {
+                if(getMarketData().getInstrument() instanceof Equity) {
+                    return new TradeEventImpl(getMessageId(),
+                                                    getTimestamp(),
+                                                    (Equity)getMarketData().getInstrument(),
+                                                    getMarketData().getExchange(),
+                                                    getMarketData().getPrice(),
+                                                    getMarketData().getSize(),
+                                                    getMarketData().getExchangeTimestamp());
+                }
+                throw new IllegalArgumentException();
+            }
+        };
     }
     /**
-     * 
+     * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Option <code>TradeEvent</code> object.
      *
-     *
-     * @return
+     * @return a <code>TradeEventBuilder</code> value
+     * @throw IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Option}
      */
-    public static TradeEventBuilder newOptionTradeEvent()
+    public static TradeEventBuilder optionTradeEvent()
     {
-        return new OptionTradeEventBuilder();
+        return new TradeEventBuilder() {
+            @Override
+            public TradeEvent create()
+            {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.AbstractEventBuilder#withMessageId(long)
@@ -85,7 +126,7 @@ public abstract class TradeEventBuilder
      */
     public final TradeEventBuilder withInstrument(Instrument inInstrument)
     {
-        instrument.setInstrument(inInstrument);
+        marketData.setInstrument(inInstrument);
         return this;
     }
     /**
@@ -95,7 +136,7 @@ public abstract class TradeEventBuilder
      */
     public final TradeEventBuilder withPrice(BigDecimal inPrice)
     {
-        exchangeCommon.setPrice(inPrice);
+        marketData.setPrice(inPrice);
         return this;
     }
     /**
@@ -105,7 +146,7 @@ public abstract class TradeEventBuilder
      */
     public final TradeEventBuilder withSize(BigDecimal inSize)
     {
-        exchangeCommon.setSize(inSize);
+        marketData.setSize(inSize);
         return this;
     }
     /**
@@ -115,7 +156,7 @@ public abstract class TradeEventBuilder
      */
     public final TradeEventBuilder withExchange(String inExchange)
     {
-        exchangeCommon.setExchange(inExchange);
+        marketData.setExchange(inExchange);
         return this;
     }
     /**
@@ -123,50 +164,101 @@ public abstract class TradeEventBuilder
      *
      * @param a <code>String</code> value
      */
-    public final TradeEventBuilder atQuoteDate(String inQuoteDate)
+    public final TradeEventBuilder withTradeDate(String inTradeDate)
     {
-        exchangeCommon.setExchangeTimestamp(inQuoteDate);
+        marketData.setExchangeTimestamp(inTradeDate);
         return this;
     }
-    protected final InstrumentBean getInstrument()
+    /**
+     * Sets the underlyingEquity value.
+     *
+     * @param a <code>Equity</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder withUnderlyingEquity(Equity inUnderlyingEquity)
     {
-        return instrument;
+        option.setUnderlyingEquity(inUnderlyingEquity);
+        return this;
     }
-    protected final MarketDataBean getExchangeCommon()
+    /**
+     * Sets the expiry value.
+     *
+     * @param a <code>String</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder withExpiry(String inExpiry)
     {
-        return exchangeCommon;
+        option.setExpiry(inExpiry);
+        return this;
     }
-    private static final class EquityTradeEventBuilder
-            extends TradeEventBuilder
+    /**
+     * Sets the optionType value.
+     *
+     * @param a <code>OptionType</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder withOptionType(OptionType inOptionType)
     {
-        /* (non-Javadoc)
-         * @see org.marketcetera.event.EventBuilder#create()
-         */
-        @Override
-        public TradeEvent create()
-        {
-            return new EquityTradeEventImpl(getMessageId(),
-                                            getTimestamp(),
-                                            (Equity)getInstrument().getInstrument(),
-                                            getExchangeCommon().getExchange(),
-                                            getExchangeCommon().getPrice(),
-                                            getExchangeCommon().getSize(),
-                                            getExchangeCommon().getExchangeTimestamp());
-        }
+        option.setOptionType(inOptionType);
+        return this;
     }
-    private static final class OptionTradeEventBuilder
-            extends TradeEventBuilder
+    /**
+     * Sets the expirationType value.
+     *
+     * @param a <code>ExpirationType</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder withExpirationType(ExpirationType inExpirationType)
     {
-        /* (non-Javadoc)
-         * @see org.marketcetera.event.EventBuilder#create()
-         */
-        @Override
-        public TradeEvent create()
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
+        option.setExpirationType(inExpirationType);
+        return this;
     }
-    private final InstrumentBean instrument = new InstrumentBean();
-    private final MarketDataBean exchangeCommon = new MarketDataBean();
+    /**
+     * Sets the multiplier value.
+     *
+     * @param a <code>int</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder withMultiplier(int inMultiplier)
+    {
+        option.setMultiplier(inMultiplier);
+        return this;
+    }
+    /**
+     * Sets the hasDeliverable value.
+     *
+     * @param a <code>boolean</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder hasDeliverable(boolean inHasDeliverable)
+    {
+        option.setHasDeliverable(inHasDeliverable);
+        return this;
+    }
+    /**
+     * Get the marketData value.
+     *
+     * @return a <code>MarketDataBean</code> value
+     */
+    protected final MarketDataBean getMarketData()
+    {
+        return marketData;
+    }
+    /**
+     * Get the option value.
+     *
+     * @return a <code>OptionBean</code> value
+     */
+    protected final OptionBean getOption()
+    {
+        return option;
+    }
+    /**
+     * the market data attributes 
+     */
+    private final MarketDataBean marketData = new MarketDataBean();
+    /**
+     * the option attributes
+     */
+    private final OptionBean option = new OptionBean();
 }
