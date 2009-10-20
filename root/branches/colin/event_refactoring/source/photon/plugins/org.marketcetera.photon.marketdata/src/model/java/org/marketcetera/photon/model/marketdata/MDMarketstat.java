@@ -2,8 +2,6 @@ package org.marketcetera.photon.model.marketdata;
 
 import java.math.BigDecimal;
 
-import java.util.Date;
-
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -47,7 +45,7 @@ public interface MDMarketstat extends MDItem {
 	 * @model suppressedSetVisibility="true"
 	 * @generated
 	 */
-	Date getCloseDate();
+	String getCloseDate();
 
 	/**
 	 * Returns the value of the '<em><b>Previous Close Price</b></em>' attribute.
@@ -69,6 +67,6 @@ public interface MDMarketstat extends MDItem {
 	 * @model suppressedSetVisibility="true"
 	 * @generated
 	 */
-	Date getPreviousCloseDate();
+	String getPreviousCloseDate();
 
 } // MDSymbolStatistic
