@@ -1,45 +1,36 @@
 package org.marketcetera.event;
 
-import org.marketcetera.util.ws.wrappers.RemoteProperties;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Represents a log entry event.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 1.5.0
  */
+@ClassVersion("$Id$")
 public interface LogEvent
-    extends Event
+        extends Event
 {
     /**
-     * 
+     * Get the Level value.
      *
-     *
-     * @return
+     * @return a <code>LogEventLevel</code> value
      */
     public LogEventLevel getLevel();
     /**
-     * 
+     * Get the exception value.
      *
-     *
-     * @return
+     * @return a <code>Throwable</code> value
      */
     public Throwable getException();
     /**
-     * 
+     * Returns the bound event message. 
      *
-     *
-     * @return
-     */
-    public RemoteProperties getRemoteProperties();
-    /**
-     * 
-     *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     public String getMessage();
 }

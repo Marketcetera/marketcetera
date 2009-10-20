@@ -1,8 +1,9 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.marketcetera.event.EquityTradeEvent;
 import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.InstrumentBean;
 import org.marketcetera.trade.Equity;
@@ -47,7 +48,7 @@ class EquityTradeEventImpl
      * @see org.marketcetera.event.TradeEvent#getTradeTime()
      */
     @Override
-    public String getTradeTime()
+    public String getEventTime()
     {
         return exchangeCommon.getExchangeTimestamp();
     }

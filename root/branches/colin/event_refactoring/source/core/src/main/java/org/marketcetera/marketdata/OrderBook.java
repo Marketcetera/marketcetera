@@ -16,12 +16,12 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.BookPriceComparator;
 import org.marketcetera.event.DepthOfBookEvent;
-import org.marketcetera.event.DepthOfBookEventBuilder;
-import org.marketcetera.event.EquityEvent;
-import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.HasEquity;
+import org.marketcetera.event.HasOption;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TopOfBookEvent;
-import org.marketcetera.event.TopOfBookEventBuilder;
+import org.marketcetera.event.impl.DepthOfBookEventBuilder;
+import org.marketcetera.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -125,11 +125,11 @@ public class OrderBook
     public final DepthOfBookEvent getDepthOfBook()
     {
         DepthOfBookEvent dobEvent;
-        if(getInstrument() instanceof EquityEvent) {
+        if(getInstrument() instanceof HasEquity) {
             dobEvent = DepthOfBookEventBuilder.equityDepthOfBook().withBids(getBidBook())
                                                                   .withAsks(getAskBook())
                                                                   .withInstrument(getInstrument()).create();
-        } else if(getInstrument() instanceof OptionEvent) {
+        } else if(getInstrument() instanceof HasOption) {
             dobEvent = DepthOfBookEventBuilder.optionDepthOfBook().withBids(getBidBook())
                                                                   .withAsks(getAskBook())
                                                                   .withInstrument(getInstrument()).create();
@@ -145,7 +145,7 @@ public class OrderBook
      */
     public final List<BidEvent> getBidBook()
     {
-        return mBidBook.getSortedView(BookPriceComparator.getBidComparator());
+        return mBidBook.getSortedView(BookPriceComparator.bidComparator);
     }
     /**
      * Gets the current state of the <code>Ask</code> book.
@@ -154,7 +154,7 @@ public class OrderBook
      */
     public final List<AskEvent> getAskBook()
     {
-        return mAskBook.getSortedView(BookPriceComparator.getAskComparator());
+        return mAskBook.getSortedView(BookPriceComparator.askComparator);
     }
     /**
      * Processes the given event for the order book.

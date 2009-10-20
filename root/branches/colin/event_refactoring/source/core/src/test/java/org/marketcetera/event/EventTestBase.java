@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.marketcetera.event.impl.DepthOfBookEventBuilder;
+import org.marketcetera.event.impl.EventValidationException;
+import org.marketcetera.event.impl.MarketstatEventBuilder;
+import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TopOfBookEventBuilder;
+import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.trade.Equity;
 

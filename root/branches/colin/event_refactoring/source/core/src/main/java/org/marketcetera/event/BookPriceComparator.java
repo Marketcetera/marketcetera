@@ -20,14 +20,14 @@ import org.marketcetera.util.misc.ClassVersion;
 public final class BookPriceComparator
     implements Comparator<QuoteEvent>
 {
-    public static BookPriceComparator getBidComparator()
-    {
-        return new BookPriceComparator(false);
-    }
-    public static BookPriceComparator getAskComparator()
-    {
-        return new BookPriceComparator(true);
-    }
+    /**
+     * a <code>Comparator</code> suitable for sorting bids in an order book
+     */
+    public static final BookPriceComparator bidComparator = new BookPriceComparator(false);
+    /**
+     * a <code>Comparator</code> suitable for sorting asks in an order book
+     */
+    public static final BookPriceComparator askComparator = new BookPriceComparator(true);
     /**
      * indicates whether to sort ascending or descending
      */

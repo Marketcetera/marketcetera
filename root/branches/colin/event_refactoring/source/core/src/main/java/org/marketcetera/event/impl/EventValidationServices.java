@@ -1,4 +1,4 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.MarketDataRequestException;

@@ -1,9 +1,12 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DepthOfBookEvent;
 import org.marketcetera.event.beans.InstrumentBean;
 import org.marketcetera.trade.Instrument;
 

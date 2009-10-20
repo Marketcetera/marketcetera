@@ -1,8 +1,11 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.HasEquity;
+import org.marketcetera.event.QuoteAction;
 import org.marketcetera.trade.Equity;
 
 /* $License$ */
@@ -14,8 +17,8 @@ import org.marketcetera.trade.Equity;
  * @version $Id$
  * @since $Release$
  */
-class EquityAskEventImpl
-        implements EquityAskEvent
+class EquityBidEventImpl
+        implements BidEvent, HasEquity
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getExchange()
@@ -37,9 +40,9 @@ class EquityAskEventImpl
      * @see org.marketcetera.event.QuoteEvent#getQuoteTime()
      */
     @Override
-    public String getQuoteTime()
+    public String getEventTime()
     {
-        return quote.getQuoteTime();
+        return quote.getEventTime();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getSize()
@@ -111,9 +114,10 @@ class EquityAskEventImpl
     @Override
     public void setSource(Object inSource)
     {
+        quote.setSource(inSource);
     }
     /**
-     * Create a new EquityAskEventImpl instance.
+     * Create a new EquityBidEventImpl instance.
      *
      * @param inMessageId
      * @param inTimestamp
@@ -124,7 +128,7 @@ class EquityAskEventImpl
      * @param inQuoteTime
      * @param inAction
      */
-    EquityAskEventImpl(long inMessageId,
+    EquityBidEventImpl(long inMessageId,
                        Date inTimestamp,
                        Equity inInstrument,
                        String inExchange,

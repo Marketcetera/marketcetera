@@ -2,6 +2,9 @@ package org.marketcetera.event;
 
 import java.util.Date;
 
+import org.marketcetera.event.beans.EventBean;
+import org.marketcetera.event.impl.EventValidationException;
+
 /* $License$ */
 
 /**
@@ -17,8 +20,8 @@ public class MockEquityEvent
     public MockEquityEvent()
         throws EventValidationException
     {
-        event = new EventImpl(System.nanoTime(),
-                              new Date());
+        event.setMessageId(System.nanoTime());
+        event.setTimestamp(new Date());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getMessageId()
@@ -42,7 +45,7 @@ public class MockEquityEvent
     @Override
     public long getTimeMillis()
     {
-        return event.getTimeMillis();
+        return event.getTimestamp().getTime();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getSource()
@@ -63,6 +66,6 @@ public class MockEquityEvent
     /**
      * 
      */
-    private final EventImpl event;
+    private final EventBean event = new EventBean();
     private static final long serialVersionUID = 1L;
 }

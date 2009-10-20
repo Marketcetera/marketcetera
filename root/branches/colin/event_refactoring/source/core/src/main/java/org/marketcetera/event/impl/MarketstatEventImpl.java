@@ -1,8 +1,9 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.beans.InstrumentBean;
 import org.marketcetera.event.beans.MarketstatBean;
 import org.marketcetera.trade.Instrument;

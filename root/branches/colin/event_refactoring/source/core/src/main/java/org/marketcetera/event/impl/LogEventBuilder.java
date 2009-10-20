@@ -1,8 +1,10 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.io.Serializable;
 import java.util.Date;
 
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
@@ -43,7 +45,6 @@ public abstract class LogEventBuilder
                                         getTimestamp(),
                                         LogEventLevel.DEBUG,
                                         getMessage(),
-                                        getRemoteProperties(),
                                         getException(),
                                         getParameters());
             }
@@ -65,7 +66,6 @@ public abstract class LogEventBuilder
                                         getTimestamp(),
                                         LogEventLevel.INFO,
                                         getMessage(),
-                                        getRemoteProperties(),
                                         getException(),
                                         getParameters());
             }
@@ -87,7 +87,6 @@ public abstract class LogEventBuilder
                                         getTimestamp(),
                                         LogEventLevel.WARN,
                                         getMessage(),
-                                        getRemoteProperties(),
                                         getException(),
                                         getParameters());
             }
@@ -109,7 +108,6 @@ public abstract class LogEventBuilder
                                         getTimestamp(),
                                         LogEventLevel.ERROR,
                                         getMessage(),
-                                        getRemoteProperties(),
                                         getException(),
                                         getParameters());
             }
@@ -220,11 +218,6 @@ public abstract class LogEventBuilder
     {
         message = inMessage;
         setParameters(inParameters);
-        return this;
-    }
-    public LogEventBuilder withRemoteProperties(RemoteProperties inRemoteProperties)
-    {
-        remoteProperties = inRemoteProperties;
         return this;
     }
     /**

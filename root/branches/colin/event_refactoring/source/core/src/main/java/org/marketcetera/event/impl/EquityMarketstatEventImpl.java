@@ -1,8 +1,9 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.marketcetera.event.EquityMarketstatEvent;
 import org.marketcetera.trade.Equity;
 
 /* $License$ */

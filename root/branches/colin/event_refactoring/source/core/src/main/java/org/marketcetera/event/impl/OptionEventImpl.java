@@ -1,7 +1,8 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 
+import org.marketcetera.event.OptionEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.MarketDataRequestException;
 import org.marketcetera.options.ExpirationType;

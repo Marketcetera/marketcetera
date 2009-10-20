@@ -1,10 +1,16 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.EquityQuoteEvent;
+import org.marketcetera.event.OptionQuoteEvent;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.InstrumentBean;
 import org.marketcetera.event.beans.OptionBean;
@@ -46,7 +52,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                           equityEvent.getExchange(),
                                           equityEvent.getPrice(),
                                           equityEvent.getSize(),
-                                          equityEvent.getQuoteTime(),
+                                          equityEvent.getEventTime(),
                                           QuoteAction.ADD);
         } else if(inEvent instanceof OptionQuoteEvent) {
             OptionQuoteEvent optionEvent = (OptionQuoteEvent)inEvent;
@@ -56,7 +62,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                           optionEvent.getExchange(),
                                           optionEvent.getPrice(),
                                           optionEvent.getSize(),
-                                          optionEvent.getQuoteTime(),
+                                          optionEvent.getEventTime(),
                                           optionEvent.getUnderlyingEquity(),
                                           optionEvent.getStrike(),
                                           optionEvent.getOptionType(),
@@ -92,7 +98,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                              equityEvent.getExchange(),
                                              equityEvent.getPrice(),
                                              inNewSize,
-                                             equityEvent.getQuoteTime(),
+                                             equityEvent.getEventTime(),
                                              QuoteAction.CHANGE);
         } else if(inEvent instanceof OptionQuoteEvent) {
             OptionQuoteEvent optionEvent = (OptionQuoteEvent)inEvent;
@@ -102,7 +108,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                              optionEvent.getExchange(),
                                              optionEvent.getPrice(),
                                              inNewSize,
-                                             optionEvent.getQuoteTime(),
+                                             optionEvent.getEventTime(),
                                              optionEvent.getUnderlyingEquity(),
                                              optionEvent.getStrike(),
                                              optionEvent.getOptionType(),
@@ -134,7 +140,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                              equityEvent.getExchange(),
                                              equityEvent.getPrice(),
                                              equityEvent.getSize(),
-                                             equityEvent.getQuoteTime(),
+                                             equityEvent.getEventTime(),
                                              QuoteAction.DELETE);
         } else if(inEvent instanceof OptionQuoteEvent) {
             OptionQuoteEvent optionEvent = (OptionQuoteEvent)inEvent;
@@ -144,7 +150,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                              optionEvent.getExchange(),
                                              optionEvent.getPrice(),
                                              optionEvent.getSize(),
-                                             optionEvent.getQuoteTime(),
+                                             optionEvent.getEventTime(),
                                              optionEvent.getUnderlyingEquity(),
                                              optionEvent.getStrike(),
                                              optionEvent.getOptionType(),

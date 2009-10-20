@@ -1,9 +1,14 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.TopOfBookEvent;
 
 /* $License$ */
 

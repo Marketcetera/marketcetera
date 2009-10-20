@@ -1,4 +1,4 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;

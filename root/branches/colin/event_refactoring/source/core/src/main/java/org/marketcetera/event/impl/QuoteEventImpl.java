@@ -1,9 +1,12 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.trade.Equity;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.beans.QuoteBean;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -14,8 +17,8 @@ import org.marketcetera.trade.Equity;
  * @version $Id$
  * @since $Release$
  */
-class EquityBidEventImpl
-        implements EquityBidEvent
+class QuoteEventImpl
+        implements QuoteEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getExchange()
@@ -37,7 +40,7 @@ class EquityBidEventImpl
      * @see org.marketcetera.event.QuoteEvent#getQuoteTime()
      */
     @Override
-    public String getQuoteTime()
+    public String getEventTime()
     {
         return quote.getQuoteTime();
     }
@@ -53,9 +56,9 @@ class EquityBidEventImpl
      * @see org.marketcetera.event.Event#getInstrument()
      */
     @Override
-    public Equity getInstrument()
+    public Instrument getInstrument()
     {
-        return (Equity)quote.getInstrument();
+        return quote.getInstrument();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getMessageId()
@@ -63,7 +66,7 @@ class EquityBidEventImpl
     @Override
     public long getMessageId()
     {
-        return quote.getMessageId();
+        return event.getMessageId();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getTimestamp()
@@ -71,7 +74,7 @@ class EquityBidEventImpl
     @Override
     public Date getTimestamp()
     {
-        return quote.getTimestamp();
+        return event.getTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
@@ -79,20 +82,13 @@ class EquityBidEventImpl
     @Override
     public long getTimeMillis()
     {
-        return quote.getTimeMillis();
+        return event.getTimeMillis();
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.HasEquity#getEquity()
+    /**
+     * Get the action value.
+     *
+     * @return a <code>QuoteAction</code> value
      */
-    @Override
-    public Equity getEquity()
-    {
-        return (Equity)quote.getInstrument();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getAction()
-     */
-    @Override
     public QuoteAction getAction()
     {
         return quote.getAction();
@@ -103,7 +99,7 @@ class EquityBidEventImpl
     @Override
     public Object getSource()
     {
-        return quote.getSource();
+        return event.getSource();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#setSource(java.lang.Object)
@@ -111,10 +107,10 @@ class EquityBidEventImpl
     @Override
     public void setSource(Object inSource)
     {
-        quote.setSource(inSource);
+        event.setSource(inSource);
     }
     /**
-     * Create a new EquityBidEventImpl instance.
+     * Create a new QuoteEventImpl instance.
      *
      * @param inMessageId
      * @param inTimestamp
@@ -125,27 +121,31 @@ class EquityBidEventImpl
      * @param inQuoteTime
      * @param inAction
      */
-    EquityBidEventImpl(long inMessageId,
-                       Date inTimestamp,
-                       Equity inInstrument,
-                       String inExchange,
-                       BigDecimal inPrice,
-                       BigDecimal inSize,
-                       String inQuoteTime,
-                       QuoteAction inAction)
-    {
-        quote = new QuoteEventImpl(inMessageId,
-                                   inTimestamp,
-                                   inInstrument,
-                                   inExchange,
-                                   inPrice,
-                                   inSize,
-                                   inQuoteTime,
-                                   inAction);
-    }
+    QuoteEventImpl(long inMessageId,
+                   Date inTimestamp,
+                   Instrument inInstrument,
+                   String inExchange,
+                   BigDecimal inPrice,
+                   BigDecimal inSize,
+                   String inQuoteTime,
+                   QuoteAction inAction)
+     {
+        event = new EventImpl(inMessageId,
+                              inTimestamp);
+        quote.setAction(inAction);
+        quote.setInstrument(inInstrument);
+        quote.setExchange(inExchange);
+        quote.setPrice(inPrice);
+        quote.setSize(inSize);
+        quote.setQuoteTime(inQuoteTime);
+     }
     /**
      * 
      */
-    private final QuoteEventImpl quote;
+    private final EventImpl event;
+    /**
+     * 
+     */
+    private final QuoteBean quote = new QuoteBean();
     private static final long serialVersionUID = 1L;
 }

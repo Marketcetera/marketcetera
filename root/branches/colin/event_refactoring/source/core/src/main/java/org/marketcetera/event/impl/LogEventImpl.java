@@ -1,4 +1,4 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -67,14 +69,6 @@ class LogEventImpl
         return getI18NBoundMessage().getText();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.LogEvent#getRemoteProperties()
-     */
-    @Override
-    public RemoteProperties getRemoteProperties()
-    {
-        return remoteProperties;
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getMessageId()
      */
     @Override
@@ -121,7 +115,6 @@ class LogEventImpl
      * @param inTimestamp
      * @param inLevel
      * @param inMessage
-     * @param inRemoteProperties
      * @param inException
      * @param inParameters TODO
      */
@@ -129,14 +122,12 @@ class LogEventImpl
                  Date inTimestamp,
                  LogEventLevel inLevel,
                  I18NMessage inMessage,
-                 RemoteProperties inRemoteProperties,
                  Throwable inException,
                  Serializable... inParameters)
     {
         event = new EventImpl(inMessageId,
                               inTimestamp);
         level = inLevel;
-        remoteProperties = inRemoteProperties;
         message = inMessage;
         exception = inException;
         parameters = inParameters;
@@ -240,10 +231,6 @@ class LogEventImpl
      * 
      */
     private final transient Serializable[] parameters;
-    /**
-     * 
-     */
-    private final RemoteProperties remoteProperties;
     /**
      * the bound event message valid only after serialization
      */

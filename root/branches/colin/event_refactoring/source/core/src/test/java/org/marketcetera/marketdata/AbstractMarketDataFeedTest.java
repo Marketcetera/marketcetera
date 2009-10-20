@@ -19,7 +19,7 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.event.MockEquityEvent;
+import org.marketcetera.event.MockEvent;
 import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
@@ -383,7 +383,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeedToken token = feed.execute(spec);
         waitForPublication(s1);
         assertEquals(token,
-                     ((MockEquityEvent)s1.getData()).getSource());
+                     ((MockEvent)s1.getData()).getSource());
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(Status.ACTIVE,
@@ -420,7 +420,7 @@ public class AbstractMarketDataFeedTest
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(token,
-                     ((MockEquityEvent)s1.getData()).getSource());
+                     ((MockEvent)s1.getData()).getSource());
         assertEquals(Status.ACTIVE,
                      token.getStatus());
         // now check to make sure that the resubmitted query has a new handle
@@ -448,7 +448,7 @@ public class AbstractMarketDataFeedTest
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(token,
-                     ((MockEquityEvent)s1.getPublications().get(0)).getSource());
+                     ((MockEvent)s1.getPublications().get(0)).getSource());
         // bonus testing - make a resubmission fail and verify that the token status is set correctly
         // there is already one active query represented by "spec" and "token" - add another one that
         //  we can set to fail when it is resubmitted
@@ -458,7 +458,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeedToken token2 = feed.execute(spec2);
         waitForPublication(s1);
         assertEquals(token2,
-                     ((MockEquityEvent)s1.getData()).getSource());
+                     ((MockEvent)s1.getData()).getSource());
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(Status.ACTIVE,

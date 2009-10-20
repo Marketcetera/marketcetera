@@ -17,7 +17,7 @@ import org.apache.log4j.Level;
 import org.junit.Test;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.QuoteEventBuilder;
+import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;

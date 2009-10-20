@@ -1,4 +1,6 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
+
+import org.marketcetera.event.Event;
 
 
 /* $License$ */
@@ -10,7 +12,7 @@ package org.marketcetera.event;
  * @version $Id$
  * @since $Release$
  */
-public interface EquityAskEvent
-        extends AskEvent, EquityQuoteEvent
+public interface EventBuilder<E extends Event>
 {
+    public E create();
 }
