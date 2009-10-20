@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,7 +16,8 @@ import org.junit.Test;
 import org.marketcetera.core.ImmediateExecutorService;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEventBuilder;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -357,12 +359,12 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	}
 
 	protected AskEvent createAskEvent(String symbol, String exchange, int price, int size) throws Exception {
-		return EventTestBase.generateEquityAskEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
-				new BigDecimal(price), new BigDecimal(size));
+		return QuoteEventBuilder.newEquityAskEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
+        .withPrice(new BigDecimal(price)).withSize(new BigDecimal(size)).withAction(QuoteAction.ADD).create();
 	}
 
 	protected BidEvent createBidEvent(String symbol, String exchange, int price, int size) throws Exception {
-		return EventTestBase.generateEquityBidEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
-				new BigDecimal(price), new BigDecimal(size));
+		return QuoteEventBuilder.newEquityBidEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
+        .withPrice(new BigDecimal(price)).withSize(new BigDecimal(size)).withAction(QuoteAction.ADD).create();
 	}
 }

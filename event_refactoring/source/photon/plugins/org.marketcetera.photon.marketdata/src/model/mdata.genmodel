@@ -10,6 +10,7 @@
   <foreignModel>mdata.ecore</foreignModel>
   <genPackages prefix="MD" basePackage="org.marketcetera.photon.model" disposableProviderFactory="true"
       contentTypeIdentifier="" ecorePackage="mdata.ecore#/">
+    <genDataTypes ecoreDataType="mdata.ecore#//DepthOfBookProduct"/>
     <genClasses image="false" ecoreClass="mdata.ecore#//MDItem">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDItem/symbol"/>
     </genClasses>
@@ -22,6 +23,23 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDTopOfBook/bidPrice"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDTopOfBook/askSize"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDTopOfBook/askPrice"/>
+    </genClasses>
+    <genClasses ecoreClass="mdata.ecore#//MDMarketstat">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDMarketstat/closePrice"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDMarketstat/closeDate"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDMarketstat/previousClosePrice"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDMarketstat/previousCloseDate"/>
+    </genClasses>
+    <genClasses ecoreClass="mdata.ecore#//MDDepthOfBook">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDDepthOfBook/product"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference mdata.ecore#//MDDepthOfBook/bids"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference mdata.ecore#//MDDepthOfBook/asks"/>
+    </genClasses>
+    <genClasses ecoreClass="mdata.ecore#//MDQuote">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDQuote/price"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDQuote/size"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDQuote/source"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdata.ecore#//MDQuote/time"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>
