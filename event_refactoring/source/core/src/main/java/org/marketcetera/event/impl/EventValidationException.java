@@ -1,4 +1,4 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.util.log.I18NBoundMessage;

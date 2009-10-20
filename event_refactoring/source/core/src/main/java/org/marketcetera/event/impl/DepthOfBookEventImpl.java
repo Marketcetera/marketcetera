@@ -1,4 +1,4 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.SystemUtils;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DepthOfBookEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.PriceAndSizeComparator;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.beans.InstrumentBean;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.OrderBook;

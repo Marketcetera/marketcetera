@@ -20,7 +20,7 @@ import org.marketcetera.client.Validations;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.Event;
-import org.marketcetera.event.LogEventBuilder;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowSupport;

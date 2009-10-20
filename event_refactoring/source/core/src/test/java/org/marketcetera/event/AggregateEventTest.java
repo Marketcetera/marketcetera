@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
+import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.InstrumentBean;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
@@ -104,8 +105,8 @@ public class AggregateEventTest
         public MockAggregateEvent(Date inTimestamp,
                                   Instrument inInstrument)
         {
-            event = new EventImpl(System.nanoTime(),
-                                  new Date());
+            event.setMessageId(System.nanoTime());
+            event.setTimestamp(new Date());
             instrument.setInstrument(inInstrument);
         }
         /**
@@ -183,7 +184,10 @@ public class AggregateEventTest
         /**
          * 
          */
-        private final EventImpl event;
+        private final EventBean event = new EventBean();
+        /**
+         * 
+         */
         private final InstrumentBean instrument = new InstrumentBean();
         private static final long serialVersionUID = 1L;
     }

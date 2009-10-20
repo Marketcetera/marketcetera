@@ -2,6 +2,8 @@ package org.marketcetera.event;
 
 import java.util.Date;
 
+import org.marketcetera.event.beans.EventBean;
+import org.marketcetera.event.impl.EventValidationException;
 import org.marketcetera.marketdata.MarketDataRequest;
 
 /* $License$ */
@@ -37,8 +39,8 @@ public class MockEvent
                      long inTimestamp)
         throws EventValidationException
     {
-        event = new EventImpl(inMessageId,
-                              new Date(inTimestamp));
+        event.setMessageId(inMessageId);
+        event.setTimestamp(new Date(inTimestamp));
     }
     /**
      * Create a new MockEvent instance.
@@ -93,6 +95,9 @@ public class MockEvent
     {
         return event.getTimeMillis();
     }
-    private final EventImpl event;
+    /**
+     * 
+     */
+    private final EventBean event = new EventBean();
     private static final long serialVersionUID = 1L;
 }

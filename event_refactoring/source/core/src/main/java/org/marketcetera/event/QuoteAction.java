@@ -12,7 +12,16 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id: QuoteEvent.java 10567 2009-05-11 17:01:09Z colin $")
 public enum QuoteAction 
 {
+    /**
+     * the quote should be added
+     */
     ADD,
+    /**
+     * the quote should replace an existing quote
+     */
     CHANGE,
+    /**
+     * the quote should be deleted
+     */
     DELETE
 }

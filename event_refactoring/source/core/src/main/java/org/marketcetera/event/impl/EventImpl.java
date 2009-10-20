@@ -1,6 +1,9 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.util.Date;
+
+import org.marketcetera.event.Event;
+import org.marketcetera.event.beans.EventBean;
 
 /* $License$ */
 
@@ -20,7 +23,7 @@ class EventImpl
     @Override
     public long getMessageId()
     {
-        return messageId;
+        return event.getMessageId();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getTimestamp()
@@ -28,7 +31,7 @@ class EventImpl
     @Override
     public Date getTimestamp()
     {
-        return timestamp;
+        return event.getTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
@@ -36,7 +39,7 @@ class EventImpl
     @Override
     public long getTimeMillis()
     {
-        return timestamp.getTime();
+        return event.getTimestamp().getTime();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getSource()
@@ -44,7 +47,7 @@ class EventImpl
     @Override
     public Object getSource()
     {
-        return source;
+        return event.getSource();
     }
     /**
      * 
@@ -54,7 +57,7 @@ class EventImpl
      */
     public void setSource(Object inSource)
     {
-        source = inSource;
+        event.setSource(inSource);
     }
     /**
      * 
@@ -64,7 +67,6 @@ class EventImpl
      */
     void validate()
     {
-        
     }
     /**
      * Create a new EventImpl instance.
@@ -76,12 +78,13 @@ class EventImpl
     protected EventImpl(long inMessageId,
                         Date inTimestamp)
     {
-        messageId = inMessageId;
-        timestamp = inTimestamp;
+        event.setMessageId(inMessageId);
+        event.setTimestamp(inTimestamp);
         validate();
     }
-    private final long messageId;
-    private final Date timestamp;
-    private volatile Object source;
+    /**
+     * 
+     */
+    private final EventBean event = new EventBean();
     private static final long serialVersionUID = 1L;
 }

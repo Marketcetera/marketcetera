@@ -1,9 +1,13 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.DividendFrequency;
+import org.marketcetera.event.DividendStatus;
+import org.marketcetera.event.DividendType;
 import org.marketcetera.trade.Equity;
 
 /* $License$ */

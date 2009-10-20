@@ -16,9 +16,9 @@ import org.apache.commons.io.FileUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.LogEventBuilder;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
 

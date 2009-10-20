@@ -1,8 +1,11 @@
-package org.marketcetera.event;
+package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.OptionQuoteEvent;
+import org.marketcetera.event.QuoteAction;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
@@ -17,8 +20,8 @@ import org.marketcetera.trade.OptionType;
  * @version $Id$
  * @since $Release$
  */
-class OptionBidEventImpl
-        implements OptionBidEvent
+class OptionAskEventImpl
+        implements AskEvent, OptionQuoteEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getExchange()
@@ -40,9 +43,9 @@ class OptionBidEventImpl
      * @see org.marketcetera.event.QuoteEvent#getQuoteTime()
      */
     @Override
-    public String getQuoteTime()
+    public String getEventTime()
     {
-        return quote.getQuoteTime();
+        return quote.getEventTime();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getSize()
@@ -58,7 +61,7 @@ class OptionBidEventImpl
     @Override
     public Option getInstrument()
     {
-        return (Option)quote.getInstrument();
+        return option.getInstrument();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getMessageId()
@@ -133,14 +136,6 @@ class OptionBidEventImpl
         return option.hasDeliverable();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.HasUnderlyingEquity#getUnderlyingEquity()
-     */
-    @Override
-    public Equity getUnderlyingEquity()
-    {
-        return option.getUnderlyingEquity();
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.event.HasOption#getOption()
      */
     @Override
@@ -149,12 +144,20 @@ class OptionBidEventImpl
         return option.getOption();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getAction()
+     * @see org.marketcetera.event.HasUnderlyingEquity#getUnderlyingEquity()
      */
     @Override
-    public QuoteAction getAction()
+    public Equity getUnderlyingEquity()
     {
-        return quote.getAction();
+        return option.getUnderlyingEquity();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getSource()
+     */
+    @Override
+    public Object getSource()
+    {
+        return quote.getSource();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#setSource(java.lang.Object)
@@ -165,15 +168,15 @@ class OptionBidEventImpl
         quote.setSource(inSource);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getSource()
+     * @see org.marketcetera.event.QuoteEvent#getAction()
      */
     @Override
-    public Object getSource()
+    public QuoteAction getAction()
     {
-        return quote.getSource();
+        return quote.getAction();
     }
     /**
-     * Create a new OptionBidEventImpl instance.
+     * Create a new OptionAskEventImpl instance.
      *
      * @param inMessageId
      * @param inTimestamp
@@ -191,7 +194,7 @@ class OptionBidEventImpl
      * @param inExpirationType
      * @param inAction TODO
      */
-    OptionBidEventImpl(long inMessageId,
+    OptionAskEventImpl(long inMessageId,
                        Date inTimestamp,
                        Option inInstrument,
                        String inExchange,

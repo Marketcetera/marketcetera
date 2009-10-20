@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log.LogEvent;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;

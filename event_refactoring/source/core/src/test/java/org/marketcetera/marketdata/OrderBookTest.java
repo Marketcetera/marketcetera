@@ -23,8 +23,8 @@ import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.event.QuantityTuple;
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.QuoteEventBuilder;
 import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 
