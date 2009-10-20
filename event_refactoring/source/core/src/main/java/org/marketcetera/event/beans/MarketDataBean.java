@@ -2,7 +2,7 @@ package org.marketcetera.event.beans;
 
 import java.math.BigDecimal;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.trade.Instrument;
@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ThreadSafe
+@NotThreadSafe
 @ClassVersion("$Id$")
 public class MarketDataBean
         extends EventBean
@@ -113,21 +113,52 @@ public class MarketDataBean
         exchange = inExchange;
     }
     /**
+     * Performs validation of the attributes.
+     *
+     * <p>Subclasses should override this method to validate
+     * their attributes and invoke the parent method.
+     * @throws IllegalArgumentException if {@link #getTimestamp()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getMessageId()} &lt; 0
+     * @throws IllegalArgumentException if {@link #instrument} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #price} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #size} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #exchange} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #exchangeTimestamp} is <code>null</code>
+     */
+    @Override
+    public void validate()
+    {
+        super.validate();
+        instrument.validate();
+        if(price == null) {
+            EventValidationServices.error(VALIDATION_NULL_PRICE);
+        }
+        if(size == null) {
+            EventValidationServices.error(VALIDATION_NULL_SIZE);
+        }
+        if(exchange == null) {
+            EventValidationServices.error(VALIDATION_NULL_EXCHANGE);
+        }
+        if(exchangeTimestamp == null) {
+            EventValidationServices.error(VALIDATION_NULL_EXCHANGE_TIMESTAMP);
+        }
+    }
+    /**
      * the market data price
      */
-    private volatile BigDecimal price;
+    private BigDecimal price;
     /**
      * the market data size
      */
-    private volatile BigDecimal size;
+    private BigDecimal size;
     /**
      * the market data exchange
      */
-    private volatile String exchange;
+    private String exchange;
     /**
      * the market data exchange timestamp (format is dependent on the market data provider)
      */
-    private volatile String exchangeTimestamp;
+    private String exchangeTimestamp;
     /**
      * the market data instrument
      */

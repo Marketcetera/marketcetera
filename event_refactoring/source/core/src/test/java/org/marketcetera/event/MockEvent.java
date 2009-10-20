@@ -3,7 +3,6 @@ package org.marketcetera.event;
 import java.util.Date;
 
 import org.marketcetera.event.beans.EventBean;
-import org.marketcetera.event.impl.EventValidationException;
 import org.marketcetera.marketdata.MarketDataRequest;
 
 /* $License$ */
@@ -20,10 +19,8 @@ public class MockEvent
 {
     /**
      * Create a new MockEvent instance.
-     * @throws EventValidationException 
      */
     public MockEvent()
-        throws EventValidationException
     {
         this(System.nanoTime(),
              System.currentTimeMillis());
@@ -33,11 +30,9 @@ public class MockEvent
      *
      * @param inMessageId
      * @param inTimestamp
-     * @throws EventValidationException 
      */
     public MockEvent(long inMessageId,
                      long inTimestamp)
-        throws EventValidationException
     {
         event.setMessageId(inMessageId);
         event.setTimestamp(new Date(inTimestamp));
@@ -46,10 +41,8 @@ public class MockEvent
      * Create a new MockEvent instance.
      *
      * @param inRequest
-     * @throws EventValidationException 
      */
     public MockEvent(MarketDataRequest inRequest)
-        throws EventValidationException
     {
         this(System.nanoTime(),
              System.currentTimeMillis());

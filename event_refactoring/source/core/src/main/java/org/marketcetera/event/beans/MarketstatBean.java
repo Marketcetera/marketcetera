@@ -2,7 +2,7 @@ package org.marketcetera.event.beans;
 
 import java.math.BigDecimal;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.trade.Instrument;
@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ThreadSafe
+@NotThreadSafe
 @ClassVersion("$Id$")
 public final class MarketstatBean
         extends EventBean
@@ -27,7 +27,7 @@ public final class MarketstatBean
      *
      * @return a <code>BigDecimal</code> value
      */
-    public final BigDecimal getOpen()
+    public BigDecimal getOpen()
     {
         return openPrice;
     }
@@ -36,7 +36,7 @@ public final class MarketstatBean
      *
      * @param a <code>BigDecimal</code> value
      */
-    public final void setOpen(BigDecimal inOpenPrice)
+    public void setOpen(BigDecimal inOpenPrice)
     {
         openPrice = inOpenPrice;
     }
@@ -45,7 +45,7 @@ public final class MarketstatBean
      *
      * @return a <code>BigDecimal</code> value
      */
-    public final BigDecimal getHigh()
+    public BigDecimal getHigh()
     {
         return highPrice;
     }
@@ -54,7 +54,7 @@ public final class MarketstatBean
      *
      * @param a <code>BigDecimal</code> value
      */
-    public final void setHigh(BigDecimal inHighPrice)
+    public void setHigh(BigDecimal inHighPrice)
     {
         highPrice = inHighPrice;
     }
@@ -63,7 +63,7 @@ public final class MarketstatBean
      *
      * @return a <code>BigDecimal</code> value
      */
-    public final BigDecimal getLow()
+    public BigDecimal getLow()
     {
         return lowPrice;
     }
@@ -72,7 +72,7 @@ public final class MarketstatBean
      *
      * @param a <code>BigDecimal</code> value
      */
-    public final void setLow(BigDecimal inLowPrice)
+    public void setLow(BigDecimal inLowPrice)
     {
         lowPrice = inLowPrice;
     }
@@ -81,7 +81,7 @@ public final class MarketstatBean
      *
      * @return a <code>BigDecimal</code> value
      */
-    public final BigDecimal getClose()
+    public BigDecimal getClose()
     {
         return closePrice;
     }
@@ -90,7 +90,7 @@ public final class MarketstatBean
      *
      * @param a <code>BigDecimal</code> value
      */
-    public final void setClose(BigDecimal inClosePrice)
+    public void setClose(BigDecimal inClosePrice)
     {
         closePrice = inClosePrice;
     }
@@ -99,7 +99,7 @@ public final class MarketstatBean
      *
      * @return a <code>BigDecimal</code> value
      */
-    public final BigDecimal getPreviousClose()
+    public BigDecimal getPreviousClose()
     {
         return previousClosePrice;
     }
@@ -108,7 +108,7 @@ public final class MarketstatBean
      *
      * @param a <code>BigDecimal</code> value
      */
-    public final void setPreviousClose(BigDecimal inPreviousClosePrice)
+    public void setPreviousClose(BigDecimal inPreviousClosePrice)
     {
         previousClosePrice = inPreviousClosePrice;
     }
@@ -117,7 +117,7 @@ public final class MarketstatBean
      *
      * @return a <code>BigDecimal</code> value
      */
-    public final BigDecimal getVolume()
+    public BigDecimal getVolume()
     {
         return volume;
     }
@@ -126,7 +126,7 @@ public final class MarketstatBean
      *
      * @param a <code>BigDecimal</code> value
      */
-    public final void setVolume(BigDecimal inVolume)
+    public void setVolume(BigDecimal inVolume)
     {
         volume = inVolume;
     }
@@ -135,7 +135,7 @@ public final class MarketstatBean
      *
      * @return a <code>String</code> value
      */
-    public final String getCloseDate()
+    public String getCloseDate()
     {
         return closeDate;
     }
@@ -144,7 +144,7 @@ public final class MarketstatBean
      *
      * @param a <code>String</code> value
      */
-    public final void setCloseDate(String inCloseDate)
+    public void setCloseDate(String inCloseDate)
     {
         closeDate = inCloseDate;
     }
@@ -153,7 +153,7 @@ public final class MarketstatBean
      *
      * @return a <code>String</code> value
      */
-    public final String getPreviousCloseDate()
+    public String getPreviousCloseDate()
     {
         return previousCloseDate;
     }
@@ -162,7 +162,7 @@ public final class MarketstatBean
      *
      * @param a <code>String</code> value
      */
-    public final void setPreviousCloseDate(String inPreviousCloseDate)
+    public void setPreviousCloseDate(String inPreviousCloseDate)
     {
         previousCloseDate = inPreviousCloseDate;
     }
@@ -171,7 +171,7 @@ public final class MarketstatBean
      *
      * @return a <code>String</code> value
      */
-    public final String getTradeHighTime()
+    public String getTradeHighTime()
     {
         return tradeHighTime;
     }
@@ -180,7 +180,7 @@ public final class MarketstatBean
      *
      * @param a <code>String</code> value
      */
-    public final void setTradeHighTime(String inTradeHighTime)
+    public void setTradeHighTime(String inTradeHighTime)
     {
         tradeHighTime = inTradeHighTime;
     }
@@ -189,7 +189,7 @@ public final class MarketstatBean
      *
      * @return a <code>String</code> value
      */
-    public final String getTradeLowTime()
+    public String getTradeLowTime()
     {
         return tradeLowTime;
     }
@@ -198,7 +198,7 @@ public final class MarketstatBean
      *
      * @param a <code>String</code> value
      */
-    public final void setTradeLowTime(String inTradeLowTime)
+    public void setTradeLowTime(String inTradeLowTime)
     {
         tradeLowTime = inTradeLowTime;
     }
@@ -207,7 +207,7 @@ public final class MarketstatBean
      *
      * @return a <code>String</code> value
      */
-    public final String getOpenExchange()
+    public String getOpenExchange()
     {
         return openExchange;
     }
@@ -216,7 +216,7 @@ public final class MarketstatBean
      *
      * @param a <code>String</code> value
      */
-    public final void setOpenExchange(String inOpenExchange)
+    public void setOpenExchange(String inOpenExchange)
     {
         openExchange = inOpenExchange;
     }
@@ -225,7 +225,7 @@ public final class MarketstatBean
      *
      * @return a <code>String</code> value
      */
-    public final String getHighExchange()
+    public String getHighExchange()
     {
         return highExchange;
     }
@@ -234,7 +234,7 @@ public final class MarketstatBean
      *
      * @param a <code>String</code> value
      */
-    public final void setHighExchange(String inHighExchange)
+    public void setHighExchange(String inHighExchange)
     {
         highExchange = inHighExchange;
     }
@@ -243,7 +243,7 @@ public final class MarketstatBean
      *
      * @return a <code>String</code> value
      */
-    public final String getLowExchange()
+    public String getLowExchange()
     {
         return lowExchange;
     }
@@ -252,7 +252,7 @@ public final class MarketstatBean
      *
      * @param a <code>String</code> value
      */
-    public final void setLowExchange(String inLowExchange)
+    public void setLowExchange(String inLowExchange)
     {
         lowExchange = inLowExchange;
     }
@@ -261,7 +261,7 @@ public final class MarketstatBean
      *
      * @return a <code>String</code> value
      */
-    public final String getCloseExchange()
+    public String getCloseExchange()
     {
         return closeExchange;
     }
@@ -270,7 +270,7 @@ public final class MarketstatBean
      *
      * @param a <code>String</code> value
      */
-    public final void setCloseExchange(String inCloseExchange)
+    public void setCloseExchange(String inCloseExchange)
     {
         closeExchange = inCloseExchange;
     }
@@ -279,7 +279,7 @@ public final class MarketstatBean
      *
      * @return an <code>Instrument</code> value
      */
-    public final Instrument getInstrument()
+    public Instrument getInstrument()
     {
         return instrument.getInstrument();
     }
@@ -288,66 +288,81 @@ public final class MarketstatBean
      *
      * @param inInstrument an <code>Instrument</code> value
      */
-    public final void setInstrument(Instrument inInstrument)
+    public void setInstrument(Instrument inInstrument)
     {
         instrument.setInstrument(inInstrument);
     }
     /**
+     * Performs validation of the attributes.
+     *
+     * <p>Subclasses should override this method to validate
+     * their attributes and invoke the parent method.
+     * @throws IllegalArgumentException if {@link #timestamp} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #messageId} &lt; 0
+     * @throws IllegalArgumentException if {@link #instrument} is <code>null</code>
+     */
+    @Override
+    public void validate()
+    {
+        super.validate();
+        instrument.validate();
+    }
+    /**
      * the open price for the current or most recent session
      */
-    private volatile BigDecimal openPrice;
+    private BigDecimal openPrice;
     /**
      * the high price for the current or most recent session
      */
-    private volatile BigDecimal highPrice;
+    private BigDecimal highPrice;
     /**
      * the low price for the current or most recent session
      */
-    private volatile BigDecimal lowPrice;
+    private BigDecimal lowPrice;
     /**
      * the close price for the current or most recent session
      */
-    private volatile BigDecimal closePrice;
+    private BigDecimal closePrice;
     /**
      * the close price from the previous session
      */
-    private volatile BigDecimal previousClosePrice;
+    private BigDecimal previousClosePrice;
     /**
      * the cumulative volume for the current or most recent session
      */
-    private volatile BigDecimal volume;
+    private BigDecimal volume;
     /**
      * the market close date - format is dependent on the market data provider
      */
-    private volatile String closeDate;
+    private String closeDate;
     /**
      * the market previous close date - format is dependent on the market data provider
      */
-    private volatile String previousCloseDate;
+    private String previousCloseDate;
     /**
      * the time of the high trade for the current or most recent session - format is dependent on the market data provider 
      */
-    private volatile String tradeHighTime;
+    private String tradeHighTime;
     /**
      * the time of the low trade for the current or most recent session - format is dependent on the market data provider 
      */
-    private volatile String tradeLowTime;
+    private String tradeLowTime;
     /**
      * the exchange for which the open price was reported 
      */
-    private volatile String openExchange;
+    private String openExchange;
     /**
      * the exchange for which the high price was reported 
      */
-    private volatile String highExchange;
+    private String highExchange;
     /**
      * the exchange for which the low price was reported 
      */
-    private volatile String lowExchange;
+    private String lowExchange;
     /**
      * the exchange for which the close price was reported 
      */
-    private volatile String closeExchange;
+    private String closeExchange;
     /**
      * the instrument
      */

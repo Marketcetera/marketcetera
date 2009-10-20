@@ -2,9 +2,10 @@ package org.marketcetera.event.beans;
 
 import java.io.Serializable;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.HasInstrument;
+import org.marketcetera.event.Messages;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -17,10 +18,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ThreadSafe
+@NotThreadSafe
 @ClassVersion("$Id$")
 public final class InstrumentBean
-        implements Serializable
+        implements Serializable, Messages
 {
     /**
      * Get the instrument value.
@@ -41,8 +42,19 @@ public final class InstrumentBean
         instrument = inInstrument;
     }
     /**
+     * Performs validation of the attributes.
+     *
+     * @throws IllegalArgumentException if {@link #instrument} is <code>null</code>
+     */
+    public void validate()
+    {
+        if(instrument == null) {
+            EventValidationServices.error(VALIDATION_NULL_INSTRUMENT);
+        }
+    }
+    /**
      * the instrument value 
      */
-    private volatile Instrument instrument;
+    private Instrument instrument;
     private static final long serialVersionUID = 1L;
 }

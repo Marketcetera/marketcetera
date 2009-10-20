@@ -23,7 +23,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.event.TradeEvent#getExchange()
      */
     @Override
-    public String getExchange()
+    public final String getExchange()
     {
         return marketData.getExchange();
     }
@@ -31,7 +31,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.event.TradeEvent#getPrice()
      */
     @Override
-    public BigDecimal getPrice()
+    public final BigDecimal getPrice()
     {
         return marketData.getPrice();
     }
@@ -39,7 +39,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.event.TradeEvent#getSize()
      */
     @Override
-    public BigDecimal getSize()
+    public final BigDecimal getSize()
     {
         return marketData.getSize();
     }
@@ -47,7 +47,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.event.TradeEvent#getTradeTime()
      */
     @Override
-    public String getExchangeTimestamp()
+    public final String getExchangeTimestamp()
     {
         return marketData.getExchangeTimestamp();
     }
@@ -55,7 +55,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.event.Event#getMessageId()
      */
     @Override
-    public long getMessageId()
+    public final long getMessageId()
     {
         return marketData.getMessageId();
     }
@@ -63,7 +63,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.marketData.Event#getSource()
      */
     @Override
-    public Object getSource()
+    public final Object getSource()
     {
         return marketData.getSource();
     }
@@ -71,7 +71,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.marketData.Event#getTimestamp()
      */
     @Override
-    public Date getTimestamp()
+    public final Date getTimestamp()
     {
         return marketData.getTimestamp();
     }
@@ -79,7 +79,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.marketData.Event#setSource(java.lang.Object)
      */
     @Override
-    public void setSource(Object inSource)
+    public final void setSource(Object inSource)
     {
         marketData.setSource(inSource);
     }
@@ -87,7 +87,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.marketData.TimestampCarrier#getTimeMillis()
      */
     @Override
-    public long getTimeMillis()
+    public final long getTimeMillis()
     {
         return marketData.getTimeMillis();
     }
@@ -95,7 +95,7 @@ abstract class TradeEventImpl
      * @see org.marketcetera.event.HasInstrument#getInstrument()
      */
     @Override
-    public Instrument getInstrument()
+    public final Instrument getInstrument()
     {
         return marketData.getInstrument();
     }
@@ -112,7 +112,7 @@ abstract class TradeEventImpl
      */
     protected TradeEventImpl(long inMessageId,
                              Date inTimestamp,
-                             Instrument inEquity,
+                             Instrument inInstrument,
                              String inExchange,
                              BigDecimal inPrice,
                              BigDecimal inSize,
@@ -120,7 +120,7 @@ abstract class TradeEventImpl
     {
         marketData.setMessageId(inMessageId);
         marketData.setTimestamp(inTimestamp);
-        marketData.setInstrument(inEquity);
+        marketData.setInstrument(inInstrument);
         marketData.setExchange(inExchange);
         marketData.setPrice(inPrice);
         marketData.setSize(inSize);

@@ -3,8 +3,9 @@ package org.marketcetera.event.beans;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 
+import org.marketcetera.event.Messages;
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
@@ -21,17 +22,17 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ThreadSafe
+@NotThreadSafe
 @ClassVersion("$Id$")
 public final class OptionBean
-        implements Serializable
+        implements Serializable, Messages
 {
     /**
      * Gets the instrument.
      *
      * @return an <code>Option</code> value
      */
-    public final Option getInstrument()
+    public Option getInstrument()
     {
         return (Option)instrument.getInstrument();
     }
@@ -40,7 +41,7 @@ public final class OptionBean
      *
      * @param inOption an <code>Option</code> value
      */
-    public final void setInstrument(Option inOption)
+    public void setInstrument(Option inOption)
     {
         instrument.setInstrument(inOption);
     }
@@ -49,7 +50,7 @@ public final class OptionBean
      *
      * @return a <code>Equity</code> value
      */
-    public final Equity getUnderlyingEquity()
+    public Equity getUnderlyingEquity()
     {
         return underlyingEquity;
     }
@@ -58,7 +59,7 @@ public final class OptionBean
      *
      * @param a <code>Equity</code> value
      */
-    public final void setUnderlyingEquity(Equity inUnderlyingEquity)
+    public void setUnderlyingEquity(Equity inUnderlyingEquity)
     {
         underlyingEquity = inUnderlyingEquity;
     }
@@ -67,7 +68,7 @@ public final class OptionBean
      *
      * @return a <code>String</code> value
      */
-    public final String getExpiry()
+    public String getExpiry()
     {
         return expiry;
     }
@@ -76,7 +77,7 @@ public final class OptionBean
      *
      * @param a <code>String</code> value
      */
-    public final void setExpiry(String inExpiry)
+    public void setExpiry(String inExpiry)
     {
         expiry = inExpiry;
     }
@@ -85,7 +86,7 @@ public final class OptionBean
      *
      * @return a <code>BigDecimal</code> value
      */
-    public final BigDecimal getStrike()
+    public BigDecimal getStrike()
     {
         return strike;
     }
@@ -94,7 +95,7 @@ public final class OptionBean
      *
      * @param a <code>BigDecimal</code> value
      */
-    public final void setStrike(BigDecimal inStrike)
+    public void setStrike(BigDecimal inStrike)
     {
         strike = inStrike;
     }
@@ -103,7 +104,7 @@ public final class OptionBean
      *
      * @return a <code>OptionType</code> value
      */
-    public final OptionType getOptionType()
+    public OptionType getOptionType()
     {
         return optionType;
     }
@@ -112,7 +113,7 @@ public final class OptionBean
      *
      * @param a <code>OptionType</code> value
      */
-    public final void setOptionType(OptionType inOptionType)
+    public void setOptionType(OptionType inOptionType)
     {
         optionType = inOptionType;
     }
@@ -121,7 +122,7 @@ public final class OptionBean
      *
      * @return a <code>ExpirationType</code> value
      */
-    public final ExpirationType getExpirationType()
+    public ExpirationType getExpirationType()
     {
         return expirationType;
     }
@@ -130,7 +131,7 @@ public final class OptionBean
      *
      * @param a <code>ExpirationType</code> value
      */
-    public final void setExpirationType(ExpirationType inExpirationType)
+    public void setExpirationType(ExpirationType inExpirationType)
     {
         expirationType = inExpirationType;
     }
@@ -139,7 +140,7 @@ public final class OptionBean
      *
      * @return a <code>int</code> value
      */
-    public final int getMultiplier()
+    public int getMultiplier()
     {
         return multiplier;
     }
@@ -148,7 +149,7 @@ public final class OptionBean
      *
      * @param a <code>int</code> value
      */
-    public final void setMultiplier(int inMultiplier)
+    public void setMultiplier(int inMultiplier)
     {
         multiplier = inMultiplier;
     }
@@ -157,7 +158,7 @@ public final class OptionBean
      *
      * @return a <code>boolean</code> value
      */
-    public final boolean hasDeliverable()
+    public boolean hasDeliverable()
     {
         return hasDeliverable;
     }
@@ -166,41 +167,71 @@ public final class OptionBean
      *
      * @param a <code>boolean</code> value
      */
-    public final void setHasDeliverable(boolean inHasDeliverable)
+    public void setHasDeliverable(boolean inHasDeliverable)
     {
         hasDeliverable = inHasDeliverable;
     }
     /**
+     * Performs validation of the attributes.
+     *
+     * @throws IllegalArgumentException if {@link #instrument} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #underlyingEquity} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #expiry} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #strike} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #optionType} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #expirationType} is <code>null</code>
+     */
+    public void validate()
+    {
+        instrument.validate();
+        if(underlyingEquity == null) {
+            EventValidationServices.error(VALIDATION_NULL_UNDERLYING_EQUITY);
+        }
+        if(expiry == null ||
+           expiry.isEmpty()) {
+            EventValidationServices.error(VALIDATION_NULL_EXPIRY);
+        }
+        if(strike == null) {
+            EventValidationServices.error(VALIDATION_NULL_STRIKE);
+        }
+        if(optionType == null) {
+            EventValidationServices.error(VALIDATION_NULL_OPTION_TYPE);
+        }
+        if(expirationType == null) {
+            EventValidationServices.error(VALIDATION_NULL_EXPIRATION_TYPE);
+        }
+    }
+    /**
      * the underlying equity for the option
      */
-    private volatile Equity underlyingEquity;
+    private Equity underlyingEquity;
     /**
      * the expiry for the option - format is dependent on the market data provider
      */
-    private volatile String expiry;
+    private String expiry;
     /**
      * the strike of the option
      */
-    private volatile BigDecimal strike;
+    private BigDecimal strike;
     /**
      * the type of the option
      */
-    private volatile OptionType optionType;
+    private OptionType optionType;
     /**
      * the expiration type of the option
      */
-    private volatile ExpirationType expirationType;
+    private ExpirationType expirationType;
     /**
      * the multiplier of the option
      */
-    private volatile int multiplier;
+    private int multiplier;
     /**
      * indicates if the option includes deliverables
      */
-    private volatile boolean hasDeliverable;
+    private boolean hasDeliverable;
     /**
      * the instrument of the option
      */
     private final InstrumentBean instrument = new InstrumentBean();
-    private static final long serialVersionUID = 1L;
+    private final static long serialVersionUID = 1L;
 }

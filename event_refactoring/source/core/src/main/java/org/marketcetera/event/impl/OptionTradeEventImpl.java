@@ -4,10 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.event.OptionEvent;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.OptionBean;
-import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
@@ -23,72 +20,9 @@ import org.marketcetera.trade.OptionType;
  * @since $Release$
  */
 final class OptionTradeEventImpl
-        implements TradeEvent, OptionEvent
+        extends TradeEventImpl
+        implements OptionEvent
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getExchange()
-     */
-    @Override
-    public String getExchange()
-    {
-        return marketData.getExchange();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getPrice()
-     */
-    @Override
-    public BigDecimal getPrice()
-    {
-        return marketData.getPrice();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getQuoteTime()
-     */
-    @Override
-    public String getExchangeTimestamp()
-    {
-        return marketData.getExchangeTimestamp();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getSize()
-     */
-    @Override
-    public BigDecimal getSize()
-    {
-        return marketData.getSize();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getInstrument()
-     */
-    @Override
-    public Option getInstrument()
-    {
-        return option.getInstrument();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getMessageId()
-     */
-    @Override
-    public long getMessageId()
-    {
-        return marketData.getMessageId();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getTimestamp()
-     */
-    @Override
-    public Date getTimestamp()
-    {
-        return marketData.getTimestamp();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
-     */
-    @Override
-    public long getTimeMillis()
-    {
-        return marketData.getTimeMillis();
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.event.OptionEvent#getExpirationType()
      */
@@ -153,32 +87,16 @@ final class OptionTradeEventImpl
     {
         return option.getUnderlyingEquity();
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getSource()
-     */
-    @Override
-    public Object getSource()
-    {
-        return marketData.getSource();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#setSource(java.lang.Object)
-     */
-    @Override
-    public void setSource(Object inSource)
-    {
-        marketData.setSource(inSource);
-    }
     /**
      * Create a new OptionAskEventImpl instance.
      *
      * @param inMessageId
      * @param inTimestamp
-     * @param inInstrument
+     * @param inOption
      * @param inExchange
      * @param inPrice
      * @param inSize
-     * @param inQuoteTime
+     * @param inTradeTime
      * @param inUnderlyingEquity
      * @param inStrike
      * @param inOptionType
@@ -189,11 +107,11 @@ final class OptionTradeEventImpl
      */
     OptionTradeEventImpl(long inMessageId,
                          Date inTimestamp,
-                         Option inInstrument,
+                         Option inOption,
                          String inExchange,
                          BigDecimal inPrice,
                          BigDecimal inSize,
-                         String inQuoteTime,
+                         String inTradeTime,
                          Equity inUnderlyingEquity,
                          BigDecimal inStrike,
                          OptionType inOptionType,
@@ -202,13 +120,16 @@ final class OptionTradeEventImpl
                          int inMultiplier,
                          ExpirationType inExpirationType)
     {
+        super(inMessageId,
+              inTimestamp,
+              inOption,
+              inExchange,
+              inPrice,
+              inSize,
+              inTradeTime);
     }
     /**
-     * 
-     */
-    private final MarketDataBean marketData = new MarketDataBean();
-    /**
-     * 
+     * option attributes
      */
     private final OptionBean option = new OptionBean();
     private static final long serialVersionUID = 1L;
