@@ -1,6 +1,6 @@
 package org.marketcetera.event.beans;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.util.QuoteAction;
@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ThreadSafe
+@NotThreadSafe
 @ClassVersion("$Id$")
 public final class QuoteBean
         extends MarketDataBean
@@ -39,8 +39,39 @@ public final class QuoteBean
         action = inAction;
     }
     /**
+     * Performs validation of the attributes.
+     *
+     * <p>Subclasses should override this method to validate
+     * their attributes and invoke the parent method.
+     * @throws illegalargumentexception if {@link #gettimestamp()} is <code>null</code>
+     * @throws illegalargumentexception if {@link #getmessageid()} &lt; 0
+     * @throws IllegalArgumentException if {@link #getInstrument()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getPrice()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getSize()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getExchange()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getExchangeTimestamp()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #quoteAction} is <code>null</code>
+     */
+    @Override
+    public void validate()
+    {
+        super.validate();
+        if(action == null) {
+            EventValidationServices.error(VALIDATION_NULL_QUOTE_ACTION);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.beans.EventBean#setDefaults()
+     */
+    @Override
+    public void setDefaults()
+    {
+        super.setDefaults();
+        action = QuoteAction.ADD;
+    }
+    /**
      * the action of the quote
      */
-    private volatile QuoteAction action;
+    private QuoteAction action;
     private static final long serialVersionUID = 1L;
 }

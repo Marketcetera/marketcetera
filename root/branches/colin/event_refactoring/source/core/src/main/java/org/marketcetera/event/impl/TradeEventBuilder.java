@@ -72,7 +72,7 @@ public abstract class TradeEventBuilder
             public TradeEvent create()
             {
                 if(getMarketData().getInstrument() instanceof Equity) {
-                    return new TradeEventImpl(getMessageId(),
+                    return new EquityTradeEventImpl(getMessageId(),
                                                     getTimestamp(),
                                                     (Equity)getMarketData().getInstrument(),
                                                     getMarketData().getExchange(),
@@ -96,8 +96,23 @@ public abstract class TradeEventBuilder
             @Override
             public TradeEvent create()
             {
-                // TODO Auto-generated method stub
-                return null;
+                if(getMarketData().getInstrument() instanceof Option) {
+                    return new OptionTradeEventImpl(getMessageId(),
+                                                    getTimestamp(),
+                                                    (Option)getMarketData().getInstrument(),
+                                                    getMarketData().getExchange(),
+                                                    getMarketData().getPrice(),
+                                                    getMarketData().getSize(),
+                                                    getMarketData().getExchangeTimestamp(),
+                                                    getOption().getUnderlyingEquity(),
+                                                    getOption().getStrike(),
+                                                    getOption().getOptionType(),
+                                                    getOption().getExpiry(),
+                                                    getOption().hasDeliverable(),
+                                                    getOption().getMultiplier(),
+                                                    getOption().getExpirationType());
+                }
+                throw new IllegalArgumentException();
             }
         };
     }

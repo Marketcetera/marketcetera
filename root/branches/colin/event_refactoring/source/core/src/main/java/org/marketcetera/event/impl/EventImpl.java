@@ -2,18 +2,23 @@ package org.marketcetera.event.impl;
 
 import java.util.Date;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import org.marketcetera.event.Event;
 import org.marketcetera.event.beans.EventBean;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Implementation of {@link Event}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@NotThreadSafe
+@ClassVersion("$Id$")
 class EventImpl
         implements Event
 {
@@ -50,10 +55,9 @@ class EventImpl
         return event.getSource();
     }
     /**
-     * 
+     * Sets the source value.
      *
-     *
-     * @param inSource
+     * @param an <code>Object</code> value or null
      */
     public final void setSource(Object inSource)
     {
@@ -63,18 +67,18 @@ class EventImpl
      * @see java.lang.Object#hashCode()
      */
     @Override
-    public final int hashCode()
+    public int hashCode()
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((event == null) ? 0 : event.hashCode());
+        result = prime * result + (int) (event.getMessageId() ^ (event.getMessageId() >>> 32));
         return result;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public final boolean equals(Object obj)
+    public boolean equals(Object obj)
     {
         if (this == obj)
             return true;
@@ -83,38 +87,26 @@ class EventImpl
         if (getClass() != obj.getClass())
             return false;
         EventImpl other = (EventImpl) obj;
-        if (event == null) {
-            if (other.event != null)
-                return false;
-        } else if (!event.equals(other.event))
+        if (event.getMessageId() != other.getMessageId())
             return false;
         return true;
     }
     /**
-     * 
-     *
-     *
-     * @throws EventValidationException
-     */
-    void validate()
-    {
-    }
-    /**
      * Create a new EventImpl instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
-     * @throws EventValidationException 
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>Date</code> value
+     * @throws IllegalArgumentException if <code>inMessageId</code> &lt; 0
      */
     protected EventImpl(long inMessageId,
                         Date inTimestamp)
     {
         event.setMessageId(inMessageId);
         event.setTimestamp(inTimestamp);
-        validate();
+        event.validate();
     }
     /**
-     * 
+     * the event attributes 
      */
     private final EventBean event = new EventBean();
     private static final long serialVersionUID = 1L;

@@ -1,9 +1,8 @@
 package org.marketcetera.event.beans;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.util.DividendFrequency;
@@ -21,10 +20,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ThreadSafe
+@NotThreadSafe
 @ClassVersion("$Id$")
 public final class DividendBean
-        implements Serializable
+        extends EventBean
 {
     /**
      * Get the equity value.
@@ -207,44 +206,102 @@ public final class DividendBean
         type = inType;
     }
     /**
+     * Performs validation of the attributes.
+     *
+     * <p>Subclasses should override this method to validate
+     * their attributes and invoke the parent method.
+     * @throws IllegalArgumentException if {@link #getTimestamp()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getMessageId()} &lt; 0
+     * @throws IllegalArgumentException if {@link #equity} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #amount} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #currency} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #declareDate} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #executionDate} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #paymentDate} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #recordDate} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #frequency} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #status} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #type} is <code>null</code>
+     */
+    @Override
+    public void validate()
+    {
+        super.validate();
+        if(equity == null) {
+            EventValidationServices.error(VALIDATION_NULL_EQUITY);
+        }
+        if(amount == null) {
+            EventValidationServices.error(VALIDATION_NULL_AMOUNT);
+        }
+        if(currency == null ||
+           currency.isEmpty()) {
+            EventValidationServices.error(VALIDATION_NULL_CURRENCY);
+        }
+        if(declareDate == null ||
+           declareDate.isEmpty()) {
+            EventValidationServices.error(VALIDATION_NULL_DECLARE_DATE);
+        }
+        if(executionDate == null ||
+           executionDate.isEmpty()) {
+            EventValidationServices.error(VALIDATION_NULL_EXECUTION_DATE);
+        }
+        if(paymentDate == null ||
+           paymentDate.isEmpty()) {
+            EventValidationServices.error(VALIDATION_NULL_PAYMENT_DATE);
+        }
+        if(recordDate == null ||
+           recordDate.isEmpty()) {
+            EventValidationServices.error(VALIDATION_NULL_RECORD_DATE);
+        }
+        if(frequency == null) {
+            EventValidationServices.error(VALIDATION_NULL_FREQUENCY);
+        }
+        if(status == null) {
+            EventValidationServices.error(VALIDATION_NULL_STATUS);
+        }
+        if(type == null) {
+            EventValidationServices.error(VALIDATION_NULL_TYPE);
+        }
+    }
+    /**
      * the equity for which the dividend was or will be issued 
      */
-    private volatile Equity equity;
+    private Equity equity;
     /**
      * the amount in which the dividend was or will be issued 
      */
-    private volatile BigDecimal amount;
+    private BigDecimal amount;
     /**
      * the currency in which the dividend was or will be issued 
      */
-    private volatile String currency;
+    private String currency;
     /**
      * the declare date on which the dividend was or will be issued - the format is dependent on the market data provider 
      */
-    private volatile String declareDate;
+    private String declareDate;
     /**
      * the execution date on which the dividend was or will be issued - the format is dependent on the market data provider 
      */
-    private volatile String executionDate;
+    private String executionDate;
     /**
      * the payment date on which the dividend was or will be issued - the format is dependent on the market data provider 
      */
-    private volatile String paymentDate;
+    private String paymentDate;
     /**
      * the record date on which the dividend was or will be issued - the format is dependent on the market data provider 
      */
-    private volatile String recordDate;
+    private String recordDate;
     /**
      * the frequency in which the dividend was or will be issued 
      */
-    private volatile DividendFrequency frequency;
+    private DividendFrequency frequency;
     /**
      * the status of the dividend that was or will be issued 
      */
-    private volatile DividendStatus status;
+    private DividendStatus status;
     /**
      * the type of the dividend that was or will be issued 
      */
-    private volatile DividendType type;
+    private DividendType type;
     private static final long serialVersionUID = 1L;
 }

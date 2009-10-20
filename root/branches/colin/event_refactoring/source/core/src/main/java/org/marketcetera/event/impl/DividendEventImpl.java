@@ -3,22 +3,27 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.beans.DividendBean;
 import org.marketcetera.event.util.DividendFrequency;
 import org.marketcetera.event.util.DividendStatus;
 import org.marketcetera.event.util.DividendType;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Implementation of {@link DividendEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
+@ClassVersion("$Id$")
 final class DividendEventImpl
         extends EventImpl
         implements DividendEvent
@@ -29,7 +34,7 @@ final class DividendEventImpl
     @Override
     public BigDecimal getAmount()
     {
-        return amount;
+        return dividend.getAmount();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DividendEvent#getCurrency()
@@ -37,7 +42,7 @@ final class DividendEventImpl
     @Override
     public String getCurrency()
     {
-        return currency;
+        return dividend.getCurrency();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DividendEvent#getDeclareDate()
@@ -45,7 +50,7 @@ final class DividendEventImpl
     @Override
     public String getDeclareDate()
     {
-        return declareDate;
+        return dividend.getDeclareDate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DividendEvent#getEquity()
@@ -53,10 +58,10 @@ final class DividendEventImpl
     @Override
     public Equity getEquity()
     {
-        return equity;
+        return dividend.getEquity();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getInstrument()
+     * @see org.marketcetera.event.HasInstrument#getInstrument()
      */
     @Override
     public Equity getInstrument()
@@ -69,7 +74,7 @@ final class DividendEventImpl
     @Override
     public String getExecutionDate()
     {
-        return executionDate;
+        return dividend.getExecutionDate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DividendEvent#getFrequency()
@@ -77,7 +82,7 @@ final class DividendEventImpl
     @Override
     public DividendFrequency getFrequency()
     {
-        return frequency;
+        return dividend.getFrequency();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DividendEvent#getPaymentDate()
@@ -85,7 +90,7 @@ final class DividendEventImpl
     @Override
     public String getPaymentDate()
     {
-        return paymentDate;
+        return dividend.getPaymentDate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DividendEvent#getRecordDate()
@@ -93,7 +98,7 @@ final class DividendEventImpl
     @Override
     public String getRecordDate()
     {
-        return recordDate;
+        return dividend.getRecordDate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DividendEvent#getStatus()
@@ -101,7 +106,7 @@ final class DividendEventImpl
     @Override
     public DividendStatus getStatus()
     {
-        return status;
+        return dividend.getStatus();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DividendEvent#getType()
@@ -109,51 +114,35 @@ final class DividendEventImpl
     @Override
     public DividendType getType()
     {
-        return type;
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString()
-    {
-        StringBuilder builder = new StringBuilder();
-        builder.append("DividendEventImpl [amount=");
-        builder.append(amount);
-        builder.append(", currency=");
-        builder.append(currency);
-        builder.append(", declareDate=");
-        builder.append(declareDate);
-        builder.append(", executionDate=");
-        builder.append(executionDate);
-        builder.append(", frequency=");
-        builder.append(frequency);
-        builder.append(", paymentDate=");
-        builder.append(paymentDate);
-        builder.append(", recordDate=");
-        builder.append(recordDate);
-        builder.append(", status=");
-        builder.append(status);
-        builder.append(", type=");
-        builder.append(type);
-        builder.append("]");
-        return builder.toString();
+        return dividend.getType();
     }
     /**
      * Create a new DividendEventImpl instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
-     * @param inEquity
-     * @param inAmount
-     * @param inCurrency
-     * @param inDeclareDate
-     * @param inExecutionDate
-     * @param inPaymentDate
-     * @param inRecordDate
-     * @param inDividendFrequency
-     * @param inDividendStatus
-     * @param inDividendType
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>Date</code> value
+     * @param inEquity an <code>Equity</code> value
+     * @param inAmount a <code>BigDecimal</code> value
+     * @param inCurrency a <code>String</code> value
+     * @param inDeclareDate a <code>String</code> value
+     * @param inExecutionDate a <code>String</code> value
+     * @param inPaymentDate a <code>String</code> value
+     * @param inRecordDate a <code>String</code> value
+     * @param inFrequency a <code>DividendFrequency</code> value
+     * @param inStatus a <code>DividendStatus</code> value
+     * @param inType a <code>DividendType</code> value
+     * @throws IllegalArgumentException if {@link #getTimestamp()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getMessageId()} &lt; 0
+     * @throws IllegalArgumentException if {@link #equity} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #amount} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #currency} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #declareDate} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #executionDate} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #paymentDate} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #recordDate} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #frequency} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #status} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #type} is <code>null</code>
      */
     DividendEventImpl(long inMessageId,
                       Date inTimestamp,
@@ -164,118 +153,27 @@ final class DividendEventImpl
                       String inExecutionDate,
                       String inPaymentDate,
                       String inRecordDate,
-                      DividendFrequency inDividendFrequency,
-                      DividendStatus inDividendStatus,
-                      DividendType inDividendType)
+                      DividendFrequency inFrequency,
+                      DividendStatus inStatus,
+                      DividendType inType)
     {
         super(inMessageId,
               inTimestamp);
-        equity = inEquity;
-        amount = inAmount;
-        currency = inCurrency;
-        declareDate = inDeclareDate;
-        executionDate = inExecutionDate;
-        paymentDate = inPaymentDate;
-        recordDate = inRecordDate;
-        frequency = inDividendFrequency;
-        status = inDividendStatus;
-        type = inDividendType;
-        validate();
+        dividend.setAmount(inAmount);
+        dividend.setCurrency(inCurrency);
+        dividend.setDeclareDate(inDeclareDate);
+        dividend.setEquity(inEquity);
+        dividend.setExecutionDate(inExecutionDate);
+        dividend.setFrequency(inFrequency);
+        dividend.setPaymentDate(inPaymentDate);
+        dividend.setRecordDate(inRecordDate);
+        dividend.setStatus(inStatus);
+        dividend.setType(inType);
+        dividend.validate();
     }
     /**
-     * 
-     *
-     *
-     * @throws EventValidationException
+     * dividend attributes
      */
-    void validate()
-    {
-        super.validate();
-        // TODO null equity
-        if(amount == null) {
-            EventValidationException.error(VALIDATION_NULL_AMOUNT);
-        }
-        if(currency == null ||
-           currency.isEmpty()) {
-            EventValidationException.error(VALIDATION_NULL_CURRENCY);
-        }
-        if(declareDate == null ||
-           declareDate.isEmpty()) {
-            EventValidationException.error(VALIDATION_NULL_DECLARE_DATE);
-        }
-        EventValidationServices.validateDate(declareDate,
-                                             new I18NBoundMessage1P(VALIDATION_FORMAT_DECLARE_DATE,
-                                                                    declareDate));
-        if(executionDate == null ||
-           executionDate.isEmpty()) {
-            EventValidationException.error(VALIDATION_NULL_EXECUTION_DATE);
-        }
-        EventValidationServices.validateDate(declareDate,
-                                             new I18NBoundMessage1P(VALIDATION_FORMAT_EXECUTION_DATE,
-                                                                    executionDate));
-        if(paymentDate == null ||
-           paymentDate.isEmpty()) {
-            EventValidationException.error(VALIDATION_NULL_PAYMENT_DATE);
-        }
-        EventValidationServices.validateDate(paymentDate,
-                                             new I18NBoundMessage1P(VALIDATION_FORMAT_PAYMENT_DATE,
-                                                                    paymentDate));
-        if(recordDate == null ||
-           recordDate.isEmpty()) {
-            EventValidationException.error(VALIDATION_NULL_RECORD_DATE);
-        }
-        EventValidationServices.validateDate(recordDate,
-                                             new I18NBoundMessage1P(VALIDATION_FORMAT_RECORD_DATE,
-                                                                    paymentDate));
-        if(frequency == null) {
-            EventValidationException.error(VALIDATION_NULL_FREQUENCY);
-        }
-        if(status == null) {
-            EventValidationException.error(VALIDATION_NULL_STATUS);
-        }
-        if(type == null) {
-            EventValidationException.error(VALIDATION_NULL_TYPE);
-        }
-    }
-    /**
-     * 
-     */
-    private final Equity equity;
-    /**
-     * 
-     */
-    private final BigDecimal amount;
-    /**
-     * 
-     */
-    private final String currency;
-    /**
-     * 
-     */
-    private final String declareDate;
-    /**
-     * 
-     */
-    private final String executionDate;
-    /**
-     * 
-     */
-    private final String paymentDate;
-    /**
-     * 
-     */
-    private final String recordDate;
-    /**
-     * 
-     */
-    private final DividendFrequency frequency;
-    /**
-     * 
-     */
-    private final DividendStatus status;
-    /**
-     * 
-     */
-    private final DividendType type;
+    private final DividendBean dividend = new DividendBean();
     private static final long serialVersionUID = 1L;
 }

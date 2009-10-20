@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.event.impl.DepthOfBookEventBuilder;
-import org.marketcetera.event.impl.EventValidationException;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TopOfBookEventBuilder;
@@ -330,7 +329,6 @@ public class EventTestBase
      * @param inLowExchange
      * @param inCloseExchange
      * @return
-     * @throws EventValidationException
      */
     public static MarketstatEvent generateEquityMarketstatEvent(Equity inInstrument,
                                                                         Date inTimestamp,
@@ -348,7 +346,6 @@ public class EventTestBase
                                                                         String inHighExchange,
                                                                         String inLowExchange,
                                                                         String inCloseExchange)
-        throws EventValidationException
     {
         return MarketstatEventBuilder.equityMarketstat().withInstrument(inInstrument)
             .withTimestamp(inTimestamp).withOpenPrice(inOpenPrice).withHighPrice(inHighPrice)
@@ -387,13 +384,11 @@ public class EventTestBase
      * @param inTimestamp
      * @param inInstrument
      * @return
-     * @throws EventValidationException
      */
     public static DepthOfBookEvent generateEquityDepthOfBookEvent(List<BidEvent> inBids,
                                                                   List<AskEvent> inAsks,
                                                                   Date inTimestamp,
                                                                   Equity inInstrument)
-        throws EventValidationException
     {
         return DepthOfBookEventBuilder.depthOfBook().withMessageId(counter.incrementAndGet()).withTimestamp(inTimestamp)
             .withBids(inBids).withAsks(inAsks).create();

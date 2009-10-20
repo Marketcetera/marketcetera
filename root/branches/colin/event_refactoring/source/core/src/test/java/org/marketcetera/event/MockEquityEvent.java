@@ -3,7 +3,6 @@ package org.marketcetera.event;
 import java.util.Date;
 
 import org.marketcetera.event.beans.EventBean;
-import org.marketcetera.event.impl.EventValidationException;
 
 /* $License$ */
 
@@ -18,7 +17,6 @@ public class MockEquityEvent
     implements Event
 {
     public MockEquityEvent()
-        throws EventValidationException
     {
         event.setMessageId(System.nanoTime());
         event.setTimestamp(new Date());
