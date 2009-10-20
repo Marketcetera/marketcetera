@@ -1,17 +1,26 @@
 package org.marketcetera.event.beans;
 
+import java.io.Serializable;
+
+import javax.annotation.concurrent.ThreadSafe;
+
+import org.marketcetera.event.HasInstrument;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Stores the attributes necessary for {@link HasInstrument}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
+@ClassVersion("$Id$")
 public final class InstrumentBean
+        implements Serializable
 {
     /**
      * Get the instrument value.
@@ -32,7 +41,8 @@ public final class InstrumentBean
         instrument = inInstrument;
     }
     /**
-     * 
+     * the instrument value 
      */
-    private Instrument instrument;
+    private volatile Instrument instrument;
+    private static final long serialVersionUID = 1L;
 }

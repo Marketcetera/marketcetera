@@ -43,9 +43,9 @@ class OptionAskEventImpl
      * @see org.marketcetera.event.QuoteEvent#getQuoteTime()
      */
     @Override
-    public String getEventTime()
+    public String getExchangeTimestamp()
     {
-        return quote.getEventTime();
+        return quote.getExchangeTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getSize()

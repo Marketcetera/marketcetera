@@ -21,7 +21,7 @@ class EventImpl
      * @see org.marketcetera.event.Event#getMessageId()
      */
     @Override
-    public long getMessageId()
+    public final long getMessageId()
     {
         return event.getMessageId();
     }
@@ -29,7 +29,7 @@ class EventImpl
      * @see org.marketcetera.event.Event#getTimestamp()
      */
     @Override
-    public Date getTimestamp()
+    public final Date getTimestamp()
     {
         return event.getTimestamp();
     }
@@ -37,7 +37,7 @@ class EventImpl
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
      */
     @Override
-    public long getTimeMillis()
+    public final long getTimeMillis()
     {
         return event.getTimestamp().getTime();
     }
@@ -45,7 +45,7 @@ class EventImpl
      * @see org.marketcetera.event.Event#getSource()
      */
     @Override
-    public Object getSource()
+    public final Object getSource()
     {
         return event.getSource();
     }
@@ -55,9 +55,40 @@ class EventImpl
      *
      * @param inSource
      */
-    public void setSource(Object inSource)
+    public final void setSource(Object inSource)
     {
         event.setSource(inSource);
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public final int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((event == null) ? 0 : event.hashCode());
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public final boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        EventImpl other = (EventImpl) obj;
+        if (event == null) {
+            if (other.event != null)
+                return false;
+        } else if (!event.equals(other.event))
+            return false;
+        return true;
     }
     /**
      * 

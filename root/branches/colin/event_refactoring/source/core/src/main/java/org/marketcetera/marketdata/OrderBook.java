@@ -15,8 +15,6 @@ import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DepthOfBookEvent;
-import org.marketcetera.event.HasEquity;
-import org.marketcetera.event.HasOption;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.impl.DepthOfBookEventBuilder;
@@ -113,7 +111,7 @@ public class OrderBook
     {
         List<BidEvent> bidBook = getBidBook();
         List<AskEvent> askBook = getAskBook();
-        return TopOfBookEventBuilder.newTopOfBook().withBid(bidBook.isEmpty() ? null : bidBook.get(0))
+        return TopOfBookEventBuilder.topOfBookEvent().withBid(bidBook.isEmpty() ? null : bidBook.get(0))
                                                    .withAsk(askBook.isEmpty() ? null : askBook.get(0))
                                                    .withTimestamp(new Date()).create();
     }
@@ -124,19 +122,10 @@ public class OrderBook
      */
     public final DepthOfBookEvent getDepthOfBook()
     {
-        DepthOfBookEvent dobEvent;
-        if(getInstrument() instanceof HasEquity) {
-            dobEvent = DepthOfBookEventBuilder.equityDepthOfBook().withBids(getBidBook())
-                                                                  .withAsks(getAskBook())
-                                                                  .withInstrument(getInstrument()).create();
-        } else if(getInstrument() instanceof HasOption) {
-            dobEvent = DepthOfBookEventBuilder.optionDepthOfBook().withBids(getBidBook())
-                                                                  .withAsks(getAskBook())
-                                                                  .withInstrument(getInstrument()).create();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-        return dobEvent;
+        return DepthOfBookEventBuilder.depthOfBook()
+                                      .withBids(getBidBook())
+                                      .withAsks(getAskBook())
+                                      .withInstrument(getInstrument()).create();
     }
     /**
      * Gets the current state of the <code>Bid</code> book. 

@@ -289,7 +289,7 @@ public class OrderBookTest
                    OrderBook.UNLIMITED_DEPTH,
                    book);
         // delete each event in turn
-        AskEvent ask1Killer = QuoteEventBuilder.newEquityAskEvent().delete(ask1);
+        AskEvent ask1Killer = QuoteEventBuilder.equityAskEvent().delete(ask1);
         asks.clear();
         book.process(ask1Killer);
         verifyBook(symbol,
@@ -297,7 +297,7 @@ public class OrderBookTest
                    asks,
                    OrderBook.UNLIMITED_DEPTH,
                    book);
-        BidEvent bid1Killer = QuoteEventBuilder.newEquityBidEvent().delete(bid1);
+        BidEvent bid1Killer = QuoteEventBuilder.equityBidEvent().delete(bid1);
         bids.clear();
         book.process(bid1Killer);
         verifyBook(symbol,
@@ -324,7 +324,7 @@ public class OrderBookTest
                    OrderBook.UNLIMITED_DEPTH,
                    book);
         // change the ask
-        AskEvent askChange = QuoteEventBuilder.newEquityAskEvent().change(ask1,
+        AskEvent askChange = QuoteEventBuilder.equityAskEvent().change(ask1,
                                                                           ask1.getTimestamp(),
                                                                           ask1.getSize().add(TEN));
         asks.clear();
@@ -336,7 +336,7 @@ public class OrderBookTest
                    OrderBook.UNLIMITED_DEPTH,
                    book);
         // change the bid
-        BidEvent bidChange = QuoteEventBuilder.newEquityBidEvent().change(bid1,
+        BidEvent bidChange = QuoteEventBuilder.equityBidEvent().change(bid1,
                                                   bid1.getTimestamp(),
                                                   bid1.getSize().add(TEN));
         bids.clear();
@@ -350,7 +350,7 @@ public class OrderBookTest
         // create changes for non-existent events
         AskEvent unusedAsk = EventTestBase.generateEquityAskEvent(symbol,
                                                                 exchange);
-        book.process(QuoteEventBuilder.newEquityAskEvent().change(unusedAsk,
+        book.process(QuoteEventBuilder.equityAskEvent().change(unusedAsk,
                                                                   unusedAsk.getTimestamp(),
                                                                   unusedAsk.getSize().add(TEN)));
         verifyBook(symbol,
@@ -360,7 +360,7 @@ public class OrderBookTest
                    book);
         BidEvent unusedBid = EventTestBase.generateEquityBidEvent(symbol,
                                                                 exchange);
-        book.process(QuoteEventBuilder.newEquityBidEvent().change(unusedBid,
+        book.process(QuoteEventBuilder.equityBidEvent().change(unusedBid,
                                                                   unusedBid.getTimestamp(),
                                                                   unusedBid.getSize().add(TEN)));
         verifyBook(symbol,
@@ -486,7 +486,7 @@ public class OrderBookTest
                    2,
                    book);
         // verify deletion behavior on a limited-size book
-        AskEvent askKiller = QuoteEventBuilder.newEquityAskEvent().delete(ask2);
+        AskEvent askKiller = QuoteEventBuilder.equityAskEvent().delete(ask2);
         asks.remove(ask2);
         book.process(askKiller);
         verifyBook(symbol,
@@ -494,7 +494,7 @@ public class OrderBookTest
                    asks,
                    2,
                    book);
-        BidEvent bidKiller = QuoteEventBuilder.newEquityBidEvent().delete(bid2);
+        BidEvent bidKiller = QuoteEventBuilder.equityBidEvent().delete(bid2);
         bids.remove(bid2);
         book.process(bidKiller);
         verifyBook(symbol,

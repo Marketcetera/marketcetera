@@ -20,6 +20,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  * @since $Release$
  */
 final class DividendEventImpl
+        extends EventImpl
         implements DividendEvent
 {
     /* (non-Javadoc)
@@ -111,77 +112,6 @@ final class DividendEventImpl
         return type;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getMessageId()
-     */
-    @Override
-    public long getMessageId()
-    {
-        return event.getMessageId();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getTimestamp()
-     */
-    @Override
-    public Date getTimestamp()
-    {
-        return event.getTimestamp();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
-     */
-    @Override
-    public long getTimeMillis()
-    {
-        return event.getTimeMillis();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getSource()
-     */
-    @Override
-    public Object getSource()
-    {
-        return event.getSource();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#setSource(java.lang.Object)
-     */
-    @Override
-    public void setSource(Object inSource)
-    {
-        event.setSource(inSource);
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((event == null) ? 0 : event.hashCode());
-        return result;
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        DividendEventImpl other = (DividendEventImpl) obj;
-        if (event == null) {
-            if (other.event != null)
-                return false;
-        } else if (!event.equals(other.event))
-            return false;
-        return true;
-    }
-    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -194,8 +124,6 @@ final class DividendEventImpl
         builder.append(currency);
         builder.append(", declareDate=");
         builder.append(declareDate);
-        builder.append(", event=");
-        builder.append(event);
         builder.append(", executionDate=");
         builder.append(executionDate);
         builder.append(", frequency=");
@@ -240,8 +168,8 @@ final class DividendEventImpl
                       DividendStatus inDividendStatus,
                       DividendType inDividendType)
     {
-        event = new EventImpl(inMessageId,
-                              inTimestamp);
+        super(inMessageId,
+              inTimestamp);
         equity = inEquity;
         amount = inAmount;
         currency = inCurrency;
@@ -262,7 +190,7 @@ final class DividendEventImpl
      */
     void validate()
     {
-        event.validate();
+        super.validate();
         // TODO null equity
         if(amount == null) {
             EventValidationException.error(VALIDATION_NULL_AMOUNT);
@@ -309,10 +237,6 @@ final class DividendEventImpl
             EventValidationException.error(VALIDATION_NULL_TYPE);
         }
     }
-    /**
-     * 
-     */
-    private final EventImpl event;
     /**
      * 
      */

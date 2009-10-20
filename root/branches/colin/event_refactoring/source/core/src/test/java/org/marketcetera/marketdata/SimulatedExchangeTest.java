@@ -1276,7 +1276,7 @@ public class SimulatedExchangeTest
             QuoteEvent quote = (QuoteEvent)inData;
             BidEvent newBid = (quote instanceof BidEvent ? quote.getAction() == QuoteAction.DELETE ? null : (BidEvent)quote : lastBid);
             AskEvent newAsk = (quote instanceof AskEvent ? quote.getAction() == QuoteAction.DELETE ? null : (AskEvent)quote : lastAsk);
-            TopOfBookEvent newTop = TopOfBookEventBuilder.newTopOfBook()
+            TopOfBookEvent newTop = TopOfBookEventBuilder.topOfBookEvent()
                                              .withBid(newBid)
                                              .withAsk(newAsk)
                                              .withTimestamp(quote.getTimestamp()).create();

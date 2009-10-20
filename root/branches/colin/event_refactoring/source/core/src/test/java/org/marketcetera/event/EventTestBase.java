@@ -50,7 +50,7 @@ public class EventTestBase
                                                           String inExchangeTimestamp)
           throws Exception
     {
-        return QuoteEventBuilder.newEquityAskEvent().withMessageId(inMessageId).withTimestamp(inTimestamp).withInstrument(inInstrument).withExchange(inExchange)
+        return QuoteEventBuilder.equityAskEvent().withMessageId(inMessageId).withTimestamp(inTimestamp).withInstrument(inInstrument).withExchange(inExchange)
             .withPrice(inPrice).withSize(inSize).withQuoteDate(inExchangeTimestamp).create();
     }
     /**
@@ -74,7 +74,7 @@ public class EventTestBase
                                                           BigDecimal inSize)
           throws Exception
     {
-        return QuoteEventBuilder.newEquityAskEvent().withMessageId(inMessageId).withTimestamp(new Date(inTimestamp)).withInstrument(inInstrument).withExchange(inExchange)
+        return QuoteEventBuilder.equityAskEvent().withMessageId(inMessageId).withTimestamp(new Date(inTimestamp)).withInstrument(inInstrument).withExchange(inExchange)
             .withPrice(inPrice).withSize(inSize).withQuoteDate(DateUtils.dateToString(new Date(inTimestamp))).create();
     }
     /**
@@ -94,7 +94,7 @@ public class EventTestBase
                                                           String inExchange)
           throws Exception
     {
-        return QuoteEventBuilder.newEquityAskEvent().withMessageId(counter.incrementAndGet()).withTimestamp(new Date()).withInstrument(inInstrument)
+        return QuoteEventBuilder.equityAskEvent().withMessageId(counter.incrementAndGet()).withTimestamp(new Date()).withInstrument(inInstrument)
             .withExchange(inExchange).withPrice(generateDecimalValue()).withSize(generateDecimalValue()).withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
     /**
@@ -115,7 +115,7 @@ public class EventTestBase
                                                   BigDecimal inPrice)
           throws Exception
     {
-        return QuoteEventBuilder.newEquityAskEvent().withMessageId(counter.incrementAndGet()).withTimestamp(new Date()).withInstrument(inInstrument)
+        return QuoteEventBuilder.equityAskEvent().withMessageId(counter.incrementAndGet()).withTimestamp(new Date()).withInstrument(inInstrument)
             .withExchange(inExchange).withPrice(inPrice).withSize(generateDecimalValue()).withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
     /**
@@ -141,7 +141,7 @@ public class EventTestBase
                                                   String inExchangeTimestamp)
           throws Exception
     {
-        return QuoteEventBuilder.newEquityBidEvent().withMessageId(inMessageId).withTimestamp(inTimestamp).withInstrument(inInstrument).withExchange(inExchange)
+        return QuoteEventBuilder.equityBidEvent().withMessageId(inMessageId).withTimestamp(inTimestamp).withInstrument(inInstrument).withExchange(inExchange)
             .withPrice(inPrice).withSize(inSize).withQuoteDate(inExchangeTimestamp).create();
     }
     /**
@@ -165,7 +165,7 @@ public class EventTestBase
                                                           BigDecimal inSize)
           throws Exception
     {
-        return QuoteEventBuilder.newEquityBidEvent().withMessageId(inMessageId).withTimestamp(new Date(inTimestamp)).withInstrument(inInstrument).withExchange(inExchange)
+        return QuoteEventBuilder.equityBidEvent().withMessageId(inMessageId).withTimestamp(new Date(inTimestamp)).withInstrument(inInstrument).withExchange(inExchange)
             .withPrice(inPrice).withSize(inSize).withQuoteDate(DateUtils.dateToString(new Date(inTimestamp))).create();
     }
     /**
@@ -185,7 +185,7 @@ public class EventTestBase
                                                   String inExchange)
           throws Exception
     {
-        return QuoteEventBuilder.newEquityBidEvent().withMessageId(counter.incrementAndGet()).withTimestamp(new Date()).withInstrument(inInstrument)
+        return QuoteEventBuilder.equityBidEvent().withMessageId(counter.incrementAndGet()).withTimestamp(new Date()).withInstrument(inInstrument)
             .withExchange(inExchange).withPrice(generateDecimalValue()).withSize(generateDecimalValue()).withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
     /**
@@ -206,7 +206,7 @@ public class EventTestBase
                                                           BigDecimal inPrice)
           throws Exception
     {
-        return QuoteEventBuilder.newEquityBidEvent().withMessageId(counter.incrementAndGet()).withTimestamp(new Date()).withInstrument(inInstrument)
+        return QuoteEventBuilder.equityBidEvent().withMessageId(counter.incrementAndGet()).withTimestamp(new Date()).withInstrument(inInstrument)
             .withExchange(inExchange).withPrice(inPrice).withSize(generateDecimalValue()).withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
     /**
@@ -282,8 +282,8 @@ public class EventTestBase
                                                               String inExchangeTimestamp)
               throws Exception
     {
-        return TradeEventBuilder.newEquityTradeEvent().withMessageId(inMessageId).withTimestamp(inTimestamp).withInstrument(inInstrument).withExchange(inExchange)
-            .withPrice(inPrice).withSize(inSize).atQuoteDate(inExchangeTimestamp).create();
+        return TradeEventBuilder.equityTradeEvent().withMessageId(inMessageId).withTimestamp(inTimestamp).withInstrument(inInstrument).withExchange(inExchange)
+            .withPrice(inPrice).withSize(inSize).withTradeDate(inExchangeTimestamp).create();
     }
     /**
      * 
@@ -306,8 +306,8 @@ public class EventTestBase
                                                               BigDecimal inSize)
               throws Exception
     {
-        return TradeEventBuilder.newEquityTradeEvent().withMessageId(inMessageId).withTimestamp(new Date(inTimestamp)).withInstrument(inInstrument).withExchange(inExchange)
-            .withPrice(inPrice).withSize(inSize).atQuoteDate(DateUtils.dateToString(new Date(inTimestamp))).create();
+        return TradeEventBuilder.equityTradeEvent().withMessageId(inMessageId).withTimestamp(new Date(inTimestamp)).withInstrument(inInstrument).withExchange(inExchange)
+            .withPrice(inPrice).withSize(inSize).withTradeDate(DateUtils.dateToString(new Date(inTimestamp))).create();
     }
     /**
      * 
@@ -350,7 +350,7 @@ public class EventTestBase
                                                                         String inCloseExchange)
         throws EventValidationException
     {
-        return MarketstatEventBuilder.newEquityMarketstatEvent().withInstrument(inInstrument)
+        return MarketstatEventBuilder.equityMarketstat().withInstrument(inInstrument)
             .withTimestamp(inTimestamp).withOpenPrice(inOpenPrice).withHighPrice(inHighPrice)
             .withLowPrice(inLowPrice).withClosePrice(inClosePrice).withPreviousClosePrice(inPreviousClosePrice)
             .withVolume(inVolume).withCloseDate(DateUtils.dateToString(inCloseDate))
@@ -376,7 +376,7 @@ public class EventTestBase
                                                                  Date inTimestamp)
             throws Exception
     {
-        return TopOfBookEventBuilder.newTopOfBook().withBid(inBid).withAsk(inAsk).withTimestamp(inTimestamp).withMessageId(System.nanoTime()).create();
+        return TopOfBookEventBuilder.topOfBookEvent().withBid(inBid).withAsk(inAsk).withTimestamp(inTimestamp).withMessageId(System.nanoTime()).create();
     }
     /**
      * 
@@ -395,7 +395,7 @@ public class EventTestBase
                                                                   Equity inInstrument)
         throws EventValidationException
     {
-        return DepthOfBookEventBuilder.equityDepthOfBook().withMessageId(counter.incrementAndGet()).withTimestamp(inTimestamp)
+        return DepthOfBookEventBuilder.depthOfBook().withMessageId(counter.incrementAndGet()).withTimestamp(inTimestamp)
             .withBids(inBids).withAsks(inAsks).create();
     }
     /**

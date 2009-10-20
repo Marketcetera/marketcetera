@@ -200,7 +200,7 @@ public final class SimulatedExchange
         // calculate low price (the min of current, open, and close - 0.00-4.99 inclusive)
         BigDecimal lowPrice = currentValue.min(openPrice).min(closePrice).subtract(randomDecimalDifference(5).abs());
         // ready to return the data
-        return MarketstatEventBuilder.newEvent(inInstrument)
+        return MarketstatEventBuilder.marketstat(inInstrument)
                                      .withTimestamp(new Date(currentTime))
                                      .withOpenPrice(openPrice)
                                      .withHighPrice(highPrice)
@@ -770,13 +770,13 @@ public final class SimulatedExchange
                 }
             }
             // take the modified value and add a bid and an ask based on it
-            process(QuoteEventBuilder.newAskEvent(getBook().getInstrument())
+            process(QuoteEventBuilder.askEvent(getBook().getInstrument())
                                      .withMessageId(System.nanoTime())
                                      .withTimestamp(new Date())
                                      .withExchange(exchange.getCode())
                                      .withPrice(getValue().add(PENNY))
                                      .withSize(randomInteger(10000)).create());
-            process(QuoteEventBuilder.newBidEvent(getBook().getInstrument())
+            process(QuoteEventBuilder.bidEvent(getBook().getInstrument())
                                      .withMessageId(System.nanoTime())
                                      .withTimestamp(new Date())
                                      .withExchange(exchange.getCode())
@@ -908,7 +908,7 @@ public final class SimulatedExchange
                                                    tradeSize.toPlainString(),
                                                    tradePrice.toPlainString());
                             // create the new trade
-                            TradeEvent trade = TradeEventBuilder.newTradeEvent(bid.getInstrument())
+                            TradeEvent trade = TradeEventBuilder.tradeEvent(bid.getInstrument())
                                                                 .withMessageId(System.nanoTime())
                                                                 .withTimestamp(new Date(tradeTime))
                                                                 .withExchange(bid.getExchange())

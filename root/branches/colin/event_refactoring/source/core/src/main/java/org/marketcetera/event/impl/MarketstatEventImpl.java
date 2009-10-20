@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.beans.InstrumentBean;
 import org.marketcetera.event.beans.MarketstatBean;
 import org.marketcetera.trade.Instrument;
 
@@ -42,7 +41,7 @@ abstract class MarketstatEventImpl
     @Override
     public BigDecimal getClose()
     {
-        return marketstat.getClosePrice();
+        return marketstat.getClose();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.MarketstatEvent#getHighExchange()
@@ -58,7 +57,7 @@ abstract class MarketstatEventImpl
     @Override
     public BigDecimal getHigh()
     {
-        return marketstat.getHighPrice();
+        return marketstat.getHigh();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.MarketstatEvent#getInstrument()
@@ -66,7 +65,7 @@ abstract class MarketstatEventImpl
     @Override
     public Instrument getInstrument()
     {
-        return instrument.getInstrument();
+        return marketstat.getInstrument();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.MarketstatEvent#getLowExchange()
@@ -82,7 +81,7 @@ abstract class MarketstatEventImpl
     @Override
     public BigDecimal getLow()
     {
-        return marketstat.getLowPrice();
+        return marketstat.getLow();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.MarketstatEvent#getOpenExchange()
@@ -98,7 +97,7 @@ abstract class MarketstatEventImpl
     @Override
     public BigDecimal getOpen()
     {
-        return marketstat.getOpenPrice();
+        return marketstat.getOpen();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.MarketstatEvent#getPreviousCloseDate()
@@ -114,7 +113,7 @@ abstract class MarketstatEventImpl
     @Override
     public BigDecimal getPreviousClose()
     {
-        return marketstat.getPreviousClosePrice();
+        return marketstat.getPreviousClose();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.MarketstatEvent#getTradeHighTime()
@@ -146,7 +145,7 @@ abstract class MarketstatEventImpl
     @Override
     public long getMessageId()
     {
-        return event.getMessageId();
+        return marketstat.getMessageId();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getSource()
@@ -154,7 +153,7 @@ abstract class MarketstatEventImpl
     @Override
     public Object getSource()
     {
-        return event.getSource();
+        return marketstat.getSource();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getTimestamp()
@@ -162,7 +161,7 @@ abstract class MarketstatEventImpl
     @Override
     public Date getTimestamp()
     {
-        return event.getTimestamp();
+        return marketstat.getTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#setSource(java.lang.Object)
@@ -170,7 +169,7 @@ abstract class MarketstatEventImpl
     @Override
     public void setSource(Object inSource)
     {
-        event.setSource(inSource);
+        marketstat.setSource(inSource);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
@@ -178,7 +177,7 @@ abstract class MarketstatEventImpl
     @Override
     public long getTimeMillis()
     {
-        return event.getTimeMillis();
+        return marketstat.getTimeMillis();
     }
     /**
      * Create a new EquityMarketstatEventImpl instance.
@@ -217,14 +216,12 @@ abstract class MarketstatEventImpl
                                   String inLowExchange,
                                   String inCloseExchange)
     {
-        event = new EventImpl(inMessageId,
-                              inTimestamp);
-        instrument.setInstrument(inInstrument);
-        marketstat.setOpenPrice(inOpenPrice);
-        marketstat.setHighPrice(inHighPrice);
-        marketstat.setLowPrice(inLowPrice);
-        marketstat.setClosePrice(inClosePrice);
-        marketstat.setPreviousClosePrice(inPreviousClosePrice);
+        marketstat.setInstrument(inInstrument);
+        marketstat.setOpen(inOpenPrice);
+        marketstat.setHigh(inHighPrice);
+        marketstat.setLow(inLowPrice);
+        marketstat.setClose(inClosePrice);
+        marketstat.setPreviousClose(inPreviousClosePrice);
         marketstat.setCloseDate(inCloseDate);
         marketstat.setPreviousCloseDate(inPreviousCloseDate);
         marketstat.setTradeHighTime(inTradeHighTime);
@@ -233,15 +230,12 @@ abstract class MarketstatEventImpl
         marketstat.setHighExchange(inHighExchange);
         marketstat.setLowExchange(inLowExchange);
         marketstat.setCloseExchange(inCloseExchange);
+        marketstat.setMessageId(inMessageId);
+        marketstat.setTimestamp(inTimestamp);
     }
-    private final InstrumentBean instrument = new InstrumentBean();
     /**
      * 
      */
     private final MarketstatBean marketstat = new MarketstatBean();
-    /**
-     * 
-     */
-    private final EventImpl event;
     private static final long serialVersionUID = 1L;
 }

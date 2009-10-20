@@ -93,7 +93,11 @@ public class MockEvent
     @Override
     public long getTimeMillis()
     {
-        return event.getTimeMillis();
+        Date timestamp = event.getTimestamp();
+        if(timestamp == null) {
+            return -1;
+        }
+        return event.getTimestamp().getTime();
     }
     /**
      * 

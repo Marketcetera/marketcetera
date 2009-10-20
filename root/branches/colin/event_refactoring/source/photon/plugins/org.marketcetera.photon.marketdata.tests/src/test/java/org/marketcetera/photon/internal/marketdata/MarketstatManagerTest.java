@@ -99,7 +99,7 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 
 	private Object createEvent(String symbol, int close, int previousClose, String closeDate,
 			String previousCloseDate) throws Exception {
-		return MarketstatEventBuilder.newEquityMarketstatEvent().withInstrument(new Equity(symbol))
+		return MarketstatEventBuilder.equityMarketstat().withInstrument(new Equity(symbol))
 				.withTimestamp(new Date()).withClosePrice(new BigDecimal(close))
 				.withPreviousClosePrice(new BigDecimal(previousClose)).withCloseDate(closeDate)
 				.withPreviousCloseDate(previousCloseDate).create();
@@ -126,7 +126,7 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 	}
 
 	protected Object createNullEvent(MarketstatKey key) throws Exception {
-		return MarketstatEventBuilder.newEquityMarketstatEvent().withInstrument(new Equity(key.getSymbol()));
+		return MarketstatEventBuilder.equityMarketstat().withInstrument(new Equity(key.getSymbol()));
 	}
 
 }

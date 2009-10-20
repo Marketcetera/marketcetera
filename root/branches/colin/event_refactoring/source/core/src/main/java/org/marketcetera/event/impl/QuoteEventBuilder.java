@@ -7,45 +7,53 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.HasEquity;
+import org.marketcetera.event.EquityEvent;
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.beans.InstrumentBean;
-import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.event.beans.QuoteBean;
 import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Constructs {@link QuoteEvent} objects.
+ * 
+ * <p>Construct a <code>QuoteEvent</code> by getting a <code>QuoteEventBuilder</code>,
+ * setting the appropriate attributes on the builder, and calling {@link #create()}.  Note that
+ * the builder does no validation.  The object does its own validation with {@link #create()} is
+ * called.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @NotThreadSafe
+@ClassVersion("$Id$")
 public abstract class QuoteEventBuilder<E extends QuoteEvent>
         extends EventBuilderImpl
         implements EventBuilder<E>
 {
     /**
-     * 
+     * Creates a <code>QuoteEvent</code> of the same type as the given event
+     * with the same attributes except for the {@link QuoteAction} which
+     * will always be {@link QuoteAction#ADD}.
      *
-     *
-     * @param inEvent
-     * @return
-     * @throws EventValidationException
+     * @param inEvent a <code>QuoteEvent</code> value
+     * @return a <code>QuoteEvent</code> value
+     * @throws UnsupportedOperationException if the given <code>QuoteEvent</code> is for
+     *  an unsupported asset class
      */
     public static QuoteEvent add(QuoteEvent inEvent)
     {
-        if(inEvent instanceof HasEquity) {
-            HasEquity equityEvent = (HasEquity)inEvent;
+        if(inEvent instanceof EquityEvent) {
+            EquityEvent equityEvent = (EquityEvent)inEvent;
             if(inEvent instanceof AskEvent) {
                 AskEvent askEvent = (AskEvent)inEvent;
                 return new EquityAskEventImpl(askEvent.getMessageId(),
@@ -54,7 +62,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                               askEvent.getExchange(),
                                               askEvent.getPrice(),
                                               askEvent.getSize(),
-                                              askEvent.getEventTime(),
+                                              askEvent.getExchangeTimestamp(),
                                               QuoteAction.ADD);
             } else {
                 BidEvent bidEvent = (BidEvent)inEvent;
@@ -64,7 +72,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                               bidEvent.getExchange(),
                                               bidEvent.getPrice(),
                                               bidEvent.getSize(),
-                                              bidEvent.getEventTime(),
+                                              bidEvent.getExchangeTimestamp(),
                                               QuoteAction.ADD);
             }
         } else if(inEvent instanceof OptionEvent) {
@@ -77,7 +85,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                               askEvent.getExchange(),
                                               askEvent.getPrice(),
                                               askEvent.getSize(),
-                                              askEvent.getEventTime(),
+                                              askEvent.getExchangeTimestamp(),
                                               optionEvent.getUnderlyingEquity(),
                                               optionEvent.getStrike(),
                                               optionEvent.getOptionType(),
@@ -94,7 +102,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                               bidEvent.getExchange(),
                                               bidEvent.getPrice(),
                                               bidEvent.getSize(),
-                                              bidEvent.getEventTime(),
+                                              bidEvent.getExchangeTimestamp(),
                                               optionEvent.getUnderlyingEquity(),
                                               optionEvent.getStrike(),
                                               optionEvent.getOptionType(),
@@ -109,22 +117,22 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         }
     }
     /**
-     * 
+     * Creates a <code>QuoteEvent</code> of the same type as the given event
+     * with the same attributes except for the {@link QuoteAction} which
+     * will always be {@link QuoteAction#CHANGE}.
      *
-     *
-     * @param inEvent
-     * @param inNewTimestamp
-     * @param inNewSize
-     * @return
-     * @throws EventValidationException
+     * @param inEvent a <code>QuoteEvent</code> value
+     * @return a <code>QuoteEvent</code> value
+     * @throws UnsupportedOperationException if the given <code>QuoteEvent</code> is for
+     *  an unsupported asset class
      */
     @SuppressWarnings("unchecked")
     public static <E extends QuoteEvent> E change(E inEvent,
                                                   Date inNewTimestamp,
                                                   BigDecimal inNewSize)
     {
-        if(inEvent instanceof HasEquity) {
-            HasEquity equityEvent = (HasEquity)inEvent;
+        if(inEvent instanceof EquityEvent) {
+            EquityEvent equityEvent = (EquityEvent)inEvent;
             if(inEvent instanceof AskEvent) {
                 AskEvent askEvent = (AskEvent)inEvent;
                 return (E)new EquityAskEventImpl(askEvent.getMessageId(),
@@ -133,7 +141,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  askEvent.getExchange(),
                                                  askEvent.getPrice(),
                                                  inNewSize,
-                                                 askEvent.getEventTime(),
+                                                 askEvent.getExchangeTimestamp(),
                                                  QuoteAction.CHANGE);
             } else {
                 BidEvent bidEvent = (BidEvent)inEvent;
@@ -143,7 +151,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  bidEvent.getExchange(),
                                                  bidEvent.getPrice(),
                                                  inNewSize,
-                                                 bidEvent.getEventTime(),
+                                                 bidEvent.getExchangeTimestamp(),
                                                  QuoteAction.CHANGE);
             }
         } else if(inEvent instanceof OptionEvent) {
@@ -156,7 +164,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  askEvent.getExchange(),
                                                  askEvent.getPrice(),
                                                  inNewSize,
-                                                 askEvent.getEventTime(),
+                                                 askEvent.getExchangeTimestamp(),
                                                  optionEvent.getUnderlyingEquity(),
                                                  optionEvent.getStrike(),
                                                  optionEvent.getOptionType(),
@@ -173,7 +181,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  bidEvent.getExchange(),
                                                  bidEvent.getPrice(),
                                                  inNewSize,
-                                                 bidEvent.getEventTime(),
+                                                 bidEvent.getExchangeTimestamp(),
                                                  optionEvent.getUnderlyingEquity(),
                                                  optionEvent.getStrike(),
                                                  optionEvent.getOptionType(),
@@ -188,18 +196,20 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         }
     }
     /**
-     * 
+     * Creates a <code>QuoteEvent</code> of the same type as the given event
+     * with the same attributes except for the {@link QuoteAction} which
+     * will always be {@link QuoteAction#DELETE}.
      *
-     *
-     * @param inEvent
-     * @return
-     * @throws EventValidationException
+     * @param inEvent a <code>QuoteEvent</code> value
+     * @return a <code>QuoteEvent</code> value
+     * @throws UnsupportedOperationException if the given <code>QuoteEvent</code> is for
+     *  an unsupported asset class
      */
     @SuppressWarnings("unchecked")
     public static <E extends QuoteEvent> E delete(E inEvent)
     {
-        if(inEvent instanceof HasEquity) {
-            HasEquity equityEvent = (HasEquity)inEvent;
+        if(inEvent instanceof EquityEvent) {
+            EquityEvent equityEvent = (EquityEvent)inEvent;
             if(inEvent instanceof AskEvent) {
                 AskEvent askEvent = (AskEvent)inEvent;
                 return (E)new EquityAskEventImpl(askEvent.getMessageId(),
@@ -208,7 +218,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  askEvent.getExchange(),
                                                  askEvent.getPrice(),
                                                  askEvent.getSize(),
-                                                 askEvent.getEventTime(),
+                                                 askEvent.getExchangeTimestamp(),
                                                  QuoteAction.DELETE);
             } else {
                 BidEvent bidEvent = (BidEvent)inEvent;
@@ -218,7 +228,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  bidEvent.getExchange(),
                                                  bidEvent.getPrice(),
                                                  bidEvent.getSize(),
-                                                 bidEvent.getEventTime(),
+                                                 bidEvent.getExchangeTimestamp(),
                                                  QuoteAction.DELETE);
             }
         } else if(inEvent instanceof OptionEvent) {
@@ -231,7 +241,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  askEvent.getExchange(),
                                                  askEvent.getPrice(),
                                                  askEvent.getSize(),
-                                                 askEvent.getEventTime(),
+                                                 askEvent.getExchangeTimestamp(),
                                                  optionEvent.getUnderlyingEquity(),
                                                  optionEvent.getStrike(),
                                                  optionEvent.getOptionType(),
@@ -248,7 +258,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  bidEvent.getExchange(),
                                                  bidEvent.getPrice(),
                                                  bidEvent.getSize(),
-                                                 bidEvent.getEventTime(),
+                                                 bidEvent.getExchangeTimestamp(),
                                                  optionEvent.getUnderlyingEquity(),
                                                  optionEvent.getStrike(),
                                                  optionEvent.getOptionType(),
@@ -263,196 +273,176 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         }
     }
     /**
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new <code>AskEvent</code> object.
+     *
+     * <p>The type of <code>AskEvent</code> returned will match the type of the given <code>Instrument</code>,
+     * i.e., an Equity-type <code>AskEvent</code> for an {@link Equity}, an Option-type <code>AskEvent</code> for an
+     * {@link Option}, etc.
      * 
-     *
-     *
-     * @param inInstrument
-     * @return
+     * @param inInstrument an <code>Instrument</code> value indicating the type of {@link AskEvent} to create
+     * @return a <code>QuoteEventBuilder&lt;AskEvent&gt;</code> value
+     * @throws UnsupportedOperationException if the asset class of the given <code>Instrument</code> isn't supported
      */
-    public static QuoteEventBuilder<AskEvent> newAskEvent(Instrument inInstrument)
+    public static QuoteEventBuilder<AskEvent> askEvent(Instrument inInstrument)
     {
         if(inInstrument instanceof Equity) {
-            return newEquityAskEvent().withInstrument(inInstrument);
+            return equityAskEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Option) {
-            return newOptionAskEvent().withInstrument(inInstrument);
+            return optionAskEvent().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
     }
     /**
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new <code>BidEvent</code> object.
+     *
+     * <p>The type of <code>BidEvent</code> returned will match the type of the given <code>Instrument</code>,
+     * i.e., an Equity-type <code>BidEvent</code> for an {@link Equity}, an Option-type <code>BidEvent</code> for an
+     * {@link Option}, etc.
      * 
-     *
-     *
-     * @param inInstrument
-     * @return
+     * @param inInstrument an <code>Instrument</code> value indicating the type of {@link BidEvent} to create
+     * @return a <code>QuoteEventBuilder&lt;BidEvent&gt;</code> value
+     * @throws UnsupportedOperationException if the asset class of the given <code>Instrument</code> isn't supported
      */
-    public static QuoteEventBuilder<BidEvent> newBidEvent(Instrument inInstrument)
+    public static QuoteEventBuilder<BidEvent> bidEvent(Instrument inInstrument)
     {
         if(inInstrument instanceof Equity) {
-            return newEquityBidEvent().withInstrument(inInstrument);
+            return equityBidEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Option) {
-            return newOptionBidEvent().withInstrument(inInstrument);
+            return optionBidEvent().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
     }
     /**
-     * 
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Equity <code>AskEvent</code> object.
      *
-     *
-     * @return
+     * @return a <code>QuoteEventBuilder&lt;AskEvent&gt;</code> value
+     * @throw IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Equity}
      */
-    public static EquityAskEventBuilder newEquityAskEvent()
+    public static QuoteEventBuilder<AskEvent> equityAskEvent()
     {
-        return new EquityAskEventBuilder();
+        return new QuoteEventBuilder<AskEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public AskEvent create()
+            {
+                if(getQuote().getInstrument() instanceof Equity) {
+                    return new EquityAskEventImpl(getMessageId(),
+                                                  getTimestamp(),
+                                                  (Equity)getQuote().getInstrument(),
+                                                  getQuote().getExchange(),
+                                                  getQuote().getPrice(),
+                                                  getQuote().getSize(),
+                                                  getQuote().getExchangeTimestamp(),
+                                                  getQuote().getAction());
+                }
+                throw new IllegalArgumentException();
+            }
+        };
     }
     /**
-     * 
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Equity <code>BidEvent</code> object.
      *
-     *
-     * @return
+     * @return a <code>QuoteEventBuilder&lt;BidEvent&gt;</code> value
+     * @throw IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Equity}
      */
-    public static EquityBidEventBuilder newEquityBidEvent()
+    public static QuoteEventBuilder<BidEvent> equityBidEvent()
     {
-        return new EquityBidEventBuilder();
+        return new QuoteEventBuilder<BidEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public BidEvent create()
+            {
+                if(getQuote().getInstrument() instanceof Equity) {
+                    return new EquityBidEventImpl(getMessageId(),
+                                                  getTimestamp(),
+                                                  (Equity)getQuote().getInstrument(),
+                                                  getQuote().getExchange(),
+                                                  getQuote().getPrice(),
+                                                  getQuote().getSize(),
+                                                  getQuote().getExchangeTimestamp(),
+                                                  getQuote().getAction());
+                }
+                throw new IllegalArgumentException();
+            }
+        };
     }
     /**
-     * 
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Option <code>AskEvent</code> object.
      *
-     *
-     * @return
+     * @return a <code>QuoteEventBuilder&lt;AskEvent&gt;</code> value
+     * @throw IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Option}
      */
-    public static OptionAskEventBuilder newOptionAskEvent()
+    public static QuoteEventBuilder<AskEvent> optionAskEvent()
     {
-        return new OptionAskEventBuilder();
+        return new QuoteEventBuilder<AskEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public AskEvent create()
+            {
+                if(getQuote().getInstrument() instanceof Option) {
+                    return new OptionAskEventImpl(getMessageId(),
+                                                  getTimestamp(),
+                                                  (Option)getQuote().getInstrument(),
+                                                  getQuote().getExchange(),
+                                                  getQuote().getPrice(),
+                                                  getQuote().getSize(),
+                                                  getQuote().getExchangeTimestamp(),
+                                                  getOption().getUnderlyingEquity(),
+                                                  getOption().getStrike(),
+                                                  getOption().getOptionType(),
+                                                  getOption().getExpiry(),
+                                                  getOption().hasDeliverable(),
+                                                  getOption().getMultiplier(),
+                                                  getOption().getExpirationType(),
+                                                  getQuote().getAction());
+                }
+                throw new IllegalArgumentException();
+            }
+        };
     }
     /**
-     * 
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Option <code>BidEvent</code> object.
      *
-     *
-     * @return
+     * @return a <code>QuoteEventBuilder&lt;BidEvent&gt;</code> value
+     * @throw IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Option}
      */
-    public static OptionBidEventBuilder newOptionBidEvent()
+    public static QuoteEventBuilder<BidEvent> optionBidEvent()
     {
-        return new OptionBidEventBuilder();
-    }
-    /**
-     *
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    public static final class EquityAskEventBuilder
-        extends QuoteEventBuilder<AskEvent>
-    {
-        /* (non-Javadoc)
-         * @see org.marketcetera.event.EventBuilder#create()
-         */
-        @Override
-        public AskEvent create()
-        {
-            return new EquityAskEventImpl(getMessageId(),
-                                          getTimestamp(),
-                                          (Equity)getInstrument(),
-                                          getExchange(),
-                                          getPrice(),
-                                          getSize(),
-                                          getQuoteDate(),
-                                          getQuoteAction());
-        }
-    }
-    /**
-     *
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    public static final class EquityBidEventBuilder
-            extends QuoteEventBuilder<BidEvent>
-    {
-        /* (non-Javadoc)
-         * @see org.marketcetera.event.EventBuilder#create()
-         */
-        @Override
-        public BidEvent create()
-        {
-            return new EquityBidEventImpl(getMessageId(),
-                                          getTimestamp(),
-                                          (Equity)getInstrument(),
-                                          getExchange(),
-                                          getPrice(),
-                                          getSize(),
-                                          getQuoteDate(),
-                                          getQuoteAction());
-        }
-    }
-    /**
-     *
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    public static final class OptionAskEventBuilder
-            extends QuoteEventBuilder<AskEvent>
-    {
-        /* (non-Javadoc)
-         * @see org.marketcetera.event.EventBuilder#create()
-         */
-        @Override
-        public AskEvent create()
-        {
-            return new OptionAskEventImpl(getMessageId(),
-                                          getTimestamp(),
-                                          (Option)getInstrument(),
-                                          getExchange(),
-                                          getPrice(),
-                                          getSize(),
-                                          getQuoteDate(),
-                                          getUnderlyingEquity(),
-                                          getStrike(),
-                                          getOptionType(),
-                                          getExpiry(),
-                                          getHasDeliverable(),
-                                          getMultiplier(),
-                                          getExpirationType(),
-                                          getQuoteAction());
-        }
-    }
-    /**
-     *
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    public static final class OptionBidEventBuilder
-            extends QuoteEventBuilder<BidEvent>
-    {
-        /* (non-Javadoc)
-         * @see org.marketcetera.event.EventBuilder#create()
-         */
-        @Override
-        public BidEvent create()
-        {
-            return new OptionBidEventImpl(getMessageId(),
-                                          getTimestamp(),
-                                          (Option)getInstrument(),
-                                          getExchange(),
-                                          getPrice(),
-                                          getSize(),
-                                          getQuoteDate(),
-                                          getUnderlyingEquity(),
-                                          getStrike(),
-                                          getOptionType(),
-                                          getExpiry(),
-                                          getHasDeliverable(),
-                                          getMultiplier(),
-                                          getExpirationType(),
-                                          getQuoteAction());
-        }
+        return new QuoteEventBuilder<BidEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public BidEvent create()
+            {
+                if(getQuote().getInstrument() instanceof Option) {
+                    return new OptionBidEventImpl(getMessageId(),
+                                                  getTimestamp(),
+                                                  (Option)getQuote().getInstrument(),
+                                                  getQuote().getExchange(),
+                                                  getQuote().getPrice(),
+                                                  getQuote().getSize(),
+                                                  getQuote().getExchangeTimestamp(),
+                                                  getOption().getUnderlyingEquity(),
+                                                  getOption().getStrike(),
+                                                  getOption().getOptionType(),
+                                                  getOption().getExpiry(),
+                                                  getOption().hasDeliverable(),
+                                                  getOption().getMultiplier(),
+                                                  getOption().getExpirationType(),
+                                                  getQuote().getAction());
+                }
+                throw new IllegalArgumentException();
+            }
+        };
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.AbstractEventBuilder#withMessageId(long)
@@ -476,68 +466,73 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * Sets the instrument value.
      *
      * @param a <code>I</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> withInstrument(Instrument inInstrument)
     {
-        instrument.setInstrument(inInstrument);
+        quote.setInstrument(inInstrument);
         return this;
     }
     /**
      * Sets the price value.
      *
      * @param a <code>BigDecimal</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> withPrice(BigDecimal inPrice)
     {
-        exchangeCommon.setPrice(inPrice);
+        quote.setPrice(inPrice);
         return this;
     }
     /**
      * Sets the size value.
      *
      * @param a <code>BigDecimal</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> withSize(BigDecimal inSize)
     {
-        exchangeCommon.setSize(inSize);
+        quote.setSize(inSize);
         return this;
     }
     /**
      * Sets the exchange value.
      *
      * @param a <code>String</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> withExchange(String inExchange)
     {
-        exchangeCommon.setExchange(inExchange);
+        quote.setExchange(inExchange);
         return this;
     }
     /**
      * Sets the quoteDate value.
      *
      * @param a <code>String</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> withQuoteDate(String inQuoteDate)
     {
-        exchangeCommon.setExchangeTimestamp(inQuoteDate);
+        quote.setExchangeTimestamp(inQuoteDate);
         return this;
     }
     /**
-     * 
+     * Sets the quote action value. 
      *
-     *
-     * @param inAction
-     * @return
+     * @param inAction a <code>QuoteAction</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> withAction(QuoteAction inAction)
     {
-        action = inAction;
+        quote.setAction(inAction);
         return this;
     }
     /**
      * Sets the underlyingEquity value.
      *
      * @param a <code>Equity</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> withUnderlyingEquity(Equity inUnderlyingEquity)
     {
@@ -548,6 +543,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * Sets the expiry value.
      *
      * @param a <code>String</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> withExpiry(String inExpiry)
     {
@@ -558,8 +554,9 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * Sets the optionType value.
      *
      * @param a <code>OptionType</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
-    public final QuoteEventBuilder<E> ofOptionType(OptionType inOptionType)
+    public final QuoteEventBuilder<E> withOptionType(OptionType inOptionType)
     {
         option.setOptionType(inOptionType);
         return this;
@@ -568,8 +565,9 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * Sets the expirationType value.
      *
      * @param a <code>ExpirationType</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
-    public final QuoteEventBuilder<E> ofExpirationType(ExpirationType inExpirationType)
+    public final QuoteEventBuilder<E> withExpirationType(ExpirationType inExpirationType)
     {
         option.setExpirationType(inExpirationType);
         return this;
@@ -578,6 +576,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * Sets the multiplier value.
      *
      * @param a <code>int</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> withMultiplier(int inMultiplier)
     {
@@ -588,6 +587,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * Sets the hasDeliverable value.
      *
      * @param a <code>boolean</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
     public final QuoteEventBuilder<E> hasDeliverable(boolean inHasDeliverable)
     {
@@ -595,158 +595,40 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         return this;
     }
     /**
-     * Get the instrument value.
+     * Get the quote value.
      *
-     * @return an <code>Instrument</code> value
+     * @return a <code>QuoteBean</code> value
      */
-    protected final Instrument getInstrument()
+    protected final QuoteBean getQuote()
     {
-        return instrument.getInstrument();
+        return quote;
     }
     /**
-     * Get the price value.
+     * Get the option value.
      *
-     * @return a <code>BigDecimal</code> value
+     * @return a <code>OptionBean</code> value
      */
-    protected final BigDecimal getPrice()
+    protected final OptionBean getOption()
     {
-        return exchangeCommon.getPrice();
-    }
-    /**
-     * Get the size value.
-     *
-     * @return a <code>BigDecimal</code> value
-     */
-    protected final BigDecimal getSize()
-    {
-        return exchangeCommon.getSize();
-    }
-    /**
-     * Get the exchange value.
-     *
-     * @return a <code>String</code> value
-     */
-    protected final String getExchange()
-    {
-        return exchangeCommon.getExchange();
-    }
-    /**
-     * Get the quoteDate value.
-     *
-     * @return a <code>String</code> value
-     */
-    protected final String getQuoteDate()
-    {
-        return exchangeCommon.getExchangeTimestamp();
-    }
-    /**
-     * 
-     *
-     *
-     * @return
-     */
-    protected final QuoteAction getQuoteAction()
-    {
-        return action;
-    }
-
-    /**
-     * Get the underlyingEquity value.
-     *
-     * @return a <code>Equity</code> value
-     */
-    protected final Equity getUnderlyingEquity()
-    {
-        return option.getUnderlyingEquity();
-    }
-    /**
-     * Get the expiry value.
-     *
-     * @return a <code>String</code> value
-     */
-    protected final String getExpiry()
-    {
-        return option.getExpiry();
-    }
-    /**
-     * Get the strike value.
-     *
-     * @return a <code>BigDecimal</code> value
-     */
-    protected final BigDecimal getStrike()
-    {
-        return option.getStrike();
-    }
-    /**
-     * Get the optionType value.
-     *
-     * @return a <code>OptionType</code> value
-     */
-    protected final OptionType getOptionType()
-    {
-        return option.getOptionType();
-    }
-    /**
-     * Get the expirationType value.
-     *
-     * @return a <code>ExpirationType</code> value
-     */
-    protected final ExpirationType getExpirationType()
-    {
-        return option.getExpirationType();
-    }
-    /**
-     * Get the multiplier value.
-     *
-     * @return a <code>int</code> value
-     */
-    protected final int getMultiplier()
-    {
-        return option.getMultiplier();
-    }
-    /**
-     * Get the hasDeliverable value.
-     *
-     * @return a <code>boolean</code> value
-     */
-    protected final boolean getHasDeliverable()
-    {
-        return option.getHasDeliverable();
-    }
-    /**
-     * Get the action value.
-     *
-     * @return a <code>QuoteAction</code> value
-     */
-    protected final QuoteAction getAction()
-    {
-        return action;
+        return option;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.AbstractEventBuilder#setDefaults()
      */
     @Override
-    protected void setDefaults()
+    protected final void setDefaults()
     {
         super.setDefaults();
-        if(action == null) {
-            action = QuoteAction.ADD;
+        if(quote.getAction() == null) {
+            quote.setAction(QuoteAction.ADD);
         }
     }
     /**
-     * 
+     * the quote attributes
      */
-    private QuoteAction action;
+    private final QuoteBean quote = new QuoteBean();
     /**
-     * 
-     */
-    private final MarketDataBean exchangeCommon = new MarketDataBean();
-    /**
-     * 
+     * the option attributes
      */
     private final OptionBean option = new OptionBean();
-    /**
-     * 
-     */
-    private final InstrumentBean instrument = new InstrumentBean();
 }
