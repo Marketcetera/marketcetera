@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.marketcetera.event.LogEvent;
-import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.event.util.LogEventLevel;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;

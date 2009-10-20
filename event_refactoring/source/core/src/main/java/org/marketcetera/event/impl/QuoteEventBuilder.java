@@ -7,13 +7,13 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.EquityQuoteEvent;
-import org.marketcetera.event.OptionQuoteEvent;
-import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.HasEquity;
+import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.InstrumentBean;
+import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
@@ -44,33 +44,66 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      */
     public static QuoteEvent add(QuoteEvent inEvent)
     {
-        if(inEvent instanceof EquityQuoteEvent) {
-            EquityQuoteEvent equityEvent = (EquityQuoteEvent)inEvent;
-            return new EquityAskEventImpl(equityEvent.getMessageId(),
-                                          equityEvent.getTimestamp(),
-                                          equityEvent.getEquity(),
-                                          equityEvent.getExchange(),
-                                          equityEvent.getPrice(),
-                                          equityEvent.getSize(),
-                                          equityEvent.getEventTime(),
-                                          QuoteAction.ADD);
-        } else if(inEvent instanceof OptionQuoteEvent) {
-            OptionQuoteEvent optionEvent = (OptionQuoteEvent)inEvent;
-            return new OptionAskEventImpl(optionEvent.getMessageId(),
-                                          optionEvent.getTimestamp(),
-                                          optionEvent.getOption(),
-                                          optionEvent.getExchange(),
-                                          optionEvent.getPrice(),
-                                          optionEvent.getSize(),
-                                          optionEvent.getEventTime(),
-                                          optionEvent.getUnderlyingEquity(),
-                                          optionEvent.getStrike(),
-                                          optionEvent.getOptionType(),
-                                          optionEvent.getExpiry(),
-                                          optionEvent.hasDeliverable(),
-                                          optionEvent.getMultiplier(),
-                                          optionEvent.getExpirationType(),
-                                          QuoteAction.ADD);
+        if(inEvent instanceof HasEquity) {
+            HasEquity equityEvent = (HasEquity)inEvent;
+            if(inEvent instanceof AskEvent) {
+                AskEvent askEvent = (AskEvent)inEvent;
+                return new EquityAskEventImpl(askEvent.getMessageId(),
+                                              askEvent.getTimestamp(),
+                                              equityEvent.getEquity(),
+                                              askEvent.getExchange(),
+                                              askEvent.getPrice(),
+                                              askEvent.getSize(),
+                                              askEvent.getEventTime(),
+                                              QuoteAction.ADD);
+            } else {
+                BidEvent bidEvent = (BidEvent)inEvent;
+                return new EquityBidEventImpl(bidEvent.getMessageId(),
+                                              bidEvent.getTimestamp(),
+                                              equityEvent.getEquity(),
+                                              bidEvent.getExchange(),
+                                              bidEvent.getPrice(),
+                                              bidEvent.getSize(),
+                                              bidEvent.getEventTime(),
+                                              QuoteAction.ADD);
+            }
+        } else if(inEvent instanceof OptionEvent) {
+            OptionEvent optionEvent = (OptionEvent)inEvent;
+            if(inEvent instanceof AskEvent) {
+                AskEvent askEvent = (AskEvent)inEvent;
+                return new OptionAskEventImpl(askEvent.getMessageId(),
+                                              askEvent.getTimestamp(),
+                                              optionEvent.getOption(),
+                                              askEvent.getExchange(),
+                                              askEvent.getPrice(),
+                                              askEvent.getSize(),
+                                              askEvent.getEventTime(),
+                                              optionEvent.getUnderlyingEquity(),
+                                              optionEvent.getStrike(),
+                                              optionEvent.getOptionType(),
+                                              optionEvent.getExpiry(),
+                                              optionEvent.hasDeliverable(),
+                                              optionEvent.getMultiplier(),
+                                              optionEvent.getExpirationType(),
+                                              QuoteAction.ADD);
+            } else {
+                BidEvent bidEvent = (BidEvent)inEvent;
+                return new OptionBidEventImpl(bidEvent.getMessageId(),
+                                              bidEvent.getTimestamp(),
+                                              optionEvent.getOption(),
+                                              bidEvent.getExchange(),
+                                              bidEvent.getPrice(),
+                                              bidEvent.getSize(),
+                                              bidEvent.getEventTime(),
+                                              optionEvent.getUnderlyingEquity(),
+                                              optionEvent.getStrike(),
+                                              optionEvent.getOptionType(),
+                                              optionEvent.getExpiry(),
+                                              optionEvent.hasDeliverable(),
+                                              optionEvent.getMultiplier(),
+                                              optionEvent.getExpirationType(),
+                                              QuoteAction.ADD);
+            }
         } else {
             throw new UnsupportedOperationException();
         }
@@ -90,33 +123,66 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                   Date inNewTimestamp,
                                                   BigDecimal inNewSize)
     {
-        if(inEvent instanceof EquityQuoteEvent) {
-            EquityQuoteEvent equityEvent = (EquityQuoteEvent)inEvent;
-            return (E)new EquityAskEventImpl(equityEvent.getMessageId(),
-                                             inNewTimestamp,
-                                             equityEvent.getEquity(),
-                                             equityEvent.getExchange(),
-                                             equityEvent.getPrice(),
-                                             inNewSize,
-                                             equityEvent.getEventTime(),
-                                             QuoteAction.CHANGE);
-        } else if(inEvent instanceof OptionQuoteEvent) {
-            OptionQuoteEvent optionEvent = (OptionQuoteEvent)inEvent;
-            return (E)new OptionAskEventImpl(optionEvent.getMessageId(),
-                                             inNewTimestamp,
-                                             optionEvent.getOption(),
-                                             optionEvent.getExchange(),
-                                             optionEvent.getPrice(),
-                                             inNewSize,
-                                             optionEvent.getEventTime(),
-                                             optionEvent.getUnderlyingEquity(),
-                                             optionEvent.getStrike(),
-                                             optionEvent.getOptionType(),
-                                             optionEvent.getExpiry(),
-                                             optionEvent.hasDeliverable(),
-                                             optionEvent.getMultiplier(),
-                                             optionEvent.getExpirationType(),
-                                             QuoteAction.ADD);
+        if(inEvent instanceof HasEquity) {
+            HasEquity equityEvent = (HasEquity)inEvent;
+            if(inEvent instanceof AskEvent) {
+                AskEvent askEvent = (AskEvent)inEvent;
+                return (E)new EquityAskEventImpl(askEvent.getMessageId(),
+                                                 inNewTimestamp,
+                                                 equityEvent.getEquity(),
+                                                 askEvent.getExchange(),
+                                                 askEvent.getPrice(),
+                                                 inNewSize,
+                                                 askEvent.getEventTime(),
+                                                 QuoteAction.CHANGE);
+            } else {
+                BidEvent bidEvent = (BidEvent)inEvent;
+                return (E)new EquityBidEventImpl(bidEvent.getMessageId(),
+                                                 inNewTimestamp,
+                                                 equityEvent.getEquity(),
+                                                 bidEvent.getExchange(),
+                                                 bidEvent.getPrice(),
+                                                 inNewSize,
+                                                 bidEvent.getEventTime(),
+                                                 QuoteAction.CHANGE);
+            }
+        } else if(inEvent instanceof OptionEvent) {
+            OptionEvent optionEvent = (OptionEvent)inEvent;
+            if(inEvent instanceof AskEvent) {
+                AskEvent askEvent = (AskEvent)inEvent;
+                return (E)new OptionAskEventImpl(askEvent.getMessageId(),
+                                                 inNewTimestamp,
+                                                 optionEvent.getOption(),
+                                                 askEvent.getExchange(),
+                                                 askEvent.getPrice(),
+                                                 inNewSize,
+                                                 askEvent.getEventTime(),
+                                                 optionEvent.getUnderlyingEquity(),
+                                                 optionEvent.getStrike(),
+                                                 optionEvent.getOptionType(),
+                                                 optionEvent.getExpiry(),
+                                                 optionEvent.hasDeliverable(),
+                                                 optionEvent.getMultiplier(),
+                                                 optionEvent.getExpirationType(),
+                                                 QuoteAction.CHANGE);
+            } else {
+                BidEvent bidEvent = (BidEvent)inEvent;
+                return (E)new OptionBidEventImpl(bidEvent.getMessageId(),
+                                                 inNewTimestamp,
+                                                 optionEvent.getOption(),
+                                                 bidEvent.getExchange(),
+                                                 bidEvent.getPrice(),
+                                                 inNewSize,
+                                                 bidEvent.getEventTime(),
+                                                 optionEvent.getUnderlyingEquity(),
+                                                 optionEvent.getStrike(),
+                                                 optionEvent.getOptionType(),
+                                                 optionEvent.getExpiry(),
+                                                 optionEvent.hasDeliverable(),
+                                                 optionEvent.getMultiplier(),
+                                                 optionEvent.getExpirationType(),
+                                                 QuoteAction.CHANGE);
+            }
         } else {
             throw new UnsupportedOperationException();
         }
@@ -132,33 +198,66 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     @SuppressWarnings("unchecked")
     public static <E extends QuoteEvent> E delete(E inEvent)
     {
-        if(inEvent instanceof EquityQuoteEvent) {
-            EquityQuoteEvent equityEvent = (EquityQuoteEvent)inEvent;
-            return (E)new EquityAskEventImpl(equityEvent.getMessageId(),
-                                             equityEvent.getTimestamp(),
-                                             equityEvent.getEquity(),
-                                             equityEvent.getExchange(),
-                                             equityEvent.getPrice(),
-                                             equityEvent.getSize(),
-                                             equityEvent.getEventTime(),
-                                             QuoteAction.DELETE);
-        } else if(inEvent instanceof OptionQuoteEvent) {
-            OptionQuoteEvent optionEvent = (OptionQuoteEvent)inEvent;
-            return (E)new OptionAskEventImpl(optionEvent.getMessageId(),
-                                             optionEvent.getTimestamp(),
-                                             optionEvent.getOption(),
-                                             optionEvent.getExchange(),
-                                             optionEvent.getPrice(),
-                                             optionEvent.getSize(),
-                                             optionEvent.getEventTime(),
-                                             optionEvent.getUnderlyingEquity(),
-                                             optionEvent.getStrike(),
-                                             optionEvent.getOptionType(),
-                                             optionEvent.getExpiry(),
-                                             optionEvent.hasDeliverable(),
-                                             optionEvent.getMultiplier(),
-                                             optionEvent.getExpirationType(),
-                                             QuoteAction.DELETE);
+        if(inEvent instanceof HasEquity) {
+            HasEquity equityEvent = (HasEquity)inEvent;
+            if(inEvent instanceof AskEvent) {
+                AskEvent askEvent = (AskEvent)inEvent;
+                return (E)new EquityAskEventImpl(askEvent.getMessageId(),
+                                                 askEvent.getTimestamp(),
+                                                 equityEvent.getEquity(),
+                                                 askEvent.getExchange(),
+                                                 askEvent.getPrice(),
+                                                 askEvent.getSize(),
+                                                 askEvent.getEventTime(),
+                                                 QuoteAction.DELETE);
+            } else {
+                BidEvent bidEvent = (BidEvent)inEvent;
+                return (E)new EquityBidEventImpl(bidEvent.getMessageId(),
+                                                 bidEvent.getTimestamp(),
+                                                 equityEvent.getEquity(),
+                                                 bidEvent.getExchange(),
+                                                 bidEvent.getPrice(),
+                                                 bidEvent.getSize(),
+                                                 bidEvent.getEventTime(),
+                                                 QuoteAction.DELETE);
+            }
+        } else if(inEvent instanceof OptionEvent) {
+            OptionEvent optionEvent = (OptionEvent)inEvent;
+            if(inEvent instanceof AskEvent) {
+                AskEvent askEvent = (AskEvent)inEvent;
+                return (E)new OptionAskEventImpl(askEvent.getMessageId(),
+                                                 askEvent.getTimestamp(),
+                                                 optionEvent.getOption(),
+                                                 askEvent.getExchange(),
+                                                 askEvent.getPrice(),
+                                                 askEvent.getSize(),
+                                                 askEvent.getEventTime(),
+                                                 optionEvent.getUnderlyingEquity(),
+                                                 optionEvent.getStrike(),
+                                                 optionEvent.getOptionType(),
+                                                 optionEvent.getExpiry(),
+                                                 optionEvent.hasDeliverable(),
+                                                 optionEvent.getMultiplier(),
+                                                 optionEvent.getExpirationType(),
+                                                 QuoteAction.DELETE);
+            } else {
+                BidEvent bidEvent = (BidEvent)inEvent;
+                return (E)new OptionBidEventImpl(bidEvent.getMessageId(),
+                                                 bidEvent.getTimestamp(),
+                                                 optionEvent.getOption(),
+                                                 bidEvent.getExchange(),
+                                                 bidEvent.getPrice(),
+                                                 bidEvent.getSize(),
+                                                 bidEvent.getEventTime(),
+                                                 optionEvent.getUnderlyingEquity(),
+                                                 optionEvent.getStrike(),
+                                                 optionEvent.getOptionType(),
+                                                 optionEvent.getExpiry(),
+                                                 optionEvent.hasDeliverable(),
+                                                 optionEvent.getMultiplier(),
+                                                 optionEvent.getExpirationType(),
+                                                 QuoteAction.DELETE);
+            }
         } else {
             throw new UnsupportedOperationException();
         }

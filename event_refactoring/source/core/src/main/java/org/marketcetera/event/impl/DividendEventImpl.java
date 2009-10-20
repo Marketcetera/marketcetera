@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.DividendFrequency;
-import org.marketcetera.event.DividendStatus;
-import org.marketcetera.event.DividendType;
+import org.marketcetera.event.util.DividendFrequency;
+import org.marketcetera.event.util.DividendStatus;
+import org.marketcetera.event.util.DividendType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 

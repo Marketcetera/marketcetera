@@ -1,6 +1,6 @@
 package org.marketcetera.modules.remote.receiver;
 
-import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.event.util.LogEventLevel;
 import org.marketcetera.module.DisplayName;
 import org.marketcetera.util.misc.ClassVersion;
 

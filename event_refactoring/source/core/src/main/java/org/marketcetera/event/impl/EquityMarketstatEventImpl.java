@@ -3,7 +3,7 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.event.EquityMarketstatEvent;
+import org.marketcetera.event.HasEquity;
 import org.marketcetera.trade.Equity;
 
 /* $License$ */
@@ -17,7 +17,7 @@ import org.marketcetera.trade.Equity;
  */
 class EquityMarketstatEventImpl
         extends MarketstatEventImpl
-        implements EquityMarketstatEvent
+        implements HasEquity
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasEquity#getEquity()

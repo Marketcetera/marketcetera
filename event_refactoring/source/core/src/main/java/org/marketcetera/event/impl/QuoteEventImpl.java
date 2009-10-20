@@ -3,9 +3,9 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.beans.QuoteBean;
+import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.trade.Instrument;
 
 /* $License$ */

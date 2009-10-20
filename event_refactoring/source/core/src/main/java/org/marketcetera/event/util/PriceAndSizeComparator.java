@@ -1,7 +1,8 @@
-package org.marketcetera.event;
+package org.marketcetera.event.util;
 
 import java.util.Comparator;
 
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

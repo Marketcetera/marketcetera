@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.OptionQuoteEvent;
-import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
@@ -21,7 +21,7 @@ import org.marketcetera.trade.OptionType;
  * @since $Release$
  */
 class OptionAskEventImpl
-        implements AskEvent, OptionQuoteEvent
+        implements AskEvent, OptionEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getExchange()

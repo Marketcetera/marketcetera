@@ -1,4 +1,4 @@
-package org.marketcetera.event;
+package org.marketcetera.event.util;
 
 import org.marketcetera.util.misc.ClassVersion;
 

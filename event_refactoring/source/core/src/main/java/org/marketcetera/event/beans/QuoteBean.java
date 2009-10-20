@@ -2,7 +2,7 @@ package org.marketcetera.event.beans;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.trade.Instrument;
 
 /* $License$ */
