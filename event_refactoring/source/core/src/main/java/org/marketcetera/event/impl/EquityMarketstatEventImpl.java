@@ -63,8 +63,10 @@ class EquityMarketstatEventImpl
      * @param inLowPrice a <code>BigDecimal</code> value
      * @param inClosePrice a <code>BigDecimal</code> value
      * @param inPreviousClosePrice a <code>BigDecimal</code> value
+     * @param inPreviousCloseVolume a <code>BigDecimal</code> value
      * @param inCloseDate a <code>String</code> value
      * @param inPreviousCloseDate a <code>String</code> value
+     * @param inCumulativeVolume a <code>BigDecimal</code> value
      * @param inTradeHighTime a <code>String</code> value
      * @param inTradeLowTime a <code>String</code> value
      * @param inOpenExchange a <code>String</code> value
@@ -83,6 +85,7 @@ class EquityMarketstatEventImpl
                               BigDecimal inLowPrice,
                               BigDecimal inClosePrice,
                               BigDecimal inPreviousClosePrice,
+                              BigDecimal inCumulativeVolume,
                               String inCloseDate,
                               String inPreviousCloseDate,
                               String inTradeHighTime,
@@ -100,6 +103,7 @@ class EquityMarketstatEventImpl
               inLowPrice,
               inClosePrice,
               inPreviousClosePrice,
+              inCumulativeVolume,
               inCloseDate,
               inPreviousCloseDate,
               inTradeHighTime,

@@ -67,10 +67,6 @@ public class DateUtils
      */
     public static final DateTimeFormatter DAYS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter().withZone(DateTimeZone.UTC);
     /**
-     * date format to month precision without timezone: <code>yyyyMM</code>
-     */
-    public static final DateTimeFormatter MONTHS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).toFormatter().withZone(DateTimeZone.UTC);
-    /**
      * valid date formats
      */
     private static final DateTimeFormatter[] DATE_FORMATS = new DateTimeFormatter[] {
@@ -155,32 +151,12 @@ public class DateUtils
         }
         for(int formatCounter=0;formatCounter<DATE_FORMATS.length;formatCounter++) {
             try {
-                return stringToDate(inDateString,
-                                    DATE_FORMATS[formatCounter]);
+                return new Date(DATE_FORMATS[formatCounter].parseDateTime(inDateString).getMillis());
             } catch (IllegalArgumentException e) {
                 // this format didn't work, try a less specific one
             }
         }
         throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_DATE,
                                                                     inDateString));
-    }
-    /**
-     * Parses the given <code>String</code> to a <code>Date</code> value using the given format.
-     * 
-     * @param inDateString a <code>String</code> value a <code>String</code> containing a date value to be parsed.
-     * @param inFormat a <code>DateTimeFormatter</code> value
-     * @return a <code>Date</code> value 
-     * @throws MarketDataRequestException if the given <code>String</code> could not be parsed 
-     */
-    public static Date stringToDate(String inDateString,
-                                    DateTimeFormatter inFormat)
-        throws MarketDataRequestException
-    {
-        try {
-            return new Date(inFormat.parseDateTime(inDateString).getMillis());
-        } catch (IllegalArgumentException e) {
-            throw new MarketDataRequestException(new I18NBoundMessage1P(INVALID_DATE,
-                                                                        inDateString));
-        }
     }
 }

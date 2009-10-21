@@ -770,18 +770,21 @@ public final class SimulatedExchange
                 }
             }
             // take the modified value and add a bid and an ask based on it
+            Date timestamp = new Date();
             process(QuoteEventBuilder.askEvent(getBook().getInstrument())
                                      .withMessageId(System.nanoTime())
-                                     .withTimestamp(new Date())
+                                     .withTimestamp(timestamp)
                                      .withExchange(exchange.getCode())
                                      .withPrice(getValue().add(PENNY))
-                                     .withSize(randomInteger(10000)).create());
+                                     .withSize(randomInteger(10000))
+                                     .withQuoteDate(DateUtils.dateToString(timestamp)).create());
             process(QuoteEventBuilder.bidEvent(getBook().getInstrument())
                                      .withMessageId(System.nanoTime())
-                                     .withTimestamp(new Date())
+                                     .withTimestamp(timestamp)
                                      .withExchange(exchange.getCode())
                                      .withPrice(getValue().subtract(PENNY))
-                                     .withSize(randomInteger(10000)).create());
+                                     .withSize(randomInteger(10000))
+                                     .withQuoteDate(DateUtils.dateToString(timestamp)).create());
         }
         /**
          * Get the base value.
@@ -913,7 +916,8 @@ public final class SimulatedExchange
                                                                 .withTimestamp(new Date(tradeTime))
                                                                 .withExchange(bid.getExchange())
                                                                 .withPrice(tradePrice)
-                                                                .withSize(tradeSize).create();
+                                                                .withSize(tradeSize)
+                                                                .withTradeDate(DateUtils.dateToString(new Date(tradeTime))).create();
                             // these events are used to modify the orders in the book
                             BidEvent bidCorrection;
                             AskEvent askCorrection;
