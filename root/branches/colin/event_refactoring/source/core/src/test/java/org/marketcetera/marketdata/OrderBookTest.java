@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.event.QuantityTuple;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
@@ -586,9 +588,19 @@ public class OrderBookTest
         if(inEvent == null) {
             return null;
         }
+        Class<? extends MarketDataEvent> type = null;
+        if(inEvent instanceof AskEvent) {
+            type = AskEvent.class;
+        } else if(inEvent instanceof BidEvent) {
+            type = BidEvent.class;
+        } else if(inEvent instanceof TradeEvent) {
+            type = TradeEvent.class;
+        } else {
+            fail("Add support for " + inEvent);
+        }
         return new QuantityTuple(inEvent.getPrice(),
                                  inEvent.getSize(),
-                                 inEvent.getClass());
+                                 type);
     }
     /**
      * Wrapper around a {@link QuantityTuple} {@link List} that accepts {@link QuoteEvent} inputs.

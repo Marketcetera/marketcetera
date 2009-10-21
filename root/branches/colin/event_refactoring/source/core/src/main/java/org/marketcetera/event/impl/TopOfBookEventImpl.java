@@ -107,7 +107,8 @@ class TopOfBookEventImpl
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (event.getMessageId() ^ (event.getMessageId() >>> 32));
+        result = prime * result + ((ask == null) ? 0 : ask.hashCode());
+        result = prime * result + ((bid == null) ? 0 : bid.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -123,7 +124,15 @@ class TopOfBookEventImpl
         if (getClass() != obj.getClass())
             return false;
         TopOfBookEventImpl other = (TopOfBookEventImpl) obj;
-        if (event.getMessageId() != other.event.getMessageId())
+        if (ask == null) {
+            if (other.ask != null)
+                return false;
+        } else if (!ask.equals(other.ask))
+            return false;
+        if (bid == null) {
+            if (other.bid != null)
+                return false;
+        } else if (!bid.equals(other.bid))
             return false;
         return true;
     }

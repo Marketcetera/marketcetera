@@ -41,7 +41,7 @@ class EquityBidEventImpl
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("EquityBidEventImpl [getAction()=").append(getAction()).append(", getExchange()=") //$NON-NLS-1$ //$NON-NLS-2$
+        builder.append("EquityBidEvent [getAction()=").append(getAction()).append(", getExchange()=") //$NON-NLS-1$ //$NON-NLS-2$
                 .append(getExchange()).append(", getExchangeTimestamp()=").append(getExchangeTimestamp()) //$NON-NLS-1$
                 .append(", getInstrument()=").append(getInstrument()).append(", getMessageId()=") //$NON-NLS-1$ //$NON-NLS-2$
                 .append(getMessageId()).append(", getPrice()=").append(getPrice()).append(", getSize()=") //$NON-NLS-1$ //$NON-NLS-2$
