@@ -3,90 +3,33 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Provides an Option implementation of {@link BidEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
+@ClassVersion("$Id$")
 class OptionBidEventImpl
+        extends QuoteEventImpl
         implements BidEvent, OptionEvent
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getExchange()
-     */
-    @Override
-    public String getExchange()
-    {
-        return quote.getExchange();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getPrice()
-     */
-    @Override
-    public BigDecimal getPrice()
-    {
-        return quote.getPrice();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getQuoteTime()
-     */
-    @Override
-    public String getExchangeTimestamp()
-    {
-        return quote.getExchangeTimestamp();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getSize()
-     */
-    @Override
-    public BigDecimal getSize()
-    {
-        return quote.getSize();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getInstrument()
-     */
-    @Override
-    public Option getInstrument()
-    {
-        return (Option)quote.getInstrument();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getMessageId()
-     */
-    @Override
-    public long getMessageId()
-    {
-        return quote.getMessageId();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getTimestamp()
-     */
-    @Override
-    public Date getTimestamp()
-    {
-        return quote.getTimestamp();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
-     */
-    @Override
-    public long getTimeMillis()
-    {
-        return quote.getTimeMillis();
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.event.OptionEvent#getExpirationType()
      */
@@ -149,50 +92,40 @@ class OptionBidEventImpl
     @Override
     public Option getOption()
     {
-        return option.getOption();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.QuoteEvent#getAction()
-     */
-    @Override
-    public QuoteAction getAction()
-    {
-        return quote.getAction();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#setSource(java.lang.Object)
-     */
-    @Override
-    public void setSource(Object inSource)
-    {
-        quote.setSource(inSource);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.Event#getSource()
-     */
-    @Override
-    public Object getSource()
-    {
-        return quote.getSource();
+        return (Option)getInstrument();
     }
     /**
      * Create a new OptionBidEventImpl instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
-     * @param inInstrument
-     * @param inExchange
-     * @param inPrice
-     * @param inSize
-     * @param inQuoteTime
-     * @param inUnderlyingEquity
-     * @param inStrike
-     * @param inOptionType
-     * @param inExpiry
-     * @param inHasDeliverable
-     * @param inMultiplier
-     * @param inExpirationType
-     * @param inAction TODO
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>Date</code> value
+     * @param inInstrument an <code>Option</code> value
+     * @param inExchange a <code>String</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @param inSize a <code>BigDecimal</code> value
+     * @param inQuoteTime a <code>String</code> value
+     * @param inUnderlyingEquity an <code>Equity</code> value
+     * @param inStrike a <code>BigDecimal</code> value
+     * @param inOptionType an <code>OptionType</code> value
+     * @param inExpiry a <code>String</code> value
+     * @param inHasDeliverable a <code>boolean</code> value
+     * @param inMultiplier an <code>int</code> value
+     * @param inExpirationType an <code>ExpirationType</code> value
+     * @param inAction a <code>QuoteAction</code> value
+     * @throws IllegalArgumentException if <code>inMessageId</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inTimestamp</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inInstrument</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExchange</code> is <code>null</code> or empty
+     * @throws IllegalArgumentException if <code>inPrice</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inSize</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inQuoteTime</code> is <code>null</code> or empty
+     * @throws IllegalArgumentException if <code>inInstrument</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inUnderlyingEquity</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExpiry</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inStrike</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inOptionType</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExpirationType</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inQuoteAction</code> is <code>null</code>
      */
     OptionBidEventImpl(long inMessageId,
                        Date inTimestamp,
@@ -210,30 +143,27 @@ class OptionBidEventImpl
                        ExpirationType inExpirationType,
                        QuoteAction inAction)
     {
-        quote = new QuoteEventImpl(inMessageId,
-                                           inTimestamp,
-                                           inInstrument,
-                                           inExchange,
-                                           inPrice,
-                                           inSize,
-                                           inQuoteTime,
-                                           inAction);
-        option = new OptionEventImpl(inInstrument,
-                                     inUnderlyingEquity,
-                                     inStrike,
-                                     inOptionType,
-                                     inExpiry,
-                                     inHasDeliverable,
-                                     inMultiplier,
-                                     inExpirationType);
+        super(inMessageId,
+              inTimestamp,
+              inInstrument,
+              inExchange,
+              inPrice,
+              inSize,
+              inQuoteTime,
+              inAction);
+        option.setInstrument(inInstrument);
+        option.setUnderlyingEquity(inUnderlyingEquity);
+        option.setStrike(inStrike);
+        option.setOptionType(inOptionType);
+        option.setExpiry(inExpiry);
+        option.setHasDeliverable(inHasDeliverable);
+        option.setMultiplier(inMultiplier);
+        option.setExpirationType(inExpirationType);
+        option.validate();
     }
     /**
-     * 
+     * the option attributes 
      */
-    private final QuoteEventImpl quote;
-    /**
-     * 
-     */
-    private final OptionEventImpl option;
+    private final OptionBean option = new OptionBean();
     private static final long serialVersionUID = 1L;
 }

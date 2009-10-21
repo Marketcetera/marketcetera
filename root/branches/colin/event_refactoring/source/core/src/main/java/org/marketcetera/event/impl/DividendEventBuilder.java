@@ -43,7 +43,6 @@ public abstract class DividendEventBuilder
             @Override
             public DividendEvent create()
             {
-                setDefaults();
                 return new DividendEventImpl(getMessageId(),
                                              getTimestamp(),
                                              getDividend().getEquity(),
@@ -168,13 +167,6 @@ public abstract class DividendEventBuilder
     {
         dividend.setType(inDividendType);
         return this;
-    }
-    /**
-     * Sets the defaults for the <code>DividendEvent</code> if any. 
-     */
-    protected final void setDefaults()
-    {
-        super.setDefaults();
     }
     /**
      * Get the dividend value.

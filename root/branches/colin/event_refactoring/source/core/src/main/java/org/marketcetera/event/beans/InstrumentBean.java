@@ -6,6 +6,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.Messages;
+import org.marketcetera.event.util.EventValidationServices;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 

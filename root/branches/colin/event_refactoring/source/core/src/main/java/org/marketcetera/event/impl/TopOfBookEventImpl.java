@@ -5,20 +5,26 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.beans.EventBean;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Provides a {@link TopOfBookEvent} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
+@ClassVersion("$Id$")
 class TopOfBookEventImpl
         implements TopOfBookEvent
 {
@@ -96,31 +102,35 @@ class TopOfBookEventImpl
     /**
      * Create a new TopOfBookImpl instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
-     * @param inBid
-     * @param inAsk
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>Date</code> value
+     * @param inBid a <code>BidEvent</code> value or <code>null</code>
+     * @param inAsk an <code>AskEvent</code> value or <code>null</code>
+     * @throws IllegalArgumentException if <code>inMessageId</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inTimestamp</code> is <code>null</code>
      */
     TopOfBookEventImpl(long inMessageId,
                        Date inTimestamp,
                        BidEvent inBid,
                        AskEvent inAsk)
     {
-        event = new EventImpl(inMessageId,
-                              inTimestamp);
+        event.setMessageId(inMessageId);
+        event.setTimestamp(inTimestamp);
+        event.setDefaults();
+        event.validate();
         bid = inBid;
         ask = inAsk;
     }
     /**
-     * 
+     * the event attributes 
      */
-    private final EventImpl event;
+    private final EventBean event = new EventBean();
     /**
-     * 
+     * the top bid or <code>null</code>
      */
     private final BidEvent bid;
     /**
-     * 
+     * the top ask or <code>null</code>
      */
     private final AskEvent ask;
     private static final long serialVersionUID = 1L;

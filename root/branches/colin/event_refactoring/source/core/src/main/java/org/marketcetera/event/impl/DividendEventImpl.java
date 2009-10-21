@@ -25,9 +25,48 @@ import org.marketcetera.util.misc.ClassVersion;
 @ThreadSafe
 @ClassVersion("$Id$")
 final class DividendEventImpl
-        extends EventImpl
         implements DividendEvent
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getMessageId()
+     */
+    @Override
+    public long getMessageId()
+    {
+        return dividend.getMessageId();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getSource()
+     */
+    @Override
+    public Object getSource()
+    {
+        return dividend.getSource();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getTimestamp()
+     */
+    @Override
+    public Date getTimestamp()
+    {
+        return dividend.getTimestamp();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#setSource(java.lang.Object)
+     */
+    @Override
+    public void setSource(Object inSource)
+    {
+        dividend.setSource(inSource);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
+     */
+    @Override
+    public long getTimeMillis()
+    {
+        return dividend.getTimeMillis();
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DividendEvent#getAmount()
      */
@@ -131,18 +170,18 @@ final class DividendEventImpl
      * @param inFrequency a <code>DividendFrequency</code> value
      * @param inStatus a <code>DividendStatus</code> value
      * @param inType a <code>DividendType</code> value
-     * @throws IllegalArgumentException if {@link #getTimestamp()} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #getMessageId()} &lt; 0
-     * @throws IllegalArgumentException if {@link #equity} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #amount} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #currency} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #declareDate} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #executionDate} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #paymentDate} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #recordDate} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #frequency} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #status} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #type} is <code>null</code>
+     * @throws IllegalArgumentException if <code>inMessageId</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inTimestamp</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inEquity</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inAmount</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inCurrency</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inDeclareDate</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExecutionDate</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inPaymentDate</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inRecordDate</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inFrequency</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inStatus</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inType</code> is <code>null</code>
      */
     DividendEventImpl(long inMessageId,
                       Date inTimestamp,
@@ -157,18 +196,19 @@ final class DividendEventImpl
                       DividendStatus inStatus,
                       DividendType inType)
     {
-        super(inMessageId,
-              inTimestamp);
+        dividend.setMessageId(inMessageId);
+        dividend.setTimestamp(inTimestamp);
+        dividend.setEquity(inEquity);
         dividend.setAmount(inAmount);
         dividend.setCurrency(inCurrency);
         dividend.setDeclareDate(inDeclareDate);
-        dividend.setEquity(inEquity);
-        dividend.setExecutionDate(inExecutionDate);
-        dividend.setFrequency(inFrequency);
         dividend.setPaymentDate(inPaymentDate);
+        dividend.setExecutionDate(inExecutionDate);
         dividend.setRecordDate(inRecordDate);
+        dividend.setFrequency(inFrequency);
         dividend.setStatus(inStatus);
         dividend.setType(inType);
+        dividend.setDefaults();
         dividend.validate();
     }
     /**

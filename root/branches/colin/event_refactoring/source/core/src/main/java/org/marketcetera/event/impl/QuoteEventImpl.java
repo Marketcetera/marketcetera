@@ -3,20 +3,25 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.beans.QuoteBean;
 import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Implements {@link QuoteEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
+@ClassVersion("$Id$")
 class QuoteEventImpl
         implements QuoteEvent
 {
@@ -66,7 +71,7 @@ class QuoteEventImpl
     @Override
     public long getMessageId()
     {
-        return event.getMessageId();
+        return quote.getMessageId();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getTimestamp()
@@ -74,7 +79,7 @@ class QuoteEventImpl
     @Override
     public Date getTimestamp()
     {
-        return event.getTimestamp();
+        return quote.getTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
@@ -82,7 +87,7 @@ class QuoteEventImpl
     @Override
     public long getTimeMillis()
     {
-        return event.getTimeMillis();
+        return quote.getTimeMillis();
     }
     /**
      * Get the action value.
@@ -99,7 +104,7 @@ class QuoteEventImpl
     @Override
     public Object getSource()
     {
-        return event.getSource();
+        return quote.getSource();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#setSource(java.lang.Object)
@@ -107,19 +112,27 @@ class QuoteEventImpl
     @Override
     public void setSource(Object inSource)
     {
-        event.setSource(inSource);
+        quote.setSource(inSource);
     }
     /**
      * Create a new QuoteEventImpl instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
-     * @param inInstrument
-     * @param inExchange
-     * @param inPrice
-     * @param inSize
-     * @param inQuoteTime
-     * @param inAction
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>Date</code> value
+     * @param inInstrument an <code>Equity</code> value
+     * @param inExchange a <code>String</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @param inSize a <code>BigDecimal</code> value
+     * @param inQuoteTime a <code>String</code> value
+     * @param inAction a <code>QuoteAction</code> value
+     * @throws IllegalArgumentException if <code>inMessageId</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inTimestamp</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inInstrument</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExchange</code> is <code>null</code> or empty
+     * @throws IllegalArgumentException if <code>inPrice</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inSize</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inQuoteTime</code> is <code>null</code> or empty
+     * @throws IllegalArgumentException if <code>QuoteAction</code> is <code>null</code>
      */
     QuoteEventImpl(long inMessageId,
                    Date inTimestamp,
@@ -130,21 +143,19 @@ class QuoteEventImpl
                    String inQuoteTime,
                    QuoteAction inAction)
      {
-        event = new EventImpl(inMessageId,
-                              inTimestamp);
-        quote.setAction(inAction);
+        quote.setMessageId(inMessageId);
+        quote.setTimestamp(inTimestamp);
         quote.setInstrument(inInstrument);
         quote.setExchange(inExchange);
         quote.setPrice(inPrice);
         quote.setSize(inSize);
         quote.setExchangeTimestamp(inQuoteTime);
+        quote.setAction(inAction);
+        quote.setDefaults();
+        quote.validate();
      }
     /**
-     * 
-     */
-    private final EventImpl event;
-    /**
-     * 
+     * quote attributes
      */
     private final QuoteBean quote = new QuoteBean();
     private static final long serialVersionUID = 1L;

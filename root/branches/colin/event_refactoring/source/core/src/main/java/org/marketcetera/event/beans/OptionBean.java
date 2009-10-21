@@ -7,6 +7,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.util.EventValidationServices;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;

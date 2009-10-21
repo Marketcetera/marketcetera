@@ -21,7 +21,6 @@ public interface EventBuilder<E extends Event>
      * <p>This method will invoke the object type's validation routine, if any.
      *
      * @return an <code>E</code> value
-     * @throws IllegalArgumentException if the object fails its validation routine
      */
     public E create();
 }

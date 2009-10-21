@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.MarketDataEvent;
+import org.marketcetera.event.util.EventValidationServices;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 

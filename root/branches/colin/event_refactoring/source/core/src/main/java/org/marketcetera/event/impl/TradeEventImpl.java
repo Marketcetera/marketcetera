@@ -3,19 +3,24 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Provides an implementation of {@link TradeEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
+@ClassVersion("$Id$")
 abstract class TradeEventImpl
         implements TradeEvent
 {
@@ -102,13 +107,20 @@ abstract class TradeEventImpl
     /**
      * Create a new TradeEventImpl instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
-     * @param inInstrument
-     * @param inExchange
-     * @param inPrice
-     * @param inSize
-     * @param inTradeTime
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>Date</code> value
+     * @param inInstrument an <code>Equity</code> value
+     * @param inExchange a <code>String</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @param inSize a <code>BigDecimal</code> value
+     * @param inTradeTime a <code>String</code> value
+     * @throws IllegalArgumentException if <code>inMessageId</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inTimestamp</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inInstrument</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inPrice</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inSize</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExchange</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExchangeTimestamp</code> is <code>null</code>
      */
     protected TradeEventImpl(long inMessageId,
                              Date inTimestamp,
@@ -125,9 +137,11 @@ abstract class TradeEventImpl
         marketData.setPrice(inPrice);
         marketData.setSize(inSize);
         marketData.setExchangeTimestamp(inTradeTime);
+        marketData.setDefaults();
+        marketData.validate();
     }
     /**
-     * 
+     * market data attributes
      */
     private final MarketDataBean marketData = new MarketDataBean();
     private static final long serialVersionUID = 1L;

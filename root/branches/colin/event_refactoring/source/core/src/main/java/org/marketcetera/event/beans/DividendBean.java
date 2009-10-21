@@ -8,6 +8,7 @@ import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.util.DividendFrequency;
 import org.marketcetera.event.util.DividendStatus;
 import org.marketcetera.event.util.DividendType;
+import org.marketcetera.event.util.EventValidationServices;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 

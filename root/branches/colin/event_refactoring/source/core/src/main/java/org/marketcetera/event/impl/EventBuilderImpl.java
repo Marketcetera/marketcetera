@@ -1,41 +1,46 @@
 package org.marketcetera.event.impl;
 
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicLong;
+
+import javax.annotation.concurrent.ThreadSafe;
+
+import org.marketcetera.event.Event;
+import org.marketcetera.event.beans.EventBean;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Provides event builder utilities for subclasses of {@link Event}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public abstract class EventBuilderImpl
+@ThreadSafe
+@ClassVersion("$Id$")
+abstract class EventBuilderImpl
 {
     /**
-     * 
+     * Sets the message id to use with the new event. 
      *
-     *
-     * @param inMessageId
-     * @return
+     * @param inMessageId a <code>long</code> value
+     * @return an <code>EventBuilderImpl</code> value
      */
     public EventBuilderImpl withMessageId(long inMessageId)
     {
-        messageId = inMessageId;
+        event.setMessageId(inMessageId);
         return this;
     }
     /**
-     * 
+     * Sets the timestamp value to use with the new event.
      *
-     *
-     * @param inTimestamp
-     * @return
+     * @param inTimestamp a <code>Date</code> value
+     * @return an <code>EventBuilderImpl</code> value
      */
     public EventBuilderImpl withTimestamp(Date inTimestamp)
     {
-        timestamp = inTimestamp;
+        event.setTimestamp(inTimestamp);
         return this;
     }
     /**
@@ -45,7 +50,7 @@ public abstract class EventBuilderImpl
      */
     protected final long getMessageId()
     {
-        return messageId;
+        return event.getMessageId();
     }
     /**
      * Get the timestamp value.
@@ -54,39 +59,10 @@ public abstract class EventBuilderImpl
      */
     protected final Date getTimestamp()
     {
-        return timestamp;
+        return event.getTimestamp();
     }
     /**
-     * 
-     *
-     *
+     * the event attributes
      */
-    protected void setDefaults()
-    {
-        if(messageId == -1) {
-            messageId = assignMessageId();
-        }
-        if(timestamp == null) {
-            timestamp = new Date();
-        }
-    }
-    /**
-     * 
-     *
-     *
-     * @return
-     */
-    private long assignMessageId()
-    {
-        return counter.incrementAndGet();
-    }
-    /**
-     * 
-     */
-    private long messageId = -1;
-    /**
-     * 
-     */
-    private Date timestamp = null;
-    private static final AtomicLong counter = new AtomicLong(0);
+    private final EventBean event = new EventBean();
 }

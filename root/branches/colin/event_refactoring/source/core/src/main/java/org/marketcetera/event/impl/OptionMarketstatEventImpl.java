@@ -3,22 +3,29 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.marketcetera.event.HasOption;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Provides an Option representation of {@link MarketstatEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
+@ClassVersion("$Id$")
 class OptionMarketstatEventImpl
         extends MarketstatEventImpl
         implements HasOption, OptionEvent
@@ -77,7 +84,7 @@ class OptionMarketstatEventImpl
     @Override
     public Option getOption()
     {
-        return option.getOption();
+        return option.getInstrument();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasUnderlyingEquity#getUnderlyingEquity()
@@ -90,34 +97,43 @@ class OptionMarketstatEventImpl
     /**
      * Create a new OptionMarketstatEventImpl instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
-     * @param inInstrument
-     * @param inOpenPrice
-     * @param inHighPrice
-     * @param inLowPrice
-     * @param inClosePrice
-     * @param inPreviousClosePrice
-     * @param inCloseDate
-     * @param inPreviousCloseDate
-     * @param inTradeHighTime
-     * @param inTradeLowTime
-     * @param inOpenExchange
-     * @param inHighExchange
-     * @param inLowExchange
-     * @param inCloseExchange
-     * @param inUnderlyingEquity
-     * @param inStrike
-     * @param inOptionType
-     * @param inExpiry
-     * @param inHasDeliverable
-     * @param inMultiplier
-     * @param inExpirationType
-     * @throws EventValidationException 
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>Date</code> value
+     * @param inOption an <code>Instrument</code> value
+     * @param inOpenPrice a <code>BigDecimal</code> value
+     * @param inHighPrice a <code>BigDecimal</code> value
+     * @param inLowPrice a <code>BigDecimal</code> value
+     * @param inClosePrice a <code>BigDecimal</code> value
+     * @param inPreviousClosePrice a <code>BigDecimal</code> value
+     * @param inCloseDate a <code>String</code> value
+     * @param inPreviousCloseDate a <code>String</code> value
+     * @param inTradeHighTime a <code>String</code> value
+     * @param inTradeLowTime a <code>String</code> value
+     * @param inOpenExchange a <code>String</code> value
+     * @param inHighExchange a <code>String</code> value
+     * @param inLowExchange a <code>String</code> value
+     * @param inCloseExchange a <code>String</code> value
+     * @param inUnderlyingEquity an <code>Equity</code> value
+     * @param inStrike a <code>BigDecimal</code> value
+     * @param inOptionType an <code>OptionType</code> value
+     * @param inExpiry a <code>String</code> value
+     * @param inHasDeliverable a <code>boolean</code> value
+     * @param inMultiplier an <code>int</code> value
+     * @param inExpirationType an <code>ExpirationType</code> value
+     * @param inAction a <code>QuoteAction</code> value
+     * @throws IllegalArgumentException if <code>inMessageId</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inTimestamp</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inInstrument</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inUnderlyingEquity</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExpiry</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inStrike</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inOptionType</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExpirationType</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inQuoteAction</code> is <code>null</code>
      */
     OptionMarketstatEventImpl(long inMessageId,
                               Date inTimestamp,
-                              Option inInstrument,
+                              Option inOption,
                               BigDecimal inOpenPrice,
                               BigDecimal inHighPrice,
                               BigDecimal inLowPrice,
@@ -141,7 +157,7 @@ class OptionMarketstatEventImpl
     {
         super(inMessageId,
               inTimestamp,
-              (Option)inInstrument,
+              inOption,
               inOpenPrice,
               inHighPrice,
               inLowPrice,
@@ -155,18 +171,19 @@ class OptionMarketstatEventImpl
               inHighExchange,
               inLowExchange,
               inCloseExchange);
-        option = new OptionEventImpl(inInstrument,
-                                     inUnderlyingEquity,
-                                     inStrike,
-                                     inOptionType,
-                                     inExpiry,
-                                     inHasDeliverable,
-                                     inMultiplier,
-                                     inExpirationType);
+        option.setExpirationType(inExpirationType);
+        option.setExpiry(inExpiry);
+        option.setHasDeliverable(inHasDeliverable);
+        option.setInstrument(inOption);
+        option.setMultiplier(inMultiplier);
+        option.setOptionType(inOptionType);
+        option.setStrike(inStrike);
+        option.setUnderlyingEquity(inUnderlyingEquity);
+        option.validate();
     }
     /**
-     * 
+     * the option attributes
      */
-    private final OptionEventImpl option;
+    private final OptionBean option = new OptionBean();
     private static final long serialVersionUID = 1L;
 }
