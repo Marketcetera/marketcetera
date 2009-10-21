@@ -15,7 +15,7 @@ public enum DividendFrequency
     /**
      * once per year
      */
-    ANNUALY,
+    ANNUALLY,
     /**
      * once per month
      */

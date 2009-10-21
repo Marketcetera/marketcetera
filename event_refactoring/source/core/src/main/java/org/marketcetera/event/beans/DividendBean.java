@@ -361,8 +361,8 @@ public final class DividendBean
                 .append(", executionDate=").append(executionDate).append(", frequency=").append(frequency) //$NON-NLS-1$ //$NON-NLS-2$
                 .append(", paymentDate=").append(paymentDate).append(", recordDate=").append(recordDate) //$NON-NLS-1$ //$NON-NLS-2$
                 .append(", status=").append(status).append(", type=").append(type).append(", getMessageId()=") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                .append(getMessageId()).append(", getSource()=").append(getSource()).append(", getTimeMillis()=") //$NON-NLS-1$ //$NON-NLS-2$
-                .append(getTimeMillis()).append(", getTimestamp()=").append(getTimestamp()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getMessageId()).append(", getSource()=").append(getSource()) //$NON-NLS-1$
+                .append(", getTimestamp()=").append(getTimestamp()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**

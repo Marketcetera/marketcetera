@@ -133,6 +133,8 @@ public class EventBean
         final int prime = 31;
         int result = 1;
         result = prime * result + (int) (messageId ^ (messageId >>> 32));
+        result = prime * result + ((source == null) ? 0 : source.hashCode());
+        result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -149,6 +151,16 @@ public class EventBean
             return false;
         EventBean other = (EventBean) obj;
         if (messageId != other.messageId)
+            return false;
+        if (source == null) {
+            if (other.source != null)
+                return false;
+        } else if (!source.equals(other.source))
+            return false;
+        if (timestamp == null) {
+            if (other.timestamp != null)
+                return false;
+        } else if (!timestamp.equals(other.timestamp))
             return false;
         return true;
     }
