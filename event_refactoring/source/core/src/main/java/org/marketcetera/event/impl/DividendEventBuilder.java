@@ -29,7 +29,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class DividendEventBuilder
-        extends EventBuilderImpl
+        extends AbstractEventBuilderImpl
         implements EventBuilder<DividendEvent>
 {
     /**
@@ -167,6 +167,17 @@ public abstract class DividendEventBuilder
     {
         dividend.setType(inDividendType);
         return this;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DividendEventBuilder [dividend=").append(dividend).append(", getMessageId()=")
+                .append(getMessageId()).append(", getTimestamp()=").append(getTimestamp()).append("]");
+        return builder.toString();
     }
     /**
      * Get the dividend value.

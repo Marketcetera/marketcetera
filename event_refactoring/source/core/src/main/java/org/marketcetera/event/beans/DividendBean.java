@@ -31,7 +31,7 @@ public final class DividendBean
      *
      * @return a <code>Equity</code> value
      */
-    public final Equity getEquity()
+    public Equity getEquity()
     {
         return equity;
     }
@@ -40,7 +40,7 @@ public final class DividendBean
      *
      * @param a <code>Equity</code> value
      */
-    public final void setEquity(Equity inEquity)
+    public void setEquity(Equity inEquity)
     {
         equity = inEquity;
     }
@@ -49,7 +49,7 @@ public final class DividendBean
      *
      * @return a <code>BigDecimal</code> value
      */
-    public final BigDecimal getAmount()
+    public BigDecimal getAmount()
     {
         return amount;
     }
@@ -58,7 +58,7 @@ public final class DividendBean
      *
      * @param a <code>BigDecimal</code> value
      */
-    public final void setAmount(BigDecimal inAmount)
+    public void setAmount(BigDecimal inAmount)
     {
         amount = inAmount;
     }
@@ -67,7 +67,7 @@ public final class DividendBean
      *
      * @return a <code>String</code> value
      */
-    public final String getCurrency()
+    public String getCurrency()
     {
         return currency;
     }
@@ -76,7 +76,7 @@ public final class DividendBean
      *
      * @param a <code>String</code> value
      */
-    public final void setCurrency(String inCurrency)
+    public void setCurrency(String inCurrency)
     {
         currency = inCurrency;
     }
@@ -85,7 +85,7 @@ public final class DividendBean
      *
      * @return a <code>String</code> value
      */
-    public final String getDeclareDate()
+    public String getDeclareDate()
     {
         return declareDate;
     }
@@ -94,7 +94,7 @@ public final class DividendBean
      *
      * @param a <code>String</code> value
      */
-    public final void setDeclareDate(String inDeclareDate)
+    public void setDeclareDate(String inDeclareDate)
     {
         declareDate = inDeclareDate;
     }
@@ -103,7 +103,7 @@ public final class DividendBean
      *
      * @return a <code>String</code> value
      */
-    public final String getExecutionDate()
+    public String getExecutionDate()
     {
         return executionDate;
     }
@@ -112,7 +112,7 @@ public final class DividendBean
      *
      * @param a <code>String</code> value
      */
-    public final void setExecutionDate(String inExecutionDate)
+    public void setExecutionDate(String inExecutionDate)
     {
         executionDate = inExecutionDate;
     }
@@ -121,7 +121,7 @@ public final class DividendBean
      *
      * @return a <code>String</code> value
      */
-    public final String getPaymentDate()
+    public String getPaymentDate()
     {
         return paymentDate;
     }
@@ -130,7 +130,7 @@ public final class DividendBean
      *
      * @param a <code>String</code> value
      */
-    public final void setPaymentDate(String inPaymentDate)
+    public void setPaymentDate(String inPaymentDate)
     {
         paymentDate = inPaymentDate;
     }
@@ -139,7 +139,7 @@ public final class DividendBean
      *
      * @return a <code>String</code> value
      */
-    public final String getRecordDate()
+    public String getRecordDate()
     {
         return recordDate;
     }
@@ -148,7 +148,7 @@ public final class DividendBean
      *
      * @param a <code>String</code> value
      */
-    public final void setRecordDate(String inRecordDate)
+    public void setRecordDate(String inRecordDate)
     {
         recordDate = inRecordDate;
     }
@@ -157,7 +157,7 @@ public final class DividendBean
      *
      * @return a <code>DividendFrequency</code> value
      */
-    public final DividendFrequency getFrequency()
+    public DividendFrequency getFrequency()
     {
         return frequency;
     }
@@ -166,7 +166,7 @@ public final class DividendBean
      *
      * @param a <code>DividendFrequency</code> value
      */
-    public final void setFrequency(DividendFrequency inFrequency)
+    public void setFrequency(DividendFrequency inFrequency)
     {
         frequency = inFrequency;
     }
@@ -175,7 +175,7 @@ public final class DividendBean
      *
      * @return a <code>DividendStatus</code> value
      */
-    public final DividendStatus getStatus()
+    public DividendStatus getStatus()
     {
         return status;
     }
@@ -184,7 +184,7 @@ public final class DividendBean
      *
      * @param a <code>DividendStatus</code> value
      */
-    public final void setStatus(DividendStatus inStatus)
+    public void setStatus(DividendStatus inStatus)
     {
         status = inStatus;
     }
@@ -193,7 +193,7 @@ public final class DividendBean
      *
      * @return a <code>DividendType</code> value
      */
-    public final DividendType getType()
+    public DividendType getType()
     {
         return type;
     }
@@ -202,7 +202,7 @@ public final class DividendBean
      *
      * @param a <code>DividendType</code> value
      */
-    public final void setType(DividendType inType)
+    public void setType(DividendType inType)
     {
         type = inType;
     }
@@ -213,16 +213,16 @@ public final class DividendBean
      * their attributes and invoke the parent method.
      * @throws IllegalArgumentException if {@link #getTimestamp()} is <code>null</code>
      * @throws IllegalArgumentException if {@link #getMessageId()} &lt; 0
-     * @throws IllegalArgumentException if {@link #equity} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #amount} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #currency} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #declareDate} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #executionDate} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #paymentDate} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #recordDate} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #frequency} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #status} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #type} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getEquity()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getAmount()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getCurrency()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getDeclareDate()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getExecutionDate()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getPaymentDate()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getRecordDate()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getFrequency()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getStatus()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getType()} is <code>null</code>
      */
     @Override
     public void validate()
@@ -263,6 +263,107 @@ public final class DividendBean
         if(type == null) {
             EventValidationServices.error(VALIDATION_NULL_TYPE);
         }
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((amount == null) ? 0 : amount.hashCode());
+        result = prime * result + ((currency == null) ? 0 : currency.hashCode());
+        result = prime * result + ((declareDate == null) ? 0 : declareDate.hashCode());
+        result = prime * result + ((equity == null) ? 0 : equity.hashCode());
+        result = prime * result + ((executionDate == null) ? 0 : executionDate.hashCode());
+        result = prime * result + ((frequency == null) ? 0 : frequency.hashCode());
+        result = prime * result + ((paymentDate == null) ? 0 : paymentDate.hashCode());
+        result = prime * result + ((recordDate == null) ? 0 : recordDate.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DividendBean other = (DividendBean) obj;
+        if (amount == null) {
+            if (other.amount != null)
+                return false;
+        } else if (!amount.equals(other.amount))
+            return false;
+        if (currency == null) {
+            if (other.currency != null)
+                return false;
+        } else if (!currency.equals(other.currency))
+            return false;
+        if (declareDate == null) {
+            if (other.declareDate != null)
+                return false;
+        } else if (!declareDate.equals(other.declareDate))
+            return false;
+        if (equity == null) {
+            if (other.equity != null)
+                return false;
+        } else if (!equity.equals(other.equity))
+            return false;
+        if (executionDate == null) {
+            if (other.executionDate != null)
+                return false;
+        } else if (!executionDate.equals(other.executionDate))
+            return false;
+        if (frequency == null) {
+            if (other.frequency != null)
+                return false;
+        } else if (!frequency.equals(other.frequency))
+            return false;
+        if (paymentDate == null) {
+            if (other.paymentDate != null)
+                return false;
+        } else if (!paymentDate.equals(other.paymentDate))
+            return false;
+        if (recordDate == null) {
+            if (other.recordDate != null)
+                return false;
+        } else if (!recordDate.equals(other.recordDate))
+            return false;
+        if (status == null) {
+            if (other.status != null)
+                return false;
+        } else if (!status.equals(other.status))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        return true;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DividendBean [amount=").append(amount).append(", currency=").append(currency)
+                .append(", declareDate=").append(declareDate).append(", equity=").append(equity)
+                .append(", executionDate=").append(executionDate).append(", frequency=").append(frequency)
+                .append(", paymentDate=").append(paymentDate).append(", recordDate=").append(recordDate)
+                .append(", status=").append(status).append(", type=").append(type).append(", getMessageId()=")
+                .append(getMessageId()).append(", getSource()=").append(getSource()).append(", getTimeMillis()=")
+                .append(getTimeMillis()).append(", getTimestamp()=").append(getTimestamp()).append("]");
+        return builder.toString();
     }
     /**
      * the equity for which the dividend was or will be issued 

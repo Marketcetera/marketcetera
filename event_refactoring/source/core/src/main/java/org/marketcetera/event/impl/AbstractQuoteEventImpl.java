@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-class QuoteEventImpl
+abstract class AbstractQuoteEventImpl
         implements QuoteEvent
 {
     /* (non-Javadoc)
@@ -114,6 +114,34 @@ class QuoteEventImpl
     {
         quote.setSource(inSource);
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public final int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (quote.getMessageId() ^ (quote.getMessageId() >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public final boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AbstractQuoteEventImpl other = (AbstractQuoteEventImpl) obj;
+        if (quote.getMessageId() != other.quote.getMessageId())
+            return false;
+        return true;
+    }
     /**
      * Create a new QuoteEventImpl instance.
      *
@@ -134,7 +162,7 @@ class QuoteEventImpl
      * @throws IllegalArgumentException if <code>inQuoteTime</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>QuoteAction</code> is <code>null</code>
      */
-    QuoteEventImpl(long inMessageId,
+    AbstractQuoteEventImpl(long inMessageId,
                    Date inTimestamp,
                    Instrument inInstrument,
                    String inExchange,

@@ -155,6 +155,44 @@ final class DividendEventImpl
     {
         return dividend.getType();
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (dividend.getMessageId() ^ (dividend.getMessageId() >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DividendEventImpl other = (DividendEventImpl) obj;
+        if (dividend.getMessageId() != other.dividend.getMessageId())
+            return false;
+        return true;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DividendEventImpl [dividend=").append(dividend).append("]");
+        return builder.toString();
+    }
     /**
      * Create a new DividendEventImpl instance.
      *

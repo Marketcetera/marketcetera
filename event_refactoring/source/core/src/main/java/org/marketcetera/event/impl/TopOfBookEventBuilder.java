@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class TopOfBookEventBuilder
-        extends EventBuilderImpl
+        extends AbstractEventBuilderImpl
         implements EventBuilder<TopOfBookEvent>
 {
     /**

@@ -202,6 +202,86 @@ public final class OptionBean
             EventValidationServices.error(VALIDATION_NULL_EXPIRATION_TYPE);
         }
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((expirationType == null) ? 0 : expirationType.hashCode());
+        result = prime * result + ((expiry == null) ? 0 : expiry.hashCode());
+        result = prime * result + (hasDeliverable ? 1231 : 1237);
+        result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
+        result = prime * result + multiplier;
+        result = prime * result + ((optionType == null) ? 0 : optionType.hashCode());
+        result = prime * result + ((strike == null) ? 0 : strike.hashCode());
+        result = prime * result + ((underlyingEquity == null) ? 0 : underlyingEquity.hashCode());
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        OptionBean other = (OptionBean) obj;
+        if (expirationType == null) {
+            if (other.expirationType != null)
+                return false;
+        } else if (!expirationType.equals(other.expirationType))
+            return false;
+        if (expiry == null) {
+            if (other.expiry != null)
+                return false;
+        } else if (!expiry.equals(other.expiry))
+            return false;
+        if (hasDeliverable != other.hasDeliverable)
+            return false;
+        if (instrument == null) {
+            if (other.instrument != null)
+                return false;
+        } else if (!instrument.equals(other.instrument))
+            return false;
+        if (multiplier != other.multiplier)
+            return false;
+        if (optionType == null) {
+            if (other.optionType != null)
+                return false;
+        } else if (!optionType.equals(other.optionType))
+            return false;
+        if (strike == null) {
+            if (other.strike != null)
+                return false;
+        } else if (!strike.equals(other.strike))
+            return false;
+        if (underlyingEquity == null) {
+            if (other.underlyingEquity != null)
+                return false;
+        } else if (!underlyingEquity.equals(other.underlyingEquity))
+            return false;
+        return true;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("OptionBean [expirationType=").append(expirationType).append(", expiry=").append(expiry)
+                .append(", hasDeliverable=").append(hasDeliverable).append(", instrument=").append(instrument)
+                .append(", multiplier=").append(multiplier).append(", optionType=").append(optionType)
+                .append(", strike=").append(strike).append(", underlyingEquity=").append(underlyingEquity).append("]");
+        return builder.toString();
+    }
     /**
      * the underlying equity for the option
      */

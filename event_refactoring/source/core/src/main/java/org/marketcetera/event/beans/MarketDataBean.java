@@ -120,11 +120,11 @@ public class MarketDataBean
      * their attributes and invoke the parent method.
      * @throws IllegalArgumentException if {@link #getTimestamp()} is <code>null</code>
      * @throws IllegalArgumentException if {@link #getMessageId()} &lt; 0
-     * @throws IllegalArgumentException if {@link #instrument} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #price} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #size} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #exchange} is <code>null</code>
-     * @throws IllegalArgumentException if {@link #exchangeTimestamp} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getInstrument()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getPrice()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getSize()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getExchange()} is <code>null</code>
+     * @throws IllegalArgumentException if {@link #getExchangeTimestamp()} is <code>null</code>
      */
     @Override
     public void validate()
@@ -143,6 +143,75 @@ public class MarketDataBean
         if(exchangeTimestamp == null) {
             EventValidationServices.error(VALIDATION_NULL_EXCHANGE_TIMESTAMP);
         }
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((exchange == null) ? 0 : exchange.hashCode());
+        result = prime * result + ((exchangeTimestamp == null) ? 0 : exchangeTimestamp.hashCode());
+        result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
+        result = prime * result + ((price == null) ? 0 : price.hashCode());
+        result = prime * result + ((size == null) ? 0 : size.hashCode());
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MarketDataBean [exchange=").append(exchange).append(", exchangeTimestamp=")
+                .append(exchangeTimestamp).append(", instrument=").append(instrument).append(", price=").append(price)
+                .append(", size=").append(size).append(", getMessageId()=").append(getMessageId())
+                .append(", getSource()=").append(getSource()).append(", getTimestamp()=").append(getTimestamp())
+                .append("]");
+        return builder.toString();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MarketDataBean other = (MarketDataBean) obj;
+        if (exchange == null) {
+            if (other.exchange != null)
+                return false;
+        } else if (!exchange.equals(other.exchange))
+            return false;
+        if (exchangeTimestamp == null) {
+            if (other.exchangeTimestamp != null)
+                return false;
+        } else if (!exchangeTimestamp.equals(other.exchangeTimestamp))
+            return false;
+        if (instrument == null) {
+            if (other.instrument != null)
+                return false;
+        } else if (!instrument.equals(other.instrument))
+            return false;
+        if (price == null) {
+            if (other.price != null)
+                return false;
+        } else if (!price.equals(other.price))
+            return false;
+        if (size == null) {
+            if (other.size != null)
+                return false;
+        } else if (!size.equals(other.size))
+            return false;
+        return true;
     }
     /**
      * the market data price

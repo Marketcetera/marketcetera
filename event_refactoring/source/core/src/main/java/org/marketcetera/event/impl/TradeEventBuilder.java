@@ -32,7 +32,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class TradeEventBuilder
-        extends EventBuilderImpl
+        extends AbstractEventBuilderImpl
         implements EventBuilder<TradeEvent>
 {
     /**
@@ -249,6 +249,18 @@ public abstract class TradeEventBuilder
     {
         option.setHasDeliverable(inHasDeliverable);
         return this;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TradeEventBuilder [marketData=").append(marketData).append(", option=").append(option)
+                .append(", getMessageId()=").append(getMessageId()).append(", getTimestamp()=").append(getTimestamp())
+                .append("]");
+        return builder.toString();
     }
     /**
      * Get the marketData value.

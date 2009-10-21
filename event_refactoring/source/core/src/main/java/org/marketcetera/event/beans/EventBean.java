@@ -124,6 +124,45 @@ public class EventBean
             timestamp = new Date();
         }
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (messageId ^ (messageId >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        EventBean other = (EventBean) obj;
+        if (messageId != other.messageId)
+            return false;
+        return true;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("EventBean [messageId=").append(messageId).append(", source=").append(source)
+                .append(", timestamp=").append(timestamp).append("]");
+        return builder.toString();
+    }
     /**
      * the event messageId
      */

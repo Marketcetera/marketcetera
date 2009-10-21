@@ -1,6 +1,7 @@
 package org.marketcetera.event.impl;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -35,7 +36,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class LogEventBuilder
-        extends EventBuilderImpl
+        extends AbstractEventBuilderImpl
         implements EventBuilder<LogEvent>
 {
     /**
@@ -338,6 +339,18 @@ public abstract class LogEventBuilder
         message = inMessage;
         setParameters(inParameters);
         return this;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("LogEventBuilder [exception=").append(exception).append(", message=").append(message)
+                .append(", parameters=").append(Arrays.toString(parameters)).append(", getMessageId()=")
+                .append(getMessageId()).append(", getTimestamp()=").append(getTimestamp()).append("]");
+        return builder.toString();
     }
     /**
      * Get the exception value.

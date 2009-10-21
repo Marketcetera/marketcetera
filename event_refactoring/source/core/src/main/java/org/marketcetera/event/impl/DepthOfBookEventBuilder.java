@@ -30,7 +30,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class DepthOfBookEventBuilder
-        extends EventBuilderImpl
+        extends AbstractEventBuilderImpl
         implements EventBuilder<DepthOfBookEvent>
 {
     /**
@@ -110,6 +110,18 @@ public abstract class DepthOfBookEventBuilder
     {
         super.withTimestamp(inTimestamp);
         return this;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DepthOfBookEventBuilder [asks=").append(asks).append(", bids=").append(bids)
+                .append(", instrument=").append(instrument).append(", getMessageId()=").append(getMessageId())
+                .append(", getTimestamp()=").append(getTimestamp()).append("]");
+        return builder.toString();
     }
     /**
      * Get the instrument value.

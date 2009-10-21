@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -114,6 +115,47 @@ class LogEventImpl
     public long getTimeMillis()
     {
         return event.getTimeMillis();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (event.getMessageId() ^ (event.getMessageId() >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LogEventImpl other = (LogEventImpl) obj;
+        if (event.getMessageId() != other.event.getMessageId())
+            return false;
+        return true;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("LogEvent [boundMessage=").append(boundMessage).append(", event=").append(event)
+                .append(", exception=").append(exception).append(", exceptionInfo=").append(exceptionInfo)
+                .append(", level=").append(level).append(", message=").append(message).append(", parameters=")
+                .append(Arrays.toString(parameters)).append(", serialized=").append(serialized).append("]");
+        return builder.toString();
     }
     /**
      * Create a new LogEventImpl instance.

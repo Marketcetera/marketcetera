@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ThreadSafe
 @ClassVersion("$Id$")
 final class EquityTradeEventImpl
-        extends TradeEventImpl
+        extends AbstractTradeEventImpl
         implements EquityEvent
 {
     /* (non-Javadoc)
@@ -32,6 +32,20 @@ final class EquityTradeEventImpl
     public Equity getEquity()
     {
         return (Equity)getInstrument();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("EquityTradeEvent [getExchange()=").append(getExchange())
+                .append(", getExchangeTimestamp()=").append(getExchangeTimestamp()).append(", getInstrument()=")
+                .append(getInstrument()).append(", getMessageId()=").append(getMessageId()).append(", getPrice()=")
+                .append(getPrice()).append(", getSize()=").append(getSize()).append(", getSource()=")
+                .append(getSource()).append(", getTimestamp()=").append(getTimestamp()).append("]");
+        return builder.toString();
     }
     /**
      * Create a new EquityTradeEventImpl instance.
