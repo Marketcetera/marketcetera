@@ -80,7 +80,7 @@ public final class InstrumentBean
         if (instrument == null) {
             if (other.instrument != null)
                 return false;
-        } else if (!instrument.getSymbol().equals(other.instrument.getSymbol()))
+        } else if (!instrument.equals(other.instrument))
             return false;
         return true;
     }

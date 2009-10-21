@@ -96,17 +96,17 @@ public class EventBean
      *
      * <p>Subclasses should override this method to validate
      *  their attributes as necessary and invoke the parent method.
-     * @throws IllegalArgumentException if {@link #timestamp} is <code>null</code>
      * @throws IllegalArgumentException if {@link #messageId} &lt; 0
+     * @throws IllegalArgumentException if {@link #timestamp} is <code>null</code>
      */
     public void validate()
     {
-        if(timestamp == null) {
-            EventValidationServices.error(VALIDATION_NULL_TIMESTAMP);
-        }
         if(messageId < 0) {
             EventValidationServices.error(new I18NBoundMessage1P(VALIDATION_INVALID_MESSAGEID,
                                                                  messageId));
+        }
+        if(timestamp == null) {
+            EventValidationServices.error(VALIDATION_NULL_TIMESTAMP);
         }
     }
     /**
