@@ -3,22 +3,28 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Provides an Option implementation of {@link TradeEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
+@ClassVersion("$Id$")
 final class OptionTradeEventImpl
         extends TradeEventImpl
         implements OptionEvent
@@ -72,14 +78,6 @@ final class OptionTradeEventImpl
         return option.hasDeliverable();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.HasOption#getOption()
-     */
-    @Override
-    public Option getOption()
-    {
-        return option.getInstrument();
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.event.HasUnderlyingEquity#getUnderlyingEquity()
      */
     @Override
@@ -87,23 +85,36 @@ final class OptionTradeEventImpl
     {
         return option.getUnderlyingEquity();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.HasOption#getOption()
+     */
+    @Override
+    public Option getOption()
+    {
+        return (Option)getInstrument();
+    }
     /**
-     * Create a new OptionAskEventImpl instance.
+     * Create a new OptionTradeEventImpl instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
-     * @param inOption
-     * @param inExchange
-     * @param inPrice
-     * @param inSize
-     * @param inTradeTime
-     * @param inUnderlyingEquity
-     * @param inStrike
-     * @param inOptionType
-     * @param inExpiry
-     * @param inHasDeliverable
-     * @param inMultiplier
-     * @param inExpirationType
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>Date</code> value
+     * @param inInstrument an <code>Option</code> value
+     * @param inExchange a <code>String</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @param inSize a <code>BigDecimal</code> value
+     * @param inTradeTime a <code>String</code> value
+     * @throws IllegalArgumentException if <code>inMessageId</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inTimestamp</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inOption</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExchange</code> is <code>null</code> or empty
+     * @throws IllegalArgumentException if <code>inPrice</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inSize</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inTradeTime</code> is <code>null</code> or empty
+     * @throws IllegalArgumentException if <code>inUnderlyingEquity</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inStrike</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inOptionType</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExpiry</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>inExpirationType</code> is <code>null</code>
      */
     OptionTradeEventImpl(long inMessageId,
                          Date inTimestamp,
@@ -127,9 +138,18 @@ final class OptionTradeEventImpl
               inPrice,
               inSize,
               inTradeTime);
+        option.setInstrument(inOption);
+        option.setUnderlyingEquity(inUnderlyingEquity);
+        option.setStrike(inStrike);
+        option.setOptionType(inOptionType);
+        option.setExpiry(inExpiry);
+        option.setHasDeliverable(inHasDeliverable);
+        option.setMultiplier(inMultiplier);
+        option.setExpirationType(inExpirationType);
+        option.validate();
     }
     /**
-     * option attributes
+     * the option attributes 
      */
     private final OptionBean option = new OptionBean();
     private static final long serialVersionUID = 1L;

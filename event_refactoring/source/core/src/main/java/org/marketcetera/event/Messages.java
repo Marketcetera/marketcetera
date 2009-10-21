@@ -87,4 +87,6 @@ public interface Messages
                                                                                    "validation_null_expiration_type"); //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_NULL_QUOTE_ACTION = new I18NMessage0P(LOGGER,
                                                                                 "validation_null_quote_action"); //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_NULL_LOG_LEVEL = new I18NMessage0P(LOGGER,
+                                                                             "validation_null_log_level"); //$NON-NLS-1$
 }

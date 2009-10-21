@@ -612,17 +612,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     {
         return option;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.AbstractEventBuilder#setDefaults()
-     */
-    @Override
-    protected final void setDefaults()
-    {
-        super.setDefaults();
-        if(quote.getAction() == null) {
-            quote.setAction(QuoteAction.ADD);
-        }
-    }
     /**
      * the quote attributes
      */

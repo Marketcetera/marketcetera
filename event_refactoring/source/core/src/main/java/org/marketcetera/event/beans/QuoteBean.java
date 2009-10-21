@@ -3,6 +3,7 @@ package org.marketcetera.event.beans;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.util.EventValidationServices;
 import org.marketcetera.event.util.QuoteAction;
 import org.marketcetera.util.misc.ClassVersion;
 

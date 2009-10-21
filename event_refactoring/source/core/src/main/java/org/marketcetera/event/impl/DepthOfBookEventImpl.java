@@ -5,57 +5,36 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DepthOfBookEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.InstrumentBean;
 import org.marketcetera.event.util.PriceAndSizeComparator;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.OrderBook;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Implements {@link DepthOfBookEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
+@ClassVersion("$Id$")
 class DepthOfBookEventImpl
         implements DepthOfBookEvent
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.DepthOfBookEvent#getAsks()
-     */
-    @Override
-    public List<AskEvent> getAsks()
-    {
-        return Collections.unmodifiableList(asks);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.DepthOfBookEvent#getBids()
-     */
-    @Override
-    public List<BidEvent> getBids()
-    {
-        return Collections.unmodifiableList(bids);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.AggregateEvent#decompose()
-     */
-    @Override
-    public List<Event> decompose()
-    {
-        List<Event> events = new ArrayList<Event>();
-        events.addAll(bids);
-        events.addAll(asks);
-        return Collections.unmodifiableList(events);
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getMessageId()
      */
@@ -97,38 +76,39 @@ class DepthOfBookEventImpl
         return event.getTimeMillis();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.DepthOfBookEvent#getAsks()
+     */
+    @Override
+    public List<AskEvent> getAsks()
+    {
+        return Collections.unmodifiableList(asks);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.DepthOfBookEvent#getBids()
+     */
+    @Override
+    public List<BidEvent> getBids()
+    {
+        return Collections.unmodifiableList(bids);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.AggregateEvent#decompose()
+     */
+    @Override
+    public List<Event> decompose()
+    {
+        List<Event> events = new ArrayList<Event>();
+        events.addAll(bids);
+        events.addAll(asks);
+        return Collections.unmodifiableList(events);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.event.HasInstrument#getInstrument()
      */
     @Override
     public Instrument getInstrument()
     {
         return instrument.getInstrument();
-    }
-    /**
-     * Create a new DepthOfBookEventImpl instance.
-     *
-     * @param inMessageId
-     * @param inTimestamp
-     * @param inBids
-     * @param inAsks
-     * @param inInstrument
-     * @throws EventValidationException
-     */
-    DepthOfBookEventImpl(long inMessageId,
-                         Date inTimestamp,
-                         List<BidEvent> inBids,
-                         List<AskEvent> inAsks,
-                         Instrument inInstrument)
-    {
-        instrument.setInstrument(inInstrument);
-        event = new EventImpl(inMessageId,
-                              inTimestamp);
-        validateList(inBids,
-                     inInstrument);
-        bids.addAll(inBids);
-        validateList(inAsks,
-                     inInstrument);
-        asks.addAll(inAsks);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.DepthOfBookEvent#equivalent(org.marketcetera.event.DepthOfBookEvent)
@@ -164,8 +144,39 @@ class DepthOfBookEventImpl
         return output.toString();
     }
     /**
-     * Validates the contents of the given list.
+     * Create a new DepthOfBookEventImpl instance.
      *
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>Date</code> value
+     * @param inBids a <code>List&lt;BidEvent&gt;</code> value
+     * @param inAsks a <code>List&lt;AskEvent&lt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @throws IllegalArgumentException if <code>inMessageId</code> &lt; 0
+     * @throws IllegalArgumentException if <code>inTimestamp</code> is <code>null</code>
+     * @throws IllegalArgumentException if an entry in the list is for a different instrument than the one given
+     * @throws NullPointerException if either list or any entry in the lists is null
+     */
+    DepthOfBookEventImpl(long inMessageId,
+                         Date inTimestamp,
+                         List<BidEvent> inBids,
+                         List<AskEvent> inAsks,
+                         Instrument inInstrument)
+    {
+        event.setMessageId(inMessageId);
+        event.setTimestamp(inTimestamp);
+        event.setDefaults();
+        event.validate();
+        instrument.setInstrument(inInstrument);
+        instrument.validate();
+        validateList(inBids,
+                     inInstrument);
+        bids.addAll(inBids);
+        validateList(inAsks,
+                     inInstrument);
+        asks.addAll(inAsks);
+    }
+    /**
+     * Validates the contents of the given list.
      *
      * @param inQuotes a <code>List&lt;? extends QuoteEvent&gt;</code> value
      * @param inInstrument an <code>Instrument</code> value
@@ -193,7 +204,7 @@ class DepthOfBookEventImpl
      * @return a <code>boolean</code> value
      */
     private static <I extends Instrument,T extends QuoteEvent> boolean compareList(List<T> inQuotes1,
-                                                                                      List<T> inQuotes2)
+                                                                                   List<T> inQuotes2)
     {
         if(inQuotes1.size() != inQuotes2.size()) {
             return false;
@@ -209,13 +220,13 @@ class DepthOfBookEventImpl
         return true;
     }
     /**
-     * 
-     */
-    private final EventImpl event;
-    /**
-     * 
+     * the instrument attribute 
      */
     private final InstrumentBean instrument = new InstrumentBean();
+    /**
+     * the event attributes
+     */
+    private final EventBean event = new EventBean();
     /**
      * the bid side of the book
      */

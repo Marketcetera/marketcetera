@@ -8,6 +8,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.Event;
 import org.marketcetera.event.Messages;
+import org.marketcetera.event.util.EventValidationServices;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
