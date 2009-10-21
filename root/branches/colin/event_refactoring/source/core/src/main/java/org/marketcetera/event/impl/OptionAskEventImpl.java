@@ -27,7 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ThreadSafe
 @ClassVersion("$Id$")
 class OptionAskEventImpl
-        extends QuoteEventImpl
+        extends AbstractQuoteEventImpl
         implements AskEvent, OptionEvent
 {
     /* (non-Javadoc)
@@ -93,6 +93,21 @@ class OptionAskEventImpl
     public Option getOption()
     {
         return (Option)getInstrument();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("OptionAskEvent [option=").append(option).append(", getAction()=").append(getAction())
+                .append(", getExchange()=").append(getExchange()).append(", getExchangeTimestamp()=")
+                .append(getExchangeTimestamp()).append(", getInstrument()=").append(getInstrument())
+                .append(", getMessageId()=").append(getMessageId()).append(", getPrice()=").append(getPrice())
+                .append(", getSize()=").append(getSize()).append(", getSource()=").append(getSource())
+                .append(", getTimestamp()=").append(getTimestamp()).append("]");
+        return builder.toString();
     }
     /**
      * Create a new OptionAskEventImpl instance.

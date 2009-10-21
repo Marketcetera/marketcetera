@@ -37,7 +37,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class QuoteEventBuilder<E extends QuoteEvent>
-        extends EventBuilderImpl
+        extends AbstractEventBuilderImpl
         implements EventBuilder<E>
 {
     /**
@@ -593,6 +593,18 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     {
         option.setHasDeliverable(inHasDeliverable);
         return this;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("QuoteEventBuilder [option=").append(option).append(", quote=").append(quote)
+                .append(", getMessageId()=").append(getMessageId()).append(", getTimestamp()=").append(getTimestamp())
+                .append("]");
+        return builder.toString();
     }
     /**
      * Get the quote value.

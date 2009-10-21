@@ -19,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-abstract class EventBuilderImpl
+abstract class AbstractEventBuilderImpl
 {
     /**
      * Sets the message id to use with the new event. 
@@ -27,7 +27,7 @@ abstract class EventBuilderImpl
      * @param inMessageId a <code>long</code> value
      * @return an <code>EventBuilderImpl</code> value
      */
-    public EventBuilderImpl withMessageId(long inMessageId)
+    public AbstractEventBuilderImpl withMessageId(long inMessageId)
     {
         event.setMessageId(inMessageId);
         return this;
@@ -38,7 +38,7 @@ abstract class EventBuilderImpl
      * @param inTimestamp a <code>Date</code> value
      * @return an <code>EventBuilderImpl</code> value
      */
-    public EventBuilderImpl withTimestamp(Date inTimestamp)
+    public AbstractEventBuilderImpl withTimestamp(Date inTimestamp)
     {
         event.setTimestamp(inTimestamp);
         return this;

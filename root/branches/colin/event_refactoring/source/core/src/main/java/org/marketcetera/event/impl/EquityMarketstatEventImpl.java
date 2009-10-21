@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ThreadSafe
 @ClassVersion("$Id$")
 class EquityMarketstatEventImpl
-        extends MarketstatEventImpl
+        extends AbstractMarketstatEventImpl
         implements HasEquity
 {
     /* (non-Javadoc)
@@ -31,6 +31,26 @@ class EquityMarketstatEventImpl
     public Equity getEquity()
     {
         return (Equity)getInstrument();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("EquityMarketstatEventImpl [getClose()=").append(getClose()).append(", getCloseDate()=")
+                .append(getCloseDate()).append(", getCloseExchange()=").append(getCloseExchange())
+                .append(", getHigh()=").append(getHigh()).append(", getHighExchange()=").append(getHighExchange())
+                .append(", getInstrument()=").append(getInstrument()).append(", getLow()=").append(getLow())
+                .append(", getLowExchange()=").append(getLowExchange()).append(", getMessageId()=")
+                .append(getMessageId()).append(", getOpen()=").append(getOpen()).append(", getOpenExchange()=")
+                .append(getOpenExchange()).append(", getPreviousClose()=").append(getPreviousClose())
+                .append(", getPreviousCloseDate()=").append(getPreviousCloseDate()).append(", getSource()=")
+                .append(getSource()).append(", getTimestamp()=").append(getTimestamp()).append(", getTradeHighTime()=")
+                .append(getTradeHighTime()).append(", getTradeLowTime()=").append(getTradeLowTime())
+                .append(", getVolume()=").append(getVolume()).append("]");
+        return builder.toString();
     }
     /**
      * Create a new EquityMarketstatEventImpl instance.

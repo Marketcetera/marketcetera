@@ -70,6 +70,52 @@ public final class QuoteBean
         super.setDefaults();
         action = QuoteAction.ADD;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((action == null) ? 0 : action.hashCode());
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        QuoteBean other = (QuoteBean) obj;
+        if (action == null) {
+            if (other.action != null)
+                return false;
+        } else if (!action.equals(other.action))
+            return false;
+        return true;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("QuoteBean [action=").append(action).append(", getExchange()=").append(getExchange())
+                .append(", getExchangeTimestamp()=").append(getExchangeTimestamp()).append(", getInstrument()=")
+                .append(getInstrument()).append(", getPrice()=").append(getPrice()).append(", getSize()=")
+                .append(getSize()).append(", toString()=").append(super.toString()).append(", getMessageId()=")
+                .append(getMessageId()).append(", getSource()=").append(getSource()).append(", getTimestamp()=")
+                .append(getTimestamp()).append("]");
+        return builder.toString();
+    }
     /**
      * the action of the quote
      */

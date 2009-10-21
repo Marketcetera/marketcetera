@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-abstract class TradeEventImpl
+abstract class AbstractTradeEventImpl
         implements TradeEvent
 {
     /* (non-Javadoc)
@@ -104,6 +104,34 @@ abstract class TradeEventImpl
     {
         return marketData.getInstrument();
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public final int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (marketData.getMessageId() ^ (marketData.getMessageId() >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public final boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AbstractTradeEventImpl other = (AbstractTradeEventImpl) obj;
+        if (marketData.getMessageId() != other.marketData.getMessageId())
+            return false;
+        return true;
+    }
     /**
      * Create a new TradeEventImpl instance.
      *
@@ -122,7 +150,7 @@ abstract class TradeEventImpl
      * @throws IllegalArgumentException if <code>inExchange</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>inExchangeTimestamp</code> is <code>null</code>
      */
-    protected TradeEventImpl(long inMessageId,
+    protected AbstractTradeEventImpl(long inMessageId,
                              Date inTimestamp,
                              Instrument inInstrument,
                              String inExchange,

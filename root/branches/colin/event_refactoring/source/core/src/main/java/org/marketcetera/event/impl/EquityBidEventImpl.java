@@ -23,7 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ThreadSafe
 @ClassVersion("$Id$")
 class EquityBidEventImpl
-        extends QuoteEventImpl
+        extends AbstractQuoteEventImpl
         implements BidEvent, EquityEvent
 {
     /* (non-Javadoc)
@@ -33,6 +33,21 @@ class EquityBidEventImpl
     public Equity getEquity()
     {
         return (Equity)getInstrument();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("EquityBidEventImpl [getAction()=").append(getAction()).append(", getExchange()=")
+                .append(getExchange()).append(", getExchangeTimestamp()=").append(getExchangeTimestamp())
+                .append(", getInstrument()=").append(getInstrument()).append(", getMessageId()=")
+                .append(getMessageId()).append(", getPrice()=").append(getPrice()).append(", getSize()=")
+                .append(getSize()).append(", getSource()=").append(getSource()).append(", getTimestamp()=")
+                .append(getTimestamp()).append("]");
+        return builder.toString();
     }
     /**
      * Create a new EquityBidEventImpl instance.

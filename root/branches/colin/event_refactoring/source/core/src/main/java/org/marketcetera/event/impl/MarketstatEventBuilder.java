@@ -32,7 +32,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class MarketstatEventBuilder
-        extends EventBuilderImpl
+        extends AbstractEventBuilderImpl
         implements EventBuilder<MarketstatEvent>
 {
     /**
@@ -362,6 +362,18 @@ public abstract class MarketstatEventBuilder
     {
         option.setHasDeliverable(inHasDeliverable);
         return this;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MarketstatEventBuilder [marketstat=").append(marketstat).append(", option=").append(option)
+                .append(", getMessageId()=").append(getMessageId()).append(", getTimestamp()=").append(getTimestamp())
+                .append("]");
+        return builder.toString();
     }
     /**
      * Get the marketstat value.

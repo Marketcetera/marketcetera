@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-abstract class MarketstatEventImpl
+abstract class AbstractMarketstatEventImpl
         implements MarketstatEvent
 {
     /* (non-Javadoc)
@@ -184,6 +184,34 @@ abstract class MarketstatEventImpl
     {
         return marketstat.getTimeMillis();
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public final int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (marketstat.getMessageId() ^ (marketstat.getMessageId() >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public final boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AbstractMarketstatEventImpl other = (AbstractMarketstatEventImpl) obj;
+        if (marketstat.getMessageId() != other.marketstat.getMessageId())
+            return false;
+        return true;
+    }
     /**
      * Create a new EquityMarketstatEventImpl instance.
      *
@@ -207,7 +235,7 @@ abstract class MarketstatEventImpl
      * @throws IllegalArgumentException if <code>inTimestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>inInstrument</code> is <code>null</code>
      */
-    protected MarketstatEventImpl(long inMessageId,
+    protected AbstractMarketstatEventImpl(long inMessageId,
                                   Date inTimestamp,
                                   Instrument inInstrument,
                                   BigDecimal inOpenPrice,

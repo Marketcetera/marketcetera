@@ -143,6 +143,34 @@ class DepthOfBookEventImpl
                                           true));
         return output.toString();
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (event.getMessageId() ^ (event.getMessageId() >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DepthOfBookEventImpl other = (DepthOfBookEventImpl) obj;
+        if (event.getMessageId() != other.event.getMessageId())
+            return false;
+        return true;
+    }
     /**
      * Create a new DepthOfBookEventImpl instance.
      *
