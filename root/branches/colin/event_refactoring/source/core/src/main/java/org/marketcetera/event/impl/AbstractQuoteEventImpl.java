@@ -163,13 +163,13 @@ abstract class AbstractQuoteEventImpl
      * @throws IllegalArgumentException if <code>QuoteAction</code> is <code>null</code>
      */
     AbstractQuoteEventImpl(long inMessageId,
-                   Date inTimestamp,
-                   Instrument inInstrument,
-                   String inExchange,
-                   BigDecimal inPrice,
-                   BigDecimal inSize,
-                   String inQuoteTime,
-                   QuoteAction inAction)
+                           Date inTimestamp,
+                           Instrument inInstrument,
+                           String inExchange,
+                           BigDecimal inPrice,
+                           BigDecimal inSize,
+                           String inQuoteTime,
+                           QuoteAction inAction)
      {
         quote.setMessageId(inMessageId);
         quote.setTimestamp(inTimestamp);

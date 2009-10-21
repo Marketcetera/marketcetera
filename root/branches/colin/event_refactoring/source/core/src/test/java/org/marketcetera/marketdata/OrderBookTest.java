@@ -289,7 +289,7 @@ public class OrderBookTest
                    OrderBook.UNLIMITED_DEPTH,
                    book);
         // delete each event in turn
-        AskEvent ask1Killer = QuoteEventBuilder.equityAskEvent().delete(ask1);
+        AskEvent ask1Killer = QuoteEventBuilder.delete(ask1);
         asks.clear();
         book.process(ask1Killer);
         verifyBook(symbol,
@@ -297,7 +297,7 @@ public class OrderBookTest
                    asks,
                    OrderBook.UNLIMITED_DEPTH,
                    book);
-        BidEvent bid1Killer = QuoteEventBuilder.equityBidEvent().delete(bid1);
+        BidEvent bid1Killer = QuoteEventBuilder.delete(bid1);
         bids.clear();
         book.process(bid1Killer);
         verifyBook(symbol,
@@ -323,10 +323,11 @@ public class OrderBookTest
                    asks,
                    OrderBook.UNLIMITED_DEPTH,
                    book);
+        QuoteEventBuilder.equityAskEvent();
         // change the ask
-        AskEvent askChange = QuoteEventBuilder.equityAskEvent().change(ask1,
-                                                                          ask1.getTimestamp(),
-                                                                          ask1.getSize().add(TEN));
+        AskEvent askChange = QuoteEventBuilder.change(ask1,
+                                                      ask1.getTimestamp(),
+                                                      ask1.getSize().add(TEN));
         asks.clear();
         asks.add(askChange);
         book.process(askChange);
@@ -335,10 +336,11 @@ public class OrderBookTest
                    asks,
                    OrderBook.UNLIMITED_DEPTH,
                    book);
+        QuoteEventBuilder.equityBidEvent();
         // change the bid
-        BidEvent bidChange = QuoteEventBuilder.equityBidEvent().change(bid1,
-                                                  bid1.getTimestamp(),
-                                                  bid1.getSize().add(TEN));
+        BidEvent bidChange = QuoteEventBuilder.change(bid1,
+                                                      bid1.getTimestamp(),
+                                                      bid1.getSize().add(TEN));
         bids.clear();
         bids.add(bidChange);
         book.process(bidChange);
@@ -350,9 +352,10 @@ public class OrderBookTest
         // create changes for non-existent events
         AskEvent unusedAsk = EventTestBase.generateEquityAskEvent(symbol,
                                                                 exchange);
-        book.process(QuoteEventBuilder.equityAskEvent().change(unusedAsk,
-                                                                  unusedAsk.getTimestamp(),
-                                                                  unusedAsk.getSize().add(TEN)));
+        QuoteEventBuilder.equityAskEvent();
+        book.process(QuoteEventBuilder.change(unusedAsk,
+                                              unusedAsk.getTimestamp(),
+                                              unusedAsk.getSize().add(TEN)));
         verifyBook(symbol,
                    bids,
                    asks,
@@ -360,9 +363,10 @@ public class OrderBookTest
                    book);
         BidEvent unusedBid = EventTestBase.generateEquityBidEvent(symbol,
                                                                 exchange);
-        book.process(QuoteEventBuilder.equityBidEvent().change(unusedBid,
-                                                                  unusedBid.getTimestamp(),
-                                                                  unusedBid.getSize().add(TEN)));
+        QuoteEventBuilder.equityBidEvent();
+        book.process(QuoteEventBuilder.change(unusedBid,
+                                              unusedBid.getTimestamp(),
+                                              unusedBid.getSize().add(TEN)));
         verifyBook(symbol,
                    bids,
                    asks,
@@ -486,7 +490,7 @@ public class OrderBookTest
                    2,
                    book);
         // verify deletion behavior on a limited-size book
-        AskEvent askKiller = QuoteEventBuilder.equityAskEvent().delete(ask2);
+        AskEvent askKiller = QuoteEventBuilder.delete(ask2);
         asks.remove(ask2);
         book.process(askKiller);
         verifyBook(symbol,
@@ -494,7 +498,7 @@ public class OrderBookTest
                    asks,
                    2,
                    book);
-        BidEvent bidKiller = QuoteEventBuilder.equityBidEvent().delete(bid2);
+        BidEvent bidKiller = QuoteEventBuilder.delete(bid2);
         bids.remove(bid2);
         book.process(bidKiller);
         verifyBook(symbol,
@@ -572,9 +576,9 @@ public class OrderBookTest
         return result;
     }
     /**
-     * Convert the given {@link SymbolExchangeEvent} to a {@link QuantityTuple} value.
+     * Convert the given {@link MarketDataEvent} to a {@link QuantityTuple} value.
      *
-     * @param inEvent a <code>SymbolExchangeEvent</code> value
+     * @param inEvent a <code>MarketDataEvent</code> value
      * @return a <code>QuantityTuple</code> value
      */
     public static QuantityTuple convertEvent(MarketDataEvent inEvent)
@@ -583,8 +587,8 @@ public class OrderBookTest
             return null;
         }
         return new QuantityTuple(inEvent.getPrice(),
-                                         inEvent.getSize(),
-                                         inEvent.getClass());
+                                 inEvent.getSize(),
+                                 inEvent.getClass());
     }
     /**
      * Wrapper around a {@link QuantityTuple} {@link List} that accepts {@link QuoteEvent} inputs.
@@ -595,6 +599,16 @@ public class OrderBookTest
      */
     private static class QuantityTupleList<E extends QuoteEvent>
     {
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("QuantityTupleList [tuples=").append(tuples).append("]");
+            return builder.toString();
+        }
         /**
          * the list of quantitytuple values
          */

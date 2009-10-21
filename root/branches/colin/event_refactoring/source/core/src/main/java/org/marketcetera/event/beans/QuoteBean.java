@@ -68,7 +68,9 @@ public final class QuoteBean
     public void setDefaults()
     {
         super.setDefaults();
-        action = QuoteAction.ADD;
+        if(action == null) {
+            action = QuoteAction.ADD;
+        }
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()

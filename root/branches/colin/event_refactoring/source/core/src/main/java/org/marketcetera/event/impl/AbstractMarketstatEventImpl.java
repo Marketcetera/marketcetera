@@ -236,28 +236,32 @@ abstract class AbstractMarketstatEventImpl
      * @throws IllegalArgumentException if <code>inInstrument</code> is <code>null</code>
      */
     protected AbstractMarketstatEventImpl(long inMessageId,
-                                  Date inTimestamp,
-                                  Instrument inInstrument,
-                                  BigDecimal inOpenPrice,
-                                  BigDecimal inHighPrice,
-                                  BigDecimal inLowPrice,
-                                  BigDecimal inClosePrice,
-                                  BigDecimal inPreviousClosePrice,
-                                  String inCloseDate,
-                                  String inPreviousCloseDate,
-                                  String inTradeHighTime,
-                                  String inTradeLowTime,
-                                  String inOpenExchange,
-                                  String inHighExchange,
-                                  String inLowExchange,
-                                  String inCloseExchange)
+                                          Date inTimestamp,
+                                          Instrument inInstrument,
+                                          BigDecimal inOpenPrice,
+                                          BigDecimal inHighPrice,
+                                          BigDecimal inLowPrice,
+                                          BigDecimal inClosePrice,
+                                          BigDecimal inPreviousClosePrice,
+                                          BigDecimal inCumulativeVolume,
+                                          String inCloseDate,
+                                          String inPreviousCloseDate,
+                                          String inTradeHighTime,
+                                          String inTradeLowTime,
+                                          String inOpenExchange,
+                                          String inHighExchange,
+                                          String inLowExchange,
+                                          String inCloseExchange)
     {
+        marketstat.setMessageId(inMessageId);
+        marketstat.setTimestamp(inTimestamp);
         marketstat.setInstrument(inInstrument);
         marketstat.setOpen(inOpenPrice);
         marketstat.setHigh(inHighPrice);
         marketstat.setLow(inLowPrice);
         marketstat.setClose(inClosePrice);
         marketstat.setPreviousClose(inPreviousClosePrice);
+        marketstat.setVolume(inCumulativeVolume);
         marketstat.setCloseDate(inCloseDate);
         marketstat.setPreviousCloseDate(inPreviousCloseDate);
         marketstat.setTradeHighTime(inTradeHighTime);
@@ -266,8 +270,6 @@ abstract class AbstractMarketstatEventImpl
         marketstat.setHighExchange(inHighExchange);
         marketstat.setLowExchange(inLowExchange);
         marketstat.setCloseExchange(inCloseExchange);
-        marketstat.setMessageId(inMessageId);
-        marketstat.setTimestamp(inTimestamp);
         marketstat.setDefaults();
         marketstat.validate();
     }
