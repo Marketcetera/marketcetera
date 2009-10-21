@@ -118,9 +118,9 @@ public abstract class DepthOfBookEventBuilder
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("DepthOfBookEventBuilder [asks=").append(asks).append(", bids=").append(bids)
-                .append(", instrument=").append(instrument).append(", getMessageId()=").append(getMessageId())
-                .append(", getTimestamp()=").append(getTimestamp()).append("]");
+        builder.append("DepthOfBookEventBuilder [asks=").append(asks).append(", bids=").append(bids) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", instrument=").append(instrument).append(", getMessageId()=").append(getMessageId()) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", getTimestamp()=").append(getTimestamp()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**

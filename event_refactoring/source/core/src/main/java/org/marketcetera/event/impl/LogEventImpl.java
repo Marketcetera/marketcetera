@@ -151,10 +151,10 @@ class LogEventImpl
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("LogEvent [boundMessage=").append(boundMessage).append(", event=").append(event)
-                .append(", exception=").append(exception).append(", exceptionInfo=").append(exceptionInfo)
-                .append(", level=").append(level).append(", message=").append(message).append(", parameters=")
-                .append(Arrays.toString(parameters)).append(", serialized=").append(serialized).append("]");
+        builder.append("LogEvent [boundMessage=").append(boundMessage).append(", event=").append(event) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", exception=").append(exception).append(", exceptionInfo=").append(exceptionInfo) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", level=").append(level).append(", message=").append(message).append(", parameters=") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                .append(Arrays.toString(parameters)).append(", serialized=").append(serialized).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**

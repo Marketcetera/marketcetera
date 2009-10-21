@@ -159,8 +159,8 @@ public class EventBean
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("EventBean [messageId=").append(messageId).append(", source=").append(source)
-                .append(", timestamp=").append(timestamp).append("]");
+        builder.append("EventBean [messageId=").append(messageId).append(", source=").append(source) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", timestamp=").append(timestamp).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**

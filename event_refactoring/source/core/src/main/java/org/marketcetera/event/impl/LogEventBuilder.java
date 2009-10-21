@@ -347,9 +347,9 @@ public abstract class LogEventBuilder
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("LogEventBuilder [exception=").append(exception).append(", message=").append(message)
-                .append(", parameters=").append(Arrays.toString(parameters)).append(", getMessageId()=")
-                .append(getMessageId()).append(", getTimestamp()=").append(getTimestamp()).append("]");
+        builder.append("LogEventBuilder [exception=").append(exception).append(", message=").append(message) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", parameters=").append(Arrays.toString(parameters)).append(", getMessageId()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getMessageId()).append(", getTimestamp()=").append(getTimestamp()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**

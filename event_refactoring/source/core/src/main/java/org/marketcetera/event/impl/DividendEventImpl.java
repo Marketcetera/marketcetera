@@ -190,7 +190,7 @@ final class DividendEventImpl
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("DividendEventImpl [dividend=").append(dividend).append("]");
+        builder.append("DividendEventImpl [dividend=").append(dividend).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**

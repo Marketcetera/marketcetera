@@ -276,10 +276,10 @@ public final class OptionBean
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("OptionBean [expirationType=").append(expirationType).append(", expiry=").append(expiry)
-                .append(", hasDeliverable=").append(hasDeliverable).append(", instrument=").append(instrument)
-                .append(", multiplier=").append(multiplier).append(", optionType=").append(optionType)
-                .append(", strike=").append(strike).append(", underlyingEquity=").append(underlyingEquity).append("]");
+        builder.append("OptionBean [expirationType=").append(expirationType).append(", expiry=").append(expiry) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", hasDeliverable=").append(hasDeliverable).append(", instrument=").append(instrument) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", multiplier=").append(multiplier).append(", optionType=").append(optionType) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", strike=").append(strike).append(", underlyingEquity=").append(underlyingEquity).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return builder.toString();
     }
     /**

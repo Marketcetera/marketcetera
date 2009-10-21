@@ -356,13 +356,13 @@ public final class DividendBean
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("DividendBean [amount=").append(amount).append(", currency=").append(currency)
-                .append(", declareDate=").append(declareDate).append(", equity=").append(equity)
-                .append(", executionDate=").append(executionDate).append(", frequency=").append(frequency)
-                .append(", paymentDate=").append(paymentDate).append(", recordDate=").append(recordDate)
-                .append(", status=").append(status).append(", type=").append(type).append(", getMessageId()=")
-                .append(getMessageId()).append(", getSource()=").append(getSource()).append(", getTimeMillis()=")
-                .append(getTimeMillis()).append(", getTimestamp()=").append(getTimestamp()).append("]");
+        builder.append("DividendBean [amount=").append(amount).append(", currency=").append(currency) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", declareDate=").append(declareDate).append(", equity=").append(equity) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", executionDate=").append(executionDate).append(", frequency=").append(frequency) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", paymentDate=").append(paymentDate).append(", recordDate=").append(recordDate) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", status=").append(status).append(", type=").append(type).append(", getMessageId()=") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                .append(getMessageId()).append(", getSource()=").append(getSource()).append(", getTimeMillis()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getTimeMillis()).append(", getTimestamp()=").append(getTimestamp()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**

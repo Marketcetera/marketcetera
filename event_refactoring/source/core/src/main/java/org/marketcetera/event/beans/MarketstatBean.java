@@ -429,16 +429,16 @@ public final class MarketstatBean
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MarketstatBean [closeDate=").append(closeDate).append(", closeExchange=").append(closeExchange)
-                .append(", closePrice=").append(closePrice).append(", highExchange=").append(highExchange)
-                .append(", highPrice=").append(highPrice).append(", instrument=").append(instrument)
-                .append(", lowExchange=").append(lowExchange).append(", lowPrice=").append(lowPrice)
-                .append(", openExchange=").append(openExchange).append(", openPrice=").append(openPrice)
-                .append(", previousCloseDate=").append(previousCloseDate).append(", previousClosePrice=")
-                .append(previousClosePrice).append(", tradeHighTime=").append(tradeHighTime).append(", tradeLowTime=")
-                .append(tradeLowTime).append(", volume=").append(volume).append(", getMessageId()=")
-                .append(getMessageId()).append(", getSource()=").append(getSource()).append(", getTimestamp()=")
-                .append(getTimestamp()).append("]");
+        builder.append("MarketstatBean [closeDate=").append(closeDate).append(", closeExchange=").append(closeExchange) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", closePrice=").append(closePrice).append(", highExchange=").append(highExchange) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", highPrice=").append(highPrice).append(", instrument=").append(instrument) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", lowExchange=").append(lowExchange).append(", lowPrice=").append(lowPrice) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", openExchange=").append(openExchange).append(", openPrice=").append(openPrice) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", previousCloseDate=").append(previousCloseDate).append(", previousClosePrice=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(previousClosePrice).append(", tradeHighTime=").append(tradeHighTime).append(", tradeLowTime=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(tradeLowTime).append(", volume=").append(volume).append(", getMessageId()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getMessageId()).append(", getSource()=").append(getSource()).append(", getTimestamp()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getTimestamp()).append("]"); //$NON-NLS-1$
         return builder.toString();
     }
     /**

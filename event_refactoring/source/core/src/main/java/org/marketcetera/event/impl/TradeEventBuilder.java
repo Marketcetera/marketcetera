@@ -257,9 +257,9 @@ public abstract class TradeEventBuilder
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("TradeEventBuilder [marketData=").append(marketData).append(", option=").append(option)
-                .append(", getMessageId()=").append(getMessageId()).append(", getTimestamp()=").append(getTimestamp())
-                .append("]");
+        builder.append("TradeEventBuilder [marketData=").append(marketData).append(", option=").append(option) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", getMessageId()=").append(getMessageId()).append(", getTimestamp()=").append(getTimestamp()) //$NON-NLS-1$ //$NON-NLS-2$
+                .append("]"); //$NON-NLS-1$
         return builder.toString();
     }
     /**
