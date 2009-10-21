@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Test;
-import org.marketcetera.event.Messages;
 import org.marketcetera.event.util.DividendFrequency;
 import org.marketcetera.event.util.DividendStatus;
 import org.marketcetera.event.util.DividendType;
@@ -28,7 +27,7 @@ import org.marketcetera.util.test.EqualityAssert;
  * @since $Release$
  */
 public class DividendBeanTest
-        implements Messages
+        extends AbstractEventBeanTestBase<DividendBean>
 {
     /**
      * Tests {@link DividendBean#getEquity()} and {@link DividendBean#setEquity(org.marketcetera.trade.Equity)}.
@@ -37,7 +36,7 @@ public class DividendBeanTest
      */
     @Test
     public void equity()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getEquity());
@@ -55,7 +54,7 @@ public class DividendBeanTest
      */
     @Test
     public void amount()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getAmount());
@@ -73,7 +72,7 @@ public class DividendBeanTest
      */
     @Test
     public void currency()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getCurrency());
@@ -91,7 +90,7 @@ public class DividendBeanTest
      */
     @Test
     public void declareDate()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getDeclareDate());
@@ -112,7 +111,7 @@ public class DividendBeanTest
      */
     @Test
     public void executionDate()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getExecutionDate());
@@ -133,7 +132,7 @@ public class DividendBeanTest
      */
     @Test
     public void paymentDate()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getPaymentDate());
@@ -154,7 +153,7 @@ public class DividendBeanTest
      */
     @Test
     public void recordDate()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getRecordDate());
@@ -175,7 +174,7 @@ public class DividendBeanTest
      */
     @Test
     public void frequency()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getFrequency());
@@ -193,7 +192,7 @@ public class DividendBeanTest
      */
     @Test
     public void status()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getStatus());
@@ -211,7 +210,7 @@ public class DividendBeanTest
      */
     @Test
     public void type()
-        throws Exception
+            throws Exception
     {
         DividendBean bean = new DividendBean();
         assertNull(bean.getType());
@@ -222,177 +221,163 @@ public class DividendBeanTest
         assertEquals(type,
                      bean.getType());
     }
-    /**
-     * Tests {@link DividendBean#validate()}.
-     *
-     * @throws Exception if an unexpected error occurs
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.beans.AbstractEventBeanTestBase#doAdditionalValidationTest(DividendBean)
      */
-    @Test
-    public void validate()
-        throws Exception
+    @Override
+    protected void doAdditionalValidationTest(final DividendBean inBean)
+            throws Exception
     {
-        final DividendBean dividend = new DividendBean();
-        // test superclass validation
-        dividend.setMessageId(1);
-        assertNull(dividend.getTimestamp());
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_TIMESTAMP.getText()) {
-            protected void run()
-                throws Exception
-            {
-                dividend.validate();
-            }
-        };
-        dividend.setTimestamp(new Date());
         // null equity
-        assertNull(dividend.getEquity());
+        assertNull(inBean.getEquity());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EQUITY.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setEquity(new Equity("METC"));
+        inBean.setEquity(new Equity("METC"));
         // null amount
-        assertNull(dividend.getAmount());
+        assertNull(inBean.getAmount());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_AMOUNT.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setAmount(BigDecimal.TEN);
+        inBean.setAmount(BigDecimal.TEN);
         // null currency
-        assertNull(dividend.getCurrency());
+        assertNull(inBean.getCurrency());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_CURRENCY.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
         // empty currency
-        dividend.setCurrency("");
-        assertTrue(dividend.getCurrency().isEmpty());
+        inBean.setCurrency("");
+        assertTrue(inBean.getCurrency().isEmpty());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_CURRENCY.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setCurrency("US Dollars");
+        inBean.setCurrency("US Dollars");
         // null declareDate
-        assertNull(dividend.getDeclareDate());
+        assertNull(inBean.getDeclareDate());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_DECLARE_DATE.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
         // empty declareDate
-        dividend.setDeclareDate("");
-        assertTrue(dividend.getDeclareDate().isEmpty());
+        inBean.setDeclareDate("");
+        assertTrue(inBean.getDeclareDate().isEmpty());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_DECLARE_DATE.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setDeclareDate(DateUtils.dateToString(new Date()));
+        inBean.setDeclareDate(DateUtils.dateToString(new Date()));
         // null executionDate
-        assertNull(dividend.getExecutionDate());
+        assertNull(inBean.getExecutionDate());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXECUTION_DATE.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
         // empty executionDate
-        dividend.setExecutionDate("");
-        assertTrue(dividend.getExecutionDate().isEmpty());
+        inBean.setExecutionDate("");
+        assertTrue(inBean.getExecutionDate().isEmpty());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXECUTION_DATE.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setExecutionDate(DateUtils.dateToString(new Date()));
+        inBean.setExecutionDate(DateUtils.dateToString(new Date()));
         // null paymentDate
-        assertNull(dividend.getPaymentDate());
+        assertNull(inBean.getPaymentDate());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_PAYMENT_DATE.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
         // empty paymentDate
-        dividend.setPaymentDate("");
-        assertTrue(dividend.getPaymentDate().isEmpty());
+        inBean.setPaymentDate("");
+        assertTrue(inBean.getPaymentDate().isEmpty());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_PAYMENT_DATE.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setPaymentDate(DateUtils.dateToString(new Date()));
+        inBean.setPaymentDate(DateUtils.dateToString(new Date()));
         // null recordDate
-        assertNull(dividend.getRecordDate());
+        assertNull(inBean.getRecordDate());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_RECORD_DATE.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
         // empty recordDate
-        dividend.setRecordDate("");
-        assertTrue(dividend.getRecordDate().isEmpty());
+        inBean.setRecordDate("");
+        assertTrue(inBean.getRecordDate().isEmpty());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_RECORD_DATE.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setRecordDate(DateUtils.dateToString(new Date()));
+        inBean.setRecordDate(DateUtils.dateToString(new Date()));
         // null frequency
-        assertNull(dividend.getFrequency());
+        assertNull(inBean.getFrequency());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_FREQUENCY.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setFrequency(DividendFrequency.MONTHLY);
+        inBean.setFrequency(DividendFrequency.MONTHLY);
         // null status
-        assertNull(dividend.getStatus());
+        assertNull(inBean.getStatus());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_STATUS.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setStatus(DividendStatus.UNOFFICIAL);
+        inBean.setStatus(DividendStatus.UNOFFICIAL);
         // null type
-        assertNull(dividend.getType());
+        assertNull(inBean.getType());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_TYPE.getText()) {
             protected void run()
-                throws Exception
+                    throws Exception
             {
-                dividend.validate();
+                inBean.validate();
             }
         };
-        dividend.setType(DividendType.FUTURE);
+        inBean.setType(DividendType.FUTURE);
     }
     /**
      * Tests {@link DividendBean#hashCode()} and {@link DividendBean#equals(Object)}.
@@ -401,12 +386,34 @@ public class DividendBeanTest
      */
     @Test
     public void hashCodeAndEquals()
-        throws Exception
+            throws Exception
     {
         // test empty bean equality (and inequality with an object of a different class and null)
+        // beans 1 & 2 will always be the same, bean 3 will always be different
         DividendBean bean1 = new DividendBean();
         DividendBean bean2 = new DividendBean();
         DividendBean bean3 = new DividendBean();
+        // verify that null attributes are still equal (mostly this is that equals/hashcode doesn't NPE with null attributes)
+        assertNull(bean1.getAmount());
+        assertNull(bean2.getAmount());
+        assertNull(bean1.getCurrency());
+        assertNull(bean2.getCurrency());
+        assertNull(bean1.getDeclareDate());
+        assertNull(bean2.getDeclareDate());
+        assertNull(bean1.getEquity());
+        assertNull(bean2.getEquity());
+        assertNull(bean1.getExecutionDate());
+        assertNull(bean2.getExecutionDate());
+        assertNull(bean1.getFrequency());
+        assertNull(bean2.getFrequency());
+        assertNull(bean1.getPaymentDate());
+        assertNull(bean2.getPaymentDate());
+        assertNull(bean1.getRecordDate());
+        assertNull(bean2.getRecordDate());
+        assertNull(bean1.getStatus());
+        assertNull(bean2.getStatus());
+        assertNull(bean1.getType());
+        assertNull(bean2.getType());
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       this,
@@ -418,5 +425,95 @@ public class DividendBeanTest
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
+        bean3.setMessageId(bean1.getMessageId());
+        assertEquals(bean1.getTimestamp(),
+                     bean3.getTimestamp());
+        // test amount
+        // set bean3 amount to non-null
+        assertNull(bean1.getAmount());
+        bean3.setAmount(BigDecimal.TEN);
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setAmount(bean1.getAmount());
+        // test currency
+        // set bean3 currency to non-null
+        assertNull(bean1.getCurrency());
+        bean3.setCurrency("CA Dollars");
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setCurrency(bean1.getCurrency());
+        // test declareDate
+        // set bean3 to non-null
+        assertNull(bean1.getDeclareDate());
+        bean3.setDeclareDate(DateUtils.dateToString(new Date()));
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setDeclareDate(bean1.getDeclareDate());
+        // test equity
+        // set bean3 to non-null
+        assertNull(bean1.getEquity());
+        bean3.setEquity(new Equity("METC"));
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setEquity(bean1.getEquity());
+        // test executionDate
+        // set bean3 to non-null
+        assertNull(bean1.getExecutionDate());
+        bean3.setExecutionDate(DateUtils.dateToString(new Date()));
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setExecutionDate(bean1.getExecutionDate());
+        // test frequency
+        // set bean3 to non-null
+        assertNull(bean1.getFrequency());
+        bean3.setFrequency(DividendFrequency.QUARTERLY);
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setFrequency(bean1.getFrequency());
+        // test paymentDate
+        // set bean3 to non-null
+        assertNull(bean1.getPaymentDate());
+        bean3.setPaymentDate(DateUtils.dateToString(new Date()));
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setPaymentDate(bean1.getPaymentDate());
+        // test recordDate
+        // set bean3 to non-null
+        assertNull(bean1.getRecordDate());
+        bean3.setRecordDate(DateUtils.dateToString(new Date()));
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setRecordDate(bean1.getRecordDate());
+        // test status
+        // set bean3 to non-null
+        assertNull(bean1.getStatus());
+        bean3.setStatus(DividendStatus.OFFICIAL);
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setStatus(bean1.getStatus());
+        // test type
+        // set bean3 to non-null
+        assertNull(bean1.getType());
+        bean3.setType(DividendType.SPECIAL);
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.beans.AbstractEventBeanTestBase#constructBean()
+     */
+    @Override
+    protected DividendBean constructBean()
+    {
+        return new DividendBean();
     }
 }
