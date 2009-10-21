@@ -108,12 +108,12 @@ public final class QuoteBean
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("QuoteBean [action=").append(action).append(", getExchange()=").append(getExchange())
-                .append(", getExchangeTimestamp()=").append(getExchangeTimestamp()).append(", getInstrument()=")
-                .append(getInstrument()).append(", getPrice()=").append(getPrice()).append(", getSize()=")
-                .append(getSize()).append(", toString()=").append(super.toString()).append(", getMessageId()=")
-                .append(getMessageId()).append(", getSource()=").append(getSource()).append(", getTimestamp()=")
-                .append(getTimestamp()).append("]");
+        builder.append("QuoteBean [action=").append(action).append(", getExchange()=").append(getExchange()) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", getExchangeTimestamp()=").append(getExchangeTimestamp()).append(", getInstrument()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getInstrument()).append(", getPrice()=").append(getPrice()).append(", getSize()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getSize()).append(", toString()=").append(super.toString()).append(", getMessageId()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getMessageId()).append(", getSource()=").append(getSource()).append(", getTimestamp()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getTimestamp()).append("]"); //$NON-NLS-1$
         return builder.toString();
     }
     /**

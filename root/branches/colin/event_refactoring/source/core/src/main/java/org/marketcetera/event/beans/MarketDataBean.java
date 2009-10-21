@@ -166,11 +166,11 @@ public class MarketDataBean
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MarketDataBean [exchange=").append(exchange).append(", exchangeTimestamp=")
-                .append(exchangeTimestamp).append(", instrument=").append(instrument).append(", price=").append(price)
-                .append(", size=").append(size).append(", getMessageId()=").append(getMessageId())
-                .append(", getSource()=").append(getSource()).append(", getTimestamp()=").append(getTimestamp())
-                .append("]");
+        builder.append("MarketDataBean [exchange=").append(exchange).append(", exchangeTimestamp=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(exchangeTimestamp).append(", instrument=").append(instrument).append(", price=").append(price) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", size=").append(size).append(", getMessageId()=").append(getMessageId()) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", getSource()=").append(getSource()).append(", getTimestamp()=").append(getTimestamp()) //$NON-NLS-1$ //$NON-NLS-2$
+                .append("]"); //$NON-NLS-1$
         return builder.toString();
     }
     /* (non-Javadoc)

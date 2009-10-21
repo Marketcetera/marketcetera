@@ -91,7 +91,7 @@ public final class InstrumentBean
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("InstrumentBean [instrument=").append(instrument).append("]");
+        builder.append("InstrumentBean [instrument=").append(instrument).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**

@@ -41,12 +41,12 @@ class EquityBidEventImpl
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("EquityBidEventImpl [getAction()=").append(getAction()).append(", getExchange()=")
-                .append(getExchange()).append(", getExchangeTimestamp()=").append(getExchangeTimestamp())
-                .append(", getInstrument()=").append(getInstrument()).append(", getMessageId()=")
-                .append(getMessageId()).append(", getPrice()=").append(getPrice()).append(", getSize()=")
-                .append(getSize()).append(", getSource()=").append(getSource()).append(", getTimestamp()=")
-                .append(getTimestamp()).append("]");
+        builder.append("EquityBidEventImpl [getAction()=").append(getAction()).append(", getExchange()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getExchange()).append(", getExchangeTimestamp()=").append(getExchangeTimestamp()) //$NON-NLS-1$
+                .append(", getInstrument()=").append(getInstrument()).append(", getMessageId()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getMessageId()).append(", getPrice()=").append(getPrice()).append(", getSize()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getSize()).append(", getSource()=").append(getSource()).append(", getTimestamp()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getTimestamp()).append("]"); //$NON-NLS-1$
         return builder.toString();
     }
     /**

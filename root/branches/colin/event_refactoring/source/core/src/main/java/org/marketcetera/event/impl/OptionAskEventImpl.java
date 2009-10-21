@@ -101,12 +101,12 @@ class OptionAskEventImpl
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("OptionAskEvent [option=").append(option).append(", getAction()=").append(getAction())
-                .append(", getExchange()=").append(getExchange()).append(", getExchangeTimestamp()=")
-                .append(getExchangeTimestamp()).append(", getInstrument()=").append(getInstrument())
-                .append(", getMessageId()=").append(getMessageId()).append(", getPrice()=").append(getPrice())
-                .append(", getSize()=").append(getSize()).append(", getSource()=").append(getSource())
-                .append(", getTimestamp()=").append(getTimestamp()).append("]");
+        builder.append("OptionAskEvent [option=").append(option).append(", getAction()=").append(getAction()) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", getExchange()=").append(getExchange()).append(", getExchangeTimestamp()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getExchangeTimestamp()).append(", getInstrument()=").append(getInstrument()) //$NON-NLS-1$
+                .append(", getMessageId()=").append(getMessageId()).append(", getPrice()=").append(getPrice()) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", getSize()=").append(getSize()).append(", getSource()=").append(getSource()) //$NON-NLS-1$ //$NON-NLS-2$
+                .append(", getTimestamp()=").append(getTimestamp()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**

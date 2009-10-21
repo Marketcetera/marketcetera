@@ -175,8 +175,8 @@ public abstract class DividendEventBuilder
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("DividendEventBuilder [dividend=").append(dividend).append(", getMessageId()=")
-                .append(getMessageId()).append(", getTimestamp()=").append(getTimestamp()).append("]");
+        builder.append("DividendEventBuilder [dividend=").append(dividend).append(", getMessageId()=") //$NON-NLS-1$ //$NON-NLS-2$
+                .append(getMessageId()).append(", getTimestamp()=").append(getTimestamp()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
     }
     /**
