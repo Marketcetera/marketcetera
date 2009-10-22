@@ -18,6 +18,7 @@ import org.marketcetera.photon.strategy.StrategyUI;
 import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -45,8 +46,9 @@ public class OpenSuggestionHandler extends AbstractHandler {
                 .getFirstElement();
         OrderSingle order = suggestion.getOrder();
         try {
-            Message message = FIXConverter.toQMessage(FIXVersion.FIX_SYSTEM
-                    .getMessageFactory(), FIXVersion.FIX_SYSTEM, order);
+            Message message = FIXConverter.toQMessage(FIXVersion.FIX_SYSTEM.getMessageFactory(),
+            		FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX_SYSTEM).getDictionary(),
+            		order);
             IOrderTicketController orderTicketController = PhotonPlugin
                     .getDefault().getOrderTicketController(message);
             String perspective;
