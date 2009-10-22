@@ -19,5 +19,9 @@ public enum DividendStatus
     /**
      * official dividend
      */
-    OFFICIAL
+    OFFICIAL,
+    /**
+     * unknown status
+     */
+    UNKNOWN
 }

@@ -594,6 +594,17 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         option.setHasDeliverable(inHasDeliverable);
         return this;
     }
+    /**
+     * Sets the strike value.
+     *
+     * @param a <code>BigDecimal</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public final QuoteEventBuilder<E> withStrike(BigDecimal inStrike)
+    {
+        option.setStrike(inStrike);
+        return this;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

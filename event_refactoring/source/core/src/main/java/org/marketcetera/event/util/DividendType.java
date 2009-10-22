@@ -23,5 +23,9 @@ public enum DividendType
     /**
      * planned {@link DividendStatus#OFFICIAL} or {@link DividendStatus#UNOFFICIAL} dividend
      */
-    FUTURE
+    FUTURE,
+    /**
+     * unknown dividend type
+     */
+    UNKNOWN
 }
