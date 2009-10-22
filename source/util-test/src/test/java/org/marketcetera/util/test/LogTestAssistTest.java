@@ -1,241 +1,325 @@
 package org.marketcetera.util.test;
 
-import org.junit.Test;
-import org.junit.Before;
-import static org.junit.Assert.assertEquals;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang.SystemUtils;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Before;
+import org.junit.Test;
 
+import static org.junit.Assert.*;
 
-/* $License$ */
 /**
- * Tests {@link LogTestAssist}
- *
- * @author anshul@marketcetera.com
+ * @author tlerios@marketcetera.com
  * @version $Id$
  * @since $Release$
  */
-public class LogTestAssistTest {
+
+/* $License$ */
+
+public class LogTestAssistTest
+    extends LogTestBase
+{
+    private static final String TEST_LOCATION=
+        LogTestAssistTest.class.getName();
+
+    private LogTestAssist mAssist;
+
+
+    // LogTestAssistBase.
+
+    @Override
+    protected void setDefaultLevel
+        (Level level)
+    {
+        LogTestAssist.setDefaultLevel(level);
+    }
+
+    @Override
+    protected void setLevel
+        (String name,
+         Level level)
+    {
+        LogTestAssist.setLevel(name,level);
+    }
+
+    @Override
+    protected void assertEvent
+        (LoggingEvent event,
+         Level level,
+         String logger,
+         String message,
+         String location)
+    {
+        LogTestAssist.assertEvent(event,level,logger,message,location);
+    }
+
+    @Override
+    protected MemoryAppender getAppender()
+    {
+        return getAssist().getAppender();
+    }
+
+    @Override
+    protected void assertEventCount
+        (int count)
+    {
+        getAssist().assertEventCount(count);
+    }
+
+    @Override
+    protected void assertNoEvents()
+    {
+        getAssist().assertNoEvents();
+    }
+
+    @Override
+    protected void assertLastEvent
+        (Level level,
+         String category,
+         String message,
+         String location)
+    {
+        getAssist().assertLastEvent(level,category,message,location);
+    }
+
+    @Override
+    protected void assertSomeEvent
+        (Level level,
+         String category,
+         String message,
+         String location)
+    {
+        getAssist().assertSomeEvent(level,category,message,location);
+    }
+
+    @Override
+    protected void assertSingleEvent
+        (Level level,
+         String category,
+         String message,
+         String location)
+    {
+        getAssist().assertSingleEvent(level,category,message,location);
+    }
+
+
+    // Custom additional utilities.
+
+    private LogTestAssist getAssist()
+    {
+        return mAssist;
+    }
+
+    private void trackLogger
+        (String name,
+         Level level)
+    {
+        getAssist().trackLogger(name,level);
+    }
+
+    private void trackLogger
+        (String name)
+    {
+        getAssist().trackLogger(name);
+    }
+
+    private void resetAppender()
+    {
+        getAssist().resetAppender();
+    }
+
+    private String getEventsAsString()
+    {
+        return getAssist().getEventsAsString();
+    }
+
+
 
     @Before
-    public void setup()
+    public void setupLogTestAssistTest()
     {
-        mAssist = new LogTestAssist(TEST_CATEGORY, Level.ERROR);
+        mAssist=new LogTestAssist();
+        BasicConfigurator.configure(getAppender());
     }
+
+
+    // Custom additional tests.
 
     @Test
-    public void noEvents()
+    public void normalConstructor()
     {
-        assertNoEvents();
-        Logger.getLogger(TEST_CATEGORY).info(TEST_MESSAGE);
-        assertNoEvents();
-    }
+        String c1=getNextTestCategory();
+        String c2=getNextTestCategory();
+        mAssist=new LogTestAssist(c1,Level.ERROR);
 
-    @Test(expected=AssertionError.class)
-    public void someEvents()
-    {
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertNoEvents();
-    }
-
-    @Test
-    public void lastEventCorrect()
-    {
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertLastEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        Logger.getLogger(c1).warn(TEST_MESSAGE);
+        assertEquals(0,getAppender().getEvents().size());
+        Logger.getLogger(c1).error(TEST_MESSAGE);
         assertEquals(1,getAppender().getEvents().size());
-        setLevel(TEST_CATEGORY,Level.INFO);
-        Logger.getLogger(TEST_CATEGORY).info(TEST_MESSAGE);
-        assertLastEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+
+        // Not tracking any other category.
+        Logger.getLogger(c2).error(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
+    }
+
+    @Test
+    public void noLevelConstructor()
+    {
+        String c1=getNextTestCategory();
+        String c2=getNextTestCategory();
+        mAssist=new LogTestAssist(c1);
+
+        // Default logging is turned off during parent class setup.
+        Logger.getLogger(c1).warn(TEST_MESSAGE);
+        assertEquals(0,getAppender().getEvents().size());
+
+        setDefaultLevel(Level.WARN);
+        Logger.getLogger(c1).warn(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
+        Logger.getLogger(c1).info(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
+
+        setLevel(c1,Level.ERROR);
+        Logger.getLogger(c1).error(TEST_MESSAGE);
+        assertEquals(2,getAppender().getEvents().size());
+        Logger.getLogger(c1).warn(TEST_MESSAGE);
+        assertEquals(2,getAppender().getEvents().size());
+
+        // Not tracking any other category.
+        Logger.getLogger(c2).error(TEST_MESSAGE);
         assertEquals(2,getAppender().getEvents().size());
     }
 
-    @Test(expected=AssertionError.class)
-    public void noLastEvent()
-    {
-        assertLastEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-    }
-
     @Test
-    public void someEventCorrect()
+    public void defaultConstructor()
     {
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertSomeEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-        setLevel(TEST_CATEGORY,Level.INFO);
-        Logger.getLogger(TEST_CATEGORY).info(TEST_MESSAGE);
-        assertSomeEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-        assertSomeEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-        assertSomeEvent(null,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-        assertSomeEvent(Level.INFO,null,TEST_MESSAGE,TEST_LOCATION);
-        assertSomeEvent(Level.INFO,TEST_CATEGORY,null,TEST_LOCATION);
-        assertSomeEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE,null);
+        String c1=getNextTestCategory();
+        String c2=getNextTestCategory();
+        // mAssist was already constructed in setup method.
+
+        // Default logging is turned off during parent class setup.
+        Logger.getLogger(c1).error(TEST_MESSAGE);
+        assertEquals(0,getAppender().getEvents().size());
+
+        setLevel(c1,Level.ERROR);
+        Logger.getLogger(c1).error(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
+        Logger.getLogger(c1).warn(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
+
+        // Not tracking any other category.
+        Logger.getLogger(c2).error(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
     }
 
-    @Test(expected=AssertionError.class)
-    public void noMatchingIncorrectLevel()
-    {
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertSomeEvent(Level.WARN,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-    }
-
-    @Test(expected=AssertionError.class)
-    public void noMatchingIncorrectName()
-    {
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertSomeEvent(Level.ERROR,"",TEST_MESSAGE,TEST_LOCATION);
-    }
-
-    @Test(expected=AssertionError.class)
-    public void noMatchingIncorrectMessage()
-    {
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertSomeEvent(Level.ERROR,TEST_CATEGORY,"",TEST_LOCATION);
-    }
-
-    @Test(expected=AssertionError.class)
-    public void noMatchingIncorrectLocation()
-    {
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertSomeEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,"");
-    }
-
-    @Test(expected=AssertionError.class)
-    public void noSomeEvent()
-    {
-        assertSomeEvent(null,null,null,null);
-    }
-
-
-    @Test
-    public void singleEventCorrect()
-    {
-        setLevel(TEST_CATEGORY,Level.WARN);
-        Logger.getLogger(TEST_CATEGORY).warn(TEST_MESSAGE);
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-        assertNoEvents();
-        setLevel(TEST_CATEGORY,Level.INFO);
-        Logger.getLogger(TEST_CATEGORY).info(TEST_MESSAGE);
-        assertSingleEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-        assertNoEvents();
-    }
-
-    @Test(expected=AssertionError.class)
-    public void noSingleEvent()
-    {
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-    }
-
-    @Test(expected=AssertionError.class)
-    public void tooManyEvents()
-    {
-        Logger.getLogger(TEST_CATEGORY).warn(TEST_MESSAGE);
-        setLevel(TEST_CATEGORY,Level.INFO);
-        Logger.getLogger(TEST_CATEGORY).info(TEST_MESSAGE);
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-    }
 
     @Test
     public void untrackedCategory()
     {
-        Logger.getLogger("AnotherCategory").error(TEST_MESSAGE);
-        assertNoEvents();
-    }
+        String c=getNextTestCategory();
+        // Undo addition of appender to the root logger for this test,
+        // so that we can test explicit tracking (which, if we did not
+        // do this removal, would result in duplicate messages emitted
+        // when the appender is added to a specific logger).
+        Logger.getRootLogger().removeAppender(getAppender());
 
-    @Test
-    public void appenderReset()
-    {
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
-        resetAppender();
-        assertNoEvents();
+        // Default logging is turned off during parent class setup.
+        Logger.getLogger(c).error(TEST_MESSAGE);
+        assertEquals(0,getAppender().getEvents().size());
     }
 
     @Test
     public void categoryTrack()
     {
-        String anotherCategory = "AnotherCategory";
-        String yetAnotherCategory = "YetAnotherCategory";
-        Logger.getLogger(anotherCategory).error(TEST_MESSAGE);
-        Logger.getLogger(yetAnotherCategory).info(TEST_MESSAGE);
-        Logger.getLogger(yetAnotherCategory).warn(TEST_MESSAGE);
-        assertNoEvents();
+        String c1=getNextTestCategory();
+        String c2=getNextTestCategory();
+        String c3=getNextTestCategory();
+        String c4=getNextTestCategory();
+        // Undo addition of appender to the root logger for this test,
+        // so that we can test explicit tracking (which, if we did not
+        // do this removal, would result in duplicate messages emitted
+        // when the appender is added to a specific logger).
+        Logger.getRootLogger().removeAppender(getAppender());
 
-        trackCategory(anotherCategory, Level.ERROR);
-        Logger.getLogger(anotherCategory).error(TEST_MESSAGE);
-        Logger.getLogger(yetAnotherCategory).info(TEST_MESSAGE);
-        Logger.getLogger(yetAnotherCategory).warn(TEST_MESSAGE);
-        assertSingleEvent(Level.ERROR, anotherCategory, TEST_MESSAGE, TEST_LOCATION);
+        // Default logging is turned off during parent class setup.
+        Logger.getLogger(c1).error(TEST_MESSAGE);
+        Logger.getLogger(c2).info(TEST_MESSAGE);
+        assertEquals(0,getAppender().getEvents().size());
+        
+        trackLogger(c2,Level.ERROR);
+        Logger.getLogger(c2).error(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
+        Logger.getLogger(c1).info(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
+        Logger.getLogger(c3).warn(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
 
-        trackCategory(yetAnotherCategory, Level.WARN);
-        Logger.getLogger(anotherCategory).error(TEST_MESSAGE);
-        Logger.getLogger(yetAnotherCategory).warn(TEST_MESSAGE);
-        Logger.getLogger(yetAnotherCategory).info(TEST_MESSAGE);
-        assertLastEvent(Level.WARN, yetAnotherCategory, TEST_MESSAGE, TEST_LOCATION);
-        assertSomeEvent(Level.ERROR, anotherCategory, TEST_MESSAGE, TEST_LOCATION);
+        trackLogger(c3,Level.WARN);
+        Logger.getLogger(c2).error(TEST_MESSAGE);
+        assertEquals(2,getAppender().getEvents().size());
+        Logger.getLogger(c3).error(TEST_MESSAGE);
+        assertEquals(3,getAppender().getEvents().size());
+        Logger.getLogger(c1).warn(TEST_MESSAGE);
+        assertEquals(3,getAppender().getEvents().size());
+        Logger.getLogger(c3).info(TEST_MESSAGE);
+        assertEquals(3,getAppender().getEvents().size());
+
+        setDefaultLevel(Level.INFO);
+        trackLogger(c4);
+        Logger.getLogger(c2).error(TEST_MESSAGE);
+        assertEquals(4,getAppender().getEvents().size());
+        Logger.getLogger(c3).warn(TEST_MESSAGE);
+        assertEquals(5,getAppender().getEvents().size());
+        Logger.getLogger(c3).info(TEST_MESSAGE);
+        assertEquals(5,getAppender().getEvents().size());
+        Logger.getLogger(c4).info(TEST_MESSAGE);
+        assertEquals(6,getAppender().getEvents().size());
+        Logger.getLogger(c4).debug(TEST_MESSAGE);
+        assertEquals(6,getAppender().getEvents().size());
+        Logger.getLogger(c1).warn(TEST_MESSAGE);
+        assertEquals(6,getAppender().getEvents().size());
+    }
+
+
+    @Test
+    public void appenderReset()
+    {
+        String c=getNextTestCategory();
+
+        setLevel(c,Level.ERROR);
+        Logger.getLogger(c).error(TEST_MESSAGE);
+        assertEquals(1,getAppender().getEvents().size());
+
+        resetAppender();
+        assertEquals(0,getAppender().getEvents().size());
+    }
+
+
+    @Test
+    public void noEventsAsString()
+    {
+        assertEquals("Event count: 0",getEventsAsString());
     }
 
     @Test
-    public void defaultConstructor() {
-        mAssist = new LogTestAssist();
-        assertNoEvents();
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertNoEvents();
-        trackCategory(TEST_CATEGORY, Level.ERROR);
-        Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertSingleEvent(Level.ERROR, TEST_CATEGORY,  TEST_MESSAGE, TEST_LOCATION);
-    }
-
-    protected void trackCategory(String inName, Level inLevel)
+    public void twoEventsAsString()
     {
-        mAssist.trackLogger(inName, inLevel);
+        String c=getNextTestCategory();
+        setLevel(c,Level.INFO);
+        Logger.getLogger(c).info(TEST_MESSAGE);
+        Logger.getLogger(c).warn(TEST_MESSAGE);
+        assertEquals("Event count: 2"+
+                     SystemUtils.LINE_SEPARATOR+
+                     "Event 0: level: INFO"+
+                     "; logger: "+c+
+                     "; message: "+TEST_MESSAGE+
+                     "; location: "+TEST_LOCATION+
+                     SystemUtils.LINE_SEPARATOR+
+                     "Event 1: level: WARN"+
+                     "; logger: "+c+
+                     "; message: "+TEST_MESSAGE+
+                     "; location: "+TEST_LOCATION,getEventsAsString());
     }
-
-    protected void resetAppender()
-    {
-        mAssist.resetAppender();
-    }
-
-    protected void assertNoEvents()
-    {
-        mAssist.assertNoEvents();
-    }
-
-    protected void assertLastEvent(Level inLevel, String inTestCategory,
-                                   String inTestMessage, String inTestLocation)
-    {
-        mAssist.assertLastEvent(inLevel, inTestCategory,
-                inTestMessage, inTestLocation);
-    }
-
-    protected void assertSomeEvent(Level inLevel, String inTestCategory,
-                                   String inTestMessage, String inTestLocation)
-    {
-        mAssist.assertSomeEvent(inLevel,  inTestCategory,
-                inTestMessage, inTestLocation);
-    }
-
-    protected void assertSingleEvent(Level inLevel, String inTestCategory,
-                                     String inTestMessage, String inTestLocation)
-    {
-        mAssist.assertSingleEvent(inLevel, inTestCategory,
-                inTestMessage, inTestLocation);
-    }
-
-    private void setLevel(String inTestCategory, Level inInfo)
-    {
-        TestCaseBase.setLevel(inTestCategory, inInfo);
-    }
-
-    protected MemoryAppender getAppender()
-    {
-        return mAssist.getAppender();
-    }
-
-    protected static final String TEST_CATEGORY=
-        "TestCategory";
-    private static final String TEST_MESSAGE=
-        "Test message (expected)";
-    private static final String TEST_LOCATION=
-        LogTestAssistTest.class.getName();
-    protected LogTestAssist mAssist;
 }

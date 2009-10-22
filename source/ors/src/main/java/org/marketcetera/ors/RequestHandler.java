@@ -184,6 +184,44 @@ public class RequestHandler
         return mDataDictionary;
     }
 
+    /**
+     * Returns the best message factory available: this is either the
+     * system factory, if the given broker is null, or the broker's
+     * factory otherwise.
+     *
+     * @param b The broker.
+     *
+     * @return The factory.
+     */
+
+    private FIXMessageFactory getBestMsgFactory
+        (Broker b)
+    {
+        if (b==null) {
+            return getMsgFactory();
+        }
+        return b.getFIXMessageFactory();
+    }
+
+    /**
+     * Returns the best data dictionary available: this is either the
+     * system dictionary, if the given broker is null, or the broker's
+     * dictionary otherwise.
+     *
+     * @param b The broker. It may be null.
+     *
+     * @return The data dictionary.
+     */
+
+    private DataDictionary getBestDataDictionary
+        (Broker b)
+    {
+        if (b==null) {
+            return getDataDictionary();
+        }
+        return b.getDataDictionary();
+    }
+
     private ExecID getNextExecId()
         throws CoreException
     {
@@ -223,7 +261,7 @@ public class RequestHandler
         return new BigDecimal(str);
     }
 
-    private static Instrument getInstrument
+    private static Instrument getOptFieldSymbol
         (Message msg)
     {
         String str=getOptFieldStr(msg,Symbol.FIELD);
@@ -247,11 +285,12 @@ public class RequestHandler
     }
 
     /**
-     * Creates a QuickFIX/J rejection (always of the system FIX
-     * version) if processing of the given message failed with the
+     * Creates a QuickFIX/J rejection if processing of the given
+     * message, associated with the given broker, failed with the
      * given exception.
      *
      * @param ex The exception.
+     * @param b The broker. It may be null.
      * @param msg The message, in FIX Agnostic form. It may be null.
      *
      * @return The rejection.
@@ -259,24 +298,25 @@ public class RequestHandler
 
     private Message createRejection
         (I18NException ex,
+         Broker b,
          Order msg)
     {
         // Special handling of unsupported incoming messages.
 
         if (ex.getI18NBoundMessage()==Messages.RH_UNSUPPORTED_MESSAGE) {
-            return getMsgFactory().newBusinessMessageReject
+            return getBestMsgFactory(b).newBusinessMessageReject
                 (msg.getClass().getName(),
                  BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE,
                  ex.getLocalizedDetail().replace(SOH,SOH_REPLACE));
         }
 
         // Attempt conversion of incoming message into a QuickFIX/J
-        // message using the system FIX dictionary.
+        // message.
 
         Message qMsg=null;
         try {
             qMsg=FIXConverter.toQMessage
-                (getMsgFactory(),FIXVersion.FIX_SYSTEM,msg);
+                (getBestMsgFactory(b),getBestDataDictionary(b),msg);
         } catch (I18NException ex2) {
             Messages.RH_REJ_CONVERSION_FAILED.warn(this,ex2,msg);
         }
@@ -288,7 +328,7 @@ public class RequestHandler
             (FIXMessageUtil.isCancelRequest(qMsg) ||
              FIXMessageUtil.isCancelReplaceRequest(qMsg));
         if (orderCancelType) {
-            qMsgReply=getMsgFactory().newOrderCancelRejectEmpty();
+            qMsgReply=getBestMsgFactory(b).newOrderCancelRejectEmpty();
             char reason;
             if (FIXMessageUtil.isCancelRequest(qMsg)) {
                 reason=CxlRejResponseTo.ORDER_CANCEL_REQUEST;
@@ -297,7 +337,7 @@ public class RequestHandler
             }
             qMsgReply.setField(new CxlRejResponseTo(reason));
         } else {
-            qMsgReply=getMsgFactory().newExecutionReportEmpty();
+            qMsgReply=getBestMsgFactory(b).newExecutionReportEmpty();
             try {
                 qMsgReply.setField(getNextExecId());
             } catch (CoreException ex2) {
@@ -317,7 +357,8 @@ public class RequestHandler
         // Add all the fields of the incoming message.
 
         if (qMsg!=null) {
-            FIXMessageUtil.fillFieldsFromExistingMessage(qMsgReply,qMsg,false);
+            FIXMessageUtil.fillFieldsFromExistingMessage
+                (qMsgReply,qMsg,getBestDataDictionary(b),false);
         }
 
         // Add an order ID, if there was none from the incoming message.
@@ -330,7 +371,7 @@ public class RequestHandler
 
         if (!orderCancelType) {
             try {
-                getMsgFactory().getMsgAugmentor().executionReportAugment
+                getBestMsgFactory(b).getMsgAugmentor().executionReportAugment
                     (qMsgReply);
             } catch (FieldNotFound ex2) {
                 Messages.RH_REJ_AUGMENTATION_FAILED.warn(this,ex2,qMsgReply);
@@ -345,8 +386,10 @@ public class RequestHandler
 
     /**
      * Creates a QuickFIX/J ACK execution report (always of the system
-     * FIX version) for the given message.
+     * FIX version) for the given message, associated with the given
+     * broker.
      *
+     * @param b The broker.
      * @param qMsg The message, in QuickFIX/J form.
      *
      * @return The report. It may be null if a report cannot be
@@ -357,7 +400,8 @@ public class RequestHandler
      */
 
     private Message createExecutionReport
-        (Message qMsg)
+        (Broker b,
+         Message qMsg)
         throws CoreException,
                FieldNotFound
     {
@@ -380,7 +424,7 @@ public class RequestHandler
 
         // Create execution report.
 
-        Message qMsgReply=getMsgFactory().newExecutionReport
+        Message qMsgReply=getBestMsgFactory(b).newExecutionReport
             (orderID,
              getOptFieldStr(qMsg,ClOrdID.FIELD),
              getNextExecId().getValue(),
@@ -392,12 +436,13 @@ public class RequestHandler
              BigDecimal.ZERO,
              BigDecimal.ZERO,
              BigDecimal.ZERO,
-             getInstrument(qMsg),
+             getOptFieldSymbol(qMsg),
              getOptFieldStr(qMsg,Account.FIELD));
 
         // Add all the fields of the incoming message.
 
-        FIXMessageUtil.fillFieldsFromExistingMessage(qMsgReply,qMsg,false);
+        FIXMessageUtil.fillFieldsFromExistingMessage
+            (qMsgReply,qMsg,getBestDataDictionary(b),false);
 
         // Add required header/trailer fields.
 
@@ -488,7 +533,7 @@ public class RequestHandler
 
             try {
                 qMsg=FIXConverter.toQMessage
-                    (b.getFIXMessageFactory(),b.getFIXVersion(),oMsg);
+                    (b.getFIXMessageFactory(),b.getDataDictionary(),oMsg);
             } catch (I18NException ex) {
                 throw new I18NException(ex,Messages.RH_CONVERSION_FAILED);
             }
@@ -566,7 +611,7 @@ public class RequestHandler
             // Compose ACK execution report (with pending status).
 
             try {
-                qMsgReply=createExecutionReport(qMsg);
+                qMsgReply=createExecutionReport(b,qMsg);
                 if (qMsgReply==null) {
                     Messages.RH_ACK_FAILED_WARN.warn
                         (this,msg,qMsg,b.toString());
@@ -580,7 +625,7 @@ public class RequestHandler
             Messages.RH_MESSAGE_PROCESSING_FAILED.error
                 (this,ex,msg,qMsg,qMsgToSend,
                  ObjectUtils.toString(b,ObjectUtils.toString(bID)));
-            qMsgReply=createRejection(ex,msg);
+            qMsgReply=createRejection(ex,b,msg);
         }
 
         // If the reply could not be created, we are done (a
@@ -592,7 +637,7 @@ public class RequestHandler
         if (SLF4JLoggerProxy.isDebugEnabled(this)) {
             Messages.RH_ANALYZED_MESSAGE.debug
                 (this,new AnalyzedMessage
-                 (getDataDictionary(),qMsgReply).toString());
+                 (getBestDataDictionary(b),qMsgReply).toString());
         }
 
         // Convert reply to FIX Agnostic messsage.

@@ -1,69 +1,245 @@
 package org.marketcetera.util.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import java.util.NoSuchElementException;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
-import java.util.NoSuchElementException;
+import static org.junit.Assert.*;
+
+/**
+ * A log message test helper.
+ *
+ * @author tlerios@marketcetera.com
+ * @author anshul@marketcetera.com
+ * @since $Release$
+ * @version $Id$
+ */
 
 /* $License$ */
-/**
- * A utility to class to help test log messages in unit tests.
- *
- * @author anshul@marketcetera.com
- * @version $Id$
- * @since $Release$
- */
+
 public class LogTestAssist
 {
-    private final MemoryAppender mAppender = new MemoryAppender();
+
+    // INSTANCE DATA.
+
+    private final MemoryAppender mAppender=
+        new MemoryAppender();
+
+
+    // CONSTRUCTORS.
 
     /**
-     * Creates a new instance that doesn't track any logger output.
-     * The instance can be configured to track logger output by invoking
-     * {@link #trackLogger(String, org.apache.log4j.Level)}.
+     * Creates a new helper which tracks the log events sent out to
+     * the logger with the given name at the given optional threshold
+     * level.
+     *
+     * @param name The logger name.
+     * @param level The level. It may be null, in which case logger's
+     * threshold level is not altered.
      */
-    public LogTestAssist()
+
+    public LogTestAssist
+        (String name,
+         Level level)
     {
+        trackLogger(name,level);
     }
 
     /**
-     * Creates an instance that tracks the log events sent out to
-     * the specified logger.
+     * Creates a new helper which tracks the log events sent out to
+     * the logger with the given name.
      *
-     * @param inName The logger name.
-     * @param inLevel the new log level for the logger. If null, the logger's
-     * level is not reset.
+     * @param name The logger name.
      */
-    public LogTestAssist(String inName, Level inLevel)
+
+    public LogTestAssist
+        (String name)
     {
-        trackLogger(inName, inLevel);
+        this(name,null);
     }
 
     /**
-     * Starts tracking log events for the specified logger and
-     * resets the log level of the specified logger to the supplied value.
-     *
-     * @param inName the name of the logger to track.
-     * @param inLevel the new log level for the logger. If null, the logger's
-     * level is not reset.
+     * Creates a new helper which doesn't track any logger output. The
+     * helper can be configured to track logger output using {@link
+     * #trackLogger(String,org.apache.log4j.Level)}.
      */
-    public void trackLogger(String inName, Level inLevel)
+
+    public LogTestAssist() {}
+
+
+    // CLASS METHODS.
+
+    /**
+     * Sets the level of the root logger to the given level.
+     *
+     * @param level The level.
+     */
+
+    public static void setDefaultLevel
+        (Level level)
     {
-        Logger logger=Logger.getLogger(inName);
-        logger.addAppender(getAppender());
-        if (inLevel!=null) {
-            logger.setLevel(inLevel);
+        Logger.getRootLogger().setLevel(level);
+    }
+
+    /**
+     * Sets the level of the logger with the given name to the given
+     * level.
+     *
+     * @param name The logger name.
+     * @param level The level.
+     */
+
+    public static void setLevel
+        (String name,
+         Level level)
+    {
+        Logger.getLogger(name).setLevel(level);
+    }
+
+    /**
+     * Asserts that the contents of the given event match the given
+     * expected level, logger name, message, and location.
+     *
+     * @param event The event.
+     * @param level The expected level. Use null to indicate "don't
+     * care".
+     * @param logger The expected logger name. Use null to indicate
+     * "don't care".
+     * @param message The expected message. Use null to indicate
+     * "don't care".
+     * @param location The expected location. Use null to indicate
+     * "don't care".
+     */
+
+    public static void assertEvent
+        (LoggingEvent event,
+         Level level,
+         String logger,
+         String message,
+         String location)
+    {
+        if (level!=null) {
+            assertEquals(level,event.getLevel());
+        }
+        if (logger!=null) {
+            assertEquals(logger,event.getLoggerName());
+        }
+        if (message!=null) {
+            assertEquals(message,event.getMessage());
+        }
+        if (location!=null) {
+            assertEquals
+                (location,event.getLocationInformation().getClassName());
         }
     }
+
+
+    // INSTANCE METHODS.
+
     /**
-     * Clears all the log events received by the appender.
+     * Starts tracking log events sent out to the logger with the
+     * given name at the given optional threshold level.
+     *
+     * @param name The logger name.
+     * @param level The level. It may be null, in which case logger's
+     * threshold level is not altered.
      */
+
+    public void trackLogger
+        (String name,
+         Level level)
+    {
+        Logger logger=Logger.getLogger(name);
+        logger.addAppender(getAppender());
+        if (level!=null) {
+            logger.setLevel(level);
+        }
+    }
+
+    /**
+     * Starts tracking log events sent out to the logger with the
+     * given name.
+     *
+     * @param name The logger name.
+     */
+
+    public void trackLogger
+        (String name)
+    {
+        trackLogger(name,null);
+    }
+
+    /**
+     * Clears the contents of the receiver's collector.
+     */
+
     public void resetAppender()
     {
-        mAppender.clear();
+        getAppender().clear();
+    }
+
+    /**
+     * Returns a string with all the events of the receiver's
+     * collector.
+     *
+     * @return The string.
+     */
+
+    public String getEventsAsString()
+    {
+        StringBuilder builder=new StringBuilder();
+        builder.append("Event count: "); //$NON-NLS-1$
+        builder.append(getAppender().getEvents().size());
+        int i=0;
+        for (LoggingEvent event:getAppender().getEvents()) {
+            builder.append(SystemUtils.LINE_SEPARATOR);
+            builder.append("Event "); //$NON-NLS-1$
+            builder.append(i++);
+            builder.append(": level: "); //$NON-NLS-1$
+            builder.append(event.getLevel());
+            builder.append("; logger: "); //$NON-NLS-1$
+            builder.append(event.getLoggerName());
+            builder.append("; message: "); //$NON-NLS-1$
+            builder.append(event.getMessage());
+            builder.append("; location: "); //$NON-NLS-1$
+            builder.append(event.getLocationInformation().getClassName());
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Returns the receiver's collector (appender) of retained events.
+     *
+     * @return The appender.
+     */
+
+    public MemoryAppender getAppender()
+    {
+        return mAppender;
+    }
+
+    /**
+     * Asserts that the receiver's collector contains the given number
+     * of events.
+     *
+     * @param count The number of events.
+     */
+
+    public void assertEventCount
+        (int count)
+    {
+        if (getAppender().getEvents().size()==count) {
+            return;
+        }
+        StringBuilder builder=new StringBuilder();
+        builder.append("Incorrect event count; expected "); //$NON-NLS-1$
+        builder.append(count);
+        builder.append(" actual "); //$NON-NLS-1$
+        builder.append(SystemUtils.LINE_SEPARATOR);
+        builder.append(getEventsAsString());
+        fail(builder.toString());
     }
 
     /**
@@ -72,7 +248,7 @@ public class LogTestAssist
 
     public void assertNoEvents()
     {
-        assertEquals(0,getAppender().getEvents().size());
+        assertEventCount(0);
     }
 
     /**
@@ -103,7 +279,7 @@ public class LogTestAssist
         } catch (NoSuchElementException ex) {
             fail("List is empty"); //$NON-NLS-1$
         }
-        TestCaseBase.assertEvent(event,level,logger,message,location);
+        assertEvent(event,level,logger,message,location);
     }
 
     /**
@@ -140,7 +316,9 @@ public class LogTestAssist
                 return;
             }
         }
-        fail("No matches against given event:"+getAppender().getEvents().toString()); //$NON-NLS-1$
+        fail("No matches against given event. Events are:"+ //$NON-NLS-1$
+             SystemUtils.LINE_SEPARATOR+
+             getEventsAsString());
     }
 
     /**
@@ -165,19 +343,8 @@ public class LogTestAssist
          String message,
          String location)
     {
-        assertEquals(1,getAppender().getEvents().size());
+        assertEventCount(1);
         assertLastEvent(level,logger,message,location);
-        getAppender().clear();
-    }
-
-    /**
-     * Returns the receiver's collector (appender) of retained events.
-     *
-     * @return The appender.
-     */
-
-    MemoryAppender getAppender()
-    {
-        return mAppender;
+        resetAppender();
     }
 }
