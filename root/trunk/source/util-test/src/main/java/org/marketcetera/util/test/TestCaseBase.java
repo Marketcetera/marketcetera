@@ -3,11 +3,9 @@ package org.marketcetera.util.test;
 import java.io.File;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 
-import static org.junit.Assert.*;
 
 /**
  * Base class for test cases.
@@ -70,7 +68,7 @@ public class TestCaseBase
     protected static void setDefaultLevel
         (Level level)
     {
-        Logger.getRootLogger().setLevel(level);
+        LogTestAssist.setDefaultLevel(level);
     }
 
     /**
@@ -85,7 +83,7 @@ public class TestCaseBase
         (String name,
          Level level)
     {
-        Logger.getLogger(name).setLevel(level);
+        LogTestAssist.setLevel(name,level);
     }
 
     /**
@@ -110,19 +108,8 @@ public class TestCaseBase
          String message,
          String location)
     {
-        if (level!=null) {
-            assertEquals(level,event.getLevel());
-        }
-        if (logger!=null) {
-            assertEquals(logger,event.getLoggerName());
-        }
-        if (message!=null) {
-            assertEquals(message,event.getMessage());
-        }
-        if (location!=null) {
-            assertEquals
-                (location,event.getLocationInformation().getClassName());
-        }
+        LogTestAssist.assertEvent(event,level,logger,
+                                  message,location);
     }
 
 
@@ -141,6 +128,17 @@ public class TestCaseBase
     }
 
     /**
+     * Returns the receiver's log message helper.
+     *
+     * @return The helper.
+     */
+
+    protected LogTestAssist getLogAssist()
+    {
+        return mLogAssist;
+    }
+
+    /**
      * Returns the receiver's collector (appender) of retained events.
      *
      * @return The appender.
@@ -148,7 +146,20 @@ public class TestCaseBase
 
     protected MemoryAppender getAppender()
     {
-        return mLogAssist.getAppender();
+        return getLogAssist().getAppender();
+    }
+
+    /**
+     * Asserts that the receiver's collector contains the given number
+     * of events.
+     *
+     * @param count The number of events.
+     */
+
+    protected void assertEventCount
+        (int count)
+    {
+        getLogAssist().assertEventCount(count);
     }
 
     /**
@@ -157,7 +168,7 @@ public class TestCaseBase
 
     protected void assertNoEvents()
     {
-        mLogAssist.assertNoEvents();
+        getLogAssist().assertNoEvents();
     }
 
     /**
@@ -182,7 +193,7 @@ public class TestCaseBase
          String message,
          String location)
     {
-        mLogAssist.assertLastEvent(level,logger,message,location);
+        getLogAssist().assertLastEvent(level,logger,message,location);
     }
 
     /**
@@ -206,7 +217,7 @@ public class TestCaseBase
          String message,
          String location)
     {
-        mLogAssist.assertSomeEvent(level,logger,message,location);
+        getLogAssist().assertSomeEvent(level,logger,message,location);
     }
 
     /**
@@ -231,6 +242,6 @@ public class TestCaseBase
          String message,
          String location)
     {
-        mLogAssist.assertSingleEvent(level,logger,message,location);
+        getLogAssist().assertSingleEvent(level,logger,message,location);
     }
 }

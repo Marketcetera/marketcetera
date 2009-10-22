@@ -308,6 +308,23 @@ public class FIXMessageUtil {
     }
 
     /**
+     * See {@link #fillFieldsFromExistingMessage(quickfix.Message, quickfix.Message, DataDictionary, boolean, java.util.Set)}.
+     * Invokes this api with a null inclusion set.
+     *
+     * @param outgoingMessage The message whose fields need to be filled.
+     * @param existingMessage The message whose fields need to be copied.
+     * @param dict The data dictionary.
+     * @param onlyCopyRequiredFields if only required fields should be copied.
+     */
+    public static void fillFieldsFromExistingMessage(Message outgoingMessage,
+                                                     Message existingMessage,
+                                                     DataDictionary dict,
+                                                     boolean onlyCopyRequiredFields)
+    {
+        fillFieldsFromExistingMessage(outgoingMessage, existingMessage, dict, onlyCopyRequiredFields, null);
+    }
+
+    /**
      * Helper method to extract all useful fields from an existing message into another message
      * This is usually called when the "existing" message is malformed and is missing some fields,
      * and an appropriate "reject" message needs to be sent.
@@ -330,9 +347,41 @@ public class FIXMessageUtil {
                                                      boolean onlyCopyRequiredFields,
                                                      Set<Integer> inclusionSet)
     {
+        fillFieldsFromExistingMessage
+            (outgoingMessage,
+             existingMessage,
+             CurrentFIXDataDictionary.getCurrentFIXDataDictionary().
+             getDictionary(),
+             onlyCopyRequiredFields,
+             inclusionSet);
+    }
+    /**
+     * Helper method to extract all useful fields from an existing message into another message
+     * This is usually called when the "existing" message is malformed and is missing some fields,
+     * and an appropriate "reject" message needs to be sent.
+     * Can't say we are proud of this method - it's rather a kludge.
+     * Goes through all the required fields in "outgoing" message, and ignores any missing ones
+     * Skips over any of the outgoing fields that have already been set
+     *
+     * Use cases: an order comes in missing a Side, so we need to create an ExecutionReport
+     * that's a rejection, and need to extract all the other fields (ClOrdId, size, etc)
+     * which may or may not be present since the order is malformed
+     *
+     * @param outgoingMessage The message whose fields need to be filled.
+     * @param existingMessage The message whose fields need to be copied.
+     * @param dict The data dictionary.
+     * @param onlyCopyRequiredFields if only required fields should be copied.
+     * @param inclusionSet the set of fields that should be copied. Can be null.
+     * If not null, only the fields present in this set are copied.
+     */
+    public static void fillFieldsFromExistingMessage(Message outgoingMessage,
+                                                     Message existingMessage,
+                                                     DataDictionary dict,
+                                                     boolean onlyCopyRequiredFields,
+                                                     Set<Integer> inclusionSet)
+    {
         try {
             String msgType = outgoingMessage.getHeader().getString(MsgType.FIELD);
-            DataDictionary dict = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getDictionary();
             for (int fieldInt = 1; fieldInt < MAX_FIX_FIELDS; fieldInt++){
                 if(inclusionSet != null && !(inclusionSet.contains(fieldInt))) {
                     continue;
