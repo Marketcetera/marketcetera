@@ -8,7 +8,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 /* $License$ */
 
 /**
- *
+ * Mock implementation of {@link Event}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -86,14 +86,10 @@ public class MockEvent
     @Override
     public long getTimeMillis()
     {
-        Date timestamp = event.getTimestamp();
-        if(timestamp == null) {
-            return -1;
-        }
-        return event.getTimestamp().getTime();
+        return event.getTimeMillis();
     }
     /**
-     * 
+     * event attributes 
      */
     private final EventBean event = new EventBean();
     private static final long serialVersionUID = 1L;

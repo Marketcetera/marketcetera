@@ -295,7 +295,6 @@ public class EventTestBase
      * @param inPrice
      * @param inSize
      * @return
-     * @throws Exception
      */
     public static TradeEvent generateEquityTradeEvent(long inMessageId,
                                                               long inTimestamp,
@@ -303,7 +302,6 @@ public class EventTestBase
                                                               String inExchange,
                                                               BigDecimal inPrice,
                                                               BigDecimal inSize)
-              throws Exception
     {
         return TradeEventBuilder.equityTradeEvent().withMessageId(inMessageId).withTimestamp(new Date(inTimestamp)).withInstrument(inInstrument).withExchange(inExchange)
             .withPrice(inPrice).withSize(inSize).withTradeDate(DateUtils.dateToString(new Date(inTimestamp))).create();

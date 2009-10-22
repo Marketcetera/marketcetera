@@ -75,13 +75,13 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	 * @return an event to send
 	 * @throws Exception 
 	 */
-	protected abstract Object createEvent1(K key) throws Exception;
+	protected abstract Object createEvent1(K key);
 
 	/**
 	 * @return another event to send
 	 * @throws Exception 
 	 */
-	protected abstract Object createEvent2(K key) throws Exception;
+	protected abstract Object createEvent2(K key);
 	
 	/**
 	 * @return capabilities that this feed supports
@@ -358,12 +358,12 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 		mMockMarketDataModule.emitData(object);
 	}
 
-	protected AskEvent createAskEvent(String symbol, String exchange, int price, int size) throws Exception {
+	protected AskEvent createAskEvent(String symbol, String exchange, int price, int size) {
 		return QuoteEventBuilder.equityAskEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
         .withPrice(new BigDecimal(price)).withSize(new BigDecimal(size)).withAction(QuoteAction.ADD).create();
 	}
 
-	protected BidEvent createBidEvent(String symbol, String exchange, int price, int size) throws Exception {
+	protected BidEvent createBidEvent(String symbol, String exchange, int price, int size) {
 		return QuoteEventBuilder.equityBidEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
         .withPrice(new BigDecimal(price)).withSize(new BigDecimal(size)).withAction(QuoteAction.ADD).create();
 	}

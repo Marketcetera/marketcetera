@@ -28,7 +28,7 @@ public class BogusFeedEventTranslator
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
     public List<Event> toEvent(Object inData,
-                                   String inHandle)
+                               String inHandle)
             throws CoreException
     {
         if(!(inData instanceof Event)) {

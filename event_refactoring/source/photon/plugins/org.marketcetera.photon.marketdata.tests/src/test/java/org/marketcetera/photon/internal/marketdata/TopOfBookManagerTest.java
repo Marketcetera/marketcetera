@@ -64,12 +64,12 @@ public class TopOfBookManagerTest extends DataFlowManagerTestBase<MDTopOfBook, T
 	}
 
 	@Override
-	protected Object createEvent1(TopOfBookKey key) throws Exception {
+	protected Object createEvent1(TopOfBookKey key) {
 		return createAskEvent(key.getSymbol(), "Q", 34, 500);
 	}
 
 	@Override
-	protected Object createEvent2(TopOfBookKey key) throws Exception {
+	protected Object createEvent2(TopOfBookKey key) {
 		return createBidEvent(key.getSymbol(), "Q", 6, 30);
 	}
 

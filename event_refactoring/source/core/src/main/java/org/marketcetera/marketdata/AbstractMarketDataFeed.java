@@ -18,6 +18,7 @@ import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTranslator;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
@@ -516,10 +517,22 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                 try {
                     E eventTranslator = getEventTranslator();
                     List<Event> events = eventTranslator.toEvent(inData,
-                                                                                       inHandle);
+                                                                 inHandle);
+                    // events returned may contain aggregate events, which further need to be decomposed
+                    // create a list of actual events
+                    List<Event> actualEvents = new ArrayList<Event>();
+                    // check the events returned to find aggregate events, if any
+                    for(Event event : events) {
+                        if(event instanceof AggregateEvent) {
+                            AggregateEvent ae = (AggregateEvent)event;
+                            actualEvents.addAll(ae.decompose());
+                        } else {
+                            actualEvents.add(event);
+                        }
+                    }
                     ThreadedMetric.event("mdata-translated");  //$NON-NLS-1$
                     // now publish the complete list of events in the proper order
-                    for(Event event : events) {
+                    for(Event event : actualEvents) {
                         event.setSource(token);
                         token.publish(event);
                     }

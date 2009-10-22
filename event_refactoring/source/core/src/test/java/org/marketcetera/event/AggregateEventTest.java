@@ -182,13 +182,13 @@ public class AggregateEventTest
          */
         private final List<Event> compositeEvents = new ArrayList<Event>();
         /**
-         * 
+         * event attributes
          */
         private final EventBean event = new EventBean();
         /**
-         * 
+         * instrument attributes
          */
         private final InstrumentBean instrument = new InstrumentBean();
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 2L;
     }
 }

@@ -100,33 +100,33 @@ public class MarketceteraFeedEventTranslator
                     case MDEntryType.BID :
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
                             BidEvent bid = QuoteEventBuilder.equityBidEvent().withMessageId(System.nanoTime())
-                                                                                .withTimestamp(new Date())
-                                                                                .withInstrument(new Equity(symbol))
-                                                                                .withExchange(exchange)
-                                                                                .withPrice(new BigDecimal(price))
-                                                                                .withSize(new BigDecimal(size)).create();
+                                                                             .withTimestamp(new Date())
+                                                                             .withInstrument(new Equity(symbol))
+                                                                             .withExchange(exchange)
+                                                                             .withPrice(new BigDecimal(price))
+                                                                             .withSize(new BigDecimal(size)).create();
                             events.add(bid);
                         }
                         break;
                     case MDEntryType.OFFER :
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
                             AskEvent ask = QuoteEventBuilder.equityAskEvent().withMessageId(System.nanoTime())
-                                                                                .withTimestamp(new Date())
-                                                                                .withInstrument(new Equity(symbol))
-                                                                                .withExchange(exchange)
-                                                                                .withPrice(new BigDecimal(price))
-                                                                                .withSize(new BigDecimal(size)).create();
+                                                                             .withTimestamp(new Date())
+                                                                             .withInstrument(new Equity(symbol))
+                                                                             .withExchange(exchange)
+                                                                             .withPrice(new BigDecimal(price))
+                                                                             .withSize(new BigDecimal(size)).create();
                             events.add(ask);
                         }
                         break;
                     case MDEntryType.TRADE:
                         if(requestedContent.contains(Content.LATEST_TICK)) {
                             TradeEvent trade = TradeEventBuilder.equityTradeEvent().withMessageId(System.nanoTime())
-                                                                                      .withTimestamp(new Date())
-                                                                                      .withInstrument(new Equity(symbol))
-                                                                                      .withExchange(exchange)
-                                                                                      .withPrice(new BigDecimal(price))
-                                                                                      .withSize(new BigDecimal(size)).create();
+                                                                                   .withTimestamp(new Date())
+                                                                                   .withInstrument(new Equity(symbol))
+                                                                                   .withExchange(exchange)
+                                                                                   .withPrice(new BigDecimal(price))
+                                                                                   .withSize(new BigDecimal(size)).create();
                             events.add(trade);
                         }
                         break;

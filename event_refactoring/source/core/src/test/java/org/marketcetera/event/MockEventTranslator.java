@@ -37,7 +37,7 @@ public class MockEventTranslator
      */
     @Override
     public List<Event> toEvent(Object inData,
-                                      String inHandle)
+                               String inHandle)
             throws CoreException
     {
         if(getTranslateToEventsThrows()) {
@@ -55,7 +55,7 @@ public class MockEventTranslator
         } else if(inData instanceof MarketDataRequest) {
             request = (MarketDataRequest)inData;
         }
-        if(inData instanceof QuoteEvent ||
+        if(inData instanceof MarketDataEvent ||
            inData instanceof AggregateEvent) {
             return Arrays.asList(new Event[] {(Event)inData });
         }

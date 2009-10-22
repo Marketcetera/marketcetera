@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 
 import org.junit.Assert;
@@ -19,12 +20,17 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
+import org.marketcetera.event.AggregateEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.MockEvent;
 import org.marketcetera.event.MockEventTranslator;
+import org.marketcetera.event.AggregateEventTest.MockAggregateEvent;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -41,6 +47,8 @@ public class AbstractMarketDataFeedTest
     extends MarketDataFeedTestBase
     implements Messages
 {
+    private final Equity metc = new Equity("METC");
+    private final String exchange = "TEST";
     @Test
     public void testConstructor()
         throws Exception
@@ -694,6 +702,55 @@ public class AbstractMarketDataFeedTest
         feed.setCapabilities(capabilities);
         Assert.assertArrayEquals(capabilities.toArray(),
                                  feed.getCapabilities().toArray());
+    }
+    /**
+     * Verifies that {@link AggregateEvent} objects are properly decomposed.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void decomposition()
+        throws Exception
+    {
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
+        feed.start();
+        feed.login(new MockMarketDataFeedCredentials());
+        // set up a subscriber to receive events
+        final MockSubscriber s = new MockSubscriber();
+        // a market data request (doesn't matter what)
+        MarketDataRequest request = new MarketDataRequest().fromProvider("not-a-real-provider").withSymbols("METC");
+        // first, have the feed return a non-aggregate event
+        MockEvent e = new MockEvent();
+        assertTrue(Event.class.isAssignableFrom(e.getClass()));
+        assertFalse(AggregateEvent.class.isAssignableFrom(e.getClass()));
+        feed.setEventsToReturn(Arrays.asList(new Event[] { e } ));
+        feed.execute(MarketDataFeedTokenSpec.generateTokenSpec(request,
+                                                               s));
+        waitForPublication(s);
+        assertEquals(1,
+                     s.getPublishCount());
+        assertEquals(e,
+                     s.getPublications().get(0));
+        // next, send in an aggregate event and make sure it gets properly decomposed
+        List<Event> expectedEvents = Arrays.asList(new Event[] { EventTestBase.generateEquityAskEvent(metc,
+                                                                                                      exchange),
+                                                                 EventTestBase.generateEquityBidEvent(metc,
+                                                                                                      exchange) } );
+        MockAggregateEvent mae = new MockAggregateEvent(expectedEvents);
+        feed.setEventsToReturn(Arrays.asList(new Event[] { mae } ));
+        s.reset();
+        feed.execute(MarketDataFeedTokenSpec.generateTokenSpec(request,
+                                                               s));
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return s.getPublishCount() == 2;
+            }
+        });
+        assertEquals(expectedEvents,
+                     s.getPublications());
     }
     @Test
     public void testExecuteFailures()
