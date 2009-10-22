@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @Immutable
 @ClassVersion("$Id$")
-public final class EventValidationServices
+public abstract class EventValidationServices
 {
     /**
      * Causes an unchecked exception of the appropriate type

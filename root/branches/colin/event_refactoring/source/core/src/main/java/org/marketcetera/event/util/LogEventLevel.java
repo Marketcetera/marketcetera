@@ -30,6 +30,9 @@ public enum LogEventLevel
     public static boolean shouldLog(LogEvent inEvent,
                                     String inCategory)
     {
+        if(inEvent == null) {
+            return false;
+        }
         if(DEBUG.equals(inEvent.getLevel())) {
             return SLF4JLoggerProxy.isDebugEnabled(inCategory);
         }
