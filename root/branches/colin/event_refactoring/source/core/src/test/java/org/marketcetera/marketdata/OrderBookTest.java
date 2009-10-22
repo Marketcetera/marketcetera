@@ -144,7 +144,7 @@ public class OrderBookTest
                     throws Exception
             {
                 new OrderBook(null,
-                                      1);
+                              1);
             }
         };
         new ExpectedFailure<IllegalArgumentException>(null) {
@@ -153,7 +153,7 @@ public class OrderBookTest
                     throws Exception
             {
                 new OrderBook(symbol,
-                                      -2);
+                              -2);
             }
         };
         new ExpectedFailure<IllegalArgumentException>(null) {
@@ -162,7 +162,7 @@ public class OrderBookTest
                     throws Exception
             {
                 new OrderBook(symbol,
-                                      0);
+                              0);
             }
         };
         verifyBook(symbol,
@@ -175,7 +175,7 @@ public class OrderBookTest
                    asks,
                    10,
                    new OrderBook(symbol,
-                                         10));
+                                 10));
     }
     /**
      * Tests book processing of a series of bids, asks, and trades.
@@ -194,7 +194,7 @@ public class OrderBookTest
                    book);
         // create an ask
         AskEvent ask1 = EventTestBase.generateEquityAskEvent(symbol,
-                                                           exchange);
+                                                             exchange);
         book.process(ask1);
         asks.add(ask1);
         verifyBook(symbol,
@@ -204,8 +204,8 @@ public class OrderBookTest
                    book);
         // create a new ask of lesser worth (higher price)
         AskEvent ask2 = EventTestBase.generateEquityAskEvent(symbol,
-                                                                     exchange,
-                                                                     ask1.getPrice().add(TEN));
+                                                             exchange,
+                                                             ask1.getPrice().add(TEN));
         book.process(ask2);
         asks.add(ask2);
         verifyBook(symbol,
@@ -215,8 +215,8 @@ public class OrderBookTest
                    book);
         // create a new ask of greater worth (lower price)
         AskEvent ask3 = EventTestBase.generateEquityAskEvent(symbol,
-                                                                     exchange,
-                                                                     ask1.getPrice().subtract(TEN));
+                                                             exchange,
+                                                             ask1.getPrice().subtract(TEN));
         book.process(ask3);
         asks.add(ask3);
         verifyBook(symbol,
@@ -226,7 +226,7 @@ public class OrderBookTest
                    book);
         // add a bid
         BidEvent bid1 = EventTestBase.generateEquityBidEvent(symbol,
-                                                                     exchange);
+                                                             exchange);
         book.process(bid1);
         bids.add(bid1);
         verifyBook(symbol,
@@ -236,8 +236,8 @@ public class OrderBookTest
                    book);
         // create a new bid of lesser worth (lower price)
         BidEvent bid2 = EventTestBase.generateEquityBidEvent(symbol,
-                                                                     exchange,
-                                                                     bid1.getPrice().subtract(TEN));
+                                                             exchange,
+                                                             bid1.getPrice().subtract(TEN));
         book.process(bid2);
         bids.add(bid2);
         verifyBook(symbol,
@@ -247,8 +247,8 @@ public class OrderBookTest
                    book);
         // create a new bid of greater worth (higher price)
         BidEvent bid3 = EventTestBase.generateEquityBidEvent(symbol,
-                                                                     exchange,
-                                                                     bid1.getPrice().add(TEN));
+                                                             exchange,
+                                                             bid1.getPrice().add(TEN));
         book.process(bid3);
         bids.add(bid3);
         verifyBook(symbol,
@@ -273,7 +273,7 @@ public class OrderBookTest
                    book);
         // add an ask
         AskEvent ask1 = EventTestBase.generateEquityAskEvent(symbol,
-                                                                     exchange);
+                                                             exchange);
         asks.add(ask1);
         book.process(ask1);
         verifyBook(symbol,
@@ -282,7 +282,7 @@ public class OrderBookTest
                    OrderBook.UNLIMITED_DEPTH,
                    book);
         BidEvent bid1 = EventTestBase.generateEquityBidEvent(symbol,
-                                                                     exchange);
+                                                             exchange);
         bids.add(bid1);
         book.process(bid1);
         verifyBook(symbol,
@@ -393,7 +393,7 @@ public class OrderBookTest
             }
         };
         final AskEvent badAsk = EventTestBase.generateEquityAskEvent(new Equity("METC"),
-                                                                             exchange);
+                                                                     exchange);
         assertFalse(badAsk.getInstrument().equals(symbol));
         new ExpectedFailure<IllegalArgumentException>(null) {
             @Override
@@ -419,15 +419,15 @@ public class OrderBookTest
         // create three asks with a measurable difference in their timestamps
         // to prove that the pruning technique is by age instead of value, make the oldest ask the best (lowest price)
         AskEvent ask1 = EventTestBase.generateEquityAskEvent(symbol,
-                                                                     exchange);
+                                                             exchange);
         Thread.sleep(250);
         AskEvent ask2 = EventTestBase.generateEquityAskEvent(symbol,
-                                                                     exchange,
+                                                             exchange,
                                                        ask1.getPrice().add(TEN));
         Thread.sleep(250);
         AskEvent ask3 = EventTestBase.generateEquityAskEvent(symbol,
-                                                                     exchange,
-                                                                     ask2.getPrice().add(TEN));
+                                                             exchange,
+                                                             ask2.getPrice().add(TEN));
         // add the ask events to the book
         book.process(ask1);
         asks.add(ask1);
@@ -456,15 +456,15 @@ public class OrderBookTest
                    book);
         // verify the same behavior for bids
         BidEvent bid1 = EventTestBase.generateEquityBidEvent(symbol,
-                                                                     exchange);
+                                                             exchange);
         Thread.sleep(250);
         BidEvent bid2 = EventTestBase.generateEquityBidEvent(symbol,
-                                                                     exchange,
-                                                                     bid1.getPrice().subtract(TEN));
+                                                             exchange,
+                                                             bid1.getPrice().subtract(TEN));
         Thread.sleep(250);
         BidEvent bid3 = EventTestBase.generateEquityBidEvent(symbol,
-                                                                     exchange,
-                                                                     bid2.getPrice().subtract(TEN));
+                                                             exchange,
+                                                             bid2.getPrice().subtract(TEN));
         // add the bid events to the book
         book.process(bid1);
         bids.add(bid1);
@@ -526,8 +526,8 @@ public class OrderBookTest
                             OrderBook inActualBook)
         throws Exception
     {
-        inExpectedAsks.sort(QuantityTuple.PriceComparator.ASCENDING_EQUITY);
-        inExpectedBids.sort(QuantityTuple.PriceComparator.DESCENDING_EQUITY);
+        inExpectedAsks.sort(QuantityTuple.PriceComparator.ASCENDING);
+        inExpectedBids.sort(QuantityTuple.PriceComparator.DESCENDING);
         List<QuantityTuple> convertedBids = convertEvents(inActualBook.getBidBook());
         List<QuantityTuple> convertedAsks = convertEvents(inActualBook.getAskBook());
         assertEquals(inExpectedInstrument,

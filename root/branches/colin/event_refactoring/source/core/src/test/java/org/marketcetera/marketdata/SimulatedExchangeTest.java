@@ -425,19 +425,19 @@ public class SimulatedExchangeTest
         List<AskEvent> asks = new ArrayList<AskEvent>();
         for(int i=0;i<5;i++) {
             bids.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
-                                  System.currentTimeMillis(),
-                                  metc,
-                                  exchange.getCode(),
-                                  baseValue.add(BigDecimal.ONE.multiply(new BigDecimal(i))),
-                                  bidSize));
+                                                          System.currentTimeMillis(),
+                                                          metc,
+                                                          exchange.getCode(),
+                                                          baseValue.add(BigDecimal.ONE.multiply(new BigDecimal(i))),
+                                                          bidSize));
         }
         for(int i=4;i>=0;i--) {
             asks.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
-                                  System.currentTimeMillis(),
-                                  metc,
-                                  exchange.getCode(),
-                                  baseValue.add(BigDecimal.ONE.multiply(new BigDecimal(i))),
-                                  askSize));
+                                                          System.currentTimeMillis(),
+                                                          metc,
+                                                          exchange.getCode(),
+                                                          baseValue.add(BigDecimal.ONE.multiply(new BigDecimal(i))),
+                                                          askSize));
         }
         script.addAll(bids);
         script.addAll(asks);
@@ -485,8 +485,8 @@ public class SimulatedExchangeTest
         */
         // next will be the asks interleaved with trades and corrections as the books are settled after each ask
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // 1st of 5 asks
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -497,8 +497,8 @@ public class SimulatedExchangeTest
         100 100.00 |
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // resulting trade
-                                                        new BigDecimal("50"),
-                                                        TradeEvent.class));
+                                                new BigDecimal("50"),
+                                                TradeEvent.class));
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // bid correction (change)
                               new BigDecimal("50"),
                               BidEvent.class));
@@ -512,8 +512,8 @@ public class SimulatedExchangeTest
         100 100.00 |
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // ask correction (delete)
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -524,8 +524,8 @@ public class SimulatedExchangeTest
         100 100.00 |
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // 2nd of 5 asks
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -536,11 +536,11 @@ public class SimulatedExchangeTest
         100 100.00 |
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // resulting trade
-                                                        new BigDecimal("50"),
-                                                        TradeEvent.class));
+                                                new BigDecimal("50"),
+                                                TradeEvent.class));
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("104.00"), // bid correction (delete of fully consumed bid)
-                                                        new BigDecimal("50"),
-                                                        BidEvent.class));
+                                                new BigDecimal("50"),
+                                                BidEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -550,8 +550,8 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // ask correction (delete of fully consumed ask)
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -561,8 +561,8 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("102.00"), // 3rd of 5 asks
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -572,11 +572,11 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("102.00"), // resulting trade
-                                                        new BigDecimal("50"),
-                                                        TradeEvent.class));
+                                                new BigDecimal("50"),
+                                                TradeEvent.class));
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // bid correction (change of partially consumed bid)
-                                                        new BigDecimal("50"),
-                                                        BidEvent.class));
+                                                new BigDecimal("50"),
+                                                BidEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -586,8 +586,8 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("102.00"), // ask correction (delete of fully consumed ask)
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -597,8 +597,8 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("101.00"), // 4th of 5 asks
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -608,11 +608,11 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("101.00"), // resulting trade
-                                                        new BigDecimal("50"),
-                                                        TradeEvent.class));
+                                                new BigDecimal("50"),
+                                                TradeEvent.class));
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("103.00"), // bid correction (delete of fully consumed bid)
-                                                        new BigDecimal("50"),
-                                                        BidEvent.class));
+                                                new BigDecimal("50"),
+                                                BidEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -621,8 +621,8 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("101.00"), // ask correction (delete of fully consumed ask)
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -631,8 +631,8 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("100.00"), // 5th of 5 asks
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -641,11 +641,11 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("100.00"), // resulting trade
-                                                        new BigDecimal("50"),
-                                                        TradeEvent.class));
+                                                new BigDecimal("50"),
+                                                TradeEvent.class));
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("102.00"), // bid correction (change of partially consumed bid)
-                                                        new BigDecimal("50"),
-                                                        BidEvent.class));
+                                                new BigDecimal("50"),
+                                                BidEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -654,8 +654,8 @@ public class SimulatedExchangeTest
         100 100.00 | 
          */
         allExpectedEvents.add(new QuantityTuple(new BigDecimal("100.00"), // ask correction (delete of fully consumed ask)
-                                                        new BigDecimal("50"),
-                                                        AskEvent.class));
+                                                new BigDecimal("50"),
+                                                AskEvent.class));
         /*
         bid        | ask
         -----------+-----------
@@ -804,18 +804,18 @@ public class SimulatedExchangeTest
                                sub2);
         // create an event targeted to the second exchange
         AskEvent ask2 = EventTestBase.generateEquityAskEvent(System.nanoTime(),
-                                                                     System.currentTimeMillis(),
-                                                                     metc,
-                                                                     exchange2.getCode(),
-                                                                     new BigDecimal("150"),
-                                                                     new BigDecimal("500"));
+                                                             System.currentTimeMillis(),
+                                                             metc,
+                                                             exchange2.getCode(),
+                                                             new BigDecimal("150"),
+                                                             new BigDecimal("500"));
         // create an event targeted to the second exchange but with the wrong symbol
         AskEvent ask3 = EventTestBase.generateEquityAskEvent(System.nanoTime(),
-                                                                     System.currentTimeMillis(),
-                                                                     goog,
-                                                                     exchange2.getCode(),
-                                                                     new BigDecimal("150"),
-                                                                     new BigDecimal("500"));
+                                                             System.currentTimeMillis(),
+                                                             goog,
+                                                             exchange2.getCode(),
+                                                             new BigDecimal("150"),
+                                                             new BigDecimal("500"));
         // create two different scripts
         // the events that are targeted to the wrong exchange or symbol should get skipped
         List<QuoteEvent> script1 = new ArrayList<QuoteEvent>();
@@ -1276,10 +1276,9 @@ public class SimulatedExchangeTest
             QuoteEvent quote = (QuoteEvent)inData;
             BidEvent newBid = (quote instanceof BidEvent ? quote.getAction() == QuoteAction.DELETE ? null : (BidEvent)quote : lastBid);
             AskEvent newAsk = (quote instanceof AskEvent ? quote.getAction() == QuoteAction.DELETE ? null : (AskEvent)quote : lastAsk);
-            TopOfBookEvent newTop = TopOfBookEventBuilder.topOfBookEvent()
-                                             .withBid(newBid)
-                                             .withAsk(newAsk)
-                                             .withTimestamp(quote.getTimestamp()).create();
+            TopOfBookEvent newTop = TopOfBookEventBuilder.topOfBookEvent().withBid(newBid)
+                                                                          .withAsk(newAsk)
+                                                                          .withTimestamp(quote.getTimestamp()).create();
             tops.add(newTop);
             lastBid = newBid;
             lastAsk = newAsk;

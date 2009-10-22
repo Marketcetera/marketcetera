@@ -112,8 +112,8 @@ public class OrderBook
         List<BidEvent> bidBook = getBidBook();
         List<AskEvent> askBook = getAskBook();
         return TopOfBookEventBuilder.topOfBookEvent().withBid(bidBook.isEmpty() ? null : bidBook.get(0))
-                                                   .withAsk(askBook.isEmpty() ? null : askBook.get(0))
-                                                   .withTimestamp(new Date()).create();
+                                                     .withAsk(askBook.isEmpty() ? null : askBook.get(0))
+                                                     .withTimestamp(new Date()).create();
     }
     /**
      * Returns the {@link DepthOfBookEvent} view of the order book. 
@@ -122,10 +122,9 @@ public class OrderBook
      */
     public final DepthOfBookEvent getDepthOfBook()
     {
-        return DepthOfBookEventBuilder.depthOfBook()
-                                      .withBids(getBidBook())
-                                      .withAsks(getAskBook())
-                                      .withInstrument(getInstrument()).create();
+        return DepthOfBookEventBuilder.depthOfBook().withBids(getBidBook())
+                                                    .withAsks(getAskBook())
+                                                    .withInstrument(getInstrument()).create();
     }
     /**
      * Gets the current state of the <code>Bid</code> book. 
@@ -232,9 +231,9 @@ public class OrderBook
      * @param inShowExchange a <code>boolean</code> value indicating whether to display the exchange associated with each bid and ask
      * @return a <code>String</code> containing the human-readable representation of the order book implied by the given <code>Iterator</code> objects
      */
-    public static <I extends Instrument> String printBook(Iterator<BidEvent> bidIterator,
-                                                          Iterator<AskEvent> askIterator,
-                                                          boolean inShowExchange)
+    public static String printBook(Iterator<BidEvent> bidIterator,
+                                   Iterator<AskEvent> askIterator,
+                                   boolean inShowExchange)
     {
         List<String> bids = new ArrayList<String>();
         List<String> asks = new ArrayList<String>();

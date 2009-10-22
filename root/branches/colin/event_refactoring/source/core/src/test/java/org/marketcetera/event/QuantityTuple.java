@@ -126,8 +126,8 @@ public class QuantityTuple
     public static class PriceComparator
         implements Comparator<QuantityTuple>
     {
-        public static final PriceComparator ASCENDING_EQUITY = new PriceComparator(true);
-        public static final PriceComparator DESCENDING_EQUITY = new PriceComparator(false);
+        public static final PriceComparator ASCENDING = new PriceComparator(true);
+        public static final PriceComparator DESCENDING = new PriceComparator(false);
         private final boolean ascending;
         private PriceComparator(boolean inAscending)
         {

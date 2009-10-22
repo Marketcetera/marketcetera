@@ -200,22 +200,21 @@ public final class SimulatedExchange
         // calculate low price (the min of current, open, and close - 0.00-4.99 inclusive)
         BigDecimal lowPrice = currentValue.min(openPrice).min(closePrice).subtract(randomDecimalDifference(5).abs());
         // ready to return the data
-        return MarketstatEventBuilder.marketstat(inInstrument)
-                                     .withTimestamp(new Date(currentTime))
-                                     .withOpenPrice(openPrice)
-                                     .withHighPrice(highPrice)
-                                     .withLowPrice(lowPrice)
-                                     .withClosePrice(closePrice)
-                                     .withPreviousClosePrice(previousClosePrice)
-                                     .withVolume(randomInteger(100000))
-                                     .withCloseDate(DateUtils.dateToString(new Date(currentTime-(1000*60*60*8))))
-                                     .withPreviousCloseDate(DateUtils.dateToString(new Date(currentTime-(1000*60*60*24))))
-                                     .withTradeHighTime(DateUtils.dateToString(new Date(currentTime-(1000*60*60*4))))
-                                     .withTradeLowTime(DateUtils.dateToString(new Date(currentTime-(1000*60*60*4))))
-                                     .withOpenExchange(getCode())
-                                     .withHighExchange(getCode())
-                                     .withLowExchange(getCode())
-                                     .withCloseExchange(getCode()).create();
+        return MarketstatEventBuilder.marketstat(inInstrument).withTimestamp(new Date(currentTime))
+                                                              .withOpenPrice(openPrice)
+                                                              .withHighPrice(highPrice)
+                                                              .withLowPrice(lowPrice)
+                                                              .withClosePrice(closePrice)
+                                                              .withPreviousClosePrice(previousClosePrice)
+                                                              .withVolume(randomInteger(100000))
+                                                              .withCloseDate(DateUtils.dateToString(new Date(currentTime-(1000*60*60*8))))
+                                                              .withPreviousCloseDate(DateUtils.dateToString(new Date(currentTime-(1000*60*60*24))))
+                                                              .withTradeHighTime(DateUtils.dateToString(new Date(currentTime-(1000*60*60*4))))
+                                                              .withTradeLowTime(DateUtils.dateToString(new Date(currentTime-(1000*60*60*4))))
+                                                              .withOpenExchange(getCode())
+                                                              .withHighExchange(getCode())
+                                                              .withLowExchange(getCode())
+                                                              .withCloseExchange(getCode()).create();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.Exchange#getStatistics(org.marketcetera.trade.Instrument, org.marketcetera.core.publisher.ISubscriber)
@@ -771,20 +770,18 @@ public final class SimulatedExchange
             }
             // take the modified value and add a bid and an ask based on it
             Date timestamp = new Date();
-            process(QuoteEventBuilder.askEvent(getBook().getInstrument())
-                                     .withMessageId(System.nanoTime())
-                                     .withTimestamp(timestamp)
-                                     .withExchange(exchange.getCode())
-                                     .withPrice(getValue().add(PENNY))
-                                     .withSize(randomInteger(10000))
-                                     .withQuoteDate(DateUtils.dateToString(timestamp)).create());
-            process(QuoteEventBuilder.bidEvent(getBook().getInstrument())
-                                     .withMessageId(System.nanoTime())
-                                     .withTimestamp(timestamp)
-                                     .withExchange(exchange.getCode())
-                                     .withPrice(getValue().subtract(PENNY))
-                                     .withSize(randomInteger(10000))
-                                     .withQuoteDate(DateUtils.dateToString(timestamp)).create());
+            process(QuoteEventBuilder.askEvent(getBook().getInstrument()).withMessageId(System.nanoTime())
+                                                                         .withTimestamp(timestamp)
+                                                                         .withExchange(exchange.getCode())
+                                                                         .withPrice(getValue().add(PENNY))
+                                                                         .withSize(randomInteger(10000))
+                                                                         .withQuoteDate(DateUtils.dateToString(timestamp)).create());
+            process(QuoteEventBuilder.bidEvent(getBook().getInstrument()).withMessageId(System.nanoTime())
+                                                                         .withTimestamp(timestamp)
+                                                                         .withExchange(exchange.getCode())
+                                                                         .withPrice(getValue().subtract(PENNY))
+                                                                         .withSize(randomInteger(10000))
+                                                                         .withQuoteDate(DateUtils.dateToString(timestamp)).create());
         }
         /**
          * Get the base value.
@@ -911,13 +908,12 @@ public final class SimulatedExchange
                                                    tradeSize.toPlainString(),
                                                    tradePrice.toPlainString());
                             // create the new trade
-                            TradeEvent trade = TradeEventBuilder.tradeEvent(bid.getInstrument())
-                                                                .withMessageId(System.nanoTime())
-                                                                .withTimestamp(new Date(tradeTime))
-                                                                .withExchange(bid.getExchange())
-                                                                .withPrice(tradePrice)
-                                                                .withSize(tradeSize)
-                                                                .withTradeDate(DateUtils.dateToString(new Date(tradeTime))).create();
+                            TradeEvent trade = TradeEventBuilder.tradeEvent(bid.getInstrument()).withMessageId(System.nanoTime())
+                                                                                                .withTimestamp(new Date(tradeTime))
+                                                                                                .withExchange(bid.getExchange())
+                                                                                                .withPrice(tradePrice)
+                                                                                                .withSize(tradeSize)
+                                                                                                .withTradeDate(DateUtils.dateToString(new Date(tradeTime))).create();
                             // these events are used to modify the orders in the book
                             BidEvent bidCorrection;
                             AskEvent askCorrection;

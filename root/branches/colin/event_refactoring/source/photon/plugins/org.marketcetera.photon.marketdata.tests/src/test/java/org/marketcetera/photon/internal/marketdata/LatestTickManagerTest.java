@@ -64,12 +64,12 @@ public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick,
 	}
 
 	@Override
-	protected Object createEvent1(LatestTickKey key) throws Exception {
+	protected Object createEvent1(LatestTickKey key) {
 		return createEvent(key.getSymbol(), 1, 6);
 	}
 
 	@Override
-	protected Object createEvent2(LatestTickKey key) throws Exception {
+	protected Object createEvent2(LatestTickKey key) {
 		return createEvent(key.getSymbol(), 10, 7);
 	}
 
@@ -85,7 +85,7 @@ public class LatestTickManagerTest extends DataFlowManagerTestBase<MDLatestTick,
 		assertThat(item.getSize(), comparesEqualTo(7));
 	}
 
-	private Object createEvent(String symbol, int price, int size) throws Exception {
+	private Object createEvent(String symbol, int price, int size) {
 		return EventTestBase.generateEquityTradeEvent(1L, System.currentTimeMillis(), new Equity(symbol), "Q",
 				new BigDecimal(price), new BigDecimal(size));
 	}

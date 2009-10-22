@@ -72,12 +72,12 @@ public class DepthOfBookManagerTest extends DataFlowManagerTestBase<MDDepthOfBoo
 	}
 
 	@Override
-	protected Object createEvent1(DepthOfBookKey key) throws Exception {
+	protected Object createEvent1(DepthOfBookKey key) {
 		return createAskEvent(key.getSymbol(), "B", 6, 3);
 	}
 
 	@Override
-	protected Object createEvent2(DepthOfBookKey key) throws Exception {
+	protected Object createEvent2(DepthOfBookKey key) {
 		return createBidEvent(key.getSymbol(), "A", 1, 2);
 	}
 
