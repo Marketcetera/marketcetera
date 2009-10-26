@@ -17,7 +17,7 @@ public class UnsupportedMessageException
     /**
      * Create a new UnsupportedMessageException instance.
      *
-     * @param inMessage
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public UnsupportedMessageException(I18NBoundMessage inMessage)
     {
@@ -27,7 +27,7 @@ public class UnsupportedMessageException
     /**
      * Create a new UnsupportedMessageException instance.
      *
-     * @param inNested
+     * @param inNested a <code>Throwable</code> value
      */
     public UnsupportedMessageException(Throwable inNested)
     {
@@ -37,8 +37,8 @@ public class UnsupportedMessageException
     /**
      * Create a new UnsupportedMessageException instance.
      *
-     * @param inMsg
-     * @param inNested
+     * @param inNested a <code>Throwable</code> value
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public UnsupportedMessageException(Throwable inNested,
                                        I18NBoundMessage inMessage)

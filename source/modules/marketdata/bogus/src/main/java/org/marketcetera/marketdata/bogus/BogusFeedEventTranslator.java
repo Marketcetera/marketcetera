@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTranslator;
 import org.marketcetera.event.UnsupportedEventException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -27,22 +27,22 @@ public class BogusFeedEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
-    public List<EventBase> toEvent(Object inData,
+    public List<Event> toEvent(Object inData,
                                    String inHandle)
             throws CoreException
     {
-        if(!(inData instanceof EventBase)) {
+        if(!(inData instanceof Event)) {
             throw new UnsupportedEventException(new I18NBoundMessage1P(UNKNOWN_EVENT_TYPE,
                                                                        ObjectUtils.toString(inData,
                                                                                             null)));
         }
-        EventBase event = (EventBase)inData;
-        return Arrays.asList(new EventBase[] { event } );
+        Event event = (Event)inData;
+        return Arrays.asList(new Event[] { event } );
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
-    public Object fromEvent(EventBase inEvent)
+    public Object fromEvent(Event inEvent)
             throws CoreException
     {
         throw new UnsupportedOperationException();

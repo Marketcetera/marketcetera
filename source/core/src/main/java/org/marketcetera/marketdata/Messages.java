@@ -66,12 +66,26 @@ public interface Messages
                                                                                      "order_book_depth_must_be_positive"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_CONVERT_EVENT_TO_ENTRY_TYPE = new I18NMessage1P(LOGGER,
                                                                                       "cannot_convert_event_to_entry_type"); //$NON-NLS-1$
-    static final I18NMessage2P SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL = new I18NMessage2P(LOGGER,
+    static final I18NMessage2P INSTRUMENT_DOES_NOT_MATCH_ORDER_BOOK_INSTRUMENT = new I18NMessage2P(LOGGER,
                                                                                            "symbol_does_not_match_order_book_symbol"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_SYMBOLS = new I18NMessage1P(LOGGER,
                                                                    "invalid_symbols"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_UNDERLYING_SYMBOLS = new I18NMessage1P(LOGGER,
+                                                                              "invalid_underlying_symbols"); //$NON-NLS-1$
     static final I18NMessage0P MISSING_SYMBOLS = new I18NMessage0P(LOGGER,
                                                                    "missing_symbols"); //$NON-NLS-1$
+    static final I18NMessage0P MISSING_UNDERLYING_SYMBOLS = new I18NMessage0P(LOGGER,
+                                                                              "missing_underlying_symbols"); //$NON-NLS-1$
+    static final I18NMessage1P BOTH_SYMBOLS_AND_UNDERLYING_SYMBOLS_SPECIFIED = new I18NMessage1P(LOGGER,
+                                                                                                 "both_symbols_and_underlying_symbols_specified"); //$NON-NLS-1$
+    static final I18NMessage1P NEITHER_SYMBOLS_NOR_UNDERLYING_SYMBOLS_SPECIFIED = new I18NMessage1P(LOGGER,
+                                                                                                    "neither_symbols_nor_underlying_symbols_specified"); //$NON-NLS-1$
+    static final I18NMessage2P OPTION_ASSET_CLASS_REQUIRED = new I18NMessage2P(LOGGER,
+                                                                               "option_asset_class_required"); //$NON-NLS-1$
+    static final I18NMessage1P DIVIDEND_REQUIRES_SYMBOLS = new I18NMessage1P(LOGGER,
+                                                                             "dividend_requires_symbols"); //$NON-NLS-1$
+    static final I18NMessage1P EQUITY_REQUIRES_SYMBOLS = new I18NMessage1P(LOGGER,
+                                                                           "equity_requires_symbols"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_TYPE = new I18NMessage1P(LOGGER,
                                                                 "invalid_type"); //$NON-NLS-1$
     static final I18NMessage0P MISSING_TYPE = new I18NMessage0P(LOGGER,
@@ -83,11 +97,15 @@ public interface Messages
     static final I18NMessage0P NULL_URL = new I18NMessage0P(LOGGER,
                                                            "null_url"); //$NON-NLS-1$
     static final I18NMessage0P MISSING_CONTENT = new I18NMessage0P(LOGGER,
-                                                                  "missing_source"); //$NON-NLS-1$
+                                                                  "missing_content"); //$NON-NLS-1$
+    static final I18NMessage0P MISSING_ASSET_CLASS = new I18NMessage0P(LOGGER,
+                                                                       "missing_asset_class"); //$NON-NLS-1$
     static final I18NMessage0P INVALID_REQUEST = new I18NMessage0P(LOGGER,
                                                                    "invalid_request"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_CONTENT = new I18NMessage1P(LOGGER,
                                                                    "invalid_content"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_ASSET_CLASS = new I18NMessage1P(LOGGER,
+                                                                       "invalid_asset_class"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_DATE = new I18NMessage1P(LOGGER,
                                                                 "invalid_date"); //$NON-NLS-1$
     static final I18NMessage1P UNSUPPORTED_REQUEST = new I18NMessage1P(LOGGER,

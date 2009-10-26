@@ -1,15 +1,26 @@
 package org.marketcetera.modules.cep.system;
 
-import org.marketcetera.core.Pair;
-import org.marketcetera.core.notifications.INotification;
-import org.marketcetera.event.*;
-import org.marketcetera.trade.*;
-import org.marketcetera.util.misc.ClassVersion;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.marketcetera.core.Pair;
+import org.marketcetera.core.notifications.INotification;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.MarketDataEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -39,7 +50,7 @@ public class CEPDataTypes {
     public static final String LOG = "log";    //$NON-NLS-1$
 
     public static List<Pair<String, Class<?>>> REQUEST_PRECANNED_TYPES = Collections.unmodifiableList(Arrays.asList(
-                    new Pair<String, Class<?>>(CEPDataTypes.MARKET_DATA, SymbolExchangeEvent.class),
+                    new Pair<String, Class<?>>(CEPDataTypes.MARKET_DATA, MarketDataEvent.class),
                     new Pair<String, Class<?>>(CEPDataTypes.BID, BidEvent.class),
                     new Pair<String, Class<?>>(CEPDataTypes.ASK, AskEvent.class),
                     new Pair<String, Class<?>>(CEPDataTypes.TRADE, TradeEvent.class),

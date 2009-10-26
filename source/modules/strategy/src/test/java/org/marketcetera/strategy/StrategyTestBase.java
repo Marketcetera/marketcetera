@@ -14,6 +14,7 @@ import java.beans.ExceptionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -44,6 +45,7 @@ import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -60,8 +62,9 @@ import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
@@ -89,7 +92,6 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
@@ -99,6 +101,7 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.util.log.I18NMessage;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
@@ -474,27 +477,30 @@ public class StrategyTestBase
         {
             synchronized(dataToSend) {
                 dataToSend.clear();
-                dataToSend.add(new TradeEvent(System.nanoTime(),
-                                              System.currentTimeMillis(),
-                                              new Equity("GOOG"),
-                                              "Exchange",
-                                              new BigDecimal("100"),
-                                              new BigDecimal("10000")));
-                dataToSend.add(new BidEvent(System.nanoTime(),
-                                            System.currentTimeMillis(),
-                                            new Equity("GOOG"),
-                                            "Exchange",
-                                            new BigDecimal("200"),
-                                            new BigDecimal("20000")));
-                dataToSend.add(new AskEvent(System.nanoTime(),
-                                            System.currentTimeMillis(),
-                                            new Equity("GOOG"),
-                                            "Exchange",
-                                            new BigDecimal("200"),
-                                            new BigDecimal("20000")));
+                dataToSend.add(EventTestBase.generateEquityTradeEvent(System.nanoTime(),
+                                                                      System.currentTimeMillis(),
+                                                                      new Equity("GOOG"),
+                                                                      "Exchange",
+                                                                      new BigDecimal("100"),
+                                                                      new BigDecimal("10000")));
+                dataToSend.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
+                                                                    System.currentTimeMillis(),
+                                                                    new Equity("GOOG"),
+                                                                    "Exchange",
+                                                                    new BigDecimal("200"),
+                                                                    new BigDecimal("20000")));
+                dataToSend.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
+                                                                    System.currentTimeMillis(),
+                                                                    new Equity("GOOG"),
+                                                                    "Exchange",
+                                                                    new BigDecimal("200"),
+                                                                    new BigDecimal("20000")));
                 Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
                 OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
-                                                                                                                null, Originator.Server, null, null);
+                                                                                                                null,
+                                                                                                                Originator.Server,
+                                                                                                                null,
+                                                                                                                null);
                 dataToSend.add(cancel);
                 Message executionReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport("orderid",
                                                                                                   "clOrderID",
@@ -511,7 +517,9 @@ public class StrategyTestBase
                                                                                                   "account");
                 dataToSend.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
                                                                                                   new BrokerID("some-broker"),
-                                                                                                  Originator.Server, null, null));
+                                                                                                  Originator.Server,
+                                                                                                  null,
+                                                                                                  null));
                 // send an object that doesn't fit one of the categories
                 dataToSend.add(new Date());
             }
@@ -1138,6 +1146,46 @@ public class StrategyTestBase
         return positions;
     }
     /**
+     * Verifies that the event created contains the expected information.
+     *
+     * @param inActualEvent a <code>LogEvent</code> value containing the event to verify
+     * @param inExpectedLevel a <code>Priority</code> value containing the expected priority
+     * @param inException a <code>Throwable</code> value containing the expected exception or <code>null</code> for none
+     * @param inExpectedMessage an <code>I18NMessage</code> value containing the expected message
+     * @param inExpectedParameters a <code>Serializable[]</code> value containing the expected parameters
+     */
+    public static void verifyEvent(LogEvent inActualEvent,
+                                   LogEventLevel inExpectedLevel,
+                                   Throwable inException,
+                                   I18NMessage inExpectedMessage,
+                                   Serializable...inExpectedParameters)
+        throws Exception
+    {
+        assertEquals(inExpectedLevel,
+                     inActualEvent.getLevel());
+        assertEquals(inException,
+                     inActualEvent.getException());
+        String messageText = inExpectedMessage.getMessageProvider().getText(inExpectedMessage,
+                                                                            (Object[])inExpectedParameters);
+        assertEquals(messageText,
+                     inActualEvent.getMessage());
+        // serialize event
+
+        LogEvent serializedEvent = (LogEvent)
+            SerializationUtils.deserialize
+            (SerializationUtils.serialize(inActualEvent));
+        assertEquals(inExpectedLevel,
+                     serializedEvent.getLevel());
+        if(inException == null) {
+            assertNull(serializedEvent.getException());
+        } else {
+            assertEquals(inException.getMessage(),
+                         serializedEvent.getException().getMessage());
+        }
+        assertEquals(messageText,
+                     serializedEvent.getMessage());
+    }
+    /**
      * Run at the beginning of execution of all tests.
      */
     @BeforeClass
@@ -1182,18 +1230,18 @@ public class StrategyTestBase
         runningModules.add(outputURN);
         runningModules.add(bogusDataFeedURN);
         setPropertiesToNull();
-        tradeEvent = new TradeEvent(System.nanoTime(),
-                                    System.currentTimeMillis(),
-                                    new Equity("METC"),
-                                    "Q",
-                                    new BigDecimal("1000.25"),
-                                    new BigDecimal("1000"));
-        askEvent = new AskEvent(System.nanoTime(),
-                                System.currentTimeMillis(),
-                                new Equity("METC"),
-                                "Q",
-                                new BigDecimal("100.00"),
-                                new BigDecimal("10000"));
+        tradeEvent = EventTestBase.generateEquityTradeEvent(System.nanoTime(),
+                                                            System.currentTimeMillis(),
+                                                            new Equity("METC"),
+                                                            "Q",
+                                                            new BigDecimal("1000.25"),
+                                                            new BigDecimal("1000"));
+        askEvent = EventTestBase.generateEquityAskEvent(System.nanoTime(),
+                                                        System.currentTimeMillis(),
+                                                        new Equity("METC"),
+                                                        "Q",
+                                                        new BigDecimal("100.00"),
+                                                        new BigDecimal("10000"));
         StrategyDataEmissionModule.setDataToSendToDefaults();
     }
     /**

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
+import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -20,7 +21,7 @@ import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 
 /**
- * Common routines for {@link IMessageTranslator} implementations.
+ * Common routines for {@link DataRequestTranslator} implementations.
  * 
  * <p>This class hierarchy translates <em>QuickFIX</em> messages to 
  * other formats.  This class specifically provides common routines to

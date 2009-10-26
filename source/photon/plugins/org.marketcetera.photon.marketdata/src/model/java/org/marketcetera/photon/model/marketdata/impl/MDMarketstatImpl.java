@@ -2,16 +2,11 @@ package org.marketcetera.photon.model.marketdata.impl;
 
 import java.math.BigDecimal;
 
-import java.util.Date;
-
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
-import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
+import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -60,7 +55,7 @@ public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final Date CLOSE_DATE_EDEFAULT = null;
+	protected static final String CLOSE_DATE_EDEFAULT = null;
 
 	/**
 	 * The cached value of the '{@link #getCloseDate() <em>Close Date</em>}' attribute.
@@ -70,7 +65,7 @@ public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 	 * @generated
 	 * @ordered
 	 */
-	protected Date closeDate = CLOSE_DATE_EDEFAULT;
+	protected String closeDate = CLOSE_DATE_EDEFAULT;
 
 	/**
 	 * The default value of the '{@link #getPreviousClosePrice() <em>Previous Close Price</em>}' attribute.
@@ -100,7 +95,7 @@ public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final Date PREVIOUS_CLOSE_DATE_EDEFAULT = null;
+	protected static final String PREVIOUS_CLOSE_DATE_EDEFAULT = null;
 
 	/**
 	 * The cached value of the '{@link #getPreviousCloseDate() <em>Previous Close Date</em>}' attribute.
@@ -110,7 +105,7 @@ public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 	 * @generated
 	 * @ordered
 	 */
-	protected Date previousCloseDate = PREVIOUS_CLOSE_DATE_EDEFAULT;
+	protected String previousCloseDate = PREVIOUS_CLOSE_DATE_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -158,7 +153,7 @@ public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Date getCloseDate() {
+	public String getCloseDate() {
 		return closeDate;
 	}
 
@@ -167,8 +162,8 @@ public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setCloseDate(Date newCloseDate) {
-		Date oldCloseDate = closeDate;
+	public void setCloseDate(String newCloseDate) {
+		String oldCloseDate = closeDate;
 		closeDate = newCloseDate;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
@@ -203,7 +198,7 @@ public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Date getPreviousCloseDate() {
+	public String getPreviousCloseDate() {
 		return previousCloseDate;
 	}
 
@@ -212,8 +207,8 @@ public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setPreviousCloseDate(Date newPreviousCloseDate) {
-		Date oldPreviousCloseDate = previousCloseDate;
+	public void setPreviousCloseDate(String newPreviousCloseDate) {
+		String oldPreviousCloseDate = previousCloseDate;
 		previousCloseDate = newPreviousCloseDate;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
@@ -253,13 +248,13 @@ public class MDMarketstatImpl extends MDItemImpl implements MDMarketstat {
 			setClosePrice((BigDecimal) newValue);
 			return;
 		case MDPackage.MD_MARKETSTAT__CLOSE_DATE:
-			setCloseDate((Date) newValue);
+			setCloseDate((String) newValue);
 			return;
 		case MDPackage.MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE:
 			setPreviousClosePrice((BigDecimal) newValue);
 			return;
 		case MDPackage.MD_MARKETSTAT__PREVIOUS_CLOSE_DATE:
-			setPreviousCloseDate((Date) newValue);
+			setPreviousCloseDate((String) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);

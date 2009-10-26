@@ -13,7 +13,7 @@ import java.util.EnumSet;
 import java.util.concurrent.Executor;
 
 import org.junit.Test;
-import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
@@ -33,8 +33,8 @@ import org.marketcetera.trade.Equity;
  */
 public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat, MarketstatKey> {
 
-	private static final Date DATE1 = new Date(1239657332835L);
-	private static final Date DATE2 = new Date(1239570932835L);
+	private static final String DATE1 = "20091010";
+	private static final String DATE2 = "20091011";
 
 	@Override
 	protected IDataFlowManager<MDMarketstatImpl, MarketstatKey> createFixture(
@@ -97,11 +97,12 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 		assertThat(item.getPreviousClosePrice(), comparesEqualTo(2));
 	}
 
-	private Object createEvent(String symbol, int close, int previousClose, Date closeDate,
-			Date previousCloseDate) {
-		return new MarketstatEvent(new Equity(symbol), new Date(), null, null, null,
-				new BigDecimal(close), new BigDecimal(previousClose), null, closeDate,
-				previousCloseDate, null, null, null, null, null, null);
+	private Object createEvent(String symbol, int close, int previousClose, String closeDate,
+			String previousCloseDate) {
+		return MarketstatEventBuilder.equityMarketstat().withInstrument(new Equity(symbol))
+				.withTimestamp(new Date()).withClosePrice(new BigDecimal(close))
+				.withPreviousClosePrice(new BigDecimal(previousClose)).withCloseDate(closeDate)
+				.withPreviousCloseDate(previousCloseDate).create();
 	}
 
 	@Override
@@ -119,14 +120,13 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 		// emit data
 		emit(createEvent1(mKey1));
 		validateState1(mItem1);
-		// emit data for wrong key
+		// emit an event without close data
 		emit(createNullEvent(mKey1));
 		validateState1(mItem1);
 	}
 
-	protected Object createNullEvent(MarketstatKey key) {
-		return new MarketstatEvent(new Equity(key.getSymbol()), new Date(), null, null, null,
-				null, null, null, null, null, null, null, null, null, null, null);
+	protected Object createNullEvent(MarketstatKey key) throws Exception {
+		return MarketstatEventBuilder.equityMarketstat().withInstrument(new Equity(key.getSymbol()));
 	}
 
 }

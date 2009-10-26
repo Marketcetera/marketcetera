@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.module.InvalidURNException;
 import org.marketcetera.module.MXBeanOperationException;
@@ -305,7 +305,7 @@ abstract class DataFlowManager<T extends MDItemImpl, K extends Key<? super T>> i
 		 * @throws IllegalArgumentException
 		 *             if any parameter is null
 		 */
-		protected final boolean validateSymbol(final String expected, final SymbolExchangeEvent event) {
+		protected final boolean validateSymbol(final String expected, final MarketDataEvent event) {
 			Validate.noNullElements(new Object[] { expected, event });
 			return validateSymbol(expected, event.getInstrument());
 		}

@@ -14,7 +14,7 @@ public class ProcessData extends Strategy {
     private static final String [] SYMBOLS = {"AMZN", "JAVA"}; // Depends on MD - can be other symbols
     private static final String MARKET_DATA_PROVIDER = "marketcetera"; // Can be activ, bogus, marketcetera
     private static final String [] CEP_QUERY =
-            {"select t.symbolAsString as symbol, t.price * t.size as position from trade t"};
+            {"select t.instrumentAsString as symbol, t.price * t.size as position from trade t"};
     private static final String CEP_PROVIDER = "esper";
 
 

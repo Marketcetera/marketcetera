@@ -1,34 +1,45 @@
 package org.marketcetera.modules.remote.emitter;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.test.LogTestAssist;
-import org.marketcetera.core.Pair;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.CopierModuleFactory;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.trade.*;
-import org.marketcetera.client.ClientTest;
-import org.marketcetera.modules.remote.receiver.ReceiverFactory;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.springframework.beans.factory.BeanCreationException;
-import org.apache.log4j.Level;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.ConnectException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.jms.JMSException;
 import javax.security.auth.login.LoginException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.net.ConnectException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.io.Serializable;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.io.NotSerializableException;
+
+import org.apache.log4j.Level;
+import org.junit.Test;
+import org.marketcetera.client.ClientTest;
+import org.marketcetera.core.Pair;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.modules.remote.receiver.ReceiverFactory;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.TypesTestBase;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.test.LogTestAssist;
+import org.springframework.beans.factory.BeanCreationException;
 
 /* $License$ */
 /**
@@ -181,9 +192,9 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
         //Now create a data flow to supply objects to the receiver
         //The data to send
         Object [] data = {
-                new AskEvent(1, 2, new Equity("asym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
-                new BidEvent(3, 4, new Equity("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
-                new TradeEvent(5, 6, new Equity("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                EventTestBase.generateEquityAskEvent(1, 2, new Equity("asym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                EventTestBase.generateEquityBidEvent(3, 4, new Equity("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                EventTestBase.generateEquityTradeEvent(5, 6, new Equity("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
                 new NonSerializable(),
                 ClientTest.createOrderSingle(),
                 ClientTest.createOrderReplace(),

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.EventBaseTest.MockEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 
 /* $License$ */
@@ -36,8 +35,9 @@ public class MockEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
-    public List<EventBase> toEvent(Object inData,
-                                   String inHandle)
+    @Override
+    public List<Event> toEvent(Object inData,
+                                      String inHandle)
             throws CoreException
     {
         if(getTranslateToEventsThrows()) {
@@ -47,7 +47,7 @@ public class MockEventTranslator
             return null;
         }
         if(getTranslateToEventsReturnsZeroEvents()) {
-            return new ArrayList<EventBase>();
+            return new ArrayList<Event>();
         }
         MarketDataRequest request = null;
         if(requestToReturn != null) {
@@ -55,19 +55,19 @@ public class MockEventTranslator
         } else if(inData instanceof MarketDataRequest) {
             request = (MarketDataRequest)inData;
         }
-        if(inData instanceof SymbolExchangeEvent ||
+        if(inData instanceof QuoteEvent ||
            inData instanceof AggregateEvent) {
-            return Arrays.asList(new EventBase[] { (EventBase)inData });
+            return Arrays.asList(new Event[] {(Event)inData });
         }
-        if(inData instanceof EventBase) {
-            return Arrays.asList(new EventBase[] { (EventBase)inData });
+        if(inData instanceof Event) {
+            return Arrays.asList(new Event[] { (Event)inData });
         }
-        return Arrays.asList(new EventBase[] { new MockEvent(request) });
+        return Arrays.asList(new Event[] { new MockEvent(request) });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
+     * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.Event)
      */
-    public String fromEvent(EventBase inEvent)
+    public String fromEvent(Event inEvent)
             throws CoreException
     {
         return inEvent.toString();

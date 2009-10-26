@@ -1,9 +1,11 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.strategy.OutputType"
-include_class "org.marketcetera.event.TradeEvent"
+include_class "org.marketcetera.event.impl.TradeEventBuilder"
+include_class "org.marketcetera.marketdata.DateUtils"
 include_class "org.marketcetera.trade.Equity"
 include_class "org.marketcetera.module.DataRequest"
 include_class "java.lang.Long"
+include_class "java.util.Date"
 include_class "java.math.BigDecimal"
 
 class SendEvent < Strategy
@@ -14,8 +16,11 @@ class SendEvent < Strategy
         @dataFlowID = create_data_flow true, dataRequests.to_java(DataRequest)
     end
     def on_stop
-        trade = TradeEvent.new(1,1,Equity.new("METC"),"exchange",BigDecimal::ONE,BigDecimal::TEN)
-        do_send_event trade
+        tradeBuilder = TradeEventBuilder.equityTradeEvent
+        tradeBuilder.withInstrument(Equity.new("METC")).withExchange("exchange")
+        tradeBuilder.withPrice(BigDecimal::ONE).withSize(BigDecimal::TEN)
+        tradeBuilder.withTradeDate(DateUtils.dateToString(Date.new))
+        do_send_event tradeBuilder.create
         cancel_data_flow @dataFlowID
     end
     def on_other (data)

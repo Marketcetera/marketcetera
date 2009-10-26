@@ -31,7 +31,7 @@ import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject.Kind;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -180,18 +180,18 @@ public class JavaCompilerExecutionEngine
                     failed.addDiagnostic(CompilationFailed.Diagnostic.warning(diagnostic.toString()));
                 }
             }
-            StrategyModule.log(LogEvent.error(COMPILATION_FAILED,
-                                              failed,
-                                              String.valueOf(strategy),
-                                              failed.toString()),
+            StrategyModule.log(LogEventBuilder.error().withMessage(COMPILATION_FAILED,
+                                                                   String.valueOf(strategy),
+                                                                   failed.toString())
+                                                      .withException(failed).create(),
                                strategy);
             throw failed;
         } else {
             // compilation succeeded with or without warnings
             for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                StrategyModule.log(LogEvent.warn(COMPILATION_FAILED_DIAGNOSTIC,
-                                                 String.valueOf(diagnostic.getKind()),
-                                                 String.valueOf(diagnostic)),
+                StrategyModule.log(LogEventBuilder.warn().withMessage(COMPILATION_FAILED_DIAGNOSTIC,
+                                                                      String.valueOf(diagnostic.getKind()),
+                                                                      String.valueOf(diagnostic)).create(),
                                    strategy);
             }
         }
@@ -218,9 +218,10 @@ public class JavaCompilerExecutionEngine
             //  thing: the black magic of the compiler, in-memory objects, and the classloader somehow malfunctioned.
             //  this would be a warranty repair: nothing the user can do.  might as well call it a compilation problem
             //  as well as call it anything else.
-            StrategyModule.log(LogEvent.error(COMPILATION_FAILED,
-                                              e,
-                                              String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.error().withMessage(COMPILATION_FAILED,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(e))
+                                                      .withException(e).create(),
                                strategy);
             throw new CompilationFailed(e,
                                         strategy);

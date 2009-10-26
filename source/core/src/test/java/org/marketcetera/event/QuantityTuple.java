@@ -23,7 +23,7 @@ public class QuantityTuple
     /**
      * the type of the event
      */
-    private final Class<? extends SymbolExchangeEvent> type;
+    private final Class<? extends MarketDataEvent> type;
     /**
      * Create a new QuantityTuple instance.
      *
@@ -32,7 +32,7 @@ public class QuantityTuple
      */
     public QuantityTuple(BigDecimal inPrice,
                          BigDecimal inSize,
-                         Class<? extends SymbolExchangeEvent> inType)
+                         Class<? extends MarketDataEvent> inType)
     {
         mPrice = inPrice;
         mSize = inSize;
@@ -59,9 +59,9 @@ public class QuantityTuple
     /**
      * Get the type value.
      *
-     * @return a <code>Class<? extends SymbolExchangeEvent></code> value
+     * @return a <code>Class<? extends MarketDataEvent></code> value
      */
-    public Class<? extends SymbolExchangeEvent> getType()
+    public Class<? extends MarketDataEvent> getType()
     {
         return type;
     }
@@ -126,8 +126,8 @@ public class QuantityTuple
     public static class PriceComparator
         implements Comparator<QuantityTuple>
     {
-        public static final PriceComparator ASCENDING = new PriceComparator(true);
-        public static final PriceComparator DESCENDING = new PriceComparator(false);
+        public static final PriceComparator ASCENDING_EQUITY = new PriceComparator(true);
+        public static final PriceComparator DESCENDING_EQUITY = new PriceComparator(false);
         private final boolean ascending;
         private PriceComparator(boolean inAscending)
         {

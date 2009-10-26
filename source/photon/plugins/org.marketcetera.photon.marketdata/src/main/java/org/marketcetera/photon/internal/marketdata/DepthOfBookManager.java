@@ -235,7 +235,7 @@ public class DepthOfBookManager extends DataFlowManager<MDDepthOfBookImpl, Depth
 				StringBuilder builder = new StringBuilder();
 				builder.append(data instanceof BidEvent ? "bid" : "ask"); //$NON-NLS-1$ //$NON-NLS-2$
 				builder.append('-');
-				builder.append(data.getSymbolAsString());
+				builder.append(data.getInstrument().getSymbol());
 				builder.append('-');
 				builder.append(data.getExchange());
 				return builder.toString();

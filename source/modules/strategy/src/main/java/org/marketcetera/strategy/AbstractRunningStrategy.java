@@ -19,8 +19,8 @@ import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.event.EventBase;
-import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowSupport;
@@ -28,10 +28,10 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
@@ -209,30 +209,30 @@ public abstract class AbstractRunningStrategy
     protected final int requestMarketData(MarketDataRequest inRequest)
     {
         if(!canReceiveData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
                                strategy);
             return 0;
         }
         if(inRequest == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
-                                             String.valueOf(strategy),
-                                             inRequest),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MARKET_DATA_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inRequest).create(),
                                strategy);
             return 0;
         }
         try {
-            StrategyModule.log(LogEvent.debug(SUBMITTING_MARKET_DATA_REQUEST,
-                                              String.valueOf(strategy),
-                                              String.valueOf(inRequest)),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_MARKET_DATA_REQUEST,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(inRequest)).create(),
                                strategy);
             return strategy.getOutboundServicesProvider().requestMarketData(inRequest);
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
-                                             e,
-                                             String.valueOf(strategy),
-                                             inRequest),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MARKET_DATA_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inRequest)
+                                                     .withException(e).create(),
                                strategy);
             return 0;
         }
@@ -247,16 +247,16 @@ public abstract class AbstractRunningStrategy
     {
         try {
             MarketDataRequest request = MarketDataRequest.newRequestFromString(inRequest);
-            StrategyModule.log(LogEvent.debug(SUBMITTING_MARKET_DATA_REQUEST,
-                                              String.valueOf(strategy),
-                                              request),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_MARKET_DATA_REQUEST,
+                                                                   String.valueOf(strategy),
+                                                                   request).create(),
                                strategy);
             return strategy.getOutboundServicesProvider().requestMarketData(request);
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
-                                             e,
-                                             String.valueOf(strategy),
-                                             inRequest),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MARKET_DATA_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inRequest)
+                                                     .withException(e).create(),
                                strategy);
             return 0;
         }
@@ -277,16 +277,16 @@ public abstract class AbstractRunningStrategy
                                                    String inCepSource)
     {
         if(!canReceiveData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
                                strategy);
             return 0;
         }
         if(inRequest == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
-                                             String.valueOf(strategy),
-                                             inRequest),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MARKET_DATA_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inRequest).create(),
                                strategy);
             return 0;
         }
@@ -294,35 +294,35 @@ public abstract class AbstractRunningStrategy
            inStatements.length == 0 ||
            inCepSource == null ||
            inCepSource.isEmpty()) {
-            StrategyModule.log(LogEvent.warn(INVALID_CEP_REQUEST,
-                                             String.valueOf(strategy),
-                                             Arrays.toString(inStatements),
-                                             inCepSource,
-                                             strategy.getDefaultNamespace()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_CEP_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  Arrays.toString(inStatements),
+                                                                  inCepSource,
+                                                                  strategy.getDefaultNamespace()).create(),
                                strategy);
             return 0;
         }
         String namespace = strategy.getDefaultNamespace();
         try {
             // retrieve CEP default namespace
-            StrategyModule.log(LogEvent.debug(SUBMITTING_PROCESSED_MARKET_DATA_REQUEST,
-                                              String.valueOf(strategy),
-                                              String.valueOf(inRequest),
-                                              Arrays.toString(inStatements),
-                                              inCepSource,
-                                              namespace),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_PROCESSED_MARKET_DATA_REQUEST,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(inRequest),
+                                                                   Arrays.toString(inStatements),
+                                                                   inCepSource,
+                                                                   namespace).create(),
                                strategy);
             return strategy.getOutboundServicesProvider().requestProcessedMarketData(inRequest,
                                                                                      inStatements,
                                                                                      inCepSource,
                                                                                      namespace);
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(COMBINED_DATA_REQUEST_FAILED,
-                                             e,
-                                             String.valueOf(inRequest),
-                                             Arrays.toString(inStatements),
-                                             inCepSource,
-                                             namespace),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(COMBINED_DATA_REQUEST_FAILED,
+                                                                  String.valueOf(inRequest),
+                                                                  Arrays.toString(inStatements),
+                                                                  inCepSource,
+                                                                  namespace)
+                                                     .withException(e).create(),
                                strategy);
             return 0;
         }
@@ -343,16 +343,16 @@ public abstract class AbstractRunningStrategy
                                                    String inCepSource)
     {
         if(!canReceiveData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
                                strategy);
             return 0;
         }
         if(inRequest == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
-                                             String.valueOf(strategy),
-                                             inRequest),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MARKET_DATA_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inRequest).create(),
                                strategy);
             return 0;
         }
@@ -360,35 +360,35 @@ public abstract class AbstractRunningStrategy
            inStatements.length == 0 ||
            inCepSource == null ||
            inCepSource.isEmpty()) {
-            StrategyModule.log(LogEvent.warn(INVALID_CEP_REQUEST,
-                                             String.valueOf(strategy),
-                                             Arrays.toString(inStatements),
-                                             inCepSource,
-                                             strategy.getDefaultNamespace()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_CEP_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  Arrays.toString(inStatements),
+                                                                  inCepSource,
+                                                                  strategy.getDefaultNamespace()).create(),
                                strategy);
             return 0;
         }
         String namespace = strategy.getDefaultNamespace();
         try {
             // retrieve CEP default namespace
-            StrategyModule.log(LogEvent.debug(SUBMITTING_PROCESSED_MARKET_DATA_REQUEST,
-                                              String.valueOf(strategy),
-                                              String.valueOf(inRequest),
-                                              Arrays.toString(inStatements),
-                                              inCepSource,
-                                              namespace),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_PROCESSED_MARKET_DATA_REQUEST,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(inRequest),
+                                                                   Arrays.toString(inStatements),
+                                                                   inCepSource,
+                                                                   namespace).create(),
                                strategy);
             return strategy.getOutboundServicesProvider().requestProcessedMarketData(MarketDataRequest.newRequestFromString(inRequest),
                                                                                      inStatements,
                                                                                      inCepSource,
                                                                                      namespace);
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(COMBINED_DATA_REQUEST_FAILED,
-                                             e,
-                                             String.valueOf(inRequest),
-                                             Arrays.toString(inStatements),
-                                             inCepSource,
-                                             namespace),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(COMBINED_DATA_REQUEST_FAILED,
+                                                                  String.valueOf(inRequest),
+                                                                  Arrays.toString(inStatements),
+                                                                  inCepSource,
+                                                                  namespace)
+                                                     .withException(e).create(),
                                strategy);
             return 0;
         }
@@ -400,9 +400,9 @@ public abstract class AbstractRunningStrategy
      */
     protected final void cancelDataRequest(int inRequestID)
     {
-        StrategyModule.log(LogEvent.debug(CANCELING_DATA_REQUEST,
-                                          String.valueOf(strategy),
-                                          String.valueOf(inRequestID)),                           
+        StrategyModule.log(LogEventBuilder.debug().withMessage(CANCELING_DATA_REQUEST,
+                                                               String.valueOf(strategy),
+                                                               String.valueOf(inRequestID)).create(),
                            strategy);                           
         strategy.getOutboundServicesProvider().cancelDataRequest(inRequestID);
     }
@@ -411,8 +411,8 @@ public abstract class AbstractRunningStrategy
      */
     protected final void cancelAllDataRequests()
     {
-        StrategyModule.log(LogEvent.debug(CANCELING_ALL_DATA_REQUESTS,
-                                          String.valueOf(strategy)),                           
+        StrategyModule.log(LogEventBuilder.debug().withMessage(CANCELING_ALL_DATA_REQUESTS,
+                                                               String.valueOf(strategy)).create(),                           
                            strategy);                           
         strategy.getOutboundServicesProvider().cancelAllDataRequests();
     }
@@ -431,9 +431,9 @@ public abstract class AbstractRunningStrategy
                                        String inSource)
     {
         if(!canReceiveData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
                                strategy);
             return 0;
         }
@@ -441,28 +441,29 @@ public abstract class AbstractRunningStrategy
            inStatements.length == 0 ||
            inSource == null ||
            inSource.isEmpty()) {
-            StrategyModule.log(LogEvent.warn(INVALID_CEP_REQUEST,
-                                             String.valueOf(strategy),
-                                             Arrays.toString(inStatements),
-                                             inSource,
-                                             strategy.getDefaultNamespace()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_CEP_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  Arrays.toString(inStatements),
+                                                                  inSource,
+                                                                  strategy.getDefaultNamespace()).create(),
                                strategy);
                  return 0;
              }
         try {
-            StrategyModule.log(LogEvent.debug(SUBMITTING_CEP_REQUEST,
-                                              String.valueOf(strategy),
-                                              Arrays.toString(inStatements),
-                                              inSource,
-                                              strategy.getDefaultNamespace()),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_CEP_REQUEST,
+                                                                   String.valueOf(strategy),
+                                                                   Arrays.toString(inStatements),
+                                                                   inSource,
+                                                                   strategy.getDefaultNamespace()).create(),
                                strategy);
             return strategy.getOutboundServicesProvider().requestCEPData(inStatements,
                                                                          inSource,
                                                                          strategy.getDefaultNamespace());
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(CEP_REQUEST_FAILED,
-                                             e,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CEP_REQUEST_FAILED,
+                                                                  Arrays.toString(inStatements),
+                                                                  inSource)
+                                                     .withException(e).create(),
                                strategy);
             return 0;
         }
@@ -507,8 +508,8 @@ public abstract class AbstractRunningStrategy
            inScore == null ||
            inIdentifier == null ||
            inIdentifier.isEmpty()) {
-            StrategyModule.log(LogEvent.warn(INVALID_TRADE_SUGGESTION,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_TRADE_SUGGESTION,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
@@ -517,9 +518,9 @@ public abstract class AbstractRunningStrategy
         suggestion.setOrder(inOrder);
         suggestion.setScore(inScore);
         suggestion.setIdentifier(inIdentifier);
-        StrategyModule.log(LogEvent.debug(SUBMITTING_TRADE_SUGGESTION,
-                                          String.valueOf(strategy),
-                                          suggestion),
+        StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_TRADE_SUGGESTION,
+                                                               String.valueOf(strategy),
+                                                               suggestion).create(),
                            strategy);
         strategy.getOutboundServicesProvider().sendSuggestion(suggestion);
     }
@@ -537,32 +538,32 @@ public abstract class AbstractRunningStrategy
     protected boolean send(Object inData)
     {
         if(inData == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_DATA,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_DATA,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return false;
         }
         if(inData instanceof OrderSingle) {
             OrderSingle order = (OrderSingle)inData;
             if(order.getOrderID() == null) {
-                StrategyModule.log(LogEvent.warn(INVALID_ORDER,
-                                                 String.valueOf(strategy)),
+                StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_ORDER,
+                                                                      String.valueOf(strategy)).create(),
                                    strategy);
                      return false;
             }
             try {
                 Validations.validate(order);
             } catch (OrderValidationException e) {
-                StrategyModule.log(LogEvent.warn(ORDER_VALIDATION_FAILED,
-                                                 e,
-                                                 String.valueOf(strategy)),
+                StrategyModule.log(LogEventBuilder.warn().withMessage(ORDER_VALIDATION_FAILED,
+                                                                      String.valueOf(strategy))
+                                                         .withException(e).create(),
                                    strategy);
                 return false;
             }
-            StrategyModule.log(LogEvent.debug(SUBMITTING_ORDER,
-                                              String.valueOf(strategy),
-                                              order,
-                                              order.getOrderID()),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_ORDER,
+                                                                   String.valueOf(strategy),
+                                                                   order,
+                                                                   order.getOrderID()).create(),
                                strategy);
             SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
                                    "{} created {}", //$NON-NLS-1$
@@ -591,16 +592,16 @@ public abstract class AbstractRunningStrategy
                                             boolean inSendOrder)
     {
         if(inOrderID == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_CANCEL,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_CANCEL,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return null;
         }
         Entry order = submittedOrderManager.get(inOrderID);
         if(order == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_ORDERID,
-                                             String.valueOf(strategy),
-                                             String.valueOf(inOrderID)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_ORDERID,
+                                                                  String.valueOf(strategy),
+                                                                  String.valueOf(inOrderID)).create(),
                                strategy);
             return null;
         }
@@ -627,9 +628,9 @@ public abstract class AbstractRunningStrategy
                                strategy,
                                cancelRequest);
         if(inSendOrder) {
-            StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_ORDER_REQUEST,
-                                              String.valueOf(strategy),
-                                              String.valueOf(cancelRequest)),                           
+            StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_CANCEL_ORDER_REQUEST,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(cancelRequest)).create(),                           
                                strategy);
             strategy.getOutboundServicesProvider().cancelOrder(cancelRequest);
         }
@@ -647,8 +648,8 @@ public abstract class AbstractRunningStrategy
      */
     protected final int cancelAllOrders()
     {
-        StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_ALL_ORDERS_REQUEST,
-                                          String.valueOf(strategy)),
+        StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_CANCEL_ALL_ORDERS_REQUEST,
+                                                               String.valueOf(strategy)).create(),
                            strategy);
         // gets a copy of the submitted orders list - iterate over the copy in
         // order to prevent concurrent update problems
@@ -660,16 +661,16 @@ public abstract class AbstractRunningStrategy
                     count += 1;
                 }
             } catch (Exception e) {
-                StrategyModule.log(LogEvent.warn(ORDER_CANCEL_FAILED,
-                                                 e,
-                                                 String.valueOf(strategy),
-                                                 order.getOrderID()),
+                StrategyModule.log(LogEventBuilder.warn().withMessage(ORDER_CANCEL_FAILED,
+                                                                      String.valueOf(strategy),
+                                                                      order.getOrderID())
+                                                         .withException(e).create(),
                                    strategy);
             }
         }
-        StrategyModule.log(LogEvent.debug(CANCEL_REQUEST_SUBMITTED,
-                                          String.valueOf(strategy),
-                                          count),
+        StrategyModule.log(LogEventBuilder.debug().withMessage(CANCEL_REQUEST_SUBMITTED,
+                                                               String.valueOf(strategy),
+                                                               count).create(),
                            strategy);
         return count;
     }
@@ -693,16 +694,16 @@ public abstract class AbstractRunningStrategy
         if(inOrderID == null ||
            inNewOrder == null ||
            inNewOrder.getOrderID() == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_REPLACEMENT_ORDER,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_REPLACEMENT_ORDER,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return null;
         }
         Entry order = submittedOrderManager.get(inOrderID);
         if(order == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_ORDERID,
-                                             String.valueOf(strategy),
-                                             String.valueOf(inOrderID)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_ORDERID,
+                                                                  String.valueOf(strategy),
+                                                                  String.valueOf(inOrderID)).create(),
                                strategy);
             return null;
         }
@@ -739,9 +740,9 @@ public abstract class AbstractRunningStrategy
         submittedOrderManager.add(replaceOrder.getOrderID(),
                                   inNewOrder);
         if(inSendOrder) {
-            StrategyModule.log(LogEvent.debug(SUBMITTING_CANCEL_REPLACE_REQUEST,
-                                              String.valueOf(strategy),
-                                              String.valueOf(replaceOrder)),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_CANCEL_REPLACE_REQUEST,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(replaceOrder)).create(),
                                strategy);
             strategy.getOutboundServicesProvider().cancelReplace(replaceOrder);
         }
@@ -758,15 +759,15 @@ public abstract class AbstractRunningStrategy
     {
         if(inMessage == null ||
            inBroker == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_MESSAGE,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MESSAGE,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
-        StrategyModule.log(LogEvent.debug(SUBMITTING_FIX_MESSAGE,
-                                          String.valueOf(strategy),
-                                          inMessage,
-                                          inBroker),
+        StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_FIX_MESSAGE,
+                                                               String.valueOf(strategy),
+                                                               inMessage,
+                                                               inBroker).create(),
                            strategy);
         strategy.getOutboundServicesProvider().sendMessage(inMessage,
                                                            inBroker);
@@ -776,28 +777,28 @@ public abstract class AbstractRunningStrategy
      * 
      * <p>The corresponding CEP module must already exist or the message will not be sent.
      *
-     * @param inEvent an <code>EventBase</code> value containing the event to be sent
+     * @param inEvent an <code>Event</code> value containing the event to be sent
      * @param inProvider a <code>String</code> value containing the name of a CEP provider
      */
-    protected final void sendEventToCEP(EventBase inEvent,
+    protected final void sendEventToCEP(Event inEvent,
                                         String inProvider)
     {
         if(inEvent == null ||
            inProvider == null ||
            inProvider.isEmpty()) {
-            StrategyModule.log(LogEvent.warn(INVALID_EVENT_TO_CEP,
-                                             String.valueOf(strategy),
-                                             inEvent,
-                                             inProvider),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_EVENT_TO_CEP,
+                                                                  String.valueOf(strategy),
+                                                                  inEvent,
+                                                                  inProvider).create(),
                                strategy);
             return;
         }
         String namespace = strategy.getDefaultNamespace();
-        StrategyModule.log(LogEvent.debug(SUBMITTING_EVENT_TO_CEP,
-                                          String.valueOf(strategy),
-                                          inEvent,
-                                          inProvider,
-                                          namespace),
+        StrategyModule.log(LogEventBuilder.debug().withMessage(SUBMITTING_EVENT_TO_CEP,
+                                                               String.valueOf(strategy),
+                                                               inEvent,
+                                                               inProvider,
+                                                               namespace).create(),
                            strategy);
         strategy.getOutboundServicesProvider().sendEvent(inEvent,
                                                          inProvider,
@@ -806,13 +807,13 @@ public abstract class AbstractRunningStrategy
     /**
      * Sends the given event to the appropriate subscribers. 
      *
-     * @param inEvent an <code>EventBase</code> value
+     * @param inEvent an <code>Event</code> value
      */
-    protected final void sendEvent(EventBase inEvent)
+    protected final void sendEvent(Event inEvent)
     {
        if(inEvent == null) {
-           StrategyModule.log(LogEvent.warn(INVALID_EVENT,
-                                            String.valueOf(strategy)),
+           StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_EVENT,
+                                                                 String.valueOf(strategy)).create(),
                               strategy);
            return;
        }
@@ -828,8 +829,8 @@ public abstract class AbstractRunningStrategy
     protected final void sendNotification(Notification inNotification)
     {
         if(inNotification == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_NOTIFICATION,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_NOTIFICATION,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
@@ -895,22 +896,22 @@ public abstract class AbstractRunningStrategy
     {
         try {
             if(!canReceiveData()) {
-                StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
-                                                 String.valueOf(strategy),
-                                                 strategy.getStatus()),
+                StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                      String.valueOf(strategy),
+                                                                      strategy.getStatus()).create(),
                                    strategy);
                 return new BrokerStatus[0];
             }
             List<BrokerStatus> brokers = strategy.getInboundServicesProvider().getBrokers();
-            StrategyModule.log(LogEvent.debug(RECEIVED_BROKERS,
-                                              String.valueOf(strategy),
-                                              String.valueOf(brokers)),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_BROKERS,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(brokers)).create(),
                                strategy);
             return brokers.toArray(new BrokerStatus[brokers.size()]);
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(CANNOT_RETRIEVE_BROKERS,
-                                             e,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_BROKERS,
+                                                                  String.valueOf(strategy))
+                                                     .withException(e).create(),
                                strategy);
             return new BrokerStatus[0];
         }
@@ -926,38 +927,38 @@ public abstract class AbstractRunningStrategy
                                                String inSymbol)
     {
         if(!canReceiveData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
                                strategy);
             return null;
         }
         if(inDate == null ||
            inSymbol == null ||
            inSymbol.isEmpty()) {
-            StrategyModule.log(LogEvent.warn(INVALID_POSITION_REQUEST,
-                                             String.valueOf(strategy),
-                                             inDate,
-                                             inSymbol),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_POSITION_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inDate,
+                                                                  inSymbol).create(),
                                strategy);
             return null;
         }
         try {
             BigDecimal result = strategy.getInboundServicesProvider().getPositionAsOf(inDate,
                                                                                       new Equity(inSymbol)); 
-            StrategyModule.log(LogEvent.debug(RECEIVED_POSITION,
-                                              String.valueOf(strategy),
-                                              result,
-                                              inDate,
-                                              inSymbol),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITION,
+                                                                   String.valueOf(strategy),
+                                                                   result,
+                                                                   inDate,
+                                                                   inSymbol).create(),
                                strategy);
             return result;
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(CANNOT_RETRIEVE_POSITION,
-                                             e,
-                                             String.valueOf(strategy),
-                                             inSymbol,
-                                             inDate),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_POSITION,
+                                                                  String.valueOf(strategy),
+                                                                  inSymbol,
+                                                                  inDate)
+                                                     .withException(e).create(),
                                strategy);
             return null;
         }
@@ -978,16 +979,16 @@ public abstract class AbstractRunningStrategy
                                               DataRequest... inRequests)
     {
         if(!canReceiveData()) {
-            StrategyModule.log(LogEvent.warn(CANNOT_REQUEST_DATA,
-                                             String.valueOf(strategy),
-                                             strategy.getStatus()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
                                strategy);
             return null;
         }
         if(inRequests == null ||
            inRequests.length == 0) {
-            StrategyModule.log(LogEvent.warn(INVALID_DATA_REQUEST,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_DATA_REQUEST,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return null;
         }
@@ -995,10 +996,10 @@ public abstract class AbstractRunningStrategy
             return strategy.getOutboundServicesProvider().createDataFlow(inRequests,
                                                                          inAppendDataSink);
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(DATA_REQUEST_FAILED,
-                                             e,
-                                             String.valueOf(strategy),
-                                             Arrays.toString(inRequests)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(DATA_REQUEST_FAILED,
+                                                                  String.valueOf(strategy),
+                                                                  Arrays.toString(inRequests))
+                                                     .withException(e).create(),
                                strategy);
             return null;
         }
@@ -1014,18 +1015,18 @@ public abstract class AbstractRunningStrategy
     protected final void cancelDataFlow(DataFlowID inDataFlowID)
     {
         if(inDataFlowID == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_DATA_REQUEST_CANCEL,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_DATA_REQUEST_CANCEL,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
         try {
             strategy.getOutboundServicesProvider().cancelDataFlow(inDataFlowID);
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(DATA_REQUEST_CANCEL_FAILED,
-                                             e,
-                                             String.valueOf(strategy),
-                                             inDataFlowID),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(DATA_REQUEST_CANCEL_FAILED,
+                                                                  String.valueOf(strategy),
+                                                                  inDataFlowID)
+                                                     .withException(e).create(),
                                strategy);
         }
     }
@@ -1046,13 +1047,13 @@ public abstract class AbstractRunningStrategy
     protected void debug(String inMessage)
     {
         if(inMessage == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_LOG,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_LOG,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
-        strategy.getOutboundServicesProvider().log(LogEvent.debug(MESSAGE_1P,
-                                                                  inMessage));
+        strategy.getOutboundServicesProvider().log(LogEventBuilder.debug().withMessage(MESSAGE_1P,
+                                                                                       inMessage).create());
     }
     /**
      * Emits the given info message to the strategy log output.
@@ -1062,13 +1063,13 @@ public abstract class AbstractRunningStrategy
     protected void info(String inMessage)
     {
         if(inMessage == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_LOG,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_LOG,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
-        strategy.getOutboundServicesProvider().log(LogEvent.info(MESSAGE_1P,
-                                                                 inMessage));
+        strategy.getOutboundServicesProvider().log(LogEventBuilder.info().withMessage(MESSAGE_1P,
+                                                                                      inMessage).create());
     }
     /**
      * Emits the given warn message to the strategy log output.
@@ -1078,13 +1079,13 @@ public abstract class AbstractRunningStrategy
     protected void warn(String inMessage)
     {
         if(inMessage == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_LOG,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_LOG,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
-        strategy.getOutboundServicesProvider().log(LogEvent.warn(MESSAGE_1P,
-                                                                 inMessage));
+        strategy.getOutboundServicesProvider().log(LogEventBuilder.warn().withMessage(MESSAGE_1P,
+                                                                                      inMessage).create());
     }
     /**
      * Emits the given error message to the strategy log output.
@@ -1094,13 +1095,13 @@ public abstract class AbstractRunningStrategy
     protected void error(String inMessage)
     {
         if(inMessage == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_LOG,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_LOG,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
-        strategy.getOutboundServicesProvider().log(LogEvent.error(MESSAGE_1P,
-                                                                  inMessage));
+        strategy.getOutboundServicesProvider().log(LogEventBuilder.error().withMessage(MESSAGE_1P,
+                                                                                       inMessage).create());
     }
     /**
      * Searches for an appropriate <code>ExecutionReport</code> suitable for
@@ -1114,10 +1115,10 @@ public abstract class AbstractRunningStrategy
     {
         // first, try to find an ExecutionReport for this order
         List<ExecutionReport> executionReports = inEntry.executionReports;
-        StrategyModule.log(LogEvent.debug(EXECUTION_REPORTS_FOUND,
-                                          String.valueOf(strategy),
-                                          executionReports.size(),
-                                          String.valueOf(inEntry)),
+        StrategyModule.log(LogEventBuilder.debug().withMessage(EXECUTION_REPORTS_FOUND,
+                                                               String.valueOf(strategy),
+                                                               executionReports.size(),
+                                                               String.valueOf(inEntry)).create(),
                            strategy);
         // get list iterator set to last element of the list
         ListIterator<ExecutionReport> iterator = executionReports.listIterator(executionReports.size());
@@ -1125,15 +1126,15 @@ public abstract class AbstractRunningStrategy
         while(iterator.hasPrevious()) {
             ExecutionReport report = iterator.previous();
             if(Originator.Server.equals(report.getOriginator())) {
-                StrategyModule.log(LogEvent.debug(USING_EXECUTION_REPORT,
-                                                  String.valueOf(strategy),
-                                                  report),
+                StrategyModule.log(LogEventBuilder.debug().withMessage(USING_EXECUTION_REPORT,
+                                                                       String.valueOf(strategy),
+                                                                       report).create(),
                                    strategy);
                 return report;
             }
         }
-        StrategyModule.log(LogEvent.debug(NO_EXECUTION_REPORT,
-                                          String.valueOf(strategy)),
+        StrategyModule.log(LogEventBuilder.debug().withMessage(NO_EXECUTION_REPORT,
+                                                               String.valueOf(strategy)).create(),
                            strategy);
         return null;
     }
@@ -1208,24 +1209,24 @@ public abstract class AbstractRunningStrategy
         @Override
         public void run()
         {
-            StrategyModule.log(LogEvent.debug(EXECUTING_CALLBACK,
-                                              String.valueOf(runningStrategy),
-                                              new Date()),
+            StrategyModule.log(LogEventBuilder.debug().withMessage(EXECUTING_CALLBACK,
+                                                                   String.valueOf(runningStrategy),
+                                                                   new Date()).create(),
                                strategy);
             try {
                 runningStrategy.onCallback(data);
             } catch (Exception e) {
                 if(strategy.getExecutor() != null) {
-                    StrategyModule.log(LogEvent.warn(CALLBACK_ERROR,
-                                                     e,
-                                                     String.valueOf(strategy),
-                                                     strategy.getExecutor().interpretRuntimeException(e)),
+                    StrategyModule.log(LogEventBuilder.warn().withMessage(CALLBACK_ERROR,
+                                                                          String.valueOf(strategy),
+                                                                          strategy.getExecutor().interpretRuntimeException(e))
+                                                             .withException(e).create(),
                                        strategy);
                 } else {
-                    StrategyModule.log(LogEvent.warn(CALLBACK_ERROR,
-                                                     e,
-                                                     String.valueOf(strategy),
-                                                     e.getLocalizedMessage()),
+                    StrategyModule.log(LogEventBuilder.warn().withMessage(CALLBACK_ERROR,
+                                                                          String.valueOf(strategy),
+                                                                          e.getLocalizedMessage())
+                                                             .withException(e).create(),
                                        strategy);
                 }
             }

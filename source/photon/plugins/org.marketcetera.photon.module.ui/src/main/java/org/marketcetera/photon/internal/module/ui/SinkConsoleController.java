@@ -8,6 +8,7 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.photon.module.ISinkDataHandler;
 import org.marketcetera.photon.module.ISinkDataManager;
@@ -151,7 +152,7 @@ public class SinkConsoleController implements IConsoleFactory, IConsoleListener 
 		public void receivedData(DataFlowID inFlowID, Object inData) {
 			// only log log events if the category is higher than USER_MSG_CATEGORY
 			if (!(inData instanceof LogEvent)
-					|| LogEvent.shouldLog((LogEvent) inData,
+					|| LogEventLevel.shouldLog((LogEvent)inData,
 							org.marketcetera.core.Messages.USER_MSG_CATEGORY)) {
 				mStream.println(format(inFlowID, inData));
 			}

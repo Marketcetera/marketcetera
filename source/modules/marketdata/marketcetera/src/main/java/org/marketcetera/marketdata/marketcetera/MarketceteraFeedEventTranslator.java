@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.marketcetera;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -10,10 +11,13 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTranslator;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.UnsupportedEventException;
+import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.trade.Equity;
@@ -55,8 +59,8 @@ public class MarketceteraFeedEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
-    public List<EventBase> toEvent(Object inData,
-                                   String inHandle) 
+    public List<Event> toEvent(Object inData,
+                               String inHandle) 
         throws CoreException
     {
         if(!(inData instanceof MarketDataSnapshotFullRefresh)) {
@@ -65,7 +69,7 @@ public class MarketceteraFeedEventTranslator
                                                                                             null)));
         }
         MarketDataSnapshotFullRefresh refresh = (MarketDataSnapshotFullRefresh)inData;
-        List<EventBase> events = new ArrayList<EventBase>();
+        List<Event> events = new ArrayList<Event>();
         try {
             int entries = refresh.getInt(NoMDEntries.FIELD);
             // marketcetera feed returns bid/ask/trade for every query (each entry corresponds to one of these).
@@ -96,34 +100,37 @@ public class MarketceteraFeedEventTranslator
                 switch(type){
                     case MDEntryType.BID :
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
-                            BidEvent bid = new BidEvent(System.nanoTime(),
-                                                        System.currentTimeMillis(),
-                                                        new Equity(symbol),
-                                                        exchange,
-                                                        new BigDecimal(price),
-                                                        new BigDecimal(size));
+                            BidEvent bid = QuoteEventBuilder.equityBidEvent().withMessageId(System.nanoTime())
+                                                                             .withTimestamp(new Date())
+                                                                             .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                                             .withInstrument(new Equity(symbol))
+                                                                             .withExchange(exchange)
+                                                                             .withPrice(new BigDecimal(price))
+                                                                             .withSize(new BigDecimal(size)).create();
                             events.add(bid);
                         }
                         break;
                     case MDEntryType.OFFER :
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
-                            AskEvent ask = new AskEvent(System.nanoTime(),
-                                                        System.currentTimeMillis(),
-                                                        new Equity(symbol),
-                                                        exchange,
-                                                        new BigDecimal(price),
-                                                        new BigDecimal(size));
+                            AskEvent ask = QuoteEventBuilder.equityAskEvent().withMessageId(System.nanoTime())
+                                                                             .withTimestamp(new Date())
+                                                                             .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                                             .withInstrument(new Equity(symbol))
+                                                                             .withExchange(exchange)
+                                                                             .withPrice(new BigDecimal(price))
+                                                                             .withSize(new BigDecimal(size)).create();
                             events.add(ask);
                         }
                         break;
                     case MDEntryType.TRADE:
                         if(requestedContent.contains(Content.LATEST_TICK)) {
-                            TradeEvent trade = new TradeEvent(System.nanoTime(),
-                                                              System.currentTimeMillis(),
-                                                              new Equity(symbol),
-                                                              exchange,
-                                                              new BigDecimal(price),
-                                                              new BigDecimal(size));
+                            TradeEvent trade = TradeEventBuilder.equityTradeEvent().withMessageId(System.nanoTime())
+                                                                                   .withTimestamp(new Date())
+                                                                                   .withTradeDate(DateUtils.dateToString(new Date()))
+                                                                                   .withInstrument(new Equity(symbol))
+                                                                                   .withExchange(exchange)
+                                                                                   .withPrice(new BigDecimal(price))
+                                                                                   .withSize(new BigDecimal(size)).create();
                             events.add(trade);
                         }
                         break;
@@ -140,7 +147,7 @@ public class MarketceteraFeedEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
-    public Object fromEvent(EventBase inEvent) 
+    public Object fromEvent(Event inEvent) 
         throws CoreException
     {
         throw new UnsupportedOperationException();

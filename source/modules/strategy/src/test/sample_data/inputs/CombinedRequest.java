@@ -57,7 +57,7 @@ public class CombinedRequest
     @Override
     public void onAsk(AskEvent inAsk)
     {
-        recordSymbol(inAsk.getSymbolAsString(),
+        recordSymbol(inAsk.getInstrumentAsString(),
                      asks);
         transcribeCollection("ask",
                              asks);
@@ -68,7 +68,7 @@ public class CombinedRequest
     @Override
     public void onBid(BidEvent inBid)
     {
-        recordSymbol(inBid.getSymbolAsString(),
+        recordSymbol(inBid.getInstrumentAsString(),
                      bids);
         transcribeCollection("bid",
                              bids);

@@ -510,7 +510,7 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 				"closePrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(
 				getMDMarketstat_CloseDate(),
-				ecorePackage.getEDate(),
+				ecorePackage.getEString(),
 				"closeDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(
 				getMDMarketstat_PreviousClosePrice(),
@@ -518,7 +518,7 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
 				"previousClosePrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(
 				getMDMarketstat_PreviousCloseDate(),
-				ecorePackage.getEDate(),
+				ecorePackage.getEString(),
 				"previousCloseDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(mdDepthOfBookEClass, MDDepthOfBook.class,

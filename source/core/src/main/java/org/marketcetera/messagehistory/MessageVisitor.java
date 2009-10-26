@@ -14,7 +14,7 @@ public interface MessageVisitor {
 
     /** Visits each Execution Report that we have gathered for all the
      * outstanding open orders
-     * @param message
+     * @param report a <code>ReportBase</code> value
      */
     public void visitOpenOrderExecutionReports(ReportBase report);
 

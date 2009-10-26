@@ -17,14 +17,18 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.DepthOfBook;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.DepthOfBookEvent;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.HasInstrument;
+import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.SymbolExchangeEvent;
-import org.marketcetera.event.TopOfBook;
+import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.MarketstatEventBuilder;
+import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.event.util.PriceAndSizeComparator;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -123,7 +127,7 @@ public final class SimulatedExchange
      * @see org.marketcetera.marketdata.Exchange#getDepthOfBook(org.marketcetera.trade.Instrument, int)
      */
     @Override
-    public DepthOfBook getDepthOfBook(Instrument inInstrument)
+    public DepthOfBookEvent getDepthOfBook(Instrument inInstrument)
     {
         validateSymbolAndState(inInstrument);
         return getBookWrapper(inInstrument).getBook().getDepthOfBook();
@@ -132,7 +136,7 @@ public final class SimulatedExchange
      * @see org.marketcetera.marketdata.Exchange#getTopOfBook(org.marketcetera.trade.Instrument)
      */
     @Override
-    public TopOfBook getTopOfBook(Instrument inInstrument)
+    public TopOfBookEvent getTopOfBook(Instrument inInstrument)
     {
         validateSymbolAndState(inInstrument);
         return getBookWrapper(inInstrument).getBook().getTopOfBook();
@@ -196,22 +200,22 @@ public final class SimulatedExchange
         // calculate low price (the min of current, open, and close - 0.00-4.99 inclusive)
         BigDecimal lowPrice = currentValue.min(openPrice).min(closePrice).subtract(randomDecimalDifference(5).abs());
         // ready to return the data
-        return new MarketstatEvent(inInstrument,
-                                        new Date(currentTime),
-                                        openPrice,
-                                        highPrice,
-                                        lowPrice,
-                                        closePrice,
-                                        previousClosePrice,
-                                        randomInteger(100000),
-                                        new Date(currentTime-(1000*60*60*8)),
-                                        new Date(currentTime-(1000*60*60*24)),
-                                        new Date(currentTime-(1000*60*60*4)),
-                                        new Date(currentTime-(1000*60*60*4)),
-                                        getCode(),
-                                        getCode(),
-                                        getCode(),
-                                        getCode());
+        return MarketstatEventBuilder.marketstat(inInstrument)
+                                     .withTimestamp(new Date(currentTime))
+                                     .withOpenPrice(openPrice)
+                                     .withHighPrice(highPrice)
+                                     .withLowPrice(lowPrice)
+                                     .withClosePrice(closePrice)
+                                     .withPreviousClosePrice(previousClosePrice)
+                                     .withVolume(randomInteger(100000))
+                                     .withCloseDate(DateUtils.dateToString(new Date(currentTime-(1000*60*60*8))))
+                                     .withPreviousCloseDate(DateUtils.dateToString(new Date(currentTime-(1000*60*60*24))))
+                                     .withTradeHighTime(DateUtils.dateToString(new Date(currentTime-(1000*60*60*4))))
+                                     .withTradeLowTime(DateUtils.dateToString(new Date(currentTime-(1000*60*60*4))))
+                                     .withOpenExchange(getCode())
+                                     .withHighExchange(getCode())
+                                     .withLowExchange(getCode())
+                                     .withCloseExchange(getCode()).create();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.Exchange#getStatistics(org.marketcetera.trade.Instrument, org.marketcetera.core.publisher.ISubscriber)
@@ -617,7 +621,7 @@ public final class SimulatedExchange
         inBook.publish(OrderBookSettler.settleBook(inBook,
                                                    maxDepth));
         // produce statistics
-        inBook.publish(Arrays.asList(new EventBase[] { getStatistics(inBook.getBook().getInstrument()) } ));
+        inBook.publish(Arrays.asList(new Event[] { getStatistics(inBook.getBook().getInstrument()) } ));
     }
     /**
      * Unique identifier for a specific subscription request to the {@link SimulatedExchange}.
@@ -706,7 +710,7 @@ public final class SimulatedExchange
         {
             exchange = inExchange;
             book = new OrderBook(inInstrument,
-                                  inMaxDepth);
+                                 inMaxDepth);
             // check to see if there is already a value we should use to seed the book
             value = getSymbolValue(inInstrument);
             if(value == null) {
@@ -727,26 +731,26 @@ public final class SimulatedExchange
             QuoteEvent displacedEvent = book.process(inEvent);
             publish(inEvent);
             if(displacedEvent != null) {
-                publish(QuoteEvent.deleteEvent(displacedEvent));
+                publish(QuoteEventBuilder.delete(displacedEvent));
             }
         }
         /**
          * Publishes the given events to relevant subscribers, if any.
          *
-         * @param inEvents a <code>List&lt;? extends EventBase&gt;</code> value
+         * @param inEvents a <code>List&lt;? extends Event&gt;</code> value
          */
-        private void publish(List<? extends EventBase> inEvents)
+        private void publish(List<? extends Event> inEvents)
         {
-            for(EventBase event : inEvents) {
+            for(Event event : inEvents) {
                 publish(event);
             }
         }
         /**
          * Publishes the given event to relevant subscribers, if any. 
          *
-         * @param inEvent an <code>EventBase</code> value
+         * @param inEvent an <code>Event</code> value
          */
-        private void publish(EventBase inEvent)
+        private void publish(Event inEvent)
         {
             publisher.publish(inEvent);
         }
@@ -766,18 +770,21 @@ public final class SimulatedExchange
                 }
             }
             // take the modified value and add a bid and an ask based on it
-            process(new AskEvent(System.nanoTime(),
-                                 System.currentTimeMillis(),
-                                 getBook().getInstrument(),
-                                 exchange.getCode(),
-                                 getValue().add(PENNY),
-                                 randomInteger(10000)));
-            process(new BidEvent(System.nanoTime(),
-                                 System.currentTimeMillis(),
-                                 getBook().getInstrument(),
-                                 exchange.getCode(),
-                                 getValue().subtract(PENNY),
-                                 randomInteger(10000)));
+            Date timestamp = new Date();
+            process(QuoteEventBuilder.askEvent(getBook().getInstrument())
+                                     .withMessageId(System.nanoTime())
+                                     .withTimestamp(timestamp)
+                                     .withExchange(exchange.getCode())
+                                     .withPrice(getValue().add(PENNY))
+                                     .withSize(randomInteger(10000))
+                                     .withQuoteDate(DateUtils.dateToString(timestamp)).create());
+            process(QuoteEventBuilder.bidEvent(getBook().getInstrument())
+                                     .withMessageId(System.nanoTime())
+                                     .withTimestamp(timestamp)
+                                     .withExchange(exchange.getCode())
+                                     .withPrice(getValue().subtract(PENNY))
+                                     .withSize(randomInteger(10000))
+                                     .withQuoteDate(DateUtils.dateToString(timestamp)).create());
         }
         /**
          * Get the base value.
@@ -847,15 +854,15 @@ public final class SimulatedExchange
          * 
          * @param inBook an <code>OrderBook</code> value
          * @param inMaxDepth an <code>int</code> value containing the maximum depth to allow
-         * @return a <code>List&lt;SymbolExchangeEvent&gt;</code> value containing the events created, if any, to settle the book
+         * @return a <code>List&lt;MarketDataEvent&gt;</code> value containing the events created, if any, to settle the book
          */
-        private static List<SymbolExchangeEvent> settleBook(OrderBookWrapper inBook,
-                                                            int inMaxDepth)
+        private static List<MarketDataEvent> settleBook(OrderBookWrapper inBook,
+                                                        int inMaxDepth)
         {
             SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                    "OrderBook starts at\n{}", //$NON-NLS-1$
                                    inBook.getBook());
-            List<SymbolExchangeEvent> eventsToReturn = new ArrayList<SymbolExchangeEvent>();
+            List<MarketDataEvent> eventsToReturn = new ArrayList<MarketDataEvent>();
             try {
                 // this is the list of bids over which to operate - note this is a static list, it does
                 //  not reflect the ongoing changes to the order book
@@ -904,28 +911,29 @@ public final class SimulatedExchange
                                                    tradeSize.toPlainString(),
                                                    tradePrice.toPlainString());
                             // create the new trade
-                            TradeEvent trade = new TradeEvent(System.nanoTime(),
-                                                              tradeTime,
-                                                              bid.getInstrument(),
-                                                              bid.getExchange(),
-                                                              tradePrice,
-                                                              tradeSize);
+                            TradeEvent trade = TradeEventBuilder.tradeEvent(bid.getInstrument())
+                                                                .withMessageId(System.nanoTime())
+                                                                .withTimestamp(new Date(tradeTime))
+                                                                .withExchange(bid.getExchange())
+                                                                .withPrice(tradePrice)
+                                                                .withSize(tradeSize)
+                                                                .withTradeDate(DateUtils.dateToString(new Date(tradeTime))).create();
                             // these events are used to modify the orders in the book
                             BidEvent bidCorrection;
                             AskEvent askCorrection;
                             if(tradeSize.compareTo(bidSize) == -1) {
                                 // trade is smaller than the bid, this is a partial fill
-                                bidCorrection = BidEvent.changeEvent(bid,
-                                                                     tradeTime,
-                                                                     bidSize.subtract(tradeSize));
-                                askCorrection = AskEvent.deleteEvent(ask); 
+                                bidCorrection = QuoteEventBuilder.change(bid,
+                                                                         new Date(tradeTime),
+                                                                         bidSize.subtract(tradeSize));
+                                askCorrection = QuoteEventBuilder.delete(ask); 
                             } else {
                                 // trade is equal to the bid, this is a full fill
-                                bidCorrection = BidEvent.deleteEvent(bid);
-                                askCorrection = tradeSize.equals(askSize) ? AskEvent.deleteEvent(ask) :
-                                                                            AskEvent.changeEvent(ask,
-                                                                                                 tradeTime,
-                                                                                                 askSize.subtract(tradeSize));
+                                bidCorrection = QuoteEventBuilder.delete(bid);
+                                askCorrection = tradeSize.equals(askSize) ? QuoteEventBuilder.delete(ask) :
+                                                                            QuoteEventBuilder.change(ask,
+                                                                                                     new Date(tradeTime),
+                                                                                                     askSize.subtract(tradeSize));
                             }
                             // adjust the remainder we need to fill
                             bidSize = bidSize.subtract(tradeSize);
@@ -1044,12 +1052,12 @@ public final class SimulatedExchange
         public boolean isInteresting(Object inData)
         {
             // escape hatch for non-events
-            if(!(inData instanceof EventBase)) {
+            if(!(inData instanceof Event)) {
                 return true;
             }
             // verify the exchange matches
-            if(inData instanceof SymbolExchangeEvent) {
-                if(!((SymbolExchangeEvent)inData).getExchange().equals(exchange.getCode())) {
+            if(inData instanceof MarketDataEvent) {
+                if(!((MarketDataEvent)inData).getExchange().equals(exchange.getCode())) {
                     return false;
                 }
             }
@@ -1090,7 +1098,7 @@ public final class SimulatedExchange
                 //  for the exchange; an opportunity but *not* a guarantee
                 // first, check to see if there is, in fact, a new top-of-book state for the
                 //  exchange
-                TopOfBook currentState = exchange.getTopOfBook(instrument);
+                TopOfBookEvent currentState = exchange.getTopOfBook(instrument);
                 try {
                     // we are guaranteed that this object is non-null, but its components may be null
                     // check to see if the quote event caused a change in the top-of-book state
@@ -1123,7 +1131,7 @@ public final class SimulatedExchange
                 // there is no current top quote, was there one before?
                 if(inLastTop != null) {
                     // yes, there used to be a top quote, but it should go away now
-                    originalSubscriber.publishTo(QuoteEvent.deleteEvent(inLastTop));
+                    originalSubscriber.publishTo(QuoteEventBuilder.delete(inLastTop));
                 } else {
                     // there didn't used to be a top quote, so don't do anything
                 }
@@ -1131,20 +1139,20 @@ public final class SimulatedExchange
                 // there is a current top quote, compare it to the one that used to be here
                 if(inLastTop == null) {
                     // there didn't used to be a top quote, just add the new one
-                    originalSubscriber.publishTo(QuoteEvent.addEvent(inCurrentTop));
+                    originalSubscriber.publishTo(QuoteEventBuilder.add(inCurrentTop));
                 } else {
                     // there used to be a top quote, check to see if it's different than the current one
                     // btw, we know that current quote and last known quote are both non-null
-                    if(QuoteEvent.PriceAndSizeComparator.instance.compare(inLastTop,
-                                                                          inCurrentTop) != 0) {
-                        originalSubscriber.publishTo(QuoteEvent.addEvent(inCurrentTop));
+                    if(PriceAndSizeComparator.instance.compare(inLastTop,
+                                                               inCurrentTop) != 0) {
+                        originalSubscriber.publishTo(QuoteEventBuilder.add(inCurrentTop));
                     } else {
                         // the current and previous tops are identical, so don't do anything
                     }
                 }
             }
         }
-        private TopOfBook lastKnownState = null;
+        private TopOfBookEvent lastKnownState = null;
         /**
          * Gets the <code>Token</code> corresponding to this subscription.
          *
