@@ -29,6 +29,11 @@ if (!defined($::prvConfig) && (-e $prvConfig)) {
 	'public/source/tradebase/vendor/plugins/debug_view_helper',
 );
 
+@::retainedKeywords=(
+	@::retainedKeywords,
+	'public/source/photon/plugins/org.marketcetera.photon.commons/templates',
+);
+
 @::executables=(
 	@::executables,
 	'public/source/tradebase/script/about',
