@@ -12,14 +12,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.DepthOfBook;
+import org.marketcetera.event.DepthOfBookEvent;
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.TopOfBook;
+import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.impl.DepthOfBookEventBuilder;
+import org.marketcetera.event.impl.TopOfBookEventBuilder;
+import org.marketcetera.event.util.BookPriceComparator;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -100,30 +103,30 @@ public class OrderBook
         return mMaxDepth;
     }
     /**
-     * Gets the {@link TopOfBook} view of the order book.
+     * Gets the {@link TopOfBookEvent} view of the order book.
      * 
      * @return a <code>TopOfBook</code> value
      */
-    public final TopOfBook getTopOfBook()
+    public final TopOfBookEvent getTopOfBook()
     {
         List<BidEvent> bidBook = getBidBook();
         List<AskEvent> askBook = getAskBook();
-        return new TopOfBook(bidBook.isEmpty() ? null : bidBook.get(0),
-                             askBook.isEmpty() ? null : askBook.get(0),
-                             new Date(),
-                             getInstrument());
+        return TopOfBookEventBuilder.topOfBookEvent().withBid(bidBook.isEmpty() ? null : bidBook.get(0))
+                                                     .withAsk(askBook.isEmpty() ? null : askBook.get(0))
+                                                     .withInstrument(getInstrument())
+                                                     .withTimestamp(new Date()).create();
     }
     /**
-     * Returns the {@link DepthOfBook} view of the order book. 
+     * Returns the {@link DepthOfBookEvent} view of the order book. 
      *
      * @return a <code>DepthOfBook</code> value
      */
-    public final DepthOfBook getDepthOfBook()
+    public final DepthOfBookEvent getDepthOfBook()
     {
-        return new DepthOfBook(getBidBook(),
-                               getAskBook(),
-                               new Date(),
-                               getInstrument());
+        return DepthOfBookEventBuilder.depthOfBook()
+                                      .withBids(getBidBook())
+                                      .withAsks(getAskBook())
+                                      .withInstrument(getInstrument()).create();
     }
     /**
      * Gets the current state of the <code>Bid</code> book. 
@@ -132,7 +135,7 @@ public class OrderBook
      */
     public final List<BidEvent> getBidBook()
     {
-        return mBidBook.getSortedView(QuoteEvent.BookPriceComparator.BidComparator);
+        return mBidBook.getSortedView(BookPriceComparator.bidComparator);
     }
     /**
      * Gets the current state of the <code>Ask</code> book.
@@ -141,7 +144,7 @@ public class OrderBook
      */
     public final List<AskEvent> getAskBook()
     {
-        return mAskBook.getSortedView(QuoteEvent.BookPriceComparator.AskComparator);
+        return mAskBook.getSortedView(BookPriceComparator.askComparator);
     }
     /**
      * Processes the given event for the order book.
@@ -230,9 +233,9 @@ public class OrderBook
      * @param inShowExchange a <code>boolean</code> value indicating whether to display the exchange associated with each bid and ask
      * @return a <code>String</code> containing the human-readable representation of the order book implied by the given <code>Iterator</code> objects
      */
-    public static String printBook(Iterator<BidEvent> bidIterator,
-                                   Iterator<AskEvent> askIterator,
-                                   boolean inShowExchange)
+    public static <I extends Instrument> String printBook(Iterator<BidEvent> bidIterator,
+                                                          Iterator<AskEvent> askIterator,
+                                                          boolean inShowExchange)
     {
         List<String> bids = new ArrayList<String>();
         List<String> asks = new ArrayList<String>();
@@ -366,8 +369,8 @@ public class OrderBook
     private void checkEvent(QuoteEvent inEvent)
     {
         if(!inEvent.getInstrument().equals(getInstrument())) {
-            throw new IllegalArgumentException(SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL.getText(inEvent.getInstrument(),
-                                                                                               getInstrument()));
+            throw new IllegalArgumentException(INSTRUMENT_DOES_NOT_MATCH_ORDER_BOOK_INSTRUMENT.getText(inEvent.getInstrument(),
+                                                                                                       getInstrument()));
         }
     }
     /**

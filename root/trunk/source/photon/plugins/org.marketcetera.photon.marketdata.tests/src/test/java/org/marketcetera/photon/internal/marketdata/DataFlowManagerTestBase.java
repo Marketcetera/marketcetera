@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,7 +16,10 @@ import org.junit.Test;
 import org.marketcetera.core.ImmediateExecutorService;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.ExpectedFailure;
@@ -354,12 +358,12 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	}
 
 	protected AskEvent createAskEvent(String symbol, String exchange, int price, int size) {
-		return new AskEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
-				new BigDecimal(price), new BigDecimal(size));
+		return QuoteEventBuilder.equityAskEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
+        .withPrice(new BigDecimal(price)).withSize(new BigDecimal(size)).withAction(QuoteAction.ADD).withQuoteDate(DateUtils.dateToString(new Date())).create();
 	}
 
 	protected BidEvent createBidEvent(String symbol, String exchange, int price, int size) {
-		return new BidEvent(mMessageIds.incrementAndGet(), System.currentTimeMillis(), new Equity(symbol), exchange,
-				new BigDecimal(price), new BigDecimal(size));
+		return QuoteEventBuilder.equityBidEvent().withMessageId(mMessageIds.incrementAndGet()).withTimestamp(new Date()).withInstrument(new Equity(symbol)).withExchange(exchange)
+        .withPrice(new BigDecimal(price)).withSize(new BigDecimal(size)).withAction(QuoteAction.ADD).withQuoteDate(DateUtils.dateToString(new Date())).create();
 	}
 }

@@ -29,9 +29,10 @@ import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.LogEvent;
-import org.marketcetera.event.LogEvent.Level;
+import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.module.DataEmitter;
@@ -51,9 +52,9 @@ import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
@@ -165,8 +166,8 @@ final class StrategyModule
                                "{} received {}", //$NON-NLS-1$
                                strategy,
                                inData);
-        if(inData instanceof EventBase) {
-            EventBase event = (EventBase)inData;
+        if(inData instanceof Event) {
+            Event event = (Event)inData;
             synchronized(dataFlows) {
                 event.setSource(dataFlows.get(inFlowID));
             }
@@ -196,9 +197,9 @@ final class StrategyModule
     public int requestMarketData(MarketDataRequest inRequest)
     {
         if(inRequest == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_MARKET_DATA_REQUEST,
-                                             String.valueOf(strategy),
-                                             inRequest),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MARKET_DATA_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inRequest).create(),
                                strategy);
             return 0;
         }
@@ -213,9 +214,9 @@ final class StrategyModule
                               requestID);
             }
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(MARKET_DATA_REQUEST_FAILED,
-                                             e,
-                                             inRequest),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(MARKET_DATA_REQUEST_FAILED,
+                                                                  inRequest)
+                                                     .withException(e).create(),
                                strategy);
             return 0;
         }
@@ -237,12 +238,12 @@ final class StrategyModule
            inCEPSource.isEmpty() ||
            inNamespace == null ||
            inNamespace.isEmpty()) {
-            StrategyModule.log(LogEvent.warn(INVALID_COMBINED_DATA_REQUEST,
-                                             String.valueOf(strategy),
-                                             inRequest,
-                                             Arrays.toString(inStatements),
-                                             inCEPSource,
-                                             inNamespace),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_COMBINED_DATA_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inRequest,
+                                                                  Arrays.toString(inStatements),
+                                                                  inCEPSource,
+                                                                  inNamespace).create(),
                                strategy);
             return 0;
         }
@@ -264,12 +265,12 @@ final class StrategyModule
             }
             return requestID;
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(COMBINED_DATA_REQUEST_FAILED,
-                                             e,
-                                             inRequest,
-                                             Arrays.toString(inStatements),
-                                             inCEPSource,
-                                             inNamespace),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(COMBINED_DATA_REQUEST_FAILED,
+                                                                  inRequest,
+                                                                  Arrays.toString(inStatements),
+                                                                  inCEPSource,
+                                                                  inNamespace)
+                                                      .withException(e).create(),
                                strategy);
             return 0;
         }        
@@ -287,10 +288,10 @@ final class StrategyModule
                 try {
                     cancelDataRequest(request);
                 } catch (Exception e) {
-                    StrategyModule.log(LogEvent.warn(UNABLE_TO_CANCEL_DATA_REQUEST,
-                                                     e,
-                                                     String.valueOf(strategy),
-                                                     request),
+                    StrategyModule.log(LogEventBuilder.warn().withMessage(UNABLE_TO_CANCEL_DATA_REQUEST,
+                                                                          String.valueOf(strategy),
+                                                                          request)
+                                                             .withException(e).create(),
                                        strategy);
                 }
             }
@@ -304,19 +305,19 @@ final class StrategyModule
     {
         synchronized(dataFlows) {
             if(!dataFlows.inverse().containsKey(inDataRequestID)) {
-                StrategyModule.log(LogEvent.warn(NO_DATA_HANDLE,
-                                                 String.valueOf(strategy),
-                                                 inDataRequestID),
+                StrategyModule.log(LogEventBuilder.warn().withMessage(NO_DATA_HANDLE,
+                                                                      String.valueOf(strategy),
+                                                                      inDataRequestID).create(),
                                    strategy);
                 return;
             }
             try {
                 doCancelDataRequest(inDataRequestID);
             } catch (Exception e) {
-                StrategyModule.log(LogEvent.warn(UNABLE_TO_CANCEL_DATA_REQUEST,
-                                                 e,
-                                                 String.valueOf(strategy),
-                                                 inDataRequestID),
+                StrategyModule.log(LogEventBuilder.warn().withMessage(UNABLE_TO_CANCEL_DATA_REQUEST,
+                                                                      String.valueOf(strategy),
+                                                                      inDataRequestID)
+                                                         .withException(e).create(),
                                    strategy);
             }
         }
@@ -331,11 +332,11 @@ final class StrategyModule
     {
         if(inStatements == null ||
            inStatements.length == 0) {
-            StrategyModule.log(LogEvent.warn(INVALID_CEP_REQUEST,
-                                             String.valueOf(strategy),
-                                             Arrays.toString(inStatements),
-                                             String.valueOf(inSource),
-                                             String.valueOf(inNamespace)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_CEP_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  Arrays.toString(inStatements),
+                                                                  String.valueOf(inSource),
+                                                                  String.valueOf(inNamespace)).create(),
                                strategy);
             return 0;
         }
@@ -353,10 +354,10 @@ final class StrategyModule
                               requestID);
             }
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(CEP_REQUEST_FAILED,
-                                             e,
-                                             Arrays.toString(inStatements),
-                                             inSource),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CEP_REQUEST_FAILED,
+                                                                  Arrays.toString(inStatements),
+                                                                  inSource)
+                                                     .withException(e).create(),
                                strategy);
             return 0;
         }
@@ -480,8 +481,8 @@ final class StrategyModule
     {
         if(inMessage == null ||
            inBroker == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_MESSAGE,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MESSAGE,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
@@ -489,11 +490,11 @@ final class StrategyModule
             publish(Factory.getInstance().createOrder(inMessage,
                                                       inBroker));
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.warn(SEND_MESSAGE_FAILED,
-                                             e,
-                                             String.valueOf(strategy),
-                                             inMessage,
-                                             inBroker),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(SEND_MESSAGE_FAILED,
+                                                                  String.valueOf(strategy),
+                                                                  inMessage,
+                                                                  inBroker)
+                                                     .withException(e).create(),
                                strategy);
         }
     }
@@ -504,8 +505,8 @@ final class StrategyModule
     public void send(Object inData)
     {
         if(inData == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_DATA,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_DATA,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
@@ -518,8 +519,8 @@ final class StrategyModule
     public void sendSuggestion(Suggestion inSuggestion)
     {
         if(inSuggestion == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_TRADE_SUGGESTION,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_TRADE_SUGGESTION,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
@@ -529,14 +530,14 @@ final class StrategyModule
      * @see org.marketcetera.strategy.OutboundServicesProvider#sendEvent(org.marketcetera.event.EventBase)
      */
     @Override
-    public void sendEvent(EventBase inEvent,
+    public void sendEvent(Event inEvent,
                           String inProvider,
                           String inNamespace)
     {
         // event must not be null, but the other two parameters may be
         if(inEvent == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_EVENT,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_EVENT,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
@@ -554,10 +555,10 @@ final class StrategyModule
             } catch (Exception e) {
                 // warn that the event was not sent to CEP, but continue to send to subscribers
                 // this may not be an error as the CEP module may not exist
-                StrategyModule.log(LogEvent.warn(CANNOT_SEND_EVENT_TO_CEP,
-                                                 String.valueOf(strategy),
-                                                 inEvent,
-                                                 cepModuleURN),
+                StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_SEND_EVENT_TO_CEP,
+                                                                      String.valueOf(strategy),
+                                                                      inEvent,
+                                                                      cepModuleURN).create(),
                                    strategy);
             }
             // done sending event to CEP, for better or worse
@@ -572,8 +573,8 @@ final class StrategyModule
     public void sendNotification(Notification inNotification)
     {
         if(inNotification == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_NOTIFICATION,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_NOTIFICATION,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
@@ -586,8 +587,8 @@ final class StrategyModule
     public void log(LogEvent inEvent)
     {
         if(inEvent == null) {
-            StrategyModule.log(LogEvent.warn(INVALID_LOG,
-                                             String.valueOf(strategy)),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_LOG,
+                                                                  String.valueOf(strategy)).create(),
                                strategy);
             return;
         }
@@ -743,7 +744,8 @@ final class StrategyModule
      * @return a <code>boolean</code> value
      */
     private static boolean shouldLog(LogEvent inEvent) {
-        return LogEvent.shouldLog(inEvent, Strategy.STRATEGY_MESSAGES);
+        return LogEventLevel.shouldLog(inEvent,
+                                       Strategy.STRATEGY_MESSAGES);
     }
     /**
      * Logs the given message to the standard log.
@@ -754,7 +756,7 @@ final class StrategyModule
     {
         Throwable exception = inEvent.getException();
         String message = inEvent.getMessage();
-        if(Level.DEBUG.equals(inEvent.getLevel())) {
+        if(LogEventLevel.DEBUG.equals(inEvent.getLevel())) {
             if(exception == null) {
                 MESSAGE_1P.debug(Strategy.STRATEGY_MESSAGES,
                                  message);
@@ -763,7 +765,7 @@ final class StrategyModule
                                  exception,
                                  message);
             }
-        } else if(Level.INFO.equals(inEvent.getLevel())) {
+        } else if(LogEventLevel.INFO.equals(inEvent.getLevel())) {
             if(exception == null) {
                 MESSAGE_1P.info(Strategy.STRATEGY_MESSAGES,
                                 message);
@@ -772,7 +774,7 @@ final class StrategyModule
                                 exception,
                                 message);
             }
-        } else if(Level.WARN.equals(inEvent.getLevel())) {
+        } else if(LogEventLevel.WARN.equals(inEvent.getLevel())) {
             if(exception == null) {
                 MESSAGE_1P.warn(Strategy.STRATEGY_MESSAGES,
                                 message);
@@ -781,7 +783,7 @@ final class StrategyModule
                                 exception,
                                 message);
             }
-        } else if(Level.ERROR.equals(inEvent.getLevel())) {
+        } else if(LogEventLevel.ERROR.equals(inEvent.getLevel())) {
             if(exception == null) {
                 MESSAGE_1P.error(Strategy.STRATEGY_MESSAGES,
                                  message);
@@ -1115,7 +1117,7 @@ final class StrategyModule
      * @throws ModuleException if the event could not be sent
      */
     private void sendEventToCEP(ModuleURN inCEPModule,
-                                EventBase inEvent)
+                                Event inEvent)
         throws ModuleException
     {
         assert(inCEPModule != null);
@@ -1132,9 +1134,9 @@ final class StrategyModule
                               counter.incrementAndGet());
                 establishedConnection = internalDataFlows.get(inCEPModule);
                 if(establishedConnection == null) {
-                    StrategyModule.log(LogEvent.warn(CANNOT_CREATE_CONNECTION,
-                                                     String.valueOf(strategy),
-                                                     inCEPModule),
+                    StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_CREATE_CONNECTION,
+                                                                          String.valueOf(strategy),
+                                                                          inCEPModule).create(),
                                        strategy);
                     return;
                 }
@@ -1211,7 +1213,7 @@ final class StrategyModule
             ordersPublisher.publish(inObject);
         } else if(inObject instanceof Suggestion) {
             suggestionsPublisher.publish(inObject);
-        } else if(inObject instanceof EventBase) {
+        } else if(inObject instanceof Event) {
             eventsPublisher.publish(inObject);
         } else if(inObject instanceof Notification) {
             notificationsPublisher.publish(inObject);

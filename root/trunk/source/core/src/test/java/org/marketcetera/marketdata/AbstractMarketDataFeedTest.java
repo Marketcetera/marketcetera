@@ -21,11 +21,11 @@ import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.AggregateEvent;
-import org.marketcetera.event.EventBase;
-import org.marketcetera.event.EventBaseTest;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.MockAggregateEvent;
+import org.marketcetera.event.MockEvent;
 import org.marketcetera.event.MockEventTranslator;
-import org.marketcetera.event.AggregateEventTest.MockAggregateEvent;
-import org.marketcetera.event.EventBaseTest.MockEvent;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
@@ -506,7 +506,7 @@ public class AbstractMarketDataFeedTest
         // create an invalid request
         final MarketDataRequest invalidRequest = MarketDataRequest.newRequest();
         // prove that it's invalid
-        new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(NEITHER_SYMBOLS_NOR_UNDERLYING_SYMBOLS_SPECIFIED.getText(invalidRequest)) {
             @Override
             protected void run()
                     throws Exception
@@ -721,9 +721,9 @@ public class AbstractMarketDataFeedTest
         MarketDataRequest request = new MarketDataRequest().fromProvider("not-a-real-provider").withSymbols("METC");
         // first, have the feed return a non-aggregate event
         MockEvent e = new MockEvent();
-        assertTrue(EventBase.class.isAssignableFrom(e.getClass()));
+        assertTrue(Event.class.isAssignableFrom(e.getClass()));
         assertFalse(AggregateEvent.class.isAssignableFrom(e.getClass()));
-        feed.setEventsToReturn(Arrays.asList(new EventBase[] { e } ));
+        feed.setEventsToReturn(Arrays.asList(new Event[] { e } ));
         feed.execute(MarketDataFeedTokenSpec.generateTokenSpec(request,
                                                                s));
         waitForPublication(s);
@@ -732,12 +732,12 @@ public class AbstractMarketDataFeedTest
         assertEquals(e,
                      s.getPublications().get(0));
         // next, send in an aggregate event and make sure it gets properly decomposed
-        List<EventBase> expectedEvents = Arrays.asList(new EventBase[] { EventBaseTest.generateAskEvent(metc,
-                                                                                                        exchange),
-                                                                         EventBaseTest.generateBidEvent(metc,
-                                                                                                        exchange) } );
+        List<Event> expectedEvents = Arrays.asList(new Event[] { EventTestBase.generateEquityAskEvent(metc,
+                                                                                                      exchange),
+                                                                 EventTestBase.generateEquityBidEvent(metc,
+                                                                                                      exchange) } );
         MockAggregateEvent mae = new MockAggregateEvent(expectedEvents);
-        feed.setEventsToReturn(Arrays.asList(new EventBase[] { mae } ));
+        feed.setEventsToReturn(Arrays.asList(new Event[] { mae } ));
         s.reset();
         feed.execute(MarketDataFeedTokenSpec.generateTokenSpec(request,
                                                                s));

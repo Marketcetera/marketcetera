@@ -2,6 +2,7 @@ package org.marketcetera.event;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * An event was received from a data feed but could not be translated.
@@ -9,6 +10,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class UnsupportedEventException
         extends CoreException
 {

@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedException;
@@ -40,7 +40,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * <p>This implementation generates random market data for each
  * symbol for which a market data request is received.  Data is returned
- * from the feed via {@link EventBase} objects.
+ * from the feed via {@link Event} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

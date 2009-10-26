@@ -2,8 +2,8 @@ package org.marketcetera.marketdata.bogus;
 
 import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.MARKET_STAT;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOTAL_VIEW;
 import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;

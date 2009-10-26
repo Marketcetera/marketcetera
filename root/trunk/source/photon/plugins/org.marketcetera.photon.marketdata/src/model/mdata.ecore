@@ -51,7 +51,7 @@
         <details key="suppressedSetVisibility" value="true"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="closeDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="closeDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="suppressedSetVisibility" value="true"/>
       </eAnnotations>
@@ -61,7 +61,7 @@
         <details key="suppressedSetVisibility" value="true"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="previousCloseDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="previousCloseDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="suppressedSetVisibility" value="true"/>
       </eAnnotations>

@@ -10,7 +10,7 @@ import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.jruby.exceptions.RaiseException;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.strategy.CompilationFailed.Diagnostic;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -80,9 +80,9 @@ class BeanScriptingFrameworkEngine
                 }
             }
         } catch (BSFException e) {
-            StrategyModule.log(LogEvent.error(NO_SUPPORT_FOR_LANGUAGE,
-                                              e,
-                                              languageString),
+            StrategyModule.log(LogEventBuilder.error().withMessage(NO_SUPPORT_FOR_LANGUAGE,
+                                                                   languageString)
+                                                      .withException(e).create(),
                                strategy);
             throw new StrategyException(e,
                                         new I18NBoundMessage1P(NO_SUPPORT_FOR_LANGUAGE,
@@ -106,10 +106,10 @@ class BeanScriptingFrameworkEngine
             if(e.getTargetException() instanceof RaiseException) {
                 failed.addDiagnostic(Diagnostic.error(RubyExecutor.exceptionAsString(e)));
             }
-            StrategyModule.log(LogEvent.error(COMPILATION_FAILED,
-                                              failed,
-                                              String.valueOf(strategy),
-                                              failed.toString()),
+            StrategyModule.log(LogEventBuilder.error().withMessage(COMPILATION_FAILED,
+                                                                   String.valueOf(strategy),
+                                                                   failed.toString())
+                                                      .withException(failed).create(),
                                strategy);
             throw failed;
         }

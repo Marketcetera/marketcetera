@@ -5,7 +5,7 @@ import static org.marketcetera.strategy.Status.STARTING;
 import static org.marketcetera.strategy.Status.STOPPED;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -36,8 +36,8 @@ abstract class AbstractExecutor
                        processedScript);
         Object objectReturned = engine.start();
         if(objectReturned == null) {
-            StrategyModule.log(LogEvent.error(STRATEGY_COMPILATION_NULL_RESULT,
-                                              String.valueOf(getStrategy())),                               
+            StrategyModule.log(LogEventBuilder.error().withMessage(STRATEGY_COMPILATION_NULL_RESULT,
+                                                                   String.valueOf(getStrategy())).create(),                               
                                getStrategy());                               
             throw new StrategyException(new I18NBoundMessage1P(STRATEGY_COMPILATION_NULL_RESULT,
                                                                getStrategy().toString()));
@@ -71,16 +71,16 @@ abstract class AbstractExecutor
             } catch (Exception e) {
                 // this means that the "onStart" method was never completed so the strategy never started
                 // this will cause a moduleCreationError in StrategyModule, which is what we want
-                StrategyModule.log(LogEvent.error(RUNTIME_ERROR,
-                                                  e,
-                                                  getStrategy().toString(),
-                                                  translateMethodName("onStart"), //$NON-NLS-1$
-                                                  interpretRuntimeException(e)),
+                StrategyModule.log(LogEventBuilder.error().withMessage(RUNTIME_ERROR,
+                                                                       getStrategy().toString(),
+                                                                       translateMethodName("onStart"), //$NON-NLS-1$
+                                                                       interpretRuntimeException(e))
+                                                          .withException(e).create(),
                                    getStrategy());
                 throw e;
             }
         } else {
-            StrategyModule.log(LogEvent.error(NO_STRATEGY_CLASS),
+            StrategyModule.log(LogEventBuilder.error().withMessage(NO_STRATEGY_CLASS).create(),
                                getStrategy());
             throw new StrategyException(NO_STRATEGY_CLASS);
         }
@@ -105,11 +105,11 @@ abstract class AbstractExecutor
                 runningStrategy.onStop();
                 enclosingStrategy.setStatus(STOPPED);
         } catch (Exception e) {
-            StrategyModule.log(LogEvent.error(RUNTIME_ERROR,
-                                              e,
-                                              String.valueOf(getStrategy()),
-                                              translateMethodName("onStop"), //$NON-NLS-1$
-                                              interpretRuntimeException(e)),
+            StrategyModule.log(LogEventBuilder.error().withMessage(RUNTIME_ERROR,
+                                                                   String.valueOf(getStrategy()),
+                                                                   translateMethodName("onStop"), //$NON-NLS-1$
+                                                                   interpretRuntimeException(e))
+                                                     .withException(e).create(),
                                getStrategy());
             throw e;
         }

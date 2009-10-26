@@ -2,14 +2,15 @@ package org.marketcetera.marketdata;
 
 import static org.marketcetera.marketdata.Messages.INVALID_DATE;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Offers date translation utilities for {@link MarketDataRequest} objects.
@@ -88,9 +89,7 @@ public class DateUtils
      * 
      * <p>The format of the returned value is ISO 8601 basic format to millisecond precision with
      * time zone offset.  This format can be expressed as: <code>yyyyMMdd'T'HHmmssSSSZ</code> in terms of the format expected
-     * by {@link http://java.sun.com/javase/6//docs/api/java/text/SimpleDateFormat.html}.  This format
-     * can be used with {@link MarketDataRequest#newRequestFromString(String)} and
-     * {@link MarketDataRequest#asOf(String)}.
+     * by {@link SimpleDateFormat}.
      *
      * @param inDate a <code>Date</code> value
      * @return a <code>String</code> value

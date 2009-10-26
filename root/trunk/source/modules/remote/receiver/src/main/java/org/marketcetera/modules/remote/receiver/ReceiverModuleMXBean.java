@@ -1,8 +1,8 @@
 package org.marketcetera.modules.remote.receiver;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.module.DisplayName;
-import org.marketcetera.event.LogEvent;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -48,7 +48,7 @@ public interface ReceiverModuleMXBean {
      * @return the log level value.
      */
     @DisplayName("Minimum log level of log events to transmit")
-    public LogEvent.Level getLogLevel();
+    public LogEventLevel getLogLevel();
 
     /**
      * Sets the minimum log level of log events remotely transmitted
@@ -69,7 +69,7 @@ public interface ReceiverModuleMXBean {
     @DisplayName("Minimum log level of log events to transmit")
     public void setLogLevel(
             @DisplayName("Minimum log level of log events to transmit")
-            LogEvent.Level inLevel);
+            LogEventLevel inLevel);
 
     /**
      * If the module should skip the automatic JAAS configuration when

@@ -1,20 +1,26 @@
 package org.marketcetera.modules.remote.receiver;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.spring.SpringUtils;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.module.*;
-import org.marketcetera.event.LogEvent;
-import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.JmsException;
+import java.util.EnumSet;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
-
-import java.util.EnumSet;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataReceiver;
+import org.marketcetera.module.Module;
+import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.ReceiveDataException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.spring.SpringUtils;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.jms.JmsException;
+import org.springframework.jms.core.JmsTemplate;
 
 /* $License$ */
 /**
@@ -87,7 +93,7 @@ public class ReceiverModule extends Module
     ReceiverModule(ModuleURN inURN) {
         super(inURN, true);
         //Set the log level to the default value
-        setLogLevel(LogEvent.Level.WARN);
+        setLogLevel(LogEventLevel.WARN);
     }
 
     @Override
@@ -172,16 +178,16 @@ public class ReceiverModule extends Module
     }
 
     @Override
-    public LogEvent.Level getLogLevel() {
+    public LogEventLevel getLogLevel() {
         return mLogLevel;
     }
 
     @Override
-    public void setLogLevel(LogEvent.Level inLevel) {
+    public void setLogLevel(LogEventLevel inLevel) {
         if(inLevel == null) {
             throw new IllegalArgumentException(
                     Messages.NULL_LEVEL_VALUE.getText(
-                            EnumSet.allOf(LogEvent.Level.class)));
+                            EnumSet.allOf(LogEventLevel.class)));
         }
         getLogger().setLevel(Level.toLevel(inLevel.name(), null));
         mLogLevel = inLevel;
@@ -226,7 +232,7 @@ public class ReceiverModule extends Module
     private volatile String mURL;
     private volatile ClassPathXmlApplicationContext mContext;
     private volatile JmsTemplate mSender;
-    private volatile LogEvent.Level mLogLevel;
+    private volatile LogEventLevel mLogLevel;
     private volatile boolean mSkipJAASConfiguration = false;
     private volatile boolean mDoneJaasConfiguration;
 }

@@ -17,7 +17,7 @@ class ProcessData < Strategy
     SYMBOLS = "AMZN,JAVA" # Depends on MD - can be other symbols
     CONTENT = "LATEST_TICK"
     MARKET_DATA_PROVIDER = "marketcetera" # Can be activ, bogus, marketcetera
-    CEP_QUERY = ["select t.symbolAsString as symbol, t.price * t.size as position from trade t"]
+    CEP_QUERY = ["select t.instrumentAsString as symbol, t.price * t.size as position from trade t"]
     CEP_PROVIDER = "esper"
     
 

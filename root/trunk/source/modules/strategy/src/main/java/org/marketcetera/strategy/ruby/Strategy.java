@@ -8,7 +8,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -418,10 +418,10 @@ public class Strategy
      * 
      * <p>The corresponding CEP module must already exist or the message will not be sent.
      *
-     * @param inEvent an <code>EventBase</code> value containing the event to be sent
+     * @param inEvent an <code>Event</code> value containing the event to be sent
      * @param inProvider a <code>String</code> value containing the name of a CEP provider
      */
-    public final void send_event_to_cep(EventBase inEvent,
+    public final void send_event_to_cep(Event inEvent,
                                         String inProvider)
     {
         sendEventToCEP(inEvent,
@@ -430,9 +430,9 @@ public class Strategy
     /**
      * Sends the given event to the appropriate subscribers. 
      *
-     * @param inEvent an <code>EventBase</code> value
+     * @param inEvent an <code>Event</code> value
      */
-    public final void send_event(EventBase inEvent)
+    public final void send_event(Event inEvent)
     {
         sendEvent(inEvent);
     }

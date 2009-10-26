@@ -5,7 +5,7 @@ import java.util.concurrent.Executor;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
@@ -82,8 +82,8 @@ public class TopOfBookManager extends DataFlowManager<MDTopOfBookImpl, TopOfBook
 			public void receiveData(final Object inData) {
 				final MDTopOfBookImpl item = getItem(key);
 				synchronized (item) {
-					if (inData instanceof SymbolExchangeEvent
-							&& !validateSymbol(symbol, (SymbolExchangeEvent) inData)) {
+					if (inData instanceof MarketDataEvent
+							&& !validateSymbol(symbol, (MarketDataEvent) inData)) {
 						return;
 					}
 					if (inData instanceof BidEvent) {

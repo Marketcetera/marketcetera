@@ -19,7 +19,7 @@ public class VWAPStrategy extends Strategy {
     public static final String [] SYMBOLS = {"AMZN","GOOG","MSFT"}; // Depends on MD - can be other symbols
     public static final String MARKET_DATA_PROVIDER = "bogus"; // Can be activ, bogus, marketcetera
     public static final String [] CEP_QUERY =
-            {"SELECT t.symbolAsString AS symbol, sum(cast(t.price, double) * cast(t.size, double))/sum(cast(t.size, double)) AS vwap FROM trade t GROUP BY symbol"};
+            {"SELECT t.instrumentAsString AS instrument, sum(cast(t.price, double) * cast(t.size, double))/sum(cast(t.size, double)) AS vwap FROM trade t GROUP BY instrument"};
     public static final String CEP_PROVIDER = "esper";
     /**
      * Executed when the strategy is started.
@@ -49,7 +49,7 @@ public class VWAPStrategy extends Strategy {
         //the map keys correspond to the column names used in the cep query.
         if (inEvent instanceof Map) {
             Map map = (Map) inEvent;
-            String symbol = (String) map.get("symbol");
+            String symbol = (String) map.get("instrument");
             Double vwap = (Double) map.get("vwap");
             info("setting vwap for symbol " + symbol + " " + vwap);
             mVWAPs.put(symbol, vwap);
@@ -83,7 +83,7 @@ public class VWAPStrategy extends Strategy {
                 info("sending order " + order);
                 send(order);
             } else {
-                warn("didnt' find anything for "+ symbol +
+                warn("didn't find anything for "+ symbol +
                         " and checked value was " + vwap + " within " + mVWAPs);
             }
         }

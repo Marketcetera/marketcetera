@@ -89,11 +89,11 @@ public class MarketstatManager extends DataFlowManager<MDMarketstatImpl, Markets
 						}
 						BigDecimal close = data.getClose();
 						if (close != null) item.setClosePrice(close);
-						Date closeDate = data.getCloseDate();
+						String closeDate = data.getCloseDate();
 						if (closeDate != null) item.setCloseDate(closeDate);
 						BigDecimal previousClose = data.getPreviousClose();
 						if (previousClose != null) item.setPreviousClosePrice(previousClose);
-						Date previousCloseDate = data.getPreviousCloseDate();
+						String previousCloseDate = data.getPreviousCloseDate();
 						if (previousCloseDate != null)
 							item.setPreviousCloseDate(previousCloseDate);
 					} else {

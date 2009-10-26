@@ -1,26 +1,50 @@
 package org.marketcetera.modules.remote.emitter;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.module.*;
-import org.marketcetera.client.*;
-import org.marketcetera.modules.remote.receiver.ReceiverFactory;
-import org.marketcetera.modules.remote.receiver.ReceiverModuleMXBean;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.LogEvent;
-import org.marketcetera.trade.*;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import javax.management.*;
-import java.util.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Deque;
+import java.util.LinkedList;
+
+import javax.management.AttributeChangeNotification;
+import javax.management.JMX;
+import javax.management.MBeanInfo;
+import javax.management.MBeanNotificationInfo;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+
+import org.junit.Test;
+import org.marketcetera.client.ClientTest;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.module.BlockingSinkDataListener;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.MockConfigProvider;
+import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleInfo;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.modules.remote.receiver.ReceiverFactory;
+import org.marketcetera.modules.remote.receiver.ReceiverModuleMXBean;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.TypesTestBase;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -53,6 +77,7 @@ public class EmitterModuleTest extends RemoteEmitterTestBase {
         //Attempt to create the instance fails as it fails to start,
         //but the module gets created.
         new ExpectedFailure<ModuleException>(Messages.START_FAIL_NO_URL){
+            @Override
             protected void run() throws Exception {
                 mManager.createModule(EmitterFactory.PROVIDER_URN, myModule);
             }
@@ -101,18 +126,21 @@ public class EmitterModuleTest extends RemoteEmitterTestBase {
         //Test for failures when setting the attributes
         new ExpectedFailure<IllegalStateException>(
                 Messages.ILLEGAL_STATE_CHANGE_PASSWORD.getText()){
+            @Override
             protected void run() throws Exception {
                 bean.setPassword("value");
             }
         };
         new ExpectedFailure<IllegalStateException>(
                 Messages.ILLEGAL_STATE_CHANGE_URL.getText()){
+            @Override
             protected void run() throws Exception {
                 bean.setURL("tcp://myurl");
             }
         };
         new ExpectedFailure<IllegalStateException>(
                 Messages.ILLEGAL_STATE_CHANGE_USERNAME.getText()){
+            @Override
             protected void run() throws Exception {
                 bean.setUsername("myuser");
             }
@@ -182,9 +210,9 @@ public class EmitterModuleTest extends RemoteEmitterTestBase {
         assertEquals(0, listener.size());
         //The data to send
         Object [] data = {
-                new AskEvent(1, 2, new Equity("asym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
-                new BidEvent(3, 4, new Equity("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
-                new TradeEvent(5, 6, new Equity("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                EventTestBase.generateEquityAskEvent(1, 2, new Equity("asym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                EventTestBase.generateEquityBidEvent(3, 4, new Equity("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
+                EventTestBase.generateEquityTradeEvent(5, 6, new Equity("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
                 ClientTest.createOrderSingle(),
                 ClientTest.createOrderReplace(),
                 ClientTest.createOrderCancel(),
@@ -252,11 +280,11 @@ public class EmitterModuleTest extends RemoteEmitterTestBase {
                 ReceiverFactory.INSTANCE_URN.toObjectName(),
                 ReceiverModuleMXBean.class);
         //verify the default level
-        assertEquals(LogEvent.Level.WARN, bean.getLogLevel());
+        assertEquals(LogEventLevel.WARN, bean.getLogLevel());
         //test the default log level
-        runLogFilterFlow(listener, LogEvent.Level.WARN);
+        runLogFilterFlow(listener, LogEventLevel.WARN);
         //test out each of the log levels
-        for(LogEvent.Level level: LogEvent.Level.values()) {
+        for(LogEventLevel level: LogEventLevel.values()) {
             bean.setLogLevel(level);
             assertEquals(level, bean.getLogLevel());
             runLogFilterFlow(listener, level);
@@ -337,7 +365,7 @@ public class EmitterModuleTest extends RemoteEmitterTestBase {
      * @throws Exception if there were errors.
      */
     private void runLogFilterFlow(BlockingSinkDataListener inListener,
-                                  LogEvent.Level inCurrentLevel)
+                                  LogEventLevel inCurrentLevel)
             throws Exception {
         //Setup the emitter flow
         DataFlowID eFlowID = mManager.createDataFlow(new DataRequest[]{
@@ -354,10 +382,10 @@ public class EmitterModuleTest extends RemoteEmitterTestBase {
         };
         //The data to send
         LogEvent [] data = {
-                LogEvent.debug(msgs[0]),
-                LogEvent.info(msgs[1]),
-                LogEvent.warn(msgs[2]),
-                LogEvent.error(msgs[3])
+                LogEventBuilder.debug().withMessage(msgs[0]).create(),
+                LogEventBuilder.info().withMessage(msgs[1]).create(),
+                LogEventBuilder.warn().withMessage(msgs[2]).create(),
+                LogEventBuilder.error().withMessage(msgs[3]).create()
         };
         //Now setup a data flow into the receiver.
         DataFlowID rFlowID = mManager.createDataFlow(new DataRequest[]{
@@ -408,6 +436,7 @@ public class EmitterModuleTest extends RemoteEmitterTestBase {
                                     I18NMessage0P inMessage)
             throws Exception {
         new ExpectedFailure<ModuleException>(inMessage){
+            @Override
             protected void run() throws Exception {
                 mManager.start(TEST_INSTANCE_URN);
             }

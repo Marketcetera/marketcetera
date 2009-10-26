@@ -1,14 +1,18 @@
 import java.math.BigDecimal;
 
 import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.OutputType;
 import org.marketcetera.strategy.java.Strategy;
 import org.marketcetera.trade.Equity;
+
+import java.util.Date;
 
 /* $License$ */
 
@@ -40,12 +44,11 @@ public class SendEvent
     @Override
     public void onStop()
     {
-        TradeEvent trade = new TradeEvent(1,
-                                          1,
-                                          new Equity("METC"),
-                                          "exchange",
-                                          BigDecimal.ONE,
-                                          BigDecimal.TEN);
+        TradeEvent trade = TradeEventBuilder.equityTradeEvent().withInstrument(new Equity("METC"))
+                                                               .withExchange("exchange")
+                                                               .withPrice(BigDecimal.ONE)
+                                                               .withSize(BigDecimal.TEN)
+                                                               .withTradeDate(DateUtils.dateToString(new Date())).create();
         doSendEvent(trade);
         cancelDataFlow(dataFlowID);
     }
@@ -79,14 +82,14 @@ public class SendEvent
     @Override
     public void onOther(Object inEvent)
     {
-        doSendEvent((EventBase)inEvent);
+        doSendEvent((Event)inEvent);
     }
     /**
      * Sends the given event.
      *
-     * @param inEvent an <code>EventBase</code> value
+     * @param inEvent an <code>Event</code> value
      */
-    private void doSendEvent(EventBase inEvent)
+    private void doSendEvent(Event inEvent)
     {
         if(getProperty("eventOnlyTest") != null) {
             if(getProperty("nilEvent") != null) {

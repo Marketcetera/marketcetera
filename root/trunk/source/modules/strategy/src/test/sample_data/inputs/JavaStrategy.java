@@ -6,7 +6,7 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.ExecutionReport;
@@ -332,9 +332,9 @@ public class JavaStrategy
     /**
      * Creates a trade suggestion from the given event.
      *
-     * @param inEvent an <code>EventBase</code> value
+     * @param inEvent an <code>Event</code> value
      */
-    private void suggestionFromEvent(EventBase inEvent)
+    private void suggestionFromEvent(Event inEvent)
     {
         OrderSingle suggestedOrder = Factory.getInstance().createOrderSingle();
         if(inEvent instanceof QuoteEvent) {

@@ -34,5 +34,14 @@ public abstract class Instrument implements Serializable {
 	 * @return the security type.
 	 */
 	public abstract SecurityType getSecurityType();
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public abstract boolean equals(Object inObj);
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public abstract int hashCode();
 }

@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.bogus;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.DIVIDEND;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -30,7 +31,7 @@ public class BogusFeedMessageTranslatorTest
     @Override
     protected Set<Content> getCapabilities()
     {
-        return Collections.unmodifiableSet(EnumSet.allOf(Content.class));
+        return Collections.unmodifiableSet(EnumSet.complementOf(EnumSet.of(DIVIDEND)));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase#getTranslator()

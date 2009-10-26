@@ -41,5 +41,9 @@ public enum Capability
     /**
      * the market data feed is able to return the latest trade
      */
-    LATEST_TICK
+    LATEST_TICK,
+    /**
+     * the market data feed is able to return dividend information
+     */
+    DIVIDEND
 }

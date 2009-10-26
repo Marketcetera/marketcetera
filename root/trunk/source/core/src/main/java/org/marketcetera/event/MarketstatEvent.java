@@ -1,9 +1,7 @@
 package org.marketcetera.event;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -21,290 +19,108 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class MarketstatEvent
-        extends EventBase
-        implements Messages, HasInstrument
+public interface MarketstatEvent
+        extends Event, HasInstrument
 {
     /**
-     * Create a new MarketstatEvent instance.
-     * 
-     * @param inInstrument an <code>Instrument</code> value
-     * @param inTimestamp a <code>Date</code> value expressing the time this event occurred
-     * @param inOpen a <code>BigDecimal</code> value or null
-     * @param inHigh a <code>BigDecimal</code> value or null
-     * @param inLow a <code>BigDecimal</code> value or null
-     * @param inClose a <code>BigDecimal</code> value or null
-     * @param inPreviousClose a <code>BigDecimal</code> value or null
-     * @param inVolume a <code>BigDecimal</code> value or null
-     * @param inCloseDate a <code>Date</code> value or null
-     * @param inPreviousCloseDate a <code>Date</code> value or null
-     * @param inTradeHighTime a <code>Date</code> value or null
-     * @param inTradeLowTime a <code>Date</code> value or null
-     * @param inOpenExchange a <code>String</code> value or null
-     * @param inHighExchange a <code>String</code> value or null
-     * @param inLowExchange a <code>String</code> value or null
-     * @param inCloseExchange a <code>String</code> value or null
-     * @throws IllegalArgumentException if <code>timestamp</code> &lt; 0
-     */
-    public MarketstatEvent(Instrument inInstrument,
-                           Date inTimestamp,
-                           BigDecimal inOpen,
-                           BigDecimal inHigh,
-                           BigDecimal inLow,
-                           BigDecimal inClose,
-                           BigDecimal inPreviousClose,
-                           BigDecimal inVolume,
-                           Date inCloseDate,
-                           Date inPreviousCloseDate,
-                           Date inTradeHighTime,
-                           Date inTradeLowTime,
-                           String inOpenExchange,
-                           String inHighExchange,
-                           String inLowExchange,
-                           String inCloseExchange)
-    {
-        super(EventBase.assignCounter(),
-              inTimestamp.getTime());
-        if(inInstrument == null) {
-            throw new NullPointerException();
-        }
-        open = inOpen;
-        high = inHigh;
-        low = inLow;
-        close = inClose;
-        previousClose = inPreviousClose;
-        volume = inVolume;
-        closeDate = inCloseDate;
-        previousCloseDate = inPreviousCloseDate;
-        instrument = inInstrument;
-        highTime = inTradeHighTime;
-        lowTime = inTradeLowTime;
-        closeExchange = inCloseExchange;
-        openExchange = inOpenExchange;
-        highExchange = inHighExchange;
-        lowExchange = inLowExchange;
-    }
-    /**
-     * Get the open value.
+     * Gets the value of the {@link Instrument} at the time of market open.
      *
      * @return a <code>BigDecimal</code> value or null
      */
-    public BigDecimal getOpen()
-    {
-        return open;
-    }
+    public BigDecimal getOpen();
     /**
-     * Get the high value.
+     * Gets highest value trade during the current or
+     * most recent session.
      *
      * @return a <code>BigDecimal</code> value or null
      */
-    public BigDecimal getHigh()
-    {
-        return high;
-    }
+    public BigDecimal getHigh();
     /**
-     * Get the low value.
+     * Gets the low trade value of the {@link Instrument} for this market session.
      *
      * @return a <code>BigDecimal</code> value or null
      */
-    public BigDecimal getLow()
-    {
-        return low;
-    }
+    public BigDecimal getLow();
     /**
-     * Get the close value.
+     * Gets the value of the {@link Instrument} at the time of market close.
      *
      * @return a <code>BigDecimal</code> value or null
      */
-    public BigDecimal getClose()
-    {
-        return close;
-    }
+    public BigDecimal getClose();
     /**
-     * Get the previousClose value.
+     * Gets the value of the {@link Instrument} at the time of market close
+     * of the previous session.
      *
      * @return a <code>BigDecimal</code> value or null
      */
-    public BigDecimal getPreviousClose()
-    {
-        return previousClose;
-    }
+    public BigDecimal getPreviousClose();
     /**
-     * Get the volume value.
+     * Gets the cumulative volume of trades of the {@link Instrument} during
+     * the current or last market session.
      *
      * @return a <code>BigDecimal</code> value or null
      */
-    public BigDecimal getVolume()
-    {
-        return volume;
-    }
+    public BigDecimal getVolume();
     /**
-     * Get the closeDate value.
+     * Gets the close date of the most recent session.
      *
-     * @return a <code>Date</code> value or null
-     */
-    public Date getCloseDate()
-    {
-        return closeDate;
-    }
-    /**
-     * Get the previousCloseDate value.
+     * <p>The format of the date returned is dependent on the market data
+     * provider.
      *
-     * @return a <code>Date</code> value or null
+     * @return a <code>String</code> value
      */
-    public Date getPreviousCloseDate()
-    {
-        return previousCloseDate;
-    }
+    public String getCloseDate();
     /**
-     * Get the instrument value.
+     * Gets the close date of the previous session.
      *
-     * @return a <code>instrument</code> value
-     */
-    public Instrument getInstrument()
-    {
-        return instrument;
-    }
-    /**
-     * Get the highTime value.
+     * <p>The format of the date returned is dependent on the market data
+     * provider.
      *
-     * @return a <code>Date</code> value or null
+     * @return a <code>String</code> value
      */
-    public Date getHighTime()
-    {
-        return highTime;
-    }
+    public String getPreviousCloseDate();
     /**
-     * Get the lowTime value.
+     * Gets the time of the highest value trade during the current or
+     * most recent session.
      *
-     * @return a <code>Date</code> value or null
-     */
-    public Date getLowTime()
-    {
-        return lowTime;
-    }
-    /**
-     * Get the closeExchange value.
+     * <p>The format of the time returned is dependent on the market data
+     * provider.
      *
-     * @return a <code>String</code> value or null
+     * @return a <code>String</code> value
      */
-    public String getCloseExchange()
-    {
-        return closeExchange;
-    }
+    public String getTradeHighTime();
     /**
-     * Get the openExchange value.
+     * Gets the time of the lowest value trade during the current or
+     * most recent session.
      *
-     * @return a <code>String</code> value or null
-     */
-    public String getOpenExchange()
-    {
-        return openExchange;
-    }
-    /**
-     * Get the highExchange value.
+     * <p>The format of the time returned is dependent on the market data
+     * provider.
      *
-     * @return a <code>String</code> value or null
+     * @return a <code>String</code> value
      */
-    public String getHighExchange()
-    {
-        return highExchange;
-    }
+    public String getTradeLowTime();
     /**
-     * Get the lowExchange value.
+     * Gets the exchange on which the open price was reported.
      *
-     * @return a <code>String</code> value or null
+     * @return a <code>String</code> value
      */
-    public String getLowExchange()
-    {
-        return lowExchange;
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString()
-    {
-        String closeDateString = "---"; //$NON-NLS-1$
-        if(closeDate != null) {
-            closeDateString = DateUtils.dateToString(closeDate,
-                                                     DateUtils.DAYS);
-        }
-        String previousCloseDateString = "---"; //$NON-NLS-1$
-        if(previousCloseDate != null) {
-            previousCloseDateString = DateUtils.dateToString(previousCloseDate,
-                                                             DateUtils.DAYS);
-        }
-        return String.format("Statistics for %s -> Open: %s High: %s Low: %s Close: %s (%s) Previous Close: %s (%s) Volume: %s", //$NON-NLS-1$
-                             getInstrument(),
-                             open,
-                             high,
-                             low,
-                             close,
-                             closeDateString,
-                             previousClose,
-                             previousCloseDateString,
-                             volume);
-    }
+    public String getOpenExchange();
     /**
-     * instrument for the event
+     * Gets the exchange on which the trade high price was reported.
+     *
+     * @return a <code>String</code> value
      */
-    private final Instrument instrument;
+    public String getHighExchange();
     /**
-     * open price
+     * Gets the exchange on which the trade low price was reported.
+     *
+     * @return a <code>String</code> value
      */
-    private final BigDecimal open;
+    public String getLowExchange();
     /**
-     * high price
+     * Gets the exchange on which the close price was reported.
+     *
+     * @return a <code>String</code> value
      */
-    private final BigDecimal high;
-    /**
-     * low price
-     */
-    private final BigDecimal low;
-    /**
-     * close price
-     */
-    private final BigDecimal close;
-    /**
-     * previous close price
-     */
-    private final BigDecimal previousClose;
-    /**
-     * volume
-     */
-    private final BigDecimal volume;
-    /**
-     * close price date
-     */
-    private final Date closeDate;
-    /**
-     * previous close date
-     */
-    private final Date previousCloseDate;
-    /**
-     * the time that the high price occurred
-     */
-    private final Date highTime;
-    /**
-     * the time that the low price occurred
-     */
-    private final Date lowTime;
-    /**
-     * the exchange for the close price
-     */
-    private final String closeExchange;
-    /**
-     * the exchange for the open price
-     */
-    private final String openExchange;
-    /**
-     * the exchange for the high price
-     */
-    private final String highExchange;
-    /**
-     * the exchange for the low price
-     */
-    private final String lowExchange;
-    private static final long serialVersionUID = 2L;
+    public String getCloseExchange();
 }

@@ -6,11 +6,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.marketcetera.marketdata.MarketDataRequest.ASSETCLASS_KEY;
 import static org.marketcetera.marketdata.MarketDataRequest.CONTENT_KEY;
 import static org.marketcetera.marketdata.MarketDataRequest.EXCHANGE_KEY;
 import static org.marketcetera.marketdata.MarketDataRequest.PROVIDER_KEY;
 import static org.marketcetera.marketdata.MarketDataRequest.SYMBOLS_KEY;
 import static org.marketcetera.marketdata.MarketDataRequest.SYMBOL_DELIMITER;
+import static org.marketcetera.marketdata.MarketDataRequest.UNDERLYINGSYMBOLS_KEY;
+import static org.marketcetera.marketdata.MarketDataRequest.AssetClass.EQUITY;
+import static org.marketcetera.marketdata.MarketDataRequest.AssetClass.OPTION;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.DIVIDEND;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.MARKET_STAT;
@@ -34,10 +39,12 @@ import org.junit.Test;
 import org.marketcetera.core.Util;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.MarketDataRequest.AssetClass;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -58,21 +65,26 @@ public class MarketDataRequestTest
     implements Messages
 {
     private static final String[] symbols = new String[] { null, "", " ", "METC", "GOOG,ORCL" };
-    private static final String[][] symbolArrays = new String[][] { {}, { ""," " }, { "METC" }, { "GOOG","ORCL" } };
+    private static final String[][] symbolArrays = new String[][] { {}, { ""," ", "MSFT" }, { "METC" }, { "GOOG","ORCL" } };
     private static final String[] providers = new String[] { null, "", "invalid-provider", "bogus" };
     private static final String[] exchanges = new String[] { null, "", "invalid-exchange", "Q" };
-    private static final Content[] contents = new Content[] { null, TOP_OF_BOOK, MARKET_STAT, LATEST_TICK, OPEN_BOOK, TOTAL_VIEW, LEVEL_2 };
+    private static final Content[] contents = new Content[] { null, TOP_OF_BOOK, MARKET_STAT, LATEST_TICK, OPEN_BOOK, TOTAL_VIEW, LEVEL_2, DIVIDEND };
     private static final Content[][] contentArrays = new Content[][] { {}, { null }, { TOP_OF_BOOK }, { LATEST_TICK, OPEN_BOOK }, { null, LEVEL_2 } };
     private static final String[][] contentStringArrays = new String[][] { {}, { null }, { "" }, { null, "", LATEST_TICK.toString() }, { TOP_OF_BOOK.toString() }, { OPEN_BOOK.toString(), MARKET_STAT.toString().toLowerCase() }, { "invalid-content" } };
     // alternate representation of values
     private static final String[] contentStrings = new String[] { null, "", "not-a-content", "TOP_OF_BOOK", "level_2", "StATisTicS" };
+    private static final AssetClass[] assetClasses = new AssetClass[] { null, EQUITY, OPTION };
+    private static final String[] assetClassStrings = new String[] { null, "", "not-an-asset-class", "equity", "OpTiOn" };
     // variations of keys
     private static final int keyCount = 4;
     private static final String[] symbolKeys = new String[] { "symbols", "SYMBOLS", "SyMbOlS", MarketDataRequest.SYMBOLS_KEY };
+    private static final String[] underlyingSymbolsKeys = new String[] { "underlyingsymbols", "UNDERLYINGSYMBOLS", "UnDeRlYiNgSyMbOlS", MarketDataRequest.UNDERLYINGSYMBOLS_KEY };
     private static final String[] providerKeys = new String[] { "provider", "PROVIDER", "PrOvIdEr", MarketDataRequest.PROVIDER_KEY };
     private static final String[] exchangeKeys = new String[] { "exchange", "EXCHANGE", "ExChAnGe", MarketDataRequest.EXCHANGE_KEY };
     private static final String[] contentKeys = new String[] { "content", "CONTENT", "CoNtEnT", MarketDataRequest.CONTENT_KEY };
+    private static final String[] assetClassKeys = new String[] { "assetclass", "ASSETCLASS", "AsSeTcLaSs", MarketDataRequest.ASSETCLASS_KEY };
     private static final Set<String> ALL_CONTENTS = new HashSet<String>();
+    private static final Set<String> ALL_ASSET_CLASSES = new HashSet<String>();
     /**
      * Initialization that needs to be run once for all tests.
      */
@@ -81,6 +93,9 @@ public class MarketDataRequestTest
     {
         for(Content content : Content.values()) {
             ALL_CONTENTS.add(content.toString());
+        }
+        for(AssetClass assetClass : AssetClass.values()) {
+            ALL_ASSET_CLASSES.add(assetClass.toString());
         }
     }
     /**
@@ -95,17 +110,26 @@ public class MarketDataRequestTest
         assertEquals(keyCount,
                      symbolKeys.length);
         assertEquals(keyCount,
+                     underlyingSymbolsKeys.length);
+        assertEquals(keyCount,
                      providerKeys.length);
         assertEquals(keyCount,
                      exchangeKeys.length);
         assertEquals(keyCount,
                      contentKeys.length);
+        assertEquals(keyCount,
+                     assetClassKeys.length);
         String symbols = "METC";
+        String underlyingSymbols = "GOOG";
         String provider = "provider";
         String exchange = "exchange";
         Content content = MARKET_STAT;
         for(int keyCounter=0;keyCounter<keyCount;keyCounter++) {
-            String requestString = String.format("%s=%s:%s=%s:%s=%s:%s=%s",
+            // some combinations are not allowed - this is why we specify symbols or underlying symbols
+            //  but not both
+            // first, test symbols
+            AssetClass assetClass = EQUITY;
+            String requestString = String.format("%s=%s:%s=%s:%s=%s:%s=%s:%s=%s",
                                                  symbolKeys[keyCounter],
                                                  symbols,
                                                  providerKeys[keyCounter],
@@ -113,12 +137,36 @@ public class MarketDataRequestTest
                                                  exchangeKeys[keyCounter],
                                                  exchange,
                                                  contentKeys[keyCounter],
-                                                 content);
+                                                 content,
+                                                 assetClassKeys[keyCounter],
+                                                 assetClass);
             verifyRequest(MarketDataRequest.newRequestFromString(requestString),
                           provider,
                           exchange,
                           content,
-                          symbols);
+                          EQUITY,
+                          symbols,
+                          null);
+            // now, test underlying symbols
+            assetClass = OPTION;
+            requestString = String.format("%s=%s:%s=%s:%s=%s:%s=%s:%s=%s",
+                                          underlyingSymbolsKeys[keyCounter],
+                                          underlyingSymbols,
+                                          providerKeys[keyCounter],
+                                          provider,
+                                          exchangeKeys[keyCounter],
+                                          exchange,
+                                          contentKeys[keyCounter],
+                                          content,
+                                          assetClassKeys[keyCounter],
+                                          assetClass);
+            verifyRequest(MarketDataRequest.newRequestFromString(requestString),
+                          provider,
+                          exchange,
+                          content,
+                          OPTION,
+                          null,
+                          underlyingSymbols);
         }
     }
     /**
@@ -131,6 +179,7 @@ public class MarketDataRequestTest
         throws Exception
     {
         new ExpectedFailure<IllegalArgumentException>(INVALID_REQUEST.getText()) {
+            @Override
             protected void run()
                 throws Exception
             {
@@ -138,6 +187,7 @@ public class MarketDataRequestTest
             }
         };
         new ExpectedFailure<IllegalArgumentException>(INVALID_REQUEST.getText()) {
+            @Override
             protected void run()
                 throws Exception
             {
@@ -154,42 +204,305 @@ public class MarketDataRequestTest
                                                              providersCounter,
                                                              symbolsCounter,
                                                              exchangesCounter));
-                        final String requestString = marketDataRequestStringFromComponents(providers[providersCounter],
-                                                                                           exchanges[exchangesCounter],
-                                                                                           contents[contentsCounter],
-                                                                                           symbols[symbolsCounter]);
+                        final String symbolRequestString = marketDataRequestStringFromComponents(providers[providersCounter],
+                                                                                                 exchanges[exchangesCounter],
+                                                                                                 contents[contentsCounter],
+                                                                                                 EQUITY,
+                                                                                                 symbols[symbolsCounter],
+                                                                                                 null);
                         // catch-all for a totally empty request
-                        if(requestString.isEmpty()) {
+                        if(symbolRequestString.isEmpty()) {
                             new ExpectedFailure<IllegalArgumentException>(INVALID_REQUEST.getText()) {
+                                @Override
                                 protected void run()
                                     throws Exception
                                 {
-                                    MarketDataRequest.newRequestFromString(requestString);
+                                    MarketDataRequest.newRequestFromString(symbolRequestString);
                                 }
                             };
                             continue;
                         }
                         // symbols error conditions
                         if(isEmptyList(symbols[symbolsCounter])) {
-                            new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
+                            // the message isn't checked because the ingoing request string won't equal the incoming one, so the message contents are different 
+                            new ExpectedFailure<IllegalArgumentException>(null) {
+                                @Override
                                 protected void run()
                                     throws Exception
                                 {
-                                    MarketDataRequest.newRequestFromString(requestString);
+                                    MarketDataRequest.newRequestFromString(symbolRequestString);
                                 }
                             };
                             continue;
                         }
-                        MarketDataRequest request = MarketDataRequest.newRequestFromString(requestString);
+                        MarketDataRequest request = MarketDataRequest.newRequestFromString(symbolRequestString);
                         verifyRequest(request,
                                       providers[providersCounter],
                                       exchanges[exchangesCounter],
                                       contentsCounter == 0 ? TOP_OF_BOOK : contents[contentsCounter],
+                                      EQUITY,
+                                      symbols[symbolsCounter],
+                                      null);
+                        // check again, but use underlying symbols instead of symbols
+                        final String underlyingSymbolRequestString = marketDataRequestStringFromComponents(providers[providersCounter],
+                                                                                                           exchanges[exchangesCounter],
+                                                                                                           contents[contentsCounter],
+                                                                                                           OPTION,
+                                                                                                           null,
+                                                                                                           symbols[symbolsCounter]);
+                        if(isEmptyList(symbols[symbolsCounter])) {
+                            // the message isn't checked because the ingoing request string won't equal the incoming one, so the message contents are different 
+                            new ExpectedFailure<IllegalArgumentException>(null) {
+                                @Override
+                                protected void run()
+                                    throws Exception
+                                {
+                                    MarketDataRequest.newRequestFromString(underlyingSymbolRequestString);
+                                }
+                            };
+                            continue;
+                        }
+                        if(contents[contentsCounter] == DIVIDEND) {
+                            new ExpectedFailure<IllegalArgumentException>(null) {
+                                @Override
+                                protected void run()
+                                    throws Exception
+                                {
+                                    MarketDataRequest.newRequestFromString(underlyingSymbolRequestString);
+                                }
+                            };
+                            continue;
+                        }
+                        request = MarketDataRequest.newRequestFromString(underlyingSymbolRequestString);
+                        verifyRequest(request,
+                                      providers[providersCounter],
+                                      exchanges[exchangesCounter],
+                                      contentsCounter == 0 ? TOP_OF_BOOK : contents[contentsCounter],
+                                      OPTION,
+                                      null,
                                       symbols[symbolsCounter]);
+                        
                     }
                 }
             }
         }
+    }
+    /**
+     * Tests {@link MarketDataRequest#ofAssetClass(AssetClass)} and {@link MarketDataRequest#ofAssetClass(String)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void assetClass()
+        throws Exception
+    {
+        final String symbols = "METC";
+        final String provider = "provider";
+        // test strings version of ofAssetClass
+        for(int assetClassCounter=0;assetClassCounter<assetClassStrings.length;assetClassCounter++) {
+            final String assetClassString = assetClassStrings[assetClassCounter];
+            if(assetClassString == null ||
+               assetClassString.isEmpty()) {
+                new ExpectedFailure<IllegalArgumentException>(null) {
+                    @Override
+                    protected void run()
+                        throws Exception
+                    {
+                        MarketDataRequest.newRequest().fromProvider(provider).withSymbols(symbols).ofAssetClass(assetClassString);                    
+                    }
+                };
+                continue;
+            } 
+            if(!ALL_ASSET_CLASSES.contains(assetClassString.toUpperCase())) {
+                new ExpectedFailure<IllegalArgumentException>(INVALID_ASSET_CLASS.getText(assetClassString)) {
+                    @Override
+                    protected void run()
+                        throws Exception
+                    {
+                        MarketDataRequest.newRequest().fromProvider(provider).withSymbols(symbols).ofAssetClass(assetClassString);                    
+                    }
+                };
+                continue;
+            } 
+            MarketDataRequest request = MarketDataRequest.newRequest().fromProvider(provider).withSymbols(symbols).ofAssetClass(assetClassString); 
+            verifyRequest(request,
+                          provider,
+                          null,
+                          TOP_OF_BOOK,
+                          AssetClass.valueOf(assetClassString.toUpperCase()),
+                          symbols,
+                          null);
+        }
+        // test enum version of ofAssetClass
+        for(int assetClassCounter=0;assetClassCounter<assetClasses.length;assetClassCounter++) {
+            final AssetClass assetClass = assetClasses[assetClassCounter];
+            if(assetClass == null) {
+                new ExpectedFailure<IllegalArgumentException>(null) {
+                    @Override
+                    protected void run()
+                        throws Exception
+                    {
+                        MarketDataRequest.newRequest().fromProvider(provider).withSymbols(symbols).ofAssetClass(assetClass);
+                    }
+                };
+            } else {
+                MarketDataRequest request = MarketDataRequest.newRequest().fromProvider(provider).withSymbols(symbols).ofAssetClass(assetClass);
+                verifyRequest(request,
+                              provider,
+                              null,
+                              TOP_OF_BOOK,
+                              assetClass,
+                              symbols,
+                              null);
+            }
+        }
+    }
+    /**
+     * Tests {@link MarketDataRequest#validate(MarketDataRequest)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void wholeRequestValidation()
+        throws Exception
+    {
+        final MarketDataRequest[] request = new MarketDataRequest[] { new MarketDataRequest() };
+        // test neither symbols nor underlying symbols
+        assertTrue(request[0].getSymbols().length == 0);
+        assertTrue(request[0].getUnderlyingSymbols().length == 0);
+        new ExpectedFailure<IllegalArgumentException>(NEITHER_SYMBOLS_NOR_UNDERLYING_SYMBOLS_SPECIFIED.getText(request[0])) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                MarketDataRequest.validate(request[0]);
+            }
+        };
+        // test specifying both symbols and underlying symbols
+        request[0].withSymbols("METC");
+        request[0].withUnderlyingSymbols("GOOG");
+        assertTrue(Arrays.equals(new String[] { "METC" },
+                                 request[0].getSymbols()));
+        assertTrue(Arrays.equals(new String[] { "GOOG" },
+                                 request[0].getUnderlyingSymbols()));
+        new ExpectedFailure<IllegalArgumentException>(BOTH_SYMBOLS_AND_UNDERLYING_SYMBOLS_SPECIFIED.getText(request[0])) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                MarketDataRequest.validate(request[0]);
+            }
+        };
+        // underlying symbols and asset class != option
+        request[0] = new MarketDataRequest();
+        request[0].withUnderlyingSymbols("METC");
+        request[0].ofAssetClass(EQUITY);
+        assertTrue(Arrays.equals(new String[] { "METC" },
+                                 request[0].getUnderlyingSymbols()));
+        assertEquals(EQUITY,
+                     request[0].getAssetClass());
+        new ExpectedFailure<IllegalArgumentException>(OPTION_ASSET_CLASS_REQUIRED.getText(request[0],
+                                                                                          request[0].getAssetClass())) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                MarketDataRequest.validate(request[0]);
+            }
+        };
+        // dividend content requires symbols
+        request[0].withContent(DIVIDEND);
+        request[0].ofAssetClass(OPTION);
+        assertTrue(Arrays.equals(new String[] { "METC" },
+                                 request[0].getUnderlyingSymbols()));
+        assertTrue(Arrays.equals(new Content[] { DIVIDEND },
+                                 request[0].getContent().toArray(new Content[1])));
+        assertEquals(OPTION,
+                     request[0].getAssetClass());
+        new ExpectedFailure<IllegalArgumentException>(DIVIDEND_REQUIRES_SYMBOLS.getText(request[0])) {
+            @Override
+            protected void run()
+                throws Exception
+            {
+                MarketDataRequest.validate(request[0]);
+            }
+        };
+    }
+    /**
+     * Tests {@link MarketDataRequest#hashCode()} and {@link MarketDataRequest#equals(Object)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void hashCodeEquals()
+        throws Exception
+    {
+       MarketDataRequest request1 = new MarketDataRequest();
+       MarketDataRequest request2 = new MarketDataRequest();
+       assertEquals(request1,
+                    request1);
+       assertFalse(request1.equals(null));
+       assertFalse(request1.equals(this));
+       assertEquals(request1,
+                    request2);
+       assertTrue(request1.hashCode() == request2.hashCode());
+       // differ by content
+       request1.withContent(TOTAL_VIEW);
+       assertFalse(request1.getContent().equals(request2.getContent()));
+       assertFalse(request1.hashCode() == request2.hashCode());
+       assertFalse(request1.equals(request2));
+       // differ by exchange
+       request1.withContent(request2.getContent().toArray(new Content[1]));
+       assertEquals(request1,
+                    request2);
+       request1.fromExchange("exchange");
+       assertNull(request2.getExchange());
+       assertFalse(request1.equals(request2));
+       assertFalse(request2.equals(request1));
+       request2.fromExchange("other exchange");
+       assertFalse(request1.getExchange().equals(request2.getExchange()));
+       assertFalse(request1.equals(request2));
+       assertFalse(request2.equals(request1));
+       // differ by provider
+       request1.fromExchange(request2.getExchange());
+       assertEquals(request1,
+                    request2);
+       request1.fromProvider("provider");
+       assertNull(request2.getProvider());
+       assertFalse(request1.equals(request2));
+       assertFalse(request2.equals(request1));
+       request2.fromProvider("other provider");
+       assertFalse(request1.getProvider().equals(request2.getProvider()));
+       assertFalse(request1.equals(request2));
+       assertFalse(request2.equals(request1));
+       // differ by asset class
+       request1.fromProvider(request2.getProvider());
+       assertEquals(request1,
+                    request2);
+       assertEquals(EQUITY,
+                    request1.getAssetClass());
+       request2.ofAssetClass(OPTION);
+       assertFalse(request1.equals(request2));
+       assertFalse(request2.equals(request1));
+       // differ by symbols
+       request1.ofAssetClass(request2.getAssetClass());
+       assertEquals(request1,
+                    request2);
+       assertTrue(request1.getSymbols().length == 0);
+       assertTrue(request2.getSymbols().length == 0);
+       request1.withSymbols("METC,GOOG");
+       assertFalse(request1.equals(request2));
+       assertFalse(request2.equals(request1));
+       // differ by underlyingsymbols
+       request1 = new MarketDataRequest();
+       request2 = new MarketDataRequest();
+       assertEquals(request1,
+                    request2);
+       assertTrue(request1.getUnderlyingSymbols().length == 0);
+       assertTrue(request2.getUnderlyingSymbols().length == 0);
+       request1.withUnderlyingSymbols("METC,GOOG");
+       assertFalse(request1.equals(request2));
+       assertFalse(request2.equals(request1));
     }
     /**
      * Tests {@link MarketDataRequest#withContent(Content)} and {@link MarketDataRequest#withContent(String)}.
@@ -208,6 +521,7 @@ public class MarketDataRequestTest
             if(contentString == null ||
                contentString.isEmpty()) {
                 new ExpectedFailure<IllegalArgumentException>(MISSING_CONTENT.getText()) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -218,6 +532,7 @@ public class MarketDataRequestTest
             } 
             if(!ALL_CONTENTS.contains(contentString.toUpperCase())) {
                 new ExpectedFailure<IllegalArgumentException>(INVALID_CONTENT.getText(contentString)) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -231,13 +546,16 @@ public class MarketDataRequestTest
                           provider,
                           null,
                           Content.valueOf(contentString.toUpperCase()),
-                          symbols);
+                          EQUITY,
+                          symbols,
+                          null);
         }
         // test enum version of withContent
         for(int contentCounter=0;contentCounter<contents.length;contentCounter++) {
             final Content content = contents[contentCounter];
             if(content == null) {
                 new ExpectedFailure<IllegalArgumentException>(INVALID_CONTENT.getText(Arrays.toString(new Content[] { null }))) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -250,7 +568,9 @@ public class MarketDataRequestTest
                               provider,
                               null,
                               content,
-                              symbols);
+                              EQUITY,
+                              symbols,
+                              null);
             }
         }
         // test multiple enum version of withContent
@@ -259,6 +579,7 @@ public class MarketDataRequestTest
             if(content == null ||
                content.length == 0) {
                 new ExpectedFailure<IllegalArgumentException>(MISSING_CONTENT.getText()) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -270,6 +591,7 @@ public class MarketDataRequestTest
             if(isEmptyEnumList(content) ||
                !isValidEnumList(content)) {
                 new ExpectedFailure<IllegalArgumentException>(INVALID_CONTENT.getText(Arrays.toString(content))) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -283,7 +605,9 @@ public class MarketDataRequestTest
                           provider,
                           null,
                           content,
-                          symbols);
+                          EQUITY,
+                          symbols,
+                          null);
         }
         // test multiple string version of withContent
         for(int contentCounter=0;contentCounter<contentStringArrays.length;contentCounter++) {
@@ -293,6 +617,7 @@ public class MarketDataRequestTest
                isEmptyStringList(content) ||
                !isValidStringList(content)) {
                 new ExpectedFailure<IllegalArgumentException>(null) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -313,6 +638,7 @@ public class MarketDataRequestTest
             }
             if(willFail) {
                 new ExpectedFailure<IllegalArgumentException>(null) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -326,7 +652,9 @@ public class MarketDataRequestTest
                           provider,
                           null,
                           expectedContents.toArray(new Content[expectedContents.size()]),
-                          symbols);
+                          EQUITY,
+                          symbols,
+                          null);
         }
         // test that changing the source doesn't change the held value
         Content content = LEVEL_2;
@@ -338,6 +666,7 @@ public class MarketDataRequestTest
                      request.getContent());
         // test that changing the destination doesn't change the held value
         new ExpectedFailure<UnsupportedOperationException>(null) {
+            @Override
             protected void run()
                 throws Exception
             {
@@ -360,6 +689,7 @@ public class MarketDataRequestTest
             final String[] symbolArray = symbolArrays[symbolCounter];
             if(isEmptyStringList(symbolArray)) {
                 new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -372,7 +702,9 @@ public class MarketDataRequestTest
                               provider,
                               null,
                               TOP_OF_BOOK,
-                              symbolArrayToString(symbolArray));
+                              EQUITY,
+                              symbolArrayToString(symbolArray),
+                              null);
             }
         }
         // test single, comma-delimited version
@@ -380,6 +712,7 @@ public class MarketDataRequestTest
             final String symbol = symbols[symbolCounter];
             if(isEmptyList(symbol)) {
                 new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -389,6 +722,7 @@ public class MarketDataRequestTest
             } else if(symbol == null ||
                       symbol.trim().isEmpty()) {
                 new ExpectedFailure<IllegalArgumentException>(INVALID_SYMBOLS) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -400,7 +734,9 @@ public class MarketDataRequestTest
                               provider,
                               null,
                               TOP_OF_BOOK,
-                              symbol);
+                              EQUITY,
+                              symbol,
+                              null);
             }
         }
         // check for white-space around the symbol
@@ -432,6 +768,99 @@ public class MarketDataRequestTest
                           request.getSymbols());
     }
     /**
+     * Tests the ability to set and retrieve underlying symbols. 
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void underlyingSymbol()
+        throws Exception
+    {
+        final String provider = "provider";
+        // test array version of withUnderlyingSymbols
+        for(int symbolCounter=0;symbolCounter<symbolArrays.length;symbolCounter++) {
+            final String[] symbolArray = symbolArrays[symbolCounter];
+            if(isEmptyStringList(symbolArray)) {
+                new ExpectedFailure<IllegalArgumentException>(MISSING_UNDERLYING_SYMBOLS.getText()) {
+                    @Override
+                    protected void run()
+                        throws Exception
+                    {
+                        MarketDataRequest.newRequest().fromProvider(provider).withUnderlyingSymbols(symbolArray).ofAssetClass(OPTION);                    
+                    }
+                };
+            } else {
+                MarketDataRequest request = MarketDataRequest.newRequest().fromProvider(provider).withUnderlyingSymbols(symbolArray).ofAssetClass(OPTION);
+                verifyRequest(request,
+                              provider,
+                              null,
+                              TOP_OF_BOOK,
+                              OPTION,
+                              null,
+                              symbolArrayToString(symbolArray));
+            }
+        }
+        // test single, comma-delimited version
+        for(int symbolCounter=0;symbolCounter<symbols.length;symbolCounter++) {
+            final String symbol = symbols[symbolCounter];
+            if(isEmptyList(symbol)) {
+                new ExpectedFailure<IllegalArgumentException>(MISSING_UNDERLYING_SYMBOLS.getText()) {
+                    @Override
+                    protected void run()
+                        throws Exception
+                    {
+                        MarketDataRequest.newRequest().fromProvider(provider).withUnderlyingSymbols(symbol).ofAssetClass(OPTION);                    
+                    }
+                };
+            } else if(symbol == null ||
+                      symbol.trim().isEmpty()) {
+                new ExpectedFailure<IllegalArgumentException>(INVALID_UNDERLYING_SYMBOLS) {
+                    @Override
+                    protected void run()
+                        throws Exception
+                    {
+                        MarketDataRequest.newRequest().fromProvider(provider).withUnderlyingSymbols(symbol).ofAssetClass(OPTION);                    
+                    }
+                };
+            } else {
+                verifyRequest(MarketDataRequest.newRequest().fromProvider(provider).withUnderlyingSymbols(symbol).ofAssetClass(OPTION),
+                              provider,
+                              null,
+                              TOP_OF_BOOK,
+                              OPTION,
+                              null,
+                              symbol);
+            }
+        }
+        // check for white-space around the symbol
+        String startingSymbols = "METC, ORCL, GOOG ";
+        MarketDataRequest request = MarketDataRequest.newRequest().fromProvider(provider).withUnderlyingSymbols(startingSymbols).ofAssetClass(OPTION);
+        String[] actualSymbols = request.getUnderlyingSymbols();
+        assertEquals("METC",
+                     actualSymbols[0]);
+        assertEquals("ORCL",
+                     actualSymbols[1]);
+        assertEquals("GOOG",
+                     actualSymbols[2]);
+        // make sure that changing the source doesn't change the held values
+        String testSymbol = "METC";
+        request.withUnderlyingSymbols(testSymbol);
+        assertArrayEquals(new String[] { "METC" },
+                          request.getUnderlyingSymbols());
+        testSymbol = "GOOG";
+        assertArrayEquals(new String[] { "METC" },
+                          request.getUnderlyingSymbols());
+        // make sure that changing the destination doesn't change the held values
+        actualSymbols = request.getUnderlyingSymbols();
+        assertArrayEquals(new String[] { "METC" },
+                          actualSymbols);
+        assertArrayEquals(new String[] { "METC" },
+                          request.getUnderlyingSymbols());
+        actualSymbols = new String[] { "ORCL" };
+        assertArrayEquals(new String[] { "METC" },
+                          request.getUnderlyingSymbols());
+    }
+    /**
      * Tests the ability to set and retrieve provider values.
      *
      * @throws Exception if an error occurs
@@ -447,7 +876,9 @@ public class MarketDataRequestTest
                           provider,
                           null,
                           TOP_OF_BOOK,
-                          symbol);
+                          EQUITY,
+                          symbol,
+                          null);
         }
         // test that changing the source doesn't change the held value
         String provider = "provider1";
@@ -481,7 +912,9 @@ public class MarketDataRequestTest
                           provider,
                           exchanges[exchangeCounter],
                           TOP_OF_BOOK,
-                          symbol);
+                          EQUITY,
+                          symbol,
+                          null);
         }
         // test that changing the source doesn't change the held value
         String exchange = "exchange1";
@@ -519,6 +952,7 @@ public class MarketDataRequestTest
         assertEquals(new LinkedHashSet<Content>(Arrays.asList(TOP_OF_BOOK)),
                      request.getContent());
         new ExpectedFailure<NullPointerException>(null) {
+            @Override
             protected void run()
                 throws Exception
             {
@@ -540,7 +974,9 @@ public class MarketDataRequestTest
             final StringBuilder requestString = new StringBuilder().append(marketDataRequestStringFromComponents("provider",
                                                                                                                  null,
                                                                                                                  null,
-                                                                                                                 "METC"));
+                                                                                                                 EQUITY,
+                                                                                                                 "METC",
+                                                                                                                 null));
             requestString.append(Util.KEY_VALUE_DELIMITER);
             requestString.append(CONTENT_KEY).append(Util.KEY_VALUE_SEPARATOR);
             boolean delimiterNeeded = false;
@@ -566,9 +1002,12 @@ public class MarketDataRequestTest
                               "provider",
                               null,
                               expectedContents.toArray(new Content[expectedContents.size()]),
-                              "METC");
+                              EQUITY,
+                              "METC",
+                              null);
             } else {
                 new ExpectedFailure<IllegalArgumentException>(INVALID_CONTENT.getText(null)) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -582,12 +1021,13 @@ public class MarketDataRequestTest
             final StringBuilder requestString = new StringBuilder().append(marketDataRequestStringFromComponents("provider",
                                                                                                                  null,
                                                                                                                  null,
-                                                                                                                 "METC"));
+                                                                                                                 EQUITY,
+                                                                                                                 "METC",
+                                                                                                                 null));
             requestString.append(Util.KEY_VALUE_DELIMITER);
             requestString.append(CONTENT_KEY).append(Util.KEY_VALUE_SEPARATOR);
             boolean delimiterNeeded = false;
             boolean errorExpected = false;
-            String invalidContent = null;
             List<Content> expectedContents = new ArrayList<Content>();
             for(String subcontent : content) {
                 if(delimiterNeeded) {
@@ -599,7 +1039,6 @@ public class MarketDataRequestTest
                    !ALL_CONTENTS.contains(subcontent.trim().toUpperCase()) &&
                    !subcontent.trim().isEmpty()) {
                     errorExpected = true;
-                    invalidContent = subcontent;
                 } else {
                     if(!subcontent.trim().isEmpty()) {
                         expectedContents.add(Content.valueOf(subcontent.trim().toUpperCase()));
@@ -614,9 +1053,12 @@ public class MarketDataRequestTest
                               "provider",
                               null,
                               expectedContents.toArray(new Content[expectedContents.size()]),
-                              "METC");
+                              EQUITY,
+                              "METC",
+                              null);
             } else {
-                new ExpectedFailure<IllegalArgumentException>(INVALID_CONTENT.getText(invalidContent)) {
+                new ExpectedFailure<IllegalArgumentException>(null) {
+                    @Override
                     protected void run()
                         throws Exception
                     {
@@ -636,19 +1078,20 @@ public class MarketDataRequestTest
         throws Exception
     {
         new ExpectedFailure<NullPointerException>(null) {
+            @Override
             protected void run()
                 throws Exception
             {
                 TOP_OF_BOOK.isRelevantTo(null);
             }
         };
-        Set<Class<? extends EventBase>> eventTypes = new HashSet<Class<? extends EventBase>>();
+        Set<Class<? extends Event>> eventTypes = new HashSet<Class<? extends Event>>();
         eventTypes.add(AskEvent.class);
         eventTypes.add(BidEvent.class);
         eventTypes.add(MarketstatEvent.class);
         eventTypes.add(TradeEvent.class);
         eventTypes.add(LogEvent.class);
-        Multimap<Content,Class<? extends EventBase>> relevantTypes = HashMultimap.create();
+        Multimap<Content,Class<? extends Event>> relevantTypes = HashMultimap.create();
         relevantTypes.put(TOP_OF_BOOK,
                           BidEvent.class);
         relevantTypes.put(TOP_OF_BOOK,
@@ -669,9 +1112,11 @@ public class MarketDataRequestTest
                           TradeEvent.class);
         relevantTypes.put(MARKET_STAT,
                           MarketstatEvent.class);
+        relevantTypes.put(DIVIDEND,
+                          DividendEvent.class);
         Set<Content> contents = EnumSet.allOf(Content.class);
         for(Content content : contents) {
-            for(Class<? extends EventBase> eventType : eventTypes) {
+            for(Class<? extends Event> eventType : eventTypes) {
                 assertEquals(relevantTypes.get(content).contains(eventType),
                              content.isRelevantTo(eventType));
             }
@@ -742,14 +1187,19 @@ public class MarketDataRequestTest
      * @param inProvider a <code>String</code> value containing a <code>Provider</code> or <code>null</code>
      * @param inExchange a <code>String</code> value containing an <code>Exchange</code> or <code>null</code>
      * @param inContent a <code>Content</code> value or <code>null</code>
+     * @param inAssetClass an <code>AssetClass</code> value containing the expected <code>AssetClass</code>
      * @param inSymbols a <code>String</code> value containing a symbol or symbols delimited by 
+     *  {@link MarketDataRequest#SYMBOL_DELIMITER} or <code>null</code>
+     * @param inUnderlyingSymbols a <code>String</code> value containing a symbol or symbols delimited by 
      *  {@link MarketDataRequest#SYMBOL_DELIMITER} or <code>null</code>
      * @return a <code>String</code> value
      */
     private static String marketDataRequestStringFromComponents(String inProvider,
                                                                 String inExchange,
                                                                 Content inContent,
-                                                                String inSymbols)
+                                                                AssetClass inAssetClass,
+                                                                String inSymbols,
+                                                                String inUnderlyingSymbols)
         throws Exception
     {
         StringBuilder request = new StringBuilder();
@@ -783,6 +1233,21 @@ public class MarketDataRequestTest
             request.append(SYMBOLS_KEY).append(Util.KEY_VALUE_SEPARATOR).append(inSymbols);
             delimiterNeeded = true;
         }
+        if(inUnderlyingSymbols != null &&
+          !inUnderlyingSymbols.isEmpty()) {
+            if(delimiterNeeded) {
+                request.append(Util.KEY_VALUE_DELIMITER);
+            }
+            request.append(UNDERLYINGSYMBOLS_KEY).append(Util.KEY_VALUE_SEPARATOR).append(inUnderlyingSymbols);
+            delimiterNeeded = true;
+        }
+        if(inAssetClass != null) {
+            if(delimiterNeeded) {
+                request.append(Util.KEY_VALUE_DELIMITER);
+            }
+            request.append(ASSETCLASS_KEY).append(Util.KEY_VALUE_SEPARATOR).append(inAssetClass);
+            delimiterNeeded = true;
+        }
         // add a key/value pair that is totally extraneous and should be ignored
         if(delimiterNeeded) {
             request.append(Util.KEY_VALUE_DELIMITER);
@@ -797,14 +1262,18 @@ public class MarketDataRequestTest
      * @param inProvider a <code>String</code> value containing the expected <code>Provider</code>
      * @param inExchange a <code>String</code> value containing the expected <code>Exchange</code>
      * @param inContent a <code>Content[]</code> value containing the expected <code>Content</code>
+     * @param inAssetClass an <code>AssetClass</code> value containing the expected <code>AssetClass</code>
      * @param inSymbols a <code>String[]</code> value containing the expected <code>Symbol</code> values
+     * @param inUnderlyingSymbols a <code>String[]</code> value containing the expected <code>UnderlyingSymbol</code> values
      * @throws Exception if an error occurs
      */
     private static void verifyRequest(final MarketDataRequest inActualRequest,
                                       String inProvider,
                                       String inExchange,
                                       Content[] inContent,
-                                      String inSymbols)
+                                      AssetClass inAssetClass,
+                                      String inSymbols,
+                                      String inUnderlyingSymbols)
         throws Exception
     {
         assertNotNull(inActualRequest);
@@ -843,20 +1312,48 @@ public class MarketDataRequestTest
                 }
             };
         }
+        // test asset class
+        AssetClass assetClass = inActualRequest.getAssetClass();
+        assertNotNull(assetClass);
+        assertEquals(inAssetClass,
+                     assetClass);
         // test symbols
-        String[] expectedSymbols = inSymbols.split(MarketDataRequest.SYMBOL_DELIMITER);
-        String[] actualSymbols = inActualRequest.getSymbols();
-        assertArrayEquals(String.format("Expected: %s Actual: %s",
-                                        Arrays.toString(expectedSymbols),
-                                        Arrays.toString(actualSymbols)),
-                                        expectedSymbols,
-                                        actualSymbols);
-        if(actualSymbols != null) {
-            actualSymbols = new String[] { "some", "symbols", "here"};
-            assertFalse(Arrays.equals(expectedSymbols,
-                                      actualSymbols));
-            assertArrayEquals(expectedSymbols,
-                              inActualRequest.getSymbols());
+        if(inSymbols != null) {
+            String[] expectedSymbols = inSymbols.split(MarketDataRequest.SYMBOL_DELIMITER);
+            String[] actualSymbols = inActualRequest.getSymbols();
+            assertArrayEquals(String.format("Expected: %s Actual: %s",
+                                            Arrays.toString(expectedSymbols),
+                                            Arrays.toString(actualSymbols)),
+                                            expectedSymbols,
+                                            actualSymbols);
+            if(actualSymbols != null) {
+                actualSymbols = new String[] { "some", "symbols", "here"};
+                assertFalse(Arrays.equals(expectedSymbols,
+                                          actualSymbols));
+                assertArrayEquals(expectedSymbols,
+                                  inActualRequest.getSymbols());
+            }
+        } else {
+            assertTrue(inActualRequest.getSymbols().length == 0);
+        }
+        if(inUnderlyingSymbols != null) {
+            // test underlying symbols
+            String[] expectedSymbols = inUnderlyingSymbols.split(MarketDataRequest.SYMBOL_DELIMITER);
+            String[] actualSymbols = inActualRequest.getUnderlyingSymbols();
+            assertArrayEquals(String.format("Expected: %s Actual: %s",
+                                            Arrays.toString(expectedSymbols),
+                                            Arrays.toString(actualSymbols)),
+                                            expectedSymbols,
+                                            actualSymbols);
+            if(actualSymbols != null) {
+                actualSymbols = new String[] { "some", "symbols", "here"};
+                assertFalse(Arrays.equals(expectedSymbols,
+                                          actualSymbols));
+                assertArrayEquals(expectedSymbols,
+                                  inActualRequest.getUnderlyingSymbols());
+            }
+        } else {
+            assertTrue(inActualRequest.getUnderlyingSymbols().length == 0);
         }
         // check validation
         MarketDataRequest.validate(inActualRequest);
@@ -895,21 +1392,27 @@ public class MarketDataRequestTest
      * @param inProvider a <code>String</code> value containing the expected <code>Provider</code>
      * @param inExchange a <code>String</code> value containing the expected <code>Exchange</code>
      * @param inContent a <code>Content</code> value containing the expected <code>Content</code>
-     * @param inSymbols a <code>String[]</code> value containing the expected <code>Symbol</code> values
+     * @param inAssetClass an <code>AssetClass</code> value containing the expected <code>AssetClass</code>
+     * @param inSymbols a <code>String</code> value containing the expected <code>Symbol</code> values
+     * @param inUnderlyingSymbols a <code>String</code> value containing the expected <code>UnderlyingSymbol</code> values
      * @throws Exception if an error occurs
      */
     private static void verifyRequest(MarketDataRequest inActualRequest,
                                       String inProvider,
                                       String inExchange,
                                       Content inContent,
-                                      String inSymbols)
+                                      AssetClass inAssetClass,
+                                      String inSymbols,
+                                      String inUnderlyingSymbols)
         throws Exception
     {
         verifyRequest(inActualRequest,
                       inProvider,
                       inExchange,
                       new Content[] { inContent },
-                      inSymbols);
+                      inAssetClass,
+                      inSymbols,
+                      inUnderlyingSymbols);
     }
     /**
      * Checks to see if the given <code>String</code> represents an empty list.
@@ -942,12 +1445,12 @@ public class MarketDataRequestTest
             return true;
         }
         for(String symbol : inStrings) {
-            if(symbol != null &&
-               !symbol.trim().isEmpty()) {
-                return false;
+            if(symbol == null ||
+               symbol.trim().isEmpty()) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
     /**
      * Checks to see if the given <code>Enum&lt;?&gt;[]</code> value represents an empty list.

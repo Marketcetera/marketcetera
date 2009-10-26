@@ -16,9 +16,9 @@ import org.apache.commons.io.FileUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
 
@@ -109,10 +109,10 @@ class StrategyImpl
     {
         // make sure that the strategy is in a state to receive incoming data
         if(!getStatus().canReceiveData()) {
-            StrategyModule.log(LogEvent.warn(INVALID_STATUS_TO_RECEIVE_DATA,
-                                             String.valueOf(this),
-                                             String.valueOf(inData),
-                                             getStatus()),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_STATUS_TO_RECEIVE_DATA,
+                                                                  String.valueOf(this),
+                                                                  String.valueOf(inData),
+                                                                  getStatus()).create(),
                                this);
             return;
         }
@@ -120,9 +120,9 @@ class StrategyImpl
         try {
             RunningStrategy runningStrategy = getRunningStrategy();
             if(runningStrategy == null) {
-                StrategyModule.log(LogEvent.warn(STRATEGY_NOT_READY_TO_RECEIVE_DATA,
-                                                 String.valueOf(this),
-                                                 String.valueOf(inData)),
+                StrategyModule.log(LogEventBuilder.warn().withMessage(STRATEGY_NOT_READY_TO_RECEIVE_DATA,
+                                                                      String.valueOf(this),
+                                                                      String.valueOf(inData)).create(),
                                    this);
                 return;
             }
@@ -170,11 +170,11 @@ class StrategyImpl
                 methodName = getExecutor().translateMethodName(method);
                 exceptionTranslation = getExecutor().interpretRuntimeException(e);
             }
-            StrategyModule.log(LogEvent.warn(RUNTIME_ERROR,
-                                             e,
-                                             String.valueOf(this),
-                                             methodName,
-                                             exceptionTranslation),
+            StrategyModule.log(LogEventBuilder.warn().withMessage(RUNTIME_ERROR,
+                                                                  String.valueOf(this),
+                                                                  methodName,
+                                                                  exceptionTranslation)
+                                                     .withException(e).create(),
                                this);
         }
     }

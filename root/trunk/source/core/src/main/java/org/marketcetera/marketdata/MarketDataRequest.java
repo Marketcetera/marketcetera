@@ -2,6 +2,8 @@ package org.marketcetera.marketdata;
 
 import static org.marketcetera.core.Util.KEY_VALUE_DELIMITER;
 import static org.marketcetera.core.Util.KEY_VALUE_SEPARATOR;
+import static org.marketcetera.marketdata.MarketDataRequest.AssetClass.OPTION;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.DIVIDEND;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
 
 import java.io.Serializable;
@@ -17,7 +19,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.core.Util;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TradeEvent;
@@ -50,6 +53,10 @@ public class MarketDataRequest
      */
     public static final String SYMBOLS_KEY = "symbols"; //$NON-NLS-1$
     /**
+     * the key used to identify the underlying symbols in the string representation of the market data request
+     */
+    public static final String UNDERLYINGSYMBOLS_KEY = "underlyingsymbols"; //$NON-NLS-1$
+    /**
      * the key used to identify the provider in the string representation of the market data request
      */
     public static final String PROVIDER_KEY = "provider"; //$NON-NLS-1$
@@ -62,6 +69,10 @@ public class MarketDataRequest
      */
     public static final String EXCHANGE_KEY = "exchange"; //$NON-NLS-1$
     /**
+     * the key used to identify the asset class in the string representation of the market data request
+     */
+    public static final String ASSETCLASS_KEY = "assetclass"; //$NON-NLS-1$
+    /**
      * Creates a <code>MarketDataRequest</code>.
      * 
      * <p>The <code>String</code> parameter should be a set of key/value pairs delimited
@@ -69,9 +80,11 @@ public class MarketDataRequest
      * is as follows:
      * <ul>
      *   <li>{@link #SYMBOLS_KEY} - the symbols for which to request market data</li>
+     *   <li>{@link #UNDERLYINGSYMBOLS_KEY} - the underlying symbols for which to request market data</li>
      *   <li>{@link #PROVIDER_KEY} - the provider from which to request market data</li>
      *   <li>{@link #CONTENT_KEY} - the content of the market data</li>
      *   <li>{@link #EXCHANGE_KEY} - the exchange for which to request market data</li>
+     *   <li>{@link #ASSETCLASS_KEY} - the asset class for which to request market data</li>
      * </ul>
      * 
      * <p>Example:
@@ -82,7 +95,12 @@ public class MarketDataRequest
      * <p>The key/value pairs are validated according to the rules established for each
      * component.  Extraneous key/value pairs, i.e., key/value pairs with a key that
      * does not match one of the above list are ignored.  Additional validation is performed
-     * according to the rules defined at {@link Util#propertiesFromString(String)}.  
+     * according to the rules defined at {@link Util#propertiesFromString(String)}.
+     * 
+     * <p>Validation is performed on each key/value pair as it is processed with respect to that
+     * key/value pair only.  After all key/value pairs are processed and validated, a
+     * second, comprehensive validation checks that all key/value pairs are valid with respect
+     * to each other.
      *
      * @param inRequest a <code>String</code> value
      * @return a <code>MarketDataRequest</code> value
@@ -101,6 +119,9 @@ public class MarketDataRequest
             if(sanitizedProps.containsKey(SYMBOLS_KEY)) {
                 request.setSymbols(sanitizedProps.get(SYMBOLS_KEY).split(SYMBOL_DELIMITER));
             }
+            if(sanitizedProps.containsKey(UNDERLYINGSYMBOLS_KEY)) {
+                request.setUnderlyingSymbols(sanitizedProps.get(UNDERLYINGSYMBOLS_KEY).split(SYMBOL_DELIMITER));
+            }
             if(sanitizedProps.containsKey(PROVIDER_KEY)) {
                 request.setProvider(sanitizedProps.get(PROVIDER_KEY));
             }
@@ -109,6 +130,9 @@ public class MarketDataRequest
             }
             if(sanitizedProps.containsKey(EXCHANGE_KEY)) {
                 request.setExchange(sanitizedProps.get(EXCHANGE_KEY));
+            }
+            if(sanitizedProps.containsKey(ASSETCLASS_KEY)) {
+                request.ofAssetClass(sanitizedProps.get(ASSETCLASS_KEY));
             }
             validate(request);
             return request;
@@ -134,14 +158,27 @@ public class MarketDataRequest
         if(inRequest == null) {
             throw new NullPointerException();
         }
-        validateExchange(inRequest,
-                         inRequest.exchange);
-        validateSymbols(inRequest,
-                        inRequest.symbols.toArray(new String[inRequest.symbols.size()]));
-        validateProvider(inRequest,
-                         inRequest.provider);
-        validateContent(inRequest,
-                        inRequest.content);
+        // underlying symbols and symbols may not both be specified
+        if(!inRequest.symbols.isEmpty() &&
+           !inRequest.underlyingSymbols.isEmpty()) {
+           throw new IllegalArgumentException(BOTH_SYMBOLS_AND_UNDERLYING_SYMBOLS_SPECIFIED.getText(inRequest)); 
+        }
+        // underlying symbols or symbols must be specified
+        if(inRequest.symbols.isEmpty() &&
+           inRequest.underlyingSymbols.isEmpty()) {
+            throw new IllegalArgumentException(NEITHER_SYMBOLS_NOR_UNDERLYING_SYMBOLS_SPECIFIED.getText(inRequest)); 
+        }
+        // underlyingsymbols requires assetclass==OPTION
+        if(!inRequest.underlyingSymbols.isEmpty() &&
+           inRequest.assetClass != OPTION) {
+            throw new IllegalArgumentException(OPTION_ASSET_CLASS_REQUIRED.getText(inRequest,
+                                                                                   inRequest.assetClass));
+        }
+        // content dividend requires symbols
+        if(inRequest.content.contains(DIVIDEND) &&
+           inRequest.symbols.isEmpty()) {
+            throw new IllegalArgumentException(DIVIDEND_REQUIRES_SYMBOLS.getText(inRequest));
+        }
     }
     /**
      * Creates a new market data request.
@@ -157,18 +194,19 @@ public class MarketDataRequest
     }
     /**
      * Create a new MarketDataRequest instance.
-     *
      */
     public MarketDataRequest()
     {
         content.add(TOP_OF_BOOK);
+        assetClass = AssetClass.EQUITY;
     }
     /**
      * Adds the given symbols to the market data request. 
      *
      * <p>The given symbols must be non-null and non-empty.
      * 
-     * <p>This attribute is required and no default is provided.
+     * <p>Either symbols or underlying symbols ({@link #withUnderlyingSymbols(String)} or
+     * {@link #withUnderlyingSymbols(String...)}) must be specified and no default is provided. 
      * 
      * @param inSymbols a <code>String[]</code> value containing symbols to add to the request
      * @return a <code>MarketDataRequest</code> value
@@ -185,7 +223,8 @@ public class MarketDataRequest
      * <p>The given symbols must be non-null and non-empty.  The symbols may be a single symbol
      * or a series of symbols delimited by {@link #SYMBOL_DELIMITER}.
      * 
-     * <p>This attribute is required and no default is provided.
+     * <p>Either symbols or underlying symbols ({@link #withUnderlyingSymbols(String)} or
+     * {@link #withUnderlyingSymbols(String...)}) must be specified and no default is provided. 
      * 
      * @param inSymbols a <code>String</code> value containing symbols separated by {@link #SYMBOL_DELIMITER} to add to the request
      * @return a <code>MarketDataRequest</code> value
@@ -193,10 +232,48 @@ public class MarketDataRequest
      */
     public MarketDataRequest withSymbols(String inSymbols)
     {
-        if(isEmptyStringList(inSymbols)) {
+        if(isInvalidStringList(inSymbols)) {
             throw new IllegalArgumentException(MISSING_SYMBOLS.getText());
         }
         setSymbols(inSymbols.split(SYMBOL_DELIMITER));
+        return this;
+    }
+    /**
+     * Adds the given underlying symbols to the market data request. 
+     *
+     * <p>The given underlying symbols must be non-null and non-empty.
+     * 
+     * <p>Either symbols ({@link #withSymbols(String)} or {@link #withSymbols(String...)}) or 
+     * underlying symbols must be specified and no default is provided. 
+     * 
+     * @param inUnderlyingSymbols a <code>String[]</code> value containing underlying symbols to add to the request
+     * @return a <code>MarketDataRequest</code> value
+     * @throws IllegalArgumentException if the specified underlying symbols result in an invalid request 
+     */
+    public MarketDataRequest withUnderlyingSymbols(String... inUnderlyingSymbols)
+    {
+        setUnderlyingSymbols(inUnderlyingSymbols);
+        return this;
+    }
+    /**
+     * Adds the given underlying symbols to the market data request. 
+     *
+     * <p>The given underlying symbols must be non-null and non-empty.  The underlying symbols may be a single symbol
+     * or a series of symbols delimited by {@link #SYMBOL_DELIMITER}.
+     * 
+     * <p>Either symbols ({@link #withSymbols(String)} or {@link #withSymbols(String...)}) or 
+     * underlying symbols must be specified and no default is provided. 
+     * 
+     * @param inUnderlyingSymbols a <code>String</code> value containing underlying symbols separated by {@link #SYMBOL_DELIMITER} to add to the request
+     * @return a <code>MarketDataRequest</code> value
+     * @throws IllegalArgumentException if the specified symbols result in an invalid request 
+     */
+    public MarketDataRequest withUnderlyingSymbols(String inUnderlyingSymbols)
+    {
+        if(isInvalidStringList(inUnderlyingSymbols)) {
+            throw new IllegalArgumentException(MISSING_UNDERLYING_SYMBOLS.getText());
+        }
+        setUnderlyingSymbols(inUnderlyingSymbols.split(SYMBOL_DELIMITER));
         return this;
     }
     /**
@@ -248,7 +325,7 @@ public class MarketDataRequest
      */
     public MarketDataRequest withContent(String inContent)
     {
-        if(isEmptyStringList(inContent)) {
+        if(isInvalidStringList(inContent)) {
             throw new IllegalArgumentException(MISSING_CONTENT.getText());
         }
         return withContent(inContent.split(SYMBOL_DELIMITER));
@@ -280,7 +357,7 @@ public class MarketDataRequest
      */
     public MarketDataRequest withContent(String...inContent)
     {
-        if(isEmptyStringList(inContent)) {
+        if(isInvalidStringList(inContent)) {
             throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_CONTENT,
                                                                       Arrays.toString(inContent)).getText());
         }
@@ -298,6 +375,42 @@ public class MarketDataRequest
         return this;
     }
     /**
+     * Adds the given asset class to the market data request.
+     *
+     * <p>The given asset class value must not be null.  This attribute is required.  If
+     * unspecified, the default value is {@link AssetClass#EQUITY}.
+     *
+     * @param inAssetClass an <code>AssetClass</code> value
+     * @return a <code>MarketDataRequest</code> value
+     */
+    public MarketDataRequest ofAssetClass(AssetClass inAssetClass)
+    {
+        setAssetClass(inAssetClass);
+        return this;
+    }
+    /**
+    /**
+     * Adds the given asset class to the market data request.
+     *
+     * <p>The given asset class value must not be null.  This attribute is required.  If
+     * unspecified, the default value is {@link AssetClass#EQUITY}.
+     *
+     * @param inAssetClass a <code>String</code> value containing a string representation of
+     *  an {@link AssetClass}
+     * @return a <code>MarketDataRequest</code> value
+     */
+    public MarketDataRequest ofAssetClass(String inAssetClass)
+    {
+        try {
+            setAssetClass(AssetClass.valueOf(inAssetClass.toUpperCase().trim()));
+        } catch (Exception e) {
+            throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_ASSET_CLASS,
+                                                                      inAssetClass).getText(),
+                                               e);
+        }
+        return this;
+    }
+    /**
      * Get the symbols value.
      * 
      * @return a <code>String[]</code> value
@@ -305,6 +418,15 @@ public class MarketDataRequest
     public String[] getSymbols()
     {
         return symbols.toArray(new String[symbols.size()]);
+    }
+    /**
+     * Get the underlying symbols value.
+     * 
+     * @return a <code>String[]</code> value
+     */
+    public String[] getUnderlyingSymbols()
+    {
+        return underlyingSymbols.toArray(new String[underlyingSymbols.size()]);
     }
     /**
      * Get the provider value.
@@ -342,6 +464,15 @@ public class MarketDataRequest
         return Collections.unmodifiableSet(content);
     }
     /**
+     * Get the asset class value.
+     *
+     * @return an <code>AssetClass</code> value
+     */
+    public AssetClass getAssetClass()
+    {
+        return assetClass;
+    }
+    /**
      * Determines if the request is valid apropos the given capabilities.
      *
      * @param inCapabilities a <code>Content[]</code> value containing the capabilities against which to verify the request
@@ -365,6 +496,8 @@ public class MarketDataRequest
         result = prime * result + ((exchange == null) ? 0 : exchange.hashCode());
         result = prime * result + ((provider == null) ? 0 : provider.hashCode());
         result = prime * result + ((symbols == null) ? 0 : symbols.hashCode());
+        result = prime * result + ((underlyingSymbols == null) ? 0 : underlyingSymbols.hashCode());
+        result = prime * result + ((assetClass == null) ? 0 : assetClass.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -395,10 +528,20 @@ public class MarketDataRequest
                 return false;
         } else if (!provider.equals(other.provider))
             return false;
+        if (assetClass == null) {
+            if (other.assetClass != null)
+                return false;
+        } else if (!assetClass.equals(other.assetClass))
+            return false;
         if (symbols == null) {
             if (other.symbols != null)
                 return false;
         } else if (!symbols.equals(other.symbols))
+            return false;
+        if (underlyingSymbols == null) {
+            if (other.underlyingSymbols != null)
+                return false;
+        } else if (!underlyingSymbols.equals(other.underlyingSymbols))
             return false;
         return true;
     }
@@ -412,7 +555,7 @@ public class MarketDataRequest
     private static void validateSymbols(MarketDataRequest inRequest,
                                         String[] inSymbols)
     {
-        if(isEmptyStringList(inSymbols)) {
+        if(isInvalidStringList(inSymbols)) {
             throw new IllegalArgumentException(MISSING_SYMBOLS.getText());
         }
         for(String symbol : inSymbols) {
@@ -420,6 +563,27 @@ public class MarketDataRequest
                symbol.trim().isEmpty()) {
                 throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_SYMBOLS,
                                                                           Arrays.toString(inSymbols)).getText());
+            }
+        }
+    }
+    /**
+     * Verifies that the given underlying symbols are valid.
+     * 
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inUnderlyingSymbols a <code>String[]</code> value
+     * @throws IllegalArgumentException if the symbols are not valid
+     */
+    private static void validateUnderlyingSymbols(MarketDataRequest inRequest,
+                                                  String[] inUnderlyingSymbols)
+    {
+        if(isInvalidStringList(inUnderlyingSymbols)) {
+            throw new IllegalArgumentException(MISSING_UNDERLYING_SYMBOLS.getText());
+        }
+        for(String underlyingSymbol : inUnderlyingSymbols) {
+            if(underlyingSymbol == null ||
+               underlyingSymbol.trim().isEmpty()) {
+                throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_UNDERLYING_SYMBOLS,
+                                                                          Arrays.toString(inUnderlyingSymbols)).getText());
             }
         }
     }
@@ -447,6 +611,20 @@ public class MarketDataRequest
         // provider is optional when an MDR is passed directly to a Market Data Module
     }
     /**
+     * Verifies that the <code>AssetClass</code> is valid on the given <code>MarketDataRequest</code>.
+     *
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inAssetClass an <code>AssetClass</code> value
+     * @throws IllegalArgumentException if the <code>AssetClass</code> is not valid
+     */
+    private static void validateAssetClass(MarketDataRequest inRequest,
+                                           AssetClass inAssetClass)
+    {
+        if(inAssetClass == null) {
+            throw new IllegalArgumentException(MISSING_ASSET_CLASS.getText());
+        }
+    }
+    /**
      * Verifies that the <code>Content</code> on the given <code>MarketDataRequest</code> is valid.
      *
      * @param inRequest a <code>MarketDataRequest</code> value
@@ -466,61 +644,42 @@ public class MarketDataRequest
         }
     }
     /**
-     * Verifies that the <code>Content</code> on the given <code>MarketDataRequest</code> is valid.
-     *
-     * @param inRequest a <code>MarketDataRequest</code> value
-     * @param inContent a <code>Set&lt;Content&gt;</code> value
-     * @throws IllegalArgumentException if the <code>Content</code> is not valid
-     */
-    private static void validateContent(MarketDataRequest inRequest,
-                                        Set<Content> inContent)
-    {
-        if(inContent == null ||
-           inContent.isEmpty()) {
-            throw new IllegalArgumentException(MISSING_CONTENT.getText());
-        }
-        if(!isValidEnumList(inContent.toArray(new Content[inContent.size()]))) {
-            throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_CONTENT,
-                                                                      String.valueOf(inContent)).getText());
-        }
-    }
-    /**
-     * Checks to see if the given <code>String</code> represents an empty list.
+     * Checks to see if the given <code>String</code> represents an invalid list.
      * 
-     * <p>The list is considered empty if it is empty or if all strings in the list are whitespace or empty.
+     * <p>The list is considered invalid if it is empty or if any strings in the list are whitespace or empty.
      *
      * @param inStrings a <code>String</code> value allegedly containing a list of tokens delimited by {@link MarketDataRequest#SYMBOL_DELIMITER}
      * @return a <code>boolean</code>value
      */
-    private static boolean isEmptyStringList(String inStrings)
+    private static boolean isInvalidStringList(String inStrings)
     {
         if(inStrings == null ||
            inStrings.isEmpty()) {
             return true;
         }
-        return isEmptyStringList(inStrings.split(MarketDataRequest.SYMBOL_DELIMITER));
+        return isInvalidStringList(inStrings.split(MarketDataRequest.SYMBOL_DELIMITER));
     }
     /**
      * Checks to see if the given <code>String[]</code> value represents an empty list.
      * 
-     * <p>The list is considered empty if the array is empty or contains only null or whitespace values.
+     * <p>The list is considered empty if the array is empty or contains any null or whitespace values.
      *
      * @param inStrings a <code>String[]</code> value
      * @return a <code>boolean</cod> value
      */
-    private static boolean isEmptyStringList(String[] inStrings)
+    private static boolean isInvalidStringList(String[] inStrings)
     {
         if(inStrings == null ||
            inStrings.length == 0) {
             return true;
         }
         for(String string : inStrings) {
-            if(string != null &&
-               !string.trim().isEmpty()) {
-                return false;
+            if(string == null ||
+               string.trim().isEmpty()) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
     /**
      * Checks to see if the given <code>Enum&lt;E&gt;[]</code> value represents a list of valid enums.
@@ -561,6 +720,29 @@ public class MarketDataRequest
             symbols.clear();
             for(String symbol:inSymbols) {
                 symbols.add(symbol.trim());
+            }
+        }
+    }
+    /**
+     * Sets the underlying symbols.
+     *
+     * <p>The given underlying symbols must be non-null and non-empty.
+     * 
+     * <p>This attribute is optional and no default is provided. 
+     * 
+     * @param inUnderlyingSymbols a <code>String[]</code> value containing underlying symbols to add to the request
+     * @return a <code>MarketDataRequest</code> value
+     * @throws IllegalArgumentException if the specified underlying symbols result in an invalid request 
+     */
+    private void setUnderlyingSymbols(String[] inUnderlyingSymbols)
+    {
+        validateUnderlyingSymbols(this,
+                                  inUnderlyingSymbols);
+        // synchronize to make the underlying symbol change atomic
+        synchronized(this) {
+            underlyingSymbols.clear();
+            for(String underlyingSymbol:inUnderlyingSymbols) {
+                underlyingSymbols.add(underlyingSymbol.trim());
             }
         }
     }
@@ -619,8 +801,21 @@ public class MarketDataRequest
     {
         validateContent(this,
                         inContent);
-        content.clear();
-        content.addAll(Arrays.asList(inContent));
+        synchronized(this) {
+            content.clear();
+            content.addAll(Arrays.asList(inContent));
+        }
+    }
+    /**
+     * Sets the asset class value.
+     *
+     * @param inAssetClass an <code>AssetClass</code> value
+     */
+    private void setAssetClass(AssetClass inAssetClass)
+    {
+        validateAssetClass(this,
+                           inAssetClass);
+        assetClass = inAssetClass;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -634,6 +829,12 @@ public class MarketDataRequest
            !symbols.isEmpty()) {
             output.append(SYMBOLS_KEY).append(KEY_VALUE_SEPARATOR).append(symbols.toString().replaceAll("[\\[\\]]", //$NON-NLS-1$
                                                                                                         "")); //$NON-NLS-1$
+            delimiterNeeded = true;
+        }
+        if(underlyingSymbols != null &&
+           !underlyingSymbols.isEmpty()) {
+            output.append(UNDERLYINGSYMBOLS_KEY).append(KEY_VALUE_SEPARATOR).append(underlyingSymbols.toString().replaceAll("[\\[\\]]", //$NON-NLS-1$
+                                                                                                                            "")); //$NON-NLS-1$
             delimiterNeeded = true;
         }
         if(provider != null &&
@@ -660,12 +861,23 @@ public class MarketDataRequest
             output.append(EXCHANGE_KEY).append(KEY_VALUE_SEPARATOR).append(String.valueOf(exchange));
             delimiterNeeded = true;
         }
+        if(assetClass != null) {
+            if(delimiterNeeded) {
+                output.append(KEY_VALUE_DELIMITER);
+            }
+            output.append(ASSETCLASS_KEY).append(KEY_VALUE_SEPARATOR).append(String.valueOf(assetClass));
+            delimiterNeeded = true;
+        }
         return output.toString();
     }
     /**
      * the symbols for which to request data
      */
     private final List<String> symbols = new ArrayList<String>();
+    /**
+     * the underlying symbols for which to request data
+     */
+    private final List<String> underlyingSymbols = new ArrayList<String>();
     /**
      * the provider key from which to request data
      */
@@ -678,6 +890,10 @@ public class MarketDataRequest
      * the request content
      */
     private final Set<Content> content = new LinkedHashSet<Content>();
+    /**
+     * the asset class
+     */
+    private AssetClass assetClass;
     /**
      * The content types for market data requests.
      * 
@@ -712,7 +928,11 @@ public class MarketDataRequest
         /**
          * latest trade
          */
-        LATEST_TICK;
+        LATEST_TICK,
+        /**
+         * dividend data
+         */
+        DIVIDEND;
         /**
          * Determines if this content is relevant to the given event class.
          * 
@@ -725,7 +945,7 @@ public class MarketDataRequest
          * @return a <code>boolean</code> value
          * @throws UnsupportedOperationException if the given class is not covered by the logic in this class
          */
-        public boolean isRelevantTo(Class<? extends EventBase> inEventClass)
+        public boolean isRelevantTo(Class<? extends Event> inEventClass)
         {
             switch(this) {
                 case TOP_OF_BOOK :
@@ -740,6 +960,8 @@ public class MarketDataRequest
                     return QuoteEvent.class.isAssignableFrom(inEventClass);
                 case LATEST_TICK :
                     return (inEventClass.equals(TradeEvent.class));
+                case DIVIDEND :
+                    return inEventClass.equals(DividendEvent.class);
                 default :
                     throw new UnsupportedOperationException();
             }
@@ -759,9 +981,29 @@ public class MarketDataRequest
                 case LEVEL_2 : return Capability.LEVEL_2;
                 case MARKET_STAT : return Capability.MARKET_STAT;
                 case LATEST_TICK : return Capability.LATEST_TICK;
+                case DIVIDEND : return Capability.DIVIDEND;
                 default : throw new UnsupportedOperationException();
             }
         }
+    }
+    /**
+     * The asset class for market data requests.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    public static enum AssetClass
+    {
+        /**
+         * equities
+         */
+        EQUITY,
+        /**
+         * options
+         */
+        OPTION
     }
     private static final long serialVersionUID = 1L;
 }
