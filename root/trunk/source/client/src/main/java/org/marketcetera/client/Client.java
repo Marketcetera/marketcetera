@@ -118,9 +118,9 @@ public interface Client {
      * generated and received until the supplied date in UTC.
      *
      * @param inDate the date in UTC. Cannot be null.
-     * @param inEquity The symbol. Cannot be null.
+     * @param inEquity The equity. Cannot be null.
      *
-     * @return the current position of the symbol.
+     * @return the current position of the equity.
      *
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
