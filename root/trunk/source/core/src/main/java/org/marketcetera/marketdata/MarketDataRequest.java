@@ -993,7 +993,6 @@ public class MarketDataRequest
      * @version $Id$
      * @since $Release$
      */
-    @ClassVersion("$Id$")
     public static enum AssetClass
     {
         /**
