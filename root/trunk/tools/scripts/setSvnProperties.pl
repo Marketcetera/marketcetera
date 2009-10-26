@@ -14,7 +14,6 @@ my($svnConfig)=File::Spec->catpath
 	($volume,$dir,'svnConfig.pl');
 require $svnConfig;
 
-
 # Error checking.
 
 if (@ARGV!=1) {
@@ -163,9 +162,21 @@ sub walk ()
 	} else {
 		$mime=`file --brief --mime $quoted`;
 		chop($mime);
+		# Adding ;'s omitted by buggy versions of 'file'.
+		$mime=~s/([^;])(\s+\S+=\S+)/\1;\2/g;
 	}
 	run('svn propset svn:mime-type "'.$mime.'" '.$quoted);
-	run('svn propset svn:keywords "Id Revision" '.$quoted);
+
+	my($retainKeywords)=0;
+	my($retainedKeyword);
+	foreach $retainedKeyword (@::retainedKeywords) {
+		if ($absName=~/^$retainedKeyword/) {
+			$retainKeywords=1;
+		}
+	}
+	if (!$retainKeywords) {
+		run('svn propset svn:keywords "Id Revision" '.$quoted);
+	}
 }
 
 find(\&walk,$ARGV[0]);
