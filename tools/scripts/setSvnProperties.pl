@@ -25,7 +25,22 @@ if (@ARGV!=1) {
 
 # Configuration.
 
-my($ignoreFile)=$ENV{'TEMP'}.'/ignoreFile';
+my($tmpDir);
+if (defined($ENV{'TEMP'})) {
+	$tmpDir=$ENV{'TEMP'};
+} else {
+	if (-d '/tmp') {
+		$tmpDir='/tmp';
+	} elsif (-d 'C:/Temp') {
+		$tmpDir='C:/Temp';
+	} else {
+		warn "\n";
+		warn "Set TEMP environment variable and re-run this script.\n";
+		die "\n";
+	}
+}
+
+my($ignoreFile)=$tmpDir.'/ignoreFile';
 
 my(@patternsEmacs)=('*~','#*#');
 my(@patternsEclipse)=('.classpath','.project','.settings');
