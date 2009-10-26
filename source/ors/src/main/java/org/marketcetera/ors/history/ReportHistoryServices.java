@@ -60,7 +60,7 @@ public class ReportHistoryServices {
     }
 
     /**
-     * Returns the position of the symbol based on all reports
+     * Returns the position of the equity based on all reports
      * received for it before the supplied date, and which are visible
      * to the given user.
      *
@@ -71,9 +71,9 @@ public class ReportHistoryServices {
      *
      * @param inEquity the equity whose position is desired. Cannot be null.
      *
-     * @return the symbol position.
+     * @return the equity position.
      *
-     * @throws PersistenceException if there were errors retrieving the symbol
+     * @throws PersistenceException if there were errors retrieving the equity
      * position
      */
     public BigDecimal getPositionAsOf
@@ -86,7 +86,7 @@ public class ReportHistoryServices {
             (inUser,inDate,inEquity);
     }
     /**
-     * Returns the aggregate position of each (symbol,account,actor)
+     * Returns the aggregate position of each (equity,account,actor)
      * tuple based on all reports received for each tuple on or before
      * the supplied date, and which are visible to the given user.
      *

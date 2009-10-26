@@ -71,7 +71,7 @@ import java.util.HashMap;
 class ExecutionReportSummary extends EntityBase {
 
     /**
-     * Gets the current aggregate position for the symbol based on
+     * Gets the current aggregate position for the equity based on
      * execution reports received before the supplied time, and which
      * are visible to the given user.
      *
@@ -84,7 +84,7 @@ class ExecutionReportSummary extends EntityBase {
      * than this time are included in this calculation.
      * @param inEquity the equity for which this position needs to be computed
      *
-     * @return the aggregate position for the symbol.
+     * @return the aggregate position for the equity.
      *
      * @throws PersistenceException if there were errors retrieving the
      * position.
@@ -116,7 +116,7 @@ class ExecutionReportSummary extends EntityBase {
 
     }
     /**
-     * Returns the aggregate position of each (symbol,account,actor)
+     * Returns the aggregate position of each (equity,account,actor)
      * tuple based on all reports received for each tuple on or before
      * the supplied date, and which are visible to the given user.
      *
