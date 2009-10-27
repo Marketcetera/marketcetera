@@ -26,7 +26,7 @@ import static org.marketcetera.trade.TypesTestBase.*;
 /**
  * @author tlerios@marketcetera.com
  * @since $Release$
- * @version $Id: OrderSendingTest.java 10808 2009-10-12 21:33:18Z anshul $
+ * @version $Id$
  */
 
 /* $License$ */

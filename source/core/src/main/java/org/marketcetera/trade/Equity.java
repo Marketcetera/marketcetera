@@ -16,10 +16,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Identifies an equity.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: Equity.java 10804 2009-10-08 18:00:15Z will $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: Equity.java 10804 2009-10-08 18:00:15Z will $")
+@ClassVersion("$Id$")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Equity extends Instrument {

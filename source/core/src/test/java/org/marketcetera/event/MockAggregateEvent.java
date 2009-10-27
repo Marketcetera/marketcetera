@@ -14,7 +14,7 @@ import org.marketcetera.trade.Instrument;
  * Extends {@link AggregateEvent} in order to test the parent class.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AggregateEventTest.java 10827 2009-10-22 05:28:52Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public class MockAggregateEvent

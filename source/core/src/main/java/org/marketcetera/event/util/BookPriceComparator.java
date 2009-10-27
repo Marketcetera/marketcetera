@@ -14,11 +14,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * <code>equals(Object)</code>.  This is OK, but it should be noted.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: QuoteEvent.java 10808 2009-10-12 21:33:18Z anshul $
+ * @version $Id$
  * @since 0.6.0
  */
 @Immutable
-@ClassVersion("$Id: QuoteEvent.java 10808 2009-10-12 21:33:18Z anshul $")
+@ClassVersion("$Id$")
 public final class BookPriceComparator
     implements Comparator<QuoteEvent>
 {
