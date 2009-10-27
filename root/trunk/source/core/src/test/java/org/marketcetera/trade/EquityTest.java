@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
  * Tests {@link Equity}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: EquityTest.java 10804 2009-10-08 18:00:15Z will $
+ * @version $Id$
  * @since $Release$
  */
 public class EquityTest extends InstrumentTestBase<Equity> {

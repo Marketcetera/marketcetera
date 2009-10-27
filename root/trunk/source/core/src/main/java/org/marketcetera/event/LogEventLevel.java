@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Severity level of {@link LogEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: LogEvent.java 10612 2009-06-21 06:16:28Z tlerios $
+ * @version $Id$
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
