@@ -5,6 +5,7 @@ import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.TradeEvent;
@@ -282,6 +283,17 @@ public class JavaStrategy
         }
         setProperty("onOther",
                     data.toString());
+    }
+    
+    @Override
+    public void onDividend(DividendEvent dividend)
+    {
+        String shouldFail = getParameter("shouldFailOnDividend");
+        if(shouldFail != null) { 
+            int x = 10 / 0;
+        }
+        setProperty("onDividend",
+                    dividend.toString());
     }
     
     private void doRequestParameterCallbacks()

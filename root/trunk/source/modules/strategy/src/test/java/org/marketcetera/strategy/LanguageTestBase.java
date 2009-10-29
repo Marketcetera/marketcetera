@@ -365,15 +365,17 @@ public abstract class LanguageTestBase
                                             null);
         // runtime error in each callback
         doCallbackFailsTest("shouldFailOnAsk",
-                            new String[] { "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther" });
+                            new String[] { "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther", "onDividend" });
         doCallbackFailsTest("shouldFailOnBid",
-                            new String[] { "onAsk", "onCancel", "onExecutionReport", "onTrade", "onOther" });
+                            new String[] { "onAsk", "onCancel", "onExecutionReport", "onTrade", "onOther", "onDividend" });
         doCallbackFailsTest("shouldFailOnExecutionReport",
-                            new String[] { "onAsk", "onBid", "onCancel", "onTrade", "onOther" });
+                            new String[] { "onAsk", "onBid", "onCancel", "onTrade", "onOther", "onDividend" });
         doCallbackFailsTest("shouldFailOnTrade",
-                            new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onOther" });
+                            new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onOther", "onDividend" });
         doCallbackFailsTest("shouldFailOnOther",
-                            new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade" });
+                            new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade", "onDividend" });
+        doCallbackFailsTest("shouldFailOnDividend",
+                            new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther" });
     }
     /**
      * Tests a strategy with an arbitrarily long onStart.
@@ -4305,7 +4307,7 @@ public abstract class LanguageTestBase
                                                            parameters,
                                                            null,
                                                            null));
-        Set<String> allCallbacks = new HashSet<String>(Arrays.asList(new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther" }));
+        Set<String> allCallbacks = new HashSet<String>(Arrays.asList(new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther", "onDividend" }));
         for(String callback : inCallbacksThatShouldHaveSucceeded) {
             verifyPropertyNonNull(callback);
             allCallbacks.remove(callback);

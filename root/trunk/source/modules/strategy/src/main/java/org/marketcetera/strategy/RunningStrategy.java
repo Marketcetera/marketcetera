@@ -3,6 +3,7 @@ package org.marketcetera.strategy;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.ExecutionReport;
@@ -45,6 +46,12 @@ public interface RunningStrategy
      */
     public void onMarketstat(MarketstatEvent inStatistics);
     /**
+     * Indicates a <code>DividendEvent</code> has been received. 
+     *
+     * @param inDividend a <code>DividendEvent</code> value
+     */
+    public void onDividend(DividendEvent inStatistics);
+    /**
      * Indicates an <code>ExecutionReport</code> has been received.
      * 
      * @param inExecutionReport an <code>ExecutionReport</code> value
@@ -57,7 +64,7 @@ public interface RunningStrategy
      */
     public void onCancelReject(OrderCancelReject inCancelReject);
     /**
-     * Indicates an event has occurred that does not fit any of the other callbacks.
+     * Indicates an object has been sent that does not fit any of the other callbacks.
      * 
      * @param inEvent an <code>Object</code> value
      */

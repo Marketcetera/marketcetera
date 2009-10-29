@@ -85,6 +85,13 @@ class DataFlow < Strategy
         send data      
     end
 
+    ####################################################
+    # Executed when the strategy receives a dividend event #
+    ####################################################
+    def on_dividend(dividend)
+        send dividend
+    end
+
     ############################################################
     # Executed when the strategy receives a callback requested #
     #  via request_callback_at or request_callback_after       #

@@ -119,11 +119,10 @@ public class OptionUtils {
             throw new IllegalArgumentException();
         }
         // determine current century as an int
-        Calendar today = GregorianCalendar.getInstance();
-        int currentCentury = (today.get(Calendar.YEAR) / 100) * 100;
+        int currentYear = GregorianCalendar.getInstance().get(Calendar.YEAR);
+        int currentCentury = (currentYear / 100) * 100;
         int extrapolatedYear = currentCentury + inYear;
         // completeYear contains an int representing a specific year
-        int currentYear = GregorianCalendar.getInstance().get(Calendar.YEAR);
         if(extrapolatedYear < currentYear) {
             extrapolatedYear += 100;
         }

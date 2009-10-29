@@ -35,6 +35,13 @@ class __TEMPLATE_CLASS_NAME__ < Strategy
     def on_bid(bid)
       
     end
+
+    ########################################################
+    # Executed when the strategy receives a dividend event #
+    ########################################################
+    def on_dividend(dividend)
+      
+    end
     
     ##########################################################
     # Executed when the strategy receives a statistics event #

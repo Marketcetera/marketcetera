@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import org.marketcetera.event.impl.DividendEventBuilder;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
@@ -428,6 +429,27 @@ public class EventTestBase
                                                         .withTradeHighTime(DateUtils.dateToString(inTradeHighTime))
                                                         .withTradeLowTime(DateUtils.dateToString(inTradeLowTime)).withOpenExchange(inOpenExchange)
                                                         .withHighExchange(inHighExchange).withLowExchange(inLowExchange).withCloseExchange(inCloseExchange).create();
+    }
+    /**
+     * Generates a <code>DividendEvent</code> with preset values.
+     *
+     * @return a <code>DividendEvent</code> value
+     */
+    public static DividendEvent generateDividendEvent()
+    {
+        long startMillis = System.currentTimeMillis();
+        long oneDay = 1000 * 60 * 60 * 24;
+        int counter = 0;
+        return DividendEventBuilder.dividend().withEquity(new Equity("METC"))
+                                              .withAmount(generateDecimalValue())
+                                              .withCurrency("US Dollars")
+                                              .withDeclareDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                              .withExecutionDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                              .withFrequency(DividendFrequency.ANNUALLY)
+                                              .withPaymentDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                              .withRecordDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                              .withStatus(DividendStatus.OFFICIAL)
+                                              .withType(DividendType.CURRENT).create();
     }
     /**
      * Generates an <code>Instrument</code> guaranteed to be of a

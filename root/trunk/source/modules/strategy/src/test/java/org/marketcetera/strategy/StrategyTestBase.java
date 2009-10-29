@@ -445,18 +445,6 @@ public class StrategyTestBase
          */
         private static final List<Object> dataToSend = new ArrayList<Object>();
         /**
-         * Sets the data to transmit.
-         *
-         * @param inData a <code>List&lt;Object&gt;</code> value
-         */
-        public static void setDataToSend(List<Object> inData)
-        {
-            synchronized(dataToSend) {
-                dataToSend.clear();
-                dataToSend.addAll(inData);
-            }
-        }
-        /**
          * Gets the data that will be tramsitted.
          *
          * @return a <code>List&lt;Object&gt;</code> value
@@ -495,6 +483,7 @@ public class StrategyTestBase
                                                                     "Exchange",
                                                                     new BigDecimal("200"),
                                                                     new BigDecimal("20000")));
+                dataToSend.add(EventTestBase.generateDividendEvent());
                 Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
                 OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
                                                                                                                 null,
@@ -1573,6 +1562,7 @@ public class StrategyTestBase
         verifyPropertyNull("onAsk");
         verifyPropertyNull("onBid");
         verifyPropertyNull("onCancel");
+        verifyPropertyNull("onDividend");
         verifyPropertyNull("onExecutionReport");
         verifyPropertyNull("onOther");
         verifyPropertyNull("onTrade");
@@ -1587,6 +1577,7 @@ public class StrategyTestBase
         verifyPropertyNonNull("onAsk");
         verifyPropertyNonNull("onBid");
         verifyPropertyNonNull("onCancel");
+        verifyPropertyNonNull("onDividend");
         verifyPropertyNonNull("onExecutionReport");
         verifyPropertyNonNull("onOther");
         verifyPropertyNonNull("onTrade");
