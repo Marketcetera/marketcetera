@@ -1,6 +1,7 @@
 import org.marketcetera.strategy.java.Strategy;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
@@ -28,7 +29,7 @@ public class __TEMPLATE_CLASS_NAME__ extends Strategy
     /**
      * Indicates an <code>AskEvent</code> has been received.
      * 
-     * @param inAsk an <code>AskEvent</code> value
+     * @param ask an <code>AskEvent</code> value
      */
     @Override
     public void onAsk(AskEvent ask) {
@@ -37,7 +38,7 @@ public class __TEMPLATE_CLASS_NAME__ extends Strategy
     /**
      * Indicates a <code>BidEvent</code> has been received.
      * 
-     * @param inBid a <code>BidEvent</code> value
+     * @param bid a <code>BidEvent</code> value
      */
     @Override
     public void onBid(BidEvent bid) {
@@ -46,16 +47,25 @@ public class __TEMPLATE_CLASS_NAME__ extends Strategy
     /**
      * Indicates a <code>MarketstatEvent</code> has been received. 
      *
-     * @param inStatistics a <code>MarketstatEvent</code> value
+     * @param statistics a <code>MarketstatEvent</code> value
      */
     @Override
     public void onMarketstat(MarketstatEvent statistics) {
     }
 
     /**
+     * Indicates a <code>DividendEvent</code> has been received. 
+     *
+     * @param dividend a <code>DividendEvent</code> value
+     */
+    @Override
+    public void onDividend(DividendEvent dividend) {
+    }
+    
+    /**
      * Indicates a scheduled callback has been executed.
      * 
-     * @param inData an <code>Object</code> value passed to the request for callback method 
+     * @param data an <code>Object</code> value passed to the request for callback method 
      */
     @Override
     public void onCallback(Object data) {
@@ -64,7 +74,7 @@ public class __TEMPLATE_CLASS_NAME__ extends Strategy
     /**
      * Indicates an <code>ExecutionReport</code> has been received.
      * 
-     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param executionReport an <code>ExecutionReport</code> value
      */
     @Override
     public void onExecutionReport(ExecutionReport executionReport) {
@@ -73,7 +83,7 @@ public class __TEMPLATE_CLASS_NAME__ extends Strategy
     /**
      * Indicates an <code>OrderCancelReject</code> has been received.
      *
-     * @param inCancelReject an <code>OrderCancelReject</code> value
+     * @param cancel an <code>OrderCancelReject</code> value
      */
     @Override
     public void onCancelReject(OrderCancelReject cancel) {
@@ -82,16 +92,16 @@ public class __TEMPLATE_CLASS_NAME__ extends Strategy
     /**
      * Indicates a <code>TradeEvent</code> has been received.
      * 
-     * @param inTrade a <code>TradeEvent</code> value
+     * @param trade a <code>TradeEvent</code> value
      */
     @Override
     public void onTrade(TradeEvent trade) {
     }
 
     /**
-     * Indicates an event has occurred that does not fit any of the other callbacks.
+     * Indicates an object has been sent that does not fit any of the other callbacks.
      * 
-     * @param inEvent an <code>Object</code> value
+     * @param data an <code>Object</code> value
      */
     @Override
     public void onOther(Object data) {

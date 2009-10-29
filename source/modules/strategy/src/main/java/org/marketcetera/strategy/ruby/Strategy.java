@@ -8,6 +8,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
@@ -68,6 +69,14 @@ public class Strategy
     public void onMarketstat(MarketstatEvent inStatistics)
     {
         on_marketstat(inStatistics);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.RunningStrategy#onDividend(org.marketcetera.event.DividendEvent)
+     */
+    @Override
+    public void onDividend(DividendEvent inDividend)
+    {
+        on_dividend(inDividend);
     }
     /*
      * (non-Javadoc)
@@ -156,6 +165,14 @@ public class Strategy
      * @param inStatistics a <code>MarketstatEvent</code> value
      */
     protected void on_marketstat(MarketstatEvent inStatistics)
+    {
+    }
+    /**
+     * Invoked when the <code>Strategy</code> receives a {@link DividendEvent}.
+     * 
+     * @param inStatistics a <code>DividendEvent</code> value
+     */
+    protected void on_dividend(DividendEvent inStatistics)
     {
     }
     /**

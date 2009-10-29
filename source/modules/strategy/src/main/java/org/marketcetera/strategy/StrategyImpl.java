@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.LogEventBuilder;
@@ -139,6 +140,11 @@ class StrategyImpl
             if(inData instanceof MarketstatEvent) {
                 method = "onMarketstat"; //$NON-NLS-1$
                 runningStrategy.onMarketstat((MarketstatEvent)inData);
+                return;
+            }
+            if(inData instanceof DividendEvent) {
+                method = "onDividend"; //$NON-NLS-1$
+                runningStrategy.onDividend((DividendEvent)inData);
                 return;
             }
             if(inData instanceof OrderCancelReject) {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.module.DataFlowID;
@@ -138,6 +139,14 @@ public class DataFlow
     public void onTrade(TradeEvent inTrade)
     {
         send(inTrade);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.java.Strategy#onDividend(org.marketcetera.event.DividendEvent)
+     */
+    @Override
+    public void onDividend(DividendEvent inDividend)
+    {
+        send(inDividend);
     }
     /**
      * Sets up the data flow as dictated by strategy parameters.

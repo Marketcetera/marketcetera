@@ -1,7 +1,6 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
 
 class StrategyWithHelpers < Strategy
-# TODO move the set_property call to the HelperClass
   def on_ask(ask)
         set_property("onAsk",
                      ask.toString());
@@ -29,6 +28,10 @@ class StrategyWithHelpers < Strategy
   def on_other(data)
         set_property("onOther",
                      data.toString());
+  end  
+  def on_dividend(dividend)
+        set_property("onDividend",
+                     dividend.toString());
   end  
 end
 

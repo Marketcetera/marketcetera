@@ -4,6 +4,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractRunningStrategy;
@@ -47,6 +48,13 @@ public class Strategy
      */
     @Override
     public void onMarketstat(MarketstatEvent inStatistics)
+    {
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.RunningStrategy#onDividend(org.marketcetera.event.DividendEvent)
+     */
+    @Override
+    public void onDividend(DividendEvent inStatistics)
     {
     }
     /*

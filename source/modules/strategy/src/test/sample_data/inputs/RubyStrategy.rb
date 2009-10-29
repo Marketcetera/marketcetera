@@ -246,6 +246,14 @@ class RubyStrategy < Strategy
       end
     end
   end
+  def on_dividend(dividend)
+      shouldFail = get_parameter("shouldFailOnDividend")
+      if(shouldFail != nil) 
+          10 / 0
+      end
+      set_property("onDividend",
+                   dividend.toString())
+  end  
   def suggestion_from_event(event)
       suggestedOrder = Factory.getInstance().createOrderSingle()
       suggestedOrder.setPrice event.getPrice

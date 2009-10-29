@@ -6,6 +6,7 @@ import java.lang.Override;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
@@ -81,6 +82,14 @@ public class StrategyWithHelpers
                              data.toString());
     }
     
+    @Override
+    public void onDividend(DividendEvent dividend)
+    {
+        helper.doesSomething(this,
+                             "onDividend",
+                             dividend.toString());
+    }
+
     private static class Helper
     {
         private void doesSomething(Strategy inStrategy,

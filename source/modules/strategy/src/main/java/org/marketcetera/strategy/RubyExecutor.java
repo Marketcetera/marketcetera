@@ -106,6 +106,8 @@ class RubyExecutor
                         "on_bid"); //$NON-NLS-1$
         methodNames.put("onMarketstat", //$NON-NLS-1$
                         "on_marketstat"); //$NON-NLS-1$
+        methodNames.put("onDividend", //$NON-NLS-1$
+                        "on_dividend"); //$NON-NLS-1$
         methodNames.put("onCancelReject", //$NON-NLS-1$
                         "on_cancel_reject"); //$NON-NLS-1$
         methodNames.put("onExecutionReport", //$NON-NLS-1$
@@ -114,6 +116,8 @@ class RubyExecutor
                         "on_trade"); //$NON-NLS-1$
         methodNames.put("onOther", //$NON-NLS-1$
                         "on_other"); //$NON-NLS-1$
+        methodNames.put("onCallback", //$NON-NLS-1$
+                        "on_callback"); //$NON-NLS-1$
         methodNames.put("onStart", //$NON-NLS-1$
                         "on_start"); //$NON-NLS-1$
         methodNames.put("onStop", //$NON-NLS-1$

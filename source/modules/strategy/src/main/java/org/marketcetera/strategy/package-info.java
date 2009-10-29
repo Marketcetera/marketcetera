@@ -111,6 +111,16 @@
  *            if the strategy has submitted a market data or complex event processing request.
  *        </p>
  *        <p>
+ *            <em id="strategy_structure_api_data_ondividend">onDividend</em>
+ *            <br>
+ *            <pre>
+ *                void onDividend(org.marketcetera.event.DividendEvent)
+ *                on_dividend(dividend)
+ *            </pre>
+ *            Called when the strategy receives a dividend event.  Dividend events are received
+ *            if the strategy has submitted a market data or complex event processing request.
+ *        </p>
+ *        <p>
  *            <em id="strategy_structure_api_data_oncancelreject">onCancelReject</em>
  *            <br>
  *            <pre>
@@ -571,9 +581,6 @@
  *        
  *        <h2 id="technical">Technical Information</h2>
  *        
- *        <h3 id="technical_status_state_changes">Strategy Status State Changes</h3>
- *        <img alt="Strategy status state changes" src="img/status-state.png"/>   
- *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
