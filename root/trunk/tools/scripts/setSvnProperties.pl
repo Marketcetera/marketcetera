@@ -173,13 +173,13 @@ sub walk ()
 		$mime='text/plain';
 	} elsif (/\.((sh)|(bat))$/io) {
 		$mime='text/x-shellscript';
-	} elsif (/\.xml$/io) {
-		$mime='text/xml';
 	} else {
 		$mime=`file --brief --mime $quoted`;
 		chop($mime);
 		# Adding ;'s omitted by buggy versions of 'file'.
 		$mime=~s/([^;])(\s+\S+=\S+)/\1;\2/g;
+		# Replace application/xml with text/xml.
+		$mime=~s@application/xml@text/xml@g;
 	}
 	run('svn propset svn:mime-type "'.$mime.'" '.$quoted);
 
