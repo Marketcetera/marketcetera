@@ -339,7 +339,7 @@ public class ReceiverTest extends ModuleTestBase {
      * @throws Exception if there were unexpected results.
      */
     private void verifyNoConnectToReceiver() throws Exception {
-        new ExpectedFailure<ConnectException>(null){
+        new ExpectedFailure<ConnectException>(){
             @Override
             protected void run() throws Exception {
                 verifyConnectToReceiver();

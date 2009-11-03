@@ -1,6 +1,7 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.instruments.InstrumentFromMessage;
 import quickfix.field.*;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -134,18 +135,7 @@ class FIXUtil {
         return null;
     }
     static Instrument getInstrument(Message inMessage) {
-        String symbol = null;
-        //todo handle instruments other than Equity
-        if (inMessage.isSetField(Symbol.FIELD)) {
-            try {
-                symbol = inMessage.getString(Symbol.FIELD);
-            } catch (FieldNotFound ignore) {
-            }
-        }
-        if(symbol != null) {
-            return new Equity(symbol);
-        }
-        return null;
+        return InstrumentFromMessage.SELECTOR.forValue(inMessage).extract(inMessage);
     }
     static Date getTransactTime(Message inMessage) {
         if (inMessage.isSetField(TransactTime.FIELD)) {

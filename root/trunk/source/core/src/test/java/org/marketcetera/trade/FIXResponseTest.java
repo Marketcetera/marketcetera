@@ -31,7 +31,7 @@ public class FIXResponseTest
         final UserID viewerID=new UserID(3);
         final Message msg=createEmptyExecReport();
         // null message.
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception
             {
@@ -40,7 +40,7 @@ public class FIXResponseTest
             }
         };
         // null originator.
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception
             {

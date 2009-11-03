@@ -381,7 +381,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
                          symbolGroup.getString(Symbol.FIELD));
             if(inExpectedExchange == null ||
                inExpectedExchange.isEmpty()) {
-                new ExpectedFailure<FieldNotFound>(null) {
+                new ExpectedFailure<FieldNotFound>() {
                     protected void run()
                     throws Exception
                     {

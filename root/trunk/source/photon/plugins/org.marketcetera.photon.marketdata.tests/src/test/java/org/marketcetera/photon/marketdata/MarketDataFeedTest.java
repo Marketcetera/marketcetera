@@ -31,7 +31,7 @@ public class MarketDataFeedTest {
 	@Test
 	public void nullURN() throws Exception {
 		// not expecting a particular message since it is thrown from infrastructure
-		new ExpectedFailure<InvalidURNException>(null) {
+		new ExpectedFailure<InvalidURNException>() {
 			@Override
 			protected void run() throws Exception {
 				new MarketDataFeed(null);
@@ -42,7 +42,7 @@ public class MarketDataFeedTest {
 	@Test
 	public void gargabeURN() throws Exception {
 		// not expecting a particular message since it is thrown from infrastructure
-		new ExpectedFailure<InvalidURNException>(null) {
+		new ExpectedFailure<InvalidURNException>() {
 			@Override
 			protected void run() throws Exception {
 				new MarketDataFeed(new ModuleURN("abc"));
@@ -63,8 +63,7 @@ public class MarketDataFeedTest {
 
 	@Test
 	public void noSuchModule() throws Exception {
-		new ExpectedFailure<ProviderNotFoundException>(
-				null) {
+		new ExpectedFailure<ProviderNotFoundException>() {
 			@Override
 			protected void run() throws Exception {
 				new MarketDataFeed(new ModuleURN("metc:mdata:nothing"));

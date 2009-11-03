@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -15,7 +16,7 @@ import quickfix.field.OrdType;
 import quickfix.field.OrderQty;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Price;
-import quickfix.field.Symbol;
+import quickfix.field.MsgType;
 
 /**
  * FIX conversion utilities.
@@ -37,36 +38,34 @@ public final class FIXConverter
      * Adds the given instrument to the given QuickFIX/J message (of the
      * given FIX dictionary).
      *
-     * @param instrument The instrument. It may be null.
-     * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
-     * @param required True if the instrument is required but is not set.
-     *
+     * @param instrument The instrument. It cannot be null.
+     * @param fixDictionary The FIX dictionary.
+     * @param msgType The FIX message type
+     * @param required True if the instrument is required.
+     * @param msg The QuickFIX/J message.
      * @throws I18NException Thrown if the instrument is required but is
      * not set.
      */
 
     private static void addInstrument
-        (Instrument instrument,
-         DataDictionary fixDictionary,
-         Message msg,
-         boolean required)
-        throws I18NException
+            (Instrument instrument,
+             DataDictionary fixDictionary,
+             String msgType,
+             Message msg,
+             boolean required)
+            throws I18NException
     {
-        boolean supported=
-            (fixDictionary.isField(Symbol.FIELD));
-    	//todo handle instruments other than equity
-        if ((instrument==null) ||
-            (instrument.getSymbol()==null)) {
-            if (supported && required) {
-                throw new I18NException
-                    (new I18NBoundMessage1P(Messages.NO_INSTRUMENT,instrument));
+        if(instrument==null) {
+            if (required) {
+                throw new I18NException(new I18NBoundMessage1P(Messages.NO_INSTRUMENT,instrument));
             }
         } else{
-            if (!supported) {
+            InstrumentToMessage instrumentFunction=InstrumentToMessage.SELECTOR.
+                    forInstrument(instrument);
+            if (!instrumentFunction.isSupported(fixDictionary,msgType)) {
                 throw new I18NException(Messages.UNSUPPORTED_INSTRUMENT);
             }
-            msg.setField(new Symbol(instrument.getSymbol()));
+            instrumentFunction.set(instrument,fixDictionary,msgType,msg);
         }
     }
 
@@ -76,7 +75,8 @@ public final class FIXConverter
      *
      * @param price The price. It may be null.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the price is required but is not set.
      *
      * @throws I18NException Thrown if the price is required but is
@@ -86,12 +86,13 @@ public final class FIXConverter
     private static void addPrice
         (BigDecimal price,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(Price.FIELD));
+            (fixDictionary.isMsgField(msgType,Price.FIELD));
         if (price==null) {
             if (supported && required) {
                 throw new I18NException(Messages.NO_PRICE);
@@ -110,7 +111,8 @@ public final class FIXConverter
      *
      * @param quantity The quantity. It may be null.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the quantity is required but is not set.
      *
      * @throws I18NException Thrown if the quantity is required but is
@@ -120,12 +122,13 @@ public final class FIXConverter
     private static void addQuantity
         (BigDecimal quantity,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(OrderQty.FIELD));
+            (fixDictionary.isMsgField(msgType,OrderQty.FIELD));
         if (quantity==null) {
             if (supported && required) {
                 throw new I18NException(Messages.NO_QUANTITY);
@@ -144,7 +147,8 @@ public final class FIXConverter
      *
      * @param account The account. It may be null.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the account is required but is not set.
      *
      * @throws I18NException Thrown if the account is required but is
@@ -154,12 +158,13 @@ public final class FIXConverter
     private static void addAccount
         (String account,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(Account.FIELD));
+            (fixDictionary.isMsgField(msgType,Account.FIELD));
         if (account==null) {
             if (supported && required) {
                 throw new I18NException(Messages.NO_ACCOUNT);
@@ -178,7 +183,8 @@ public final class FIXConverter
      *
      * @param orderID The order ID. It may be null.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the order ID is required but is not
      * set.
      *
@@ -189,12 +195,13 @@ public final class FIXConverter
     private static void addOrderID
         (OrderID orderID,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(ClOrdID.FIELD));
+            (fixDictionary.isMsgField(msgType,ClOrdID.FIELD));
         if (orderID==null) {
             if (supported && required) {
                 throw new I18NException(Messages.NO_ORDER_ID);
@@ -213,7 +220,8 @@ public final class FIXConverter
      *
      * @param originalOrderID The original order ID. It may be null.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the original order ID is required but
      * is not set.
      *
@@ -224,12 +232,13 @@ public final class FIXConverter
     private static void addOriginalOrderID
         (OrderID originalOrderID,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(OrigClOrdID.FIELD));
+            (fixDictionary.isMsgField(msgType,OrigClOrdID.FIELD));
         if (originalOrderID==null) {
             if (supported && required) {
                 throw new I18NException(Messages.NO_ORIGINAL_ORDER_ID);
@@ -249,7 +258,8 @@ public final class FIXConverter
      * @param brokerOrderID The broker order ID. It may be
      * null.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the broker order ID is required
      * but is not set.
      *
@@ -260,12 +270,13 @@ public final class FIXConverter
     private static void addBrokerOrderID
         (String brokerOrderID,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(quickfix.field.OrderID.FIELD));
+            (fixDictionary.isMsgField(msgType,quickfix.field.OrderID.FIELD));
         if (brokerOrderID==null) {
             if (supported && required) {
                 throw new I18NException(Messages.NO_BROKER_ORDER_ID);
@@ -284,7 +295,8 @@ public final class FIXConverter
      *
      * @param side The side. It may be null or unknown.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the side is required but is not set.
      *
      * @throws I18NException Thrown if the side is required but is not
@@ -294,12 +306,13 @@ public final class FIXConverter
     private static void addSide
         (Side side,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(quickfix.field.Side.FIELD));
+            (fixDictionary.isMsgField(msgType,quickfix.field.Side.FIELD));
         if ((side==null) ||
             (side==Side.Unknown)) {
             if (supported && required) {
@@ -315,53 +328,14 @@ public final class FIXConverter
     }
 
     /**
-     * Adds the given security type to the given QuickFIX/J message
-     * (of the given FIX dictionary).
-     *
-     * @param securityType The security type. It may be null or
-     * unknown.
-     * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
-     * @param required True if the security type is required but is
-     * not set.
-     *
-     * @throws I18NException Thrown if the security type is required
-     * but is not set.
-     */
-
-    private static void addSecurityType
-        (SecurityType securityType,
-         DataDictionary fixDictionary,
-         Message msg,
-         boolean required)
-        throws I18NException
-    {
-        boolean supported=
-            (fixDictionary.isField(quickfix.field.SecurityType.FIELD));
-        if ((securityType==null) ||
-            (securityType==SecurityType.Unknown)) {
-            if (supported && required) {
-                throw new I18NException
-                    (new I18NBoundMessage1P
-                     (Messages.NO_SECURITY_TYPE,securityType));
-            }
-        } else{
-            if (!supported) {
-                throw new I18NException(Messages.UNSUPPORTED_SECURITY_TYPE);
-            }
-            msg.setField(new quickfix.field.SecurityType
-                         (securityType.getFIXValue()));
-        }
-    }
-
-    /**
      * Adds the given time-in-force to the given QuickFIX/J message
      * (of the given FIX dictionary).
      *
      * @param timeInForce The time-in-force. It may be null or
      * unknown.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the time-in-force is required but is
      * not set.
      *
@@ -372,12 +346,13 @@ public final class FIXConverter
     private static void addTimeInForce
         (TimeInForce timeInForce,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(quickfix.field.TimeInForce.FIELD));
+            (fixDictionary.isMsgField(msgType,quickfix.field.TimeInForce.FIELD));
         if ((timeInForce==null) ||
             (timeInForce==TimeInForce.Unknown)) {
             if (supported && required) {
@@ -401,7 +376,8 @@ public final class FIXConverter
      * @param positionEffect The position effect. It may be null or
      * unknown.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the position effect is required but is
      * not set.
      *
@@ -412,12 +388,13 @@ public final class FIXConverter
     private static void addPositionEffect
         (PositionEffect positionEffect,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(quickfix.field.PositionEffect.FIELD));
+            (fixDictionary.isMsgField(msgType,quickfix.field.PositionEffect.FIELD));
         if ((positionEffect==null) ||
             (positionEffect==PositionEffect.Unknown)) {
             if (supported && required) {
@@ -441,7 +418,8 @@ public final class FIXConverter
      * @param orderCapacity The order capacity. It may be null or
      * unknown.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the order capacity is required but is
      * not set.
      *
@@ -452,12 +430,13 @@ public final class FIXConverter
     private static void addOrderCapacity
         (OrderCapacity orderCapacity,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(quickfix.field.OrderCapacity.FIELD));
+            (fixDictionary.isMsgField(msgType,quickfix.field.OrderCapacity.FIELD));
         if ((orderCapacity==null) ||
             (orderCapacity==OrderCapacity.Unknown)) {
             if (supported && required) {
@@ -480,7 +459,8 @@ public final class FIXConverter
      *
      * @param orderType The order type. It may be null or unknown.
      * @param fixDictionary The FIX dictionary. 
-     * @param msg The QuickFIX/J message. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
      * @param required True if the order type is required but is not
      * set.
      *
@@ -491,12 +471,13 @@ public final class FIXConverter
     private static void addOrderType
         (OrderType orderType,
          DataDictionary fixDictionary,
+         String msgType,
          Message msg,
          boolean required)
         throws I18NException
     {
         boolean supported=
-            (fixDictionary.isField(OrdType.FIELD));
+            (fixDictionary.isMsgField(msgType,OrdType.FIELD));
         if ((orderType==null) ||
             (orderType==OrderType.Unknown)) {
             if (supported && required) {
@@ -553,20 +534,20 @@ public final class FIXConverter
         throws I18NException
     {
         Message msg=fixFactory.newOrderEmpty();
-        addOrderID(o.getOrderID(),fixDictionary,msg,true);
-        addInstrument(o.getInstrument(),fixDictionary,msg,true);
-        addSide(o.getSide(),fixDictionary,msg,true);
-        addOrderType(o.getOrderType(),fixDictionary,msg,true);
-        addSecurityType(o.getSecurityType(),fixDictionary,msg,false);
-        addQuantity(o.getQuantity(),fixDictionary,msg,false);
-        addTimeInForce(o.getTimeInForce(),fixDictionary,msg,false);
-        addAccount(o.getAccount(),fixDictionary,msg,false);
-        addPositionEffect(o.getPositionEffect(),fixDictionary,msg,false);
-        addOrderCapacity(o.getOrderCapacity(),fixDictionary,msg,false);
+        String msgType=MsgType.ORDER_SINGLE;
+        addOrderID(o.getOrderID(),fixDictionary,msgType,msg,true);
+        addInstrument(o.getInstrument(),fixDictionary,msgType,msg,true);
+        addSide(o.getSide(),fixDictionary,msgType,msg,true);
+        addOrderType(o.getOrderType(),fixDictionary,msgType,msg,true);
+        addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
+        addTimeInForce(o.getTimeInForce(),fixDictionary,msgType,msg,false);
+        addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
+        addPositionEffect(o.getPositionEffect(),fixDictionary,msgType,msg,false);
+        addOrderCapacity(o.getOrderCapacity(),fixDictionary,msgType,msg,false);
         if (o.getOrderType()==OrderType.Limit) {
-            addPrice(o.getPrice(),fixDictionary,msg,true);
+            addPrice(o.getPrice(),fixDictionary,msgType,msg,true);
         }
-        addCustomFields(o,msg);
+        addCustomFields(o, msg);
         fixFactory.getMsgAugmentor().newOrderSingleAugment(msg);
         return msg;
     }
@@ -592,15 +573,15 @@ public final class FIXConverter
         throws I18NException
     {
         Message msg=fixFactory.newCancelEmpty();
-        addOriginalOrderID(o.getOriginalOrderID(),fixDictionary,msg,true);
-        addOrderID(o.getOrderID(),fixDictionary,msg,true);
-        addInstrument(o.getInstrument(),fixDictionary,msg,true);
-        addSide(o.getSide(),fixDictionary,msg,true);
-        addQuantity(o.getQuantity(),fixDictionary,msg,false);
-        addBrokerOrderID(o.getBrokerOrderID(),fixDictionary,msg,false);
-        addAccount(o.getAccount(),fixDictionary,msg,false);
-        addSecurityType(o.getSecurityType(),fixDictionary,msg,false);
-        addCustomFields(o,msg);
+        String msgType=MsgType.ORDER_CANCEL_REQUEST;
+        addOriginalOrderID(o.getOriginalOrderID(),fixDictionary,msgType,msg,true);
+        addOrderID(o.getOrderID(),fixDictionary,msgType,msg,true);
+        addInstrument(o.getInstrument(),fixDictionary,msgType,msg,true);
+        addSide(o.getSide(),fixDictionary,msgType,msg,true);
+        addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
+        addBrokerOrderID(o.getBrokerOrderID(),fixDictionary,msgType,msg,false);
+        addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
+        addCustomFields(o, msg);
         fixFactory.getMsgAugmentor().cancelRequestAugment(msg);
         return msg;
     }
@@ -626,20 +607,20 @@ public final class FIXConverter
         throws I18NException
     {
         Message msg=fixFactory.newCancelReplaceEmpty();
-        addOriginalOrderID(o.getOriginalOrderID(),fixDictionary,msg,true);
-        addOrderID(o.getOrderID(),fixDictionary,msg,true);
-        addInstrument(o.getInstrument(),fixDictionary,msg,true);
-        addSide(o.getSide(),fixDictionary,msg,true);
-        addOrderType(o.getOrderType(),fixDictionary,msg,true);
-        addQuantity(o.getQuantity(),fixDictionary,msg,false);
-        addAccount(o.getAccount(),fixDictionary,msg,false);
-        addPrice(o.getPrice(),fixDictionary,msg,false);
-        addSecurityType(o.getSecurityType(),fixDictionary,msg,false);
-        addTimeInForce(o.getTimeInForce(),fixDictionary,msg,false);
-        addPositionEffect(o.getPositionEffect(),fixDictionary,msg,false);
-        addOrderCapacity(o.getOrderCapacity(),fixDictionary,msg,false);
-        addBrokerOrderID(o.getBrokerOrderID(),fixDictionary,msg,false);
-        addCustomFields(o,msg);
+        String msgType=MsgType.ORDER_CANCEL_REPLACE_REQUEST;
+        addOriginalOrderID(o.getOriginalOrderID(),fixDictionary,msgType,msg,true);
+        addOrderID(o.getOrderID(),fixDictionary,msgType,msg,true);
+        addInstrument(o.getInstrument(),fixDictionary,msgType,msg,true);
+        addSide(o.getSide(),fixDictionary,msgType,msg,true);
+        addOrderType(o.getOrderType(),fixDictionary,msgType,msg,true);
+        addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
+        addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
+        addPrice(o.getPrice(),fixDictionary,msgType,msg,false);
+        addTimeInForce(o.getTimeInForce(),fixDictionary,msgType,msg,false);
+        addPositionEffect(o.getPositionEffect(),fixDictionary,msgType,msg,false);
+        addOrderCapacity(o.getOrderCapacity(),fixDictionary,msgType,msg,false);
+        addBrokerOrderID(o.getBrokerOrderID(),fixDictionary,msgType,msg,false);
+        addCustomFields(o, msg);
         fixFactory.getMsgAugmentor().cancelReplaceRequestAugment(msg);
         return msg;
     }

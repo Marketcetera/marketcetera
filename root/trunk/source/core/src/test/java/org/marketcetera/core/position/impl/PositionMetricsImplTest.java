@@ -43,14 +43,14 @@ public class PositionMetricsImplTest {
         total = "20.02";
         assertPositionMetrics(createMetrics(incomingPosition, position, positional, trading, realized, unrealized, total),
                 incomingPosition, position, positional, trading, realized, unrealized, total);
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
 
             @Override
             protected void run() throws Exception {
                 createMetrics(null, "0", "0", "0", "0", "0", "0");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
 
             @Override
             protected void run() throws Exception {

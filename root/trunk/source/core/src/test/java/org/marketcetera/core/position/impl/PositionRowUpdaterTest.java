@@ -44,13 +44,13 @@ public class PositionRowUpdaterTest {
 
     @Test
     public void testNulls() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new PositionRowUpdater(null, mTrades, new MockMarketData());
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new PositionRowUpdater(mRow, mTrades, null);

@@ -100,6 +100,9 @@
         <tr><td>Symbol</td><td>Required</td><td>text</td></tr>
         <tr><td>SecurityType</td><td>Optional</td><td>Enumeration. See {@link org.marketcetera.trade.SecurityType}</td></tr>
         <tr><td>TimeInForce</td><td>Optional</td><td>Enumeration. See {@link org.marketcetera.trade.TimeInForce}</td></tr>
+        <tr><td>Expiry</td><td>Optional, required for Option.</td><td>Expiry date in format: <code>YYYYMM</code> or <code>YYYYMMDD</code> or <code>YYYYMMwN</code></td></tr>
+        <tr><td>StrikePrice</td><td>Optional, required for Option.</td><td>decimal</td></tr>
+        <tr><td>OptionType</td><td>Optional, required for Option.</td><td>Enumeration. See {@link org.marketcetera.trade.OptionType</td></tr>
     </tbody>
 </table>
 <p>
@@ -107,7 +110,7 @@
 </p>
 <pre>
 Symbol,Side,Quantity,Price,OrderType,TimeInForce,Account
-SUNW,SellShort,4000,4.26,Limit,Day,Account1
+AAPL,SellShort,4000,4.26,Limit,Day,Account1
 GOOG,Buy,2000,,Market,Day,Account2
 GOOG,SellShort,4000,408.18,Limit,Day,Account1
 MSFT,Sell,2000,22.81,Limit,Day,Account2

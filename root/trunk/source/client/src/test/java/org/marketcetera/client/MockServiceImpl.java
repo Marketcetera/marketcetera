@@ -1,22 +1,14 @@
 package org.marketcetera.client;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.MessageCreationException;
-import org.marketcetera.trade.ReportBaseImpl;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.RemoteCaller;
@@ -97,9 +89,70 @@ public class MockServiceImpl
         return new MapWrapper<PositionKey<Equity>, BigDecimal>(POSITIONS);
     }
 
+    private BigDecimal getOptionPositionAsOfImpl
+        (Date inRaw,
+         Option inOption)
+    {
+        return inOption.getStrikePrice().add(BigDecimal.valueOf(inRaw.getTime()));
+    }
+
+    private MapWrapper<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOfImpl
+        (Date inRaw)
+    {
+        Map<PositionKey<Option>, BigDecimal> map = new HashMap<PositionKey<Option>, BigDecimal>();
+        map.put(PositionKeyFactory.createOptionKey("OPT", "20101010",
+                BigDecimal.TEN, OptionType.Call, "acc", "tra"),
+                BigDecimal.valueOf(inRaw.getTime()));
+        return new MapWrapper<PositionKey<Option>, BigDecimal>(map);
+    }
+    
+    private MapWrapper<PositionKey<Option>, BigDecimal> getOptionPositionsAsOfImpl
+        (Date inRaw,
+         String... inSymbols)
+    {
+        Map<PositionKey<Option>, BigDecimal> map = new HashMap<PositionKey<Option>, BigDecimal>();
+        if (inSymbols != null) {
+            for(String symbol: inSymbols) {
+                map.put(PositionKeyFactory.createOptionKey(symbol, "20101010",
+                        BigDecimal.TEN, OptionType.Call, "acc", "tra"),
+                        BigDecimal.valueOf(inRaw.getTime()));
+            }
+        }
+        return new MapWrapper<PositionKey<Option>, BigDecimal>(map);
+    }
+
     private String getNextOrderIDImpl()
     {
         return ID_PREFIX +(mNextOrderID++);
+    }
+
+    private String getUnderlyingImpl(String inOptionRoot)
+    {
+        mServiceInvoked = true;
+        return inOptionRoot;
+    }
+
+    private Collection<String> getOptionRootsImpl(String inUnderlying)
+    {
+        mServiceInvoked = true;
+        if(inUnderlying == null) {
+            return null;
+        }
+        List<String> list = new LinkedList<String>();
+        for(int i = 0; i < inUnderlying.length(); i++) {
+            list.add(inUnderlying);
+        }
+        return list;
+    }
+
+    public boolean isServiceInvoked()
+    {
+        return mServiceInvoked;
+    }
+
+    public void resetServiceInvoked()
+    {
+        mServiceInvoked = false;
     }
 
     boolean toggleServerStatus()
@@ -202,6 +255,93 @@ public class MockServiceImpl
     }
 
     @Override
+    public BigDecimal getOptionPositionAsOf
+            (ClientContext context,
+             final DateWrapper date,
+             final Option option) throws RemoteException
+    {
+        return (new RemoteCaller<Object,BigDecimal>
+                (getSessionManager()) {
+            @Override
+            protected BigDecimal call
+                (ClientContext context,
+                 SessionHolder<Object> sessionHolder)
+            {
+                return getOptionPositionAsOfImpl
+                    (date.getRaw(),option);
+            }}).execute(context);
+    }
+
+    @Override
+    public MapWrapper<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
+            (ClientContext context,
+             final DateWrapper date) throws RemoteException
+    {
+        return (new RemoteCaller<Object,MapWrapper<PositionKey<Option>,
+                                                          BigDecimal>>
+                (getSessionManager()) {
+            @Override
+            protected MapWrapper<PositionKey<Option>,BigDecimal> call
+                (ClientContext context,
+                 SessionHolder<Object> sessionHolder)
+            {
+                return getAllOptionPositionsAsOfImpl
+                    (date.getRaw());
+            }}).execute(context);
+    }
+
+    @Override
+    public MapWrapper<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
+            (ClientContext context,
+             final DateWrapper date,
+             final String... symbols) throws RemoteException
+    {
+        return (new RemoteCaller<Object,MapWrapper<PositionKey<Option>,
+                                                          BigDecimal>>
+                (getSessionManager()) {
+            @Override
+            protected MapWrapper<PositionKey<Option>,BigDecimal> call
+                (ClientContext context,
+                 SessionHolder<Object> sessionHolder)
+            {
+                return getOptionPositionsAsOfImpl
+                    (date.getRaw(), symbols);
+            }}).execute(context);
+    }
+
+    @Override
+    public String getUnderlying
+            (ClientContext context,
+             final String optionRoot) throws RemoteException
+    {
+        return (new RemoteCaller<Object,String>
+                (getSessionManager()) {
+            @Override
+            protected String call
+                (ClientContext context,
+                 SessionHolder<Object> sessionHolder)
+            {
+                return getUnderlyingImpl(optionRoot);
+            }}).execute(context);
+    }
+
+    @Override
+    public Collection<String> getOptionRoots
+            (ClientContext context,
+             final String underlying) throws RemoteException
+    {
+        return (new RemoteCaller<Object,Collection<String>>
+                (getSessionManager()) {
+            @Override
+            protected Collection<String> call
+                (ClientContext context,
+                 SessionHolder<Object> sessionHolder)
+            {
+                return getOptionRootsImpl(underlying);
+            }}).execute(context);
+    }
+
+    @Override
     public String getNextOrderID
         (ClientContext context)
         throws RemoteException
@@ -234,6 +374,7 @@ public class MockServiceImpl
 
     private int mHeartbeatCount = 0;
     private boolean mHeartbeatSuccess = true;
+    private boolean mServiceInvoked = false;
 
     static ReportBaseImpl[] sReports = null;
     static boolean sActive = true;

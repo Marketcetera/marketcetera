@@ -24,8 +24,6 @@ import org.marketcetera.quickfix.IQuickFIXSender;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
@@ -45,10 +43,8 @@ import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.SessionNotFound;
-import quickfix.field.Account;
 import quickfix.field.AvgPx;
 import quickfix.field.BusinessRejectReason;
-import quickfix.field.ClOrdID;
 import quickfix.field.CumQty;
 import quickfix.field.CxlRejResponseTo;
 import quickfix.field.ExecID;
@@ -56,14 +52,11 @@ import quickfix.field.ExecTransType;
 import quickfix.field.LastPx;
 import quickfix.field.LastShares;
 import quickfix.field.MsgSeqNum;
+import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
-import quickfix.field.OrderQty;
-import quickfix.field.Price;
 import quickfix.field.SenderCompID;
 import quickfix.field.SendingTime;
-import quickfix.field.Side;
-import quickfix.field.Symbol;
 import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 
@@ -239,39 +232,6 @@ public class RequestHandler
         }
     }
 
-    private static char getOptFieldChar
-        (Message msg,
-         int field)
-    {
-        try {
-            return msg.getChar(field);
-        } catch(FieldNotFound ex) {
-            return '\0';
-        }
-    }
-
-    private static BigDecimal getOptFieldNum
-        (Message msg,
-         int field)
-    {
-        String str=getOptFieldStr(msg,field);
-        if (str==null) {
-            return null;
-        }
-        return new BigDecimal(str);
-    }
-
-    private static Instrument getOptFieldSymbol
-        (Message msg)
-    {
-        String str=getOptFieldStr(msg,Symbol.FIELD);
-        if (str==null) {
-            return null;
-        }
-        //TODO update to handle instruments other than equity
-        return new Equity(str);
-    }
-
     private static void addRequiredFields
         (Message msg)
     {
@@ -424,25 +384,37 @@ public class RequestHandler
 
         // Create execution report.
 
-        Message qMsgReply=getBestMsgFactory(b).newExecutionReport
-            (orderID,
-             getOptFieldStr(qMsg,ClOrdID.FIELD),
-             getNextExecId().getValue(),
-             ordStatus,
-             getOptFieldChar(qMsg,Side.FIELD),
-             getOptFieldNum(qMsg,OrderQty.FIELD),
-             getOptFieldNum(qMsg,Price.FIELD),
-             BigDecimal.ZERO,
-             BigDecimal.ZERO,
-             BigDecimal.ZERO,
-             BigDecimal.ZERO,
-             getOptFieldSymbol(qMsg),
-             getOptFieldStr(qMsg,Account.FIELD));
+        FIXMessageFactory messageFactory = getBestMsgFactory(b);
+        Message qMsgReply= messageFactory.newExecutionReportEmpty();
+        String msgType = MsgType.EXECUTION_REPORT;
+        DataDictionary dict=getBestDataDictionary(b);
+        if(dict.isMsgField(msgType,OrderID.FIELD)) {
+            qMsgReply.setField(new OrderID(orderID));
+        }
+        if(dict.isMsgField(msgType,ExecID.FIELD)) {
+            qMsgReply.setField(new ExecID(getNextExecId().getValue()));
+        }
+        if(dict.isMsgField(msgType,OrdStatus.FIELD)) {
+            qMsgReply.setField(new OrdStatus(ordStatus));
+        }
+        if(dict.isMsgField(msgType,LastShares.FIELD)) {
+            qMsgReply.setField(new LastShares(BigDecimal.ZERO));
+        }
+        if(dict.isMsgField(msgType,LastPx.FIELD)) {
+            qMsgReply.setField(new LastPx(BigDecimal.ZERO));
+        }
+        if(dict.isMsgField(msgType,CumQty.FIELD)) {
+            qMsgReply.setField(new CumQty(BigDecimal.ZERO));
+        }
+        if(dict.isMsgField(msgType,AvgPx.FIELD)) {
+            qMsgReply.setField(new AvgPx(BigDecimal.ZERO));
+        }
 
         // Add all the fields of the incoming message.
 
         FIXMessageUtil.fillFieldsFromExistingMessage
             (qMsgReply,qMsg,getBestDataDictionary(b),false);
+        messageFactory.getMsgAugmentor().executionReportAugment(qMsgReply);
 
         // Add required header/trailer fields.
 

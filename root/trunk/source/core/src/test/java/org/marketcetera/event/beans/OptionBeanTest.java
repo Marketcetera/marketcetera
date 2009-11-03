@@ -58,7 +58,7 @@ public class OptionBeanTest
     public void getOptionBeanFromEvent()
             throws Exception
     {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run()
                     throws Exception
@@ -148,7 +148,7 @@ public class OptionBeanTest
         };
         builder.withExpirationType(expirationType)
                .withInstrument(null);
-        new ExpectedFailure<IllegalArgumentException>(null){
+        new ExpectedFailure<IllegalArgumentException>(){
             @Override
             protected void run()
                     throws Exception
@@ -168,7 +168,7 @@ public class OptionBeanTest
         };
     }
     /**
-     * Tests {@link OptionBean#getInstrument()} and {@link OptionBean#setInstrument(org.marketcetera.trade.Instrument)}. 
+     * Tests {@link OptionBean#getInstrument()} and {@link OptionBean#setInstrument(org.marketcetera.trade.Option)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -183,7 +183,7 @@ public class OptionBeanTest
                      bean.getInstrument());
     }
     /**
-     * Tests {@link OptionBean#getUnderlyingInstrument()} and {@link OptionBean#setUnderlyingInstrument(org.marketcetera.trade.Equity)}. 
+     * Tests {@link OptionBean#getUnderlyingInstrument()} and {@link OptionBean#setUnderlyingInstrument(org.marketcetera.trade.Instrument)}. 
      *
      * @throws Exception if an unexpected error occurs
      */

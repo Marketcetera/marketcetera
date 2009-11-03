@@ -11,6 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>
  * Each instrument has a symbol attribute. Sub-types may add more
  * attributes as needed to uniquely identify the instrument being traded.
+ * <p>
+ * Each instrument sub-type should override the {@link #equals(Object)} &
+ * {@link #hashCode()} methods to ensure that any two instrument instances that
+ * refer to the same instrument are considered equal.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -34,14 +38,4 @@ public abstract class Instrument implements Serializable {
 	 * @return the security type.
 	 */
 	public abstract SecurityType getSecurityType();
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public abstract boolean equals(Object inObj);
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public abstract int hashCode();
 }

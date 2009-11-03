@@ -44,14 +44,14 @@ public class SummaryRowUpdaterTest {
                 "4.5", "14", null, "-52", "18", "97")));
         createAndAssert(list, "1", "9.5", "18", null, "-50", "19", "104");
 
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new SummaryRowUpdater(null);
             }
         };
 
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new SummaryRowUpdater(new PositionRowImpl(null, null, null, BigDecimal.ZERO));

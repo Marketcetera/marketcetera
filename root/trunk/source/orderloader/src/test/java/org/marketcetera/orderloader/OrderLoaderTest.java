@@ -32,14 +32,14 @@ public class OrderLoaderTest {
     @Test
     public void nullArguments() throws Exception {
         //null order processor
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 new OrderLoader("",new BrokerID("y"), null,
                         new File("don'tmatter"));
             }
         };
         //null file
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 new OrderLoader("",new BrokerID("y"),
                         new MockOrderProcessor(), null);
@@ -91,10 +91,10 @@ public class OrderLoaderTest {
         tmpFile.deleteOnExit();
         CopyCharsUtils.copy(OrderParserTest.arrayToLines(SYSTEM_ORDER_EXAMPLE).toCharArray(),
                 tmpFile.getAbsolutePath());
-        assertLoader(null, null, tmpFile, 22, 5, 5, 4, 7);
-        assertLoader(OrderLoader.MODE_SYSTEM, null, tmpFile, 22, 5, 5, 4, 7);
+        assertLoader(null, null, tmpFile, 25, 5, 5, 4, 10);
+        assertLoader(OrderLoader.MODE_SYSTEM, null, tmpFile, 25, 5, 5, 4, 10);
         assertLoader(OrderLoader.MODE_SYSTEM, new BrokerID("yes"),
-                tmpFile, 22, 5, 5, 4, 7);
+                tmpFile, 25, 5, 5, 4, 10);
         tmpFile.delete();
     }
     private OrderLoader assertLoader(String inMode, BrokerID inBrokerID,
@@ -114,26 +114,29 @@ public class OrderLoaderTest {
     public static final String[] SYSTEM_ORDER_EXAMPLE = new String[]{
             "#Sample system order input",
             "",
-            "Account,OrderCapacity,OrderType,PositionEffect,Price,Quantity,Side,Symbol,SecurityType,TimeInForce,1001",
+            "Account,OrderCapacity,OrderType,PositionEffect,Price,Quantity,Side,Symbol,SecurityType,TimeInForce,Expiry,StrikePrice,OptionType,1001",
             "",
             "#ubm equity orders",
-            "AC1,,Market,,,11,Buy,ubm,,Day,right",
-            "AC1,,Limit,,25.56,32.09,Sell,ubm,,FillOrKill,left",
+            "AC1,,Market,,,11,Buy,ubm,,Day,,,,right",
+            "AC1,,Limit,,25.56,32.09,Sell,ubm,,FillOrKill,,,,left",
             "  ",
             "#Option orders",
-            "AC2,Agency,Limit,Open,90,50,SellShort,zoog,Option,AtTheClose,up",
-            "AC2,Individual,Market,Close,,101,SellShortExempt,moog,Option,Day,down",
+            "AC2,Agency,Limit,Open,90,50,SellShort,zoog,Option,AtTheClose,201010,10.00,Call,up",
+            "AC2,Individual,Market,Close,,101,SellShortExempt,moog,Option,Day,20101010,11.50,Put,down",
             "  ",
             "#Equity Orders with errors",
-            "AC1,,OrderType?,,,11,Buy,ubm,,Day,right",
-            "AC1,,Market,,,eleven,Buy,ubm,,Day,right",
-            "AC1,,Market,,,11,Buy,ubm,,Night,right",
+            "AC1,,OrderType?,,,11,Buy,ubm,,Day,,,,right",
+            "AC1,,Market,,,eleven,Buy,ubm,,Day,,,,right",
+            "AC1,,Market,,,11,Buy,ubm,,Night,,,,right",
             "  ",
             "#Option Orders with errors",
-            "AC2,MyCapacity,Limit,Open,90,50,SellShort,zoog,Option,AtTheClose,up",
-            "AC2,Agency,Limit,Open,ninety,50,SellShort,zoog,Option,AtTheClose,up",
-            "AC2,Agency,Limit,Open,90,50,BuyShort,zoog,Option,AtTheClose,up",
-            "AC2,Agency,Limit,Open,90,50,SellShort,zoog,Future,AtTheClose,up",
+            "AC2,MyCapacity,Limit,Open,90,50,SellShort,zoog,Option,AtTheClose,201010,10.00,Call,up",
+            "AC2,Agency,Limit,Open,ninety,50,SellShort,zoog,Option,AtTheClose,201010,100.00,Put,up",
+            "AC2,Agency,Limit,Open,90,50,BuyShort,zoog,Option,AtTheClose,20101010,10.05,Put,up",
+            "AC2,Agency,Limit,Open,90,50,SellShort,zoog,Future,AtTheClose,20101010,23.45,Call,up",
+            "AC2,Agency,Limit,Open,90,50,SellShort,zoog,Option,AtTheClose,201010,nostrike,Call,up",
+            "AC2,Agency,Limit,Open,90,50,SellShort,zoog,Option,AtTheClose,201010,10.00,Pup,up",
+            "AC2,Agency,Limit,Open,90,50,SellShort,zoog,Option,AtTheClose,,10.00,Call,up",
     };
 }
 

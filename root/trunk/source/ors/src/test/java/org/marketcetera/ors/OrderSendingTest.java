@@ -1,16 +1,14 @@
 package org.marketcetera.ors;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Arrays;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.ExecutionType;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
+import org.marketcetera.trade.*;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.MessageEncoding;
@@ -18,8 +16,11 @@ import quickfix.field.Rule80A;
 
 import static org.junit.Assert.*;
 import static org.marketcetera.trade.TypesTestBase.*;
+import org.marketcetera.core.instruments.InstrumentFromMessage;
 
 /**
+ * Tests sending of orders for various instrument types.
+ *
  * @author tlerios@marketcetera.com
  * @since $Release$
  * @version $Id$
@@ -27,9 +28,31 @@ import static org.marketcetera.trade.TypesTestBase.*;
 
 /* $License$ */
 
+@RunWith(Parameterized.class)
 public class OrderSendingTest
     extends ORSTestBase
 {
+    public OrderSendingTest(Instrument inInstrument)
+    {
+        mInstrument = inInstrument;
+    }
+
+    /**
+     * The test parameters that this test iterates through.
+     *
+     * @return the test parameters.
+     */
+    @Parameterized.Parameters
+    public static Collection<Object[]> data()
+    {
+        return Arrays.asList(
+                new Object[]{new Equity("sym")},
+                new Object[]{new Option("sym","20101010",BigDecimal.TEN,OptionType.Put)},
+                new Object[]{new Option("sym","20101010",BigDecimal.TEN,OptionType.Call)},
+                new Object[]{new Option("sym","201010",BigDecimal.TEN,OptionType.Put)}
+        );
+    }
+
     @Test(timeout=300000)
     public void orderSending()
         throws Exception
@@ -37,13 +60,13 @@ public class OrderSendingTest
         ORSTestClient c=getAdminClient();
 
         // Compose order.
-        Equity ibm=new Equity("IBM");
+        Instrument instrument=getInstrument();
         OrderSingle order=Factory.getInstance().createOrderSingle();
         order.setOrderID(new OrderID("ID1"));
         order.setOrderType(OrderType.Limit);
         order.setQuantity(new BigDecimal("1"));
         order.setSide(Side.Buy);
-        order.setInstrument(ibm);
+        order.setInstrument(instrument);
         order.setPrice(new BigDecimal("10"));
         c.getClient().sendOrder(order);
 
@@ -61,7 +84,7 @@ public class OrderSendingTest
                                new BigDecimal("1"),
                                OrderType.Limit,
                                Side.Buy,
-                               ibm,
+                               instrument,
                                null,
                                null,
                                null,
@@ -79,5 +102,14 @@ public class OrderSendingTest
         // Test sending message modifiers.
         assertEquals(Rule80A.AGENCY_SINGLE_ORDER,
                      msg.getChar(Rule80A.FIELD));
+        //Verify that the sent message has the correct instrument in it
+        assertEquals(instrument,InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
+
+    private Instrument getInstrument()
+    {
+        return mInstrument;
+    }
+
+    private final Instrument mInstrument;
 }

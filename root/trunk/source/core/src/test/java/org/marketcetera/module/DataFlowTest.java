@@ -335,7 +335,7 @@ public class DataFlowTest extends ModuleTestBase {
     private void runNestedFlowRequestFailureInRequestData(
             final ModuleURN inProcURN) throws Exception {
         assertEquals(ModuleException.class, ExpectedFailure.assertI18NException(
-                new ExpectedFailure<RequestDataException>(null){
+                new ExpectedFailure<RequestDataException>(){
                     protected void run() throws Exception {
                         sManager.createDataFlow(new DataRequest[]{
                                 new DataRequest(inProcURN)
@@ -652,7 +652,7 @@ public class DataFlowTest extends ModuleTestBase {
         //verify that the auto-created module is not orphaned
         //if the attempt to create a data flow fails
         //Create a data flow that fails to setup
-        new ExpectedFailure<IllegalRequestParameterValue>(null){
+        new ExpectedFailure<IllegalRequestParameterValue>(){
             protected void run() throws Exception {
                 sManager.createDataFlow(new DataRequest[]{
                         new DataRequest(EmitterModuleFactory.INSTANCE_URN, null),

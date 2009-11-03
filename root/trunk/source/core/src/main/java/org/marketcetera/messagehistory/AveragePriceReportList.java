@@ -5,19 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.MessageCreationException;
-import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.instruments.InstrumentFromMessage;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;
+import quickfix.field.Side;
 import ca.odell.glazedlists.AbstractEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -82,8 +78,8 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                         ReportBase deltaReport = deltaReportHolder.getReport();
                         String symbol = deltaMessage.getString(Symbol.FIELD);
                         String side = deltaMessage.getString(Side.FIELD);
-                        //TODO handle instruments other than equity.
-                        SymbolSide symbolSide = new SymbolSide(new Equity(symbol), side);
+                        Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(deltaMessage).extract(deltaMessage);
+                        SymbolSide symbolSide = new SymbolSide(instrument, side);
                         averagePriceIndex = mAveragePriceIndexes.get(symbolSide);
 
                         if(averagePriceIndex != null) {

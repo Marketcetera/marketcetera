@@ -46,7 +46,7 @@ public enum OptionType {
      * 
      * @return the OptionType instance.
      */
-    static OptionType getInstanceForFIXValue(int inValue) {
+    public static OptionType getInstanceForFIXValue(int inValue) {
         OptionType s = mFIXValueMap.get(inValue);
         return s == null
                 ? Unknown

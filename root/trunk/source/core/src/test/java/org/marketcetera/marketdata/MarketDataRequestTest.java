@@ -225,7 +225,7 @@ public class MarketDataRequestTest
                         // symbols error conditions
                         if(isEmptyList(symbols[symbolsCounter])) {
                             // the message isn't checked because the ingoing request string won't equal the incoming one, so the message contents are different 
-                            new ExpectedFailure<IllegalArgumentException>(null) {
+                            new ExpectedFailure<IllegalArgumentException>() {
                                 @Override
                                 protected void run()
                                     throws Exception
@@ -252,7 +252,7 @@ public class MarketDataRequestTest
                                                                                                            symbols[symbolsCounter]);
                         if(isEmptyList(symbols[symbolsCounter])) {
                             // the message isn't checked because the ingoing request string won't equal the incoming one, so the message contents are different 
-                            new ExpectedFailure<IllegalArgumentException>(null) {
+                            new ExpectedFailure<IllegalArgumentException>() {
                                 @Override
                                 protected void run()
                                     throws Exception
@@ -263,7 +263,7 @@ public class MarketDataRequestTest
                             continue;
                         }
                         if(contents[contentsCounter] == DIVIDEND) {
-                            new ExpectedFailure<IllegalArgumentException>(null) {
+                            new ExpectedFailure<IllegalArgumentException>() {
                                 @Override
                                 protected void run()
                                     throws Exception
@@ -303,7 +303,7 @@ public class MarketDataRequestTest
             final String assetClassString = assetClassStrings[assetClassCounter];
             if(assetClassString == null ||
                assetClassString.isEmpty()) {
-                new ExpectedFailure<IllegalArgumentException>(null) {
+                new ExpectedFailure<IllegalArgumentException>() {
                     @Override
                     protected void run()
                         throws Exception
@@ -337,7 +337,7 @@ public class MarketDataRequestTest
         for(int assetClassCounter=0;assetClassCounter<assetClasses.length;assetClassCounter++) {
             final AssetClass assetClass = assetClasses[assetClassCounter];
             if(assetClass == null) {
-                new ExpectedFailure<IllegalArgumentException>(null) {
+                new ExpectedFailure<IllegalArgumentException>() {
                     @Override
                     protected void run()
                         throws Exception
@@ -505,7 +505,7 @@ public class MarketDataRequestTest
        assertFalse(request2.equals(request1));
     }
     /**
-     * Tests {@link MarketDataRequest#withContent(Content)} and {@link MarketDataRequest#withContent(String)}.
+     * Tests {@link MarketDataRequest#withContent(Content[])} and {@link MarketDataRequest#withContent(String)}.
      *
      * @throws Exception if an error occurs
      */
@@ -616,7 +616,7 @@ public class MarketDataRequestTest
                content.length == 0 ||
                isEmptyStringList(content) ||
                !isValidStringList(content)) {
-                new ExpectedFailure<IllegalArgumentException>(null) {
+                new ExpectedFailure<IllegalArgumentException>() {
                     @Override
                     protected void run()
                         throws Exception
@@ -637,7 +637,7 @@ public class MarketDataRequestTest
                 }
             }
             if(willFail) {
-                new ExpectedFailure<IllegalArgumentException>(null) {
+                new ExpectedFailure<IllegalArgumentException>() {
                     @Override
                     protected void run()
                         throws Exception
@@ -665,7 +665,7 @@ public class MarketDataRequestTest
         assertEquals(new LinkedHashSet<Content>(Arrays.asList(new Content[] { LEVEL_2 } )),
                      request.getContent());
         // test that changing the destination doesn't change the held value
-        new ExpectedFailure<UnsupportedOperationException>(null) {
+        new ExpectedFailure<UnsupportedOperationException>() {
             @Override
             protected void run()
                 throws Exception
@@ -951,7 +951,7 @@ public class MarketDataRequestTest
         assertNull(request.getExchange());
         assertEquals(new LinkedHashSet<Content>(Arrays.asList(TOP_OF_BOOK)),
                      request.getContent());
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                 throws Exception
@@ -1057,7 +1057,7 @@ public class MarketDataRequestTest
                               "METC",
                               null);
             } else {
-                new ExpectedFailure<IllegalArgumentException>(null) {
+                new ExpectedFailure<IllegalArgumentException>() {
                     @Override
                     protected void run()
                         throws Exception
@@ -1077,7 +1077,7 @@ public class MarketDataRequestTest
     public void eventRelevance()
         throws Exception
     {
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                 throws Exception
@@ -1303,7 +1303,7 @@ public class MarketDataRequestTest
                      content);
         if(content != null &&
            !content.isEmpty()) {
-            new ExpectedFailure<UnsupportedOperationException>(null) {
+            new ExpectedFailure<UnsupportedOperationException>() {
                 @Override
                 protected void run()
                     throws Exception
@@ -1368,7 +1368,7 @@ public class MarketDataRequestTest
                      roundTripRequest);
         // test content validation
         // compare with null
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                 throws Exception

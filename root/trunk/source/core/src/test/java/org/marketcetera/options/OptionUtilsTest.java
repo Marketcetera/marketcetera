@@ -63,7 +63,7 @@ public class OptionUtilsTest extends TestCase {
     public void testOsiOptionFromString()
             throws Exception
     {
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -71,7 +71,7 @@ public class OptionUtilsTest extends TestCase {
                 OptionUtils.getOsiOptionFromString(null);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -79,7 +79,7 @@ public class OptionUtilsTest extends TestCase {
                 OptionUtils.getOsiOptionFromString("");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -87,7 +87,7 @@ public class OptionUtilsTest extends TestCase {
                 OptionUtils.getOsiOptionFromString("this-is-not-a-valid-osi-option");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -95,7 +95,7 @@ public class OptionUtilsTest extends TestCase {
                 OptionUtils.getOsiOptionFromString("21-characters-not-osi");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -103,7 +103,7 @@ public class OptionUtilsTest extends TestCase {
                 OptionUtils.getOsiOptionFromString("MSFT  991122p12345123"); // valid except 'Put' indicator is lower-case
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -111,7 +111,7 @@ public class OptionUtilsTest extends TestCase {
                 OptionUtils.getOsiOptionFromString("MSFT  991122c12345123"); // valid except 'Call' indicator is lower-case
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -119,7 +119,7 @@ public class OptionUtilsTest extends TestCase {
                 OptionUtils.getOsiOptionFromString("MSFT  991122 12345123"); // option-type missing
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception

@@ -47,7 +47,7 @@ public class SAClientFactoryTest {
         try {
             MockStrategyAgent.startServerAndClient();
             //null parameters
-            new ExpectedFailure<NullPointerException>(null){
+            new ExpectedFailure<NullPointerException>(){
                 @Override
                 protected void run() throws Exception {
                     SAClientFactory.getInstance().create(null);

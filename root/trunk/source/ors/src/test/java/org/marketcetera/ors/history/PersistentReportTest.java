@@ -1,24 +1,22 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.ors.Principals;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.event.HasFIXMessage;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Collection;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
-
-import quickfix.field.SendingTime;
 
 /* $License$ */
 /**
@@ -28,7 +26,29 @@ import quickfix.field.SendingTime;
  * @version $Id$
  * @since 1.0.0
  */
+@RunWith(Parameterized.class)
 public class PersistentReportTest extends ReportsTestBase {
+    /**
+     * The test parameters that this test iterates through.
+     *
+     * @return the test parameters.
+     */
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(
+                new Object[]{new Equity("sym")},
+                new Object[]{new Option("sym", "20101010", BigDecimal.TEN, OptionType.Put)}
+        );
+    }
+    /**
+     * Creates an instance.
+     *
+     * @param inInstrument the instrument for this test.
+     */
+    public PersistentReportTest(Instrument inInstrument) {
+        mInstrument = inInstrument;
+    }
+
     /**
      * Verify empty broker/actor/viewer.
      *
@@ -98,8 +118,8 @@ public class PersistentReportTest extends ReportsTestBase {
     @Test
     public void execReportSaveAndRetrieve() throws Exception {
         //Create exec report, save and retrieve it.
-        ExecutionReport report = createExecReport("o1", null, "blue", Side.Buy,
-                OrderStatus.New, BigDecimal.ONE, BigDecimal.ONE,
+        ExecutionReport report = createExecReport("o1", null, getInstrument(),
+                Side.Buy, OrderStatus.New, BigDecimal.ONE, BigDecimal.ONE,
                 BigDecimal.ONE, BigDecimal.ONE);
         assertNull(report.getReportID());
         PersistentReport.save(report);
@@ -137,7 +157,7 @@ public class PersistentReportTest extends ReportsTestBase {
         nonNullCVCheck("sendingTime", new Callable<Object>(){
             public Object call() throws Exception {
                 PersistentReport.save(removeSendingTime(createExecReport("o1",
-                        null, "i", Side.Buy, OrderStatus.DoneForDay,
+                        null, getInstrument(), Side.Buy, OrderStatus.DoneForDay,
                         BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
                         BigDecimal.ONE)));
                 return null;
@@ -159,10 +179,10 @@ public class PersistentReportTest extends ReportsTestBase {
     public void verifyIDSequential() throws Exception {
         //Create multiple reports
         OrderCancelReject reject1 = createCancelReject();
-        ExecutionReport report2 = createExecReport("o1",null, "s", Side.Sell,
+        ExecutionReport report2 = createExecReport("o1",null, getInstrument(), Side.Sell,
                 OrderStatus.Filled, BigDecimal.ONE, BigDecimal.ONE,
                 BigDecimal.ONE, BigDecimal.ONE);
-        ExecutionReport report3 = createExecReport("o2",null, "s", Side.Buy, 
+        ExecutionReport report3 = createExecReport("o2",null, getInstrument(), Side.Buy,
                 OrderStatus.PartiallyFilled, BigDecimal.ONE, BigDecimal.ONE,
                 BigDecimal.ONE, BigDecimal.ONE);
         OrderCancelReject reject4 = createCancelReject();
@@ -197,13 +217,13 @@ public class PersistentReportTest extends ReportsTestBase {
         sleepForSignificantTime();
         Date time2 = new Date();
         sleepForSignificantTime();
-        ExecutionReport report2 = createExecReport("o1",null, "s", Side.Sell,
+        ExecutionReport report2 = createExecReport("o1",null, getInstrument(), Side.Sell,
                 OrderStatus.Filled, BigDecimal.ONE, BigDecimal.ONE,
                 BigDecimal.ONE, BigDecimal.ONE);
         sleepForSignificantTime();
         Date time3 = new Date();
         sleepForSignificantTime();
-        ExecutionReport report3 = createExecReport("o2",null, "s", Side.Buy,
+        ExecutionReport report3 = createExecReport("o2",null, getInstrument(), Side.Buy,
                 OrderStatus.PartiallyFilled, BigDecimal.ONE, BigDecimal.ONE,
                 BigDecimal.ONE, BigDecimal.ONE);
         sleepForSignificantTime();
@@ -329,4 +349,8 @@ public class PersistentReportTest extends ReportsTestBase {
         }
     }
 
+    private Instrument getInstrument() {
+        return mInstrument;
+    }
+    private final Instrument mInstrument;
 }

@@ -74,11 +74,17 @@ public interface Messages
             new I18NMessage2P(LOGGER, "invalid_side");   //$NON-NLS-1$
     static final I18NMessage2P INVALID_TIME_IN_FORCE =
             new I18NMessage2P(LOGGER, "invalid_time_in_force");   //$NON-NLS-1$
+    static final I18NMessage2P INVALID_OPTION_TYPE =
+            new I18NMessage2P(LOGGER, "invalid_option_type");   //$NON-NLS-1$
+    static final I18NMessage1P MISSING_OPTION_FIELD =
+            new I18NMessage1P(LOGGER, "missing_option_field");   //$NON-NLS-1$
 
     static final I18NMessage1P INVALID_PRICE_VALUE =
             new I18NMessage1P(LOGGER, "invalid_price_value");   //$NON-NLS-1$
     static final I18NMessage1P INVALID_QUANTITY_VALUE =
             new I18NMessage1P(LOGGER, "invalid_quantity_value");   //$NON-NLS-1$
+    static final I18NMessage1P INVALID_STRIKE_PRICE_VALUE =
+            new I18NMessage1P(LOGGER, "invalid_strike_price_value");   //$NON-NLS-1$
     static final I18NMessage2P INVALID_CUSTOM_HEADER =
             new I18NMessage2P(LOGGER, "invalid_custom_header");   //$NON-NLS-1$
     static final I18NMessage3P DUPLICATE_HEADER =

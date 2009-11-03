@@ -170,13 +170,13 @@ public class AsyncModuleTest extends ModuleTestBase {
                 new String[]{validAttribute, invalidAttribute});
         assertEquals(1, attribList.size());
         assertEquals(new Attribute(validAttribute, 0), attribList.get(0));
-        new ExpectedFailure<AttributeNotFoundException>(null){
+        new ExpectedFailure<AttributeNotFoundException>(){
             @Override
             protected void run() throws Exception {
                 beanServer.setAttribute(on, new Attribute(validAttribute, 34));
             }
         };
-        new ExpectedFailure<AttributeNotFoundException>(null){
+        new ExpectedFailure<AttributeNotFoundException>(){
             @Override
             protected void run() throws Exception {
                 beanServer.setAttribute(on, new Attribute(invalidAttribute, 34));
@@ -188,7 +188,7 @@ public class AsyncModuleTest extends ModuleTestBase {
                 ));
         assertEquals(0, beanServer.setAttributes(on, list).size());
         //verify no operations can be performed
-        ReflectionException excpt = new ExpectedFailure<ReflectionException>(null) {
+        ReflectionException excpt = new ExpectedFailure<ReflectionException>() {
             @Override
             protected void run() throws Exception {
                 beanServer.invoke(on, "getQueueSizes", null, null);

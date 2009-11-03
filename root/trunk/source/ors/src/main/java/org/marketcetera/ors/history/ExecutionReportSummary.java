@@ -11,10 +11,7 @@ import org.marketcetera.trade.*;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 /* $License$ */
 /**
@@ -37,9 +34,19 @@ import java.util.HashMap;
 @SqlResultSetMappings({
     @SqlResultSetMapping(name = "positionForSymbol",
             columns = {@ColumnResult(name = "position")}),
-    @SqlResultSetMapping(name = "allPositions",
+    @SqlResultSetMapping(name = "eqAllPositions",
             columns = {
                 @ColumnResult(name = "symbol"),
+                @ColumnResult(name = "account"),
+                @ColumnResult(name = "actor"),
+                @ColumnResult(name = "position")
+                    }),
+    @SqlResultSetMapping(name = "optAllPositions",
+            columns = {
+                @ColumnResult(name = "symbol"),
+                @ColumnResult(name = "expiry"),
+                @ColumnResult(name = "strikePrice"),
+                @ColumnResult(name = "optionType"),
                 @ColumnResult(name = "account"),
                 @ColumnResult(name = "actor"),
                 @ColumnResult(name = "position")
@@ -47,32 +54,72 @@ import java.util.HashMap;
         })
 
 @NamedNativeQueries({
-    @NamedNativeQuery(name = "positionForSymbol",query = "select " +
+    @NamedNativeQuery(name = "eqPositionForSymbol",query = "select " +
             "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
             "from execreports e " +
             "where e.symbol = :symbol " +
+            "and (e.securityType is null " +
+            "or e.securityType = :securityType) " +
             "and e.sendingTime <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
             "(select max(s.id) from execreports s where s.rootID = e.rootID)",
             resultSetMapping = "positionForSymbol"),
-    @NamedNativeQuery(name = "allPositions",query = "select " +
+    @NamedNativeQuery(name = "eqAllPositions",query = "select " +
             "e.symbol as symbol, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
             "from execreports e " +
             "join reports r on (e.report_id=r.id) " +
             "where e.sendingTime <= :sendingTime " +
+            "and (e.securityType is null " +
+            "or e.securityType = :securityType) " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
             "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
             "group by symbol, account, actor having position <> 0",
-            resultSetMapping = "allPositions")
+            resultSetMapping = "eqAllPositions"),
+    @NamedNativeQuery(name = "optPositionForTuple",query = "select " +
+            "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "from execreports e " +
+            "where e.symbol = :symbol " +
+            "and e.securityType = :securityType " +
+            "and e.expiry = :expiry " +
+            "and e.strikePrice = :strikePrice " +
+            "and e.optionType = :optionType " +
+            "and e.sendingTime <= :sendingTime " +
+            "and (:allViewers or e.viewer_id = :viewerID) " +
+            "and e.id = " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID)",
+            resultSetMapping = "positionForSymbol"),
+    @NamedNativeQuery(name = "optAllPositions",query = "select " +
+            "e.symbol as symbol, e.expiry as expiry, e.strikePrice as strikePrice, e.optionType as optionType, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "from execreports e " +
+            "join reports r on (e.report_id=r.id) " +
+            "where e.sendingTime <= :sendingTime " +
+            "and e.securityType = :securityType " +
+            "and (:allViewers or e.viewer_id = :viewerID) " +
+            "and e.id = " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
+            "group by symbol, expiry, strikePrice, optionType, account, actor having position <> 0",
+            resultSetMapping = "optAllPositions"),
+    @NamedNativeQuery(name = "optPositionsForRoots",query = "select " +
+            "e.symbol as symbol, e.expiry as expiry, e.strikePrice as strikePrice, e.optionType as optionType, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "from execreports e " +
+            "join reports r on (e.report_id=r.id) " +
+            "where e.sendingTime <= :sendingTime " +
+            "and e.securityType = :securityType " +
+            "and e.symbol in (:symbols) " +
+            "and (:allViewers or e.viewer_id = :viewerID) " +
+            "and e.id = " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
+            "group by symbol, expiry, strikePrice, optionType, account, actor having position <> 0",
+            resultSetMapping = "optAllPositions")
         })
 
 class ExecutionReportSummary extends EntityBase {
 
     /**
      * Gets the current aggregate position for the equity based on
-     * execution reports received before the supplied time, and which
+     * execution reports received on or before the supplied time, and which
      * are visible to the given user.
      *
      * <p>
@@ -81,7 +128,7 @@ class ExecutionReportSummary extends EntityBase {
      *
      * @param inUser the user making the query. Cannot be null.
      * @param inDate the time. execution reports with sending time values less
-     * than this time are included in this calculation.
+     * than or equal to this time are included in this calculation.
      * @param inEquity the equity for which this position needs to be computed
      *
      * @return the aggregate position for the equity.
@@ -101,12 +148,13 @@ class ExecutionReportSummary extends EntityBase {
             @Override
             public BigDecimal execute(EntityManager em, PersistContext context) {
                 Query query = em.createNamedQuery(
-                        "positionForSymbol");  //$NON-NLS-1$
+                        "eqPositionForSymbol");  //$NON-NLS-1$
 
                 query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
                 query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
                 query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
                 query.setParameter("symbol", inEquity.getSymbol());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
                 query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
                         TemporalType.TIMESTAMP);
                 return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
@@ -145,10 +193,11 @@ class ExecutionReportSummary extends EntityBase {
             public Map<PositionKey<Equity>, BigDecimal> execute(EntityManager em,
                                                     PersistContext context) {
                 Query query = em.createNamedQuery(
-                        "allPositions");  //$NON-NLS-1$
+                        "eqAllPositions");  //$NON-NLS-1$
                 query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
                 query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
                 query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
                 query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
                         TemporalType.TIMESTAMP);
                 HashMap<PositionKey<Equity>, BigDecimal> map =
@@ -177,6 +226,196 @@ class ExecutionReportSummary extends EntityBase {
 
     }
 
+
+    /**
+     * Gets the current aggregate position for the option tuple based on
+     * execution reports received on or before the supplied time, and which
+     * are visible to the given user.
+     *
+     * <p>
+     * Buy trades result in positive positions. All other kinds of trades
+     * result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the time. execution reports with sending time values less
+     * than or equal to this time are included in this calculation.
+     * @param inOption option instrument
+     *
+     * @return the aggregate position for the symbol.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position.
+     */
+    static BigDecimal getOptionPositionAsOf
+        (final SimpleUser inUser,
+         final Date inDate,
+         final Option inOption)
+        throws PersistenceException {
+        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public BigDecimal execute(EntityManager em, PersistContext context) {
+                Query query = em.createNamedQuery(
+                        "optPositionForTuple");  //$NON-NLS-1$
+
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+                query.setParameter("symbol", inOption.getSymbol());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
+                query.setParameter("expiry", inOption.getExpiry());  //$NON-NLS-1$
+                query.setParameter("strikePrice", inOption.getStrikePrice());  //$NON-NLS-1$
+                query.setParameter("optionType", inOption.getType().ordinal());  //$NON-NLS-1$
+                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+                        TemporalType.TIMESTAMP);
+                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
+            }
+        }, null);
+        return position == null? BigDecimal.ZERO: position;
+
+    }
+
+    /**
+     * Returns the aggregate position of each option
+     * (option,account,actor)
+     * tuple based on all reports received for each option instrument on or before
+     * the supplied date, and which are visible to the given user.
+     *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
+     *
+     * @return the position map.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position map.
+     */
+    static Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
+        (final SimpleUser inUser,
+         final Date inDate)
+        throws PersistenceException {
+        return executeRemote(new Transaction<Map<PositionKey<Option>, BigDecimal>>() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Map<PositionKey<Option>, BigDecimal> execute(EntityManager em,
+                                                    PersistContext context) {
+                Query query = em.createNamedQuery(
+                        "optAllPositions");  //$NON-NLS-1$
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
+                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+                        TemporalType.TIMESTAMP);
+                HashMap<PositionKey<Option>, BigDecimal> map =
+                        new HashMap<PositionKey<Option>, BigDecimal>();
+                List<?> list = query.getResultList();
+                Object[] columns;
+                for(Object o: list) {
+                    columns = (Object[]) o;
+                    //7 columns
+                    if(columns.length > 1) {
+                        //first one is the symbol
+                        //second one is the expiry
+                        //third one is the strikePrice
+                        //fourth one is the option type
+                        //fifth one is the account
+                        //sixth one is the actor ID
+                        //seventh one is the position
+                        map.put(PositionKeyFactory.createOptionKey
+                                ((String)columns[0],
+                                 (String)columns[1],
+                                 (BigDecimal)columns[2],
+                                 OptionType.values()[(Integer)columns[3]],
+                                 (String)columns[4],
+                                 ((columns[5]==null)?null:
+                                  ((BigInteger)columns[5]).toString())),
+                                 (BigDecimal)columns[6]);
+                    }
+                }
+                return map;
+            }
+        }, null);
+
+    }
+
+    /**
+     * Returns the aggregate position of each option
+     * (option,account,actor)
+     * tuple based on all reports received for each option instrument on or before
+     * the supplied date, and which are visible to the given user.
+     *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
+     * @param inRootSymbols the list of option roots.
+     *
+     * @return the position map.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position map.
+     */
+    static Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
+        (final SimpleUser inUser,
+         final Date inDate,
+         final String... inRootSymbols)
+        throws PersistenceException {
+        return executeRemote(new Transaction<Map<PositionKey<Option>, BigDecimal>>() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Map<PositionKey<Option>, BigDecimal> execute(EntityManager em,
+                                                    PersistContext context) {
+                Query query = em.createNamedQuery("optPositionsForRoots");  //$NON-NLS-1$
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
+                query.setParameter("symbols", Arrays.asList(inRootSymbols));  //$NON-NLS-1$
+                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+                        TemporalType.TIMESTAMP);
+                HashMap<PositionKey<Option>, BigDecimal> map =
+                        new HashMap<PositionKey<Option>, BigDecimal>();
+                List<?> list = query.getResultList();
+                Object[] columns;
+                for(Object o: list) {
+                    columns = (Object[]) o;
+                    //7 columns
+                    if(columns.length > 1) {
+                        //first one is the symbol
+                        //second one is the expiry
+                        //third one is the strikePrice
+                        //fourth one is the optionType
+                        //fifth one is the account
+                        //sixth one is the actor ID
+                        //seventh one is the position
+                        map.put(PositionKeyFactory.createOptionKey
+                                ((String)columns[0],
+                                 (String)columns[1],
+                                 (BigDecimal)columns[2],
+                                 OptionType.values()[(Integer)columns[3]],
+                                 (String)columns[4],
+                                 ((columns[5]==null)?null:
+                                  ((BigInteger)columns[5]).toString())),
+                                 (BigDecimal)columns[6]);
+                    }
+                }
+                return map;
+            }
+        }, null);
+
+    }
+
     /**
      * Creates an instance.
      *
@@ -189,8 +428,14 @@ class ExecutionReportSummary extends EntityBase {
         mOrderID = inReport.getOrderID();
         mOrigOrderID = inReport.getOriginalOrderID();
         Instrument instrument = inReport.getInstrument();
-        mSymbol = instrument == null? null: instrument.getSymbol();
-        //TODO handle instruments other than Equity
+        if (instrument != null) {
+            mSecurityType = instrument.getSecurityType();
+            mSymbol = instrument.getSymbol();
+            InstrumentSummaryFields summaryFields = InstrumentSummaryFields.SELECTOR.forInstrument(instrument);
+            mOptionType = summaryFields.getOptionType(instrument);
+            mStrikePrice = summaryFields.getStrikePrice(instrument);
+            mExpiry = summaryFields.getExpiry(instrument);
+        }
         mAccount = inReport.getAccount();
         mSide = inReport.getSide();
         mCumQuantity = inReport.getCumulativeQuantity();
@@ -285,6 +530,14 @@ class ExecutionReportSummary extends EntityBase {
         mOrigOrderID = inOrigOrderID;
     }
 
+    SecurityType getSecurityType() {
+        return mSecurityType;
+    }
+
+    private void setSecurityType(SecurityType inSecurityType) {
+        mSecurityType = inSecurityType;
+    }
+
     @Column(nullable = false)
     String getSymbol() {
         return mSymbol;
@@ -292,6 +545,31 @@ class ExecutionReportSummary extends EntityBase {
 
     private void setSymbol(String inSymbol) {
         mSymbol = inSymbol;
+    }
+
+    String getExpiry() {
+        return mExpiry;
+    }
+
+    private void setExpiry(String inExpiry) {
+        mExpiry = inExpiry;
+    }
+
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE, nullable = true)
+    BigDecimal getStrikePrice() {
+        return mStrikePrice;
+    }
+
+    private void setStrikePrice(BigDecimal inStrikePrice) {
+        mStrikePrice = inStrikePrice;
+    }
+
+    OptionType getOptionType() {
+        return mOptionType;
+    }
+
+    private void setOptionType(OptionType inOptionType) {
+        mOptionType = inOptionType;
     }
 
     String getAccount() {
@@ -391,7 +669,11 @@ class ExecutionReportSummary extends EntityBase {
     private OrderID mRootID;
     private OrderID mOrderID;
     private OrderID mOrigOrderID;
+    private SecurityType mSecurityType;
     private String mSymbol;
+    private String mExpiry;
+    private BigDecimal mStrikePrice;
+    private OptionType mOptionType;
     private String mAccount;
     private Side mSide;
     private BigDecimal mCumQuantity;

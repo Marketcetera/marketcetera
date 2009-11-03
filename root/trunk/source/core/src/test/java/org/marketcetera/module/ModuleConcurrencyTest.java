@@ -88,7 +88,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         //wait for the first task to complete
         assertEquals(urn,result1.get());
         //verify that the second task fails
-        ExecutionException failure = new ExpectedFailure<ExecutionException>(null) {
+        ExecutionException failure = new ExpectedFailure<ExecutionException>() {
             protected void run() throws Exception {
                 result2.get();
             }
@@ -164,7 +164,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         lock.unlock();
         assertEquals(urn, result1.get());
         //Verify that the second thread fails with duplicate URN error.
-        ExecutionException failure = new ExpectedFailure<ExecutionException>(null) {
+        ExecutionException failure = new ExpectedFailure<ExecutionException>() {
             @Override
             protected void run() throws Exception {
                 result2.get();
@@ -254,7 +254,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         lock.unlock();
         assertEquals(urn, result1.get());
         //Verify that the second thread fails with duplicate URN error.
-        ExecutionException failure = new ExpectedFailure<ExecutionException>(null) {
+        ExecutionException failure = new ExpectedFailure<ExecutionException>() {
             @Override
             protected void run() throws Exception {
                 result2.get();
@@ -316,7 +316,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         //Run the start tests.
         final Future<Object> result1 = runStartTests(lock, urn);
         //wait for start to complete
-        ExecutionException failure = new ExpectedFailure<ExecutionException>(null) {
+        ExecutionException failure = new ExpectedFailure<ExecutionException>() {
             protected void run() throws Exception {
                 result1.get();
             }
@@ -408,7 +408,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         lock.lock();
         final Future<Object> future = runStopTests(urn, lock);
         //wait for stop to complete
-        ExecutionException failure = new ExpectedFailure<ExecutionException>(null) {
+        ExecutionException failure = new ExpectedFailure<ExecutionException>() {
             protected void run() throws Exception {
                 future.get();
             }

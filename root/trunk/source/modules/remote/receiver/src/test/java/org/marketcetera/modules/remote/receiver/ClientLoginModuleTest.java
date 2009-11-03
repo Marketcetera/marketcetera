@@ -144,7 +144,7 @@ public class ClientLoginModuleTest extends TestCaseBase {
      */
     @Test
     public void nullHelperFail() throws Exception {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 ClientLoginHelper.setCurrentHelper(null);
             }

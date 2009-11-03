@@ -213,7 +213,7 @@ public class StringToTypeConvertTest {
         verifyConvertFail(Properties.class, null);
 
         //Invalid type
-        assertTrue(new ExpectedFailure<IllegalArgumentException>(null){
+        assertTrue(new ExpectedFailure<IllegalArgumentException>(){
             protected void run() throws Exception {
                 StringToTypeConverter.convert("Not a Class", "Don't Matter");
             }

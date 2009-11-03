@@ -78,7 +78,7 @@ public class QuoteEventTest
        verify(setDefaults(getBuilder()));
        // create a new kind of instrument
        final Instrument unsupportedInstrument = EventTestBase.generateUnsupportedInstrument(); 
-       new ExpectedFailure<UnsupportedOperationException>(null) {
+       new ExpectedFailure<UnsupportedOperationException>() {
            @Override
            protected void run()
                    throws Exception
@@ -86,7 +86,7 @@ public class QuoteEventTest
                QuoteEventBuilder.askEvent(unsupportedInstrument);
            }
        };
-       new ExpectedFailure<UnsupportedOperationException>(null) {
+       new ExpectedFailure<UnsupportedOperationException>() {
            @Override
            protected void run()
                    throws Exception

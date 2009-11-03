@@ -68,7 +68,7 @@ public class MarketstatEventTest
        useInstrument = true;
        verify(setDefaults(getBuilder()));
        // create a new kind of instrument
-       new ExpectedFailure<UnsupportedOperationException>(null) {
+       new ExpectedFailure<UnsupportedOperationException>() {
            @Override
            protected void run()
                    throws Exception
@@ -312,7 +312,7 @@ public class MarketstatEventTest
         verify(builder);
     }
     /**
-     * Tests {@link MarketstatEventBuilder#withHighTime(String)}.
+     * Tests {@link MarketstatEventBuilder#withTradeHighTime(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -340,7 +340,7 @@ public class MarketstatEventTest
         verify(builder);
     }
     /**
-     * Tests {@link MarketstatEventBuilder#withLowTime(String)}.
+     * Tests {@link MarketstatEventBuilder#withTradeLowTime(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */

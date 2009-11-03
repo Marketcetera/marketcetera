@@ -8,6 +8,7 @@ import org.marketcetera.core.position.PositionKey;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Collection;
 import java.math.BigDecimal;
 import java.beans.ExceptionListener;
 
@@ -115,7 +116,7 @@ public interface Client {
 
     /**
      * Returns the position of the supplied equity based on reports,
-     * generated and received until the supplied date in UTC.
+     * generated and received on or before the supplied date in UTC.
      *
      * @param inDate the date in UTC. Cannot be null.
      * @param inEquity The equity. Cannot be null.
@@ -129,17 +130,117 @@ public interface Client {
             throws ConnectionException;
 
     /**
-     * Returns all open positions based on reports,
-     * generated and received up until the supplied date in UTC.
+     * Returns all open equity positions based on reports,
+     * generated and received on or before the supplied date in UTC.
      *
      * @param inDate the date in UTC. Cannot be null.
      *
-     * @return the open positions. Includes non-zero positions only.
+     * @return the open equity positions. Includes non-zero positions only.
      *
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
     public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf(Date inDate)
+            throws ConnectionException;
+
+    /**
+     * Gets the current aggregate position for the option instrument based on
+     * execution reports received on or before the supplied date in UTC, and which
+     * are visible to the given user.
+     *
+     * <p>
+     * Buy trades result in positive positions. All other kinds of trades
+     * result in negative positions.
+     *
+     * @param inDate the date in UTC. Cannot be null.
+     * @param inOption the option instrument
+     *
+     * @return the aggregate position for the option.
+     *
+     * @throws ConnectionException if there were errors retrieving the
+     * position.
+     */
+    public BigDecimal getOptionPositionAsOf(Date inDate, Option inOption)
+            throws ConnectionException;
+    
+    /**
+     * Returns the aggregate position of each option (option,account,actor)
+     * tuple based on all reports received for each option instrument on or before
+     * the supplied date in UTC and which are visible to the given user.
+     *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inDate the date in UTC. Cannot be null.
+     *
+     * @return the position map.
+     *
+     * @throws ConnectionException if there were errors retrieving the
+     * position map.
+     */
+    public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf(Date inDate)
+        throws ConnectionException;
+
+    /**
+     * Returns the aggregate position of each option
+     * (option,account,actor)
+     * tuple based on all reports received for each option instrument on or before
+     * the supplied date in UTC, and which are visible to the given user.
+     *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inDate the date in UTC. Cannot be null.
+     * @param inRootSymbols the list of option root symbols.
+     *
+     * @return the position map.
+     *
+     * @throws ConnectionException if there were errors retrieving the
+     * position map.
+     */
+    public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf(
+            Date inDate, String... inRootSymbols)
+            throws ConnectionException;
+    
+    /**
+     * Returns the underlying symbol for the supplied option root, if
+     * a mapping is found for it. Null otherwise.
+     * <p>
+     * The mapping is retrieved from the server the first time an
+     * option root symbol is specified. The value returned by the server is
+     * cached on the client for all subsequent invocations for the
+     * same root symbol. All the cached values are cleared when the client
+     * is {@link #close() closed}.
+     *
+     * @param inOptionRoot The option root symbol.
+     *
+     * @return The underlying symbol for the supplied option root. null, if
+     * no mapping was found.
+     *
+     * @throws ConnectionException if there were errors retrieving the
+     * underlying symbol.
+     */
+    public String getUnderlying(String inOptionRoot)
+            throws ConnectionException;
+
+    /**
+     * Returns the collection of known option roots for the underlying symbol.
+     * <p>
+     * The mapping is retrieved from the server the first time an
+     * underlying symbol is specified. The value returned by the server is
+     * cached on the client for all subsequent invocations for the
+     * same underlying symbol. All the cached values are cleared when the client
+     * is {@link #close() closed}.
+     *
+     * @param inUnderlying The underlying symbol.
+     *
+     * @return The sorted collection of option roots if mappings are found
+     * for the option root, null otherwise.
+     *
+     * @throws ConnectionException if there were errors retrieving the
+     * option roots.
+     */
+    public Collection<String> getOptionRoots(String inUnderlying)
             throws ConnectionException;
 
     /**

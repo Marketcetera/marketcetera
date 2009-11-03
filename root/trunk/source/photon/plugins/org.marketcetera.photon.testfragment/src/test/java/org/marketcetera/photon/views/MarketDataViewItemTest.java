@@ -95,13 +95,13 @@ public class MarketDataViewItemTest {
 
     @Test
     public void testConstructorNegative() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new MarketDataViewItem(mMockMarketData, null);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new MarketDataViewItem(null, symbol1);
@@ -111,7 +111,7 @@ public class MarketDataViewItemTest {
 
     @Test
     public void testSetSymbolNegative() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 mFixture.setEquity(null);

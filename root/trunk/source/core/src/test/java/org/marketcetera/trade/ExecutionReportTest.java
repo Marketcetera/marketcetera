@@ -35,7 +35,7 @@ public class ExecutionReportTest extends TypesTestBase {
     public void failures() throws Exception {
         final BrokerID cID = new BrokerID("blah");
         // null message
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
              protected void run() throws Exception {
                  sFactory.createExecutionReport
                      (null, cID, Originator.Server, null, null);
@@ -43,7 +43,7 @@ public class ExecutionReportTest extends TypesTestBase {
          };
         // null originator
         final Message execReport = createEmptyExecReport();
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
              protected void run() throws Exception {
                  sFactory.createExecutionReport
                      (execReport, cID, null, null, null);
@@ -178,7 +178,7 @@ public class ExecutionReportTest extends TypesTestBase {
         final Map<Integer, String> actual = ((FIXMessageSupport) report).getFields();
         assertEquals(expected, actual);
         //Verify that the map is not modifiable
-        new ExpectedFailure<UnsupportedOperationException>(null){
+        new ExpectedFailure<UnsupportedOperationException>(){
             protected void run() throws Exception {
                 actual.clear();
             }

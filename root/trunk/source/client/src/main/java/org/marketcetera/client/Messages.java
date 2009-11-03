@@ -94,6 +94,8 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "validation_suggest_score");   //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_SUGGEST_ORDER =
             new I18NMessage0P(LOGGER, "validation_suggest_order");   //$NON-NLS-1$
+    static final I18NMessage1P VALIDATION_UNKNOWN_INSTRUMENT =
+            new I18NMessage1P(LOGGER, "validation_unknown_instrument");   //$NON-NLS-1$
     static final I18NMessage0P UNABLE_FETCH_ID_SERVER =
             new I18NMessage0P(LOGGER, "unable_fetch_id_server");   //$NON-NLS-1$
 

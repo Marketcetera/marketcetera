@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
@@ -58,7 +59,6 @@ import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
-import quickfix.field.SecurityType;
 
 /**
  * Factory class that creates a particular beginString of the FIX message
@@ -250,6 +250,23 @@ public class FIXMessageFactory {
         }
         throw new IllegalStateException();
     }
+
+    /**
+     * Creates a new limit order with it fields set to the specified values.
+     *
+     * <p>
+     * <b>NOTE:</b> This method is only meant to be used for unit testing.
+     *
+     * @param clOrderID the client order ID
+     * @param side the side
+     * @param quantity the quantity
+     * @param instrument the instrument
+     * @param price the price
+     * @param timeInForce the time in force
+     * @param account the account
+     *
+     * @return the new limit order
+     */
     public Message newLimitOrder(
             String clOrderID,
             char side,
@@ -257,8 +274,7 @@ public class FIXMessageFactory {
             Instrument instrument,
             BigDecimal price,
             char timeInForce,
-            String account
-    ) {
+            String account) {
 
         Message newMessage = newOrderHelper(clOrderID, side, quantity, instrument, timeInForce, account);
         newMessage.setField(new OrdType(OrdType.LIMIT));
@@ -267,14 +283,27 @@ public class FIXMessageFactory {
         return newMessage;
     }
 
+    /**
+     * Creates a new market order with it fields set to the specified values.
+     * <p>
+     * <b>NOTE:</b> This method is only meant to be used for unit testing.
+     *
+     * @param clOrderID the client order ID
+     * @param side the side
+     * @param quantity the quantity
+     * @param instrument the instrument
+     * @param timeInForce the time in force
+     * @param account the account
+     *
+     * @return the new market order
+     */
     public Message newMarketOrder(
             String clOrderID,
             char side,
             BigDecimal quantity,
             Instrument instrument,
             char timeInForce,
-            String account
-    ) {
+            String account) {
         Message newMessage = newOrderHelper(clOrderID, side, quantity, instrument, timeInForce, account);
         newMessage.setField(new OrdType(OrdType.MARKET));
         return newMessage;
@@ -282,6 +311,8 @@ public class FIXMessageFactory {
 
     /**
      * Creates a new FIX order
+     * <p>
+     * <b>NOTE:</b> This method is only meant to be used for unit testing.
      *
      * @param clOrderID     Internally generated clOrderID that will become the {@link ClOrdID} that
      *                    uniquely identifies this orderlater
@@ -297,13 +328,8 @@ public class FIXMessageFactory {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
         aMessage.setField(new ClOrdID(clOrderID));
         addHandlingInst(aMessage);
-        //todo handle instruments other than equity.
-        aMessage.setField(new Symbol(instrument.getSymbol()));
-        if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(beginString))) &&
-                instrument.getSecurityType() != null &&
-                org.marketcetera.trade.SecurityType.Unknown != instrument.getSecurityType()) {
-            aMessage.setField(new SecurityType(instrument.getSecurityType().getFIXValue()));
-        }
+        InstrumentToMessage.SELECTOR.forInstrument(instrument).
+                set(instrument, beginString, aMessage);
         aMessage.setField(new Side(side));
 
         aMessage.setField(new OrderQty(quantity));
@@ -318,6 +344,8 @@ public class FIXMessageFactory {
 
     /**
      * Helps create a cancel order for an existing cancel request
+     * <p>
+     * <b>NOTE:</b> This method is only meant to be used for unit testing.
      *
      * @param clOrderId        Newly generated OrderID for this cancel request
      * @param origClOrderID    our original clOrderID of the existing order we are trying to cancel
@@ -335,21 +363,15 @@ public class FIXMessageFactory {
             char side,
             BigDecimal quantity,
             Instrument instrument,
-            String counterpartyOrderID
-    ) {
+            String counterpartyOrderID) {
         Message aMessage = msgFactory.create(beginString,MsgType.ORDER_CANCEL_REQUEST);
 
         addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(clOrderId));
         aMessage.setField(new OrigClOrdID(origClOrderID));
         aMessage.setField(new Side(side));
-        //todo handle instruments other than equity.
-        aMessage.setField(new Symbol(instrument.getSymbol()));
-        if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(beginString))) &&
-                instrument.getSecurityType() != null &&
-                org.marketcetera.trade.SecurityType.Unknown != instrument.getSecurityType()) {
-            aMessage.setField(new SecurityType(instrument.getSecurityType().getFIXValue()));
-        }
+        InstrumentToMessage.SELECTOR.forInstrument(instrument).
+                set(instrument, beginString, aMessage);
         aMessage.setField(new OrderQty(quantity));
         if (counterpartyOrderID != null) {
             aMessage.setField(new OrderID(counterpartyOrderID));
@@ -359,6 +381,9 @@ public class FIXMessageFactory {
     }
 
     /** Incoming price may be null for MARKET orders
+     * <p>
+     * <b>NOTE:</b> This method is only meant to be used for unit testing.
+     * 
      * @param orderQty  Original order qty
      * @param orderPrice    Original order price
      * @param inAccount Account name of the institution that's sending the order. may be null
@@ -392,13 +417,8 @@ public class FIXMessageFactory {
         if (lastPrice != null) aMessage.setField(new LastPx(lastPrice));
         aMessage.setField(new CumQty(cumQty));
         aMessage.setField(new AvgPx(avgPrice));
-        //todo handle instruments other than equity.
-        aMessage.setField(new Symbol(instrument.getSymbol()));
-        if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(beginString))) &&
-                instrument.getSecurityType() != null &&
-                org.marketcetera.trade.SecurityType.Unknown != instrument.getSecurityType()) {
-            aMessage.setField(new SecurityType(instrument.getSecurityType().getFIXValue()));
-        }
+        InstrumentToMessage.SELECTOR.forInstrument(instrument).
+                set(instrument, beginString, aMessage);
         if(inAccount != null) {
             aMessage.setField(new Account(inAccount));
         }

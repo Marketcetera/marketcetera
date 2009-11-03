@@ -10,7 +10,7 @@ import org.marketcetera.orderloader.OrderParsingException;
  * Extracts an {@link SecurityType} value from an order row and sets it
  * on the supplied order.
  * This processor is not used directly to parse out SecurityType value. It's
- * instead used by {@link SymbolProcessor} to create symbol value.
+ * instead used by {@link InstrumentFromRow} to create instrument value.
  *
  * @author anshul@marketcetera.com
  * @version $Id$

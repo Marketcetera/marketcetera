@@ -25,7 +25,7 @@ public class URNValidationTest extends ModuleTestBase {
      */
     @Test
     public void moduleURN() throws Exception {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 new ModuleURN(null);
             }
@@ -244,7 +244,7 @@ public class URNValidationTest extends ModuleTestBase {
         checkObjectName("metc:strategy:java","org.marketcetera.module:type=strategy,provider=java");
         checkObjectName("metc:strategy::billion","org.marketcetera.module:type=strategy,name=billion");
         checkObjectName("metc::java:billion","org.marketcetera.module:provider=java,name=billion");
-        new ExpectedFailure<MXBeanOperationException>(null){
+        new ExpectedFailure<MXBeanOperationException>(){
             protected void run() throws Exception {
                 new ModuleURN("metc").toObjectName();
             }

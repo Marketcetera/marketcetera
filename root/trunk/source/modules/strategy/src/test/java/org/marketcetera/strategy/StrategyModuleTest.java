@@ -141,7 +141,7 @@ public class StrategyModuleTest
                                                                  new Properties(),
                                                                  true,
                                                                  outputURN);
-        new ExpectedFailure<ModuleException>(null) {
+        new ExpectedFailure<ModuleException>() {
             @Override
             protected void run()
                 throws Exception

@@ -95,7 +95,7 @@ public class PriceComparatorsTest
                                             .withPrice(ONE)
                                             .withSize(TEN).create();
         // check nulls first
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                 throws Exception
@@ -104,7 +104,7 @@ public class PriceComparatorsTest
                                                         quote1);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                 throws Exception
@@ -191,7 +191,7 @@ public class PriceComparatorsTest
                                             .withPrice(ONE)
                                             .withSize(TEN).create();
         // check nulls first
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -200,7 +200,7 @@ public class PriceComparatorsTest
                                       quote1);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
             throws Exception
@@ -209,7 +209,7 @@ public class PriceComparatorsTest
                                       quote1);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
             throws Exception
@@ -218,7 +218,7 @@ public class PriceComparatorsTest
                                       null);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
             throws Exception

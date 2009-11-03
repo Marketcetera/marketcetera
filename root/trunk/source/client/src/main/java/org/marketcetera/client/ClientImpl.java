@@ -178,6 +178,90 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     @Override
+    public BigDecimal getOptionPositionAsOf(Date inDate, Option inOption)
+            throws ConnectionException {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.getOptionPositionAsOf(
+                    getServiceContext(), new DateWrapper(inDate), inOption);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex, Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+
+    @Override
+    public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf(Date inDate)
+            throws ConnectionException {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.getAllOptionPositionsAsOf
+                    (getServiceContext(), new DateWrapper(inDate)).getMap();
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex, Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+
+    @Override
+    public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf(Date inDate,
+                                                                       String... inSymbols)
+            throws ConnectionException {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.getOptionPositionsAsOf
+                    (getServiceContext(), new DateWrapper(inDate), inSymbols).getMap();
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex, Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+
+    @Override
+    public String getUnderlying(String inOptionRoot) throws ConnectionException {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            String value;
+            synchronized (mUnderlyingToRootCache) {
+                if(mUnderlyingToRootCache.containsKey(inOptionRoot)) {
+                    value = mUnderlyingToRootCache.get(inOptionRoot);
+                } else {
+                    //cache null return values too
+                    value = mService.getUnderlying(getServiceContext(),
+                            inOptionRoot);
+                    mUnderlyingToRootCache.put(inOptionRoot, value);
+                }
+            }
+            return value;
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex, Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+
+    @Override
+    public Collection<String> getOptionRoots(String inUnderlying)
+            throws ConnectionException {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            Collection<String> value;
+            synchronized (mRootToUnderlyingCache) {
+                if(mRootToUnderlyingCache.containsKey(inUnderlying)) {
+                    value = mRootToUnderlyingCache.get(inUnderlying);
+                } else {
+                    value = mService.getOptionRoots(getServiceContext(),
+                            inUnderlying);
+                    mRootToUnderlyingCache.put(inUnderlying, value);
+                }
+            }
+            return value;
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex, Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+
+    @Override
     public BrokersStatus getBrokersStatus()
         throws ConnectionException
     {
@@ -533,6 +617,16 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         if (mContext == null) {
             return;
         }
+        //Clear all the caches
+        synchronized (mUnderlyingToRootCache) {
+            mUnderlyingToRootCache.clear();
+        }
+        synchronized (mRootToUnderlyingCache) {
+            mRootToUnderlyingCache.clear();
+        }
+        synchronized (mUserInfoCache) {
+            mUserInfoCache.clear();
+        }
         // Close the heartbeat generator first so that it won't
         // re-create a JMS connection during subsequent shutdown. In
         // fact, the generator will normally shut down the JMS
@@ -810,8 +904,11 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     private final Deque<ExceptionListener> mExceptionListeners =
             new LinkedList<ExceptionListener>();
     private Date mLastConnectTime;
-    private Map<UserID,UserInfo> mUserInfoCache=
+    private final Map<UserID,UserInfo> mUserInfoCache=
         new HashMap<UserID,UserInfo>();
+    private final Map<String,String> mUnderlyingToRootCache= new HashMap<String, String>();
+    private final Map<String,Collection<String>> mRootToUnderlyingCache=
+            new HashMap<String, Collection<String>>();
 
     private static final long DEFAULT_HEARTBEAT_INTERVAL = 5000;
     private static long sHeartbeatInterval=

@@ -174,7 +174,7 @@ public class DateUtilsTest
         throws Exception
     {
         DateTimeFormatter[] formats = new DateTimeFormatter[] { MILLIS_WITH_TZ,MILLIS,SECONDS_WITH_TZ,SECONDS,MINUTES_WITH_TZ,MINUTES,DAYS_WITH_TZ,DAYS };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             protected void run()
                 throws Exception
             {

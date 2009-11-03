@@ -1242,7 +1242,7 @@ public class AbstractMarketDataFeedTest
         // log in to the feed
         if(inLoginThrows ||
            inIsLoggedInThrows) {
-            new ExpectedFailure<NullPointerException>(null) {
+            new ExpectedFailure<NullPointerException>() {
                 @Override
                 protected void run()
                     throws Exception

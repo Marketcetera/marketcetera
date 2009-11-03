@@ -59,28 +59,28 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
     @Test
     public void nulls() throws Exception {
         //null URL
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 new RemoteDataEmitter(null, "bla", "bla", new MyAdapter());
             }
         };
         //null adapter
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 new RemoteDataEmitter(DEFAULT_URL, "bla", "bla", null);
             }
         };
         //null user name
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 new RemoteDataEmitter(DEFAULT_URL, null, "bla", new MyAdapter());
             }
         };
         //null password
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 new RemoteDataEmitter(DEFAULT_URL, "bla", null, new MyAdapter());
@@ -95,7 +95,7 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
     @Test
     public void connectFailure() throws Exception {
         final MyAdapter adapter = new MyAdapter();
-        Throwable jmsException = new ExpectedFailure<Exception>(null){
+        Throwable jmsException = new ExpectedFailure<Exception>(){
             @Override
             protected void run() throws Exception {
                 new RemoteDataEmitter("tcp://localhost:101", "admin", "admin", adapter);
@@ -110,7 +110,7 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
         assertTrue(adapter.hasNoStatus());
 
         //invalid URL
-        new ExpectedFailure<Exception>(null) {
+        new ExpectedFailure<Exception>() {
             @Override
             protected void run() throws Exception {
                 new RemoteDataEmitter("this is not a URL", "admin", "admin", adapter);
@@ -382,7 +382,7 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
                                    final String inPassword)
             throws Exception {
         final MyAdapter adapter = new MyAdapter();
-        Throwable failure = new ExpectedFailure<BeanCreationException>(null) {
+        Throwable failure = new ExpectedFailure<BeanCreationException>() {
             @Override
             protected void run() throws Exception {
                 new RemoteDataEmitter(DEFAULT_URL, inUsername, inPassword, adapter);

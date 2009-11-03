@@ -33,13 +33,13 @@ public class OrderCancelRejectTest extends TypesTestBase {
     public void failures() throws Exception {
         final BrokerID cID = new BrokerID("blah");
         // null message
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
              protected void run() throws Exception {
                  sFactory.createOrderCancelReject(null, cID, Originator.Server, null, null);
              }
          };
         //null originator
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
              protected void run() throws Exception {
                  sFactory.createOrderCancelReject
                      (getSystemMessageFactory().newOrderCancelReject(),
@@ -115,7 +115,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
         final Map<Integer, String> actual = ((FIXMessageSupport) report).getFields();
         assertEquals(expected, actual);
         //Verify that the map is not modifiable
-        new ExpectedFailure<UnsupportedOperationException>(null){
+        new ExpectedFailure<UnsupportedOperationException>(){
             protected void run() throws Exception {
                 actual.clear();
             }

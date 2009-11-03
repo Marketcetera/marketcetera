@@ -175,6 +175,7 @@ public class FIXMessageUtil {
                              MsgType.SECURITY_LIST_REQUEST);
     }
 
+    @Deprecated
 	public static boolean isEquityOptionOrder(Message message)
 	{
 		try {

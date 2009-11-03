@@ -7,6 +7,8 @@ import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.orderloader.*;
 import org.marketcetera.orderloader.Messages;
 import static org.marketcetera.orderloader.system.SystemProcessor.*;
+import static org.marketcetera.orderloader.system.InstrumentFromRow.*;
+import static org.marketcetera.orderloader.system.OptionFromRow.*;
 import org.marketcetera.trade.*;
 import org.marketcetera.module.ExpectedFailure;
 import org.junit.BeforeClass;
@@ -33,7 +35,7 @@ public class SystemProcessorTest {
     @Test
     public void constructor() throws Exception {
         //Order Processor cannot be null
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             protected void run() throws Exception {
                 new SystemProcessor(null, new BrokerID("what"));
             }
@@ -183,34 +185,52 @@ public class SystemProcessorTest {
         processor.initialize(FIELD_ACCOUNT, FIELD_ORDER_CAPACITY,
                 FIELD_ORDER_TYPE, FIELD_POSITION_EFFECT, "666",
                 FIELD_PRICE, FIELD_QUANTITY, FIELD_SECURITY_TYPE,
-                FIELD_SIDE, FIELD_SYMBOL, FIELD_TIME_IN_FORCE, "2112");
+                FIELD_SIDE, FIELD_SYMBOL, FIELD_TIME_IN_FORCE,
+                FIELD_EXPIRY, FIELD_STRIKE_PRICE,
+                FIELD_OPTION_TYPE, "2112");
         processor.processOrder(1, "mine", "",
                 OrderType.Market.toString(), "", "beast", "", "3.33",
                 SecurityType.CommonStock.toString(),
                 Side.SellShortExempt.toString(), "vsft",
-                TimeInForce.Day.toString(), "steel");
+                TimeInForce.Day.toString(), null, null, null, "steel");
         //fails due to incorrect price value
         String[] failRow1 = {"mine", "",
                 OrderType.Market.toString(), "", "beast", "nice", "3.33",
                 SecurityType.CommonStock.toString(),
                 Side.SellShortExempt.toString(), "vsft",
-                TimeInForce.Day.toString(), "steel"};
+                TimeInForce.Day.toString(), null, null, null, "steel"};
         processor.processOrder(2, failRow1);
         processor.processOrder(3, "yours", OrderCapacity.Individual.toString(),
                 OrderType.Limit.toString(), PositionEffect.Close.toString(),
                 "number", "22.2", "9.99",
                 SecurityType.Option.toString(),
                 Side.Buy.toString(), "soft",
-                TimeInForce.FillOrKill.toString(), "of");
+                TimeInForce.FillOrKill.toString(), "20101010", "12.34", "Call", "of");
         //fails due to incorrect OrderCapacity Value
         String[] failRow2 = {"yours", OrderCapacity.Unknown.toString(),
                 OrderType.Limit.toString(), PositionEffect.Close.toString(),
                 "number", "22.2", "9.99",
                 SecurityType.Option.toString(),
                 Side.Buy.toString(), "soft",
-                TimeInForce.Day.toString(), "of"};
+                TimeInForce.Day.toString(), "20101010", "12.34", "Call", "of"};
         processor.processOrder(4, failRow2);
-        OrderParserTest.assertProcessor(processor, 2, 2);
+        //fails due to incorrect OptionType Value
+        String[] failRow3 = {"yours", OrderCapacity.Agency.toString(),
+                OrderType.Limit.toString(), PositionEffect.Close.toString(),
+                "number", "22.2", "9.99",
+                SecurityType.Option.toString(),
+                Side.Buy.toString(), "soft",
+                TimeInForce.Day.toString(), "20101010", "12.34", "Puff", "of"};
+        processor.processOrder(5, failRow3);
+        //fails due to incorrect strike price Value
+        String[] failRow4 = {"yours", OrderCapacity.Agency.toString(),
+                OrderType.Limit.toString(), PositionEffect.Close.toString(),
+                "number", "22.2", "9.99",
+                SecurityType.Option.toString(),
+                Side.Buy.toString(), "soft",
+                TimeInForce.Day.toString(), "20101010", "nostrike", "Call", "of"};
+        processor.processOrder(6, failRow4);
+        OrderParserTest.assertProcessor(processor, 2, 4);
         //Verify successful orders
         List<Order> list = mProcessor.getOrders();
         assertEquals(2, list.size());
@@ -228,19 +248,19 @@ public class SystemProcessorTest {
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(1),
                 TypesTestBase.NOT_NULL, Side.Buy, new BigDecimal("9.99"),
                 new BigDecimal("22.2"), TimeInForce.FillOrKill, OrderType.Limit,
-                //TODO test options when they are added 
-                new Equity("soft"),
-                SecurityType.CommonStock, "yours", OrderCapacity.Individual,
+                new Option("soft", "20101010", new BigDecimal("12.34"), OptionType.Call),
+                SecurityType.Option, "yours", OrderCapacity.Individual,
                 PositionEffect.Close, brokerID, map);
         //Verify failures.
         List<FailedOrderInfo> failed = processor.getFailedOrders();
-        assertEquals(2, failed.size());
+        assertEquals(4, failed.size());
         FailedOrderInfo info = failed.get(0);
         assertEquals(2, info.getIndex());
         assertArrayEquals(failRow1, info.getRow());
         assertEquals(new I18NBoundMessage1P(Messages.INVALID_PRICE_VALUE,
                 "nice"), ((OrderParsingException)info.getException()).
                 getI18NBoundMessage());
+
         info = failed.get(1);
         assertEquals(4, info.getIndex());
         assertArrayEquals(failRow2, info.getRow());
@@ -249,6 +269,24 @@ public class SystemProcessorTest {
         validValues.remove(OrderCapacity.Unknown);
         assertEquals(new I18NBoundMessage2P(Messages.INVALID_ORDER_CAPACITY,
                 OrderCapacity.Unknown.toString(), validValues.toString()), 
+                ((OrderParsingException)info.getException()).
+                getI18NBoundMessage());
+
+        info = failed.get(2);
+        assertEquals(5, info.getIndex());
+        assertArrayEquals(failRow3, info.getRow());
+        Set<OptionType> validOpTypes = EnumSet.allOf(OptionType.class);
+        validOpTypes.remove(OptionType.Unknown);
+        assertEquals(new I18NBoundMessage2P(Messages.INVALID_OPTION_TYPE,
+                "Puff", validOpTypes.toString()),
+                ((OrderParsingException)info.getException()).
+                getI18NBoundMessage());
+
+        info = failed.get(3);
+        assertEquals(6, info.getIndex());
+        assertArrayEquals(failRow4, info.getRow());
+        assertEquals(new I18NBoundMessage1P(Messages.INVALID_STRIKE_PRICE_VALUE,
+                "nostrike"),
                 ((OrderParsingException)info.getException()).
                 getI18NBoundMessage());
     }

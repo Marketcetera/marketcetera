@@ -34,7 +34,7 @@ public abstract class KeyTestBase {
 	 */
 	@Test
 	public void testNullSymbolFails() throws Exception {
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				createKeyWithNullSymbol();

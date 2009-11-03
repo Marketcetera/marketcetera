@@ -239,7 +239,7 @@ public class OrderReplaceTest extends TypesTestBase {
     public void systemFIXWrapFailures() throws Exception {
         final BrokerID brokerID = new BrokerID("meh");
         //Null check for message parameter
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             protected void run() throws Exception {
                 sFactory.createOrderReplace(null, brokerID);
             }

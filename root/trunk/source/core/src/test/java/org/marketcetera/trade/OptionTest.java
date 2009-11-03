@@ -54,18 +54,26 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
 	@Test
     public void testStrikePriceTrailingZerosTrimmed() throws Exception {
-        Option option1 = new Option("ABC", "20091010", new BigDecimal("5"),
+        verifyStrikePriceTrimTrailingZero("5", "5.00");
+        verifyStrikePriceTrimTrailingZero("50", "50.00");
+        verifyStrikePriceTrimTrailingZero("5.5", "5.500");
+        verifyStrikePriceTrimTrailingZero("5000", "5000.00000");
+        verifyStrikePriceTrimTrailingZero("5000.4343", "5000.434300000");
+    }
+
+    private void verifyStrikePriceTrimTrailingZero(String inPrice1, String inPrice2) {
+        Option option1 = new Option("ABC", "20091010", new BigDecimal(inPrice1),
                 OptionType.Call);
-        Option option2 = new Option("ABC", "20091010", new BigDecimal("5.00"),
+        Option option2 = new Option("ABC", "20091010", new BigDecimal(inPrice2),
                 OptionType.Call);
-        assertThat(option2.getStrikePrice(), is(new BigDecimal("5")));
+        assertThat(option2.getStrikePrice(), is(new BigDecimal(inPrice1)));
         assertThat(option1, is(option2));
         assertThat(option1.hashCode(), is(option2.hashCode()));
     }
 
     @Test
     public void testNullSymbol() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Option(null, "20091010", BigDecimal.ONE, OptionType.Call);
@@ -75,13 +83,13 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testWhitespaceSymbol() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Option("", "20091010", BigDecimal.ONE, OptionType.Call);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Option("   ", "20091010", BigDecimal.ONE, OptionType.Call);
@@ -91,7 +99,7 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testNullType() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", "20091010", BigDecimal.ONE, null);
@@ -101,7 +109,7 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testNullExpiry() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", null, BigDecimal.ONE, OptionType.Call);
@@ -111,13 +119,13 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testWhitespaceExpiry() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", "", BigDecimal.ONE, OptionType.Call);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", " ", BigDecimal.ONE, OptionType.Call);
@@ -127,7 +135,7 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testNullStrikePrice() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", "20091010", null, OptionType.Call);
