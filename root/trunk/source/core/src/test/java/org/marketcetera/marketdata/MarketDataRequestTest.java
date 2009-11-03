@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import static org.marketcetera.marketdata.MarketDataRequest.ASSETCLASS_KEY;
 import static org.marketcetera.marketdata.MarketDataRequest.CONTENT_KEY;
 import static org.marketcetera.marketdata.MarketDataRequest.EXCHANGE_KEY;
@@ -48,6 +49,7 @@ import org.marketcetera.marketdata.MarketDataRequest.AssetClass;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.RandomStrings;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -503,6 +505,21 @@ public class MarketDataRequestTest
        request1.withUnderlyingSymbols("METC,GOOG");
        assertFalse(request1.equals(request2));
        assertFalse(request2.equals(request1));
+        //differ by parameters
+        request1 = new MarketDataRequest();
+        request2 = new MarketDataRequest();
+        assertEquals(request1,
+                     request2);
+        request1.withParameter("blue","green");
+        assertFalse(request1.equals(request2));
+        request2.withParameter("blue","green");
+        assertEquals(request1,
+                     request2);
+        request2.withParameter("blue","red");
+        assertFalse(request1.equals(request2));
+        request1.withParameter("blue","red");
+        assertEquals(request1,
+                     request2);
     }
     /**
      * Tests {@link MarketDataRequest#withContent(Content[])} and {@link MarketDataRequest#withContent(String)}.
@@ -1156,6 +1173,72 @@ public class MarketDataRequestTest
                 assertFalse(other.equals(content.getAsCapability()));
             }
         }
+    }
+
+    /**
+     * Tests the function of {@link MarketDataRequest#withParameter(String, String)}
+     * & {@link MarketDataRequest#getParameters()}.
+     *
+     * @throws Exception if an error occurs.
+     */
+    @Test
+    public void parameters() throws Exception
+    {
+        final MarketDataRequest request = MarketDataRequest.newRequest();
+        assertTrue(request.getParameters().isEmpty());
+
+        assertSame(request, request.withParameter("blue","green"));
+        assertEquals(1, request.getParameters().size());
+        assertEquals("green", request.getParameters().get("blue"));
+
+        assertSame(request, request.withParameter("blue","red"));
+        assertEquals(1, request.getParameters().size());
+        assertEquals("red", request.getParameters().get("blue"));
+
+        assertSame(request, request.withParameter("sky","water"));
+        assertEquals(2, request.getParameters().size());
+        assertEquals("red", request.getParameters().get("blue"));
+        assertEquals("water", request.getParameters().get("sky"));
+
+        assertSame(request, request.withParameter(null,"bull"));
+        assertEquals(3, request.getParameters().size());
+        assertEquals("red", request.getParameters().get("blue"));
+        assertEquals("water", request.getParameters().get("sky"));
+        assertEquals("bull", request.getParameters().get(null));
+
+        assertSame(request, request.withParameter("hush",null));
+        assertEquals(4, request.getParameters().size());
+        assertEquals("red", request.getParameters().get("blue"));
+        assertEquals("water", request.getParameters().get("sky"));
+        assertEquals("bull", request.getParameters().get(null));
+        assertEquals(null, request.getParameters().get("hush"));
+
+        assertSame(request, request.withParameter("",""));
+        assertEquals(5, request.getParameters().size());
+        assertEquals("red", request.getParameters().get("blue"));
+        assertEquals("water", request.getParameters().get("sky"));
+        assertEquals("bull", request.getParameters().get(null));
+        assertEquals(null, request.getParameters().get("hush"));
+        assertEquals("", request.getParameters().get(""));
+
+        String name = RandomStrings.genStrValid();
+        String value = RandomStrings.genStrValid();
+
+        assertSame(request, request.withParameter(name, value));
+        assertEquals(6, request.getParameters().size());
+        assertEquals("red", request.getParameters().get("blue"));
+        assertEquals("water", request.getParameters().get("sky"));
+        assertEquals("bull", request.getParameters().get(null));
+        assertEquals(null, request.getParameters().get("hush"));
+        assertEquals("", request.getParameters().get(""));
+        assertEquals(value, request.getParameters().get(name));
+
+        new ExpectedFailure<UnsupportedOperationException>() {
+            @Override
+            protected void run() throws Exception {
+                request.getParameters().clear();
+            }
+        };
     }
     /**
      * Creates a composite <code>String</code> representation of a <code>String[]</code> value.

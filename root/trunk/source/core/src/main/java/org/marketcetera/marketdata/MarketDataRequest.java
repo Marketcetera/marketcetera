@@ -5,6 +5,7 @@ import static org.marketcetera.core.Util.KEY_VALUE_SEPARATOR;
 import static org.marketcetera.marketdata.MarketDataRequest.AssetClass.OPTION;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.DIVIDEND;
 import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Messages.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class MarketDataRequest
-    implements Serializable, Messages
+    implements Serializable
 {
     /**
      * the delimiter used to distinguish between symbols in the string representation of the symbol collection
@@ -206,7 +207,7 @@ public class MarketDataRequest
      * <p>The given symbols must be non-null and non-empty.
      * 
      * <p>Either symbols or underlying symbols ({@link #withUnderlyingSymbols(String)} or
-     * {@link #withUnderlyingSymbols(String...)}) must be specified and no default is provided. 
+     * {@link #withUnderlyingSymbols(String[])}) must be specified and no default is provided.
      * 
      * @param inSymbols a <code>String[]</code> value containing symbols to add to the request
      * @return a <code>MarketDataRequest</code> value
@@ -224,7 +225,7 @@ public class MarketDataRequest
      * or a series of symbols delimited by {@link #SYMBOL_DELIMITER}.
      * 
      * <p>Either symbols or underlying symbols ({@link #withUnderlyingSymbols(String)} or
-     * {@link #withUnderlyingSymbols(String...)}) must be specified and no default is provided. 
+     * {@link #withUnderlyingSymbols(String[])}) must be specified and no default is provided.
      * 
      * @param inSymbols a <code>String</code> value containing symbols separated by {@link #SYMBOL_DELIMITER} to add to the request
      * @return a <code>MarketDataRequest</code> value
@@ -243,7 +244,7 @@ public class MarketDataRequest
      *
      * <p>The given underlying symbols must be non-null and non-empty.
      * 
-     * <p>Either symbols ({@link #withSymbols(String)} or {@link #withSymbols(String...)}) or 
+     * <p>Either symbols ({@link #withSymbols(String)} or {@link #withSymbols(String[])}) or
      * underlying symbols must be specified and no default is provided. 
      * 
      * @param inUnderlyingSymbols a <code>String[]</code> value containing underlying symbols to add to the request
@@ -261,7 +262,7 @@ public class MarketDataRequest
      * <p>The given underlying symbols must be non-null and non-empty.  The underlying symbols may be a single symbol
      * or a series of symbols delimited by {@link #SYMBOL_DELIMITER}.
      * 
-     * <p>Either symbols ({@link #withSymbols(String)} or {@link #withSymbols(String...)}) or 
+     * <p>Either symbols ({@link #withSymbols(String)} or {@link #withSymbols(String[])}) or
      * underlying symbols must be specified and no default is provided. 
      * 
      * @param inUnderlyingSymbols a <code>String</code> value containing underlying symbols separated by {@link #SYMBOL_DELIMITER} to add to the request
@@ -389,7 +390,6 @@ public class MarketDataRequest
         return this;
     }
     /**
-    /**
      * Adds the given asset class to the market data request.
      *
      * <p>The given asset class value must not be null.  This attribute is required.  If
@@ -408,6 +408,21 @@ public class MarketDataRequest
                                                                       inAssetClass).getText(),
                                                e);
         }
+        return this;
+    }
+    /**
+     * Adds the given parameter name and value to the market data request.
+     * <p>
+     * See marketdata providers documentation for supported parameters.
+     * Parameters not supported by a marketdata provider will be ignored.
+     *
+     * @param inName the parameter name
+     * @param inValue the parameter value
+     * @return a <code>MarketDataRequest</code> value
+     */
+    public MarketDataRequest withParameter(String inName, String inValue)
+    {
+        parameters.put(inName, inValue);
         return this;
     }
     /**
@@ -464,6 +479,15 @@ public class MarketDataRequest
         return Collections.unmodifiableSet(content);
     }
     /**
+     * Get the map of parameter names and values.
+     *
+     * @return an umodifiable map of parameter names and values. 
+     */
+    public Map<String,String> getParameters()
+    {
+        return Collections.unmodifiableMap(parameters);
+    }
+    /**
      * Get the asset class value.
      *
      * @return an <code>AssetClass</code> value
@@ -498,6 +522,7 @@ public class MarketDataRequest
         result = prime * result + ((symbols == null) ? 0 : symbols.hashCode());
         result = prime * result + ((underlyingSymbols == null) ? 0 : underlyingSymbols.hashCode());
         result = prime * result + ((assetClass == null) ? 0 : assetClass.hashCode());
+        result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -542,6 +567,11 @@ public class MarketDataRequest
             if (other.underlyingSymbols != null)
                 return false;
         } else if (!underlyingSymbols.equals(other.underlyingSymbols))
+            return false;
+        if (parameters == null) {
+            if (other.parameters != null)
+                return false;
+        } else if (!parameters.equals(other.parameters))
             return false;
         return true;
     }
@@ -794,7 +824,7 @@ public class MarketDataRequest
      *
      * <p>This attribute is required.  If omitted, the value will be {@link Content#TOP_OF_BOOK}.
      * 
-     * @param a <code>Content[]</code> value
+     * @param inContent a <code>Content[]</code> value
      * @throws IllegalArgumentException if the given content value is invalid 
      */
     private void setContent(Content...inContent)
@@ -878,6 +908,10 @@ public class MarketDataRequest
      * the underlying symbols for which to request data
      */
     private final List<String> underlyingSymbols = new ArrayList<String>();
+    /**
+     * the map of custom request parameters 
+     */
+    private final Map<String,String> parameters = new HashMap<String, String>();
     /**
      * the provider key from which to request data
      */
