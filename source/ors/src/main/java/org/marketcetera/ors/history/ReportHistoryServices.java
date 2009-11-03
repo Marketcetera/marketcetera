@@ -7,10 +7,7 @@ import java.util.Map;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.position.PositionKey;
 
@@ -61,12 +58,12 @@ public class ReportHistoryServices {
 
     /**
      * Returns the position of the equity based on all reports
-     * received for it before the supplied date, and which are visible
+     * received for it before or on the supplied date, and which are visible
      * to the given user.
      *
      * @param inUser the user making the query. Cannot be null.
      * @param inDate the date to compare with all the reports. Only the reports
-     * that were received prior to this date will be used in this calculation.
+     * that were received prior to or on this date will be used in this calculation.
      * Cannot be null.
      *
      * @param inEquity the equity whose position is desired. Cannot be null.
@@ -106,6 +103,88 @@ public class ReportHistoryServices {
         throws PersistenceException
     {
         return ExecutionReportSummary.getPositionsAsOf(inUser,inDate);
+    }
+
+    /**
+     * Gets the current aggregate position for the option instrument based on
+     * execution reports received before or on the supplied date, and which
+     * are visible to the given user.
+     *
+     * <p>
+     * Buy trades result in positive positions. All other kinds of trades
+     * result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the time. execution reports with sending time values less
+     * than or equal to this time are included in this calculation.
+     * @param inOption The option instrument
+     *
+     * @return the aggregate position for the symbol.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position.
+     */
+    public BigDecimal getOptionPositionAsOf
+        (final SimpleUser inUser,
+         final Date inDate,
+         final Option inOption)
+        throws PersistenceException {
+        return ExecutionReportSummary.getOptionPositionAsOf(inUser,
+                inDate, inOption);
+    }
+
+    /**
+     * Returns the aggregate position of each option
+     * (option,account,actor)
+     * tuple based on all reports received for each option instrument on or before
+     * the supplied date, and which are visible to the given user.
+     *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
+     *
+     * @return the position map.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position map.
+     */
+    public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
+        (final SimpleUser inUser,
+         final Date inDate)
+        throws PersistenceException {
+        return ExecutionReportSummary.getAllOptionPositionsAsOf(inUser, inDate);
+    }
+
+    /**
+     * Returns the aggregate position of each option
+     * (option,account,actor)
+     * tuple based on all reports received for each option instrument on or before
+     * the supplied date, and which are visible to the given user.
+     *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
+     * @param inSymbols the list of option roots.
+     *
+     * @return the position map.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position map.
+     */
+    public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
+        (final SimpleUser inUser,
+         final Date inDate,
+         final String... inSymbols)
+        throws PersistenceException {
+        return ExecutionReportSummary.getOptionPositionsAsOf(inUser, inDate, inSymbols);
     }
 
     /**

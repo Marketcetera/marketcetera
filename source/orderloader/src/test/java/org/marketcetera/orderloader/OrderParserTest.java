@@ -40,7 +40,7 @@ public class OrderParserTest {
     }
     @Test
     public void nullRowProcessor() throws Exception {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 new OrderParser(null);
             }
@@ -48,7 +48,7 @@ public class OrderParserTest {
     }
     @Test
     public void nullOrderProcessor() throws Exception {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 new MockRowProcessor(new BrokerID("yyz"), null);
             }

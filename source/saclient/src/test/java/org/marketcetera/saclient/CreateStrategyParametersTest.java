@@ -32,21 +32,21 @@ public class CreateStrategyParametersTest {
     @Test
     public void constructorChecks() throws Exception {
         //strategy name
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 new CreateStrategyParameters("blah", null, "JAVA", new File("dontmatter"), null, false);
             }
         };
         //language
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 new CreateStrategyParameters("blah", "naah", null, new File("dontmatter"), null, false);
             }
         };
         //strategy script
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 new CreateStrategyParameters("blah", "naah", "JAVA", null, null, false);
@@ -129,7 +129,7 @@ public class CreateStrategyParametersTest {
                 null, "mname", "JAVA", tmp, null, true);
         assertTrue(tmp.delete());
         assertFalse(tmp.exists());
-        new ExpectedFailure<FileNotFoundException>(null){
+        new ExpectedFailure<FileNotFoundException>(){
             @Override
             protected void run() throws Exception {
                 csp2.getStrategySource();

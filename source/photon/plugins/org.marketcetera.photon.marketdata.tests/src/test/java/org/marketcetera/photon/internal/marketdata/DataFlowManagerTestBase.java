@@ -156,7 +156,7 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	
 	@Test
 	public void testNullModuleManager() throws Exception {
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				createFixture(null, mock(Executor.class));
@@ -285,19 +285,19 @@ public abstract class DataFlowManagerTestBase<T extends MDItem, K extends Key<T>
 	
 	@Test
 	public void nullKeys() throws Exception {
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getItem(null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.startFlow(null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.stopFlow(null);

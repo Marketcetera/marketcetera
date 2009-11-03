@@ -92,6 +92,7 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
@@ -466,23 +467,23 @@ public class StrategyTestBase
             synchronized(dataToSend) {
                 dataToSend.clear();
                 dataToSend.add(EventTestBase.generateEquityTradeEvent(System.nanoTime(),
-                                                                      System.currentTimeMillis(),
-                                                                      new Equity("GOOG"),
-                                                                      "Exchange",
-                                                                      new BigDecimal("100"),
-                                                                      new BigDecimal("10000")));
+                                              System.currentTimeMillis(),
+                                              new Equity("GOOG"),
+                                              "Exchange",
+                                              new BigDecimal("100"),
+                                              new BigDecimal("10000")));
                 dataToSend.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
-                                                                    System.currentTimeMillis(),
-                                                                    new Equity("GOOG"),
-                                                                    "Exchange",
-                                                                    new BigDecimal("200"),
-                                                                    new BigDecimal("20000")));
+                                            System.currentTimeMillis(),
+                                            new Equity("GOOG"),
+                                            "Exchange",
+                                            new BigDecimal("200"),
+                                            new BigDecimal("20000")));
                 dataToSend.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
-                                                                    System.currentTimeMillis(),
-                                                                    new Equity("GOOG"),
-                                                                    "Exchange",
-                                                                    new BigDecimal("200"),
-                                                                    new BigDecimal("20000")));
+                                            System.currentTimeMillis(),
+                                            new Equity("GOOG"),
+                                            "Exchange",
+                                            new BigDecimal("200"),
+                                            new BigDecimal("20000")));
                 dataToSend.add(EventTestBase.generateDividendEvent());
                 Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
                 OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
@@ -836,12 +837,46 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#isCredentialsMatch(String, char[])
          */
         @Override
-        public boolean isCredentialsMatch(String inUsername, char[] inPassword) {
+        public boolean isCredentialsMatch(String inUsername, char[] inPassword)
+        {
             throw new UnsupportedOperationException();
         }
 
         @Override
         public boolean isServerAlive()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public BigDecimal getOptionPositionAsOf(Date inDate, Option inOption)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+
+        @Override
+        public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf(
+                Date inDate)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf(
+                Date inDate, String... inSymbols)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getUnderlying(String optionRoot)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Collection<String> getOptionRoots(String inUnderlying)
         {
             throw new UnsupportedOperationException();
         }
@@ -1220,17 +1255,17 @@ public class StrategyTestBase
         runningModules.add(bogusDataFeedURN);
         setPropertiesToNull();
         tradeEvent = EventTestBase.generateEquityTradeEvent(System.nanoTime(),
-                                                            System.currentTimeMillis(),
-                                                            new Equity("METC"),
-                                                            "Q",
-                                                            new BigDecimal("1000.25"),
-                                                            new BigDecimal("1000"));
+                                    System.currentTimeMillis(),
+                                    new Equity("METC"),
+                                    "Q",
+                                    new BigDecimal("1000.25"),
+                                    new BigDecimal("1000"));
         askEvent = EventTestBase.generateEquityAskEvent(System.nanoTime(),
-                                                        System.currentTimeMillis(),
-                                                        new Equity("METC"),
-                                                        "Q",
-                                                        new BigDecimal("100.00"),
-                                                        new BigDecimal("10000"));
+                                System.currentTimeMillis(),
+                                new Equity("METC"),
+                                "Q",
+                                new BigDecimal("100.00"),
+                                new BigDecimal("10000"));
         StrategyDataEmissionModule.setDataToSendToDefaults();
     }
     /**

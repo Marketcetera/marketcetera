@@ -188,7 +188,7 @@ public class PropertiesConfigurationProviderTest
     @Test
     public void nulls() throws Exception {
         //null loader
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 createProvider(null);
@@ -196,7 +196,7 @@ public class PropertiesConfigurationProviderTest
         };
         //null URN
         final ModuleConfigurationProvider provider = createProvider();
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 provider.getDefaultFor(null,"value");

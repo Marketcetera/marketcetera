@@ -35,7 +35,7 @@ public class FIXOrderTest extends TypesTestBase {
     public void checkFIXWrap() throws Exception {
         final BrokerID id = new BrokerID("blah");
         //Null value check for message.
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 sFactory.createOrder(null,id);
             }
@@ -76,7 +76,7 @@ public class FIXOrderTest extends TypesTestBase {
         final Message msg = FIXVersion.FIX44.getMessageFactory().newBasicOrder();
         final BrokerID id = new BrokerID("blah");
         // null broker not allowed.
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 sFactory.createOrder(msg, null);
             }
@@ -86,7 +86,7 @@ public class FIXOrderTest extends TypesTestBase {
         BrokerID cID = new BrokerID("meh");
         order.setBrokerID(cID);
         assertOrderValues(order,cID, null);
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             protected void run() throws Exception {
                 order.setBrokerID(null);
             }
@@ -143,7 +143,7 @@ public class FIXOrderTest extends TypesTestBase {
         expected.put(Price.FIELD, price.toString());
         final Map<Integer,String> actual = order.getFields();
         //Verify that it's an unmodifiable map.
-        new ExpectedFailure<UnsupportedOperationException>(null) {
+        new ExpectedFailure<UnsupportedOperationException>() {
             protected void run() throws Exception {
                 actual.clear();
             }

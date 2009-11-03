@@ -4,9 +4,7 @@ import java.util.Comparator;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -48,58 +46,18 @@ final class PositionKeyComparator implements Comparator<PositionKey<?>> {
 
         @Override
         public int compare(Instrument o1, Instrument o2) {
-            if (o1 instanceof Equity && o2 instanceof Equity) {
-                return EquityComparator.INSTANCE.compare((Equity) o1,
-                        (Equity) o2);
-            } else if (o1 instanceof Option && o2 instanceof Option) {
-                return OptionComparator.INSTANCE.compare((Option) o1,
-                        (Option) o2);
+            if(o1.getClass().equals(o2.getClass())) {
+                @SuppressWarnings("unchecked")
+                int value = getComparator(o1).compare(o1, o2);
+                return value;
             } else {
-                return getOrdering(o1) - getOrdering(o2);
+                return getComparator(o1).getRank() - getComparator(o2).getRank();
             }
         }
 
-        private int getOrdering(Instrument instrument) {
-            if (instrument instanceof Equity) {
-                return 0;
-            } else if (instrument instanceof Option) {
-                return 1;
-            } else {
-                return Integer.MAX_VALUE;
-            }
+        private static InstrumentPositionKeyComparator getComparator(Instrument o1) {
+            return InstrumentPositionKeyComparator.SELECTOR.forInstrument(o1);
         }
     }
 
-    /**
-     * Comparator for Equities.
-     */
-    @ClassVersion("$Id$")
-    private final static class EquityComparator implements Comparator<Equity> {
-
-        public final static EquityComparator INSTANCE = new EquityComparator();
-
-        @Override
-        public int compare(Equity o1, Equity o2) {
-            return new CompareToBuilder()
-                    .append(o1.getSymbol(), o2.getSymbol()).toComparison();
-        }
-    }
-
-    /**
-     * Comparator for Options.
-     */
-    @ClassVersion("$Id$")
-    private final static class OptionComparator implements Comparator<Option> {
-
-        public final static OptionComparator INSTANCE = new OptionComparator();
-
-        @Override
-        public int compare(Option o1, Option o2) {
-            return new CompareToBuilder()
-                    .append(o1.getSymbol(), o2.getSymbol()).append(
-                            o1.getExpiry(), o2.getExpiry()).append(
-                            o1.getStrikePrice(), o2.getStrikePrice()).append(
-                            o1.getType(), o2.getType()).toComparison();
-        }
-    }
 }

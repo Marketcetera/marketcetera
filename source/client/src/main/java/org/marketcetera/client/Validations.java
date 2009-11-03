@@ -2,7 +2,9 @@ package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.trade.*;
+import org.marketcetera.client.instruments.InstrumentValidationHandler;
 
 /* $License$ */
 /**
@@ -22,7 +24,7 @@ public final class Validations {
      *  <li>has a non-null orderType</li>
      *  <li>has a non-null orderQuantity</li>
      *  <li>has a non-null Side value</li>
-     *  <li>has a non-null Symbol</li>
+     *  <li>has a non-null &amp; valid Instrument</li>
      * </ul>
      *
      * @param inOrderSingle The order that needs to be validated.
@@ -44,8 +46,7 @@ public final class Validations {
                 Messages.VALIDATION_ORDER_QUANTITY);
         validate(inOrderSingle.getSide() == null,
                 Messages.VALIDATION_ORDER_SIDE);
-        validate(inOrderSingle.getInstrument() == null,
-                Messages.VALIDATION_ORDER_INSTRUMENT);
+        validateInstrument(inOrderSingle.getInstrument());
     }
 
     /**
@@ -74,7 +75,7 @@ public final class Validations {
      *  <li>has a non-null orderType</li>
      *  <li>has a non-null orderQuantity</li>
      *  <li>has a non-null Side value</li>
-     *  <li>has a non-null Symbol</li>
+     *  <li>has a non-null &amp; valid Instrument</li>
      * </ul>
      *
      * @param inOrderReplace The order that needs to be validated.
@@ -98,8 +99,7 @@ public final class Validations {
                 Messages.VALIDATION_ORDER_QUANTITY);
         validate(inOrderReplace.getSide() == null,
                 Messages.VALIDATION_ORDER_SIDE);
-        validate(inOrderReplace.getInstrument() == null,
-                Messages.VALIDATION_ORDER_INSTRUMENT);
+        validateInstrument(inOrderReplace.getInstrument());
     }
 
     /**
@@ -110,7 +110,7 @@ public final class Validations {
      *  <li>has a non-null original orderID</li>
      *  <li>has a non-null orderQuantity</li>
      *  <li>has a non-null Side value</li>
-     *  <li>has a non-null Symbol</li>
+     *  <li>has a non-null &amp; valid Instrument</li>
      * </ul>
      *
      * @param inOrderCancel The order that needs to be validated.
@@ -132,8 +132,7 @@ public final class Validations {
                 Messages.VALIDATION_ORDER_QUANTITY);
         validate(inOrderCancel.getSide() == null,
                 Messages.VALIDATION_ORDER_SIDE);
-        validate(inOrderCancel.getInstrument() == null,
-                Messages.VALIDATION_ORDER_INSTRUMENT);
+        validateInstrument(inOrderCancel.getInstrument());
     }
 
     /**
@@ -164,6 +163,27 @@ public final class Validations {
                 Messages.VALIDATION_SUGGEST_ORDER);
     }
 
+    /**
+     * Validates an instrument.
+     * <p>
+     * Verifies that the instrument is non-null and performs instrument
+     * specific validation using {@link InstrumentValidationHandler}.
+     *
+     * @param inInstrument the instrument
+     *
+     * @throws OrderValidationException if the instrument fails validation.
+     */
+    public static void validateInstrument(Instrument inInstrument)
+            throws OrderValidationException {
+        validate(inInstrument == null, Messages.VALIDATION_ORDER_INSTRUMENT);
+        try {
+            InstrumentValidationHandler.SELECTOR.forInstrument(inInstrument).
+                validate(inInstrument);
+        } catch (IllegalArgumentException e) {
+            throw new OrderValidationException(e, new I18NBoundMessage1P(
+                    Messages.VALIDATION_UNKNOWN_INSTRUMENT, inInstrument));
+        }
+    }
     private static void validate(boolean inValidationFailed,
                                    I18NMessage0P inMessage)
             throws OrderValidationException {

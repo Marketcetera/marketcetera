@@ -130,7 +130,7 @@ public class OrderBookTest
     public void bookConstruction()
         throws Exception
     {
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -138,7 +138,7 @@ public class OrderBookTest
                 new OrderBook(null);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -147,7 +147,7 @@ public class OrderBookTest
                               1);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -156,7 +156,7 @@ public class OrderBookTest
                               -2);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -384,7 +384,7 @@ public class OrderBookTest
     public void processBadEvents()
         throws Exception
     {
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -395,7 +395,7 @@ public class OrderBookTest
         final AskEvent badAsk = EventTestBase.generateEquityAskEvent(new Equity("METC"),
                                                                      exchange);
         assertFalse(badAsk.getInstrument().equals(symbol));
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception

@@ -25,7 +25,7 @@ public class ModuleURNXmlAdapterTest {
     @Test
     public void failures() throws Exception {
         //marshalling failures
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 sAdapter.marshal(null);

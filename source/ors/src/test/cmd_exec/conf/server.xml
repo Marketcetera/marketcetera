@@ -92,4 +92,9 @@
       </bean>
     </property>
   </bean>
+  <bean
+   class="org.marketcetera.ors.OptionRootUnderlyingMap">
+    <property name="filename" value="${metc.optionroot.map.file}"/>
+    <property name="includeTypes" value="EU,EL"/>
+  </bean>
 </beans>

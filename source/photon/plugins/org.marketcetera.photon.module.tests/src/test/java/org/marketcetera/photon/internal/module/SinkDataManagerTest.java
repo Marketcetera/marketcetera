@@ -149,81 +149,81 @@ public class SinkDataManagerTest {
 	@Test
 	public void invalid() throws Exception {
 		// register
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.register(null, String.class);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.register(mock(ISinkDataHandler.class), (Class<?>) null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.register(mock(ISinkDataHandler.class), (Class<?>[]) null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.register(mock(ISinkDataHandler.class), null, String.class);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.register(mock(ISinkDataHandler.class), new Class<?>[] {String.class, null});
 			}
 		};
 		// unregister
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.unregister(null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.unregister(null, String.class);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.unregister(mock(ISinkDataHandler.class), (Class<?>) null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.unregister(mock(ISinkDataHandler.class), (Class<?>[]) null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.unregister(mock(ISinkDataHandler.class), null, String.class);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.unregister(mock(ISinkDataHandler.class), new Class<?>[] {String.class, null});
 			}
 		};
 		// register default
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.registerDefault(null);
 			}
 		};
-		new ExpectedFailure<IllegalStateException>(null) {
+		new ExpectedFailure<IllegalStateException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.registerDefault(mock(ISinkDataHandler.class));
@@ -231,7 +231,7 @@ public class SinkDataManagerTest {
 			}
 		};
 		// unregister default
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				fixture.unregisterDefault(null);

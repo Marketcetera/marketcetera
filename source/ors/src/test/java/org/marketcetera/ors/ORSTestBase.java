@@ -2,8 +2,8 @@ package org.marketcetera.ors;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.AfterClass;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.exchange.Event;
@@ -52,14 +52,14 @@ public class ORSTestBase
         "tcp://localhost:61616";
 
 
-    private SampleExchange mExchange;
-    private OrderRoutingSystem mORS;
-    private Thread mORSThread;
-    private ORSTestClient mAdminClient;
-    private AtomicInteger mNextOrderID=new AtomicInteger(0);
+    private static SampleExchange mExchange;
+    private static OrderRoutingSystem sORS;
+    private static Thread sORSThread;
+    private static ORSTestClient sAdminClient;
+    private static AtomicInteger sNextOrderID=new AtomicInteger(0);
 
 
-    protected void startORS
+    protected static void startORS
         (final String args[])
         throws Exception
     {
@@ -78,14 +78,14 @@ public class ORSTestBase
 
         // Create and start ORS in a separate thread.
 
-        mORS=new OrderRoutingSystem(args);
-        mORSThread=new Thread("testThread") {
+        sORS =new OrderRoutingSystem(args);
+        sORSThread =new Thread("testThread") {
             @Override
             public void run() {
                 getORS().startWaitingForever();
             }
         };
-        mORSThread.start();
+        sORSThread.start();
 
         // Wait for ORS initialization to complete.
 
@@ -109,45 +109,45 @@ public class ORSTestBase
 
         // Create the administrative client.
 
-        mAdminClient=new ORSTestClient
+        sAdminClient =new ORSTestClient
             (getORS().getAuth().getUser(),
              getORS().getAuth().getPassword());
     }
 
-    protected void startORS()
+    protected static void startORS()
         throws Exception
     {
         startORS(new String[0]);
     }
 
-    protected void stopORS()
+    protected static void stopORS()
         throws Exception
     {
         // Close the administrative client.
 
         if (getAdminClient()!=null) {
             getAdminClient().close();
-            mAdminClient=null;
+            sAdminClient =null;
         }
 
         // Shut down ORS waiting thread.
 
-        if (mORSThread!=null) {
-            mORSThread.interrupt();
+        if (sORSThread !=null) {
+            sORSThread.interrupt();
 
             // Wait for ORS waiting thread to terminate.
 
-            while (mORSThread.isAlive()) {
+            while (sORSThread.isAlive()) {
                 Thread.sleep(1000);
             }
-            mORSThread=null;
+            sORSThread =null;
         }
 
         // Shut down the ORS.
 
         if (getORS()!=null) {
             getORS().stop();
-            mORS=null;
+            sORS =null;
         }
 
         // Shut down the exchange.
@@ -159,32 +159,32 @@ public class ORSTestBase
         }
     }
 
-    protected SampleExchange getExchange()
+    protected static SampleExchange getExchange()
     {
         return mExchange;
     }
 
-    protected OrderRoutingSystem getORS()
+    protected static OrderRoutingSystem getORS()
     {
-        return mORS;
+        return sORS;
     }
 
-    protected ORSTestClient getAdminClient()
+    protected static ORSTestClient getAdminClient()
     {
-        return mAdminClient;
+        return sAdminClient;
     }
 
-    protected Brokers getBrokers()
+    protected static Brokers getBrokers()
     {
         return getORS().getBrokers();
     }
 
-    protected BrokerID getFirstBrokerID()
+    protected static BrokerID getFirstBrokerID()
     {
         return getBrokers().getBrokers().get(0).getBrokerID();
     }
 
-    protected void emulateBrokerResponse
+    protected static void emulateBrokerResponse
         (BrokerID brokerID,
          Message msg)
         throws Exception
@@ -199,14 +199,14 @@ public class ORSTestBase
                                     id.getSenderCompID()));
     }
 
-    protected void emulateFirstBrokerResponse
+    protected static void emulateFirstBrokerResponse
         (Message msg)
         throws Exception
     {
         emulateBrokerResponse(getFirstBrokerID(),msg);
     }
 
-    protected Message getNextExchangeMessage()
+    protected static Message getNextExchangeMessage()
         throws InterruptedException
     {
         while (true) {
@@ -217,20 +217,20 @@ public class ORSTestBase
         }
     }
 
-    protected void completeExecReport
+    protected static void completeExecReport
         (Message msg)
     {
         if (!msg.isSetField(AvgPx.FIELD)) {
             msg.setField(new AvgPx(0));
         }
         if (!msg.isSetField(ClOrdID.FIELD)) {
-            msg.setField(new ClOrdID("ID"+mNextOrderID.getAndIncrement()));
+            msg.setField(new ClOrdID("ID"+ sNextOrderID.getAndIncrement()));
         }
         if (!msg.isSetField(CumQty.FIELD)) {
             msg.setField(new CumQty(0));
         }
         if (!msg.isSetField(ExecID.FIELD)) {
-            msg.setField(new ExecID("ID"+mNextOrderID.getAndIncrement()));
+            msg.setField(new ExecID("ID"+ sNextOrderID.getAndIncrement()));
         }
         if (!msg.isSetField(ExecTransType.FIELD)) {
             msg.setField(new ExecTransType(ExecTransType.NEW));
@@ -245,7 +245,7 @@ public class ORSTestBase
             msg.setField(new OrdStatus(OrdStatus.NEW));
         }
         if (!msg.isSetField(OrderID.FIELD)) {
-            msg.setField(new OrderID("ID"+mNextOrderID.getAndIncrement()));
+            msg.setField(new OrderID("ID"+ sNextOrderID.getAndIncrement()));
         }
         if (!msg.isSetField(Side.FIELD)) {
             msg.setField(new Side(Side.BUY));
@@ -260,11 +260,11 @@ public class ORSTestBase
         return getSystemMessageFactory().newOrderCancelReject();
     }
 
-    protected void completeOrderCancelReject
+    protected static void completeOrderCancelReject
         (Message msg)
     {
         if (!msg.isSetField(ClOrdID.FIELD)) {
-            msg.setField(new ClOrdID("ID"+mNextOrderID.getAndIncrement()));
+            msg.setField(new ClOrdID("ID"+ sNextOrderID.getAndIncrement()));
         }
         if (!msg.isSetField(CxlRejResponseTo.FIELD)) {
             msg.setField(new CxlRejResponseTo
@@ -274,10 +274,10 @@ public class ORSTestBase
             msg.setField(new OrdStatus(OrdStatus.NEW));
         }
         if (!msg.isSetField(OrderID.FIELD)) {
-            msg.setField(new OrderID("ID"+mNextOrderID.getAndIncrement()));
+            msg.setField(new OrderID("ID"+ sNextOrderID.getAndIncrement()));
         }
         if (!msg.isSetField(OrigClOrdID.FIELD)) {
-            msg.setField(new OrigClOrdID("ID"+mNextOrderID.getAndIncrement()));
+            msg.setField(new OrigClOrdID("ID"+ sNextOrderID.getAndIncrement()));
         }
     }
 
@@ -289,15 +289,15 @@ public class ORSTestBase
     }
 
 
-    @Before
-    public void setupORSTestBase()
+    @BeforeClass
+    public static void setupORSTestBase()
         throws Exception
     {
         startORS();
     }
 
-    @After
-    public void tearDownORSTestBase()
+    @AfterClass
+    public static void tearDownORSTestBase()
         throws Exception
     {
         stopORS();

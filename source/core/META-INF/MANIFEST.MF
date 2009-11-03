@@ -9,6 +9,7 @@ Require-Bundle: org.marketcetera.util;visibility:=reexport,
  org.marketcetera.util-test;resolution:=optional,
  org.marketcetera.test.thirdparty;resolution:=optional
 Export-Package: org.marketcetera.core,
+ org.marketcetera.core.instruments,
  org.marketcetera.core.notifications,
  org.marketcetera.core.position,
  org.marketcetera.core.position.impl,
@@ -35,4 +36,6 @@ Eclipse-BuddyPolicy: registered
 Import-Package: junit.framework;resolution:=optional,
  org.hamcrest;resolution:=optional,
  org.junit;resolution:=optional,
+ org.junit.runners;resolution:=optional,
+ org.junit.runner;resolution:=optional,
  org.mockito;resolution:=optional

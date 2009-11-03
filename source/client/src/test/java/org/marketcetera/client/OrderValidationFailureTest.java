@@ -2,6 +2,8 @@ package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.trade.*;
 import org.marketcetera.module.ExpectedFailure;
@@ -51,7 +53,14 @@ public class OrderValidationFailureTest {
         order = ClientTest.createOrderSingle();
         order.setInstrument(null);
         verifySingle(order, VALIDATION_ORDER_INSTRUMENT);
-        
+
+        order = ClientTest.createOrderSingle();
+        order.setInstrument(OPTION_INVALID_EXPIRY);
+        verifySingle(order, EXPECTED_EXPIRY_FAIL_MESSAGE);
+
+        order = ClientTest.createOrderSingle();
+        order.setInstrument(UNKNOWN_INSTRUMENT);
+        verifySingle(order, EXPECTED_UNKNOWN_INSTRUMENT_MESSAGE);
     }
     @Test
     public void orderReplace() throws Exception {
@@ -85,6 +94,14 @@ public class OrderValidationFailureTest {
         order = ClientTest.createOrderReplace();
         order.setInstrument(null);
         verifyReplace(order, VALIDATION_ORDER_INSTRUMENT);
+
+        order = ClientTest.createOrderReplace();
+        order.setInstrument(OPTION_INVALID_EXPIRY);
+        verifyReplace(order, EXPECTED_EXPIRY_FAIL_MESSAGE);
+
+        order = ClientTest.createOrderReplace();
+        order.setInstrument(UNKNOWN_INSTRUMENT);
+        verifyReplace(order, EXPECTED_UNKNOWN_INSTRUMENT_MESSAGE);
     }
     @Test
     public void orderCancel() throws Exception {
@@ -115,6 +132,13 @@ public class OrderValidationFailureTest {
         order.setInstrument(null);
         verifyCancel(order, VALIDATION_ORDER_INSTRUMENT);
 
+        order = ClientTest.createOrderCancel();
+        order.setInstrument(OPTION_INVALID_EXPIRY);
+        verifyCancel(order, EXPECTED_EXPIRY_FAIL_MESSAGE);
+
+        order = ClientTest.createOrderCancel();
+        order.setInstrument(UNKNOWN_INSTRUMENT);
+        verifyCancel(order, EXPECTED_UNKNOWN_INSTRUMENT_MESSAGE);
     }
     @Test
     public void orderFIX() throws Exception {
@@ -141,6 +165,26 @@ public class OrderValidationFailureTest {
         suggest.setScore(BigDecimal.ONE);
         Validations.validate(suggest);
     }
+    @Test
+    public void instrument() throws Exception {
+        //null instrument
+        new ExpectedFailure<OrderValidationException>(Messages.VALIDATION_ORDER_INSTRUMENT){
+            @Override
+            protected void run() throws Exception {
+                Validations.validateInstrument(null);
+            }
+        };
+        //invalid instrument
+        new ExpectedFailure<OrderValidationException>(EXPECTED_UNKNOWN_INSTRUMENT_MESSAGE){
+            @Override
+            protected void run() throws Exception {
+                Validations.validateInstrument(UNKNOWN_INSTRUMENT);
+            }
+        };
+        //valid instruments
+        Validations.validateInstrument(new Equity("eq"));
+        Validations.validateInstrument(new Option("eq","200010",BigDecimal.TEN, OptionType.Call));
+    }
     @BeforeClass
     public static void setup() throws Exception {
         LoggerConfiguration.logSetup();
@@ -161,7 +205,7 @@ public class OrderValidationFailureTest {
     }
 
     private static void verifySingle(final OrderSingle inOrder,
-                                     I18NMessage0P inExpectedMessage)
+                                     I18NBoundMessage inExpectedMessage)
             throws Exception {
         new ExpectedFailure<OrderValidationException>(
                 inExpectedMessage){
@@ -177,7 +221,7 @@ public class OrderValidationFailureTest {
         };
     }
     private static void verifyReplace(final OrderReplace inOrder,
-                                     I18NMessage0P inExpectedMessage)
+                                     I18NBoundMessage inExpectedMessage)
             throws Exception {
         new ExpectedFailure<OrderValidationException>(
                 inExpectedMessage){
@@ -193,7 +237,7 @@ public class OrderValidationFailureTest {
         };
     }
     private static void verifyCancel(final OrderCancel inOrder,
-                                     I18NMessage0P inExpectedMessage)
+                                     I18NBoundMessage inExpectedMessage)
             throws Exception {
         new ExpectedFailure<OrderValidationException>(
                 inExpectedMessage){
@@ -233,5 +277,24 @@ public class OrderValidationFailureTest {
             }
         };
     }
+    private static final Option OPTION_INVALID_EXPIRY = new Option("TEST",
+            "20090000", BigDecimal.TEN, OptionType.Call);
+    private static final Instrument UNKNOWN_INSTRUMENT = new Instrument() {
+        @Override
+        public String getSymbol() {
+            return null;
+        }
+
+        @Override
+        public SecurityType getSecurityType() {
+            return null;
+        }
+    };
+    private static final I18NBoundMessage1P EXPECTED_UNKNOWN_INSTRUMENT_MESSAGE =
+            new I18NBoundMessage1P(Messages.VALIDATION_UNKNOWN_INSTRUMENT,
+                    UNKNOWN_INSTRUMENT);
     private static MockServer sServer;
+    private static final I18NBoundMessage1P EXPECTED_EXPIRY_FAIL_MESSAGE = new I18NBoundMessage1P(
+            org.marketcetera.client.instruments.Messages.INVALID_OPTION_EXPIRY_FORMAT,
+            OPTION_INVALID_EXPIRY.getExpiry());
 }

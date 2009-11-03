@@ -19,7 +19,7 @@ public class IDTest extends ModuleTestBase {
      */
     @Test
     public void requestID() throws Exception {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 new RequestID(null);
             }
@@ -48,7 +48,7 @@ public class IDTest extends ModuleTestBase {
      */
     @Test
     public void flowID() throws Exception {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 new DataFlowID(null);
             }

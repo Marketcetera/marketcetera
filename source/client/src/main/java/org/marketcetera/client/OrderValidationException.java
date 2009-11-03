@@ -24,5 +24,15 @@ public class OrderValidationException extends I18NException {
         super(message);
     }
 
+    /**
+     * Creates an instance.
+     *
+     * @param cause the underlying exception
+     * @param message the localized message
+     */
+    public OrderValidationException(Throwable cause, I18NBoundMessage message) {
+        super(cause, message);
+    }
+
     private static final long serialVersionUID = 1L;
 }

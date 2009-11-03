@@ -153,7 +153,7 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
     @Test
     public void clientAuth() throws Exception {
         //null context
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 StrategyAgent.authenticate(null,"value", "value".toCharArray());

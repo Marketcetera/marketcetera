@@ -59,7 +59,12 @@ public class Option extends Instrument {
         mSymbol = symbol;
         mType = type;
         mExpiry = expiry;
-        mStrikePrice = strikePrice.stripTrailingZeros();
+        strikePrice = strikePrice.stripTrailingZeros();
+        if(strikePrice.scale() < 0) {
+            //reset the scale if the number is a multiple of 10
+            strikePrice = strikePrice.setScale(0);
+        }
+        mStrikePrice = strikePrice;
     }
 
     /**

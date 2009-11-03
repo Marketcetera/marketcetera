@@ -76,7 +76,7 @@ public class MarketceteraFeedMessageTranslatorTest
             // check exchange
             if(inExpectedExchange == null ||
                inExpectedExchange.isEmpty()) {
-                new ExpectedFailure<FieldNotFound>(null) {
+                new ExpectedFailure<FieldNotFound>() {
                     protected void run()
                         throws Exception
                     {

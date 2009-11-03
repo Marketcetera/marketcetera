@@ -8,9 +8,7 @@ import org.marketcetera.persist.PersistTestBase;
 import org.marketcetera.event.HasFIXMessage;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNull;
-import org.apache.log4j.Level;
 
 import javax.persistence.TemporalType;
 import java.util.List;
@@ -22,14 +20,14 @@ import quickfix.field.*;
 
 /* $License$ */
 /**
- * Verifies {@link ExecutionReportSummary}
+ * Verifies {@link ExecutionReportSummary}.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class ExecReportSummaryTest extends ReportsTestBase {
+public abstract class ExecReportSummaryTestBase<I extends Instrument> extends ReportsTestBase {
     /**
      * Verify empty actor/viewer.
      *
@@ -41,12 +39,12 @@ public class ExecReportSummaryTest extends ReportsTestBase {
     {
         PersistentReport.save
             (createExecReport
-             ("o1",null,"sym",Side.Buy,OrderStatus.PartiallyFilled,
+             ("o1",null, getInstrument(),Side.Buy,OrderStatus.PartiallyFilled,
               BigDecimal.TEN,BigDecimal.TEN,BigDecimal.ONE,BigDecimal.ONE,
               BROKER,null,null));
         PersistentReport.save
             (createExecReport
-             ("o1",null,"sym",Side.Buy,OrderStatus.PartiallyFilled,
+             ("o1",null, getInstrument(),Side.Buy,OrderStatus.PartiallyFilled,
               BigDecimal.TEN,BigDecimal.TEN,BigDecimal.ONE,BigDecimal.ONE));
 
         MultiExecReportSummary query=MultiExecReportSummary.all();
@@ -91,10 +89,10 @@ public class ExecReportSummaryTest extends ReportsTestBase {
     @Test
     public void execReportSave() throws Exception {
         String orderID1 = "ord1";
-        String symbol = "sym";
+        I instrument = getInstrument();
         // A report with null orig ID. The root ID should be set to orderID1
-        ExecutionReport report1 = createExecReport(orderID1, null,
-                symbol, Side.Buy, OrderStatus.PartiallyFilled,
+        ExecutionReport report1 = createExecReport(orderID1, null, instrument,
+                Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
         PersistentReport.save(report1);
         //report got saved
@@ -112,12 +110,12 @@ public class ExecReportSummaryTest extends ReportsTestBase {
                 report1.getLastQuantity(), report1.getOrderID(),
                 report1.getOrderStatus(), null, reportQuery.fetch().get(0),
                 report1.getOrderID(), report1.getSendingTime(),
-                report1.getSide(), report1.getInstrument().getSymbol());
+                report1.getSide(), instrument);
 
         String orderID2 = "ord2";
         // A report with orig ID set to previous order. The root ID should be set to orderID1
         ExecutionReport report2 = createExecReport(orderID2, orderID1,
-                symbol, Side.Buy, OrderStatus.PartiallyFilled,
+                instrument, Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
         PersistentReport.save(report2);
         //report got saved
@@ -132,12 +130,12 @@ public class ExecReportSummaryTest extends ReportsTestBase {
                 report2.getOrderStatus(), report2.getOriginalOrderID(),
                 reportQuery.fetch().get(1),
                 report1.getOrderID(), report2.getSendingTime(),
-                report2.getSide(), report2.getInstrument().getSymbol());
+                report2.getSide(), instrument);
 
         String orderID3 = "ord3";
         // A report with orig ID set to previous order. The root ID should be set to orderID1
         ExecutionReport report3 = createExecReport(orderID3, orderID2,
-                symbol, Side.Buy, OrderStatus.PartiallyFilled,
+                instrument, Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
         PersistentReport.save(report3);
         //report3 got saved
@@ -152,7 +150,7 @@ public class ExecReportSummaryTest extends ReportsTestBase {
                 report3.getOrderStatus(), report3.getOriginalOrderID(),
                 reportQuery.fetch().get(2),
                 report1.getOrderID(), report3.getSendingTime(),
-                report3.getSide(), report3.getInstrument().getSymbol());
+                report3.getSide(), instrument);
     }
 
     /**
@@ -165,8 +163,9 @@ public class ExecReportSummaryTest extends ReportsTestBase {
     public void execReportOrigOrderNotPresent() throws Exception {
         //Create a report with orig orderID value such that no
         //record of an exec report with that order ID value exists
+        I instrument = getInstrument();
         ExecutionReport report = createExecReport("ord1", "ord2",
-                "s", Side.Buy, OrderStatus.PartiallyFilled,
+                instrument, Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
         PersistentReport.save(report);
         //report got saved
@@ -184,7 +183,7 @@ public class ExecReportSummaryTest extends ReportsTestBase {
                 report.getOrderStatus(), report.getOriginalOrderID(),
                 reportQuery.fetch().get(0),
                 report.getOriginalOrderID(), report.getSendingTime(),
-                report.getSide(), report.getInstrument().getSymbol());
+                report.getSide(), instrument);
     }
     
     @Test
@@ -288,19 +287,9 @@ public class ExecReportSummaryTest extends ReportsTestBase {
         assertEquals(-1, query.getMaxResult());
     }
 
-    private static ExecutionReport removeField(ExecutionReport inReport,
-                                               int inTag) {
-        ((HasFIXMessage)inReport).getMessage().removeField(inTag);
-        return inReport;
-    }
-
-    private ExecutionReport createDummyExecReport() throws Exception {
-        return createExecReport("o1", null, "s", Side.Buy,
-                OrderStatus.Filled, BigDecimal.ONE, BigDecimal.ONE,
-                BigDecimal.ONE, BigDecimal.ONE);
-    }
+    protected abstract I getInstrument();
     
-    private static void assertSummary(ExecutionReportSummary inSummary,
+    protected void assertSummary(ExecutionReportSummary inSummary,
                                       BigDecimal inAvgPrice,
                                       BigDecimal inCumQuantity,
                                       BigDecimal inLastPrice,
@@ -312,7 +301,7 @@ public class ExecReportSummaryTest extends ReportsTestBase {
                                       OrderID inRootID,
                                       Date inSendingTime,
                                       Side inSide,
-                                      String inSymbol) throws Exception {
+                                      I inInstrument) throws Exception {
         assertBigDecimalEquals(inAvgPrice, inSummary.getAvgPrice());
         assertBigDecimalEquals(inCumQuantity, inSummary.getCumQuantity());
         assertBigDecimalEquals(inLastPrice, inSummary.getLastPrice());
@@ -327,7 +316,23 @@ public class ExecReportSummaryTest extends ReportsTestBase {
         PersistTestBase.assertCalendarEquals(inSendingTime,
                 inSummary.getSendingTime(), TemporalType.TIMESTAMP);
         assertEquals(inSide, inSummary.getSide());
-        assertEquals(inSymbol, inSummary.getSymbol());
+        assertInstrument(inSummary, inInstrument);
     }
 
+    protected void assertInstrument(ExecutionReportSummary inSummary, I inInstrument) {
+        assertEquals(inInstrument.getSecurityType(), inSummary.getSecurityType());
+        assertEquals(inInstrument.getSymbol(), inSummary.getSymbol());
+    }
+
+    private static ExecutionReport removeField(ExecutionReport inReport,
+                                               int inTag) {
+        ((HasFIXMessage)inReport).getMessage().removeField(inTag);
+        return inReport;
+    }
+
+    private ExecutionReport createDummyExecReport() throws Exception {
+        return createExecReport("o1", null, getInstrument(), Side.Buy,
+                OrderStatus.Filled, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE);
+    }
 }

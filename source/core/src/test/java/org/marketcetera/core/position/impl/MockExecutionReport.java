@@ -15,7 +15,6 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.PositionEffect;
 import org.marketcetera.trade.ReportID;
-import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.UserID;

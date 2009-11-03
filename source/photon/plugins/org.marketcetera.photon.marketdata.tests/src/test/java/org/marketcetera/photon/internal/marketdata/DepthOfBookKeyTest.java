@@ -40,13 +40,13 @@ public class DepthOfBookKeyTest extends KeyTestBase {
 	
 	@Test
 	public void testInvalidContent() throws Exception {
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				new DepthOfBookKey("IBM", null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				new DepthOfBookKey("IBM", Content.LATEST_TICK);

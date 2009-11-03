@@ -81,35 +81,35 @@ public class MarketDataTest {
 
 	@Test
 	public void testNulls() throws Exception {
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				new MarketData(null, mMockTopOfBookManager, mMockMarketstatManager,
 						mDepthOfBookFactory);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				new MarketData(mMockLatestTickManager, null, mMockMarketstatManager,
 						mDepthOfBookFactory);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				new MarketData(mMockLatestTickManager, mMockTopOfBookManager, null,
 						mDepthOfBookFactory);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				new MarketData(mMockLatestTickManager, mMockTopOfBookManager,
 						mMockMarketstatManager, null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				new MarketData(mMockLatestTickManager, mMockTopOfBookManager,
@@ -121,37 +121,37 @@ public class MarketDataTest {
 						});
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getLatestTick(null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getTopOfBook(null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getMarketstat(null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getDepthOfBook(null, Content.TOTAL_VIEW);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getDepthOfBook("ABC", null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getDepthOfBook("ABC", Content.MARKET_STAT);

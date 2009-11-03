@@ -409,7 +409,7 @@ public class JMXIntegrationTest extends ModuleTestBase {
                         missingAttribute, "right?"));
             }
         };
-        new ExpectedFailure<ReflectionException>(null){
+        new ExpectedFailure<ReflectionException>(){
             @Override
             protected void run() throws Exception {
                 server.invoke(objectName, "run", null, null);

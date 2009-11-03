@@ -213,7 +213,7 @@ public class StrategyAgentRemotingConfigTest extends StrategyAgentTestBase {
         if(inSuccess) {
             new Socket(inHost, inPort).close();
         } else {
-            new ExpectedFailure<ConnectException>(null){
+            new ExpectedFailure<ConnectException>(){
                 @Override
                 protected void run() throws Exception {
                     new Socket(inHost, inPort).close();

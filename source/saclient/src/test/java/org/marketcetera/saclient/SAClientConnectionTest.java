@@ -222,13 +222,13 @@ public class SAClientConnectionTest {
     @Test
     public void nullListeners() throws Exception {
         final SAClient saclient = MockStrategyAgent.connectTo();
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 saclient.addConnectionStatusListener(null);
             }
         };
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 saclient.removeConnectionStatusListener(null);
@@ -301,7 +301,7 @@ public class SAClientConnectionTest {
         assertFalse(listener1.getNext());
         assertFalse(listener2.getNext());
         //verify that listener throws exception when set to fail
-        new ExpectedFailure<IllegalStateException>(null){
+        new ExpectedFailure<IllegalStateException>(){
             @Override
             protected void run() throws Exception {
                 listener1.receiveConnectionStatus(false);

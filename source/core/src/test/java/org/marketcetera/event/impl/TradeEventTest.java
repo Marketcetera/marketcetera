@@ -66,7 +66,7 @@ public class TradeEventTest
        useEquity = true; useInstrument = true;
        verify(setDefaults(getBuilder()));
        // create a new kind of instrument
-       new ExpectedFailure<UnsupportedOperationException>(null) {
+       new ExpectedFailure<UnsupportedOperationException>() {
            @Override
            protected void run()
                    throws Exception

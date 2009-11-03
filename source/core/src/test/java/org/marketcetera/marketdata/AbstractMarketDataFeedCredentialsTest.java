@@ -54,7 +54,7 @@ public class AbstractMarketDataFeedCredentialsTest
                 new MockMarketDataFeedCredentials("           ");            
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception

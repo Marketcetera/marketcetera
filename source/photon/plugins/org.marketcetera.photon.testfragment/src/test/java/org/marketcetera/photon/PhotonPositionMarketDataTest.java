@@ -81,43 +81,43 @@ public class PhotonPositionMarketDataTest {
 
 	@Test
 	public void testNulls() throws Exception {
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				new PhotonPositionMarketData(null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getLastTradePrice(null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.getClosingPrice(null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.addSymbolChangeListener(null, mock(SymbolChangeListener.class));
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.addSymbolChangeListener("IBM", null);
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.removeSymbolChangeListener(null, mock(SymbolChangeListener.class));
 			}
 		};
-		new ExpectedFailure<IllegalArgumentException>(null) {
+		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
 				mFixture.removeSymbolChangeListener("IBM", null);

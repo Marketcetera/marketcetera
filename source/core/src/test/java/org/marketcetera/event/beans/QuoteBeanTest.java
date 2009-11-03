@@ -65,7 +65,7 @@ public class QuoteBeanTest
                         .withSize(BigDecimal.TEN)
                         .withQuoteDate(DateUtils.dateToString(new Date()));
         // signature 1
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run()
                     throws Exception
@@ -76,7 +76,7 @@ public class QuoteBeanTest
                                                 QuoteAction.ADD);
             }
         };
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run()
                     throws Exception
@@ -88,7 +88,7 @@ public class QuoteBeanTest
                                                 QuoteAction.ADD);
             }
         };
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run()
                     throws Exception
@@ -100,7 +100,7 @@ public class QuoteBeanTest
                                                 QuoteAction.ADD);
             }
         };
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run()
                     throws Exception
@@ -113,7 +113,7 @@ public class QuoteBeanTest
             }
         };
         // signature 2
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run()
                     throws Exception
@@ -122,7 +122,7 @@ public class QuoteBeanTest
                                                 QuoteAction.ADD);
             }
         };
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run()
                     throws Exception
@@ -226,7 +226,7 @@ public class QuoteBeanTest
         equityAskBuilder.withMessageId(Long.MIN_VALUE);
         // test the instrument
         equityAskBuilder.withInstrument(null);
-        new ExpectedFailure<IllegalArgumentException>(null){
+        new ExpectedFailure<IllegalArgumentException>(){
             @Override
             protected void run()
                     throws Exception

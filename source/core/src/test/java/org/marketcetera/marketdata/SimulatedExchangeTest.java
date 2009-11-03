@@ -117,7 +117,7 @@ public class SimulatedExchangeTest
     public void redundantStartAndStop()
         throws Exception
     {
-        new ExpectedFailure<IllegalStateException>(null) {
+        new ExpectedFailure<IllegalStateException>() {
             @Override
             protected void run()
                     throws Exception
@@ -126,7 +126,7 @@ public class SimulatedExchangeTest
             }
         };
         exchange.start();
-        new ExpectedFailure<IllegalStateException>(null) {
+        new ExpectedFailure<IllegalStateException>() {
             @Override
             protected void run()
                     throws Exception
@@ -146,7 +146,7 @@ public class SimulatedExchangeTest
     {
         final String name = "name";
         final String code = "code";
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -155,7 +155,7 @@ public class SimulatedExchangeTest
                                       code);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -165,7 +165,7 @@ public class SimulatedExchangeTest
                                       1);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -174,7 +174,7 @@ public class SimulatedExchangeTest
                                       null);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -184,7 +184,7 @@ public class SimulatedExchangeTest
                                       1);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -194,7 +194,7 @@ public class SimulatedExchangeTest
                                       -2);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -228,7 +228,7 @@ public class SimulatedExchangeTest
     public void snapshots()
         throws Exception
     {
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -236,7 +236,7 @@ public class SimulatedExchangeTest
                 exchange.getDepthOfBook(null);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -244,7 +244,7 @@ public class SimulatedExchangeTest
                 exchange.getTopOfBook(null);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -253,7 +253,7 @@ public class SimulatedExchangeTest
             }
         };
         // exchange is not started yet
-        new ExpectedFailure<IllegalStateException>(null) {
+        new ExpectedFailure<IllegalStateException>() {
             @Override
             protected void run()
                     throws Exception
@@ -261,7 +261,7 @@ public class SimulatedExchangeTest
                 exchange.getDepthOfBook(metc);
             }
         };
-        new ExpectedFailure<IllegalStateException>(null) {
+        new ExpectedFailure<IllegalStateException>() {
             @Override
             protected void run()
                     throws Exception
@@ -269,7 +269,7 @@ public class SimulatedExchangeTest
                 exchange.getTopOfBook(metc);
             }
         };
-        new ExpectedFailure<IllegalStateException>(null) {
+        new ExpectedFailure<IllegalStateException>() {
             @Override
             protected void run()
                     throws Exception
@@ -357,7 +357,7 @@ public class SimulatedExchangeTest
     public void statistics()
         throws Exception
     {
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -366,7 +366,7 @@ public class SimulatedExchangeTest
             }
         };
         // exchange not started
-        new ExpectedFailure<IllegalStateException>(null) {
+        new ExpectedFailure<IllegalStateException>() {
             @Override
             protected void run()
                     throws Exception

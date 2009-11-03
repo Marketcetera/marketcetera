@@ -32,6 +32,10 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>
@@ -39,7 +43,7 @@
       <artifactId>log4j</artifactId>
       <scope>compile</scope>
     </dependency>
-      
+
     <!-- Runtime. -->
     <dependency>
       <groupId>org.apache.cxf</groupId>

@@ -18,19 +18,16 @@ import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Util;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.PositionKeyFactory;
 import org.junit.*;
+import static org.junit.Assert.*;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
+import org.hamcrest.Matchers;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.allOf;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
@@ -353,6 +350,81 @@ public class ClientTest
                      (new Date(10),null));
         assertEquals(MockServiceImpl.POSITIONS, getClient().
                 getPositionsAsOf(new Date()));
+
+        //getOptionPositionAsOf()
+        Option option = new Option("XYZ", "20101010", BigDecimal.TEN, OptionType.Call);
+        Date date = new Date();
+        assertEquals(BigDecimal.TEN.add(BigDecimal.valueOf(date.getTime())),
+                getClient().getOptionPositionAsOf(date, option));
+
+        //getAllOptionPositionsAsOf()
+        Map<PositionKey<Option>, BigDecimal> positions = getClient().
+                getOptionPositionsAsOf(date, "XYZ", "PQR");
+        assertEquals(2, positions.size());
+        assertThat(positions, allOf(hasEntry(
+                PositionKeyFactory.createOptionKey("XYZ",
+                        option.getExpiry(), option.getStrikePrice(),
+                        option.getType(), "acc", "tra"), 
+                BigDecimal.valueOf(date.getTime())),
+                hasEntry(
+                PositionKeyFactory.createOptionKey("PQR",
+                        option.getExpiry(), option.getStrikePrice(),
+                        option.getType(), "acc", "tra"),
+                BigDecimal.valueOf(date.getTime()))));
+        assertEquals(0, getClient().getOptionPositionsAsOf(date, new String[0]).size());
+
+        //getAllOptionPositionsAsOf()
+        positions = getClient().getAllOptionPositionsAsOf(date);
+        assertEquals(1, positions.size());
+        assertThat(positions, Matchers.hasEntry(
+                PositionKeyFactory.createOptionKey("OPT",
+                        option.getExpiry(), option.getStrikePrice(),
+                        option.getType(), "acc", "tra"),
+                BigDecimal.valueOf(date.getTime())));
+
+        //getUnderlying()
+        assertEquals(null, getClient().getUnderlying(null));
+        assertEquals("", getClient().getUnderlying(""));
+        String symbol = "symbol";
+        String underlying = getClient().getUnderlying(symbol);
+        assertEquals(symbol, underlying);
+        //verify caching
+        assertSame(underlying,
+                getClient().getUnderlying(symbol));
+
+        //getOptionRoots()
+        Collection<String> roots = getClient().getOptionRoots(null);
+        assertEquals(null, roots);
+        //verify caching
+        sServer.getServiceImpl().resetServiceInvoked();
+        assertEquals(null, getClient().getOptionRoots(null));
+        assertFalse(sServer.getServiceImpl().isServiceInvoked());
+
+        //Verify empty collections are received as null
+        roots = getClient().getOptionRoots("");
+        assertEquals(null, roots);
+        //verify caching
+        sServer.getServiceImpl().resetServiceInvoked();
+        assertEquals(null, getClient().getOptionRoots(""));
+        assertFalse(sServer.getServiceImpl().isServiceInvoked());
+        
+        roots = getClient().getOptionRoots(symbol);
+        assertEquals(symbol.length(), roots.size());
+        assertThat(roots, Matchers.hasItem(symbol));
+        //verify caching
+        sServer.getServiceImpl().resetServiceInvoked();
+        assertSame(roots, getClient().getOptionRoots(symbol));
+        assertFalse(sServer.getServiceImpl().isServiceInvoked());
+
+        //reconnect and verify that the cache gets flushed
+        getClient().reconnect();
+        sServer.getServiceImpl().resetServiceInvoked();
+        assertNotSame(underlying, getClient().getUnderlying(symbol));
+        assertTrue(sServer.getServiceImpl().isServiceInvoked());
+        
+        sServer.getServiceImpl().resetServiceInvoked();
+        assertNotSame(roots, getClient().getOptionRoots(symbol));
+        assertTrue(sServer.getServiceImpl().isServiceInvoked());
     }
 
     @Test(timeout=60000)
@@ -746,6 +818,31 @@ public class ClientTest
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
                 client.getUserInfo(null, true);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.getOptionPositionAsOf(null, null);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.getAllOptionPositionsAsOf(null);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.getOptionPositionsAsOf(null, "symbol");
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.getUnderlying(null);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.getOptionRoots(null);
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){

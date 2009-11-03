@@ -32,7 +32,7 @@ public class UriSchemeTest
     public void constructor()
         throws Exception
     {
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -71,7 +71,7 @@ public class UriSchemeTest
         throws Exception
     {
         final UriScheme scheme = new UriScheme("metc");
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -79,7 +79,7 @@ public class UriSchemeTest
                 scheme.composeUriString(null);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -144,7 +144,7 @@ public class UriSchemeTest
         throws Exception
     {
         final UriScheme scheme = new UriScheme("metc");
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -189,7 +189,7 @@ public class UriSchemeTest
         throws Exception
     {
         final UriScheme scheme = new UriScheme("metc");
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -197,7 +197,7 @@ public class UriSchemeTest
                 scheme.hostnameFromUri(null);
             }
         };
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception

@@ -11,7 +11,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.BusinessRejectReason;
+import quickfix.field.*;
 
 import static org.junit.Assert.*;
 
@@ -36,9 +36,31 @@ public class FIXConverterTest
 
     private static enum OrderClass
     {
-        OrderSingle,OrderCancel,OrderReplace;
+        OrderSingle,OrderCancel,OrderReplace
     }
 
+    /**
+     * A data dictionary that does not support any fields except symbol.
+     */
+
+    private static class SymbolOnlyDictionary
+        extends DataDictionary
+    {
+        public static SymbolOnlyDictionary INSTANCE=
+            new SymbolOnlyDictionary();
+
+        public SymbolOnlyDictionary()
+        {
+            super(getSystemMessageDictionary().getDictionary());
+        }
+
+        @Override
+        public boolean isMsgField(String msgType,int field)
+        {
+            //Make instrument supported
+            return Symbol.FIELD==field;
+        }
+    }
     /**
      * A data dictionary that does not support any fields.
      */
@@ -55,7 +77,7 @@ public class FIXConverterTest
         }
 
         @Override
-        public boolean isField(int field)
+        public boolean isMsgField(String msgType,int field)
         {
             return false;
         }
@@ -351,7 +373,7 @@ public class FIXConverterTest
          I18NBoundMessage expectedExceptionMsg)
     {
         testOrderSingle
-            (EmptyDictionary.INSTANCE,orderID,
+            (SymbolOnlyDictionary.INSTANCE,orderID,
              instrument,side,orderType,quantity,timeInForce,account,
              positionEffect,orderCapacity,price,customFields,
              expectedExceptionMsg);
@@ -421,7 +443,7 @@ public class FIXConverterTest
          I18NBoundMessage expectedExceptionMsg)
     {
         testOrderCancel
-            (EmptyDictionary.INSTANCE,orderID,
+            (SymbolOnlyDictionary.INSTANCE,orderID,
              originalOrderID,brokerOrderID,instrument,side,
              quantity,account,customFields,
              expectedExceptionMsg);
@@ -507,7 +529,7 @@ public class FIXConverterTest
          I18NBoundMessage expectedExceptionMsg)
     {
         testOrderReplace
-            (EmptyDictionary.INSTANCE,orderID,
+            (SymbolOnlyDictionary.INSTANCE,orderID,
              originalOrderID,brokerOrderID,instrument,side,
              orderType,quantity,timeInForce,account,
              positionEffect,orderCapacity,price,customFields,
@@ -586,29 +608,29 @@ public class FIXConverterTest
         testOrderSingleUnsupported
             (true,false,false,false,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_ORDER_ID);
-        testOrderSingleUnsupported
-            (false,true,false,false,false,false,false,false,false,false,false,
+        testOrderSingle
+            (EmptyDictionary.INSTANCE,false,true,false,false,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_INSTRUMENT);
         testOrderSingleUnsupported
-            (false,false,true,false,false,false,false,false,false,false,false,
+            (false,true,true,false,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_SIDE);
         testOrderSingleUnsupported
-            (false,false,false,true,false,false,false,false,false,false,false,
+            (false,true,false,true,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_ORDER_TYPE);
         testOrderSingleUnsupported
-            (false,false,false,false,true,false,false,false,false,false,false,
+            (false,true,false,false,true,false,false,false,false,false,false,
              Messages.UNSUPPORTED_QUANTITY);
         testOrderSingleUnsupported
-            (false,false,false,false,false,true,false,false,false,false,false,
+            (false,true,false,false,false,true,false,false,false,false,false,
              Messages.UNSUPPORTED_TIME_IN_FORCE);
         testOrderSingleUnsupported
-            (false,false,false,false,false,false,true,false,false,false,false,
+            (false,true,false,false,false,false,true,false,false,false,false,
              Messages.UNSUPPORTED_ACCOUNT);
         testOrderSingleUnsupported
-            (false,false,false,false,false,false,false,true,false,false,false,
+            (false,true,false,false,false,false,false,true,false,false,false,
              Messages.UNSUPPORTED_POSITION_EFFECT);
         testOrderSingleUnsupported
-            (false,false,false,false,false,false,false,false,true,false,false,
+            (false,true,false,false,false,false,false,false,true,false,false,
              Messages.UNSUPPORTED_ORDER_CAPACITY);
     }
 
@@ -642,19 +664,19 @@ public class FIXConverterTest
             (false,true,false,false,false,false,false,false,
              Messages.UNSUPPORTED_ORIGINAL_ORDER_ID);
         testOrderCancelUnsupported
-            (false,false,true,false,false,false,false,false,
+            (false,false,true,true,false,false,false,false,
              Messages.UNSUPPORTED_BROKER_ORDER_ID);
-        testOrderCancelUnsupported
-            (false,false,false,true,false,false,false,false,
+        testOrderCancel
+            (EmptyDictionary.INSTANCE,false,false,false,true,false,false,false,false,
              Messages.UNSUPPORTED_INSTRUMENT);
         testOrderCancelUnsupported
-            (false,false,false,false,true,false,false,false,
+            (false,false,false,true,true,false,false,false,
              Messages.UNSUPPORTED_SIDE);
         testOrderCancelUnsupported
-            (false,false,false,false,false,true,false,false,
+            (false,false,false,true,false,true,false,false,
              Messages.UNSUPPORTED_QUANTITY);
         testOrderCancelUnsupported
-            (false,false,false,false,false,false,true,false,
+            (false,false,false,true,false,false,true,false,
              Messages.UNSUPPORTED_ACCOUNT);
     }
 
@@ -694,39 +716,39 @@ public class FIXConverterTest
              false,false,
              Messages.UNSUPPORTED_ORIGINAL_ORDER_ID);
         testOrderReplaceUnsupported
-            (false,false,true,false,false,false,false,false,false,false,false,
+            (false,false,true,true,false,false,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_BROKER_ORDER_ID);
-        testOrderReplaceUnsupported
-            (false,false,false,true,false,false,false,false,false,false,false,
+        testOrderReplace
+            (EmptyDictionary.INSTANCE,false,false,false,true,false,false,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_INSTRUMENT);
         testOrderReplaceUnsupported
-            (false,false,false,false,true,false,false,false,false,false,false,
+            (false,false,false,true,true,false,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_SIDE);
         testOrderReplaceUnsupported
-            (false,false,false,false,false,true,false,false,false,false,false,
+            (false,false,false,true,false,true,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_ORDER_TYPE);
         testOrderReplaceUnsupported
-            (false,false,false,false,false,false,true,false,false,false,false,
+            (false,false,false,true,false,false,true,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_QUANTITY);
         testOrderReplaceUnsupported
-            (false,false,false,false,false,false,false,true,false,false,false,
+            (false,false,false,true,false,false,false,true,false,false,false,
              false,false,
              Messages.UNSUPPORTED_TIME_IN_FORCE);
         testOrderReplaceUnsupported
-            (false,false,false,false,false,false,false,false,true,false,false,
+            (false,false,false,true,false,false,false,false,true,false,false,
              false,false,
              Messages.UNSUPPORTED_ACCOUNT);
         testOrderReplaceUnsupported
-            (false,false,false,false,false,false,false,false,false,true,false,
+            (false,false,false,true,false,false,false,false,false,true,false,
              false,false,
              Messages.UNSUPPORTED_POSITION_EFFECT);
         testOrderReplaceUnsupported
-            (false,false,false,false,false,false,false,false,false,false,true,
+            (false,false,false,true,false,false,false,false,false,false,true,
              false,false,
              Messages.UNSUPPORTED_ORDER_CAPACITY);
     }

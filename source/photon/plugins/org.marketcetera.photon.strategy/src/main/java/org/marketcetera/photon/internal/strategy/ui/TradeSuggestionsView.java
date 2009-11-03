@@ -74,8 +74,8 @@ public class TradeSuggestionsView extends ViewPart implements IColumnProvider {
 						.heading(
 								Messages.TRADE_SUGGESTION_QUANTITY_LABEL
 										.getText()),
-				ColumnConfiguration.defaults().beanProperty("symbol").heading( //$NON-NLS-1$
-						Messages.TRADE_SUGGESTION_SYMBOL_LABEL.getText()),
+				ColumnConfiguration.defaults().beanProperty("instrument").heading( //$NON-NLS-1$
+						Messages.TRADE_SUGGESTION_INSTRUMENT_LABEL.getText()),
 				ColumnConfiguration.defaults().beanProperty("price").heading( //$NON-NLS-1$
 						Messages.TRADE_SUGGESTION_PRICE_LABEL.getText()),
 				ColumnConfiguration.defaults().beanProperty("orderType") //$NON-NLS-1$

@@ -3,10 +3,11 @@ package org.marketcetera.module;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NInterruptedException;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.log.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import java.io.Serializable;
 
 /* $License$ */
 /**
@@ -105,29 +106,67 @@ public class ExpectedFailureTest {
     }
     private static I18NException check(final Exception e,
                                        I18NMessage inMessage,
-                                       Object... inParameters)
+                                       Serializable... inParameters)
             throws Exception {
+        //test static method
         assertSame(e, ExpectedFailure.assertI18NException(e,
-                inMessage, inParameters));
-        return new ExpectedFailure<I18NException>(inMessage, inParameters){
+                inMessage, (Object[])inParameters));
+        //verify constructor that takes parameters.
+        I18NException except = new ExpectedFailure<I18NException>(inMessage, (Object[])inParameters) {
             protected void run() throws Exception {
-                if(e != null) {
+                if (e != null) {
                     throw e;
                 }
             }
         }.getException();
+        //verify constructor that accepts bound message
+        assertSame(except, new ExpectedFailure<I18NException>(
+                toBoundMessage(inMessage, inParameters)){
+            @Override
+            protected void run() throws Exception {
+                if (e != null) {
+                    throw e;
+                }
+            }
+        }.getException());
+        return except;
     }
+
+    private static I18NBoundMessage toBoundMessage(I18NMessage inMessage,
+                                                   Serializable[] inParameters) {
+        if(inMessage == null) {
+            return null;
+        }
+        switch(inMessage.getParamCount()) {
+            case 0:
+                return (I18NMessage0P)inMessage;
+            case 2:
+                return inParameters.length == 2? new I18NBoundMessage2P((I18NMessage2P)inMessage,
+                        extract(inParameters, 0), extract(inParameters, 1)): null;
+            default:
+                fail("Unhandled message type");
+                return null;
+        }
+    }
+    private static Serializable extract(Serializable[] inParameters, int inIndex) {
+        return inParameters != null && inParameters.length > inIndex
+                ? inParameters[inIndex]
+                : null;
+    }
+
     private static void checkFailure(final Exception inException,
                                      I18NMessage inMessage,
-                                     Object... inParameters) throws Exception {
+                                     Serializable... inParameters) throws Exception {
+        //test method
         try {
             ExpectedFailure.assertI18NException(inException,
-                    inMessage, inParameters);
+                    inMessage, (Object[])inParameters);
             fail("should fail");
         } catch(AssertionError e) {
         }
+        //test constructor that accepts parameters.
         try {
-            new ExpectedFailure<I18NException>(inMessage, inParameters){
+            new ExpectedFailure<I18NException>(inMessage, (Object[])inParameters){
                 protected void run() throws Exception {
                     if(inException != null) {
                         throw inException;
@@ -137,8 +176,33 @@ public class ExpectedFailureTest {
             fail("should fail");
         } catch(AssertionError e) {
         }
+        //test constructor that accepts bound message
         try {
-            new I18NSubClass(inMessage, inParameters){
+            new ExpectedFailure<I18NException>(toBoundMessage(inMessage, inParameters)){
+                protected void run() throws Exception {
+                    if(inException != null) {
+                        throw inException;
+                    }
+                }
+            };
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
+        //test subclass constructor that accepts parameters
+        try {
+            new I18NSubClass(inMessage, (Object[])inParameters){
+                protected void run() throws Exception {
+                    if(inException != null) {
+                        throw inException;
+                    }
+                }
+            };
+            fail("should fail");
+        } catch(AssertionError e) {
+        }
+        //test subclass constructor that accepts bound message
+        try {
+            new I18NSubClass(toBoundMessage(inMessage, inParameters)){
                 protected void run() throws Exception {
                     if(inException != null) {
                         throw inException;
@@ -155,13 +219,24 @@ public class ExpectedFailureTest {
         if (message != null) {
             assertSame(e, ExpectedFailure.assertException(e, message, true));
         }
-        return new ExpectedFailure<IllegalArgumentException>(message){
+        //test constructor with an argument
+        IllegalArgumentException except = new ExpectedFailure<IllegalArgumentException>(message) {
             protected void run() throws Exception {
-                if(e != null) {
+                if (e != null) {
                     throw e;
                 }
             }
         }.getException();
+        //test constructor with no arguments
+        assertSame(except, new ExpectedFailure<IllegalArgumentException>(){
+            @Override
+            protected void run() throws Exception {
+                if (e != null) {
+                    throw e;
+                }
+            }
+        }.getException());
+        return except;
     }
     private static void checkFailure(final Exception inException,
                                      String inMessage) throws Exception {
@@ -270,6 +345,11 @@ public class ExpectedFailureTest {
                                Object... inExpectedParams)
                 throws Exception {
             super(inExpectedMessage, inExpectedParams);
+        }
+
+        protected I18NSubClass(I18NBoundMessage inExpectedMessage)
+                throws Exception {
+            super(inExpectedMessage);
         }
     }
 }

@@ -45,7 +45,7 @@ public class EquityTest extends InstrumentTestBase<Equity> {
 
 	@Test
     public void testNullSymbol() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Equity(null);
@@ -55,13 +55,13 @@ public class EquityTest extends InstrumentTestBase<Equity> {
 
     @Test
     public void testWhitespaceSymbol() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Equity("");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(null) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
                 new Equity("   \n");

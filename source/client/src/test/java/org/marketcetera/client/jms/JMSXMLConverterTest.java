@@ -16,6 +16,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import java.util.Map;
 import java.util.HashMap;
+import java.math.BigDecimal;
 
 /* $License$ */
 /**
@@ -34,34 +35,43 @@ public class JMSXMLConverterTest {
     }
     @Test
     public void verifyOrderSingle() throws Exception {
-        OrderSingle i = ClientTest.createOrderSingle();
-        i.setCustomFields(generateCustomFields());
-        OrderEnvelope o=(OrderEnvelope)roundTrip
-            (new OrderEnvelope(i,SESSION_ID));
-        assertEquals(SESSION_ID,o.getSessionId());
-        TypesTestBase.assertOrderSingleEquals
+        for (Instrument instrument: sInstruments) {
+            OrderSingle i = ClientTest.createOrderSingle();
+            i.setInstrument(instrument);
+            i.setCustomFields(generateCustomFields());
+            OrderEnvelope o=(OrderEnvelope)roundTrip
+                (new OrderEnvelope(i,SESSION_ID));
+            assertEquals(SESSION_ID,o.getSessionId());
+            TypesTestBase.assertOrderSingleEquals
             (i,(OrderSingle)o.getOrder());
+        }
     }
 
     @Test
     public void verifyOrderCancel() throws Exception {
-        OrderCancel i = ClientTest.createOrderCancel();
-        i.setCustomFields(generateCustomFields());
-        OrderEnvelope o=(OrderEnvelope)roundTrip
-            (new OrderEnvelope(i,SESSION_ID));
-        assertEquals(SESSION_ID,o.getSessionId());
-        TypesTestBase.assertOrderCancelEquals
+        for (Instrument instrument: sInstruments) {
+            OrderCancel i = ClientTest.createOrderCancel();
+            i.setInstrument(instrument);
+            i.setCustomFields(generateCustomFields());
+            OrderEnvelope o=(OrderEnvelope)roundTrip
+                (new OrderEnvelope(i,SESSION_ID));
+            assertEquals(SESSION_ID,o.getSessionId());
+            TypesTestBase.assertOrderCancelEquals
             (i,(OrderCancel)o.getOrder());
+        }
     }
     @Test
     public void verifyOrderReplace() throws Exception {
-        OrderReplace i = ClientTest.createOrderReplace();
-        i.setCustomFields(generateCustomFields());
-        OrderEnvelope o=(OrderEnvelope)roundTrip
-            (new OrderEnvelope(i,SESSION_ID));
-        assertEquals(SESSION_ID,o.getSessionId());
-        TypesTestBase.assertOrderReplaceEquals
+        for (Instrument instrument: sInstruments) {
+            OrderReplace i = ClientTest.createOrderReplace();
+            i.setInstrument(instrument);
+            i.setCustomFields(generateCustomFields());
+            OrderEnvelope o=(OrderEnvelope)roundTrip
+                (new OrderEnvelope(i,SESSION_ID));
+            assertEquals(SESSION_ID,o.getSessionId());
+            TypesTestBase.assertOrderReplaceEquals
             (i,(OrderReplace)o.getOrder());
+        }
     }
     @Test
     public void verifyFIXOrder() throws Exception {
@@ -108,7 +118,7 @@ public class JMSXMLConverterTest {
     }
     @Test
     public void unmarshallFailure() throws Exception {
-        new ExpectedFailure<UnmarshalException>(null){
+        new ExpectedFailure<UnmarshalException>(){
             protected void run() throws Exception {
                 sConverter.fromXML("This is not XML");
             }
@@ -129,6 +139,10 @@ public class JMSXMLConverterTest {
     private static class NotMarshallable {
         
     }
+    private static Instrument[] sInstruments = new Instrument[]{
+            new Equity("sym"),
+            new Option("sym", "20101010", BigDecimal.TEN, OptionType.Call)
+    };
 
     private static JMSXMLMessageConverter sConverter;
     private static final SessionId SESSION_ID=SessionId.generate();

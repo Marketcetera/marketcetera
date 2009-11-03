@@ -1,17 +1,19 @@
 package org.marketcetera.orderloader.system;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.trade.*;
 import org.marketcetera.orderloader.OrderParsingException;
 import org.marketcetera.orderloader.Messages;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.core.LoggerConfiguration;
 import org.junit.Test;
+import org.junit.BeforeClass;
 import static org.junit.Assert.*;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 import java.math.BigDecimal;
 
 /* $License$ */
@@ -24,6 +26,10 @@ import java.math.BigDecimal;
  */
 @ClassVersion("$Id$")
 public class FieldProcessorTest {
+    @BeforeClass
+    public static void logSetup() {
+        LoggerConfiguration.logSetup();
+    }
     @Test
     public void account() throws Exception {
         AccountProcessor proc = new AccountProcessor(1);
@@ -190,25 +196,122 @@ public class FieldProcessorTest {
         };
     }
     @Test
-    public void symbolNoSecurityType() throws Exception {
-        final SymbolProcessor proc = new SymbolProcessor();
-        proc.setSymbolIdx(1);
+    public void equityNoSecurityType() throws Exception {
+        final InstrumentProcessor proc = new InstrumentProcessor();
+        assertTrue(proc.canProcess(InstrumentFromRow.FIELD_SYMBOL, 1));
         assertEquals(null, apply(proc, "java", null, "mava").getInstrument());
         assertEquals(null, apply(proc, "java", "", "mava").getInstrument());
+        assertEquals(null, apply(proc, "java", "  ", "mava").getInstrument());
         assertEquals(new Equity("kava"), apply(proc, "java", "kava", "mava").getInstrument());
     }
     @Test
-    public void symbolWithSecurityType() throws Exception {
-        final SymbolProcessor proc = new SymbolProcessor();
-        proc.setSymbolIdx(0);
-        proc.setSecurityTypeIdx(1);
+    public void equityWithSecurityType() throws Exception {
+        final InstrumentProcessor proc = new InstrumentProcessor();
+        assertTrue(proc.canProcess(InstrumentFromRow.FIELD_SYMBOL, 0));
+        assertTrue(proc.canProcess(InstrumentFromRow.FIELD_SECURITY_TYPE, 1));
         assertEquals(null, apply(proc, null, null, "mava").getInstrument());
         assertEquals(null, apply(proc, "", null, "mava").getInstrument());
         assertEquals(null, apply(proc, null, SecurityType.CommonStock.toString(), "mava").getInstrument());
         assertEquals(null, apply(proc, "", SecurityType.CommonStock.toString(), "mava").getInstrument());
         assertEquals(new Equity("java"), apply(proc, "java", null, "mava").getInstrument());
         assertEquals(new Equity("java"), apply(proc, "java", "", "mava").getInstrument());
-        assertEquals(new Equity("java"), apply(proc, "java", SecurityType.Option.toString(), "mava").getInstrument());
+        assertEquals(new Equity("java"), apply(proc, " java ", "", "mava").getInstrument());
+        assertEquals(new Equity("java"), apply(proc, "java", SecurityType.CommonStock.toString(), "mava").getInstrument());
+        Set<SecurityType> validValues = EnumSet.allOf(SecurityType.class);
+        validValues.remove(SecurityType.Unknown);
+        for (String invalidSecType:
+                Arrays.asList("InvalidSecurityType", SecurityType.Unknown.toString())) {
+            verifyParseFailure(proc,
+                new I18NBoundMessage2P(Messages.INVALID_SECURITY_TYPE,
+                            invalidSecType, validValues.toString()),
+                    "java", invalidSecType, "whatever");
+        }
+    }
+    @Test
+    public void optionInstrument() throws Exception {
+        InstrumentProcessor proc = new InstrumentProcessor();
+        assertTrue(proc.canProcess(InstrumentFromRow.FIELD_SYMBOL, 0));
+        assertTrue(proc.canProcess(InstrumentFromRow.FIELD_SECURITY_TYPE, 1));
+        assertTrue(proc.canProcess(OptionFromRow.FIELD_EXPIRY, 2));
+        assertTrue(proc.canProcess(OptionFromRow.FIELD_OPTION_TYPE, 3));
+        assertTrue(proc.canProcess(OptionFromRow.FIELD_STRIKE_PRICE, 4));
+        //verify fields that cannot be processed.
+        assertFalse(proc.canProcess(SystemProcessor.FIELD_ACCOUNT, 4));
+        //verify equity works
+        final String symbol = "java";
+        assertEquals(new Equity(symbol),
+                apply(proc, symbol, "", "kava", "lava", "mava").getInstrument());
+        assertEquals(new Equity(symbol),
+                apply(proc, symbol, SecurityType.CommonStock.toString(), "kava", "lava", "mava").getInstrument());
+        //verify option works
+        final String expiry = "20101010";
+        final BigDecimal strikePrice = BigDecimal.TEN;
+        final OptionType type = OptionType.Call;
+        assertEquals(new Option(symbol, expiry, strikePrice, type),
+                apply(proc, symbol, SecurityType.Option.toString(), expiry,
+                        type.toString(), strikePrice.toPlainString()).getInstrument());
+        //verify option fields are ignored if the security type is set to equity
+        assertEquals(new Equity(symbol),
+                apply(proc, symbol, SecurityType.CommonStock.toString(), expiry,
+                        type.toString(), strikePrice.toPlainString()).getInstrument());
+
+        //verify failures
+
+        //symbol missing
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_SYMBOL,
+                null, SecurityType.Option.toString(), expiry, type.toString(), strikePrice.toPlainString());
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_SYMBOL,
+                "", SecurityType.Option.toString(), expiry, type.toString(), strikePrice.toPlainString());
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_SYMBOL,
+                "  ", SecurityType.Option.toString(), expiry, type.toString(), strikePrice.toPlainString());
+        //expiry missing
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_EXPIRY,
+                symbol, SecurityType.Option.toString(), null, type.toString(), strikePrice.toPlainString());
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_EXPIRY,
+                symbol, SecurityType.Option.toString(), "", type.toString(), strikePrice.toPlainString());
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_EXPIRY,
+                symbol, SecurityType.Option.toString(), "  ", type.toString(), strikePrice.toPlainString());
+        //type missing
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_OPTION_TYPE,
+                symbol, SecurityType.Option.toString(), expiry, null, strikePrice.toPlainString());
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_OPTION_TYPE,
+                symbol, SecurityType.Option.toString(), expiry, "", strikePrice.toPlainString());
+        //strike missing
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_STRIKE_PRICE,
+                symbol, SecurityType.Option.toString(), expiry, type.toString(), null);
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_STRIKE_PRICE,
+                symbol, SecurityType.Option.toString(), expiry, type.toString(), "");
+        //verify invalid option type failure
+        EnumSet<OptionType> validValues = EnumSet.allOf(OptionType.class);
+        validValues.remove(OptionType.Unknown);
+        for (String opType:Arrays.asList("invalid", OptionType.Unknown.toString())) {
+            verifyParseFailure(proc,
+                new I18NBoundMessage2P(Messages.INVALID_OPTION_TYPE,
+                            opType, validValues.toString()),
+                    symbol, SecurityType.Option.toString(), expiry,
+                            opType, strikePrice.toPlainString());
+        }
+        //verify invalid strike price value failure
+        String invalidStrike = "not big D";
+        verifyParseFailure(proc,
+            new I18NBoundMessage1P(Messages.INVALID_STRIKE_PRICE_VALUE, invalidStrike),
+                symbol, SecurityType.Option.toString(), expiry, type.toString(), invalidStrike);
+        //Create a processor without strike,type,expiry headers
+        proc = new InstrumentProcessor();
+        assertTrue(proc.canProcess(InstrumentFromRow.FIELD_SYMBOL, 0));
+        assertTrue(proc.canProcess(InstrumentFromRow.FIELD_SECURITY_TYPE, 1));
+        //no expiry header
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_EXPIRY,
+                symbol, SecurityType.Option.toString(), expiry, type.toString(), strikePrice.toPlainString());
+        assertTrue(proc.canProcess(OptionFromRow.FIELD_EXPIRY, 2));
+        //no option type
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_OPTION_TYPE,
+                symbol, SecurityType.Option.toString(), expiry, type.toString(), strikePrice.toPlainString());
+        assertTrue(proc.canProcess(OptionFromRow.FIELD_OPTION_TYPE, 3));
+        //no strike header
+        verifyOptionMissingFieldFailure(proc, OptionFromRow.FIELD_STRIKE_PRICE,
+                symbol, SecurityType.Option.toString(), expiry, type.toString(), strikePrice.toPlainString());
+
     }
     @Test
     public void timeInForce() throws Exception {
@@ -234,13 +337,31 @@ public class FieldProcessorTest {
             }
         };
     }
-    private OrderSingle apply(FieldProcessor inProcessor, String... inRow)
+    private static void verifyOptionMissingFieldFailure(InstrumentProcessor inProc,
+                                                        String inFieldName,
+                                                        String... inRow) throws Exception {
+        verifyParseFailure(inProc,
+                new I18NBoundMessage1P(Messages.MISSING_OPTION_FIELD, inFieldName),
+                inRow);
+    }
+    private static void verifyParseFailure(
+            final FieldProcessor inProc,
+            I18NBoundMessage inMessage,
+            final String... inRow) throws Exception {
+        new ExpectedFailure<OrderParsingException>(inMessage){
+            @Override
+            protected void run() throws Exception {
+                apply(inProc, inRow);
+            }
+        };
+    }
+    private static OrderSingle apply(FieldProcessor inProcessor, String... inRow)
             throws OrderParsingException {
         OrderSingle inOrder = createOrder();
         inProcessor.apply(inRow, inOrder);
         return inOrder;
     }
-    private OrderSingle createOrder() {
+    private static OrderSingle createOrder() {
         return Factory.getInstance().createOrderSingle();
     }
 }

@@ -356,7 +356,7 @@ public class SAClientWSTest extends SAClientTestBase {
                 new I18NMessage0P(Messages.LOGGER, "test"));
         getMockSAService().setFailure(failure);
         inTester.setReturnValue(false);
-        ConnectionException e = new ExpectedFailure<ConnectionException>(null) {
+        ConnectionException e = new ExpectedFailure<ConnectionException>() {
             @Override
             protected void run() throws Exception {
                 inTester.invokeApi(false);

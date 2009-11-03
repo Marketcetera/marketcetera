@@ -149,4 +149,9 @@ public interface Messages
         new I18NMessage2P(LOGGER,"rp_add_to_map_failed"); //$NON-NLS-1$
     static final I18NMessage1P RP_GET_FROM_DB_FAILED=
         new I18NMessage1P(LOGGER,"rp_get_from_db_failed"); //$NON-NLS-1$
+
+    static final I18NMessage1P ORUM_LOG_ERROR_LOADING_FILE =
+            new I18NMessage1P(LOGGER, "orum_log_error_loading_file");   //$NON-NLS-1$
+    static final I18NMessage0P ORUM_LOG_SKIP_LOAD_FILE =
+            new I18NMessage0P(LOGGER, "orum_log_skip_load_file");   //$NON-NLS-1$
 }

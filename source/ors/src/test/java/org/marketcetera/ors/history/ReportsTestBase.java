@@ -1,7 +1,7 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.PositionKeyFactory;
+import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.persist.PersistTestBase;
@@ -11,6 +11,7 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.MultiSimpleUserQuery;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Side;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.event.HasFIXMessage;
 import org.junit.AfterClass;
@@ -23,9 +24,7 @@ import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import quickfix.Message;
-import quickfix.field.ClOrdID;
-import quickfix.field.OrigClOrdID;
-import quickfix.field.SendingTime;
+import quickfix.field.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -35,7 +34,7 @@ import java.io.File;
 
 /* $License$ */
 /**
- * ReportsTestBase
+ * Base class for various persistence tests.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -125,20 +124,22 @@ public class ReportsTestBase extends TestCaseBase {
 
     static ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
-                                            String inSymbol, Side inSide,
+                                            Instrument inInstrument,
+                                            Side inSide,
                                             OrderStatus inOrderStatus,
                                             BigDecimal inCumQuantity,
                                             BigDecimal inAvgPrice,
                                             BigDecimal inLastQty,
                                             BigDecimal inLastPrice)
             throws Exception {
-        return createExecReport(inOrderID, inOrigOrderID, inSymbol,
-                inSide, inOrderStatus, inCumQuantity, inAvgPrice,
+        return createExecReport(inOrderID, inOrigOrderID,
+                inInstrument, inSide, inOrderStatus, inCumQuantity, inAvgPrice,
                 inLastQty, inLastPrice, sViewerID);
     }
     static ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
-                                            String inSymbol, Side inSide,
+                                            Instrument inInstrument,
+                                            Side inSide,
                                             OrderStatus inOrderStatus,
                                             BigDecimal inCumQuantity,
                                             BigDecimal inAvgPrice,
@@ -146,13 +147,14 @@ public class ReportsTestBase extends TestCaseBase {
                                             BigDecimal inLastPrice,
                                             UserID inViewerID)
             throws Exception {
-        return createExecReport(inOrderID, inOrigOrderID, inSymbol,
+        return createExecReport(inOrderID, inOrigOrderID, inInstrument,
                 inSide, inOrderStatus, inCumQuantity, inAvgPrice,
                 inLastQty, inLastPrice, BROKER, inViewerID);
     }
     static ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
-                                            String inSymbol, Side inSide,
+                                            Instrument inInstrument,
+                                            Side inSide,
                                             OrderStatus inOrderStatus,
                                             BigDecimal inCumQuantity,
                                             BigDecimal inAvgPrice,
@@ -161,13 +163,14 @@ public class ReportsTestBase extends TestCaseBase {
                                             BrokerID inBrokerID,
                                             UserID inViewerID)
             throws Exception {
-        return createExecReport(inOrderID, inOrigOrderID, inSymbol,
+        return createExecReport(inOrderID, inOrigOrderID, inInstrument,
                 inSide, inOrderStatus, inCumQuantity, inAvgPrice,
                 inLastQty, inLastPrice, inBrokerID, sActorID, inViewerID);
     }
     static ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
-                                            String inSymbol, Side inSide,
+                                            Instrument inInstrument,
+                                            Side inSide,
                                             OrderStatus inOrderStatus,
                                             BigDecimal inCumQuantity,
                                             BigDecimal inAvgPrice,
@@ -178,14 +181,15 @@ public class ReportsTestBase extends TestCaseBase {
                                             UserID inViewerID)
             throws Exception {
         return createExecReport
-            (inOrderID, inOrigOrderID, inSymbol,
+            (inOrderID, inOrigOrderID, inInstrument,
              inSide, inOrderStatus, inCumQuantity, inAvgPrice,
              inLastQty, inLastPrice, inBrokerID, ACCOUNT,
              inActorID, inViewerID);
     }
     static ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
-                                            String inSymbol, Side inSide,
+                                            Instrument inInstrument,
+                                            Side inSide,
                                             OrderStatus inOrderStatus,
                                             BigDecimal inCumQuantity,
                                             BigDecimal inAvgPrice,
@@ -200,7 +204,7 @@ public class ReportsTestBase extends TestCaseBase {
                 "exec1", inOrderStatus.getFIXValue(), inSide.getFIXValue(),
                 new BigDecimal("23.234"), new BigDecimal("343.343"),
                 inLastQty, inLastPrice, inCumQuantity, inAvgPrice,
-                new Equity(inSymbol), inAccount);
+                inInstrument, inAccount);
         if (inOrigOrderID != null) {
             msg.setField(new OrigClOrdID(inOrigOrderID));
         }
@@ -248,7 +252,7 @@ public class ReportsTestBase extends TestCaseBase {
     protected static void nonNullCVCheck(String inFieldName,
                                          final Callable<?> inTest)
             throws Exception {
-        String exceptMsg = new ExpectedFailure<PersistenceException>(null) {
+        String exceptMsg = new ExpectedFailure<PersistenceException>() {
             protected void run() throws Exception {
                 inTest.call();
             }
@@ -288,19 +292,50 @@ public class ReportsTestBase extends TestCaseBase {
         PersistTestBase.sleepForSignificantTime();
     }
 
-    protected static BigDecimal getPosition(Date inDate, String inSymbol)
+    protected static BigDecimal getPosition(Date inDate, Equity inEquity)
             throws Exception {
-        return getPosition(inDate, inSymbol, sViewer);
+        return getPosition(inDate, inEquity, sViewer);
     }
-    protected static BigDecimal getPosition(Date inDate, String inSymbol, SimpleUser inViewer)
+    
+    protected static BigDecimal getPosition(Date inDate, Equity inEquity, SimpleUser inViewer)
             throws Exception {
-        return sServices.getPositionAsOf(inViewer, inDate, new Equity(inSymbol));
+        return sServices.getPositionAsOf(inViewer, inDate, inEquity);
     }
 
     protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate)
             throws Exception {
         return getPositions(inDate, sViewer);
     }
+    
+    protected static BigDecimal getPosition(Date inDate, Option inOption) throws Exception {
+        return getPosition(inDate, inOption, sViewer);
+    }
+    protected static BigDecimal getPosition(Date inDate, Option inOption,
+                                            SimpleUser inViewer)
+            throws Exception {
+        return sServices.getOptionPositionAsOf(inViewer, inDate, inOption);
+    }
+
+    protected static Map<PositionKey<Option>,BigDecimal> getAllOptionPositions(
+            Date inDate) throws PersistenceException {
+        return getAllOptionPositions(inDate, sViewer);
+    }
+    protected static Map<PositionKey<Option>,BigDecimal> getAllOptionPositions(
+            Date inDate, SimpleUser inViewer) throws PersistenceException {
+        return sServices.getAllOptionPositionsAsOf(inViewer, inDate);
+    }
+
+    protected static Map<PositionKey<Option>,BigDecimal> getOptionPositions(
+            Date inDate, String... inSymbols) throws PersistenceException {
+        return getOptionPositions(inDate, sViewer,  inSymbols);
+    }
+    
+    protected static Map<PositionKey<Option>,BigDecimal> getOptionPositions(
+            Date inDate, SimpleUser inViewer, String... inSymbols)
+            throws PersistenceException {
+        return sServices.getOptionPositionsAsOf(inViewer, inDate, inSymbols);
+    }
+
     protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
             throws Exception {
         return sServices.getPositionsAsOf(inViewer, inDate);
@@ -308,41 +343,45 @@ public class ReportsTestBase extends TestCaseBase {
 
     protected static ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
-                                            String inSymbol, Side inSide,
+                                            Instrument inInstrument,
+                                            Side inSide,
                                             BigDecimal inCumQty) throws Exception {
-        return createAndSaveER(inOrderID, inOrigOrderID, inSymbol,
+        return createAndSaveER(inOrderID, inOrigOrderID, inInstrument,
                                inSide, inCumQty, sViewerID);
     }
 
     protected static ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
-                                            String inSymbol, Side inSide,
+                                            Instrument inInstrument,
+                                            Side inSide,
                                             BigDecimal inCumQty,
                                             UserID inViewerID) throws Exception {
-        return createAndSaveER(inOrderID,inOrigOrderID,inSymbol,inSide,
+        return createAndSaveER(inOrderID,inOrigOrderID, inInstrument,inSide,
                                inCumQty,sActorID,inViewerID);
     }
 
     protected static ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
-                                            String inSymbol, Side inSide,
+                                            Instrument inInstrument,
+                                            Side inSide,
                                             BigDecimal inCumQty,
                                             UserID inActorID,
                                             UserID inViewerID) throws Exception {
-        return createAndSaveER(inOrderID,inOrigOrderID,inSymbol,inSide,
+        return createAndSaveER(inOrderID,inOrigOrderID, inInstrument,inSide,
                                inCumQty, ACCOUNT, inActorID,inViewerID);
     }
 
     protected static ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
-                                            String inSymbol, Side inSide,
+                                            Instrument inInstrument,
+                                            Side inSide,
                                             BigDecimal inCumQty,
                                             String inAccount,
                                             UserID inActorID,
                                             UserID inViewerID) throws Exception {
         sleepForSignificantTime();
         ExecutionReport report = createExecReport(inOrderID, inOrigOrderID,
-                inSymbol, inSide, OrderStatus.PartiallyFilled, inCumQty,
+                inInstrument, inSide, OrderStatus.PartiallyFilled, inCumQty,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN,
                 BROKER, inAccount, inActorID, inViewerID);
         sServices.save(report);
@@ -350,14 +389,21 @@ public class ReportsTestBase extends TestCaseBase {
         return report;
     }
 
-    protected static PositionKey<Equity> pos(String inSymbol) {
-        return pos(inSymbol,ACCOUNT,sActorID);
+    protected static <T extends Instrument> PositionKey<T> pos(T inInstrument) {
+        return pos(inInstrument,ACCOUNT,sActorID);
     }
-    protected static PositionKey<Equity> pos(String inSymbol, String inAccount, UserID inActor) {
-        return PositionKeyFactory.createEquityKey(inSymbol,inAccount,Long.toString(inActor.getValue()));
+
+    protected static <T extends Instrument> PositionKey<T> pos(T inInstrument,
+                                                               String inAccount,
+                                                               UserID inActor) {
+        return new PositionKeyImpl<T>(inInstrument, inAccount,
+                Long.toString(inActor.getValue()));
     }
-    protected static PositionKey<Equity> pos(String inSymbol, String inAccount, String inActor) {
-        return PositionKeyFactory.createEquityKey(inSymbol,inAccount,inActor);
+    
+    protected static <T extends Instrument> PositionKey<T> pos(T inSymbol,
+                                                               String inAccount,
+                                                               String inActor) {
+        return new PositionKeyImpl<T>(inSymbol, inAccount, inActor);
     }
 
     protected static Matcher<Map> isOfSize(int inLength) {

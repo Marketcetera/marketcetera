@@ -92,8 +92,8 @@ public class MainTest {
         assertTrue(main.getOrderProcessor().isDoneInvoked());
 
         String output = mOutput.toString();
-        assertTrue(output, output.contains(LINE_SUMMARY.getText(22, 5, 5)));
-        assertTrue(output, output.contains(ORDER_SUMMARY.getText(4, 7)));
+        assertTrue(output, output.contains(LINE_SUMMARY.getText(25, 5, 5)));
+        assertTrue(output, output.contains(ORDER_SUMMARY.getText(4, 10)));
         //Verify copyright message was printed
         assertTrue(output, output.contains(LOG_APP_COPYRIGHT.getText()));
         tmpFile.delete();

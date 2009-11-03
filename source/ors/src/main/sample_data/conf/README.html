@@ -27,17 +27,18 @@ Version: $Id$<br/></p>
  <li><a href="#jms_producer">JMS producer/consumer</a></li>
  </ul>
 </li>
-<li><a href="#brokers"/>Brokers</a>
+<li><a href="#brokers">Brokers</a>
  <ul>
- <li><a href="#quickfixj"/>QuickFIX/J</a></li>
- <li><a href="#filters"/>Filters</a></li>
- <li><a href="#selector"/>Broker selector</a></li>
- <li><a href="#mbrokers"/>Multiple brokers</a></li>
+ <li><a href="#quickfixj">QuickFIX/J</a></li>
+ <li><a href="#filters">Filters</a></li>
+ <li><a href="#selector">Broker selector</a></li>
+ <li><a href="#mbrokers">Multiple brokers</a></li>
  </ul>
 </li>
 <li><a href="#database">Database services</a></li>
 <li><a href="#logging">Logging</a></li>
 <li><a href="#jmx">JMX</a></li>
+<li><a href="#optionRootMapping">Option Root Mapping</a></li>
 </ul>
 
 
@@ -393,7 +394,7 @@ broker-specific.</p></li>
 broker to direct incoming orders (for those orders that have no
 explicit broker), reaching the ORS from ORS Clients. The selector is
 most useful in the context of <a href="#mbrokers">multiple
-brokers.</p></li>
+brokers.</a></p></li>
 
 </ul>
 
@@ -1164,7 +1165,7 @@ should also be changed to <code>DEBUG</code> (the default for both is
 <p>Another handy logging category reveals currently active sessions:
 if you want the ORS to report all active sessions whenever a change is
 made to them (or whenever
-the <a href="#JMX"><code>syncSessions()</code> JMX call</a> is made),
+the <a href="#jmx"><code>syncSessions()</code> JMX call</a> is made),
 change to <code>DEBUG</code> the category</p>
 
 <table border="1">
@@ -1199,4 +1200,21 @@ superuser status).</p></li>
 
 </ol>
 
+<hr/><a name="optionRootMapping"/>
+<h2>Option Root Mapping</h2>
+<p>ORS provides means to carry out mapping between option root symbol to
+its underlying symbol and vice-versa.
+</p>
+<p>To enable ORS to carry out this function,
+the mapping file (in CSV format) should be
+<a href="http://www.optionsclearing.com/market/listed_products/default.jsp">downloaded</a>
+from the OCC website and copied into the ORS installation. The ORS configuration
+should be updated to point to the mapping file location. 
+</p>
+The ORS mapping configuration comprises of the following settings.
+<table border="1">
+    <tr><td>Spring</td><td><code>OptionRootUnderlyingMap.filename</code></td><td><code>server.xml</code></td></tr>
+    <tr><td>Properties</td><td><code>metc.optionroot.map.file</code></td></tr>
+</table>
 </body>
+</html>

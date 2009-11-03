@@ -2,6 +2,8 @@ package org.marketcetera.ors.ws;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Collection;
+
 import org.marketcetera.client.Service;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
@@ -13,10 +15,9 @@ import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.ors.OptionRootUnderlyingMap;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ReportBaseImpl;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
@@ -60,6 +61,7 @@ public class ServiceImpl
      *
      * @param sessionManager The session manager, which may be null.
      * @param brokers The brokers.
+     * @param idFactory the ID factory.
      * @param historyServices The report history services provider.
      */    
 
@@ -156,11 +158,55 @@ public class ServiceImpl
         return new MapWrapper<PositionKey<Equity>, BigDecimal>(
                 getHistoryServices().getPositionsAsOf(session.getUser(),date));
     }
+    
+    private BigDecimal getOptionPositionAsOfImpl
+        (ClientSession session,
+         Date date,
+         Option inOption) throws PersistenceException
+    {
+        return getHistoryServices().getOptionPositionAsOf(session.getUser(),
+                date, inOption);
+    }
+
+    private MapWrapper<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOfImpl
+        (ClientSession session,
+         Date date)
+        throws PersistenceException
+    {
+        return new MapWrapper<PositionKey<Option>, BigDecimal>(
+                getHistoryServices().getAllOptionPositionsAsOf(session.getUser(),
+                        date));
+    }
+
+    private MapWrapper<PositionKey<Option>, BigDecimal> getOptionPositionsAsOfImpl
+        (ClientSession session,
+         Date date,
+         String... symbols)
+        throws PersistenceException
+    {
+        return new MapWrapper<PositionKey<Option>, BigDecimal>(
+                getHistoryServices().getOptionPositionsAsOf(
+                        session.getUser(), date, symbols));
+    }
 
     private String getNextOrderIDImpl()
         throws CoreException
     {
         return getIDFactory().getNext();
+    }
+
+    private String getUnderlyingImpl
+        (String inOptionRoot)
+    {
+        OptionRootUnderlyingMap map = OptionRootUnderlyingMap.getInstance();
+        return map == null? null: map.getUnderlying(inOptionRoot);
+    }
+
+    private Collection<String> getOptionRootsImpl
+        (String inUnderlying)
+    {
+        OptionRootUnderlyingMap map = OptionRootUnderlyingMap.getInstance();
+        return map == null? null: map.getOptionRoots(inUnderlying);
     }
 
 
@@ -261,6 +307,69 @@ public class ServiceImpl
     }
 
     @Override
+    public BigDecimal getOptionPositionAsOf
+        (ClientContext context,
+         final DateWrapper date,
+         final Option inOption)
+        throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,BigDecimal>
+                (getSessionManager()) {
+            @Override
+            protected BigDecimal call
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+                throws PersistenceException
+            {
+                return getOptionPositionAsOfImpl
+                    (sessionHolder.getSession(),date.getRaw(),
+                            inOption);
+            }}).execute(context);
+    }
+
+    @Override
+    public MapWrapper<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
+        (ClientContext context,
+         final DateWrapper date)
+        throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,MapWrapper<PositionKey<Option>,
+                                                          BigDecimal>>
+                (getSessionManager()) {
+            @Override
+            protected MapWrapper<PositionKey<Option>,BigDecimal> call
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+                throws PersistenceException
+            {
+                return getAllOptionPositionsAsOfImpl
+                    (sessionHolder.getSession(),date.getRaw());
+            }}).execute(context);
+    }
+
+    @Override
+    public MapWrapper<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
+        (ClientContext context,
+         final DateWrapper date,
+         final String... rootSymbols)
+        throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,MapWrapper<PositionKey<Option>,
+                                                          BigDecimal>>
+                (getSessionManager()) {
+            @Override
+            protected MapWrapper<PositionKey<Option>,BigDecimal> call
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+                throws PersistenceException
+            {
+                return getOptionPositionsAsOfImpl
+                    (sessionHolder.getSession(),date.getRaw(), rootSymbols);
+            }}).execute(context);
+    }
+
+
+    @Override
     public String getNextOrderID
         (ClientContext context)
         throws RemoteException
@@ -274,6 +383,42 @@ public class ServiceImpl
                 throws CoreException
             {
                 return getNextOrderIDImpl();
+            }}).execute(context);
+    }
+
+    @Override
+    public String getUnderlying
+            (ClientContext context,
+             final String optionRoot)
+            throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,String>
+                (getSessionManager()) {
+            @Override
+            protected String call
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+                throws CoreException
+            {
+                return getUnderlyingImpl(optionRoot);
+            }}).execute(context);
+    }
+
+    @Override
+    public Collection<String> getOptionRoots
+            (ClientContext context,
+             final String underlying)
+            throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,Collection<String>>
+                (getSessionManager()) {
+            @Override
+            protected Collection<String> call
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+                throws CoreException
+            {
+                return getOptionRootsImpl(underlying);
             }}).execute(context);
     }
 

@@ -111,7 +111,7 @@ public abstract class AbstractEventBeanTestBase<E extends EventBean>
         final E bean = constructBean();
         assertEquals(null,
                      bean.getTimestamp());
-        new ExpectedFailure<NullPointerException>(null) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                 throws Exception

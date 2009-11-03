@@ -45,13 +45,13 @@ public class SAClientJMSTest extends SAClientTestBase {
      */
     @Test
     public void nullReceiver() throws Exception {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 getClient().addDataReceiver(null);
             }
         };
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
                 getClient().removeDataReciever(null);
@@ -123,7 +123,7 @@ public class SAClientJMSTest extends SAClientTestBase {
             }
         });
         //As a double check verify that receivers fail when setFail is set
-        new ExpectedFailure<IllegalStateException>(null) {
+        new ExpectedFailure<IllegalStateException>() {
             @Override
             protected void run() throws Exception {
                 mReceiver1.receiveData(new Object());

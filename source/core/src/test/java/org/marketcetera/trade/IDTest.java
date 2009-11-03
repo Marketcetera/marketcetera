@@ -35,7 +35,7 @@ public class IDTest {
      */
     @Test
     public void orderID() throws Exception {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 new OrderID(null);
             }
@@ -58,7 +58,7 @@ public class IDTest {
      */
     @Test
     public void brokerID() throws Exception {
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 new BrokerID(null);
             }
@@ -126,7 +126,7 @@ public class IDTest {
         assertTrue(factory.createOrderCancel(null).getOrderID().toString().startsWith(prefix));
         assertTrue(factory.createOrderReplace(null).getOrderID().toString().startsWith(prefix));
         //Verify that the factory cannot be set to null
-        new ExpectedFailure<NullPointerException>(null){
+        new ExpectedFailure<NullPointerException>(){
             protected void run() throws Exception {
                 factory.setOrderIDFactory(null);
             }

@@ -46,7 +46,7 @@ public class MarketDataFeedTokenSpecTest
         throws Exception
     {
         if(inRequest == null) {
-            new ExpectedFailure<NullPointerException>(null) {
+            new ExpectedFailure<NullPointerException>() {
                 protected void run()
                         throws Exception
                 {

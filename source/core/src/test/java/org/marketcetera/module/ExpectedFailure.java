@@ -2,6 +2,7 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.except.I18NException;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -120,6 +121,7 @@ public abstract class ExpectedFailure<T extends Exception> {
         }
         return inThrowable;
     }
+    
     /**
      * Creates an instance that will test for failures with I18NExceptions
      *
@@ -138,6 +140,24 @@ public abstract class ExpectedFailure<T extends Exception> {
     }
 
     /**
+     * Creates an instance that will test for failures with I18NExceptions
+     *
+     * @param inExpectedMessage the expected message. null if the message
+     * need not be tested.
+     *
+     * @throws Exception if there were unexpected failures.
+     */
+    protected ExpectedFailure(I18NBoundMessage inExpectedMessage)
+            throws Exception {
+        this(inExpectedMessage == null
+                ? null
+                : inExpectedMessage.getMessage(),
+                inExpectedMessage == null
+                        ? null
+                        : (Object[])inExpectedMessage.getParams());
+    }
+
+    /**
      * Creates an instance that will test for failures with any java
      * Exception.
      *
@@ -148,6 +168,16 @@ public abstract class ExpectedFailure<T extends Exception> {
     protected ExpectedFailure(String inMessage) throws Exception {
         this(inMessage, true);
     }
+
+    /**
+     * Creates an instance that will test for failures with any exception.
+     *
+     * @throws Exception if were was an unexpected failure
+     */
+    protected ExpectedFailure() throws Exception {
+        doRun();
+    }
+
     /**
      * Creates an instance that will test for failures with any java
      * Exception.
@@ -229,5 +259,5 @@ public abstract class ExpectedFailure<T extends Exception> {
      * {@link #assertI18NException(Throwable, I18NMessage, Object[])} or
      * {@link #ExpectedFailure(I18NMessage, Object[])}  
      */
-    public static final Object IGNORE = new Object();
+    public static final Serializable IGNORE = new Serializable(){};
 }

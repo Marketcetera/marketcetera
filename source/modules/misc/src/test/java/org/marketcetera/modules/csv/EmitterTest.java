@@ -138,7 +138,7 @@ public class EmitterTest extends ModuleTestBase {
     public void emitCSVStringFile() throws Exception {
         assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
         //verify that creating a URL out of file path fails
-        new ExpectedFailure<MalformedURLException>(null){
+        new ExpectedFailure<MalformedURLException>(){
             protected void run() throws Exception {
                 new URL(VALID_CSV_FILE.getAbsolutePath());
             }
@@ -155,7 +155,7 @@ public class EmitterTest extends ModuleTestBase {
     public void emitCSVStringFileReverse() throws Exception {
         assertTrue(VALID_CSV_FILE.getAbsolutePath(), VALID_CSV_FILE.exists());
         //verify that creating a URL out of file path, with reverse prefix, fails
-        new ExpectedFailure<MalformedURLException>(null){
+        new ExpectedFailure<MalformedURLException>(){
             protected void run() throws Exception {
                 new URL(CSVEmitter.PREFIX_REVERSE + VALID_CSV_FILE.getAbsolutePath());
             }

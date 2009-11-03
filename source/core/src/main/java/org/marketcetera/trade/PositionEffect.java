@@ -39,11 +39,11 @@ public enum PositionEffect {
         mFIXValue = inFIXValue;
     }
     /**
-     * Gets the Side instance.
+     * Gets the PositionEffect instance.
      *
      * @param inValue the FIX char value.
      *
-     * @return the Side instance.
+     * @return the PositionEffect instance.
      */
     static PositionEffect getInstanceForFIXValue(char inValue) {
         PositionEffect s = mFIXValueMap.get(inValue);

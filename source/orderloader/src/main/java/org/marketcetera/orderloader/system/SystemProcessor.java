@@ -36,7 +36,7 @@ public class SystemProcessor extends RowProcessor {
         //known agnostic order values or it should be an integer and is
         //interpreted as a custom field value.
         String header;
-        SymbolProcessor symbolProcessor = new SymbolProcessor();
+        InstrumentProcessor instrumentProcessor = new InstrumentProcessor();
         CustomFieldProcessor customProcessor = new CustomFieldProcessor();
         Map<String, Integer> duplicateDetector = new HashMap<String, Integer>();
         for (int i = 0; i < inHeaders.length; i++) {
@@ -62,18 +62,16 @@ public class SystemProcessor extends RowProcessor {
                 mProcessors.add(new QuantityProcessor(i));
             } else if (FIELD_SIDE.equals(header)) {
                 mProcessors.add(new SideProcessor(i));
-            } else if (FIELD_SYMBOL.equals(header)) {
-                symbolProcessor.setSymbolIdx(i);
-            } else if (FIELD_SECURITY_TYPE.equals(header)) {
-                symbolProcessor.setSecurityTypeIdx(i);
             } else if (FIELD_TIME_IN_FORCE.equals(header)) {
                 mProcessors.add(new TimeInForceProcessor(i));
+            } else if (instrumentProcessor.canProcess(header, i)) {
+                //do nothing here
             } else {
                 //A custom field
                 customProcessor.addField(i, header);
             }
         }
-        mProcessors.add(symbolProcessor);
+        mProcessors.add(instrumentProcessor);
         if(!customProcessor.isEmpty()) {
             mProcessors.add(customProcessor);
         }
@@ -81,7 +79,7 @@ public class SystemProcessor extends RowProcessor {
         requiredFieldPresent(duplicateDetector, FIELD_ORDER_TYPE);
         requiredFieldPresent(duplicateDetector, FIELD_QUANTITY);
         requiredFieldPresent(duplicateDetector, FIELD_SIDE);
-        requiredFieldPresent(duplicateDetector, FIELD_SYMBOL);
+        requiredFieldPresent(duplicateDetector, InstrumentFromRow.FIELD_SYMBOL);
     }
 
     @Override
@@ -142,14 +140,6 @@ public class SystemProcessor extends RowProcessor {
      * The Side field header name.
      */
     public static final String FIELD_SIDE = "Side";  //$NON-NLS-1$
-    /**
-     * The Symbol field header name.
-     */
-    public static final String FIELD_SYMBOL = "Symbol";  //$NON-NLS-1$
-    /**
-     * The Security Type field header name.
-     */
-    public static final String FIELD_SECURITY_TYPE = "SecurityType";  //$NON-NLS-1$
     /**
      * The Time In Force field header name.
      */
