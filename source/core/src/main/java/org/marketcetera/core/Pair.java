@@ -1,5 +1,7 @@
 package org.marketcetera.core;
 
+import javax.annotation.concurrent.Immutable;
+
 /* $License$ */
 
 /**
@@ -10,6 +12,7 @@ package org.marketcetera.core;
  * @version $Id$
  * @since 0.5.0
  */
+@Immutable
 @ClassVersion("$Id$")
 public class Pair<T1, T2>
 {
@@ -68,7 +71,6 @@ public class Pair<T1, T2>
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object obj)
     {
@@ -78,7 +80,7 @@ public class Pair<T1, T2>
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Pair<T1,T2> other = (Pair<T1,T2>) obj;
+        Pair<?,?> other = (Pair<?,?>) obj;
         if (firstMember == null) {
             if (other.firstMember != null)
                 return false;
