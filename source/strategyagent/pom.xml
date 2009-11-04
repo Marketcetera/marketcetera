@@ -120,12 +120,12 @@
               <systemProperties>
                 <systemProperty>
                   <key>org.marketcetera.appDir</key>
-                  <value>src/test/sample_data</value>
+                  <value>src/test/cmd_exec</value>
                 </systemProperty>
               </systemProperties>
               <mainClass>org.marketcetera.strategyagent.StrategyAgent</mainClass>
               <arguments>
-                <argument>src/test/sample_data/inputs/sampleCommands.txt</argument>
+                <argument>src/test/cmd_exec/inputs/sampleCommands.txt</argument>
               </arguments>
               <classpathScope>test</classpathScope>
             </configuration>
