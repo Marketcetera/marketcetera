@@ -2,7 +2,7 @@ package org.marketcetera.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.event.HasEquity;
+import org.marketcetera.event.EquityEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.beans.MarketstatBean;
 import org.marketcetera.trade.Equity;
@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 class EquityMarketstatEventImpl
         extends AbstractMarketstatEventImpl
-        implements HasEquity
+        implements EquityEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasEquity#getInstrument()
