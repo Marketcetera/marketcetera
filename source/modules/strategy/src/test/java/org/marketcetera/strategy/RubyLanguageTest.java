@@ -88,6 +88,9 @@ public class RubyLanguageTest
     public static final File ORDER_RETENTION_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                                  "order_retention.rb");
     public static final String ORDER_RETENTION_STRATEGY_NAME = "OrderRetention";
+    public static final File POSITIONS_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                           "positions.rb");
+    public static final String POSITIONS_STRATEGY_NAME = "Positions";
     /**
      * Verifies that a Ruby strategy that requires another Ruby strategy works.
      *
@@ -377,6 +380,15 @@ public class RubyLanguageTest
      {
          return StrategyCoordinates.get(DATA_FLOW_STRATEGY,
                                         DATA_FLOW_STRATEGY_NAME);
+     }
+     /* (non-Javadoc)
+      * @see org.marketcetera.strategy.LanguageTestBase#getPositionsStrategy()
+      */
+     @Override
+     protected StrategyCoordinates getPositionsStrategy()
+     {
+         return StrategyCoordinates.get(POSITIONS_STRATEGY,
+                                        POSITIONS_STRATEGY_NAME);
      }
      private final String UNSERIALIZABLE_LOG_EVENT = "An unserializable LogEvent was emitted in on_start or on_stop.  See log for details.";
 }

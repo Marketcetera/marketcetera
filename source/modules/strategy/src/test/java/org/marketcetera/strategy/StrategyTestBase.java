@@ -1,10 +1,6 @@
 package org.marketcetera.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
 import static org.marketcetera.strategy.Status.FAILED;
 import static org.marketcetera.strategy.Status.RUNNING;
@@ -21,22 +17,7 @@ import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.jar.Manifest;
@@ -46,68 +27,32 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.marketcetera.client.BrokerStatusListener;
-import org.marketcetera.client.Client;
-import org.marketcetera.client.ClientParameters;
-import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.OrderValidationException;
-import org.marketcetera.client.ReportListener;
-import org.marketcetera.client.ServerStatusListener;
+import org.marketcetera.client.*;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.EventTestBase;
-import org.marketcetera.event.LogEvent;
-import org.marketcetera.event.LogEventLevel;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.*;
+import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.module.DataEmitter;
-import org.marketcetera.module.DataEmitterSupport;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataReceiver;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.IllegalRequestParameterValue;
-import org.marketcetera.module.Module;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.module.ModuleTestBase;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.RequestDataException;
-import org.marketcetera.module.RequestID;
-import org.marketcetera.module.StopDataFlowException;
-import org.marketcetera.module.UnsupportedDataTypeException;
-import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.module.*;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderCancelReject;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NMessage;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
 import quickfix.field.Side;
 import quickfix.field.TransactTime;
+
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 
 /* $License$ */
 
@@ -732,10 +677,162 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#getPositionsAsOf(java.util.Date)
          */
         @Override
-        public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf(Date inDate)
+        public Map<PositionKey<Equity>,BigDecimal> getPositionsAsOf(Date inDate)
                 throws ConnectionException
         {
-            throw new UnsupportedOperationException("This API is unsupported");
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            Map<PositionKey<Equity>,BigDecimal> result = new LinkedHashMap<PositionKey<Equity>,BigDecimal>();
+            for(Map.Entry<Instrument,Position> entry : positions.entrySet()) {
+                if(entry.getKey() instanceof Equity) {
+                    final Equity equity = (Equity)entry.getKey();
+                    BigDecimal value = getPositionAsOf(inDate,
+                                                       equity);
+                    if(value != null) {
+                        PositionKey<Equity> key = new PositionKey<Equity>() {
+                            @Override
+                            public String getAccount()
+                            {
+                                return null;
+                            }
+                            /* (non-Javadoc)
+                             * @see java.lang.Object#toString()
+                             */
+                            @Override
+                            public String toString()
+                            {
+                                return getInstrument().getSymbol();
+                            }
+                            @Override
+                            public Equity getInstrument()
+                            {
+                                return equity;
+                            }
+                            @Override
+                            public String getTraderId()
+                            {
+                                return null;
+                            }
+                        };
+                        result.put(key,
+                                   value);
+                    }
+                }
+            }
+            return result;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getAllOptionPositionsAsOf(java.util.Date)
+         */
+        @Override
+        public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf(Date inDate)
+                throws ConnectionException
+        {
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            Map<PositionKey<Option>,BigDecimal> result = new LinkedHashMap<PositionKey<Option>,BigDecimal>();
+            for(Map.Entry<Instrument,Position> entry : positions.entrySet()) {
+                if(entry.getKey() instanceof Option) {
+                    final Option option = (Option)entry.getKey();
+                    BigDecimal value = getOptionPositionAsOf(inDate,
+                                                             option);
+                    if(value != null) {
+                        PositionKey<Option> key = new PositionKey<Option>() {
+                            /* (non-Javadoc)
+                             * @see java.lang.Object#toString()
+                             */
+                            @Override
+                            public String toString()
+                            {
+                                return getInstrument().getSymbol();
+                            }
+                            @Override
+                            public String getAccount()
+                            {
+                                return null;
+                            }
+                            @Override
+                            public Option getInstrument()
+                            {
+                                return option;
+                            }
+                            @Override
+                            public String getTraderId()
+                            {
+                                return null;
+                            }
+                        };
+                        result.put(key,
+                                   value);
+                    }
+                }
+            }
+            return result;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
+         */
+        @Override
+        public BigDecimal getOptionPositionAsOf(Date inDate,
+                                                Option inOption)
+                throws ConnectionException
+        {
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            Position position = positions.get(inOption);
+            if(position == null) {
+                return null;
+            }
+            return position.getPositionAt(inDate);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getOptionPositionsAsOf(java.util.Date, java.lang.String[])
+         */
+        @Override
+        public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
+                                                                          String... inRootSymbols)
+                throws ConnectionException
+        {
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            Set<String> rootSymbols = new HashSet<String>(Arrays.asList(inRootSymbols));
+            Map<PositionKey<Option>,BigDecimal> allOptionPositions = getAllOptionPositionsAsOf(inDate);
+            Map<PositionKey<Option>,BigDecimal> result = new LinkedHashMap<PositionKey<Option>,BigDecimal>();
+            for(Map.Entry<PositionKey<Option>,BigDecimal> position : allOptionPositions.entrySet()) {
+                if(rootSymbols.contains(position.getKey().getInstrument().getSymbol())) {
+                    result.put(position.getKey(),
+                               position.getValue());
+                }
+            }
+            return result;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getOptionRoots(java.lang.String)
+         */
+        @Override
+        public Collection<String> getOptionRoots(String inUnderlying)
+                throws ConnectionException
+        {
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            return roots.get(inUnderlying);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getUnderlying(java.lang.String)
+         */
+        @Override
+        public String getUnderlying(String inOptionRoot)
+                throws ConnectionException
+        {
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            return underlyings.get(inOptionRoot);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#getReportsSince(java.util.Date)
@@ -832,7 +929,6 @@ public class StrategyTestBase
         {
             throw new UnsupportedOperationException();
         }
-
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#isCredentialsMatch(String, char[])
          */
@@ -841,42 +937,8 @@ public class StrategyTestBase
         {
             throw new UnsupportedOperationException();
         }
-
         @Override
         public boolean isServerAlive()
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public BigDecimal getOptionPositionAsOf(Date inDate, Option inOption)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-
-        @Override
-        public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf(
-                Date inDate)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf(
-                Date inDate, String... inSymbols)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getUnderlying(String optionRoot)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Collection<String> getOptionRoots(String inUnderlying)
         {
             throw new UnsupportedOperationException();
         }
@@ -1020,33 +1082,33 @@ public class StrategyTestBase
          */
         private final SortedSet<Interval<BigDecimal>> position = new TreeSet<Interval<BigDecimal>>();
         /**
-         * the symbol for which this position is define
+         * the instrument for which this position is defined
          */
-        private final Equity symbol;
+        private final Instrument instrument;
         /**
          * Create a new Position instance.
          * 
          * <p>The initial position is randomly generated.
          *
-         * @param inSymbol a <code>Equity</code> value
+         * @param inInstrument an <code>Instrument</code> value
          */
-        public Position(Equity inSymbol)
+        public Position(Instrument inInstrument)
         {
-            this(inSymbol,
+            this(inInstrument,
                  generateRandomPosition());
         }
         /**
          * Create a new Position instance.
          *
-         * @param inSymbol a <code>Equity</code> value
+         * @param inInstrument an <code>Instrument</code> value
          * @param inStartingPosition a <code>List&lt;Interval&lt;BigDecimal&gt;&gt;</code> value as the initial position
          */
-        public Position(Equity inSymbol,
+        public Position(Instrument inInstrument,
                         List<Interval<BigDecimal>> inStartingPosition)
         {
-            assert(inSymbol != null);
+            assert(inInstrument != null);
             assert(inStartingPosition != null);
-            symbol = inSymbol;
+            instrument = inInstrument;
             position.addAll(inStartingPosition);
         }
         /**
@@ -1084,7 +1146,7 @@ public class StrategyTestBase
             Date dataPoint = new Date(inDate.getTime() + 1);
             Interval<BigDecimal> point = new Interval<BigDecimal>(dataPoint,
                                                                   BigDecimal.ZERO);
-            // if there are no intervals or the asked-for date preceeds our first datapoint,
+            // if there are no intervals or the asked-for date precedes our first data-point,
             //  then the position is 0
             if(position.isEmpty() ||
                position.first().compareTo(point) > 0) {
@@ -1100,13 +1162,13 @@ public class StrategyTestBase
             }
         }
         /**
-         * The symbol for this position.
+         * The instrument for this position.
          *
-         * @return a <code>Equity</code> value
+         * @return an <code>Instrument</code> value
          */
-        public Equity getSymbol()
+        public Instrument getInstrument()
         {
-            return symbol;
+            return instrument;
         }
         /**
          * Generates a random position.
@@ -1146,7 +1208,7 @@ public class StrategyTestBase
         public String toString()
         {
             StringBuffer output = new StringBuffer();
-            output.append("Position for ").append(getSymbol()).append(System.getProperty("line.separator"));
+            output.append("Position for ").append(getInstrument()).append(SystemUtils.LINE_SEPARATOR);
             for(Interval<BigDecimal> interval : position) {
                 output.append(interval).append(",");
             }
@@ -1156,16 +1218,15 @@ public class StrategyTestBase
     /**
      * Generates positions for the given symbols. 
      *
-     * @param inSymbols a <code>String[]</code> value contains the strings for which to generate positions
-     * @return a <code>Map&lt;Equity,Position&gt;</code> value containing the generated positions
+     * @param inInstruments a <code>List&lt;Instrument&gt;</code> value containing the instruments for which to generate positions
+     * @return a <code>Map&lt;Instrument,Position&gt;</code> value containing the generated positions
      */
-    public static final Map<Equity,Position> generatePositions(String[] inSymbols)
+    public static final Map<Instrument,Position> generatePositions(List<Instrument> inInstruments)
     {
-        Map<Equity,Position> positions = new HashMap<Equity,Position>();
-        for(String symbol : inSymbols) {
-            Equity equity = new Equity(symbol);
-            positions.put(equity,
-                          new Position(equity));
+        Map<Instrument,Position> positions = new HashMap<Instrument,Position>();
+        for(Instrument instrument : inInstruments) {
+            positions.put(instrument,
+                          new Position(instrument));
         }
         return positions;
     }
@@ -1218,7 +1279,75 @@ public class StrategyTestBase
     {
         System.setProperty(org.marketcetera.strategy.Strategy.CLASSPATH_PROPERTYNAME,
                            StrategyTestBase.SAMPLE_STRATEGY_DIR.getCanonicalPath());
-        positions.putAll(generatePositions(new String[] { "METC", "GOOG", "YHOO", "ORCL", "AAPL", "JAVA", "MSFT" } ));
+        List<Instrument> testInstruments = new ArrayList<Instrument>();
+        testInstruments.add(new Equity("METC"));
+        testInstruments.add(new Equity("GOOG"));
+        testInstruments.add(new Equity("YHOO"));
+        testInstruments.add(new Equity("ORCL"));
+        testInstruments.add(new Equity("AAPL"));
+        testInstruments.add(new Equity("JAVA"));
+        testInstruments.add(new Equity("MSFT"));
+        testInstruments.add(new Option("METC1",
+                                       DateUtils.dateToString(new Date(),
+                                                              DateUtils.DAYS),
+                                        EventTestBase.generateDecimalValue(),
+                                        OptionType.Call));
+        testInstruments.add(new Option("METC2",
+                                       DateUtils.dateToString(new Date(),
+                                                              DateUtils.DAYS),
+                                        EventTestBase.generateDecimalValue(),
+                                        OptionType.Put));
+        testInstruments.add(new Option("METC3",
+                                       DateUtils.dateToString(new Date(),
+                                                              DateUtils.DAYS),
+                                        EventTestBase.generateDecimalValue(),
+                                        OptionType.Call));
+        testInstruments.add(new Option("METC4",
+                                       DateUtils.dateToString(new Date(),
+                                                              DateUtils.DAYS),
+                                        EventTestBase.generateDecimalValue(),
+                                        OptionType.Put));
+        roots.putAll("METC",
+                     Arrays.asList(new String[] { "METC1", "METC2", "METC3", "METC4" } ));
+        underlyings.put("METC1",
+                        "METC");
+        underlyings.put("METC2",
+                        "METC");
+        underlyings.put("METC3",
+                        "METC");
+        underlyings.put("METC4",
+                        "METC");
+        testInstruments.add(new Option("MSFT1",
+                                       DateUtils.dateToString(new Date(),
+                                                              DateUtils.DAYS),
+                                        EventTestBase.generateDecimalValue(),
+                                        OptionType.Call));
+        testInstruments.add(new Option("MSFT2",
+                                       DateUtils.dateToString(new Date(),
+                                                              DateUtils.DAYS),
+                                        EventTestBase.generateDecimalValue(),
+                                        OptionType.Put));
+        testInstruments.add(new Option("MSFT3",
+                                       DateUtils.dateToString(new Date(),
+                                                              DateUtils.DAYS),
+                                        EventTestBase.generateDecimalValue(),
+                                        OptionType.Call));
+        testInstruments.add(new Option("MSFT4",
+                                       DateUtils.dateToString(new Date(),
+                                                              DateUtils.DAYS),
+                                        EventTestBase.generateDecimalValue(),
+                                        OptionType.Put));
+        roots.putAll("MSFT",
+                     Arrays.asList(new String[] { "MSFT1", "MSFT2", "MSFT3", "MSFT4" } ));
+        underlyings.put("MSFT1",
+                        "MSFT");
+        underlyings.put("MSFT2",
+                        "MSFT");
+        underlyings.put("MSFT3",
+                        "MSFT");
+        underlyings.put("MSFT4",
+                        "MSFT");
+        positions.putAll(generatePositions(testInstruments));
     }
     /**
      * Run before each test.
@@ -1853,7 +1982,15 @@ public class StrategyTestBase
     /**
      * positions for a set of symbols
      */
-    protected final static Map<Equity,Position> positions = new HashMap<Equity,Position>();
+    protected final static Map<Instrument,Position> positions = new LinkedHashMap<Instrument,Position>();
+    /**
+     * list of option roots for a given single underlying symbol
+     */
+    protected final static Multimap<String,String> roots = LinkedHashMultimap.create();
+    /**
+     * the underlying symbol for each root
+     */
+    protected final static Map<String,String> underlyings = new LinkedHashMap<String,String>();
     /**
      * a set of test brokers
      */

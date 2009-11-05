@@ -109,26 +109,6 @@ public class JavaStrategy
             error("Some statement");
             error(UnicodeData.HOUSE_AR);
         }
-        if(getProperty("askForPosition") != null) {
-            String symbol = getProperty("symbol");
-            String dateString = getProperty("date");
-            Date date;
-            if(dateString == null) {
-                date = null;
-            } else {
-                date = new Date(Long.parseLong(dateString));
-            }
-            BigDecimal result = getPositionAsOf(date,
-                                                symbol);
-            String resultString;
-            if(result == null) {
-               resultString = null;
-            } else {
-               resultString = result.toString();
-            }
-            setProperty("position",
-                        resultString);
-        }
         if(getProperty("askForBrokers") != null) {
             int counter = 0;
             for(BrokerStatus broker : getBrokers()) {

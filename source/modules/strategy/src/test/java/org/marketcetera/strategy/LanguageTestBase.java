@@ -1,37 +1,17 @@
 package org.marketcetera.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.marketcetera.event.LogEventLevel.DEBUG;
 import static org.marketcetera.event.LogEventLevel.ERROR;
 import static org.marketcetera.event.LogEventLevel.INFO;
 import static org.marketcetera.event.LogEventLevel.WARN;
 import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
 import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
-import static org.marketcetera.strategy.Status.FAILED;
-import static org.marketcetera.strategy.Status.RUNNING;
-import static org.marketcetera.strategy.Status.STARTING;
-import static org.marketcetera.strategy.Status.STOPPED;
-import static org.marketcetera.strategy.Status.STOPPING;
+import static org.marketcetera.strategy.Status.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.*;
+import java.util.concurrent.*;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -39,41 +19,21 @@ import org.junit.Test;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataModuleTestBase.DataSink;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.module.CopierModuleFactory;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleStateException;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.SinkModuleFactory;
+import org.marketcetera.module.*;
 import org.marketcetera.module.CopierModule.SynchronousRequest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderSingleSuggestion;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TimeInForce;
-import org.marketcetera.trade.TypesTestBase;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.NamedThreadFactory;
 import org.marketcetera.util.test.CollectionAssert;
@@ -2158,41 +2118,49 @@ public abstract class LanguageTestBase
                      receivedOrder.getPrice());
     }
     /**
-     * Tests a strategy's ability to get the position of a security. 
+     * Tests {@link AbstractRunningStrategy#getPositionAsOf(Date, String)}.
      *
-     * @throws Exception if an error occurs
+     * @throws Exception if an unexpected error occurs
      */
     @Test
-    public void positions()
-        throws Exception
+    public void positionAsOf()
+            throws Exception
     {
-        String validSymbol = positions.keySet().iterator().next().getSymbol();
-        Position position = positions.get(new Equity(validSymbol));
+        Instrument validEquity = null;
+        for(Instrument instrument : positions.keySet()) {
+            if(instrument instanceof Equity) {
+                validEquity = instrument;
+                break;
+            }
+        }
+        assertNotNull(validEquity);
+        Position position = positions.get(validEquity);
+        assertNotNull(position);
         String invalidSymbol = "there-is-no-position-for-this-symbol-" + System.nanoTime();
         assertFalse(positions.containsKey(new Equity(invalidSymbol)));
         // null symbol
-        doPositionTest(null,
-                       new Date(),
-                       null);
+        doPositionAsOfTest(null,
+                           new Date(),
+                           null);
         // invalid symbol
-        doPositionTest(invalidSymbol,
-                       new Date(),
-                       null);
+        doPositionAsOfTest(invalidSymbol,
+                           new Date(),
+                           null);
         // null date
-        doPositionTest(validSymbol,
-                       null,
-                       null);
+        doPositionAsOfTest(validEquity.getSymbol(),
+                           null,
+                           null);
         // call fails
         MockClient.getPositionFails = true;
-        doPositionTest(validSymbol,
-                       new Date(),
-                       null);
+        doPositionAsOfTest(validEquity.getSymbol(),
+                           new Date(),
+                           null);
         MockClient.getPositionFails = false;
         // date in the past (before position begins)
         Interval<BigDecimal> openingBalance = position.getPositionView().get(0);
-        doPositionTest(validSymbol,
-                       new Date(openingBalance.getDate().getTime() - 1000), // 1s before the open of the position
-                       BigDecimal.ZERO);
+        doPositionAsOfTest(validEquity.getSymbol(),
+                           new Date(openingBalance.getDate().getTime() - 1000), // 1s before the open of the position
+                           BigDecimal.ZERO);
         // date in the past (after position begins)
         List<Interval<BigDecimal>> view = position.getPositionView(); 
         int median = view.size() / 2;
@@ -2206,9 +2174,9 @@ public abstract class LanguageTestBase
                      expectedValue);
         assertTrue(date.getTime() < System.currentTimeMillis());
         // found a date somewhere in the middle of the position and earlier than today
-        doPositionTest(validSymbol,
-                       date,
-                       expectedValue);
+        doPositionAsOfTest(validEquity.getSymbol(),
+                           date,
+                           expectedValue);
         // date exactly now
         date = new Date();
         expectedValue = position.getPositionAt(date);
@@ -2216,9 +2184,9 @@ public abstract class LanguageTestBase
         assertEquals("value at " + date + ": " + position,
                      dataPoint.getValue(),
                      expectedValue);
-        doPositionTest(validSymbol,
-                       date,
-                       expectedValue);
+        doPositionAsOfTest(validEquity.getSymbol(),
+                           date,
+                           expectedValue);
         // pick a data point two weeks into the future
         date = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
         expectedValue = position.getPositionAt(date);
@@ -2226,9 +2194,429 @@ public abstract class LanguageTestBase
         assertEquals("value at " + date + ": " + position,
                      dataPoint.getValue(),
                      expectedValue);
-        doPositionTest(validSymbol,
+        doPositionAsOfTest(validEquity.getSymbol(),
                        date,
                        expectedValue);
+    }
+    /**
+     * Tests {@link AbstractRunningStrategy#getAllPositionsAsOf(Date)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void allPositionsAsOf()
+            throws Exception
+    {
+        // null date
+        doAllPositionsAsOfTest(null,
+                               null);
+        // call fails
+        MockClient.getPositionFails = true;
+        doAllPositionsAsOfTest(new Date(),
+                               null);
+        MockClient.getPositionFails = false;
+        // the date of the earliest position of all instruments
+        Date date = new Date();
+        for(Position position : positions.values()) {
+            // examine only equities to make sure that the position we find is for an equity
+            if(position.getInstrument() instanceof Equity) {
+                date = new Date(Math.min(date.getTime(),
+                                         position.getPositionView().get(0).getDate().getTime()));
+            }
+        }
+        MockClient client = new MockClient();
+        date = new Date(date.getTime() - 1000);
+        doAllPositionsAsOfTest(date, // 1s before the open of the position
+                               client.getPositionsAsOf(date));
+        // date in the past (after position begins)
+        date = new Date(date.getTime() + 2000); // 1s after the open of the position
+        assertTrue(date.getTime() < System.currentTimeMillis());
+        // found a date somewhere in the middle of the position and earlier than today
+        doAllPositionsAsOfTest(date,
+                               client.getPositionsAsOf(date));
+        // date exactly now
+        date = new Date();
+        doAllPositionsAsOfTest(date,
+                               client.getPositionsAsOf(date));
+        // pick a data point two weeks into the future
+        date = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
+        doAllPositionsAsOfTest(date,
+                               client.getPositionsAsOf(date));
+    }
+    /**
+     * Tests {@link AbstractRunningStrategy#getOptionPositionAsOf(Date, String, String, BigDecimal, OptionType)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void optionPositionAsOf()
+            throws Exception
+    {
+        Option validOption = null;
+        for(Instrument instrument : positions.keySet()) {
+            if(instrument instanceof Option) {
+                validOption = (Option)instrument;
+                break;
+            }
+        }
+        assertNotNull(validOption);
+        Position position = positions.get(validOption);
+        assertNotNull(position);
+        String invalidSymbol = "there-is-no-position-for-this-symbol-" + System.nanoTime();
+        Option invalidOption = new Option(invalidSymbol,
+                                          DateUtils.dateToString(new Date(),
+                                                                 DateUtils.DAYS),
+                                          EventTestBase.generateDecimalValue(),
+                                          OptionType.Call);
+        assertFalse(positions.containsKey(invalidOption));
+        // null option root
+        doOptionPositionAsOfTest(null,
+                                 validOption.getExpiry(),
+                                 validOption.getStrikePrice(),
+                                 validOption.getType(),
+                                 new Date(),
+                                 null);
+        // null expiry
+        doOptionPositionAsOfTest(validOption.getSymbol(),
+                                 null,
+                                 validOption.getStrikePrice(),
+                                 validOption.getType(),
+                                 new Date(),
+                                 null);
+        // null strike price
+        doOptionPositionAsOfTest(validOption.getSymbol(),
+                                 validOption.getExpiry(),
+                                 null,
+                                 validOption.getType(),
+                                 new Date(),
+                                 null);
+        // null option type
+        doOptionPositionAsOfTest(validOption.getSymbol(),
+                                 validOption.getExpiry(),
+                                 validOption.getStrikePrice(),
+                                 null,
+                                 new Date(),
+                                 null);
+        // null date
+        doOptionPositionAsOfTest(validOption.getSymbol(),
+                                 validOption.getExpiry(),
+                                 validOption.getStrikePrice(),
+                                 validOption.getType(),
+                                 null,
+                                 null);
+        // option doesn't exist
+        doOptionPositionAsOfTest(invalidOption.getSymbol(),
+                                 invalidOption.getExpiry(),
+                                 invalidOption.getStrikePrice(),
+                                 invalidOption.getType(),
+                                 new Date(),
+                                 null);
+        // call fails
+        MockClient.getPositionFails = true;
+        doOptionPositionAsOfTest(validOption.getSymbol(),
+                                 validOption.getExpiry(),
+                                 validOption.getStrikePrice(),
+                                 validOption.getType(),
+                                 new Date(),
+                                 null);
+        MockClient.getPositionFails = false;
+        // date in the past (before position begins)
+        Interval<BigDecimal> openingBalance = position.getPositionView().get(0);
+        doOptionPositionAsOfTest(validOption.getSymbol(),
+                                 validOption.getExpiry(),
+                                 validOption.getStrikePrice(),
+                                 validOption.getType(),
+                                 new Date(openingBalance.getDate().getTime() - 1000), // 1s before the open of the position
+                                 BigDecimal.ZERO);
+        // date in the past (after position begins)
+        List<Interval<BigDecimal>> view = position.getPositionView(); 
+        int median = view.size() / 2;
+        assertTrue("Position " + position + " contains no data!",
+                   median > 0);
+        Interval<BigDecimal> dataPoint = position.getPositionView().get(median);
+        Date date = dataPoint.getDate();
+        BigDecimal expectedValue = position.getPositionAt(date);
+        assertEquals("value at " + date + ": " + position,
+                     dataPoint.getValue(),
+                     expectedValue);
+        assertTrue(date.getTime() < System.currentTimeMillis());
+        // found a date somewhere in the middle of the position and earlier than today
+        doOptionPositionAsOfTest(validOption.getSymbol(),
+                                 validOption.getExpiry(),
+                                 validOption.getStrikePrice(),
+                                 validOption.getType(),
+                                 date,
+                                 expectedValue);
+        // date exactly now
+        date = new Date();
+        expectedValue = position.getPositionAt(date);
+        dataPoint = view.get(view.size() - 1);
+        assertEquals("value at " + date + ": " + position,
+                     dataPoint.getValue(),
+                     expectedValue);
+        doOptionPositionAsOfTest(validOption.getSymbol(),
+                                 validOption.getExpiry(),
+                                 validOption.getStrikePrice(),
+                                 validOption.getType(),
+                                 date,
+                                 expectedValue);
+        // pick a data point two weeks into the future
+        date = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
+        expectedValue = position.getPositionAt(date);
+        dataPoint = view.get(view.size() - 1);
+        assertEquals("value at " + date + ": " + position,
+                     dataPoint.getValue(),
+                     expectedValue);
+        doOptionPositionAsOfTest(validOption.getSymbol(),
+                                 validOption.getExpiry(),
+                                 validOption.getStrikePrice(),
+                                 validOption.getType(),
+                                 date,
+                                 expectedValue);
+    }
+    /**
+     * Tests {@link AbstractRunningStrategy#getAllOptionPositionsAsOf(Date)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void allOptionPositionsAsOf()
+            throws Exception
+    {
+        // null date
+        doAllOptionPositionsAsOfTest(null,
+                                     null);
+        // call fails
+        MockClient.getPositionFails = true;
+        doAllOptionPositionsAsOfTest(new Date(),
+                                     null);
+        MockClient.getPositionFails = false;
+        // the date of the earliest position of all instruments
+        Date date = new Date();
+        for(Position position : positions.values()) {
+            if(position.getInstrument() instanceof Option) {
+                date = new Date(Math.min(date.getTime(),
+                                         position.getPositionView().get(0).getDate().getTime()));
+            }
+        }
+        MockClient client = new MockClient();
+        date = new Date(date.getTime() - 1000);
+        doAllOptionPositionsAsOfTest(date, // 1s before the open of the position
+                                     client.getAllOptionPositionsAsOf(date));
+        // date in the past (after position begins)
+        date = new Date(date.getTime() + 2000); // 1s after the open of the position
+        assertTrue(date.getTime() < System.currentTimeMillis());
+        // found a date somewhere in the middle of the position and earlier than today
+        doAllOptionPositionsAsOfTest(date,
+                                     client.getAllOptionPositionsAsOf(date));
+        // date exactly now
+        date = new Date();
+        doAllOptionPositionsAsOfTest(date,
+                                     client.getAllOptionPositionsAsOf(date));
+        // pick a data point two weeks into the future
+        date = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
+        doAllOptionPositionsAsOfTest(date,
+                                     client.getAllOptionPositionsAsOf(date));
+    }
+    /**
+     * Tests {@link AbstractRunningStrategy#getOptionPositionsAsOf(Date, String...)}. 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void optionPositionsAsOf()
+            throws Exception
+    {
+        MockClient client = new MockClient();
+        Option validOption1 = null;
+        Option validOption2 = null;
+        for(Instrument instrument : positions.keySet()) {
+            if(instrument instanceof Option &&
+               validOption1 == null) {
+                validOption1 = (Option)instrument;
+            } else {
+                if(instrument instanceof Option &&
+                   validOption2 == null) {
+                    validOption2 = (Option)instrument;
+                }
+            }
+        }
+        assertNotNull(validOption1);
+        assertNotNull(validOption2);
+        Position position1 = positions.get(validOption1);
+        Position position2 = positions.get(validOption2);
+        assertNotNull(position1);
+        assertNotNull(position2);
+        String invalidSymbol = "there-is-no-position-for-this-symbol-" + System.nanoTime();
+        Option invalidOption = new Option(invalidSymbol,
+                                          DateUtils.dateToString(new Date(),
+                                                                 DateUtils.DAYS),
+                                          EventTestBase.generateDecimalValue(),
+                                          OptionType.Call);
+        assertFalse(positions.containsKey(invalidOption));
+        // null option roots
+        doOptionPositionsAsOfTest(null,
+                                  new Date(),
+                                  null,
+                                  null);
+        // empty option roots
+        doOptionPositionsAsOfTest(new String[0],
+                                  new Date(),
+                                  null,
+                                  null);
+        String[] optionRoots = new String[] { validOption1.getSymbol(), invalidOption.getSymbol(), null };
+        Date date = new Date();
+        // a mix of valid and invalid
+        doOptionPositionsAsOfTest(optionRoots,
+                                  date,
+                                  null,
+                                  client.getOptionPositionsAsOf(date,
+                                                                optionRoots));
+        // null date
+        doOptionPositionsAsOfTest(new String[] { validOption1.getSymbol() },
+                                  null,
+                                  null,
+                                  null);
+        optionRoots = new String[] { invalidOption.getSymbol() };
+        date = new Date();
+        // option doesn't exist
+        doOptionPositionsAsOfTest(optionRoots,
+                                  date,
+                                  null,
+                                  client.getOptionPositionsAsOf(date,
+                                                                optionRoots));
+        // call fails
+        MockClient.getPositionFails = true;
+        doOptionPositionsAsOfTest(new String[] { validOption1.getSymbol() },
+                                  new Date(),
+                                  null,
+                                  null);
+        MockClient.getPositionFails = false;
+        // date in the past (before position begins)
+        optionRoots = new String[] { validOption1.getSymbol(), validOption2.getSymbol() };
+        Interval<BigDecimal> openingBalance1 = position1.getPositionView().get(0);
+        Interval<BigDecimal> openingBalance2 = position2.getPositionView().get(0);
+        date = new Date(Math.min(openingBalance1.getDate().getTime(),
+                                 openingBalance2.getDate().getTime()) - 1000); // 1s before the open of the position
+        doOptionPositionsAsOfTest(optionRoots,
+                                  date,
+                                  null,
+                                  client.getOptionPositionsAsOf(date,
+                                                                optionRoots));
+        // date in the past (after position begins)
+        List<Interval<BigDecimal>> view = position1.getPositionView(); 
+        int median = view.size() / 2;
+        assertTrue("Position " + position1 + " contains no data!",
+                   median > 0);
+        Interval<BigDecimal> dataPoint = position1.getPositionView().get(median);
+        date = dataPoint.getDate();
+        assertTrue(date.getTime() < System.currentTimeMillis());
+        // found a date somewhere in the middle of the position and earlier than today
+        doOptionPositionsAsOfTest(optionRoots,
+                                  date,
+                                  null,
+                                  client.getOptionPositionsAsOf(date,
+                                                                optionRoots));
+        // date exactly now
+        date = new Date();
+        doOptionPositionsAsOfTest(optionRoots,
+                                  date,
+                                  null,
+                                  client.getOptionPositionsAsOf(date,
+                                                                optionRoots));
+        // pick a data point two weeks into the future
+        date = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
+        doOptionPositionsAsOfTest(optionRoots,
+                                  date,
+                                  null,
+                                  client.getOptionPositionsAsOf(date,
+                                                                optionRoots));
+        // do a pair of special tests that need special handling
+        Properties parameters = new Properties();
+        parameters.setProperty("nullOptionRoot",
+                               "true");
+        doOptionPositionsAsOfTest(new String[] { validOption1.getSymbol() },
+                                  date,
+                                  parameters,
+                                  null);
+        parameters.clear();
+        parameters.setProperty("emptyOptionRoot",
+                               "true");
+        doOptionPositionsAsOfTest(new String[] { validOption1.getSymbol() },
+                                  date,
+                                  parameters,
+                                  null);
+    }
+    /**
+     * Tests {@link AbstractRunningStrategy#getUnderlying(String)}. 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void underlying()
+            throws Exception
+    {
+        MockClient client = new MockClient();
+        Option validOption = null;
+        for(Instrument instrument : positions.keySet()) {
+            if(instrument instanceof Option) {
+                validOption = (Option)instrument;
+                break;
+            }
+        }
+        assertNotNull(validOption);
+        assertTrue(underlyings.containsKey(validOption.getSymbol()));
+        String invalidSymbol = "there-is-no-underlying-for-this-symbol-" + System.nanoTime();
+        assertFalse(underlyings.containsKey(invalidSymbol));
+        // null option root
+        doUnderlyingTest(null,
+                         null);
+        // empty option root
+        doUnderlyingTest("",
+                         null);
+        // invalid option root
+        doUnderlyingTest(invalidSymbol,
+                         null);
+        // call fails
+        MockClient.getPositionFails = true;
+        doUnderlyingTest(validOption.getSymbol(),
+                         null);
+        MockClient.getPositionFails = false;
+        // valid option root
+        doUnderlyingTest(validOption.getSymbol(),
+                         client.getUnderlying(validOption.getSymbol()));
+    }
+    /**
+     * Tests {@link AbstractRunningStrategy#getOptionRoots(String)}. 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void optionRoots()
+            throws Exception
+    {
+        MockClient client = new MockClient();
+        String underlyingSymbol = roots.keySet().iterator().next();
+        assertNotNull(underlyingSymbol);
+        String invalidUnderlyingSymbol = "not-an-underlying-symbol";
+        assertFalse(roots.keySet().contains(invalidUnderlyingSymbol));
+        // null underlying symbol
+        doOptionRootsTest(null,
+                          null);
+        // empty underlying symbol
+        doOptionRootsTest("",
+                          null);
+        // invalid underlying symbol
+        doOptionRootsTest(invalidUnderlyingSymbol,
+                          client.getOptionRoots(invalidUnderlyingSymbol));
+        // call fails
+        MockClient.getPositionFails = true;
+        doOptionRootsTest(underlyingSymbol,
+                          null);
+        MockClient.getPositionFails = false;
+        // valid underlying symbol
+        doOptionRootsTest(underlyingSymbol,
+                          client.getOptionRoots(underlyingSymbol));
     }
     /**
      * Tests that two strategies with the same class name can co-exist.
@@ -3356,6 +3744,13 @@ public abstract class LanguageTestBase
      */
     protected abstract StrategyCoordinates getOrderRetentionStrategy();
     /**
+     * Gets a strategy that exercises the Strategy API calls related to
+     * positions.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getPositionsStrategy();
+    /**
      * Indicates the number of expected compiler warnings for the given strategy.
      * 
      * <p>Subclasses may override this method to assist calculations for tests that
@@ -3603,50 +3998,6 @@ public abstract class LanguageTestBase
         // verify there are no extra properties
         assertNull("Property " + inExpectedBrokers.length + " was non-null",
                    AbstractRunningStrategy.getProperty("" + inExpectedBrokers.length));
-    }
-    /**
-     * Executes a single iteration of the get-current-position test.
-     *
-     * @param inSymbol a <code>String</code> value containing the equity symbol for which to search or null
-     * @param inDate a <code>Date</code> value containing the time-point at which to search or null
-     * @param inExpectedPosition a <code>BigDecimal</code> value containing the expected result
-     * @throws Exception if an error occurs
-     */
-    private void doPositionTest(String inSymbol,
-                                Date inDate,
-                                BigDecimal inExpectedPosition)
-        throws Exception
-    {
-        StrategyCoordinates strategy = getStrategyCompiles();
-        Instrument instrument = null;
-        // set up data
-        if(inSymbol != null) {
-            instrument = new Equity(inSymbol);
-            AbstractRunningStrategy.setProperty("symbol",
-                                                instrument.getSymbol());
-        } else {
-            AbstractRunningStrategy.setProperty("symbol",
-                                                null);
-        }
-        if(inDate != null) {
-            AbstractRunningStrategy.setProperty("date",
-                                                Long.toString(inDate.getTime()));
-        } else {
-            AbstractRunningStrategy.setProperty("date",
-                                                null);
-        }
-        AbstractRunningStrategy.setProperty("askForPosition",
-                                            "true");
-        AbstractRunningStrategy.setProperty("position",
-                                            null);
-        verifyStrategyStartsAndStops(strategy.getName(),
-                                     getLanguage(),
-                                     strategy.getFile(),
-                                     null,
-                                     null,
-                                     null);
-        assertEquals((inExpectedPosition == null ? null : inExpectedPosition.toString()),
-                     AbstractRunningStrategy.getProperty("position"));
     }
     /**
      * Starts a strategy module which generates <code>FIX</code> messages and measures them against the
@@ -4315,6 +4666,259 @@ public abstract class LanguageTestBase
         for(String callbackShouldBeNull : allCallbacks) {
             verifyPropertyNull(callbackShouldBeNull);
         }
+    }
+    /**
+     * Executes one iteration of the getPositionAsOf test. 
+     *
+     * @param inSymbol a <code>String</code> value
+     * @param inDate a <code>Date</code> value
+     * @param inExpectedPosition a <code>BigDecimal</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doPositionAsOfTest(String inSymbol,
+                                    Date inDate,
+                                    BigDecimal inExpectedPosition)
+            throws Exception
+    {
+        StrategyCoordinates strategy = getPositionsStrategy();
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("positionAsOfDuringStop",
+                                            "not-empty");
+        if(inSymbol != null) {
+            AbstractRunningStrategy.setProperty("symbol",
+                                                inSymbol);
+        }
+        if(inDate != null) {
+            AbstractRunningStrategy.setProperty("date",
+                                                Long.toString(inDate.getTime()));
+        }
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null);
+        // verify expected results
+        assertEquals((inExpectedPosition == null ? null : inExpectedPosition.toString()),
+                     AbstractRunningStrategy.getProperty("positionAsOf"));
+        assertNull(AbstractRunningStrategy.getProperty("positionAsOfDuringStop"));
+    }
+    /**
+     * Executes one iteration of the <code>getAllPositionsAsOf</code> test. 
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inExpectedPositions a <code>Map&lt;PositionKey&lt;Equity&gt;,BigDecimal&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doAllPositionsAsOfTest(Date inDate,
+                                        Map<PositionKey<Equity>,BigDecimal> inExpectedPositions)
+            throws Exception
+    {
+        StrategyCoordinates strategy = getPositionsStrategy();
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("allPositionsAsOfDuringStop",
+                                            "not-empty");
+        if(inDate != null) {
+            AbstractRunningStrategy.setProperty("date",
+                                                Long.toString(inDate.getTime()));
+        }
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null);
+        // verify expected results
+        assertEquals((inExpectedPositions == null ? null : inExpectedPositions.toString()),
+                     AbstractRunningStrategy.getProperty("allPositionsAsOf"));
+        assertNull(AbstractRunningStrategy.getProperty("allPositionsAsOfDuringStop"));
+    }
+    /**
+     * Executes a single iteration of the <code>getOptionPositionAsOf</code> test.
+     *
+     * @param inOptionRoot a <code>String</code> value
+     * @param inExpiry a <code>String</code> value
+     * @param inStrikePrice a <code>BigDecimal</code> value
+     * @param inOptionType an <code>OptionType</code> value
+     * @param inDate a <code>Date</code> value
+     * @param inExpectedPosition a <code>BigDecimal</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doOptionPositionAsOfTest(String inOptionRoot,
+                                          String inExpiry,
+                                          BigDecimal inStrikePrice,
+                                          OptionType inOptionType,
+                                          Date inDate,
+                                          BigDecimal inExpectedPosition)
+            throws Exception
+    {
+        StrategyCoordinates strategy = getPositionsStrategy();
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("optionPositionAsOfDuringStop",
+                                            "not-empty");
+        if(inOptionRoot != null) {
+            AbstractRunningStrategy.setProperty("optionRoot",
+                                                inOptionRoot);
+        }
+        if(inExpiry != null) {
+            AbstractRunningStrategy.setProperty("expiry",
+                                                inExpiry);
+        }
+        if(inStrikePrice != null) {
+            AbstractRunningStrategy.setProperty("strikePrice",
+                                                inStrikePrice.toPlainString());
+        }
+        if(inOptionType != null) {
+            AbstractRunningStrategy.setProperty("optionType",
+                                                inOptionType.toString());
+        }
+        if(inDate != null) {
+            AbstractRunningStrategy.setProperty("date",
+                                                Long.toString(inDate.getTime()));
+        }
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null);
+        // verify expected results
+        assertEquals((inExpectedPosition == null ? null : inExpectedPosition.toString()),
+                     AbstractRunningStrategy.getProperty("optionPositionAsOf"));
+        assertNull(AbstractRunningStrategy.getProperty("optionPositionAsOfDuringStop"));
+    }
+    /**
+     * Executes one iteration of the <code>getAllOptionPositionsAsOf</code> test.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inExpectedPositions a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doAllOptionPositionsAsOfTest(Date inDate,
+                                              Map<PositionKey<Option>,BigDecimal> inExpectedPositions)
+            throws Exception
+    {
+        StrategyCoordinates strategy = getPositionsStrategy();
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("allOptionPositionsAsOfDuringStop",
+                                            "not-empty");
+        if(inDate != null) {
+            AbstractRunningStrategy.setProperty("date",
+                                                Long.toString(inDate.getTime()));
+        }
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null);
+        // verify expected results
+        assertEquals((inExpectedPositions == null ? null : inExpectedPositions.toString()),
+                     AbstractRunningStrategy.getProperty("allOptionPositionsAsOf"));
+        assertNull(AbstractRunningStrategy.getProperty("allOptionPositionsAsOfDuringStop"));
+    }
+    /**
+     * Executes one iteration of the <code>getOptionPositionsAsOf</code> test. 
+     *
+     * @param inOptionRoots a <code>String[]</code> value
+     * @param inDate a <code>Date</code> value
+     * @param inParameters a <code>Properties</code> value to use as parameters if non-null
+     * @param inExpectedPositions a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doOptionPositionsAsOfTest(String[] inOptionRoots,
+                                           Date inDate,
+                                           Properties inParameters,
+                                           Map<PositionKey<Option>,BigDecimal> inExpectedPositions)
+            throws Exception
+    {
+        StrategyCoordinates strategy = getPositionsStrategy();
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("optionPositionsAsOfDuringStop",
+                                            "not-empty");
+        if(inOptionRoots != null &&
+           inOptionRoots.length > 0) {
+            StringBuilder builder = new StringBuilder();
+            for(String optionRoot : inOptionRoots) {
+                builder.append(optionRoot).append(',');
+            }
+            AbstractRunningStrategy.setProperty("optionRoots",
+                                                builder.toString());
+        }
+        if(inDate != null) {
+            AbstractRunningStrategy.setProperty("date",
+                                                Long.toString(inDate.getTime()));
+        }
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     inParameters,
+                                     null,
+                                     null);
+        // verify expected results
+        assertEquals((inExpectedPositions == null ? null : inExpectedPositions.toString()),
+                     AbstractRunningStrategy.getProperty("optionPositionsAsOf"));
+        assertNull(AbstractRunningStrategy.getProperty("optionPositionsAsOfDuringStop"));
+    }
+    /**
+     * Executes one iteration of the <code>getUnderlying</code> test.
+     *
+     * @param inOptionRoot a <code>String</code> value
+     * @param inExpectedUnderlyingSymbol a <code>String</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doUnderlyingTest(String inOptionRoot,
+                                  String inExpectedUnderlyingSymbol)
+            throws Exception
+    {
+        StrategyCoordinates strategy = getPositionsStrategy();
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("underlyingDuringStop",
+                                            "not-empty");
+        if(inOptionRoot != null) {
+            AbstractRunningStrategy.setProperty("optionRoot",
+                                                inOptionRoot);
+        }
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null);
+        // verify expected results
+        assertEquals((inExpectedUnderlyingSymbol == null ? null : inExpectedUnderlyingSymbol),
+                     AbstractRunningStrategy.getProperty("underlying"));
+        assertNull(AbstractRunningStrategy.getProperty("underlyingDuringStop"));
+    }
+    /**
+     * Executes one iteration of the <code>getOptionRoots</code> test. 
+     *
+     * @param inUnderlyingSymbol a <code>String</code> value
+     * @param inExpectedOptionRoots a <code>Collection&lt;String&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doOptionRootsTest(String inUnderlyingSymbol,
+                                   Collection<String> inExpectedOptionRoots)
+            throws Exception
+    {
+        StrategyCoordinates strategy = getPositionsStrategy();
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("optionRootsDuringStop",
+                                            "not-empty");
+        if(inUnderlyingSymbol != null) {
+            AbstractRunningStrategy.setProperty("underlyingSymbol",
+                                                inUnderlyingSymbol);
+        }
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null);
+        // verify expected results
+        assertEquals((inExpectedOptionRoots == null ? null : inExpectedOptionRoots.toString()),
+                     AbstractRunningStrategy.getProperty("optionRoots"));
+        assertNull(AbstractRunningStrategy.getProperty("optionRootsDuringStop"));
     }
     /**
      * Executes the given block asynchronously.

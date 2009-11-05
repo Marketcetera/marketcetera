@@ -1,11 +1,14 @@
 package org.marketcetera.strategy.ruby;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DividendEvent;
@@ -20,7 +23,10 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
@@ -655,17 +661,97 @@ public class Strategy
         return getBrokers();
     }
     /**
-     * Gets the position in the given security at the given point in time.
+     * Gets the position in the given <code>Equity</code> at the given point in time.
      *
-     * @param inDate a <code>Date</code> value
-     * @param inSymbol a <code>String</code> value
-     * @return a <code>BigDecimal</code> value containing the position or null if the position could not be retrieved
+     * <p>Note that this method will not retrieve <code>Option</code> positions.  To retrieve
+     * <code>Option</code> positions, use {@link #get_option_position_as_of(Date, String, String, BigDecimal, OptionType)}. 
+     * 
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inSymbol a <code>String</code> value containing the <code>Equity</code> symbol
+     * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found 
      */
     public final BigDecimal get_position_as_of(Date inDate,
                                                String inSymbol)
     {
         return getPositionAsOf(inDate,
                                inSymbol);
+    }
+    /**
+     * Gets all open <code>Equity</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Equity&gt;,BigDecimal&gt;</code> value
+     */
+    public final Map<PositionKey<Equity>,BigDecimal> get_all_positions_as_of(Date inDate)
+    {
+        return getAllPositionsAsOf(inDate);
+    }
+    /**
+     * Gets the position in the given <code>Option</code> at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inOptionRoot a <code>String</code> value
+     * @param inExpiry a <code>String</code> value
+     * @param inStrikePrice a <code>BigDecimal</code> value
+     * @param inOptionType an <code>OptionType</code> value
+     * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found
+     */
+    public final BigDecimal get_option_position_as_of(Date inDate,
+                                                      String inOptionRoot,
+                                                      String inExpiry,
+                                                      BigDecimal inStrikePrice,
+                                                      OptionType inType)
+    {
+        return getOptionPositionAsOf(inDate,
+                                     inOptionRoot,
+                                     inExpiry,
+                                     inStrikePrice,
+                                     inType);
+    }
+    /**
+     * Gets all open <code>Option</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     */
+    public final Map<PositionKey<Option>,BigDecimal> get_all_option_positions_as_of(Date inDate)
+    {
+        return getAllOptionPositionsAsOf(inDate);
+    }
+    /**
+     * Gets open positions for the options specified by the given option roots at the given point in time. 
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inOptionRoots a <code>String[]</code> value containing the specific option roots for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     */
+    public final Map<PositionKey<Option>,BigDecimal> get_option_positions_as_of(Date inDate,
+                                                                                String[] inOptionRoots)
+    {
+        return getOptionPositionsAsOf(inDate,
+                                      inOptionRoots);
+    }
+    /**
+     * Gets the underlying symbol for the given option root, if available.
+     *
+     * @param inOptionRoot a <code>String</code> value containing an option root
+     * @return a <code>String</code> value containing the symbol for the underlying instrument or <code>null</code> if
+     *  no underlying instrument could be found
+     */
+    public final String get_underlying(String inOptionRoot)
+    {
+        return getUnderlying(inOptionRoot);
+    }
+    /**
+     * Gets the set of of known option roots for the given underlying symbol. 
+     *
+     * @param inUnderlying a <code>String</code> value containing the symbol of an underlying instrument
+     * @return a <code>Collection&lt;String&gt;</code> value sorted lexicographically by option root or <code>null</code>
+     *  if no option roots could be found
+     */
+    public final Collection<String> get_option_roots(String inUnderlying)
+    {
+        return getOptionRoots(inUnderlying);
     }
     /**
      * Gets the {@link ModuleURN} of this strategy.

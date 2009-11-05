@@ -1,16 +1,9 @@
 package org.marketcetera.strategy;
 
+import static org.marketcetera.strategy.Messages.*;
+
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +12,7 @@ import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.Notification;
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -27,19 +21,7 @@ import org.marketcetera.module.DataFlowSupport;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.ExecutionType;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderSingleSuggestion;
-import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
@@ -57,7 +39,7 @@ import quickfix.Message;
  */
 @ClassVersion("$Id$")
 public abstract class AbstractRunningStrategy
-        implements RunningStrategy, Messages
+        implements RunningStrategy
 {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -227,7 +209,7 @@ public abstract class AbstractRunningStrategy
                                                                    String.valueOf(strategy),
                                                                    String.valueOf(inRequest)).create(),
                                strategy);
-            return strategy.getOutboundServicesProvider().requestMarketData(inRequest);
+            return strategy.getServicesProvider().requestMarketData(inRequest);
         } catch (Exception e) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MARKET_DATA_REQUEST,
                                                                   String.valueOf(strategy),
@@ -251,7 +233,7 @@ public abstract class AbstractRunningStrategy
                                                                    String.valueOf(strategy),
                                                                    request).create(),
                                strategy);
-            return strategy.getOutboundServicesProvider().requestMarketData(request);
+            return strategy.getServicesProvider().requestMarketData(request);
         } catch (Exception e) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_MARKET_DATA_REQUEST,
                                                                   String.valueOf(strategy),
@@ -312,10 +294,10 @@ public abstract class AbstractRunningStrategy
                                                                    inCepSource,
                                                                    namespace).create(),
                                strategy);
-            return strategy.getOutboundServicesProvider().requestProcessedMarketData(inRequest,
-                                                                                     inStatements,
-                                                                                     inCepSource,
-                                                                                     namespace);
+            return strategy.getServicesProvider().requestProcessedMarketData(inRequest,
+                                                                             inStatements,
+                                                                             inCepSource,
+                                                                             namespace);
         } catch (Exception e) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(COMBINED_DATA_REQUEST_FAILED,
                                                                   String.valueOf(inRequest),
@@ -378,10 +360,10 @@ public abstract class AbstractRunningStrategy
                                                                    inCepSource,
                                                                    namespace).create(),
                                strategy);
-            return strategy.getOutboundServicesProvider().requestProcessedMarketData(MarketDataRequest.newRequestFromString(inRequest),
-                                                                                     inStatements,
-                                                                                     inCepSource,
-                                                                                     namespace);
+            return strategy.getServicesProvider().requestProcessedMarketData(MarketDataRequest.newRequestFromString(inRequest),
+                                                                             inStatements,
+                                                                             inCepSource,
+                                                                             namespace);
         } catch (Exception e) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(COMBINED_DATA_REQUEST_FAILED,
                                                                   String.valueOf(inRequest),
@@ -404,7 +386,7 @@ public abstract class AbstractRunningStrategy
                                                                String.valueOf(strategy),
                                                                String.valueOf(inRequestID)).create(),
                            strategy);                           
-        strategy.getOutboundServicesProvider().cancelDataRequest(inRequestID);
+        strategy.getServicesProvider().cancelDataRequest(inRequestID);
     }
     /**
      * Cancels all data requests from this strategy.
@@ -414,7 +396,7 @@ public abstract class AbstractRunningStrategy
         StrategyModule.log(LogEventBuilder.debug().withMessage(CANCELING_ALL_DATA_REQUESTS,
                                                                String.valueOf(strategy)).create(),                           
                            strategy);                           
-        strategy.getOutboundServicesProvider().cancelAllDataRequests();
+        strategy.getServicesProvider().cancelAllDataRequests();
     }
     /**
      * Creates a complex event processor query.
@@ -456,9 +438,9 @@ public abstract class AbstractRunningStrategy
                                                                    inSource,
                                                                    strategy.getDefaultNamespace()).create(),
                                strategy);
-            return strategy.getOutboundServicesProvider().requestCEPData(inStatements,
-                                                                         inSource,
-                                                                         strategy.getDefaultNamespace());
+            return strategy.getServicesProvider().requestCEPData(inStatements,
+                                                                 inSource,
+                                                                 strategy.getDefaultNamespace());
         } catch (Exception e) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(CEP_REQUEST_FAILED,
                                                                   Arrays.toString(inStatements),
@@ -522,7 +504,7 @@ public abstract class AbstractRunningStrategy
                                                                String.valueOf(strategy),
                                                                suggestion).create(),
                            strategy);
-        strategy.getOutboundServicesProvider().sendSuggestion(suggestion);
+        strategy.getServicesProvider().sendSuggestion(suggestion);
     }
     /**
      * Sends an order to order subscribers.
@@ -572,7 +554,7 @@ public abstract class AbstractRunningStrategy
             submittedOrderManager.add(order.getOrderID(),
                                       order);
         }
-        strategy.getOutboundServicesProvider().send(inData);
+        strategy.getServicesProvider().send(inData);
         return true;
     }
     /**
@@ -632,7 +614,7 @@ public abstract class AbstractRunningStrategy
                                                                    String.valueOf(strategy),
                                                                    String.valueOf(cancelRequest)).create(),                           
                                strategy);
-            strategy.getOutboundServicesProvider().cancelOrder(cancelRequest);
+            strategy.getServicesProvider().cancelOrder(cancelRequest);
         }
         return cancelRequest;
     }
@@ -744,7 +726,7 @@ public abstract class AbstractRunningStrategy
                                                                    String.valueOf(strategy),
                                                                    String.valueOf(replaceOrder)).create(),
                                strategy);
-            strategy.getOutboundServicesProvider().cancelReplace(replaceOrder);
+            strategy.getServicesProvider().cancelReplace(replaceOrder);
         }
         return replaceOrder;
     }
@@ -769,8 +751,8 @@ public abstract class AbstractRunningStrategy
                                                                inMessage,
                                                                inBroker).create(),
                            strategy);
-        strategy.getOutboundServicesProvider().sendMessage(inMessage,
-                                                           inBroker);
+        strategy.getServicesProvider().sendMessage(inMessage,
+                                                   inBroker);
     }
     /**
      * Sends the given event to the CEP module indicated by the provider.
@@ -800,9 +782,9 @@ public abstract class AbstractRunningStrategy
                                                                inProvider,
                                                                namespace).create(),
                            strategy);
-        strategy.getOutboundServicesProvider().sendEvent(inEvent,
-                                                         inProvider,
-                                                         namespace);
+        strategy.getServicesProvider().sendEvent(inEvent,
+                                                 inProvider,
+                                                 namespace);
     }
     /**
      * Sends the given event to the appropriate subscribers. 
@@ -817,9 +799,9 @@ public abstract class AbstractRunningStrategy
                               strategy);
            return;
        }
-       strategy.getOutboundServicesProvider().sendEvent(inEvent,
-                                                        null,
-                                                        null);
+       strategy.getServicesProvider().sendEvent(inEvent,
+                                                null,
+                                                null);
     }
     /**
      * Sends the given notification to the appropriate subscribers.
@@ -834,7 +816,7 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return;
         }
-        strategy.getOutboundServicesProvider().sendNotification(inNotification);
+        strategy.getServicesProvider().sendNotification(inNotification);
     }
     /**
      * Requests a callback after a specified delay in milliseconds.
@@ -902,7 +884,7 @@ public abstract class AbstractRunningStrategy
                                    strategy);
                 return new BrokerStatus[0];
             }
-            List<BrokerStatus> brokers = strategy.getInboundServicesProvider().getBrokers();
+            List<BrokerStatus> brokers = strategy.getServicesProvider().getBrokers();
             StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_BROKERS,
                                                                    String.valueOf(strategy),
                                                                    String.valueOf(brokers)).create(),
@@ -917,11 +899,14 @@ public abstract class AbstractRunningStrategy
         }
     }
     /**
-     * Gets the position in the given security at the given point in time.
+     * Gets the position in the given <code>Equity</code> at the given point in time.
      *
-     * @param inDate a <code>Date</code> value
-     * @param inSymbol a <code>String</code> value
-     * @return a <code>BigDecimal</code> value containing the position or null if the position could not be retrieved
+     * <p>Note that this method will not retrieve <code>Option</code> positions.  To retrieve
+     * <code>Option</code> positions, use {@link #getOptionPositionAsOf(Date, String, String, BigDecimal, OptionType)}.
+     * 
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inSymbol a <code>String</code> value containing the <code>Equity</code> symbol
+     * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found 
      */
     protected final BigDecimal getPositionAsOf(Date inDate,
                                                String inSymbol)
@@ -936,7 +921,7 @@ public abstract class AbstractRunningStrategy
         if(inDate == null ||
            inSymbol == null ||
            inSymbol.isEmpty()) {
-            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_POSITION_REQUEST,
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_EQUITY_POSITION_REQUEST,
                                                                   String.valueOf(strategy),
                                                                   inDate,
                                                                   inSymbol).create(),
@@ -944,8 +929,8 @@ public abstract class AbstractRunningStrategy
             return null;
         }
         try {
-            BigDecimal result = strategy.getInboundServicesProvider().getPositionAsOf(inDate,
-                                                                                      new Equity(inSymbol)); 
+            BigDecimal result = strategy.getServicesProvider().getPositionAsOf(inDate,
+                                                                               new Equity(inSymbol)); 
             StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITION,
                                                                    String.valueOf(strategy),
                                                                    result,
@@ -954,10 +939,287 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return result;
         } catch (Exception e) {
-            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_POSITION,
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_EQUITY_POSITION,
                                                                   String.valueOf(strategy),
                                                                   inSymbol,
                                                                   inDate)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    /**
+     * Gets all open <code>Equity</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Equity&gt;,BigDecimal&gt;</code> value
+     */
+    protected final Map<PositionKey<Equity>,BigDecimal> getAllPositionsAsOf(Date inDate)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inDate == null) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_POSITIONS_REQUEST,
+                                                                  String.valueOf(strategy)).create(),
+                               strategy);
+            return null;
+        }
+        try {
+            Map<PositionKey<Equity>,BigDecimal> result = strategy.getServicesProvider().getAllPositionsAsOf(inDate); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITIONS,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(result),
+                                                                   inDate).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_POSITIONS,
+                                                                  String.valueOf(strategy),
+                                                                  inDate)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    /**
+     * Gets the position in the given <code>Option</code> at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inOptionRoot a <code>String</code> value
+     * @param inExpiry a <code>String</code> value
+     * @param inStrikePrice a <code>BigDecimal</code> value
+     * @param inOptionType an <code>OptionType</code> value
+     * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found
+     */
+    protected final BigDecimal getOptionPositionAsOf(Date inDate,
+                                                     String inOptionRoot,
+                                                     String inExpiry,
+                                                     BigDecimal inStrikePrice,
+                                                     OptionType inType)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inDate == null ||
+           inOptionRoot == null ||
+           inOptionRoot.isEmpty() ||
+           inExpiry == null ||
+           inExpiry.isEmpty() ||
+           inStrikePrice == null ||
+           inType == null) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_OPTION_POSITION_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inDate,
+                                                                  inOptionRoot,
+                                                                  inExpiry,
+                                                                  inStrikePrice,
+                                                                  inType).create(),
+                               strategy);
+            return null;
+        }
+        try {
+            Option option = new Option(inOptionRoot,
+                                       inExpiry,
+                                       inStrikePrice,
+                                       inType);
+            BigDecimal result = strategy.getServicesProvider().getOptionPositionAsOf(inDate,
+                                                                                     option); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITION,
+                                                                   String.valueOf(strategy),
+                                                                   result,
+                                                                   inDate,
+                                                                   option).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_OPTION_POSITION,
+                                                                  String.valueOf(strategy),
+                                                                  inOptionRoot,
+                                                                  inExpiry,
+                                                                  inStrikePrice,
+                                                                  inType,
+                                                                  inDate)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    /**
+     * Gets all open <code>Option</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     */
+    protected final Map<PositionKey<Option>,BigDecimal> getAllOptionPositionsAsOf(Date inDate)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inDate == null) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_POSITIONS_REQUEST,
+                                                                  String.valueOf(strategy)).create(),
+                               strategy);
+            return null;
+        }
+        try {
+            Map<PositionKey<Option>,BigDecimal> result = strategy.getServicesProvider().getAllOptionPositionsAsOf(inDate); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITIONS,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(result),
+                                                                   inDate).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_POSITIONS,
+                                                                  String.valueOf(strategy),
+                                                                  inDate)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    /**
+     * Gets open positions for the options specified by the given option roots at the given point in time. 
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inOptionRoots a <code>String[]</code> value containing the specific option roots for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     */
+    protected final Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
+                                                                               String...inOptionRoots)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inDate == null ||
+           inOptionRoots == null ||
+           inOptionRoots.length == 0) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_POSITIONS_BY_OPTION_ROOTS_REQUEST,
+                                                                  String.valueOf(strategy)).create(),
+                               strategy);
+            return null;
+        }
+        for(String optionRoot : inOptionRoots) {
+            if(optionRoot == null ||
+               optionRoot.isEmpty()) {
+                StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_POSITIONS_BY_OPTION_ROOTS_REQUEST,
+                                                                      String.valueOf(strategy)).create(),
+                                   strategy);
+                return null;
+            }
+        }
+        try {
+            Map<PositionKey<Option>,BigDecimal> result = strategy.getServicesProvider().getOptionPositionsAsOf(inDate,
+                                                                                                               inOptionRoots); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITIONS,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(result),
+                                                                   inDate).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_POSITIONS_BY_OPTION_ROOTS,
+                                                                  String.valueOf(strategy),
+                                                                  Arrays.toString(inOptionRoots),
+                                                                  inDate)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    /**
+     * Gets the underlying symbol for the given option root, if available.
+     *
+     * @param inOptionRoot a <code>String</code> value containing an option root
+     * @return a <code>String</code> value containing the symbol for the underlying instrument or <code>null</code> if
+     *  no underlying instrument could be found
+     */
+    protected final String getUnderlying(String inOptionRoot)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inOptionRoot == null ||
+           inOptionRoot.isEmpty()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_UNDERLYING_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inOptionRoot).create(),
+                               strategy);
+            return null;
+        }
+        try {
+            String result = strategy.getServicesProvider().getUnderlying(inOptionRoot); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_UNDERLYING,
+                                                                   String.valueOf(strategy),
+                                                                   result,
+                                                                   inOptionRoot).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_UNDERLYING,
+                                                                  String.valueOf(strategy),
+                                                                  inOptionRoot)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    /**
+     * Gets the set of of known option roots for the given underlying symbol. 
+     *
+     * @param inUnderlying a <code>String</code> value containing the symbol of an underlying instrument
+     * @return a <code>Collection&lt;String&gt;</code> value sorted lexicographically by option root or <code>null</code>
+     *  if no option roots could be found
+     */
+    protected final Collection<String> getOptionRoots(String inUnderlying)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inUnderlying == null ||
+           inUnderlying.isEmpty()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_OPTION_ROOTS_REQUEST,
+                                                                  String.valueOf(strategy)).create(),
+                               strategy);
+            return null;
+        }
+        try {
+            Collection<String> result = strategy.getServicesProvider().getOptionRoots(inUnderlying); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_OPTION_ROOTS,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(result),
+                                                                   inUnderlying).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_OPTION_ROOTS,
+                                                                  String.valueOf(strategy),
+                                                                  inUnderlying)
                                                      .withException(e).create(),
                                strategy);
             return null;
@@ -993,8 +1255,8 @@ public abstract class AbstractRunningStrategy
             return null;
         }
         try {
-            return strategy.getOutboundServicesProvider().createDataFlow(inRequests,
-                                                                         inAppendDataSink);
+            return strategy.getServicesProvider().createDataFlow(inRequests,
+                                                                 inAppendDataSink);
         } catch (Exception e) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(DATA_REQUEST_FAILED,
                                                                   String.valueOf(strategy),
@@ -1021,7 +1283,7 @@ public abstract class AbstractRunningStrategy
             return;
         }
         try {
-            strategy.getOutboundServicesProvider().cancelDataFlow(inDataFlowID);
+            strategy.getServicesProvider().cancelDataFlow(inDataFlowID);
         } catch (Exception e) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(DATA_REQUEST_CANCEL_FAILED,
                                                                   String.valueOf(strategy),
@@ -1037,7 +1299,7 @@ public abstract class AbstractRunningStrategy
      */
     protected final ModuleURN getURN()
     {
-        return strategy.getInboundServicesProvider().getURN();
+        return strategy.getServicesProvider().getURN();
     }
     /**
      * Emits the given debug message to the strategy log output.
@@ -1052,8 +1314,8 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return;
         }
-        strategy.getOutboundServicesProvider().log(LogEventBuilder.debug().withMessage(MESSAGE_1P,
-                                                                                       inMessage).create());
+        strategy.getServicesProvider().log(LogEventBuilder.debug().withMessage(MESSAGE_1P,
+                                                                               inMessage).create());
     }
     /**
      * Emits the given info message to the strategy log output.
@@ -1068,8 +1330,8 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return;
         }
-        strategy.getOutboundServicesProvider().log(LogEventBuilder.info().withMessage(MESSAGE_1P,
-                                                                                      inMessage).create());
+        strategy.getServicesProvider().log(LogEventBuilder.info().withMessage(MESSAGE_1P,
+                                                                              inMessage).create());
     }
     /**
      * Emits the given warn message to the strategy log output.
@@ -1084,8 +1346,8 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return;
         }
-        strategy.getOutboundServicesProvider().log(LogEventBuilder.warn().withMessage(MESSAGE_1P,
-                                                                                      inMessage).create());
+        strategy.getServicesProvider().log(LogEventBuilder.warn().withMessage(MESSAGE_1P,
+                                                                              inMessage).create());
     }
     /**
      * Emits the given error message to the strategy log output.
@@ -1100,8 +1362,8 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return;
         }
-        strategy.getOutboundServicesProvider().log(LogEventBuilder.error().withMessage(MESSAGE_1P,
-                                                                                       inMessage).create());
+        strategy.getServicesProvider().log(LogEventBuilder.error().withMessage(MESSAGE_1P,
+                                                                               inMessage).create());
     }
     /**
      * Searches for an appropriate <code>ExecutionReport</code> suitable for

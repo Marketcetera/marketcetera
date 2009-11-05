@@ -1,6 +1,15 @@
 package org.marketcetera.strategy;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.Notification;
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -10,7 +19,10 @@ import org.marketcetera.module.DataFlowNotFoundException;
 import org.marketcetera.module.DataFlowSupport;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.Suggestion;
@@ -21,7 +33,7 @@ import quickfix.Message;
 /* $License$ */
 
 /**
- * Services available to strategies to emit data of various types to the strategy agent framework.
+ * Services available to strategies to emit and receive data of various types to and from the strategy agent framework.
  * 
  * <p>Data transmitted via the methods in this interface will be emitted via the implementer's {@link DataEmitter}
  * implementation.
@@ -30,7 +42,7 @@ import quickfix.Message;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-interface OutboundServicesProvider
+interface ServicesProvider
 {
     /**
      * Sends an object of arbitrary type to the subscriber or subscribers established in the strategy module.
@@ -168,7 +180,7 @@ interface OutboundServicesProvider
      */
     DataFlowID createDataFlow(DataRequest[] inRequests,
                               boolean inAppendDataSink)
-        throws ModuleException;
+            throws ModuleException;
     /**
      * Cancels a data flow identified by the supplied data flow ID.
      *
@@ -179,5 +191,90 @@ interface OutboundServicesProvider
      * @throws DataFlowNotFoundException if there were errors canceling the data flow.
      */
     void cancelDataFlow(DataFlowID inDataFlowID)
-        throws ModuleException;
+            throws ModuleException;
+    /**
+     * Returns the list of brokers known to the system.
+     *
+     * @return a <code>List&lt;BrokerStatus&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved
+     */
+    List<BrokerStatus> getBrokers()
+            throws ConnectionException;
+    /**
+     * Gets the position in the given <code>Equity</code> at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inEquity an <code>Equity</code> value
+     * @return a <code>BigDecimal</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     */
+    BigDecimal getPositionAsOf(Date inDate,
+                               Equity inEquity)
+            throws ConnectionException;
+    /**
+     * Gets all open <code>Equity</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @return a <code>Map&lt;PositionKey&lt;Equity&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     */
+    Map<PositionKey<Equity>,BigDecimal> getAllPositionsAsOf(Date inDate)
+            throws ConnectionException;
+    /**
+     * Gets the position in the given <code>Option</code> at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inOption an <code>Option</code> value
+     * @return a <code>BigDecimal</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     */
+    BigDecimal getOptionPositionAsOf(Date inDate,
+                                     Option inOption)
+            throws ConnectionException;
+    /**
+     * Gets all open <code>Option</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     */
+    Map<PositionKey<Option>,BigDecimal> getAllOptionPositionsAsOf(Date inDate)
+            throws ConnectionException;
+    /**
+     * Gets open positions for the options specified by the given option roots at the given point in time. 
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inOptionRoots a <code>String[]</code> value containing the specific option roots for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     */
+    Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
+                                                               String...inOptionRoots)
+            throws ConnectionException;
+    /**
+     * Gets the underlying symbol for the given option root, if available.
+     *
+     * @param inOptionRoot a <code>String</code> value containing an option root
+     * @return a <code>String</code> value containing the symbol for the underlying instrument or <code>null</code> if
+     *  no underlying instrument could be found
+     * @throws ConnectionException if the information could not be retrieved 
+     */
+    String getUnderlying(String inOptionRoot)
+            throws ConnectionException;
+    /**
+     * Gets the set of of known option roots for the given underlying symbol. 
+     *
+     * @param inUnderlying a <code>String</code> value containing the symbol of an underlying instrument
+     * @return a <code>Collection&lt;String&gt;</code> value sorted lexicographically by option root or <code>null</code>
+     *  if no option roots could be found
+     * @throws ConnectionException if the information could not be retrieved 
+     */
+    Collection<String> getOptionRoots(String inUnderlying)
+            throws ConnectionException;
+    /**
+     * Gets the {@link ModuleURN} for this strategy.
+     *
+     * @return a <code>ModuleURN</code> value
+     */
+    ModuleURN getURN();
 }
