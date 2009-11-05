@@ -225,23 +225,14 @@ class StrategyImpl
         return status;
     }
     /**
-     * Get the outboundServicesProvider value.
+     * Get the services provider value.
      *
-     * @return a <code>OutboundServices</code> value
+     * @return a <code>ServicesProvider</code> value
      */
     @Override
-    public final OutboundServicesProvider getOutboundServicesProvider()
+    public final ServicesProvider getServicesProvider()
     {
-        return outboundServicesProvider;
-    }
-    /**
-     * Get the inboundServicesProvider value.
-     *
-     * @return a <code>StrategyImpl</code> value
-     */
-    public final InboundServicesProvider getInboundServicesProvider()
-    {
-        return inboundServicesProvider;
+        return servicesProvider;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.Strategy#getDefaultNamespace()
@@ -282,7 +273,7 @@ class StrategyImpl
      * @param inSource a <code>File</code> value
      * @param inParameters a <code>Properties</code> value
      * @param inNamespace a <code>String</code> value 
-     * @param inOutboundServicesProvider an <code>OutboundServices</code> value
+     * @param inServicesProvider an <code>OutboundServices</code> value
      * @param inInboundServicesProvider an <code>InboundServices</code> value
      * @throws IOException if the given <code>File</code> could not be resolved
      */
@@ -292,8 +283,7 @@ class StrategyImpl
                  File inSource,
                  Properties inParameters,
                  String inNamespace,
-                 OutboundServicesProvider inOutboundServicesProvider,
-                 InboundServicesProvider inInboundServicesProvider)
+                 ServicesProvider inServicesProvider)
         throws IOException
     {
         status = UNSTARTED;
@@ -306,8 +296,7 @@ class StrategyImpl
         } else {
             parameters = new Properties(inParameters);
         }
-        outboundServicesProvider = inOutboundServicesProvider;
-        inboundServicesProvider = inInboundServicesProvider;
+        servicesProvider = inServicesProvider;
         code = fileToString(getSource());
         defaultNamespace = inNamespace;
     }
@@ -370,7 +359,7 @@ class StrategyImpl
             }
         }
         // notify that the status has changed
-        getOutboundServicesProvider().statusChanged(oldStatus,
+        getServicesProvider().statusChanged(oldStatus,
                                                     inStatus);
     }
     /**
@@ -428,13 +417,9 @@ class StrategyImpl
      */
     private final Properties parameters;
     /**
-     * the provider of services for outgoing data via the strategy agent framework
+     * the provider of services via the strategy agent framework
      */
-    private final OutboundServicesProvider outboundServicesProvider;
-    /**
-     * the provider of services for incoming data
-     */
-    private final InboundServicesProvider inboundServicesProvider;
+    private final ServicesProvider servicesProvider;
     /**
      * the default namespace for this strategy
      */

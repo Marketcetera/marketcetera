@@ -7,6 +7,7 @@ import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessage3P;
 import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessage5P;
+import org.marketcetera.util.log.I18NMessage6P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -102,10 +103,30 @@ public interface Messages
                                                                              "invalid_replacement_order"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_RETRIEVE_BROKERS = new I18NMessage1P(LOGGER,
                                                                                 "cannot_retrieve_brokers"); //$NON-NLS-1$
-    static final I18NMessage3P INVALID_POSITION_REQUEST = new I18NMessage3P(LOGGER,
-                                                                            "invalid_position_request"); //$NON-NLS-1$
-    static final I18NMessage3P CANNOT_RETRIEVE_POSITION = new I18NMessage3P(LOGGER,
-                                                                            "cannot_retrieve_position"); //$NON-NLS-1$
+    static final I18NMessage3P INVALID_EQUITY_POSITION_REQUEST = new I18NMessage3P(LOGGER,
+                                                                                   "invalid_equity_position_request"); //$NON-NLS-1$
+    static final I18NMessage2P INVALID_UNDERLYING_REQUEST = new I18NMessage2P(LOGGER,
+                                                                              "invalid_underlying_request"); //$NON-NLS-1$
+    static final I18NMessage6P INVALID_OPTION_POSITION_REQUEST = new I18NMessage6P(LOGGER,
+                                                                                   "invalid_option_position_request"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_POSITIONS_REQUEST = new I18NMessage1P(LOGGER,
+                                                                             "invalid_positions_request"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_POSITIONS_BY_OPTION_ROOTS_REQUEST = new I18NMessage1P(LOGGER,
+                                                                                             "invalid_positions_by_option_roots_request"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_OPTION_ROOTS_REQUEST = new I18NMessage1P(LOGGER,
+                                                                                "invalid_option_roots_request"); //$NON-NLS-1$
+    static final I18NMessage3P CANNOT_RETRIEVE_EQUITY_POSITION = new I18NMessage3P(LOGGER,
+                                                                                   "cannot_retrieve_equity_position"); //$NON-NLS-1$
+    static final I18NMessage6P CANNOT_RETRIEVE_OPTION_POSITION = new I18NMessage6P(LOGGER,
+                                                                                   "cannot_retrieve_option_position"); //$NON-NLS-1$
+    static final I18NMessage2P CANNOT_RETRIEVE_POSITIONS = new I18NMessage2P(LOGGER,
+                                                                             "cannot_retrieve_positions"); //$NON-NLS-1$
+    static final I18NMessage3P CANNOT_RETRIEVE_POSITIONS_BY_OPTION_ROOTS = new I18NMessage3P(LOGGER,
+                                                                                             "cannot_retrieve_positions_by_option_roots"); //$NON-NLS-1$
+    static final I18NMessage2P CANNOT_RETRIEVE_UNDERLYING = new I18NMessage2P(LOGGER,
+                                                                              "cannot_retrieve_underlying"); //$NON-NLS-1$
+    static final I18NMessage2P CANNOT_RETRIEVE_OPTION_ROOTS = new I18NMessage2P(LOGGER,
+                                                                                "cannot_retrieve_option_roots"); //$NON-NLS-1$
     static final I18NMessage0P CANNOT_INITIALIZE_CLIENT = new I18NMessage0P(LOGGER,
                                                                             "cannot_initialize_client"); //$NON-NLS-1$
     static final I18NMessage2P EXECUTION_REPORT_REQUEST_FAILED = new I18NMessage2P(LOGGER,
@@ -166,6 +187,12 @@ public interface Messages
                                                                     "received_brokers"); //$NON-NLS-1$
     static final I18NMessage4P RECEIVED_POSITION = new I18NMessage4P(LOGGER,
                                                                      "received_position"); //$NON-NLS-1$
+    static final I18NMessage3P RECEIVED_UNDERLYING = new I18NMessage3P(LOGGER,
+                                                                       "received_underlying"); //$NON-NLS-1$
+    static final I18NMessage3P RECEIVED_POSITIONS = new I18NMessage3P(LOGGER,
+                                                                      "received_positions"); //$NON-NLS-1$
+    static final I18NMessage3P RECEIVED_OPTION_ROOTS = new I18NMessage3P(LOGGER,
+                                                                         "received_option_roots"); //$NON-NLS-1$
     static final I18NMessage4P SUBMITTING_CEP_REQUEST = new I18NMessage4P(LOGGER,
                                                                           "submitting_cep_request"); //$NON-NLS-1$
     static final I18NMessage2P SUBMITTING_MARKET_DATA_REQUEST = new I18NMessage2P(LOGGER,

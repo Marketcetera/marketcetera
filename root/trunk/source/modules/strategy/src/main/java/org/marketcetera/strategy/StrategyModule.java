@@ -1,24 +1,14 @@
 package org.marketcetera.strategy;
 
+import static org.marketcetera.strategy.Messages.*;
+
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.management.AttributeChangeNotification;
-import javax.management.ListenerNotFoundException;
-import javax.management.MBeanNotificationInfo;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.NotificationEmitter;
-import javax.management.NotificationFilter;
-import javax.management.NotificationListener;
+import javax.management.*;
 
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientManager;
@@ -27,6 +17,7 @@ import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.Notification;
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.Event;
@@ -35,30 +26,8 @@ import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.metrics.ThreadedMetric;
-import org.marketcetera.module.DataEmitter;
-import org.marketcetera.module.DataEmitterSupport;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataFlowRequester;
-import org.marketcetera.module.DataFlowSupport;
-import org.marketcetera.module.DataReceiver;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.IllegalRequestParameterValue;
-import org.marketcetera.module.Module;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.RequestID;
-import org.marketcetera.module.StopDataFlowException;
-import org.marketcetera.module.UnsupportedDataTypeException;
-import org.marketcetera.module.UnsupportedRequestParameterType;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.Suggestion;
+import org.marketcetera.module.*;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
@@ -94,7 +63,7 @@ import com.google.common.collect.HashBiMap;
 @ClassVersion("$Id$")
 final class StrategyModule
         extends Module
-        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider, StrategyMXBean, InboundServicesProvider, NotificationEmitter, Messages
+        implements DataEmitter, DataFlowRequester, DataReceiver, ServicesProvider, StrategyMXBean, NotificationEmitter
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
@@ -619,6 +588,70 @@ final class StrategyModule
                                          inEquity);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getAllOptionPositionsAsOf(java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf(Date inDate)
+            throws ConnectionException
+    {
+        assert(orsClient != null);
+        return orsClient.getAllOptionPositionsAsOf(inDate);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
+     */
+    @Override
+    public BigDecimal getOptionPositionAsOf(Date inDate,
+                                            Option inOption)
+            throws ConnectionException
+    {
+        assert(orsClient != null);
+        return orsClient.getOptionPositionAsOf(inDate,
+                                               inOption);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionsAsOf(java.util.Date, java.lang.String[])
+     */
+    @Override
+    public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf(Date inDate,
+                                                                       String... inOptionRoots)
+            throws ConnectionException
+    {
+        assert(orsClient != null);
+        return orsClient.getOptionPositionsAsOf(inDate,
+                                                inOptionRoots);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getOptionRoots(java.lang.String)
+     */
+    @Override
+    public Collection<String> getOptionRoots(String inUnderlying)
+            throws ConnectionException
+    {
+        assert(orsClient != null);
+        return orsClient.getOptionRoots(inUnderlying);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getAllPositionsAsOf(java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<Equity>, BigDecimal> getAllPositionsAsOf(Date inDate)
+            throws ConnectionException
+    {
+        assert(orsClient != null);
+        return orsClient.getPositionsAsOf(inDate);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getUnderlying(java.lang.String)
+     */
+    @Override
+    public String getUnderlying(String inOptionRoot)
+            throws ConnectionException
+    {
+        assert(orsClient != null);
+        return orsClient.getUnderlying(inOptionRoot);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyMXBean#getStatus()
      */
     @Override
@@ -734,7 +767,7 @@ final class StrategyModule
     {
         if(shouldLog(inEvent)) {
             doLogger(inEvent);
-            inStrategy.getOutboundServicesProvider().log(inEvent);
+            inStrategy.getServicesProvider().log(inEvent);
         }
     }
     /**
@@ -979,7 +1012,6 @@ final class StrategyModule
                                         source,
                                         parameters,
                                         getURN().instanceName(),
-                                        this,
                                         this);
             strategy.start();
         } catch (Exception e) {
