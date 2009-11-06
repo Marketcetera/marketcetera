@@ -173,6 +173,8 @@ sub walk ()
 		$mime='text/plain';
 	} elsif (/\.xml$/io) {
 		$mime='text/xml';
+	} elsif (/\.html$/io) {
+		$mime='text/html; charset=us-ascii';
 	} elsif (/\.((sh)|(bat))$/io) {
 		$mime='text/x-shellscript';
 	} else {
