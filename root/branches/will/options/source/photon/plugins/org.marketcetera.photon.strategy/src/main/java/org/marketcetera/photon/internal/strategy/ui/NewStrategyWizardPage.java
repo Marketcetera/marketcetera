@@ -141,7 +141,7 @@ public class NewStrategyWizardPage extends WizardPage {
                             }), null);
             RequiredFieldSupport.initFor(mDataBindingContext, target,
                     Messages.NEW_STRATEGY_WIZARD_PAGE_CLASS_NAME.getRawLabel(),
-                    binding);
+                    true, binding);
 
             if (mContainerName.getValue() != null) {
                 classNameText.setFocus();

@@ -99,7 +99,7 @@ public final class PropertyWatcher {
      */
     public PropertyWatcher(Collection<? extends IValueProperty> properties,
             IPropertiesChangedListener listener) {
-        Validate.nonNullElements(properties, "properties");
+        Validate.nonNullElements(properties, "properties"); //$NON-NLS-1$
         Validate.notNull(listener, "listener"); //$NON-NLS-1$
         mProperties = ImmutableList.copyOf(properties);
         mListener = listener;

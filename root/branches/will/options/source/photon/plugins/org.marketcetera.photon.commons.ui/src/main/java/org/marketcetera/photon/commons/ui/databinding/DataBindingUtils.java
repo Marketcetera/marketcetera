@@ -57,7 +57,7 @@ public class DataBindingUtils {
      * {@link UpdateStrategyFactory#createEMFUpdateValueStrategyWithEmptyStringToNull()}
      * as the target to model update value strategy, and initializes the target
      * as a required field using
-     * {@link RequiredFieldSupport#initFor(DataBindingContext, org.eclipse.core.databinding.observable.IObservable, String, Binding)}
+     * {@link RequiredFieldSupport#initFor(DataBindingContext, org.eclipse.core.databinding.observable.IObservable, String, boolean, Binding)}
      * .
      * 
      * @param dataBindingContext
@@ -74,7 +74,7 @@ public class DataBindingUtils {
             IObservableValue modelObservable, String description) {
         bindValue(dataBindingContext, targetObservable, modelObservable);
         RequiredFieldSupport.initFor(dataBindingContext, targetObservable,
-                description, null);
+                description, true, null);
     }
 
     /**
@@ -105,11 +105,48 @@ public class DataBindingUtils {
      *            the object that will control the state of the control
      *            decoration
      */
-    @SuppressWarnings("restriction")
     public static void initControlDecorationSupportFor(
             ValidationStatusProvider provider) {
-        org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationSupport.create(provider, SWT.TOP | SWT.LEFT, null,
+        initControlDecorationSupportFor(provider, SWT.TOP | SWT.LEFT);
+    }
+
+    /**
+     * Initializes ControlDecorationSupport for the provided validation status
+     * provider. UI code should use this instead of referencing the provisional
+     * Eclipse code directly.
+     * 
+     * @param provider
+     *            the object that will control the state of the control
+     *            decoration
+     * @param position
+     *            the position of the decoration
+     */
+    public static void initControlDecorationSupportFor(
+            ValidationStatusProvider provider, int position) {
+        initControlDecorationSupportFor(provider, position,
                 new CaptureUpdater());
+    }
+
+    /**
+     * Initializes ControlDecorationSupport for the provided validation status
+     * provider. UI code should use this instead of referencing the provisional
+     * Eclipse code directly.
+     * 
+     * @param provider
+     *            the object that will control the state of the control
+     *            decoration
+     * @param position
+     *            the position of the decoration
+     * @param updater
+     *            controls the appearance of the {@link ControlDecoration}
+     */
+    @SuppressWarnings("restriction")
+    public static void initControlDecorationSupportFor(
+            ValidationStatusProvider provider,
+            int position,
+            org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationUpdater updater) {
+        org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationSupport
+                .create(provider, position, null, updater);
     }
 
     /**
@@ -130,7 +167,9 @@ public class DataBindingUtils {
      */
     @ClassVersion("$Id$")
     @SuppressWarnings("restriction")
-    static class CaptureUpdater extends org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationUpdater {
+    static class CaptureUpdater
+            extends
+            org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationUpdater {
 
         @Override
         protected void update(ControlDecoration decoration, IStatus status) {

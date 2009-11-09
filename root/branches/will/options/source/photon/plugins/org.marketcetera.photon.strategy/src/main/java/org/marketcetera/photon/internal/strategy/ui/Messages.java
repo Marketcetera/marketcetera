@@ -57,7 +57,6 @@ final class Messages {
 	static I18NMessage0P SEND_ORDERS_HANDLER_SEND_ORDERS_FAILURE;
 	static I18NMessage1P SEND_ORDERS_HANDLER_SEND_ORDER_FAILURE;
 	static I18NMessage0P SEND_ORDERS_HANDLER_SEND_ORDERS_FAILURE_SEE_DETAILS;
-	static I18NMessage0P OPEN_SUGGESTION_HANDLER_CONVERSION_FAILURE;
 	
 	static {
         ReflectiveMessages.init(Messages.class);

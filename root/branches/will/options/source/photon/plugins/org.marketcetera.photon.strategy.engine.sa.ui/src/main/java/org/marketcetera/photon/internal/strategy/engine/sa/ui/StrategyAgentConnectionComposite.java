@@ -107,7 +107,7 @@ public class StrategyAgentConnectionComposite extends ObservingComposite {
                                     }), null);
             RequiredFieldSupport.initFor(dataBindingContext, target,
                     Messages.STRATEGY_AGENT_CONNECTION_COMPOSITE_JMSURL
-                            .getRawLabel(), binding);
+                            .getRawLabel(), true, binding);
         }
 
         Messages.STRATEGY_AGENT_CONNECTION_COMPOSITE_HOSTNAME.createLabel(this);
@@ -172,7 +172,7 @@ public class StrategyAgentConnectionComposite extends ObservingComposite {
                                     }), new EMFUpdateValueStrategy());
             RequiredFieldSupport.initFor(dataBindingContext, target,
                     Messages.STRATEGY_AGENT_CONNECTION_COMPOSITE_PORT
-                            .getRawLabel(), binding);
+                            .getRawLabel(), true, binding);
         }
     }
 }
