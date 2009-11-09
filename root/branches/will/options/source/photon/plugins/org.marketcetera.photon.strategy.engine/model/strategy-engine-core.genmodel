@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="$License$"
+    modelDirectory="/org.marketcetera.photon.strategy.engine/src/model/java" editDirectory="/org.marketcetera.photon.strategy.engine.edit/src/model/java"
+    editorDirectory="/org.marketcetera.photon.strategy.engine.editor/src/model/java"
+    modelPluginID="org.marketcetera.photon.strategy.engine" templateDirectory="/org.marketcetera.photon.commons/templates"
+    dynamicTemplates="true" modelName="StrategyEngineCoreModel" richClientPlatform="true"
+    codeFormatting="true" testsDirectory="/org.marketcetera.photon.strategy.engine.tests/src/test/java"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="6.0" copyrightFields="false">
+  <foreignModel>strategy-engine-core.ecore</foreignModel>
+  <genPackages prefix="StrategyEngineCore" basePackage="org.marketcetera.photon.strategy.engine.model"
+      disposableProviderFactory="true" generateExampleClass="false" fileExtensions="xml"
+      ecorePackage="strategy-engine-core.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="strategy-engine-core.ecore#//ConnectionState">
+      <genEnumLiterals ecoreEnumLiteral="strategy-engine-core.ecore#//ConnectionState/Disconnected"/>
+      <genEnumLiterals ecoreEnumLiteral="strategy-engine-core.ecore#//ConnectionState/Connected"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="strategy-engine-core.ecore#//StrategyState">
+      <genEnumLiterals ecoreEnumLiteral="strategy-engine-core.ecore#//StrategyState/Stopped"/>
+      <genEnumLiterals ecoreEnumLiteral="strategy-engine-core.ecore#//StrategyState/Running"/>
+    </genEnums>
+    <genDataTypes ecoreDataType="strategy-engine-core.ecore#//ModuleURN"/>
+    <genDataTypes ecoreDataType="strategy-engine-core.ecore#//Exception"/>
+    <genClasses ecoreClass="strategy-engine-core.ecore#//StrategyEngine">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//StrategyEngine/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//StrategyEngine/description"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//StrategyEngine/connectionState"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference strategy-engine-core.ecore#//StrategyEngine/connection"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference strategy-engine-core.ecore#//StrategyEngine/deployedStrategies"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//StrategyEngine/readOnly"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="strategy-engine-core.ecore#//StrategyEngineConnection">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference strategy-engine-core.ecore#//StrategyEngineConnection/engine"/>
+      <genOperations ecoreOperation="strategy-engine-core.ecore#//StrategyEngineConnection/deploy">
+        <genParameters ecoreParameter="strategy-engine-core.ecore#//StrategyEngineConnection/deploy/strategy"/>
+      </genOperations>
+      <genOperations ecoreOperation="strategy-engine-core.ecore#//StrategyEngineConnection/undeploy">
+        <genParameters ecoreParameter="strategy-engine-core.ecore#//StrategyEngineConnection/undeploy/strategy"/>
+      </genOperations>
+      <genOperations ecoreOperation="strategy-engine-core.ecore#//StrategyEngineConnection/start">
+        <genParameters ecoreParameter="strategy-engine-core.ecore#//StrategyEngineConnection/start/strategy"/>
+      </genOperations>
+      <genOperations ecoreOperation="strategy-engine-core.ecore#//StrategyEngineConnection/stop">
+        <genParameters ecoreParameter="strategy-engine-core.ecore#//StrategyEngineConnection/stop/strategy"/>
+      </genOperations>
+      <genOperations ecoreOperation="strategy-engine-core.ecore#//StrategyEngineConnection/update">
+        <genParameters ecoreParameter="strategy-engine-core.ecore#//StrategyEngineConnection/update/strategy"/>
+        <genParameters ecoreParameter="strategy-engine-core.ecore#//StrategyEngineConnection/update/newConfiguration"/>
+      </genOperations>
+      <genOperations ecoreOperation="strategy-engine-core.ecore#//StrategyEngineConnection/refresh">
+        <genParameters ecoreParameter="strategy-engine-core.ecore#//StrategyEngineConnection/refresh/strategy"/>
+      </genOperations>
+      <genOperations ecoreOperation="strategy-engine-core.ecore#//StrategyEngineConnection/refresh.1"/>
+    </genClasses>
+    <genClasses ecoreClass="strategy-engine-core.ecore#//Strategy">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//Strategy/instanceName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//Strategy/language"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//Strategy/scriptPath"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//Strategy/className"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//Strategy/routeOrdersToServer"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference strategy-engine-core.ecore#//Strategy/parameters"/>
+    </genClasses>
+    <genClasses ecoreClass="strategy-engine-core.ecore#//DeployedStrategy">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference strategy-engine-core.ecore#//DeployedStrategy/engine"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//DeployedStrategy/state"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//DeployedStrategy/urn"/>
+    </genClasses>
+    <genClasses ecoreClass="strategy-engine-core.ecore#//StringToStringMapEntry">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//StringToStringMapEntry/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute strategy-engine-core.ecore#//StringToStringMapEntry/value"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

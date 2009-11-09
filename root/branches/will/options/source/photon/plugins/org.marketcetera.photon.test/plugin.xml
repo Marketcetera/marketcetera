@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.marketcetera.photon.test.WorkbenchRunner$Perspective"
+            id="org.marketcetera.photon.test.WorkbenchRunner$Perspective"
+            name="Test Perspective">
+      </perspective>
+   </extension>
+
+</plugin>
