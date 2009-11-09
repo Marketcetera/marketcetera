@@ -6,7 +6,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Interface for objects that provide a financial ticker symbol.
+ * Interface for objects that provide an {@link Equity} symbol.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
 public interface ISymbolProvider {
 
 	/**
-	 * @return a string ticker symbol, should not be null
+	 * @return an equity, should not be null
 	 */
 	Equity getEquity();
 

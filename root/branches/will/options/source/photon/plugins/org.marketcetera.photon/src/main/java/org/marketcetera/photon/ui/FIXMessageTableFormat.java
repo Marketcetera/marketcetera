@@ -327,7 +327,11 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 						|| fieldType.equals(FieldType.UtcDate)) {
 					textValue = DATE_FORMAT.format((Date) objValue);
 				}
-			} else if (objValue instanceof BigDecimal) {
+			}
+			/*
+			 * Exclude field 201 since it is PutOrCall, and we want to use the localizer below.
+			 */
+			else if (objValue instanceof BigDecimal && fieldNum != 201) {
 				BigDecimal n = (BigDecimal)objValue;
 				if (n.scale() <= NUM_DIGITS) {
 					return n.toPlainString();

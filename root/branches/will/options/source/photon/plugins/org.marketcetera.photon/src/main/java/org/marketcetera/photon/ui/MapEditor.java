@@ -342,11 +342,11 @@ public abstract class MapEditor
     		TableColumn column;
 			column = new TableColumn(table, SWT.LEFT);
     		column.setText(KEY_LABEL.getText());
-    		column.setWidth(100); // TODO i18n
+    		column.setWidth(100);
 
     		column = new TableColumn(table, SWT.LEFT);
     		column.setText(VALUE_LABEL.getText());
-    		column.setWidth(100); // TODO i18n
+    		column.setWidth(100);
         } else {
             checkParent(table, parent);
         }
