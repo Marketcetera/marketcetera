@@ -13,6 +13,7 @@ import org.marketcetera.photon.marketdata.ui.tests.MarketDataUISuite;
 import org.marketcetera.photon.module.tests.ModuleCoreSuite;
 import org.marketcetera.photon.module.ui.tests.ModuleUISuite;
 import org.marketcetera.photon.notification.tests.NotificationSuite;
+import org.marketcetera.photon.positions.ui.tests.PositionsUISuite;
 import org.marketcetera.photon.strategy.engine.model.core.tests.StrategyEngineCoreSuite;
 import org.marketcetera.photon.strategy.engine.sa.tests.StrategyAgentEngineSuite;
 import org.marketcetera.photon.strategy.engine.sa.ui.tests.StrategyAgentEngineUISuite;
@@ -35,6 +36,6 @@ import org.marketcetera.photon.tests.PhotonSuite;
         StrategyAgentEngineSuite.class, ModuleCoreSuite.class,
         ModuleUISuite.class, MarketDataCoreSuite.class,
         MarketDataUISuite.class, NotificationSuite.class, StrategySuite.class,
-        PhotonSuite.class, PhotonApplicationSuite.class })
+        PositionsUISuite.class, PhotonSuite.class, PhotonApplicationSuite.class })
 public class AllTestsSuite {
 }

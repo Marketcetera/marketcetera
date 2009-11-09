@@ -58,14 +58,14 @@ public class MarketDataViewItemTest {
         mTick2 = createTick(symbol2);
         mMockTick1Reference = createReference(mTick1);
         mMockTick2Reference = createReference(mTick2);
-        when(mMockMarketData.getLatestTick(symbol1.getSymbol())).thenReturn(mMockTick1Reference);
-        when(mMockMarketData.getLatestTick(symbol2.getSymbol())).thenReturn(mMockTick2Reference);
+        when(mMockMarketData.getLatestTick(symbol1)).thenReturn(mMockTick1Reference);
+        when(mMockMarketData.getLatestTick(symbol2)).thenReturn(mMockTick2Reference);
         mTOB1 = createTOB(symbol1);
         mTOB2 = createTOB(symbol2);
         mMockTOB1Reference = createReference(mTOB1);
         mMockTOB2Reference = createReference(mTOB2);
-        when(mMockMarketData.getTopOfBook(symbol1.getSymbol())).thenReturn(mMockTOB1Reference);
-        when(mMockMarketData.getTopOfBook(symbol2.getSymbol())).thenReturn(mMockTOB2Reference);
+        when(mMockMarketData.getTopOfBook(symbol1)).thenReturn(mMockTOB1Reference);
+        when(mMockMarketData.getTopOfBook(symbol2)).thenReturn(mMockTOB2Reference);
         mFixture = new MarketDataViewItem(mMockMarketData, symbol1);
         assertEquals(symbol1, mFixture.getEquity());
         mMockListener = mock(PropertyChangeListener.class);
@@ -76,7 +76,7 @@ public class MarketDataViewItemTest {
 
     private MDTopOfBook createTOB(Equity symbol) {
         MDTopOfBook item = MDFactory.eINSTANCE.createMDTopOfBook();
-        item.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, symbol.getSymbol());
+        item.eSet(MDPackage.Literals.MD_ITEM__INSTRUMENT, symbol);
         return item;
     }
 
@@ -89,7 +89,7 @@ public class MarketDataViewItemTest {
 
     private MDLatestTick createTick(Equity symbol) {
         MDLatestTick tick = MDFactory.eINSTANCE.createMDLatestTick();
-        tick.eSet(MDPackage.Literals.MD_ITEM__SYMBOL, symbol.getSymbol());
+        tick.eSet(MDPackage.Literals.MD_ITEM__INSTRUMENT, symbol);
         return tick;
     }
 
@@ -120,12 +120,12 @@ public class MarketDataViewItemTest {
     }
 
     @Test
-    public void testSetSymbol() {
+    public void testSetEquity() {
         mFixture.setEquity(symbol2);
         assertEquals(symbol2, mFixture.getEquity());
         verify(mMockTick1Reference).dispose();
         verify(mMockTOB1Reference).dispose();
-        verify(mMockListener).propertyChange(argThat(isPropertyChange("symbol", is(symbol1), is(symbol2))));
+        verify(mMockListener).propertyChange(argThat(isPropertyChange("symbol", is(symbol1.getSymbol()), is(symbol2.getSymbol()))));
         verify(mMockListener).propertyChange(argThat(isPropertyChange("latestTick", hasSymbol(symbol1), hasSymbol(symbol2))));
         verify(mMockListener).propertyChange(argThat(isPropertyChange("topOfBook", hasSymbol(symbol1), hasSymbol(symbol2))));
     }
@@ -135,7 +135,7 @@ public class MarketDataViewItemTest {
 
             @Override
             public boolean matches(Object item) {
-                return ((MDItem) item).getSymbol().equals(symbol.getSymbol());
+                return ((MDItem) item).getInstrument().equals(symbol);
             }
 
             @Override

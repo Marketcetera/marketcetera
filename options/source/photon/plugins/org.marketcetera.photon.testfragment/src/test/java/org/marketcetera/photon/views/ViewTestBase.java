@@ -8,11 +8,11 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
+import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.OrderManagerTest;
@@ -76,8 +76,6 @@ public abstract class ViewTestBase extends TestCase {
      * 
      * @param inCondition a <code>Callable&lt;Boolean&gt;</code> value which must evaluate to true or false
      * @throws Exception if an error occurs
-     * 
-     * TODO: consider deprecating in favor of SWTTestUtil.conditionalDelay
      */
 	public static void doDelay(Callable<Boolean> inCondition)
         throws Exception {
@@ -85,7 +83,7 @@ public abstract class ViewTestBase extends TestCase {
     }  
 
 	/**
-	 * TODO: consider deprecating in favor of SWTTestUtil.delay
+	 * Sleep for a number of milliseconds.
 	 */
 	protected static void delay(long millis) {
 		Display display = Display.getCurrent();
@@ -100,13 +98,8 @@ public abstract class ViewTestBase extends TestCase {
 		}
 	}
 
-	/**
-	 * TODO: consider deprecating in favor of SWTTestUtil.waitForJobs
-	 */
-	public static void waitForJobs() {
-		while (Platform.getJobManager().currentJob() != null){
-			delay(1000);
-		}
+	private void waitForJobs() {
+	    SWTTestUtil.waitForJobs(1000, TimeUnit.MILLISECONDS);
 	}
 
 	public IViewPart getTestView() {
@@ -139,7 +132,7 @@ public abstract class ViewTestBase extends TestCase {
     protected void doFilterTest()
         throws Exception
     {
-    	TradeReportsHistory hist = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
+    	TradeReportsHistory hist = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory(), new MockUnderlyingSymbolSupport());
         AbstractFIXMessagesView view = (AbstractFIXMessagesView)getTestView();
         view.setInput(hist);
         List<Message> messages = getFilterTestMessages();
