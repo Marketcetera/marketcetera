@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.internal.marketdata;
 
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleException;

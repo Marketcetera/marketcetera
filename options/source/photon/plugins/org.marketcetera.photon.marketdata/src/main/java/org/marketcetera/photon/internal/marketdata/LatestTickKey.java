@@ -1,6 +1,6 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import org.marketcetera.photon.model.marketdata.MDLatestTick;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -13,15 +13,15 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class LatestTickKey extends Key<MDLatestTick> {
+public class LatestTickKey extends Key {
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param symbol
-	 *            the symbol
-	 */
-	public LatestTickKey(final String symbol) {
-		super(symbol);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param instrument
+     *            the instrument
+     */
+    public LatestTickKey(final Instrument instrument) {
+        super(instrument);
+    }
 }
