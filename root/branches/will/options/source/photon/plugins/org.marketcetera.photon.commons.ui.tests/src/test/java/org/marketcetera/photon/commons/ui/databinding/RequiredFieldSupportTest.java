@@ -57,19 +57,19 @@ public class RequiredFieldSupportTest extends PhotonTestBase {
                 IObservableValue value = SWTObservables.observeText(text,
                         SWT.Modify);
                 DataBindingContext dbc = new DataBindingContext();
-                RequiredFieldSupport.initFor(dbc, value, "Text", null);
+                RequiredFieldSupport.initFor(dbc, value, "Text", true, null);
                 ListViewer list = new ListViewer(c);
                 list.setContentProvider(new ArrayContentProvider());
                 list.setInput(new Object[] { "item 1", "item 2" });
                 IViewerObservableList set = ViewersObservables
                         .observeMultiSelection(list);
-                RequiredFieldSupport.initFor(dbc, set, "list item", null);
+                RequiredFieldSupport.initFor(dbc, set, "list item", true, null);
                 TableViewer table = new TableViewer(c);
                 table.setContentProvider(new ArrayContentProvider());
                 table.setInput(new Object[] { "item 1", "item 2" });
                 IViewerObservableValue single = ViewersObservables
                         .observeSingleSelection(table);
-                RequiredFieldSupport.initFor(dbc, single, "table item", null);
+                RequiredFieldSupport.initFor(dbc, single, "table item", true, null);
                 GridLayoutFactory.swtDefaults().generateLayout(c);
                 return c;
             }
@@ -90,21 +90,21 @@ public class RequiredFieldSupportTest extends PhotonTestBase {
             @Override
             protected void run() throws Exception {
                 RequiredFieldSupport.initFor(null, new WritableValue(), "abc",
-                        null);
+                        true, null);
             }
         };
         new ExpectedNullArgumentFailure("target") {
             @Override
             protected void run() throws Exception {
                 RequiredFieldSupport.initFor(new DataBindingContext(), null,
-                        "abc", null);
+                        "abc", true, null);
             }
         };
         new ExpectedNullArgumentFailure("description") {
             @Override
             protected void run() throws Exception {
                 RequiredFieldSupport.initFor(new DataBindingContext(),
-                        new WritableValue(), null, null);
+                        new WritableValue(), null, true, null);
             }
         };
         final Realm badRealm = new Realm() {
@@ -117,7 +117,7 @@ public class RequiredFieldSupportTest extends PhotonTestBase {
             @Override
             protected void run() throws Exception {
                 RequiredFieldSupport.initFor(new DataBindingContext(badRealm),
-                        new WritableValue(), "", null);
+                        new WritableValue(), "", true, null);
             }
         };
         new ExpectedIllegalStateException(
@@ -125,7 +125,7 @@ public class RequiredFieldSupportTest extends PhotonTestBase {
             @Override
             protected void run() throws Exception {
                 RequiredFieldSupport.initFor(new DataBindingContext(),
-                        new WritableValue(badRealm), "", null);
+                        new WritableValue(badRealm), "", true, null);
             }
         };
     }
@@ -187,7 +187,7 @@ public class RequiredFieldSupportTest extends PhotonTestBase {
      * @param description
      *            description of the missing value (same as description passed
      *            to
-     *            {@link RequiredFieldSupport#initFor(DataBindingContext, org.eclipse.core.databinding.observable.IObservable, String, Binding)}
+     *            {@link RequiredFieldSupport#initFor(DataBindingContext, org.eclipse.core.databinding.observable.IObservable, String, boolean, Binding)}
      * @return the formatted, localized message
      */
     public static String getRequiredValueMessage(String description) {
@@ -202,7 +202,7 @@ public class RequiredFieldSupportTest extends PhotonTestBase {
      * @param description
      *            description of the missing value (same as description passed
      *            to
-     *            {@link RequiredFieldSupport#initFor(DataBindingContext, org.eclipse.core.databinding.observable.IObservable, String, Binding)}
+     *            {@link RequiredFieldSupport#initFor(DataBindingContext, org.eclipse.core.databinding.observable.IObservable, String, boolean, Binding)}
      * @return the formatted, localized message
      */
     public static String getRequiredCollectionMessage(String description) {
