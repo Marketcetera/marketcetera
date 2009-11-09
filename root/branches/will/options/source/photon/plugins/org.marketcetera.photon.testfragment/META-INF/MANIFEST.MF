@@ -6,7 +6,9 @@ Bundle-Version: 1.7.0
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon
 Require-Bundle: org.marketcetera.core.tests,
- org.marketcetera.photon.test
+ org.marketcetera.photon.test,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.swtbot.swt.finder
 Import-Package: junit.framework,
  org.hamcrest,
  org.junit,

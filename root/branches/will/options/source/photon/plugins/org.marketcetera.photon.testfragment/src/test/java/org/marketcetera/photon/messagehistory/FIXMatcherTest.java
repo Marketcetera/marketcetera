@@ -155,7 +155,7 @@ public abstract class FIXMatcherTest<T>
             FIXMatcher<T> matcher = getInstance(condition.mFixField,
                                                 condition.mValue);
             // this is the FIX message specified as part of the test condition
-            ReportHolder holder = new ReportHolder(OrderManagerTest.createReport(condition.mMessage));
+            ReportHolder holder = new ReportHolder(OrderManagerTest.createReport(condition.mMessage), null);
             // make sure that the stated condition passes (it should match or not match according to the condition)
             assertEquals(condition.mMatches,
                          matcher.matches(holder));
