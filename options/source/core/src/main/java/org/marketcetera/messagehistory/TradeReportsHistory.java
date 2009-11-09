@@ -9,6 +9,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderID;
@@ -78,7 +79,22 @@ public class TradeReportsHistory {
      */
     private boolean mQueueMessages = false;
 
-    public TradeReportsHistory(FIXMessageFactory messageFactory) {
+    private final UnderlyingSymbolSupport mUnderlyingSymbolSupport;
+
+    /**
+     * Constructor.
+     * 
+     * @param messageFactory
+     *            factory for creating FIX messages (used for average price
+     *            lists)
+     * @param underlyingSymbolSupport
+     *            underlying symbol support (allows execution reports to be
+     *            annotated with underlying symbol, e.g. for filtering by
+     *            underlying)
+     */
+    public TradeReportsHistory(FIXMessageFactory messageFactory,
+            UnderlyingSymbolSupport underlyingSymbolSupport) {
+        mUnderlyingSymbolSupport = underlyingSymbolSupport;
         mAllMessages = new BasicEventList<ReportHolder>();
         mReadLock = mAllMessages.getReadWriteLock().readLock();
         mWriteLock = mAllMessages.getReadWriteLock().writeLock();
@@ -202,7 +218,11 @@ public class TradeReportsHistory {
             }
             updateOrderIDMappings(inReport);
             OrderID groupID = getGroupID(inReport);
-            ReportHolder messageHolder = new ReportHolder(inReport, groupID);
+            String underlying = null;
+            if (inReport instanceof ExecutionReport) {
+                underlying = mUnderlyingSymbolSupport.getUnderlying(((ExecutionReport) inReport).getInstrument());
+            }
+            ReportHolder messageHolder = new ReportHolder(inReport, underlying, groupID);
     
             // The first message that comes in with a specific order id gets stored in a map.  This
             // map is used by #getFirstReport(String) to facilitate CancelReplace

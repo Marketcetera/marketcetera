@@ -9,6 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.Trade;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import ca.odell.glazedlists.BasicEventList;
@@ -30,7 +33,7 @@ import com.google.common.collect.Sets;
 public class PositionRowUpdaterConcurrencyTest {
 
     private final Random mGenerator = new Random();
-    private static final String SYMBOL = "METC";
+    private static final Instrument INSTRUMENT = new Equity("METC");
     private static final String ACCOUNT = "A1";
     private static final String TRADER = "1";
     private PositionRowImpl mRow;
@@ -46,7 +49,7 @@ public class PositionRowUpdaterConcurrencyTest {
 //        Logger.getLogger("ListUpdate").setLevel(Level.TRACE);
         mTrades = new BasicEventList<Trade<?>>();
         mLock = mTrades.getReadWriteLock().writeLock();
-        mRow = new PositionRowImpl(SYMBOL, ACCOUNT, TRADER, new BigDecimal(100));
+        mRow = new PositionRowImpl(INSTRUMENT, "METC", ACCOUNT, TRADER, new BigDecimal(100));
         mMockMarketData = new MockMarketData();
     }
 
@@ -129,7 +132,7 @@ public class PositionRowUpdaterConcurrencyTest {
         private final Set<SymbolChangeListener> mListeners = Sets.newHashSet();
 
         @Override
-        public void addSymbolChangeListener(String symbol, SymbolChangeListener listener) {
+        public void addSymbolChangeListener(Instrument instrument, SymbolChangeListener listener) {
             synchronized (mSimulatedDataFlowLock) {
                 try {
                     mListeners.add(listener);
@@ -157,17 +160,22 @@ public class PositionRowUpdaterConcurrencyTest {
         }
 
         @Override
-        public BigDecimal getClosingPrice(String symbol) {
+        public BigDecimal getClosingPrice(Instrument instrument) {
             return null;
         }
 
         @Override
-        public BigDecimal getLastTradePrice(String symbol) {
+        public BigDecimal getLastTradePrice(Instrument instrument) {
             return null;
         }
 
         @Override
-        public void removeSymbolChangeListener(String symbol, SymbolChangeListener listener) {
+        public Integer getOptionMultiplier(Option option) {
+            return null;
+        }
+
+        @Override
+        public void removeSymbolChangeListener(Instrument instrument, SymbolChangeListener listener) {
             synchronized (mSimulatedDataFlowLock) {
                 try {
                     mListeners.remove(listener);

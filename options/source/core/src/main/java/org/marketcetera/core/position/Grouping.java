@@ -16,10 +16,10 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public enum Grouping {
-    Symbol {
+    Underlying {
         @Override
         public String get(PositionRow row) {
-            return row.getSymbol();
+            return row.getUnderlying();
         }
     },
     Account {

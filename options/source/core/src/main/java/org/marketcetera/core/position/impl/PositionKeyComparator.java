@@ -47,7 +47,6 @@ final class PositionKeyComparator implements Comparator<PositionKey<?>> {
         @Override
         public int compare(Instrument o1, Instrument o2) {
             if(o1.getClass().equals(o2.getClass())) {
-                @SuppressWarnings("unchecked")
                 int value = getComparator(o1).compare(o1, o2);
                 return value;
             } else {
@@ -55,7 +54,8 @@ final class PositionKeyComparator implements Comparator<PositionKey<?>> {
             }
         }
 
-        private static InstrumentPositionKeyComparator getComparator(Instrument o1) {
+        @SuppressWarnings("unchecked")
+        private static <I extends Instrument> InstrumentPositionKeyComparator<I> getComparator(I o1) {
             return InstrumentPositionKeyComparator.SELECTOR.forInstrument(o1);
         }
     }

@@ -84,7 +84,12 @@ public class FIXValueExtractor {
 				} else if (fieldType.equals(FieldType.UtcDateOnly)
 						||fieldType.equals(FieldType.UtcDate)){
 					value = map.getUtcDateOnly(fieldID); //i18n_date
-				} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
+				}
+                /*
+                 * Exclude field 201 since it is PutOrCall, and we want to use
+                 * the human readable value instead of the numeric one.
+                 */ 
+				else if (Number.class.isAssignableFrom(fieldType.getJavaType()) && fieldID != 201){
 					value = map.getDecimal(fieldID);
 				} else if (humanReadable && dict.hasFieldValue(fieldID)){
 					value = map.getString(fieldID);

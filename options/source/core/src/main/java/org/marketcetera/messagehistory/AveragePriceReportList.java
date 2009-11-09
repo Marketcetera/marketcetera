@@ -76,7 +76,6 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                     try {
                         Message deltaMessage = deltaReportHolder.getMessage();
                         ReportBase deltaReport = deltaReportHolder.getReport();
-                        String symbol = deltaMessage.getString(Symbol.FIELD);
                         String side = deltaMessage.getString(Side.FIELD);
                         Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(deltaMessage).extract(deltaMessage);
                         SymbolSide symbolSide = new SymbolSide(instrument, side);
@@ -139,7 +138,8 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                                         averagePriceMessage,
                                                         execReport.getBrokerID(),
                                                         Originator.Server, execReport.getActorID(),
-                                                        execReport.getViewerID()));
+                                                        execReport.getViewerID()),
+                                                        deltaReportHolder.getUnderlying());
                                         mAveragePricesList.add(newReport);
                                         averagePriceIndex = mAveragePricesList.size()-1;
                                         mAveragePriceIndexes.put(symbolSide, averagePriceIndex);

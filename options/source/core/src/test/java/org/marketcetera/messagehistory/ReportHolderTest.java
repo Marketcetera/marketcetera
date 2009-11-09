@@ -36,7 +36,7 @@ public class ReportHolderTest {
                         BigDecimal.ONE, new Equity("123"), "asdf");
         ExecutionReport report = Factory.getInstance().createExecutionReport(
                 message, new BrokerID("ABC"), Originator.Server, null, null);
-        ReportHolder holder = new ReportHolder(report);
+        ReportHolder holder = new ReportHolder(report, null);
         assertEquals(message, holder.getMessage());
     }
 }
