@@ -5,6 +5,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.WorkbenchException;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
@@ -17,7 +18,6 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.messagehistory.MessageVisitor;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
-import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.trade.BrokerID;
@@ -25,7 +25,6 @@ import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
@@ -34,10 +33,10 @@ import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.OrigClOrdID;
 
 /* $License$ */
 
@@ -106,35 +105,6 @@ public class PhotonController
 		Display.getDefault().asyncExec(runnable);
 	}
 
-	public void handleInternalMessage(Message aMessage) {
-		handleInternalMessage(aMessage, DEFAULT_BROKER);
-	}
-	
-	public void handleInternalMessage(Message aMessage, String brokerId) {
-		handleInternalMessage(aMessage, brokerId == null ? null : new BrokerID(brokerId));
-	}
-	
-	public void handleInternalMessage(Message aMessage, BrokerID broker) {
-		Factory factory = Factory.getInstance();
-	
-		try {
-			if (FIXMessageUtil.isOrderSingle(aMessage)) {
-				sendOrder(factory.createOrderSingle(aMessage, broker));
-			} else if (FIXMessageUtil.isCancelRequest(aMessage)) {
-				sendOrder(factory.createOrderCancel(aMessage, broker));
-			} else if (FIXMessageUtil.isCancelReplaceRequest(aMessage)) {
-				sendOrder(factory.createOrderReplace(aMessage, broker));
-			} else {
-				internalMainLogger.warn(UNKNOWN_INTERNAL_MESSAGE_TYPE.
-						getText(aMessage.toString()));
-			}
-		} catch (MessageCreationException e) {
-            internalMainLogger.error(ERROR_HANDLING_MESSAGE.getText(
-            		aMessage.toString()),e);
-		}
-	}
-
-
 	protected void handleExecutionReport(ExecutionReport inReport) throws FieldNotFound, NoMoreIDsException {
 
 		if (OrderStatus.Rejected == inReport.getOrderStatus()) {
@@ -177,12 +147,6 @@ public class PhotonController
 		                                                reason);
 		internalMainLogger.error(errorMsg);
 	}
-
-	protected void cancelOneOrder(Message cancelMessage)
-			throws NoMoreIDsException, FieldNotFound {
-		String clOrdId = (String) cancelMessage.getString(OrigClOrdID.FIELD);
-		cancelOneOrderByClOrdID(clOrdId);
-	}
 	
 	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
 		OrderID orderid = new OrderID(clOrdID);
@@ -193,9 +157,11 @@ public class PhotonController
 						.debug("Exec id for cancel execution report:" + report.getExecutionID()); //$NON-NLS-1$
 			}
 			OrderCancel cancel = Factory.getInstance().createOrderCancel(report);
-			// null out the broker order id since some of our reports have "NONE" which is
-			// an invalid value
-			cancel.setBrokerOrderID(null);
+            /*
+             * Remove the broker order id since some of our reports have "NONE"
+             * which is an invalid value.
+             */
+            cancel.setBrokerOrderID(null);
 			sendOrder(cancel);
 		} else {
 			internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
@@ -214,23 +180,18 @@ public class PhotonController
 		return report;
 	}
 	
-	public void replaceOrder(ExecutionReport report) throws FieldNotFound {
-		ExecutionReport originalReport = getReportForCancel(report.getOrderID());
-		if (originalReport != null) {
-			Message originalMessage = ((HasFIXMessage) originalReport).getMessage();
-			Message cancelReplaceMessage = PhotonPlugin.getDefault().getMessageFactory()
-					.newCancelReplaceFromMessage(originalMessage);
-			// remove the broker order id since some of our reports have "NONE" which is
-			// an invalid value
-			cancelReplaceMessage.removeField(quickfix.field.OrderID.FIELD);
-			IOrderTicketController controller = PhotonPlugin.getDefault().getOrderTicketController(
-					originalMessage);
-			if (controller != null) {
-				controller.setOrderMessage(cancelReplaceMessage);
-				controller.setBrokerId(originalReport.getBrokerID() == null ? null : originalReport
-						.getBrokerID().getValue());
-			}
-		}
+	public void replaceOrder(ExecutionReport report) throws WorkbenchException {
+        ExecutionReport originalReport = getReportForCancel(report.getOrderID());
+        if (originalReport != null) {
+            OrderReplace replace = Factory.getInstance().createOrderReplace(
+                    originalReport);
+            /*
+             * Remove the broker order id since some of our reports have "NONE"
+             * which is an invalid value.
+             */
+            replace.setBrokerOrderID(null);
+            PhotonPlugin.getDefault().showOrderInTicket(replace);
+        }
 	}
 
 	/** Panic button: cancel all open orders
@@ -296,6 +257,33 @@ public class PhotonController
 			internalMainLogger.error(CANNOT_SEND_NOT_CONNECTED.getText());
 		}
 	}
+
+    public void sendOrderChecked(Order inOrder) throws I18NException {
+        internalMainLogger.info(PHOTON_CONTROLLER_SENDING_MESSAGE
+                .getText(inOrder.toString()));
+        try {
+            Client client = ClientManager.getInstance();
+            if (inOrder instanceof OrderSingle) {
+                client.sendOrder((OrderSingle) inOrder);
+            } else if (inOrder instanceof OrderReplace) {
+                client.sendOrder((OrderReplace) inOrder);
+            } else if (inOrder instanceof OrderCancel) {
+                client.sendOrder((OrderCancel) inOrder);
+            } else if (inOrder instanceof FIXOrder) {
+                client.sendOrderRaw((FIXOrder) inOrder);
+            } else {
+                throw new I18NException(new I18NBoundMessage1P(
+                        SEND_ORDER_FAIL_UNKNOWN_TYPE, inOrder.toString()));
+            }
+        } catch (OrderValidationException e) {
+            throw new I18NException(new I18NBoundMessage1P(
+                    SEND_ORDER_VALIDATION_FAILED, inOrder.toString()));
+        } catch (ClientInitException e) {
+            throw new I18NException(CANNOT_SEND_NOT_CONNECTED);
+        } catch (ConnectionException e) {
+            throw new I18NException(CANNOT_SEND_NOT_CONNECTED);
+        }
+    }
 	
 	/**
 	 * @return Returns the mainConsoleLogger.

@@ -22,17 +22,19 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Contribution item for a status indicator. It supports three status: on, off,
  * and error.
- * 
+ * <p>
  * It is added via the <code>org.eclipse.ui.menus</code> extension point. Images
  * can be overlayed with a custom image, the path of which is also provided by
  * the extension point.
- * 
+ * <p>
  * The Eclipse internal {@link ImageOverlayIcon} class is used intentionally to
- * avoid duplicating code. TODO: test to verify this continues to work as
- * expected.
+ * avoid duplicating code.
+ * <p>
+ * TODO: test to verify this continues to work as expected.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: StatusIndicatorContributionItem.java 10782 2009-09-30 20:11:02Z
+ *          will $
  * @since 1.0.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$

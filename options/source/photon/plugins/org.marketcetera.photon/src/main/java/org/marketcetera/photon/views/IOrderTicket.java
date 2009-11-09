@@ -1,13 +1,23 @@
 package org.marketcetera.photon.views;
 
-import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
+/**
+ * Base XSWT order ticket.
+ *
+ * @version $Id$
+ * @since 0.5.0
+ */
+@ClassVersion("$Id$")
 public interface IOrderTicket {
 
 	Button getClearButton();
@@ -20,7 +30,9 @@ public interface IOrderTicket {
 
 	Combo getSideCombo();
 
-	Text getSymbolText();
+	Combo getOrderTypeCombo();
+
+    Text getSymbolText();
 
 	Combo getBrokerCombo();
 
@@ -38,7 +50,7 @@ public interface IOrderTicket {
 	
 	ScrolledForm getForm();
 
-	CheckboxTableViewer getCustomFieldsTableViewer();
+	Table getCustomFieldsTable();
 	
 	Text getMessageDebugText();
 	

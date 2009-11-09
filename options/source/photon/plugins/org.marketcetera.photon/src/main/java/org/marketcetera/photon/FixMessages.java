@@ -110,4 +110,12 @@ public interface FixMessages
                                                                               "fix.field.value.Side.SELL"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_Side_SELL_SHORT = new I18NMessage0P(LOGGER,
                                                                                     "fix.field.value.Side.SELL SHORT"); //$NON-NLS-1$
+    public static I18NMessage0P fix_field_value_SecurityType_COMMON_STOCK = new I18NMessage0P(
+            LOGGER, "fix.field.value.SecurityType.COMMON STOCK"); //$NON-NLS-1$
+    public static I18NMessage0P fix_field_value_SecurityType_OPTION = new I18NMessage0P(
+            LOGGER, "fix.field.value.SecurityType.OPTION"); //$NON-NLS-1$
+    public static I18NMessage0P fix_field_value_PutOrCall_PUT = new I18NMessage0P(
+            LOGGER, "fix.field.value.PutOrCall.PUT"); //$NON-NLS-1$
+    public static I18NMessage0P fix_field_value_PutOrCall_CALL = new I18NMessage0P(
+            LOGGER, "fix.field.value.PutOrCall.CALL"); //$NON-NLS-1$
 }
