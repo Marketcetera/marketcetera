@@ -10,9 +10,10 @@ Require-Bundle: org.marketcetera.core,
 Eclipse-RegisterBuddy: org.marketcetera.core
 Export-Package: org.marketcetera.client,
  org.marketcetera.client.brokers,
- org.marketcetera.client.users,
  org.marketcetera.client.config,
- org.marketcetera.client.jms
+ org.marketcetera.client.instruments,
+ org.marketcetera.client.jms,
+ org.marketcetera.client.users
 Import-Package: org.hamcrest;resolution:=optional,
  org.junit;resolution:=optional,
  junit.framework;resolution:=optional

@@ -1,5 +1,7 @@
 package org.marketcetera.core.position.impl;
 
+import static org.hamcrest.Matchers.nullValue;
+
 import java.math.BigDecimal;
 
 import org.hamcrest.Matcher;
@@ -15,10 +17,18 @@ import org.hamcrest.Matcher;
  */
 public class BigDecimalMatchers {
     public static Matcher<? super BigDecimal> comparesEqualTo(String value) {
-        return OrderingComparison.comparesEqualTo(new BigDecimal(value));
+        if (value == null) {
+            return nullValue();
+        } else {
+            return OrderingComparison.comparesEqualTo(new BigDecimal(value));
+        }
     }
 
-    public static Matcher<? super BigDecimal> comparesEqualTo(int value) {
-        return OrderingComparison.comparesEqualTo(new BigDecimal(value));
+    public static Matcher<? super BigDecimal> comparesEqualTo(Integer value) {
+        if (value == null) {
+            return nullValue();
+        } else {
+            return OrderingComparison.comparesEqualTo(new BigDecimal(value));
+        }
     }
 }

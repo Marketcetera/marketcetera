@@ -9,7 +9,6 @@ import org.marketcetera.core.FIXVersionedTestCase;
 
 import quickfix.Group;
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.field.AvgPx;
 import quickfix.field.ClOrdID;
 import quickfix.field.CumQty;
@@ -23,6 +22,7 @@ import quickfix.field.NoRpts;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
+import quickfix.field.PutOrCall;
 import quickfix.field.RptSeq;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
@@ -95,6 +95,20 @@ public class FIXValueExtractorTest extends FIXVersionedTestCase {
 		assertEquals("124", ((BigDecimal)extractor.extractValue(message, CumQty.FIELD, NoOrders.FIELD, ClOrdID.FIELD, "2")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
 		assertEquals("124.400", ((BigDecimal)extractor.extractValue(message, CxlQty.FIELD, NoOrders.FIELD, ClOrdID.FIELD, "2")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
 		assertEquals("124.40", ((BigDecimal)extractor.extractValue(message, AvgPx.FIELD, NoOrders.FIELD, ClOrdID.FIELD, "2")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
-}
-
+	}
+	
+    public void testPutOrCall() {
+        FIXValueExtractor extractor = new FIXValueExtractor(fixDD
+                .getDictionary(), msgFactory);
+        if (fixDD.getDictionary().hasFieldValue(PutOrCall.FIELD)) {
+            Message message = msgFactory
+                    .createMessage(MsgType.EXECUTION_REPORT);
+            message.setField(new PutOrCall(PutOrCall.CALL));
+            assertEquals("CALL", extractor.extractValue(message,
+                    PutOrCall.FIELD, null, null, null, true));
+            message.setField(new PutOrCall(PutOrCall.PUT));
+            assertEquals("PUT", extractor.extractValue(message,
+                    PutOrCall.FIELD, null, null, null, true));
+        }
+    }
 }

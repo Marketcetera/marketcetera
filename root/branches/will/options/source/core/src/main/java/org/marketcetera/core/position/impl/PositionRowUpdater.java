@@ -13,6 +13,7 @@ import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.position.MarketDataSupport.SymbolChangeEvent;
 import org.marketcetera.core.position.MarketDataSupport.SymbolChangeListener;
 import org.marketcetera.core.position.MarketDataSupport.SymbolChangeListenerBase;
+import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
 
@@ -41,8 +42,10 @@ public final class PositionRowUpdater {
             .newSingleThreadExecutor(new NamedThreadFactory("PositionRowUpdater"));  //$NON-NLS-1$
     private final AtomicBoolean mTickPending = new AtomicBoolean();
     private final AtomicBoolean mClosingPricePending = new AtomicBoolean();
+    private final AtomicBoolean mMultiplierPending = new AtomicBoolean();
     private volatile PositionMetricsCalculator mCalculator;
     private volatile BigDecimal mClosePrice;
+    private volatile Integer mMultiplier;
     private volatile BigDecimal mLastTradePrice;
 
     /**
@@ -90,8 +93,14 @@ public final class PositionRowUpdater {
             public void closePriceChanged(SymbolChangeEvent event) {
                 PositionRowUpdater.this.closePriceChanged(event.getNewPrice());
             }
+
+            @Override
+            public void optionMultiplierChanged(Integer multiplier) {
+                PositionRowUpdater.this.optionMultiplierChanged(multiplier);
+            }
         };
-        mMarketDataSupport.addSymbolChangeListener(mPositionRow.getSymbol(), mSymbolChangeListener);
+        mMarketDataSupport.addSymbolChangeListener(
+                mPositionRow.getInstrument(), mSymbolChangeListener);
         if (trades != null) {
             connect(trades);
         } else {
@@ -125,22 +134,25 @@ public final class PositionRowUpdater {
         if (mTrades != null) {
             mTrades.removeListEventListener(mListChangeListener);
         }
-        mMarketDataSupport.removeSymbolChangeListener(mPositionRow.getSymbol(),
-                mSymbolChangeListener);
+        mMarketDataSupport.removeSymbolChangeListener(mPositionRow
+                .getInstrument(), mSymbolChangeListener);
     }
 
     private void tick(BigDecimal tick) {
         mLastTradePrice = tick;
-        // Since this modifies the position and will need a lock, the update happens in 
-        // a separate thread.  mTickPending is used to avoid queuing multiple updates
-        // since the runnable always uses the latest value.
+        /*
+         * Since this modifies the position and will need a lock, the update
+         * happens in a separate thread. mTickPending is used to avoid queuing
+         * multiple updates since the runnable always uses the latest value.
+         */
         if (mTickPending.compareAndSet(false, true)) {
             sMarketDataUpdateExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
                     mTickPending.set(false);
                     if (mCalculator != null) {
-                        mPositionRow.setPositionMetrics(mCalculator.tick(mLastTradePrice));
+                        mPositionRow.setPositionMetrics(mCalculator
+                                .tick(mLastTradePrice));
                     }
                 }
             });
@@ -149,16 +161,23 @@ public final class PositionRowUpdater {
 
     private void closePriceChanged(BigDecimal newPrice) {
         BigDecimal oldPrice = mClosePrice;
-        // since change close price requires a full recalculation, only do it if necessary
+        /*
+         * Since change close price requires a full recalculation, only do it if
+         * necessary.
+         */
         if (oldPrice == null && newPrice == null) {
             return;
-        } else if (oldPrice != null && newPrice != null && oldPrice.compareTo(newPrice) == 0) {
+        } else if (oldPrice != null && newPrice != null
+                && oldPrice.compareTo(newPrice) == 0) {
             return;
         }
         mClosePrice = newPrice;
-        // Since this modifies the position and will need a lock, the update happens in 
-        // a separate thread.  mClosingPricePending is used to avoid queuing multiple updates
-        // since the runnable always uses the latest value.
+        /*
+         * Since this modifies the position and will need a lock, the update
+         * happens in a separate thread. mClosingPricePending is used to avoid
+         * queuing multiple updates since the runnable always uses the latest
+         * value.
+         */
         if (mClosingPricePending.compareAndSet(false, true)) {
             sMarketDataUpdateExecutor.execute(new Runnable() {
                 @Override
@@ -168,6 +187,35 @@ public final class PositionRowUpdater {
                 }
             });
         }
+    }
+
+    private void optionMultiplierChanged(Integer multiplier) {
+        Integer oldMultiplier = mMultiplier;
+        /*
+         * Only process if necessary.
+         */
+        if (oldMultiplier == null && multiplier == null) {
+            return;
+        } else if (oldMultiplier != null && oldMultiplier.equals(multiplier)) {
+            return;
+        }
+        mMultiplier = multiplier;
+        /*
+         * Since this modifies the position and will need a lock, the update
+         * happens in a separate thread. mClosingPricePending is used to avoid
+         * queuing multiple updates since the runnable always uses the latest
+         * value.
+         */
+        if (mMultiplierPending.compareAndSet(false, true)) {
+            sMarketDataUpdateExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mMultiplierPending.set(false);
+                    mPositionRow.setPositionMetrics(recalculate());
+                }
+            });
+        }
+
     }
 
     private void listChanged(ListEvent<Trade<?>> listChanges) {
@@ -185,8 +233,14 @@ public final class PositionRowUpdater {
     }
 
     private PositionMetrics recalculate() {
-        mCalculator = new PositionMetricsCalculatorImpl(mPositionRow.getPositionMetrics()
-                .getIncomingPosition(), mClosePrice);
+        PositionMetricsCalculatorImpl calculator = new PositionMetricsCalculatorImpl(
+                mPositionRow.getPositionMetrics().getIncomingPosition(),
+                mClosePrice);
+        if (mPositionRow.getInstrument() instanceof Option) {
+            mCalculator = new MultiplierCalculator(calculator, mMultiplier);
+        } else {
+            mCalculator = calculator;
+        }
         PositionMetrics metrics = mCalculator.tick(mLastTradePrice);
         if (mTrades != null) {
             for (Trade<?> trade : mTrades) {

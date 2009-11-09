@@ -20,8 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
 public interface IncomingPositionSupport {
 
     /**
-     * Returns the size of the incoming position for the given symbol, account,
-     * traderId tuple.
+     * Returns the size of the incoming position for the given position key.
      * 
      * The returned value should be the size of the incoming position at the
      * time the method is called. Implementations are assumed to have an
@@ -34,7 +33,7 @@ public interface IncomingPositionSupport {
     BigDecimal getIncomingPositionFor(PositionKey<?> key);
 
     /**
-     * Returns all incoming positions, keyed by symbol, account, traderId tuple.
+     * Returns all incoming positions.
      * 
      * The returned values should be the size of the incoming positions at the
      * time the method is called. Implementations are assumed to have an
