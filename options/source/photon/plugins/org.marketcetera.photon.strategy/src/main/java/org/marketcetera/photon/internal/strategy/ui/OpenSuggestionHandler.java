@@ -8,23 +8,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.internal.strategy.TradeSuggestion;
 import org.marketcetera.photon.internal.strategy.TradeSuggestionManager;
 import org.marketcetera.photon.strategy.StrategyUI;
-import org.marketcetera.photon.views.IOrderTicketController;
-import org.marketcetera.photon.views.StockOrderTicketController;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-
-import quickfix.Message;
 
 /* $License$ */
 
@@ -45,42 +37,15 @@ public class OpenSuggestionHandler extends AbstractHandler {
         TradeSuggestion suggestion = (TradeSuggestion) selection
                 .getFirstElement();
         OrderSingle order = suggestion.getOrder();
+
         try {
-            Message message = FIXConverter.toQMessage(FIXVersion.FIX_SYSTEM.getMessageFactory(),
-            		FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX_SYSTEM).getDictionary(),
-            		order);
-            IOrderTicketController orderTicketController = PhotonPlugin
-                    .getDefault().getOrderTicketController(message);
-            String perspective;
-            String view;
-            if (orderTicketController instanceof StockOrderTicketController) {
-                perspective = "org.marketcetera.photon.EquityPerspective"; //$NON-NLS-1$
-                view = "org.marketcetera.photon.views.StockOrderTicketView"; //$NON-NLS-1$
-            } else {
-                perspective = "org.marketcetera.photon.OptionPerspective"; //$NON-NLS-1$
-                view = "org.marketcetera.photon.views.OpenOrdersView"; //$NON-NLS-1$
-            }
-            orderTicketController.setOrderMessage(message);
-            try {
-                PlatformUI.getWorkbench().showPerspective(perspective,
-                        PlatformUI.getWorkbench().getActiveWorkbenchWindow());
-                PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                        .getActivePage().showView(view);
-                TradeSuggestionManager.getCurrent().removeSuggestion(suggestion);
-            } catch (WorkbenchException e) {
-                SLF4JLoggerProxy.error(this, e);
-                Shell shell = HandlerUtil.getActiveShellChecked(event);
-                ErrorDialog.openError(shell, null, null, new Status(
-                        IStatus.ERROR, StrategyUI.PLUGIN_ID, e
-                                .getLocalizedMessage()));
-            }
-        } catch (Exception e) {
-            Messages.OPEN_SUGGESTION_HANDLER_CONVERSION_FAILURE.error(this, e);
+            PhotonPlugin.getDefault().showOrderInTicket(order);
+            TradeSuggestionManager.getCurrent().removeSuggestion(suggestion);
+        } catch (WorkbenchException e) {
+            SLF4JLoggerProxy.error(this, e);
             Shell shell = HandlerUtil.getActiveShellChecked(event);
-            ErrorDialog.openError(shell, null,
-                    Messages.OPEN_SUGGESTION_HANDLER_CONVERSION_FAILURE.getText(),
-                    new Status(IStatus.ERROR, StrategyUI.PLUGIN_ID, e
-                            .getLocalizedMessage()));
+            ErrorDialog.openError(shell, null, null, new Status(IStatus.ERROR,
+                    StrategyUI.PLUGIN_ID, e.getLocalizedMessage()));
         }
         return null;
     }

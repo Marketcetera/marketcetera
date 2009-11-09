@@ -25,8 +25,8 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Support class for decorating fields that are required. See
- * {@link #initFor(DataBindingContext, IObservable, String, Binding)} for use
- * cases.
+ * {@link #initFor(DataBindingContext, IObservable, String, boolean, Binding)}
+ * for use cases.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -35,6 +35,37 @@ import org.marketcetera.util.misc.ClassVersion;
 @SuppressWarnings("restriction")
 @ClassVersion("$Id$")
 public final class RequiredFieldSupport {
+
+    /**
+     * Initialized required field UI for the given target observable. Equivalent
+     * to
+     * {@link #initFor(DataBindingContext, IObservable, String, boolean, int, Binding)}
+     * except the position is defaulted to SWT.TOP | SWT.LEFT (the decoration is
+     * positioned at the top left of the control).
+     * 
+     * 
+     * @param context
+     *            the databinding context that manages validation status
+     * @param target
+     *            the observable to validate and decorate
+     * @param description
+     *            a description of the observable (for error messages)
+     * @param showRequiredDecoration
+     *            controls whether a decoration (black asterisk) should be shown
+     *            when a required field is missing
+     * @param binding
+     *            a binding that also contributes validation status, can be null
+     * @throws IllegalArgumentException
+     *             if context, target, or description is null
+     * @throws IllegalStateException
+     *             if the context validation realm or the target realm is not
+     *             {@link Realm#isCurrent() current}
+     */
+    public static void initFor(DataBindingContext context, IObservable target,
+            String description, boolean showRequiredDecoration, Binding binding) {
+        initFor(context, target, description, showRequiredDecoration, SWT.TOP
+                | SWT.LEFT, binding);
+    }
 
     /**
      * Initialized required field UI for the given target observable. Two use
@@ -50,12 +81,14 @@ public final class RequiredFieldSupport {
      * The actual text of the error is subject to localization.
      * <p>
      * In both cases, if the observable is an {@link ISWTObservable} or
-     * {@link IViewerObservable} (or decoration thereof), when the error status
-     * is generated, a {@link ControlDecoration} will be added to the
-     * observable's control. The decoration will display the
-     * {@link FieldDecorationRegistry#DEC_REQUIRED} (black asterisk) icon in the
-     * top left corner with the error message as the icon tooltip. The
-     * decoration will be accessible from the control using
+     * {@link IViewerObservable} (or decoration thereof), and if
+     * showRequiredDecoration is true, then when the error status is generated,
+     * a {@link ControlDecoration} will be added to the observable's control.
+     * The decoration will display the
+     * {@link FieldDecorationRegistry#DEC_REQUIRED} (black asterisk) icon with
+     * the error message as the icon tooltip. The decoration will be positioned
+     * according to controlDecorationPosition and will be accessible from the
+     * control using
      * <code>control.getData(DataBindingUtils.CONTROL_DECORATION)</code>.
      * <p>
      * If the optional binding is provided, the binding status will be queried
@@ -68,6 +101,12 @@ public final class RequiredFieldSupport {
      *            the observable to validate and decorate
      * @param description
      *            a description of the observable (for error messages)
+     * @param showRequiredDecoration
+     *            controls whether a decoration (black asterisk) should be shown
+     *            when a required field is missing
+     * @param controlDecorationPosition
+     *            the position of the control decoration, e.g. SWT.TOP |
+     *            SWT.LEFT
      * @param binding
      *            a binding that also contributes validation status, can be null
      * @throws IllegalArgumentException
@@ -77,7 +116,8 @@ public final class RequiredFieldSupport {
      *             {@link Realm#isCurrent() current}
      */
     public static void initFor(DataBindingContext context, IObservable target,
-            String description, Binding binding) {
+            String description, boolean showRequiredDecoration,
+            int controlDecorationPosition, Binding binding) {
         Validate.notNull(context, "context", //$NON-NLS-1$
                 target, "target", //$NON-NLS-1$
                 description, "description"); //$NON-NLS-1$
@@ -93,7 +133,8 @@ public final class RequiredFieldSupport {
                 description, binding);
         context.addValidationStatusProvider(validator);
         ControlDecorationSupport.create(validator, SWT.LEFT | SWT.TOP, null,
-                new RequiredDecorationUpdater());
+                showRequiredDecoration ? new RequiredDecorationUpdater()
+                        : new HideRequiredUpdater());
     }
 
     /**
@@ -109,6 +150,22 @@ public final class RequiredFieldSupport {
             if (status instanceof RequiredStatus) {
                 return FieldDecorationRegistry.getDefault().getFieldDecoration(
                         FieldDecorationRegistry.DEC_REQUIRED).getImage();
+            }
+            return super.getImage(status);
+        }
+    }
+
+    /**
+     * Updates control decorations. If the status is {@link RequiredStatus}, the
+     * decoration is hidden.
+     */
+    @ClassVersion("$Id$")
+    private static final class HideRequiredUpdater extends CaptureUpdater {
+
+        @Override
+        protected Image getImage(IStatus status) {
+            if (status instanceof RequiredStatus) {
+                return null;
             }
             return super.getImage(status);
         }
