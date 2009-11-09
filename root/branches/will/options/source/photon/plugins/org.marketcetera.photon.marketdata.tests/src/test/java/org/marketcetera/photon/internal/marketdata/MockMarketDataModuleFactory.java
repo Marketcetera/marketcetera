@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.internal.marketdata;
 
 import static org.marketcetera.marketdata.Messages.FEED_STATUS_CHANGED;
 

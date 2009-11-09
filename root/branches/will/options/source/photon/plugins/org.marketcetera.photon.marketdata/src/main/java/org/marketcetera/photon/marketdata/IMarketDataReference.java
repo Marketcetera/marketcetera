@@ -1,6 +1,5 @@
 package org.marketcetera.photon.marketdata;
 
-import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -13,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public interface IMarketDataReference<T extends MDItem> {
+public interface IMarketDataReference<T> {
 
 	/**
 	 * Returns an instance of the the market data item that reflects dynamically updated market

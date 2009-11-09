@@ -1,7 +1,6 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import org.marketcetera.photon.marketdata.IMarketDataFeed;
-import org.marketcetera.photon.model.marketdata.impl.MDItemImpl;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -25,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *            the key that identifies a unique data request
  */
 @ClassVersion("$Id$")
-public interface IDataFlowManager<T extends MDItemImpl, K extends Key<? super T>> {
+public interface IDataFlowManager<T, K extends Key> {
 
 	/**
 	 * Returns a data item for the given key. The item will not have any data unless

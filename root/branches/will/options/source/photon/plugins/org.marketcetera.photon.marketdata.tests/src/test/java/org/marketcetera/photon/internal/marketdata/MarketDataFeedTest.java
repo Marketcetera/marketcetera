@@ -1,4 +1,4 @@
-package org.marketcetera.photon.marketdata;
+package org.marketcetera.photon.internal.marketdata;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -21,8 +21,8 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ProviderNotFoundException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
-import org.marketcetera.photon.internal.marketdata.MarketDataFeed;
-import org.marketcetera.photon.internal.marketdata.Messages;
+import org.marketcetera.photon.marketdata.IFeedStatusChangedListener;
+import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.except.I18NException;
 

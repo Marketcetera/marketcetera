@@ -18,9 +18,13 @@ import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
+import org.marketcetera.options.ExpirationType;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 
 /* $License$ */
 
@@ -38,23 +42,23 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 
 	@Override
 	protected IDataFlowManager<MDMarketstatImpl, MarketstatKey> createFixture(
-			ModuleManager moduleManager, Executor marketDataExecutor) {
-		return new MarketstatManager(moduleManager, marketDataExecutor);
+			ModuleManager moduleManager, Executor marketDataExecutor, IMarketDataRequestSupport marketDataRequestSupport) {
+		return new MarketstatManager(moduleManager, marketDataExecutor, marketDataRequestSupport);
 	}
 
 	@Override
 	protected MarketstatKey createKey1() {
-		return new MarketstatKey("GOOG");
+		return new MarketstatKey(new Equity("GOOG"));
 	}
 
 	@Override
 	protected MarketstatKey createKey2() {
-		return new MarketstatKey("YHOO");
+		return new MarketstatKey(new Option("YHOO", "20100101", new BigDecimal("1.11"), OptionType.Put));
 	}
 
 	@Override
 	protected MarketstatKey createKey3() {
-		return new MarketstatKey("GIB");
+		return new MarketstatKey(new Equity("GIB"));
 	}
 
 	@Override
@@ -64,7 +68,7 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 
 	@Override
 	protected void validateInitialConditions(MDMarketstat item, MarketstatKey key) {
-		assertThat(item.getSymbol(), is(key.getSymbol()));
+		assertThat(item.getInstrument(), is(key.getInstrument()));
 		assertThat(item.getCloseDate(), nullValue());
 		assertThat(item.getClosePrice(), nullValue());
 		assertThat(item.getPreviousCloseDate(), nullValue());
@@ -73,16 +77,16 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 
 	@Override
 	protected Object createEvent1(MarketstatKey key) {
-		return createEvent(key.getSymbol(), 34, 33, DATE1, DATE2);
+		return createEvent(key.getInstrument(), 34, 33, DATE1, DATE2);
 	}
 
 	@Override
 	protected Object createEvent2(MarketstatKey key) {
-		return createEvent(key.getSymbol(), 1, 2, DATE2, DATE1);
+		return createEvent(key.getInstrument(), 1, 2, DATE2, DATE1);
 	}
 
 	@Override
-	protected void validateState1(MDMarketstat item) {
+	protected void validateState1(MDMarketstat item, MarketstatKey key) {
 		assertThat(item.getCloseDate(), is(DATE1));
 		assertThat(item.getClosePrice(), comparesEqualTo(34));
 		assertThat(item.getPreviousCloseDate(), is(DATE2));
@@ -90,19 +94,24 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 	}
 
 	@Override
-	protected void validateState2(MDMarketstat item) {
+	protected void validateState2(MDMarketstat item, MarketstatKey key) {
 		assertThat(item.getCloseDate(), is(DATE2));
 		assertThat(item.getClosePrice(), comparesEqualTo(1));
 		assertThat(item.getPreviousCloseDate(), is(DATE1));
 		assertThat(item.getPreviousClosePrice(), comparesEqualTo(2));
 	}
 
-	private Object createEvent(String symbol, int close, int previousClose, String closeDate,
+	private Object createEvent(Instrument instrument, int close, int previousClose, String closeDate,
 			String previousCloseDate) {
-		return MarketstatEventBuilder.equityMarketstat().withInstrument(new Equity(symbol))
-				.withTimestamp(new Date()).withClosePrice(new BigDecimal(close))
-				.withPreviousClosePrice(new BigDecimal(previousClose)).withCloseDate(closeDate)
-				.withPreviousCloseDate(previousCloseDate).create();
+		MarketstatEventBuilder builder = MarketstatEventBuilder.marketstat(instrument)
+                		.withTimestamp(new Date()).withClosePrice(new BigDecimal(close))
+                		.withPreviousClosePrice(new BigDecimal(previousClose)).withCloseDate(closeDate)
+                		.withPreviousCloseDate(previousCloseDate);
+		if (instrument instanceof Option) {
+            builder = builder.withUnderlyingInstrument(new Equity(instrument
+                    .getSymbol())).withExpirationType(ExpirationType.AMERICAN);
+        }
+        return builder.create();
 	}
 
 	@Override
@@ -110,23 +119,23 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 		assertThat(request.getContent().size(), is(1));
 		assertThat(request.getContent(), hasItem(Content.MARKET_STAT));
 		assertThat(request.getSymbols().length, is(1));
-		assertThat(request.getSymbols(), hasItemInArray(key.getSymbol()));
+        assertThat(request.getSymbols(), hasItemInArray(getOsiSymbol(key)));
 	}
 
-	@Test
+    @Test
 	public void testNullEventIgnored() throws Exception {
 		mFixture.startFlow(mKey1);
 		validateInitialConditions(mItem1, mKey1);
 		// emit data
 		emit(createEvent1(mKey1));
-		validateState1(mItem1);
+		validateState1(mItem1, mKey1);
 		// emit an event without close data
 		emit(createNullEvent(mKey1));
-		validateState1(mItem1);
+		validateState1(mItem1, mKey1);
 	}
 
 	protected Object createNullEvent(MarketstatKey key) throws Exception {
-		return MarketstatEventBuilder.equityMarketstat().withInstrument(new Equity(key.getSymbol()));
+		return MarketstatEventBuilder.equityMarketstat().withInstrument(key.getInstrument());
 	}
 
 }
