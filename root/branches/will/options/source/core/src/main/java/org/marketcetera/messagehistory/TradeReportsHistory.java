@@ -12,6 +12,7 @@ import java.util.concurrent.Callable;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Originator;
@@ -220,7 +221,14 @@ public class TradeReportsHistory {
             OrderID groupID = getGroupID(inReport);
             String underlying = null;
             if (inReport instanceof ExecutionReport) {
-                underlying = mUnderlyingSymbolSupport.getUnderlying(((ExecutionReport) inReport).getInstrument());
+                Instrument instrument = ((ExecutionReport) inReport).getInstrument();
+                underlying = mUnderlyingSymbolSupport.getUnderlying(instrument);
+                if (underlying == null) {
+                    /*
+                     * Fall back to the symbol, e.g. option root
+                     */
+                    underlying = instrument.getSymbol();
+                }
             }
             ReportHolder messageHolder = new ReportHolder(inReport, underlying, groupID);
     

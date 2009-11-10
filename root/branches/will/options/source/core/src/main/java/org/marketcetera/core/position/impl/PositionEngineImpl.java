@@ -18,6 +18,7 @@ import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.position.impl.GroupingList.GroupMatcher;
 import org.marketcetera.core.position.impl.GroupingList.GroupMatcherFactory;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.BasicEventList;
@@ -290,8 +291,16 @@ public final class PositionEngineImpl implements PositionEngine {
     }
 
     private void addPosition(PositionKey<?> key, EventList<Trade<?>> trades) {
-        PositionRowImpl positionRow = new PositionRowImpl(key.getInstrument(),
-                mUnderlyingSymbolSupport.getUnderlying(key.getInstrument()),
+        Instrument instrument = key.getInstrument();
+        String underlying = mUnderlyingSymbolSupport.getUnderlying(instrument);
+        if (underlying == null) {
+            /*
+             * Fall back to symbol, e.g. option root
+             */
+            underlying = instrument.getSymbol();
+        }
+        PositionRowImpl positionRow = new PositionRowImpl(instrument,
+                underlying,
                 key.getAccount(), key.getTraderId(), mIncomingPositionSupport
                         .getIncomingPositionFor(key));
         PositionRowUpdater updater = new PositionRowUpdater(positionRow,
