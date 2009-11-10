@@ -19,6 +19,7 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.internal.ide.IDEInternalWorkbenchImages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.model.WorkbenchAdapterBuilder;
@@ -87,6 +88,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 								page.setPartState(reference, IWorkbenchPage.STATE_RESTORED);
 							else
 								page.setPartState(reference, IWorkbenchPage.STATE_MINIMIZED);
+							((WorkbenchPage) page).getActivePerspective().refreshEditorAreaVisibility();
 						}
 					}
 				});
