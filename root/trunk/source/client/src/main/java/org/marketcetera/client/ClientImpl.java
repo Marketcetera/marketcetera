@@ -147,7 +147,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     @Override
-    public BigDecimal getPositionAsOf
+    public BigDecimal getEquityPositionAsOf
         (Date inDate,
          Equity inEquity)
         throws ConnectionException
@@ -155,7 +155,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         failIfClosed();
         failIfDisconnected();
         try {
-            return mService.getPositionAsOf
+            return mService.getEquityPositionAsOf
                 (getServiceContext(),new DateWrapper(inDate),inEquity);
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
@@ -163,14 +163,14 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     @Override
-    public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf
+    public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
         (Date inDate)
         throws ConnectionException
     {
         failIfClosed();
         failIfDisconnected();
         try {
-            return mService.getPositionsAsOf
+            return mService.getAllEquityPositionsAsOf
                 (getServiceContext(),new DateWrapper(inDate)).getMap();
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);

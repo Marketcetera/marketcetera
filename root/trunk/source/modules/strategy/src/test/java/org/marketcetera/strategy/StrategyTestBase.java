@@ -576,7 +576,7 @@ public class StrategyTestBase
          */
         public static boolean getBrokersFails = false;
         /**
-         * indicates whether calls to {@link #getPositionAsOf(Date, Equity)} should fail automatically
+         * indicates whether calls to {@link #getEquityPositionAsOf(Date, Equity)} should fail automatically
          */
         public static boolean getPositionFails = false;
         /* (non-Javadoc)
@@ -657,10 +657,10 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
+         * @see org.marketcetera.client.Client#getEquityPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
          */
         @Override
-        public BigDecimal getPositionAsOf(Date inDate,
+        public BigDecimal getEquityPositionAsOf(Date inDate,
                                           Equity inEquity)
                 throws ConnectionException
         {
@@ -674,10 +674,10 @@ public class StrategyTestBase
             return position.getPositionAt(inDate);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getPositionsAsOf(java.util.Date)
+         * @see org.marketcetera.client.Client#getAllEquityPositionsAsOf(java.util.Date)
          */
         @Override
-        public Map<PositionKey<Equity>,BigDecimal> getPositionsAsOf(Date inDate)
+        public Map<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOf(Date inDate)
                 throws ConnectionException
         {
             if(getPositionFails) {
@@ -687,7 +687,7 @@ public class StrategyTestBase
             for(Map.Entry<Instrument,Position> entry : positions.entrySet()) {
                 if(entry.getKey() instanceof Equity) {
                     final Equity equity = (Equity)entry.getKey();
-                    BigDecimal value = getPositionAsOf(inDate,
+                    BigDecimal value = getEquityPositionAsOf(inDate,
                                                        equity);
                     if(value != null) {
                         PositionKey<Equity> key = new PositionKey<Equity>() {

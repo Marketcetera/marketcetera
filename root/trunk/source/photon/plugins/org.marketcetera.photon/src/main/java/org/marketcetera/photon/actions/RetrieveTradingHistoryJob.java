@@ -79,7 +79,7 @@ public class RetrieveTradingHistoryJob extends Job {
 					});
 					PositionEngine engine = PositionEngineFactory.createFromReportHolders(
 							tradeReportsHistory.getAllMessagesList(), new ImmutablePositionSupport(
-									ClientManager.getInstance().getPositionsAsOf(lastOccurrence)),
+									ClientManager.getInstance().getAllEquityPositionsAsOf(lastOccurrence)),
 							new PhotonPositionMarketData(PhotonPlugin.getDefault()
 									.getMarketDataManager().getMarketData()));
 					PhotonPlugin.getDefault().registerPositionEngine(engine);

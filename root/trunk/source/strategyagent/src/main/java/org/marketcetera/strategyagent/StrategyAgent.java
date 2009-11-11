@@ -84,7 +84,7 @@ public class StrategyAgent extends ApplicationBase {
      * @param inAgent the application instance
      * @param args the command line arguments to the instance.
      */
-    static void run(StrategyAgent inAgent, String[] args) {
+    protected static void run(StrategyAgent inAgent, String[] args) {
         try {
             //Configure the application. If it fails, exit
             inAgent.configure();
@@ -128,7 +128,7 @@ public class StrategyAgent extends ApplicationBase {
      *
      * @param inExitCode the exit code.
      */
-    void exit(int inExitCode) {
+    protected void exit(int inExitCode) {
         System.exit(inExitCode);
     }
 
@@ -138,7 +138,7 @@ public class StrategyAgent extends ApplicationBase {
      *
      * @return the module manager.
      */
-    ModuleManager getManager() {
+    protected ModuleManager getManager() {
         return mManager;
     }
 

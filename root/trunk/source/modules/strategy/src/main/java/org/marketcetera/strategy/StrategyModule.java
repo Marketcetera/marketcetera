@@ -576,7 +576,7 @@ final class StrategyModule
         return orsClient.getBrokersStatus().getBrokers();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.InboundServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
+     * @see org.marketcetera.strategy.InboundServicesProvider#getEquityPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
      */
     @Override
     public BigDecimal getPositionAsOf(Date inDate,
@@ -584,7 +584,7 @@ final class StrategyModule
         throws ConnectionException
     {
         assert(orsClient != null);
-        return orsClient.getPositionAsOf(inDate,
+        return orsClient.getEquityPositionAsOf(inDate,
                                          inEquity);
     }
     /* (non-Javadoc)
@@ -639,7 +639,7 @@ final class StrategyModule
             throws ConnectionException
     {
         assert(orsClient != null);
-        return orsClient.getPositionsAsOf(inDate);
+        return orsClient.getAllEquityPositionsAsOf(inDate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getUnderlying(java.lang.String)

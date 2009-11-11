@@ -2227,21 +2227,21 @@ public abstract class LanguageTestBase
         MockClient client = new MockClient();
         date = new Date(date.getTime() - 1000);
         doAllPositionsAsOfTest(date, // 1s before the open of the position
-                               client.getPositionsAsOf(date));
+                               client.getAllEquityPositionsAsOf(date));
         // date in the past (after position begins)
         date = new Date(date.getTime() + 2000); // 1s after the open of the position
         assertTrue(date.getTime() < System.currentTimeMillis());
         // found a date somewhere in the middle of the position and earlier than today
         doAllPositionsAsOfTest(date,
-                               client.getPositionsAsOf(date));
+                               client.getAllEquityPositionsAsOf(date));
         // date exactly now
         date = new Date();
         doAllPositionsAsOfTest(date,
-                               client.getPositionsAsOf(date));
+                               client.getAllEquityPositionsAsOf(date));
         // pick a data point two weeks into the future
         date = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
         doAllPositionsAsOfTest(date,
-                               client.getPositionsAsOf(date));
+                               client.getAllEquityPositionsAsOf(date));
     }
     /**
      * Tests {@link AbstractRunningStrategy#getOptionPositionAsOf(Date, String, String, BigDecimal, OptionType)}.

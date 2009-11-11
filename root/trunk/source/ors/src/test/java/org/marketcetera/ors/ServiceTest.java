@@ -49,10 +49,10 @@ public class ServiceTest
         ReportBase[] rs=c.getReportsSince(new Date());
         assertEquals(0,rs.length);
 
-        assertEquals(BigDecimal.ZERO,c.getPositionAsOf
+        assertEquals(BigDecimal.ZERO,c.getEquityPositionAsOf
                      (new Date(), TEST_EQUITY));
 
-        assertTrue(c.getPositionsAsOf(new Date()).isEmpty());
+        assertTrue(c.getAllEquityPositionsAsOf(new Date()).isEmpty());
 
         String id=Factory.getInstance().createOrderSingle().
             getOrderID().getValue();

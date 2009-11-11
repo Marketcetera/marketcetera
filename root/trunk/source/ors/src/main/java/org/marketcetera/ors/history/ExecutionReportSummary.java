@@ -136,7 +136,7 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position.
      */
-    static BigDecimal getPositionForEquity
+    static BigDecimal getEquityPositionAsOf
         (final SimpleUser inUser,
          final Date inDate,
          final Equity inEquity)
@@ -181,7 +181,7 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    static Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf
+    static Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
         (final SimpleUser inUser,
          final Date inDate)
         throws PersistenceException
