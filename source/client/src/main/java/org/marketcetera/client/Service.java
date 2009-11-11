@@ -126,7 +126,7 @@ public interface Service
      * completed.
      */
 
-    BigDecimal getPositionAsOf
+    BigDecimal getEquityPositionAsOf
         (@WebParam(name= "context")ClientContext context,
          @WebParam(name= "date")DateWrapper date,
          @WebParam(name= "equity")Equity equity)
@@ -146,7 +146,7 @@ public interface Service
      * completed.
      */
 
-    MapWrapper<PositionKey<Equity>,BigDecimal> getPositionsAsOf
+    MapWrapper<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOf
         (@WebParam(name= "context")ClientContext context,
          @WebParam(name= "date")DateWrapper date)
         throws RemoteException;

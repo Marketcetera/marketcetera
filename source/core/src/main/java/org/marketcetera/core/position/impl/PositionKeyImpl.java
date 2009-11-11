@@ -1,10 +1,7 @@
 package org.marketcetera.core.position.impl;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -30,7 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PositionKeyImpl<T extends Instrument> implements PositionKey<T> {
 
-    @XmlAnyElement(lax = true)
+    @XmlElementRef
     private final T mInstrument;
     private final String mAccount;
     private final String mTraderId;

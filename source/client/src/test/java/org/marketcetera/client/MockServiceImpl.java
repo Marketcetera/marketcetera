@@ -220,7 +220,7 @@ public class MockServiceImpl
     }
 
     @Override
-    public BigDecimal getPositionAsOf
+    public BigDecimal getEquityPositionAsOf
         (ClientContext context,
          final DateWrapper date,
          final Equity equity)
@@ -238,7 +238,7 @@ public class MockServiceImpl
     }
 
     @Override
-    public MapWrapper<PositionKey<Equity>,BigDecimal> getPositionsAsOf
+    public MapWrapper<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOf
         (ClientContext context,
          final DateWrapper date)
         throws RemoteException

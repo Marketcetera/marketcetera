@@ -33,8 +33,11 @@ import java.beans.ExceptionListener;
  *      <li>{@link #addReportListener(ReportListener) receive reports}</li>
  *      <li>{@link #addBrokerStatusListener(BrokerStatusListener) receive broker status updates}</li>
  *      <li>{@link #getReportsSince(Date) fetch past reports} </li>
- *      <li>{@link #getPositionAsOf(Date, Equity)}  fetch positions} </li> 
- *      <li>{@link #getPositionsAsOf(java.util.Date)}  fetch all open positions} </li> 
+ *      <li>{@link #getEquityPositionAsOf(Date, Equity)}  fetch equity position} </li>
+ *      <li>{@link #getAllEquityPositionsAsOf(Date)}  fetch all open equity positions} </li>
+ *      <li>{@link #getOptionPositionAsOf(java.util.Date, Option)}  fetch option position} </li>
+ *      <li>{@link #getOptionPositionsAsOf(java.util.Date, String[])}  fetch option positions} </li>
+ *      <li>{@link #getAllOptionPositionsAsOf(java.util.Date)}  fetch all open option positions} </li>
  * </ul>
  *
  * @author anshul@marketcetera.com
@@ -126,7 +129,7 @@ public interface Client {
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
-    public BigDecimal getPositionAsOf(Date inDate, Equity inEquity)
+    public BigDecimal getEquityPositionAsOf(Date inDate, Equity inEquity)
             throws ConnectionException;
 
     /**
@@ -140,7 +143,7 @@ public interface Client {
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
-    public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf(Date inDate)
+    public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf(Date inDate)
             throws ConnectionException;
 
     /**
@@ -421,6 +424,8 @@ public interface Client {
      * cache can be used to avoid frequent server roundtrips, but it
      * may return stale information. The cache is updated whether or
      * not it was used for retrieval.
+     * <p>
+     * All cached values are cleared when the client is {@link #close() closed}.
      *
      * @param id The user ID.
      * @param useCache True if the local cache should be used.
