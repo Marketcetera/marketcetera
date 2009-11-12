@@ -1,12 +1,10 @@
 package org.marketcetera.strategy.util;
 
+import java.math.BigDecimal;
+
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.OptionEvent;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.*;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Instrument;
@@ -57,9 +55,9 @@ public final class OptionContract
     /**
      * Get the multiplier value.
      *
-     * @return an <code>int</code> value
+     * @return a <code>BigDecimal</code> value
      */
-    public int getMultiplier()
+    public BigDecimal getMultiplier()
     {
         return option.getMultiplier();
     }
@@ -116,7 +114,7 @@ public final class OptionContract
      * @param inType an <code>OptionType</code> value
      * @param inExpirationType an <code>ExpirationType</code> value
      * @param inHasDeliverable a <code>boolean</code> value
-     * @param inMultiplier an <code>int</code> value
+     * @param inMultiplier a <code>BigDecimal</code> value
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>UnderlyingInstrument</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>ExpirationType</code> is <code>null</code>
@@ -126,7 +124,7 @@ public final class OptionContract
                    OptionType inType,
                    ExpirationType inExpirationType,
                    boolean inHasDeliverable,
-                   int inMultiplier)
+                   BigDecimal inMultiplier)
     {
         option.setInstrument(new Option(inInstrument.getSymbol(),
                                         inInstrument.getExpiry(),

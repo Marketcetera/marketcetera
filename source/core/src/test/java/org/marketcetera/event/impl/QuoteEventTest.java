@@ -346,6 +346,30 @@ public class QuoteEventTest
         verify(builder);
     }
     /**
+     * Tests {@link QuoteEventBuilder#withProviderSymbol(String)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withProviderSymbol()
+            throws Exception
+    {
+        QuoteEventBuilder<?> builder = setDefaults(getBuilder());
+        String symbol = null;
+        builder.withProviderSymbol(symbol);
+        assertEquals(symbol,
+                     builder.getOption().getProviderSymbol());
+        symbol = "";
+        builder.withProviderSymbol(symbol);
+        assertEquals(symbol,
+                     builder.getOption().getProviderSymbol());
+        symbol = "MSQ/W/X";
+        builder.withProviderSymbol(symbol);
+        assertEquals(symbol,
+                     builder.getOption().getProviderSymbol());
+        verify(builder);
+    }
+    /**
      * Tests {@link QuoteEventBuilder<?>#withInstrument(Instrument)}.
      *
      * @throws Exception if an unexpected error occurs
@@ -414,14 +438,14 @@ public class QuoteEventTest
             throws Exception
     {
         QuoteEventBuilder<?> builder = setDefaults(getBuilder());
-        builder.withMultiplier(Integer.MIN_VALUE);
-        assertEquals(Integer.MIN_VALUE,
+        builder.withMultiplier(new BigDecimal(Integer.MIN_VALUE));
+        assertEquals(new BigDecimal(Integer.MIN_VALUE),
                      builder.getOption().getMultiplier());
-        builder.withMultiplier(0);
-        assertEquals(0,
+        builder.withMultiplier(BigDecimal.ZERO);
+        assertEquals(BigDecimal.ZERO,
                      builder.getOption().getMultiplier());
-        builder.withMultiplier(Integer.MAX_VALUE);
-        assertEquals(Integer.MAX_VALUE,
+        builder.withMultiplier(new BigDecimal(Integer.MAX_VALUE));
+        assertEquals(new BigDecimal(Integer.MAX_VALUE),
                      builder.getOption().getMultiplier());
         verify(builder);
     }
@@ -809,6 +833,8 @@ public class QuoteEventTest
                          optionEvent.getUnderlyingInstrument());
             assertEquals(inBuilder.getOption().hasDeliverable(),
                          optionEvent.hasDeliverable());
+            assertEquals(inBuilder.getOption().getProviderSymbol(),
+                         optionEvent.getProviderSymbol());
         }
         Object newSource = new Object();
         event.setSource(newSource);
@@ -833,9 +859,10 @@ public class QuoteEventTest
         inBuilder.withAction(QuoteAction.ADD);
         inBuilder.withExchange("exchange");
         inBuilder.withExpirationType(ExpirationType.AMERICAN);
+        inBuilder.withProviderSymbol("MSQ/K/X");
         inBuilder.withInstrument(useEquity ? equity : option);
         inBuilder.withMessageId(System.nanoTime());
-        inBuilder.withMultiplier(0);
+        inBuilder.withMultiplier(BigDecimal.ZERO);
         inBuilder.withPrice(BigDecimal.ONE);
         inBuilder.withQuoteDate(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withSize(BigDecimal.TEN);
@@ -925,6 +952,8 @@ public class QuoteEventTest
                          actualOptionEvent.getMultiplier());
             assertEquals(expectedOptionEvent.getUnderlyingInstrument(),
                          actualOptionEvent.getUnderlyingInstrument());
+            assertEquals(expectedOptionEvent.getProviderSymbol(),
+                         actualOptionEvent.getProviderSymbol());
         }
     }
     /**
