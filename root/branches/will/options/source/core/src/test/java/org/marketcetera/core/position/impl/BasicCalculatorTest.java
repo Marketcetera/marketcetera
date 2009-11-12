@@ -23,8 +23,6 @@ import org.marketcetera.core.position.Trade;
  */
 public class BasicCalculatorTest {
 
-    private int counter = 0;
-
     @Test
     public void test() {
         BasicCalculator pnl = new BasicCalculator(BigDecimal.ZERO,
@@ -86,7 +84,7 @@ public class BasicCalculatorTest {
 
     private Trade<?> createTrade(String quantity, String price) {
         return MockTrade.createEquityTrade("ABC", "asdf", "Yoram", quantity,
-                price, ++counter);
+                price);
     }
 
     private void assertPNL(PositionMetrics pnl, String position,

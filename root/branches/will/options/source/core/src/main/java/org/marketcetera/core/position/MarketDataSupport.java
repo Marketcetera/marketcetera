@@ -46,11 +46,7 @@ public interface MarketDataSupport {
     BigDecimal getClosingPrice(Instrument instrument);
 
     /**
-     * Returns the closing price for the given instrument. This is the closing
-     * price that applies to the incoming position provided by
-     * {@link IncomingPositionSupport}. The position engine does not have any
-     * notion of a trading day so it is the responsibility of the implementor of
-     * this class and IncomingPositionSupport to make sure that values match.
+     * Returns the option multiplier for the given option.
      * 
      * @param option
      *            the option in question, will not be null
@@ -59,28 +55,28 @@ public interface MarketDataSupport {
     Integer getOptionMultiplier(Option option);
 
     /**
-     * Adds a listener to be notified when the trade price for a given
+     * Adds a listener to be notified when the market data for a given
      * instrument has changed. This method has no effect if the listener has
      * already been added.
      * 
      * @param instrument
-     *            the symbol to listen for
+     *            the instrument to listen for
      * @param listener
      *            the listener to add
      */
-    void addSymbolChangeListener(Instrument instrument,
-            SymbolChangeListener listener);
+    void addInstrumentMarketDataListener(Instrument instrument,
+            InstrumentMarketDataListener listener);
 
     /**
      * Removes a listener. This has no effect if the listener does not exist.
      * 
      * @param instrument
-     *            the symbol being listened to
+     *            the instrument being listened to
      * @param listener
      *            the listener to remove
      */
-    void removeSymbolChangeListener(Instrument instrument,
-            SymbolChangeListener listener);
+    void removeInstrumentMarketDataListener(Instrument instrument,
+            InstrumentMarketDataListener listener);
 
     /**
      * Disposes the provider and releases all resources. The provider will no
@@ -90,10 +86,10 @@ public interface MarketDataSupport {
 
     /**
      * Interface to notify listeners of changes. Instead of implementing this
-     * interface, extend {@link SymbolChangeListenerBase}.
+     * interface, extend {@link InstrumentMarketDataListenerBase}.
      */
     @ClassVersion("$Id$")
-    public interface SymbolChangeListener {
+    public interface InstrumentMarketDataListener {
 
         /**
          * Callback for receiving trade notifications.
@@ -101,7 +97,7 @@ public interface MarketDataSupport {
          * @param event
          *            event describing the change
          */
-        void symbolTraded(SymbolChangeEvent event);
+        void symbolTraded(InstrumentMarketDataEvent event);
 
         /**
          * Callback for receiving close price change notifications.
@@ -109,7 +105,7 @@ public interface MarketDataSupport {
          * @param event
          *            event describing the change
          */
-        void closePriceChanged(SymbolChangeEvent event);
+        void closePriceChanged(InstrumentMarketDataEvent event);
 
         /**
          * Callback for receiving the option multiplier.
@@ -122,19 +118,19 @@ public interface MarketDataSupport {
     }
 
     /**
-     * No-op implementation of {@link SymbolChangeListener}. Subclasses can
+     * No-op implementation of {@link InstrumentMarketDataListener}. Subclasses can
      * extend callbacks they care about.
      */
     @ClassVersion("$Id$")
-    public abstract class SymbolChangeListenerBase implements
-            SymbolChangeListener {
+    public abstract class InstrumentMarketDataListenerBase implements
+            InstrumentMarketDataListener {
 
         @Override
-        public void closePriceChanged(SymbolChangeEvent event) {
+        public void closePriceChanged(InstrumentMarketDataEvent event) {
         }
 
         @Override
-        public void symbolTraded(SymbolChangeEvent event) {
+        public void symbolTraded(InstrumentMarketDataEvent event) {
         }
 
         @Override
@@ -143,10 +139,10 @@ public interface MarketDataSupport {
     }
 
     /**
-     * Event object for {@link SymbolChangeListener}.
+     * Event object for {@link InstrumentMarketDataListener}.
      */
     @ClassVersion("$Id$")
-    public static class SymbolChangeEvent extends EventObject {
+    public static class InstrumentMarketDataEvent extends EventObject {
 
         /**
          * Constructor.
@@ -157,7 +153,7 @@ public interface MarketDataSupport {
          *            the new value for the symbol price, may be null to
          *            indicate market data is no longer available
          */
-        public SymbolChangeEvent(Object source, BigDecimal newPrice) {
+        public InstrumentMarketDataEvent(Object source, BigDecimal newPrice) {
             super(source);
             mNewPrice = newPrice;
         }

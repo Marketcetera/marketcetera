@@ -1010,15 +1010,36 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         assertThat(openOrder.getOrderID().getValue(), is("2"));
     }
     
-    public void testUnderlyingSymbolSupport() throws Exception {
+    public void testUnderlyingSymbolSupportOption() throws Exception {
+        // options not supported in FIX 4.0
+        if (fixVersion != FIXVersion.FIX40) {
+            UnderlyingSymbolSupport mockSupport = mock(UnderlyingSymbolSupport.class);
+            TradeReportsHistory history = new TradeReportsHistory(msgFactory,
+                    mockSupport);
+            Message message = createSimpleMessage(Side.BUY, "1");
+            Option option = new Option("XYZ", "200910", new BigDecimal("2"),
+                    OptionType.Put);
+            InstrumentToMessage.SELECTOR.forInstrument(option).set(option,
+                    fixVersion.toString(), message);
+            when(mockSupport.getUnderlying(option)).thenReturn("ABC");
+            history.addIncomingMessage(createBrokerReport(message));
+            assertThat(history.getAllMessagesList().get(0).getUnderlying(),
+                    is("ABC"));
+        }
+    }
+
+    public void testUnderlyingSymbolSupportEquity() throws Exception {
         UnderlyingSymbolSupport mockSupport = mock(UnderlyingSymbolSupport.class);
-        TradeReportsHistory history = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory(), mockSupport);
+        TradeReportsHistory history = new TradeReportsHistory(msgFactory,
+                mockSupport);
         Message message = createSimpleMessage(Side.BUY, "1");
-        Option option = new Option("XYZ", "200910", new BigDecimal("2"), OptionType.Put);
-        InstrumentToMessage.SELECTOR.forInstrument(option).set(option, FIXVersion.FIX42.toString(), message);
-        when(mockSupport.getUnderlying(option)).thenReturn("ABC");
+        Equity equity = new Equity("IBM");
+        InstrumentToMessage.SELECTOR.forInstrument(equity).set(equity,
+                fixVersion.toString(), message);
+        when(mockSupport.getUnderlying(equity)).thenReturn("DEF");
         history.addIncomingMessage(createBrokerReport(message));
-        assertThat(history.getAllMessagesList().get(0).getUnderlying(), is("ABC"));
+        assertThat(history.getAllMessagesList().get(0).getUnderlying(),
+                is("DEF"));
     }
     
     private void simulateOrderSingle(TradeReportsHistory history, String orderId, char side, String quantity, String symbol, String price) throws Exception {

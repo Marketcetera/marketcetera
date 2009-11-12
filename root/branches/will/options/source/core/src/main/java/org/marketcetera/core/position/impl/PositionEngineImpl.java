@@ -293,12 +293,6 @@ public final class PositionEngineImpl implements PositionEngine {
     private void addPosition(PositionKey<?> key, EventList<Trade<?>> trades) {
         Instrument instrument = key.getInstrument();
         String underlying = mUnderlyingSymbolSupport.getUnderlying(instrument);
-        if (underlying == null) {
-            /*
-             * Fall back to symbol, e.g. option root
-             */
-            underlying = instrument.getSymbol();
-        }
         PositionRowImpl positionRow = new PositionRowImpl(instrument,
                 underlying,
                 key.getAccount(), key.getTraderId(), mIncomingPositionSupport
@@ -331,28 +325,61 @@ public final class PositionEngineImpl implements PositionEngine {
         if (groupings.length != 2 || groupings[0] == groupings[1]) {
             throw new UnsupportedOperationException();
         }
+        /*
+         * The API accepts two groupings, i.e. Underlying, then Account. We
+         * compute the other implied one because it is needed to do the
+         * matching.
+         */
         EnumSet<Grouping> complements = EnumSet.complementOf(EnumSet.of(
                 groupings[0], groupings[1]));
         if (complements.size() != 1) {
             throw new IllegalStateException();
         }
         Grouping complement = complements.iterator().next();
+        /*
+         * This builds up a chain of lists off of mFlatView, each grouping and
+         * summarizing its children. 
+         * 
+         * We are essentially builds a tree from the
+         * bottom up. The leaf nodes are the positions, i.e. the elements in
+         * mFlatView. Intermediary nodes are summaries of their children.
+         */
         Lock lock = mFlatView.getReadWriteLock().readLock();
         lock.lock();
         try {
+            /*
+             * The first grouping is on all Grouping values, i.e. partition the
+             * positions into groups that match on everything.
+             */
             final GroupingList<PositionRow> grouped1 = new GroupingList<PositionRow>(
-                    mFlatView, new GroupingMatcherFactory(groupings[0],
-                            groupings[1], complement));
+                    mFlatView, new GroupingMatcherFactory(groupings[0], groupings[1], complement));
+            /*
+             * Now make a new list that has one element for each group that
+             * summarizes the position values.  These form the next level of tree nodes.
+             */
             final FunctionList<EventList<PositionRow>, PositionRow> summarized1 = new FunctionList<EventList<PositionRow>, PositionRow>(
-                    grouped1, new SummarizeFunction(groupings[0], groupings[1],
-                            complement));
+                    grouped1, new SummarizeFunction(groupings[0], groupings[1], complement));
+            /*
+             * Partition the above summary list into groups that match on the
+             * two provided values.
+             */
             final GroupingList<PositionRow> grouped2 = new GroupingList<PositionRow>(
                     summarized1, new GroupingMatcherFactory(groupings[0],
                             groupings[1]));
+            /*
+             * Summarize the new groups to make the next level of tree nodes.
+             */
             final FunctionList<EventList<PositionRow>, PositionRow> summarized2 = new FunctionList<EventList<PositionRow>, PositionRow>(
                     grouped2, new SummarizeFunction(groupings[0], groupings[1]));
+            /*
+             * Partition the above summary list into groups that match on the
+             * final grouping.
+             */
             final GroupingList<PositionRow> grouped3 = new GroupingList<PositionRow>(
                     summarized2, new GroupingMatcherFactory(groupings[0]));
+            /*
+             * Summarize the final groups for the top level nodes.
+             */
             final FunctionList<EventList<PositionRow>, PositionRow> summarized3 = new FunctionList<EventList<PositionRow>, PositionRow>(
                     grouped3, new SummarizeFunction(groupings[0]));
 

@@ -77,27 +77,22 @@ public class FIXValueExtractor {
 				FieldType fieldType = dict.getFieldTypeEnum(fieldID);
 				if (fieldType == null){
 					value = map.getString(fieldID);
-				} else if (fieldType.equals(FieldType.UtcTimeOnly)) {
+				} else if (humanReadable && dict.hasFieldValue(fieldID)){
+                    value = map.getString(fieldID);
+                    try {
+                        value = FIXDataDictionary.getHumanFieldValue(dict, fieldID, map.getString(fieldID));
+                    } catch (Exception ex){
+                        // do nothing, use the string value
+                    }
+                } else if (fieldType.equals(FieldType.UtcTimeOnly)) {
 					value = map.getUtcTimeOnly(fieldID); //i18n_time
 				} else if (fieldType.equals(FieldType.UtcTimeStamp)){
 					value = map.getUtcTimeStamp(fieldID); //i18n_datetime
 				} else if (fieldType.equals(FieldType.UtcDateOnly)
 						||fieldType.equals(FieldType.UtcDate)){
 					value = map.getUtcDateOnly(fieldID); //i18n_date
-				}
-                /*
-                 * Exclude field 201 since it is PutOrCall, and we want to use
-                 * the human readable value instead of the numeric one.
-                 */ 
-				else if (Number.class.isAssignableFrom(fieldType.getJavaType()) && fieldID != 201){
+				} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
 					value = map.getDecimal(fieldID);
-				} else if (humanReadable && dict.hasFieldValue(fieldID)){
-					value = map.getString(fieldID);
-					try {
-						value = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldValue(fieldID, map.getString(fieldID));
-					} catch (Exception ex){
-						// do nothing, use the string value
-					}
 				} else if (fieldID == ClOrdID.FIELD) {
 					value = new NumericStringSortable(map.getString(fieldID));
 				} else {

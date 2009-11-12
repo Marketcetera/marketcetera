@@ -9,8 +9,10 @@ import java.text.MessageFormat;
 import java.util.Random;
 
 import org.marketcetera.core.position.MockTrade;
+import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -54,7 +56,7 @@ public abstract class PositionMetricsCalculatorTestTemplate implements Runnable 
                         calculator.tick(tradePrice), i);
             } else {
                 Trade<?> trade = createTrade(random.nextBoolean(),
-                        randomBigDecimal(random), randomBigDecimal(random), i);
+                        randomBigDecimal(random), randomBigDecimal(random));
                 SLF4JLoggerProxy.debug(this, MessageFormat.format(
                         "Iteration {0}: Trade of {1} ${2}", i, trade
                                 .getQuantity(), trade.getPrice()));
@@ -76,10 +78,9 @@ public abstract class PositionMetricsCalculatorTestTemplate implements Runnable 
     }
 
     private Trade<?> createTrade(boolean buy, BigDecimal quantity,
-            BigDecimal price, int counter) {
-        return MockTrade.createEquityTrade("ABC", "asdf", "Yoram", buy ? quantity.toPlainString() : quantity
-        .negate().toPlainString(), price
-                        .toPlainString(), counter);
+            BigDecimal price) {
+        return new MockTrade<Equity>(PositionKeyFactory.createEquityKey("ABC",
+                "asdf", "Yoram"), buy ? quantity : quantity.negate(), price);
     }
 
     private void assertPositionMetrics(PositionMetrics expected,

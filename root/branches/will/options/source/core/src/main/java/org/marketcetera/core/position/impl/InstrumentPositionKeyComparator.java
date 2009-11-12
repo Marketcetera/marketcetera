@@ -48,7 +48,6 @@ public abstract class InstrumentPositionKeyComparator<I extends Instrument>
      * The factory that provides the handler instance for the specified
      * instrument.
      */
-    @SuppressWarnings("unchecked")
     public static final StaticInstrumentFunctionSelector<InstrumentPositionKeyComparator> SELECTOR =
             new StaticInstrumentFunctionSelector<InstrumentPositionKeyComparator>(InstrumentPositionKeyComparator.class);
 }

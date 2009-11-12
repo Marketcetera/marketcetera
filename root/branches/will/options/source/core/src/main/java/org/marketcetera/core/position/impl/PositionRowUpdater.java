@@ -5,14 +5,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.Trade;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeEvent;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeListener;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeListenerBase;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListenerBase;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
@@ -37,7 +38,7 @@ public final class PositionRowUpdater {
     private EventList<Trade<?>> mTrades;
     private final PositionRowImpl mPositionRow;
     private final MarketDataSupport mMarketDataSupport;
-    private final SymbolChangeListener mSymbolChangeListener;
+    private final InstrumentMarketDataListener mSymbolChangeListener;
     private static final ExecutorService sMarketDataUpdateExecutor = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("PositionRowUpdater"));  //$NON-NLS-1$
     private final AtomicBoolean mTickPending = new AtomicBoolean();
@@ -82,15 +83,15 @@ public final class PositionRowUpdater {
                 PositionRowUpdater.this.listChanged(listChanges);
             }
         };
-        mSymbolChangeListener = new SymbolChangeListenerBase() {
+        mSymbolChangeListener = new InstrumentMarketDataListenerBase() {
 
             @Override
-            public void symbolTraded(SymbolChangeEvent event) {
+            public void symbolTraded(InstrumentMarketDataEvent event) {
                 tick(event.getNewPrice());
             }
 
             @Override
-            public void closePriceChanged(SymbolChangeEvent event) {
+            public void closePriceChanged(InstrumentMarketDataEvent event) {
                 PositionRowUpdater.this.closePriceChanged(event.getNewPrice());
             }
 
@@ -99,7 +100,7 @@ public final class PositionRowUpdater {
                 PositionRowUpdater.this.optionMultiplierChanged(multiplier);
             }
         };
-        mMarketDataSupport.addSymbolChangeListener(
+        mMarketDataSupport.addInstrumentMarketDataListener(
                 mPositionRow.getInstrument(), mSymbolChangeListener);
         if (trades != null) {
             connect(trades);
@@ -134,7 +135,7 @@ public final class PositionRowUpdater {
         if (mTrades != null) {
             mTrades.removeListEventListener(mListChangeListener);
         }
-        mMarketDataSupport.removeSymbolChangeListener(mPositionRow
+        mMarketDataSupport.removeInstrumentMarketDataListener(mPositionRow
                 .getInstrument(), mSymbolChangeListener);
     }
 
@@ -194,15 +195,13 @@ public final class PositionRowUpdater {
         /*
          * Only process if necessary.
          */
-        if (oldMultiplier == null && multiplier == null) {
-            return;
-        } else if (oldMultiplier != null && oldMultiplier.equals(multiplier)) {
+        if (ObjectUtils.equals(oldMultiplier, multiplier)) {
             return;
         }
         mMultiplier = multiplier;
         /*
          * Since this modifies the position and will need a lock, the update
-         * happens in a separate thread. mClosingPricePending is used to avoid
+         * happens in a separate thread. mMultiplierPending is used to avoid
          * queuing multiple updates since the runnable always uses the latest
          * value.
          */
@@ -236,6 +235,7 @@ public final class PositionRowUpdater {
         PositionMetricsCalculatorImpl calculator = new PositionMetricsCalculatorImpl(
                 mPositionRow.getPositionMetrics().getIncomingPosition(),
                 mClosePrice);
+        // TODO: instrument specific functionality should be abstracted
         if (mPositionRow.getInstrument() instanceof Option) {
             mCalculator = new MultiplierCalculator(calculator, mMultiplier);
         } else {

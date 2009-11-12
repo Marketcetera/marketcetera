@@ -11,8 +11,8 @@ import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.MockTrade;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.Trade;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeEvent;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeListener;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
@@ -37,7 +37,7 @@ public class PositionRowUpdaterTest {
             BigDecimal.TEN, OptionType.Put);
     private static final String ACCOUNT = "A1";
     private static final String TRADER = "1";
-    private SymbolChangeListener mListener;
+    private InstrumentMarketDataListener mListener;
     private PositionRowUpdater mFixture;
     private PositionRowImpl mRow;
     private BasicEventList<Trade<?>> mTrades;
@@ -99,12 +99,12 @@ public class PositionRowUpdaterTest {
     }
 
     private void tick(String price) {
-        mListener.symbolTraded(new SymbolChangeEvent(this,
+        mListener.symbolTraded(new InstrumentMarketDataEvent(this,
                 new BigDecimal(price)));
     }
 
     private void setClosePrice(String closePrice) {
-        mListener.closePriceChanged(new SymbolChangeEvent(this,
+        mListener.closePriceChanged(new InstrumentMarketDataEvent(this,
                 closePrice == null ? null : new BigDecimal(closePrice)));
     }
 
@@ -181,12 +181,11 @@ public class PositionRowUpdaterTest {
 
     private Trade<?> createTrade(String quantity, String price) {
         return MockTrade.createEquityTrade("METC", ACCOUNT, TRADER, quantity,
-                price, 1L);
+                price);
     }
 
     private Trade<?> createOptionTrade(String quantity, String price) {
-        return MockTrade.createTrade(OPTION, ACCOUNT, TRADER, quantity, price,
-                1L);
+        return MockTrade.createTrade(OPTION, ACCOUNT, TRADER, quantity, price);
     }
 
     private void assertPosition(PositionRow row, Instrument instrument,
@@ -209,8 +208,8 @@ public class PositionRowUpdaterTest {
         }
 
         @Override
-        public void addSymbolChangeListener(Instrument instrument,
-                SymbolChangeListener listener) {
+        public void addInstrumentMarketDataListener(Instrument instrument,
+                InstrumentMarketDataListener listener) {
             assertThat(instrument, is(mInstrument));
             mListener = listener;
         }
@@ -231,8 +230,8 @@ public class PositionRowUpdaterTest {
         }
 
         @Override
-        public void removeSymbolChangeListener(Instrument instrument,
-                SymbolChangeListener listener) {
+        public void removeInstrumentMarketDataListener(Instrument instrument,
+                InstrumentMarketDataListener listener) {
             if (listener == mListener) {
                 mListener = null;
             }

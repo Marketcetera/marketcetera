@@ -39,7 +39,7 @@ class PositionRowImpl implements PositionRow {
      * Convenience constructor for summary position rows.
      * 
      * @param instrument
-     *            the symbol
+     *            the instrument
      * @param underlying
      *            the underlying symbol
      * @param account
@@ -61,7 +61,7 @@ class PositionRowImpl implements PositionRow {
      * Convenience constructor when only the incoming position is known.
      * 
      * @param instrument
-     *            the symbol
+     *            the instrument
      * @param underlying
      *            the underlying symbol
      * @param account
@@ -83,7 +83,7 @@ class PositionRowImpl implements PositionRow {
      * Convenience constructor.
      * 
      * @param instrument
-     *            the symbol
+     *            the instrument
      * @param underlying
      *            the underlying symbol
      * @param account
@@ -187,6 +187,7 @@ class PositionRowImpl implements PositionRow {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .appendToString(mInstrument.toString())
+                .append("underlying", mUnderlying) //$NON-NLS-1$
                 .append("account", mAccount) //$NON-NLS-1$
                 .append("traderId", mTraderId) //$NON-NLS-1$
                 .append("grouping", mGrouping) //$NON-NLS-1$
