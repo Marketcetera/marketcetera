@@ -122,9 +122,9 @@ public class PositionEngineImplTest {
             reports.add(new ReportHolder(report, null));
         }
 
-        protected void assertPosition(PositionRow position, String underlying, String account,
+        protected void assertEquityPosition(PositionRow position, String symbol, String account,
                 String traderId, String amount) {
-            assertPosition(position, new Equity(underlying), underlying, account, traderId, amount);
+            assertPosition(position, new Equity(symbol), symbol, account, traderId, amount);
         }
 
         protected void assertPosition(PositionRow position, Instrument instrument, String underlying, String account,
@@ -140,10 +140,9 @@ public class PositionEngineImplTest {
             assertThat(positions.size(), is(values.length));
             for (int i = 0; i < values.length; i++) {
                 String[] strings = values[i];
-                assertPosition(positions.get(i), strings[0], strings[1], strings[2], strings[3]);
+                assertEquityPosition(positions.get(i), strings[0], strings[1], strings[2], strings[3]);
             }
         }
-
     }
 
     @Test
@@ -158,7 +157,7 @@ public class PositionEngineImplTest {
             @Override
             protected void validatePositions(EventList<PositionRow> positions) {
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", "personal", "1", "1000");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1000");
             }
         }.run();
     }
@@ -183,12 +182,12 @@ public class PositionEngineImplTest {
             @Override
             protected void validatePositions(EventList<PositionRow> positions) {
                 assertThat(positions.size(), is(6));
-                assertPosition(positions.get(0), "ABC", "work", "1", "-80");
-                assertPosition(positions.get(1), "GOOG", "personal", "1", "45.5");
-                assertPosition(positions.get(2), "METC", "personal", "1", "1104");
-                assertPosition(positions.get(3), "METC", "work", "1", "70");
-                assertPosition(positions.get(4), "YHOO", "work", "1", "14");
-                assertPosition(positions.get(5), "ABC", "work", "2", "20");
+                assertEquityPosition(positions.get(0), "ABC", "work", "1", "-80");
+                assertEquityPosition(positions.get(1), "GOOG", "personal", "1", "45.5");
+                assertEquityPosition(positions.get(2), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(3), "METC", "work", "1", "70");
+                assertEquityPosition(positions.get(4), "YHOO", "work", "1", "14");
+                assertEquityPosition(positions.get(5), "ABC", "work", "2", "20");
             }
         }.run();
     }
@@ -206,7 +205,7 @@ public class PositionEngineImplTest {
             protected void validatePositions(EventList<PositionRow> positions) {
                 addEquityTrade("METC", "personal", Side.Buy, "1000", "1");
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", "personal", "1", "1000");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1000");
             }
         }.run();
     }
@@ -226,45 +225,45 @@ public class PositionEngineImplTest {
             protected void validatePositions(EventList<PositionRow> positions) {
                 addEquityTrade("METC", "personal", Side.Buy, "1000", "1");
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", "personal", "1", "1000");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1000");
                 addEquityTrade("METC", "personal", Side.Buy, "104", "1");
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1104");
                 addEquityTrade("METC", "work", Side.Buy, "70", "1");
                 assertThat(positions.size(), is(2));
-                assertPosition(positions.get(0), "METC", "personal", "1", "1104");
-                assertPosition(positions.get(1), "METC", "work", "1", "70");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(1), "METC", "work", "1", "70");
                 addEquityTrade("GOOG", "personal", Side.Buy, "45.5", "1");
                 assertThat(positions.size(), is(3));
-                assertPosition(positions.get(0), "GOOG", "personal", "1", "45.5");
-                assertPosition(positions.get(1), "METC", "personal", "1", "1104");
-                assertPosition(positions.get(2), "METC", "work", "1", "70");
+                assertEquityPosition(positions.get(0), "GOOG", "personal", "1", "45.5");
+                assertEquityPosition(positions.get(1), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(2), "METC", "work", "1", "70");
                 addEquityTrade("YHOO", "work", Side.Buy, "20", "1");
                 assertThat(positions.size(), is(4));
-                assertPosition(positions.get(0), "GOOG", "personal", "1", "45.5");
-                assertPosition(positions.get(1), "METC", "personal", "1", "1104");
-                assertPosition(positions.get(2), "METC", "work", "1", "70");
-                assertPosition(positions.get(3), "YHOO", "work", "1", "20");
+                assertEquityPosition(positions.get(0), "GOOG", "personal", "1", "45.5");
+                assertEquityPosition(positions.get(1), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(2), "METC", "work", "1", "70");
+                assertEquityPosition(positions.get(3), "YHOO", "work", "1", "20");
                 addEquityTrade("YHOO", "work", Side.Sell, "6", "1");
                 assertThat(positions.size(), is(4));
-                assertPosition(positions.get(0), "GOOG", "personal", "1", "45.5");
-                assertPosition(positions.get(1), "METC", "personal", "1", "1104");
-                assertPosition(positions.get(2), "METC", "work", "1", "70");
-                assertPosition(positions.get(3), "YHOO", "work", "1", "14");
+                assertEquityPosition(positions.get(0), "GOOG", "personal", "1", "45.5");
+                assertEquityPosition(positions.get(1), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(2), "METC", "work", "1", "70");
+                assertEquityPosition(positions.get(3), "YHOO", "work", "1", "14");
                 addEquityTrade("ABC", "work", Side.Sell, "100", "1");
                 assertThat(positions.size(), is(5));
-                assertPosition(positions.get(0), "ABC", "work", "1", "-100");
-                assertPosition(positions.get(1), "GOOG", "personal", "1", "45.5");
-                assertPosition(positions.get(2), "METC", "personal", "1", "1104");
-                assertPosition(positions.get(3), "METC", "work", "1", "70");
-                assertPosition(positions.get(4), "YHOO", "work", "1", "14");
+                assertEquityPosition(positions.get(0), "ABC", "work", "1", "-100");
+                assertEquityPosition(positions.get(1), "GOOG", "personal", "1", "45.5");
+                assertEquityPosition(positions.get(2), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(3), "METC", "work", "1", "70");
+                assertEquityPosition(positions.get(4), "YHOO", "work", "1", "14");
                 addEquityTrade("ABC", "work", Side.Buy, "20", "1");
                 assertThat(positions.size(), is(5));
-                assertPosition(positions.get(0), "ABC", "work", "1", "-80");
-                assertPosition(positions.get(1), "GOOG", "personal", "1", "45.5");
-                assertPosition(positions.get(2), "METC", "personal", "1", "1104");
-                assertPosition(positions.get(3), "METC", "work", "1", "70");
-                assertPosition(positions.get(4), "YHOO", "work", "1", "14");
+                assertEquityPosition(positions.get(0), "ABC", "work", "1", "-80");
+                assertEquityPosition(positions.get(1), "GOOG", "personal", "1", "45.5");
+                assertEquityPosition(positions.get(2), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(3), "METC", "work", "1", "70");
+                assertEquityPosition(positions.get(4), "YHOO", "work", "1", "14");
             }
         }.run();
     }
@@ -283,7 +282,7 @@ public class PositionEngineImplTest {
             @Override
             protected void validatePositions(EventList<PositionRow> positions) {
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", null, "1", "1800");
+                assertEquityPosition(positions.get(0), "METC", null, "1", "1800");
             }
         }.run();
     }
@@ -309,7 +308,7 @@ public class PositionEngineImplTest {
                 assertThat(positions.size(), is(0));
                 addEquityTrade("METC", "personal", Side.Buy, "2000", "500");
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", "personal", "1", "2000");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "2000");
             }
         }.run();
     }
@@ -334,15 +333,15 @@ public class PositionEngineImplTest {
             @Override
             protected void validatePositions(EventList<PositionRow> positions) {
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", "personal", "1", "1100");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1100");
                 addEquityTrade("METC", "personal", Side.Buy, "200", "500");
-                assertPosition(positions.get(0), "METC", "personal", "1", "1300");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1300");
                 clearReports();
                 assertThat(positions.size(), is(0));
                 addEquityTrade("METC", "personal", Side.Buy, "2000", "500");
                 addEquityTrade("METC", "personal", Side.Buy, "2000", "500");
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", "personal", "1", "4000");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "4000");
             }
         }.run();
     }
@@ -551,10 +550,10 @@ public class PositionEngineImplTest {
             @Override
             protected void validatePositions(EventList<PositionRow> positions) {
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", "personal", "1", "100");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "100");
                 addEquityTrade("METC", "personal", Side.Buy, "1000", "1");
                 assertThat(positions.size(), is(1));
-                assertPosition(positions.get(0), "METC", "personal", "1", "1100");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1100");
             }
         }.run();
     }
@@ -595,10 +594,111 @@ public class PositionEngineImplTest {
             protected void validatePositions(EventList<PositionRow> positions) {
                 assertThat(positions.size(), is(4));
                 assertPosition(positions.get(0), option2, "MEC", "personal", "1", "20");
-                assertPosition(positions.get(1), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(1), "METC", "personal", "1", "1104");
                 assertPosition(positions.get(2), option1, "METC", "personal", "1", "0");
                 assertPosition(positions.get(3), option3, "YHOO", "personal", "2", "20");
             }
+        }.run();
+    }
+
+    @Test
+    public void groupingWithOptions() {
+        new PositionEngineTestTemplate() {
+
+            private UnderlyingSymbolSupport mUnderlyingSymbolSupport;
+            private final Equity metcEquity = new Equity("METC");
+            private final Equity ibmEquity = new Equity("IBM");
+            private final Equity yhooEquity = new Equity("YHOO");
+            private final Option metcOption = new Option("MTC", "20090910",
+                    BigDecimal.ONE, OptionType.Call);
+            private final Option yhooOption = new Option("PXR", "20090910",
+                    BigDecimal.ONE, OptionType.Call);
+
+            protected UnderlyingSymbolSupport createUnderlyingSymbolSupport() {
+                mUnderlyingSymbolSupport = mock(UnderlyingSymbolSupport.class);
+                when(mUnderlyingSymbolSupport.getUnderlying(metcEquity))
+                        .thenReturn("METC");
+                when(mUnderlyingSymbolSupport.getUnderlying(ibmEquity))
+                        .thenReturn("IBM");
+                when(mUnderlyingSymbolSupport.getUnderlying(yhooEquity))
+                        .thenReturn("YHOO");
+                when(mUnderlyingSymbolSupport.getUnderlying(metcOption))
+                        .thenReturn("METC");
+                when(mUnderlyingSymbolSupport.getUnderlying(yhooOption))
+                        .thenReturn("YHOO");
+                return mUnderlyingSymbolSupport;
+            };
+
+            @Override
+            protected EventList<PositionRow> getPositionData(
+                    PositionEngine engine) {
+                return engine.getGroupedData(Grouping.Account,
+                        Grouping.Underlying).getPositions();
+            }
+
+            @Override
+            protected void initReports() {
+                addEquityTrade("METC", "personal", Side.Buy, "1000", "500");
+                addEquityTrade("METC", "personal", Side.Buy, "100", "500");
+                addEquityTrade("METC", "business", Side.Buy, "1050", "500");
+                addEquityTrade("METC", "business", Side.Buy, "100", "500");
+                addEquityTrade("IBM", "business", Side.Buy, "300", "500");
+                addEquityTrade("YHOO", "personal", Side.Buy, "200", "500");
+                addEquityTrade("YHOO", "personal", Side.Buy, "200", "500");
+                addTrade(metcOption, "business", "1", Side.Buy, "300", "500");
+                addTrade(yhooOption, "personal", "1", Side.Buy, "400", "500");
+            }
+
+            @Override
+            protected void validatePositions(EventList<PositionRow> positions) {
+                // root
+                assertPositions(positions, new String[] { "IBM", "business",
+                        "1", "1750" }, new String[] { "METC", "personal", "1",
+                        "1900" });
+
+                // first level
+                PositionRow business = positions.get(0);
+                assertPositions(business.getChildren(), new String[] { "IBM",
+                        "business", "1", "300" }, new String[] { "METC",
+                        "business", "1", "1450" });
+                PositionRow personal = positions.get(1);
+                assertPositions(personal.getChildren(), new String[] { "METC",
+                        "personal", "1", "1100" }, new String[] { "YHOO",
+                        "personal", "1", "800" });
+
+                // second level
+                PositionRow ibmBusiness = business.getChildren().get(0);
+                assertPositions(ibmBusiness.getChildren(), new String[] {
+                        "IBM", "business", "1", "300" });
+                PositionRow metcBusiness = business.getChildren().get(1);
+                assertPositions(metcBusiness.getChildren(), new String[] {
+                        "METC", "business", "1", "1450" });
+                PositionRow metcPersonal = personal.getChildren().get(0);
+                assertPositions(metcPersonal.getChildren(), new String[] {
+                        "METC", "personal", "1", "1100" });
+                PositionRow yhooPersonal = personal.getChildren().get(1);
+                assertPositions(yhooPersonal.getChildren(), new String[] {
+                        "YHOO", "personal", "1", "800" });
+
+                // third level
+                PositionRow ibmBusiness1 = ibmBusiness.getChildren().get(0);
+                assertPositions(ibmBusiness1.getChildren(), new String[] {
+                        "IBM", "business", "1", "300" });
+                PositionRow metcBusiness1 = metcBusiness.getChildren().get(0);
+                assertPosition(metcBusiness1.getChildren().get(0), metcEquity,
+                        "METC", "business", "1", "1150");
+                assertPosition(metcBusiness1.getChildren().get(1), metcOption,
+                        "METC", "business", "1", "300");
+                PositionRow metcPersonal1 = metcPersonal.getChildren().get(0);
+                assertPositions(metcPersonal1.getChildren(), new String[] {
+                        "METC", "personal", "1", "1100" });
+                PositionRow yhooPersonal1 = yhooPersonal.getChildren().get(0);
+                assertPosition(yhooPersonal1.getChildren().get(0), yhooEquity,
+                        "YHOO", "personal", "1", "400");
+                assertPosition(yhooPersonal1.getChildren().get(1), yhooOption,
+                        "YHOO", "personal", "1", "400");
+            }
+
         }.run();
     }
 }

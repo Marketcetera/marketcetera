@@ -266,76 +266,46 @@ public class OptionUtilsTest {
                 OptionUtils.getOsiSymbolFromOption(null);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                // symbol too long
-                OptionUtils.getOsiSymbolFromOption(new Option("1234567",
-                        "20091010", BigDecimal.ONE, OptionType.Call));
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                // expiry without day
-                OptionUtils.getOsiSymbolFromOption(new Option("123456",
-                        "200910", BigDecimal.ONE, OptionType.Call));
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                // expiry with week
-                OptionUtils.getOsiSymbolFromOption(new Option("123456",
-                        "200910w1", BigDecimal.ONE, OptionType.Call));
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                // negative strike
-                OptionUtils.getOsiSymbolFromOption(new Option("123456",
-                        "20091010", new BigDecimal(-1), OptionType.Put));
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                // strike with too many fractional digits
-                OptionUtils.getOsiSymbolFromOption(new Option("123456",
-                        "20091010", new BigDecimal("0.1234"), OptionType.Put));
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                // strike with too many non-fractional digits
-                OptionUtils.getOsiSymbolFromOption(new Option("123456",
-                        "20091010", new BigDecimal("123456"), OptionType.Put));
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                // unknown type
-                OptionUtils.getOsiSymbolFromOption(new Option("123456",
-                        "20091010", BigDecimal.ONE, OptionType.Unknown));
-            }
-        };
+        // symbol too long
+        verifyGetOsiSymbolFromOptionFails("1234567", 
+                "20091010",
+                BigDecimal.ONE, 
+                OptionType.Call);
+        // expiry too long
+        verifyGetOsiSymbolFromOptionFails("123456", 
+                "200910100",
+                BigDecimal.ONE, 
+                OptionType.Call);
+        // expiry without day
+        verifyGetOsiSymbolFromOptionFails("123456", 
+                "200910", 
+                BigDecimal.ONE,
+                OptionType.Call);
+        // expiry with week
+        verifyGetOsiSymbolFromOptionFails("123456", 
+                "200910w1", 
+                BigDecimal.ONE,
+                OptionType.Call);
+        // negative strike
+        verifyGetOsiSymbolFromOptionFails("123456", 
+                "20091010", 
+                new BigDecimal(-1),
+                OptionType.Put);
+        // strike with too many fractional digits
+        verifyGetOsiSymbolFromOptionFails("123456",
+                "20091010",
+                new BigDecimal("0.1234"),
+                OptionType.Put);
+        // strike with too many non-fractional digits
+        verifyGetOsiSymbolFromOptionFails("123456",
+                "20091010",
+                new BigDecimal("123456"),
+                OptionType.Put);
+        // unknown type
+        verifyGetOsiSymbolFromOptionFails("123456",
+                "20091010",
+                BigDecimal.ONE,
+                OptionType.Unknown);
         verifyOsiSymbolFromOption("123456301122P12345123",
                 "123456",
                 OptionType.Put,
@@ -509,5 +479,32 @@ public class OptionUtilsTest {
         assertEquals(inExpectedSymbol, OptionUtils
                 .getOsiSymbolFromOption(new Option(inRootSymbol, inExpiry,
                         inStrike, inOptionType)));
+    }
+
+    /**
+     * Verifies that {@link OptionUtils#getOsiSymbolFromOption(Option)} fails
+     * with IllegalArgumentException for the given option tuple.
+     * 
+     * @param inRootSymbol the <code>Option</code> root symbol
+     * @param inExpiry the <code>Option</code> expiry
+     * @param inStrike the <code>Option</code> strike
+     * @param inOptionType the <code>Option</code> type
+     * @throws Exception if an unexpected error occurs
+     */
+    private static void verifyGetOsiSymbolFromOptionFails(final String inRootSymbol,
+                                     final String inExpiry,
+                                     final BigDecimal inStrike,
+                                     final OptionType inOptionType)
+            throws Exception
+    {
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                OptionUtils.getOsiSymbolFromOption(new Option(inRootSymbol,
+                        inExpiry, inStrike, inOptionType));
+            }
+        };
     }
 }

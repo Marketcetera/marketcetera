@@ -103,10 +103,9 @@ public class OptionUtils {
     /**
      * Gets a string symbol as specified by <a
      * href="http://www.theocc.com/initiatives/symbology/default.jsp">Option
-     * Symbology Initiative</a> from an <code>Option</code>. The
-     * {@link Option#getSymbol() root symbol} is used as the OSI symbol. Thus,
-     * the root symbol must be the symbol of the underlying equity for the
-     * result to be a fully compliant OSI symbol.
+     * Symbology Initiative</a> from an <code>Option</code>. The provided option
+     * must have property values compliant with OSI tuples. Otherwise, an
+     * exception may be thrown, or an invalid OSI symbol may be returned.
      * 
      * @param inOption an <code>Option</code> value
      * @return a <code>String</code> value compliant with the OSI

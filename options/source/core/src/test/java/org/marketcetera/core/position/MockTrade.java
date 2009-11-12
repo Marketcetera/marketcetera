@@ -32,56 +32,32 @@ public class MockTrade<T extends Instrument> implements Trade<T> {
 
     public static MockTrade<Equity> createEquityTrade(String symbol,
             String account, String traderId, String quantity, String price) {
-        return createEquityTrade(symbol, account, traderId, quantity, price,
-                mSequenceGenerator.incrementAndGet());
-    }
-
-    public static MockTrade<Equity> createEquityTrade(String symbol,
-            String account, String traderId, String quantity, String price,
-            long sequence) {
         return createTrade(PositionKeyFactory.createEquityKey(symbol, account,
-                traderId), quantity, price, sequence);
+                traderId), quantity, price);
     }
 
     public static MockTrade<Option> createOptionTrade(String symbol,
-            String expiry, String strikePrice, OptionType type,
-            String account, String traderId, String quantity, String price) {
-        return createOptionTrade(symbol, expiry, strikePrice, type, account,
-                traderId, quantity, price, mSequenceGenerator.incrementAndGet());
-    }
-
-    private static MockTrade<Option> createOptionTrade(String symbol,
-            String expiry, String strikePrice, OptionType type,
-            String account, String traderId, String quantity, String price,
-            long sequence) {
+            String expiry, String strikePrice, OptionType type, String account,
+            String traderId, String quantity, String price) {
         return createTrade(PositionKeyFactory.createOptionKey(symbol, expiry,
-                new BigDecimal(strikePrice), type, account, traderId), quantity, price,
-                sequence);
+                new BigDecimal(strikePrice), type, account, traderId),
+                quantity, price);
     }
 
     public static <T extends Instrument> MockTrade<T> createTrade(T instrument,
             String account, String traderId, String quantity, String price) {
-        return createTrade(instrument, account, traderId, quantity, price,
-                mSequenceGenerator.incrementAndGet());
-    }
-
-    public static <T extends Instrument> MockTrade<T> createTrade(T instrument,
-            String account, String traderId, String quantity, String price,
-            long sequence) {
         return createTrade(PositionKeyFactory.createKey(instrument, account,
-                traderId), quantity, price, sequence);
+                traderId), quantity, price);
     }
 
     public static <T extends Instrument> MockTrade<T> createTrade(
             PositionKey<T> key, String quantity, String price) {
-        return createTrade(key, quantity, price, mSequenceGenerator
-                .incrementAndGet());
+        return new MockTrade<T>(key, new BigDecimal(quantity), new BigDecimal(
+                price));
     }
 
-    public static <T extends Instrument> MockTrade<T> createTrade(
-            PositionKey<T> key, String quantity, String price, long sequence) {
-        return new MockTrade<T>(key, new BigDecimal(
-                quantity), new BigDecimal(price), sequence);
+    public MockTrade(PositionKey<T> key, BigDecimal quantity, BigDecimal price) {
+        this(key, quantity, price, mSequenceGenerator.incrementAndGet());
     }
 
     public MockTrade(PositionKey<T> key, BigDecimal quantity, BigDecimal price,

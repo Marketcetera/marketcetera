@@ -223,12 +223,6 @@ public class TradeReportsHistory {
             if (inReport instanceof ExecutionReport) {
                 Instrument instrument = ((ExecutionReport) inReport).getInstrument();
                 underlying = mUnderlyingSymbolSupport.getUnderlying(instrument);
-                if (underlying == null) {
-                    /*
-                     * Fall back to the symbol, e.g. option root
-                     */
-                    underlying = instrument.getSymbol();
-                }
             }
             ReportHolder messageHolder = new ReportHolder(inReport, underlying, groupID);
     

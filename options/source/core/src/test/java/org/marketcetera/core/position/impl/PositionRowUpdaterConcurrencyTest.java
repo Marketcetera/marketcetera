@@ -129,10 +129,10 @@ public class PositionRowUpdaterConcurrencyTest {
 
     class MockMarketData implements MarketDataSupport {
 
-        private final Set<SymbolChangeListener> mListeners = Sets.newHashSet();
+        private final Set<InstrumentMarketDataListener> mListeners = Sets.newHashSet();
 
         @Override
-        public void addSymbolChangeListener(Instrument instrument, SymbolChangeListener listener) {
+        public void addInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
             synchronized (mSimulatedDataFlowLock) {
                 try {
                     mListeners.add(listener);
@@ -145,15 +145,21 @@ public class PositionRowUpdaterConcurrencyTest {
 
         public void fireEvent() {
             synchronized (mSimulatedDataFlowLock) {
-                SymbolChangeEvent event = new SymbolChangeEvent(this, new BigDecimal(mGenerator
-                        .nextInt(5)));
                 if (mGenerator.nextBoolean()) {
-                    for (SymbolChangeListener listener : mListeners) {
-                        listener.symbolTraded(event);
+                    InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(
+                            this, new BigDecimal(mGenerator.nextInt(5)));
+                    if (mGenerator.nextBoolean()) {
+                        for (InstrumentMarketDataListener listener : mListeners) {
+                            listener.symbolTraded(event);
+                        }
+                    } else {
+                        for (InstrumentMarketDataListener listener : mListeners) {
+                            listener.closePriceChanged(event);
+                        }
                     }
                 } else {
-                    for (SymbolChangeListener listener : mListeners) {
-                        listener.closePriceChanged(event);
+                    for (InstrumentMarketDataListener listener : mListeners) {
+                        listener.optionMultiplierChanged(10);
                     }
                 }
             }
@@ -175,7 +181,7 @@ public class PositionRowUpdaterConcurrencyTest {
         }
 
         @Override
-        public void removeSymbolChangeListener(Instrument instrument, SymbolChangeListener listener) {
+        public void removeInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
             synchronized (mSimulatedDataFlowLock) {
                 try {
                     mListeners.remove(listener);

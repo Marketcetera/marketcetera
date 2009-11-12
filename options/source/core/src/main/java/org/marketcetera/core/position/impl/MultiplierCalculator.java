@@ -11,6 +11,9 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * A calculator that wraps another calculator and multiplies all P&L values by a
  * multiplier.
+ * <p>
+ * If the multiplier is unavailable, this class effectively nulls out all PNL
+ * values.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -20,7 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
 public class MultiplierCalculator implements PositionMetricsCalculator {
 
     private final PositionMetricsCalculator mDelegate;
-    private final Integer mMultiplier;
+    private final BigDecimal mMultiplier;
 
     /**
      * Constructor.
@@ -28,12 +31,12 @@ public class MultiplierCalculator implements PositionMetricsCalculator {
      * @param delegate
      *            the calculator implementation
      * @param multiplier
-     *            the multiplier to apply to P&L values
+     *            the multiplier to apply to P&L values, null if unavailable
      */
     public MultiplierCalculator(PositionMetricsCalculator delegate,
             Integer multiplier) {
         mDelegate = delegate;
-        mMultiplier = multiplier;
+        mMultiplier = multiplier == null ? null : new BigDecimal(multiplier);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class MultiplierCalculator implements PositionMetricsCalculator {
         return multiply(mDelegate.trade(trade));
     }
 
-    private PositionMetricsImpl multiply(PositionMetrics metrics) {
+    private PositionMetrics multiply(PositionMetrics metrics) {
         return new PositionMetricsImpl(metrics.getIncomingPosition(), metrics
                 .getPosition(), multiply(metrics.getPositionPL()),
                 multiply(metrics.getTradingPL()), multiply(metrics
@@ -55,10 +58,10 @@ public class MultiplierCalculator implements PositionMetricsCalculator {
     }
 
     private BigDecimal multiply(BigDecimal pnl) {
-        if (mMultiplier == null) {
+        if (mMultiplier == null || pnl == null) {
             return null;
         } else {
-            return pnl.multiply(BigDecimal.valueOf(mMultiplier));
+            return pnl.multiply(mMultiplier);
         }
     }
 }

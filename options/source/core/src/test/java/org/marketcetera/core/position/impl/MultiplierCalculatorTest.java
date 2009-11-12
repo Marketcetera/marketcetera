@@ -34,15 +34,19 @@ public class MultiplierCalculatorTest {
                 new BigDecimal("20"), new BigDecimal("30"),
                 new BigDecimal("40"), new BigDecimal("50"),
                 new BigDecimal("60"), new BigDecimal("70"));
-        mTrade1 = MockTrade.createEquityTrade("ABC", "ABC", "ABC", "1", "1", 0);
+        PositionMetricsImpl m3 = new PositionMetricsImpl(new BigDecimal("100"),
+                new BigDecimal("100"), null, null, null, null, null);
+        mTrade1 = MockTrade.createEquityTrade("ABC", "ABC", "ABC", "1", "1");
         mTrade2 = MockTrade
-                .createEquityTrade("ABC2", "ABC", "ABC", "1", "1", 0);
+                .createEquityTrade("ABC2", "ABC", "ABC", "1", "1");
 
         mMockCalculator = mock(PositionMetricsCalculator.class);
         when(mMockCalculator.tick(BigDecimal.ONE)).thenReturn(m1);
         when(mMockCalculator.tick(BigDecimal.TEN)).thenReturn(m2);
+        when(mMockCalculator.tick(null)).thenReturn(m3);
         when(mMockCalculator.trade(mTrade1)).thenReturn(m1);
         when(mMockCalculator.trade(mTrade2)).thenReturn(m2);
+        when(mMockCalculator.trade(null)).thenReturn(m3);
     }
 
     @Test
@@ -69,6 +73,14 @@ public class MultiplierCalculatorTest {
     }
 
     @Test
+    public void testTickNoPNL() {
+        MultiplierCalculator fixture = new MultiplierCalculator(
+                mMockCalculator, 100);
+        PositionMetricsImplTest.assertPositionMetrics(fixture
+                .tick(null), "100", "100", null, null, null, null, null);
+    }
+
+    @Test
     public void testTrade() {
         MultiplierCalculator fixture = new MultiplierCalculator(
                 mMockCalculator, 100);
@@ -86,6 +98,14 @@ public class MultiplierCalculatorTest {
                 "1", "2", null, null, null, null, null);
         PositionMetricsImplTest.assertPositionMetrics(fixture.trade(mTrade2),
                 "10", "20", null, null, null, null, null);
+    }
+
+    @Test
+    public void testTradeNoPNL() {
+        MultiplierCalculator fixture = new MultiplierCalculator(
+                mMockCalculator, 100);
+        PositionMetricsImplTest.assertPositionMetrics(fixture
+                .trade(null), "100", "100", null, null, null, null, null);
     }
 
 }
