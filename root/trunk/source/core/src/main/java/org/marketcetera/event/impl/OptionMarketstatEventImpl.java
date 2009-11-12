@@ -1,10 +1,12 @@
 package org.marketcetera.event.impl;
 
+import java.math.BigDecimal;
+
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.event.HasOption;
 import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.OptionMarketstatEvent;
 import org.marketcetera.event.beans.MarketstatBean;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
@@ -25,7 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 class OptionMarketstatEventImpl
         extends AbstractMarketstatEventImpl
-        implements HasOption, OptionEvent
+        implements HasOption, OptionMarketstatEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.OptionEvent#getExpirationType()
@@ -39,7 +41,7 @@ class OptionMarketstatEventImpl
      * @see org.marketcetera.event.OptionEvent#getMultiplier()
      */
     @Override
-    public int getMultiplier()
+    public BigDecimal getMultiplier()
     {
         return option.getMultiplier();
     }
@@ -68,6 +70,30 @@ class OptionMarketstatEventImpl
         return option.getUnderlyingInstrument();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.OptionEvent#getOpraSymbol()
+     */
+    @Override
+    public String getProviderSymbol()
+    {
+        return option.getProviderSymbol();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.OptionMarketstatEvent#getInterestChange()
+     */
+    @Override
+    public BigDecimal getInterestChange()
+    {
+        return interestChange;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.OptionMarketstatEvent#getVolumeChange()
+     */
+    @Override
+    public BigDecimal getVolumeChange()
+    {
+        return volumeChange;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -75,7 +101,9 @@ class OptionMarketstatEventImpl
     {
         StringBuilder builder = new StringBuilder();
         builder.append(super.toString());
-        builder.append(" ").append(option.toString()); //$NON-NLS-1$
+        builder.append(option.toString());
+        builder.append(" volumeChange=").append(getVolumeChange()); //$NON-NLS-1$
+        builder.append(" interestChange=").append(getInterestChange()); //$NON-NLS-1$
         return builder.toString();
     }
     /**
@@ -90,15 +118,27 @@ class OptionMarketstatEventImpl
      * @throws IllegalArgumentException if <code>ExpirationType</code> is <code>null</code>
      */
     OptionMarketstatEventImpl(MarketstatBean inMarketstat,
-                              OptionBean inOption)
+                              OptionBean inOption,
+                              BigDecimal inVolumeChange,
+                              BigDecimal inInterestChange)
     {
         super(inMarketstat);
         option = OptionBean.copy(inOption);
         option.validate();
+        volumeChange = inVolumeChange;
+        interestChange = inInterestChange;
     }
     /**
      * the option attributes
      */
     private final OptionBean option;
+    /**
+     * the change in volume since the previous close, may be <code>null</code> 
+     */
+    private final BigDecimal volumeChange;
+    /**
+     * the change in interest since the previous close, may be <code>null</code>
+     */
+    private final BigDecimal interestChange;
     private static final long serialVersionUID = 1L;
 }

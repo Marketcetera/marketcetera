@@ -316,7 +316,7 @@ public class PriceComparatorsTest
     {
         if(doOption) {
              return inBuilder.withExpirationType(ExpirationType.AMERICAN)
-                             .withMultiplier(0)
+                             .withMultiplier(BigDecimal.ZERO)
                              .withUnderlyingInstrument(new Equity("METC"));
         }
         return inBuilder;

@@ -68,11 +68,13 @@ public class OptionBeanTest
         };
         ExpirationType expirationType = ExpirationType.AMERICAN;
         boolean hasDeliverable = true;
-        int multiplier = Integer.MIN_VALUE;
+        BigDecimal multiplier = new BigDecimal(-1);
         Instrument underlyingInstrument = new Equity("METC");
+        String providerSymbol = "MET/W/X";
         final QuoteEventBuilder<BidEvent> builder = QuoteEventBuilder.bidEvent(option);
         builder.hasDeliverable(hasDeliverable)
                .withExpirationType(expirationType)
+               .withProviderSymbol(providerSymbol)
                .withExchange("test exchange")
                .withInstrument(option)
                .withMultiplier(multiplier)
@@ -88,10 +90,11 @@ public class OptionBeanTest
                          hasDeliverable,
                          option,
                          multiplier,
+                         providerSymbol,
                          underlyingInstrument);
         // vary some inputs
         // multiplier
-        multiplier = 0;
+        multiplier = BigDecimal.ZERO;
         builder.withMultiplier(multiplier);
         bid = builder.create();
         bean = OptionBean.getOptionBeanFromEvent((OptionEvent)bid);
@@ -100,8 +103,9 @@ public class OptionBeanTest
                          hasDeliverable,
                          option,
                          multiplier,
+                         providerSymbol,
                          underlyingInstrument);
-        multiplier = Integer.MAX_VALUE;
+        multiplier = new BigDecimal(Integer.MAX_VALUE);
         builder.withMultiplier(multiplier);
         bid = builder.create();
         bean = OptionBean.getOptionBeanFromEvent((OptionEvent)bid);
@@ -110,6 +114,7 @@ public class OptionBeanTest
                          hasDeliverable,
                          option,
                          multiplier,
+                         providerSymbol,
                          underlyingInstrument);
         // hasDeliverable
         hasDeliverable = false;
@@ -121,6 +126,7 @@ public class OptionBeanTest
                          hasDeliverable,
                          option,
                          multiplier,
+                         providerSymbol,
                          underlyingInstrument);
         // underlyingInstrument
         underlyingInstrument = new Option("MSFT",
@@ -135,6 +141,19 @@ public class OptionBeanTest
                          hasDeliverable,
                          option,
                          multiplier,
+                         providerSymbol,
+                         underlyingInstrument);
+        // provider symbol
+        providerSymbol = "MTC/K/X";
+        builder.withProviderSymbol(providerSymbol);
+        bid = builder.create();
+        bean = OptionBean.getOptionBeanFromEvent((OptionEvent)bid);
+        verifyOptionBean(bean,
+                         expirationType,
+                         hasDeliverable,
+                         option,
+                         multiplier,
+                         providerSymbol,
                          underlyingInstrument);
         // prove the last three test-cases are untestable
         builder.withExpirationType(null);
@@ -215,7 +234,7 @@ public class OptionBeanTest
                      bean.getExpirationType());
     }
     /**
-     * Tests {@link OptionBean#getMultiplier()} and {@link OptionBean#setMultiplier(int)}. 
+     * Tests {@link OptionBean#getMultiplier()} and {@link OptionBean#setMultiplier(BigDecimal)}. 
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -224,17 +243,17 @@ public class OptionBeanTest
             throws Exception
     {
         OptionBean bean = new OptionBean();
-        assertEquals(0,
+        assertEquals(null,
                      bean.getMultiplier());
-        int multiplier = Integer.MIN_VALUE;
+        BigDecimal multiplier = new BigDecimal(-1);
         bean.setMultiplier(multiplier);
         assertEquals(multiplier,
                      bean.getMultiplier());
-        multiplier = 0;
+        multiplier = BigDecimal.ZERO;
         bean.setMultiplier(multiplier);
         assertEquals(multiplier,
                      bean.getMultiplier());
-        multiplier = Integer.MAX_VALUE;
+        multiplier = BigDecimal.TEN;
         bean.setMultiplier(multiplier);
         assertEquals(multiplier,
                      bean.getMultiplier());
@@ -328,9 +347,9 @@ public class OptionBeanTest
                      bean2.hasDeliverable());
         assertNull(bean1.getInstrument());
         assertNull(bean2.getInstrument());
-        assertEquals(0,
+        assertEquals(null,
                      bean1.getMultiplier());
-        assertEquals(0,
+        assertEquals(null,
                      bean2.getMultiplier());
         assertNull(bean1.getUnderlyingInstrument());
         assertNull(bean2.getUnderlyingInstrument());
@@ -364,9 +383,9 @@ public class OptionBeanTest
                                       bean3);
         bean3.setHasDeliverable(bean1.hasDeliverable());
         // test multiplier
-        assertEquals(0,
+        assertEquals(null,
                      bean1.getMultiplier());
-        bean3.setMultiplier(1);
+        bean3.setMultiplier(BigDecimal.ONE);
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -392,29 +411,34 @@ public class OptionBeanTest
                          null,
                          false,
                          null,
-                         0,
+                         null,
+                         null,
                          null);
         OptionBean newBean = OptionBean.copy(inBean);
         verifyOptionBean(newBean,
                          null,
                          false,
                          null,
-                         0,
+                         null,
+                         null,
                          null);
         ExpirationType expirationType = ExpirationType.AMERICAN;
         boolean hasDeliverable = true;
-        int multiplier = 10;
+        BigDecimal multiplier = BigDecimal.TEN;
         Instrument underlyingInstrument = new Equity("METC");
+        String providerSymbol = "MTC/W/X";
         inBean.setExpirationType(expirationType);
         inBean.setHasDeliverable(hasDeliverable);
         inBean.setInstrument(option);
         inBean.setMultiplier(multiplier);
         inBean.setUnderlyingInstrument(underlyingInstrument);
+        inBean.setProviderSymbol(providerSymbol);
         verifyOptionBean(inBean,
                          expirationType,
                          hasDeliverable,
                          option,
                          multiplier,
+                         providerSymbol,
                          underlyingInstrument);
         newBean = OptionBean.copy(inBean);
         verifyOptionBean(newBean,
@@ -422,6 +446,7 @@ public class OptionBeanTest
                          hasDeliverable,
                          option,
                          multiplier,
+                         providerSymbol,
                          underlyingInstrument);
     }
     /**
@@ -431,7 +456,8 @@ public class OptionBeanTest
      * @param inExpectedExpirationType an <code>ExpirationType</code> value
      * @param inExpectedHasDeliverable a <code>boolean</code> value
      * @param inExpectedInstrument an <code>Option</code> value
-     * @param inExpectedMultiplier an <code>int</code> value
+     * @param inExpectedMultiplier a <code>BigDecimal</code> value
+     * @param inExpectedProviderSymbol a <code>String</code> value
      * @param inExpectedUnderlyingInstrument an <code>Instrument</code> value
      * @throws Exception if an unexpected error occurs
      */
@@ -439,7 +465,8 @@ public class OptionBeanTest
                                  ExpirationType inExpectedExpirationType,
                                  boolean inExpectedHasDeliverable,
                                  Option inExpectedInstrument,
-                                 int inExpectedMultiplier,
+                                 BigDecimal inExpectedMultiplier,
+                                 String inExpectedProviderSymbol,
                                  Instrument inExpectedUnderlyingInstrument)
             throws Exception
     {
@@ -453,6 +480,8 @@ public class OptionBeanTest
                      inBean.getMultiplier());
         assertEquals(inExpectedUnderlyingInstrument,
                      inBean.getUnderlyingInstrument());
+        assertEquals(inExpectedProviderSymbol,
+                     inBean.getProviderSymbol());
     }
     /**
      * test option

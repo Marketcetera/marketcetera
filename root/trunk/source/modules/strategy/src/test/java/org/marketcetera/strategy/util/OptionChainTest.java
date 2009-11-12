@@ -122,7 +122,7 @@ public class OptionChainTest
                                                              .withExchange("B")
                                                              .withExpirationType(ExpirationType.AMERICAN)
                                                              .withInstrument(callOption)
-                                                             .withMultiplier(0)
+                                                             .withMultiplier(BigDecimal.ZERO)
                                                              .withPrice(EventTestBase.generateDecimalValue())
                                                              .withQuoteDate(DateUtils.dateToString(new Date()))
                                                              .withSize(EventTestBase.generateDecimalValue()).create();
@@ -165,7 +165,7 @@ public class OptionChainTest
                                                             .withExchange("X")
                                                             .withExpirationType(ExpirationType.AMERICAN)
                                                             .withInstrument(putOption)
-                                                            .withMultiplier(0)
+                                                            .withMultiplier(BigDecimal.ZERO)
                                                             .withPrice(EventTestBase.generateDecimalValue())
                                                             .withQuoteDate(DateUtils.dateToString(new Date()))
                                                             .withSize(EventTestBase.generateDecimalValue()).create();
@@ -676,13 +676,13 @@ public class OptionChainTest
                                                          OptionType.Call,
                                                          ExpirationType.AMERICAN,
                                                          true,
-                                                         10);
+                                                         BigDecimal.TEN);
         OptionContract expectedPut = new OptionContract(equity,
                                                         putOption,
                                                         OptionType.Put,
                                                         ExpirationType.AMERICAN,
                                                         true,
-                                                        10);
+                                                        BigDecimal.TEN);
         // create a few events for a given option contract
         assertTrue(optionChain.isEmpty());
         QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.optionAskEvent();
@@ -690,7 +690,7 @@ public class OptionChainTest
         AskEvent ask = askBuilder.withExchange("Q")
                                  .withExpirationType(ExpirationType.AMERICAN)
                                  .withInstrument(callOption)
-                                 .withMultiplier(10)
+                                 .withMultiplier(BigDecimal.TEN)
                                  .hasDeliverable(true)
                                  .withPrice(EventTestBase.generateDecimalValue())
                                  .withQuoteDate(DateUtils.dateToString(new Date()))
@@ -699,7 +699,7 @@ public class OptionChainTest
         BidEvent bid = bidBuilder.withExchange("X")
                                  .withExpirationType(ExpirationType.AMERICAN)
                                  .withInstrument(callOption)
-                                 .withMultiplier(10)
+                                 .withMultiplier(BigDecimal.TEN)
                                  .hasDeliverable(true)
                                  .withPrice(EventTestBase.generateDecimalValue())
                                  .withQuoteDate(DateUtils.dateToString(new Date()))
@@ -737,7 +737,7 @@ public class OptionChainTest
         ask = askBuilder.withExchange("Q")
                         .withExpirationType(ExpirationType.AMERICAN)
                         .withInstrument(putOption)
-                        .withMultiplier(10)
+                        .withMultiplier(BigDecimal.TEN)
                         .hasDeliverable(true)
                         .withPrice(EventTestBase.generateDecimalValue())
                         .withQuoteDate(DateUtils.dateToString(new Date()))
@@ -746,7 +746,7 @@ public class OptionChainTest
         bid = bidBuilder.withExchange("X")
                         .withExpirationType(ExpirationType.AMERICAN)
                         .withInstrument(putOption)
-                        .withMultiplier(10)
+                        .withMultiplier(BigDecimal.TEN)
                         .hasDeliverable(true)
                         .withPrice(EventTestBase.generateDecimalValue())
                         .withQuoteDate(DateUtils.dateToString(new Date()))
@@ -987,7 +987,7 @@ public class OptionChainTest
      * @param inExpectedUnderlyingInstrument an <code>Instrument</code> value
      * @param inExpectedOption an <code>Option</code> value
      * @param inExpectedExpirationType an <code>ExpirationType</code> value
-     * @param inExpectedMultiplier an <code>int</code> value
+     * @param inExpectedMultiplier a <code>BigDecimal</code> value
      * @param inExpectedHasDeliverable a <code>boolean</code> value
      * @param inExpectedLatestBid a <code>BidEvent</code> value
      * @param inExpectedLatestAsk an <code>AskEvent</code> value
@@ -999,7 +999,7 @@ public class OptionChainTest
                                              Instrument inExpectedUnderlyingInstrument,
                                              Option inExpectedOption,
                                              ExpirationType inExpectedExpirationType,
-                                             int inExpectedMultiplier,
+                                             BigDecimal inExpectedMultiplier,
                                              boolean inExpectedHasDeliverable,
                                              BidEvent inExpectedLatestBid,
                                              AskEvent inExpectedLatestAsk,
