@@ -265,6 +265,7 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
          *             if column is not in the expected range
          */
         public Object getColumnValue(PositionRow baseObject, int column) {
+            // TODO: instrument specific functionality that can be abstraced
             Instrument instrument = baseObject.getInstrument();
             Option option = (instrument instanceof Option) ? (Option) instrument
                     : null;
@@ -300,6 +301,7 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
         }
 
         private String getInstrumentLabel(Instrument instrument) {
+            // TODO: instrument specific functionality that can be abstraced
             if (instrument instanceof Equity) {
                 return Messages.POSITIONS_TABLE_EQUITY__LABEL.getText();
             } else if (instrument instanceof Option) {

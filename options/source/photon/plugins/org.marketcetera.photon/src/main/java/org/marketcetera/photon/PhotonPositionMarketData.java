@@ -51,7 +51,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	/*
 	 * mListeners synchronizes access to the following three collections.
 	 */
-	private final SetMultimap<Instrument, SymbolChangeListener> mListeners = HashMultimap.create();
+	private final SetMultimap<Instrument, InstrumentMarketDataListener> mListeners = HashMultimap.create();
 	private final Map<Instrument, IMarketDataReference<MDLatestTick>> mLatestTickReferences = Maps
 			.newHashMap();
 	private final Map<Instrument, IMarketDataReference<MDMarketstat>> mStatReferences = Maps
@@ -119,7 +119,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	}
 
 	@Override
-	public void addSymbolChangeListener(Instrument instrument, SymbolChangeListener listener) {
+	public void addInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
 		Validate.noNullElements(new Object[] { instrument, listener });
 		synchronized (mListeners) {
 			if (mDisposed.get()) return;
@@ -140,13 +140,13 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	}
 
 	@Override
-	public void removeSymbolChangeListener(Instrument instrument, SymbolChangeListener listener) {
+	public void removeInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
 		Validate.noNullElements(new Object[] { instrument, listener });
 		List<IMarketDataReference<?>> toDispose = Lists.newArrayList();
 		synchronized (mListeners) {
 			IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(instrument);
 			IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(instrument);
-			Set<SymbolChangeListener> listeners = mListeners.get(instrument);
+			Set<InstrumentMarketDataListener> listeners = mListeners.get(instrument);
 			listeners.remove(listener);
 			if (listeners.isEmpty()) {
 				if (ref != null) {
@@ -179,10 +179,10 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	    Instrument instrument = item.getInstrument();
         BigDecimal newValue = item.getPrice();
         if (updateCache(instrument, newValue, mLatestTickCache, NULL_BIG_DECIMAL)) {
-	        SymbolChangeEvent event = new SymbolChangeEvent(this, newValue);
+	        InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
 	        synchronized (mListeners) {
 	            if (mDisposed.get()) return;
-	            for (SymbolChangeListener listener : mListeners.get(instrument)) {
+	            for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
 	               listener.symbolTraded(event);
 	            }
 	        }
@@ -193,10 +193,10 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	    Instrument instrument = item.getInstrument();
         BigDecimal newValue = item.getPreviousClosePrice();
         if (updateCache(instrument, newValue, mClosingPriceCache, NULL_BIG_DECIMAL)) {
-            SymbolChangeEvent event = new SymbolChangeEvent(this, newValue);
+            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
             synchronized (mListeners) {
                 if (mDisposed.get()) return;
-                for (SymbolChangeListener listener : mListeners.get(instrument)) {
+                for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
                    listener.closePriceChanged(event);
                 }
             }
@@ -209,7 +209,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
         if (updateCache(instrument, newValue, mOptionMultiplierCache, NULL_INTEGER)) {
             synchronized (mListeners) {
                 if (mDisposed.get()) return;
-                for (SymbolChangeListener listener : mListeners.get(instrument)) {
+                for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
                    listener.optionMultiplierChanged(newValue);
                 }
             }
@@ -237,14 +237,14 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	@Override
 	public void dispose() {
 		if (mDisposed.compareAndSet(false, true)) {
-			Set<Map.Entry<Instrument, SymbolChangeListener>> entries;
+			Set<Map.Entry<Instrument, InstrumentMarketDataListener>> entries;
 			synchronized (mListeners) {
 				// make a copy since we will be modifying mListeners
 				entries = Sets.newHashSet(mListeners
 						.entries());
 			}
-			for (Map.Entry<Instrument, SymbolChangeListener> entry : entries) {
-				removeSymbolChangeListener(entry.getKey(), entry.getValue());
+			for (Map.Entry<Instrument, InstrumentMarketDataListener> entry : entries) {
+				removeInstrumentMarketDataListener(entry.getKey(), entry.getValue());
 			}
 		}
 	}

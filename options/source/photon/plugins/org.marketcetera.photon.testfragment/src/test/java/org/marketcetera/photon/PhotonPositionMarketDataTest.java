@@ -19,8 +19,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeEvent;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeListener;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
@@ -107,40 +107,40 @@ public class PhotonPositionMarketDataTest {
 		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
-				mFixture.addSymbolChangeListener(null, mock(SymbolChangeListener.class));
+				mFixture.addInstrumentMarketDataListener(null, mock(InstrumentMarketDataListener.class));
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
-				mFixture.addSymbolChangeListener(IBM, null);
+				mFixture.addInstrumentMarketDataListener(IBM, null);
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
-				mFixture.removeSymbolChangeListener(null, mock(SymbolChangeListener.class));
+				mFixture.removeInstrumentMarketDataListener(null, mock(InstrumentMarketDataListener.class));
 			}
 		};
 		new ExpectedFailure<IllegalArgumentException>() {
 			@Override
 			protected void run() throws Exception {
-				mFixture.removeSymbolChangeListener(IBM, null);
+				mFixture.removeInstrumentMarketDataListener(IBM, null);
 			}
 		};
 	}
 
 	@Test
 	public void testAddingMultipleListenersGetsSingleReference() {
-		mFixture.addSymbolChangeListener(IBM, mock(SymbolChangeListener.class));
-		mFixture.addSymbolChangeListener(IBM, mock(SymbolChangeListener.class));
+		mFixture.addInstrumentMarketDataListener(IBM, mock(InstrumentMarketDataListener.class));
+		mFixture.addInstrumentMarketDataListener(IBM, mock(InstrumentMarketDataListener.class));
 		verify(mMockMarketData, times(1)).getLatestTick(new Equity("IBM"));
 	}
 
 	@Test
 	public void testNotificationGeneratesEvent() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(METC, mockListener);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(METC, mockListener);
 		changeLatestTick(mMETCTick, 5);
 		verify(mockListener).symbolTraded(argThat(hasNewPrice(5)));
 		changeMultiplier(mMETCTick, 8);
@@ -150,10 +150,10 @@ public class PhotonPositionMarketDataTest {
 
 	@Test
 	public void testMultipleListenersGetNotified() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
-		mFixture.addSymbolChangeListener(IBM, mockListener2);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		InstrumentMarketDataListener mockListener2 = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener2);
 		changeLatestTick(mIBMTick, 12);
 		verify(mockListener).symbolTraded(argThat(hasNewPrice(12)));
 		verify(mockListener2).symbolTraded(argThat(hasNewPrice(12)));
@@ -161,42 +161,42 @@ public class PhotonPositionMarketDataTest {
 
 	@Test
 	public void testDuplicateListenerIgnored() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
 		changeLatestTick(mIBMTick, 7);
 		verify(mockListener, times(1)).symbolTraded(argThat(hasNewPrice(7)));
 	}
 
 	@Test
 	public void testRemoveNonExistantListenerIgnored() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
-		mFixture.removeSymbolChangeListener(IBM, mockListener2);
-		mFixture.removeSymbolChangeListener(METC, mockListener);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		InstrumentMarketDataListener mockListener2 = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
+		mFixture.removeInstrumentMarketDataListener(IBM, mockListener2);
+		mFixture.removeInstrumentMarketDataListener(METC, mockListener);
 		verify(mMockIBMReference, never()).dispose();
 	}
 
 	@Test
 	public void testNoMoreListenersDisposesDataAndRemovesAdapter() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
-		mFixture.addSymbolChangeListener(IBM, mockListener2);
-		mFixture.removeSymbolChangeListener(IBM, mockListener);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		InstrumentMarketDataListener mockListener2 = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener2);
+		mFixture.removeInstrumentMarketDataListener(IBM, mockListener);
 		verify(mMockIBMReference, never()).dispose();
-		mFixture.removeSymbolChangeListener(IBM, mockListener2);
+		mFixture.removeInstrumentMarketDataListener(IBM, mockListener2);
 		verify(mMockIBMReference).dispose();
 		assertThat(mIBMTick.eAdapters().size(), is(0));
 	}
 
 	@Test
 	public void testGetLastTradePrice() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
-		mFixture.addSymbolChangeListener(METC, mockListener2);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		InstrumentMarketDataListener mockListener2 = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
+		mFixture.addInstrumentMarketDataListener(METC, mockListener2);
 		changeLatestTick(mIBMTick, 18);
 		changeLatestTick(mMETCTick, 19);
 		assertThat(mFixture.getLastTradePrice(IBM), comparesEqualTo(18));
@@ -205,10 +205,10 @@ public class PhotonPositionMarketDataTest {
 
 	@Test
 	public void testGetClosingPrice() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
-		mFixture.addSymbolChangeListener(METC, mockListener2);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		InstrumentMarketDataListener mockListener2 = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
+		mFixture.addInstrumentMarketDataListener(METC, mockListener2);
 		changePreviousClose(mIBMStat, 20);
 		changePreviousClose(mMETCStat, 25);
 		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(20)));
@@ -225,36 +225,36 @@ public class PhotonPositionMarketDataTest {
 
     @Test
     public void testGetOptionMultiplier() throws Exception {
-        SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-        mFixture.addSymbolChangeListener(METC, mockListener);
+        InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+        mFixture.addInstrumentMarketDataListener(METC, mockListener);
         changeMultiplier(mMETCTick, 1000);
         assertThat(mFixture.getOptionMultiplier(METC), is(1000));
     }
 	
 	@Test
 	public void testListenerNotNotifiedAfterRemoved() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
 		changeLatestTick(mIBMTick, 1);
 		verify(mockListener).symbolTraded(argThat(hasNewPrice(1)));
 		// remove it
-		mFixture.removeSymbolChangeListener(IBM, mockListener);
+		mFixture.removeInstrumentMarketDataListener(IBM, mockListener);
 		changeLatestTick(mIBMTick, 2);
 		verify(mockListener, never()).symbolTraded(argThat(hasNewPrice(2)));
 	}
 
 	@Test
 	public void testSeparateNotifications() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
-		mFixture.addSymbolChangeListener(METC, mockListener2);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		InstrumentMarketDataListener mockListener2 = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
+		mFixture.addInstrumentMarketDataListener(METC, mockListener2);
 		changeLatestTick(mIBMTick, 12);
 		changeLatestTick(mMETCTick, 150);
 		verify(mockListener).symbolTraded(argThat(hasNewPrice(12)));
 		verify(mockListener2).symbolTraded(argThat(hasNewPrice(150)));
 		// remove one
-		mFixture.removeSymbolChangeListener(IBM, mockListener);
+		mFixture.removeInstrumentMarketDataListener(IBM, mockListener);
 		changeLatestTick(mIBMTick, 13);
 		changeLatestTick(mMETCTick, 151);
 		verify(mockListener, never()).symbolTraded(argThat(hasNewPrice(13)));
@@ -263,10 +263,10 @@ public class PhotonPositionMarketDataTest {
 
 	@Test
 	public void testDispose() throws Exception {
-		SymbolChangeListener mockListener = mock(SymbolChangeListener.class);
-		SymbolChangeListener mockListener2 = mock(SymbolChangeListener.class);
-		mFixture.addSymbolChangeListener(IBM, mockListener);
-		mFixture.addSymbolChangeListener(METC, mockListener2);
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		InstrumentMarketDataListener mockListener2 = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
+		mFixture.addInstrumentMarketDataListener(METC, mockListener2);
 		changeLatestTick(mIBMTick, 12);
 		changeLatestTick(mMETCTick, 150);
 		assertThat(mFixture.getLastTradePrice(IBM), comparesEqualTo(12));
@@ -299,8 +299,8 @@ public class PhotonPositionMarketDataTest {
 		changePreviousClose(stat, new BigDecimal(newPrice));
 	}
 
-	private static Matcher<SymbolChangeEvent> hasNewPrice(final int newPrice) {
-		return new BaseMatcher<SymbolChangeEvent>() {
+	private static Matcher<InstrumentMarketDataEvent> hasNewPrice(final int newPrice) {
+		return new BaseMatcher<InstrumentMarketDataEvent>() {
 
 			@Override
 			public void describeTo(Description description) {
@@ -310,13 +310,13 @@ public class PhotonPositionMarketDataTest {
 
 			@Override
 			public boolean matches(Object item) {
-				return comparesEqualTo(newPrice).matches(((SymbolChangeEvent) item).getNewPrice());
+				return comparesEqualTo(newPrice).matches(((InstrumentMarketDataEvent) item).getNewPrice());
 			}
 		};
 	}
 
-	private static Matcher<SymbolChangeEvent> hasNullNewPrice() {
-		return new BaseMatcher<SymbolChangeEvent>() {
+	private static Matcher<InstrumentMarketDataEvent> hasNullNewPrice() {
+		return new BaseMatcher<InstrumentMarketDataEvent>() {
 
 			@Override
 			public void describeTo(Description description) {
@@ -326,7 +326,7 @@ public class PhotonPositionMarketDataTest {
 
 			@Override
 			public boolean matches(Object item) {
-				return nullValue().matches(((SymbolChangeEvent) item).getNewPrice());
+				return nullValue().matches(((InstrumentMarketDataEvent) item).getNewPrice());
 			}
 		};
 	}

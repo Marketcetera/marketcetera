@@ -15,6 +15,7 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.eclipse.ui.PlatformUI;
+import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.ImmutablePositionSupport;
@@ -47,12 +48,7 @@ public class PositionsViewFixture {
     private final MockMarketDataSupport mMarketDataSupport = new MockMarketDataSupport();
     private final IncomingPositionSupport mIncomingPositionSupport = new ImmutablePositionSupport(
             ImmutableMap.<PositionKey<?>, BigDecimal> of());
-    private final UnderlyingSymbolSupport mUnderlyingSymbolSupport = new UnderlyingSymbolSupport() {
-        @Override
-        public String getUnderlying(Instrument instrument) {
-            return instrument.getSymbol();
-        }
-    };
+    private final UnderlyingSymbolSupport mUnderlyingSymbolSupport = new MockUnderlyingSymbolSupport();
     private ServiceRegistration mMockService;
     private PositionsView mRealView;
 
@@ -204,6 +200,7 @@ public class PositionsViewFixture {
     public void unregisterModel() {
         if (mMockService != null) {
             mMockService.unregister();
+            mMockService = null;
         }
     }
 
@@ -229,13 +226,13 @@ public class PositionsViewFixture {
         }
 
         @Override
-        public void addSymbolChangeListener(Instrument instrument,
-                SymbolChangeListener listener) {
+        public void addInstrumentMarketDataListener(Instrument instrument,
+                InstrumentMarketDataListener listener) {
         }
 
         @Override
-        public void removeSymbolChangeListener(Instrument instrument,
-                SymbolChangeListener listener) {
+        public void removeInstrumentMarketDataListener(Instrument instrument,
+                InstrumentMarketDataListener listener) {
         }
 
         @Override
