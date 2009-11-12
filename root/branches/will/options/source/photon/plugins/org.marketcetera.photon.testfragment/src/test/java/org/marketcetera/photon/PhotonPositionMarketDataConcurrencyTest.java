@@ -10,9 +10,9 @@ import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeEvent;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeListener;
-import org.marketcetera.core.position.MarketDataSupport.SymbolChangeListenerBase;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListenerBase;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDFactory;
@@ -104,7 +104,7 @@ public class PhotonPositionMarketDataConcurrencyTest extends
     private final Thread mListenersThread = new ReportingThread(
             "ListenerThread") {
 
-        private final ListMultimap<String, SymbolChangeListener> mListeners = LinkedListMultimap
+        private final ListMultimap<String, InstrumentMarketDataListener> mListeners = LinkedListMultimap
                 .create();
 
         @Override
@@ -113,10 +113,10 @@ public class PhotonPositionMarketDataConcurrencyTest extends
                 if (isInterrupted())
                     return;
                 String symbol = getRandomElement(mSymbols);
-                SymbolChangeListener listener = new SymbolChangeListenerBase() {
+                InstrumentMarketDataListener listener = new InstrumentMarketDataListenerBase() {
 
                     @Override
-                    public void symbolTraded(SymbolChangeEvent event) {
+                    public void symbolTraded(InstrumentMarketDataEvent event) {
                         try {
                             SLF4JLoggerProxy.trace(getName(), event.toString());
                             Thread.sleep(19);
@@ -126,7 +126,7 @@ public class PhotonPositionMarketDataConcurrencyTest extends
                     }
 
                     @Override
-                    public void closePriceChanged(SymbolChangeEvent event) {
+                    public void closePriceChanged(InstrumentMarketDataEvent event) {
                         try {
                             SLF4JLoggerProxy.trace(getName(), event.toString());
                             Thread.sleep(37);
@@ -142,14 +142,14 @@ public class PhotonPositionMarketDataConcurrencyTest extends
                 } catch (InterruptedException e) {
                     return;
                 }
-                mFixture.addSymbolChangeListener(new Equity(symbol), listener);
+                mFixture.addInstrumentMarketDataListener(new Equity(symbol), listener);
                 symbol = getRandomElement(mSymbols);
-                List<SymbolChangeListener> list = mListeners.get(symbol);
+                List<InstrumentMarketDataListener> list = mListeners.get(symbol);
                 if (!list.isEmpty()) {
                     SLF4JLoggerProxy.trace(getName(), "Removing listener");
                     int index = list.size() == 1 ? 0 : mGenerator.nextInt(list
                             .size() - 1);
-                    mFixture.removeSymbolChangeListener(new Equity(symbol),
+                    mFixture.removeInstrumentMarketDataListener(new Equity(symbol),
                             list.get(index));
                 }
                 try {

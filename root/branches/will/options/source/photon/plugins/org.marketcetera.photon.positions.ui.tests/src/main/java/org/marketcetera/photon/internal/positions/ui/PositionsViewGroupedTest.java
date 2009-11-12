@@ -2,8 +2,6 @@ package org.marketcetera.photon.internal.positions.ui;
 
 import java.math.BigDecimal;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +33,6 @@ public class PositionsViewGroupedTest extends PhotonTestBase {
 
     @Before
     public void before() throws Exception {
-        setLevel("org.eclipse.swtbot", Level.ALL);
-        BasicConfigurator.configure();
         mFixture = new PositionsViewFixture();
         mFixture.assertEmptyPage();
     }
