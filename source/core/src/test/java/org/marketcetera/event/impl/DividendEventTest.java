@@ -432,24 +432,6 @@ public class DividendEventTest
                 builder.create();
             }
         };
-        setDefaults(builder).withDeclareDate(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_DECLARE_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                builder.create();
-            }
-        };
-        setDefaults(builder).withDeclareDate("");
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_DECLARE_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                builder.create();
-            }
-        };
         // this value is ok
         setDefaults(builder).withDeclareDate("not-a-date");
         verify(builder);
@@ -478,47 +460,15 @@ public class DividendEventTest
         verify(builder);
         setDefaults(builder).withExecutionDate(DateUtils.dateToString(new Date()));
         verify(builder);
-        setDefaults(builder).withPaymentDate(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_PAYMENT_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                builder.create();
-            }
-        };
-        setDefaults(builder).withPaymentDate("");
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_PAYMENT_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                builder.create();
-            }
-        };
         // this value is ok
         setDefaults(builder).withPaymentDate("not-a-date");
         verify(builder);
         setDefaults(builder).withPaymentDate(DateUtils.dateToString(new Date()));
         verify(builder);
         setDefaults(builder).withRecordDate(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_RECORD_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                builder.create();
-            }
-        };
+        verify(builder);
         setDefaults(builder).withRecordDate("");
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_RECORD_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                builder.create();
-            }
-        };
+        verify(builder);
         // this value is ok
         setDefaults(builder).withRecordDate("not-a-date");
         verify(builder);

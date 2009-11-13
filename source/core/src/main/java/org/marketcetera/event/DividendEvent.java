@@ -31,11 +31,11 @@ public interface DividendEvent
      */
     public String getCurrency();
     /**
-     * Gets the declare date of the dividend.
+     * Gets the declare date of the dividend, if available.
      * 
      * <p>The format of the date is dependent on the market data provider.
      *
-     * @return a <code>String</code> value
+     * @return a <code>String</code> value or <code>null</code>
      */
     public String getDeclareDate();
     /**
@@ -59,19 +59,19 @@ public interface DividendEvent
      */
     public Equity getEquity();
     /**
-     * Gets the payment date of the dividend.
+     * Gets the payment date of the dividend, if available.
      *
      * <p>The format of the date is dependent on the market data provider.
      *
-     * @return a <code>String</code> value
+     * @return a <code>String</code> value or <code>null</code>
      */
     public String getPaymentDate();
     /**
-     * Gets the record date of the dividend.  
+     * Gets the record date of the dividend, if available.
      *
      * <p>The format of the date is dependent on the market data provider.
      *
-     * @return a <code>String</code> value
+     * @return a <code>String</code> value or <code>null</code>
      */
     public String getRecordDate();
     /**
