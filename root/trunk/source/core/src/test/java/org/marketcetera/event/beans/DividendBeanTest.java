@@ -287,28 +287,6 @@ public class DividendBeanTest
             }
         };
         inBean.setCurrency("US Dollars");
-        // null declareDate
-        assertNull(inBean.getDeclareDate());
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_DECLARE_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                inBean.validate();
-            }
-        };
-        // empty declareDate
-        inBean.setDeclareDate("");
-        assertTrue(inBean.getDeclareDate().isEmpty());
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_DECLARE_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                inBean.validate();
-            }
-        };
-        inBean.setDeclareDate(DateUtils.dateToString(new Date()));
         // null executionDate
         assertNull(inBean.getExecutionDate());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXECUTION_DATE.getText()) {
@@ -331,50 +309,6 @@ public class DividendBeanTest
             }
         };
         inBean.setExecutionDate(DateUtils.dateToString(new Date()));
-        // null paymentDate
-        assertNull(inBean.getPaymentDate());
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_PAYMENT_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                inBean.validate();
-            }
-        };
-        // empty paymentDate
-        inBean.setPaymentDate("");
-        assertTrue(inBean.getPaymentDate().isEmpty());
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_PAYMENT_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                inBean.validate();
-            }
-        };
-        inBean.setPaymentDate(DateUtils.dateToString(new Date()));
-        // null recordDate
-        assertNull(inBean.getRecordDate());
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_RECORD_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                inBean.validate();
-            }
-        };
-        // empty recordDate
-        inBean.setRecordDate("");
-        assertTrue(inBean.getRecordDate().isEmpty());
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_RECORD_DATE.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                inBean.validate();
-            }
-        };
-        inBean.setRecordDate(DateUtils.dateToString(new Date()));
         // null frequency
         assertNull(inBean.getFrequency());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_FREQUENCY.getText()) {
