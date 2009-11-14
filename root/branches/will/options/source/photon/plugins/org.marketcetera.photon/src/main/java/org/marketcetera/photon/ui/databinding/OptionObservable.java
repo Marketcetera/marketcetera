@@ -2,7 +2,6 @@ package org.marketcetera.photon.ui.databinding;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
@@ -52,15 +51,15 @@ public class OptionObservable extends
         Instrument instrument = getParent().getTypedValue();
         if (instrument instanceof Option) {
             Option option = (Option) instrument;
-            mSymbol.setValue(option.getSymbol());
-            mExpiry.setValue(option.getExpiry());
-            mStrikePrice.setValue(option.getStrikePrice());
-            mOptionType.setValue(option.getType());
+            setIfChanged(mSymbol, option.getSymbol());
+            setIfChanged(mExpiry, option.getExpiry());
+            setIfChanged(mStrikePrice, option.getStrikePrice());
+            setIfChanged(mOptionType, option.getType());
         } else {
-            mSymbol.setValue(null);
-            mExpiry.setValue(null);
-            mStrikePrice.setValue(null);
-            mOptionType.setValue(null);
+            setIfChanged(mSymbol, null);
+            setIfChanged(mExpiry, null);
+            setIfChanged(mStrikePrice, null);
+            setIfChanged(mOptionType, null);
         }
     }
 
@@ -76,9 +75,7 @@ public class OptionObservable extends
             newValue = new Option(symbol, expiry, strike, type);
         }
         ITypedObservableValue<Instrument> instrument = getParent();
-        if (!ObjectUtils.equals(instrument.getValue(), newValue)) {
-            instrument.setValue(newValue);
-        }
+        setIfChanged(instrument, newValue);
     }
 
     /**

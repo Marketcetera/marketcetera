@@ -31,7 +31,7 @@ import org.marketcetera.trade.NewOrReplaceOrder;
  * @since 0.6.0
  */
 @ClassVersion("$Id$")
-public class OrderTicketController <T extends OrderTicketModel>
+public abstract class OrderTicketController <T extends OrderTicketModel>
 	implements IOrderTicketController, IPropertyChangeListener, Messages
 {
 

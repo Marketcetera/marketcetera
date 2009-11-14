@@ -2,7 +2,6 @@ package org.marketcetera.photon.ui.databinding;
 
 import java.util.Collections;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
@@ -36,9 +35,9 @@ public class EquityObservable extends
         Instrument instrument = getParent().getTypedValue();
         if (instrument instanceof Equity) {
             Equity equity = (Equity) instrument;
-            mSymbol.setValue(equity.getSymbol());
+            setIfChanged(mSymbol, equity.getSymbol());
         } else {
-            mSymbol.setValue(null);
+            setIfChanged(mSymbol, null);
         }
     }
 
@@ -50,9 +49,7 @@ public class EquityObservable extends
             newValue = new Equity(symbol);
         }
         ITypedObservableValue<Instrument> instrument = getParent();
-        if (!ObjectUtils.equals(instrument.getValue(), newValue)) {
-            instrument.setValue(newValue);
-        }
+        setIfChanged(instrument, newValue);
     }
 
     /**

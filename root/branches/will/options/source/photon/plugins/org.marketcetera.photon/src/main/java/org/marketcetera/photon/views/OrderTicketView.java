@@ -1,7 +1,5 @@
 package org.marketcetera.photon.views;
 
-import java.util.EnumSet;
-
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -60,12 +58,8 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.collect.ObjectArrays;
 import com.ibm.icu.text.NumberFormat;
 
 /* $License$ */
@@ -86,8 +80,6 @@ import com.ibm.icu.text.NumberFormat;
 @ClassVersion("$Id$")
 public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrderTicket>
         extends XSWTView<T> {
-
-    protected static final Object BLANK = new NullSentinel(""); //$NON-NLS-1$
 
     private static final String CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX = "CUSTOM_FIELD_CHECKED_STATE_OF_"; //$NON-NLS-1$
 
@@ -276,15 +268,14 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         mSideComboViewer = new ComboViewer(ticket.getSideCombo());
         mSideComboViewer.setContentProvider(new ArrayContentProvider());
-        mSideComboViewer.setInput(getValidSides().toArray());
+        mSideComboViewer.setInput(getModel().getValidSideValues());
 
         /*
          * Order type combo based on OrderType enum.
          */
         mOrderTypeComboViewer = new ComboViewer(ticket.getOrderTypeCombo());
         mOrderTypeComboViewer.setContentProvider(new ArrayContentProvider());
-        mOrderTypeComboViewer.setInput(EnumSet.complementOf(
-                EnumSet.of(OrderType.Unknown)).toArray());
+        mOrderTypeComboViewer.setInput(getModel().getValidOrderTypeValues());
 
         /*
          * Broker combo based on available brokers.
@@ -293,8 +284,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         mAvailableBrokersViewer
                 .setContentProvider(new ObservableListContentProvider());
         mAvailableBrokersViewer.setLabelProvider(new BrokerLabelProvider());
-        mAvailableBrokersViewer.setInput(BrokerManager.getCurrent()
-                .getAvailableBrokers());
+        mAvailableBrokersViewer.setInput(getModel().getValidBrokers());
 
         /*
          * Time in Force combo based on TimeInForce enum.
@@ -303,8 +293,8 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         mTimeInForceComboViewer = new ComboViewer(ticket.getTifCombo());
         mTimeInForceComboViewer.setContentProvider(new ArrayContentProvider());
-        mTimeInForceComboViewer.setInput(ObjectArrays.concat(BLANK, EnumSet
-                .complementOf(EnumSet.of(TimeInForce.Unknown)).toArray()));
+        mTimeInForceComboViewer
+                .setInput(getModel().getValidTimeInForceValues());
 
         /*
          * Custom fields table.
@@ -320,16 +310,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                         BeansObservables.observeMaps(contentProvider
                                 .getKnownElements(), CustomField.class,
                                 new String[] { "keyString", "valueString" })));//$NON-NLS-1$ //$NON-NLS-2$
-    }
-
-    /**
-     * Return the set of Side values that are valid for the ticket.
-     * 
-     * @return the valid sides
-     */
-    protected EnumSet<Side> getValidSides() {
-        return EnumSet.complementOf(EnumSet.of(Side.Unknown,
-                Side.SellShortExempt));
     }
 
     /**
@@ -424,6 +404,13 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         Binding binding = bindDecimal(ticket.getPriceText(), model.getPrice(),
                 Messages.ORDER_TICKET_VIEW_PRICE__LABEL.getText());
+        /*
+         * RequiredFieldSupport reports an error if the value is null or empty
+         * string. We want this behavior when the order is a limit order, but
+         * not when it is a market order (since empty string is correct as the
+         * price is uneditable. So we decorate the observable and pass the
+         * decorated one to RequiredFieldsupport.
+         */
         IObservableValue priceDecorator = new DecoratingObservableValue(
                 (IObservableValue) binding.getTarget(), false) {
             @Override
@@ -431,6 +418,10 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                 Object actualValue = super.getValue();
                 if ("".equals(actualValue) //$NON-NLS-1$
                         && !model.isLimitOrder().getTypedValue()) {
+                    /*
+                     * Return an object to "trick" RequiredFieldSupport to not
+                     * error.
+                     */
                     return new Object();
                 }
                 return actualValue;
@@ -578,7 +569,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                         .getValueType()) {
                     @Override
                     public Object convert(Object fromObject) {
-                        return fromObject instanceof NullSentinel ? null
+                        return fromObject instanceof OrderTicketModel.NullSentinel ? null
                                 : fromObject;
                     }
                 }), null);
@@ -793,6 +784,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
      */
     protected void handleSend() {
         try {
+            // TODO: this logic should probably be in the controller
             PhotonPlugin plugin = PhotonPlugin.getDefault();
             mModel.completeMessage();
             NewOrReplaceOrder orderMessage = mModel.getOrderObservable()
@@ -874,26 +866,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
             ticket.getSideCombo().setFocus();
         } else {
             ticket.getQuantityText().setFocus();
-        }
-    }
-
-    @ClassVersion("$Id$")
-    private static class NullSentinel {
-        private final String mString;
-
-        /**
-         * Constructor.
-         * 
-         * @param string
-         *            the value for {@link #toString()}
-         */
-        public NullSentinel(String string) {
-            mString = string;
-        }
-
-        @Override
-        public String toString() {
-            return mString;
         }
     }
 

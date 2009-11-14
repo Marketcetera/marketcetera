@@ -44,11 +44,7 @@ public abstract class InstrumentFromMemento extends
      */
     public static Instrument restore(IMemento memento) {
         Validate.notNull(memento, "memento"); //$NON-NLS-1$
-        try {
-            return SELECTOR.forValue(memento).doRestore(memento);
-        } catch (Exception e) {
-            return null;
-        }
+        return SELECTOR.forValue(memento).doRestore(memento);
     }
 
     private static final DynamicInstrumentFunctionSelector<IMemento, InstrumentFromMemento> SELECTOR = new DynamicInstrumentFunctionSelector<IMemento, InstrumentFromMemento>(

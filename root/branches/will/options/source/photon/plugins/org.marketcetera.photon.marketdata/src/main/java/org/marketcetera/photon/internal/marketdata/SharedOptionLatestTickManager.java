@@ -109,6 +109,10 @@ public class SharedOptionLatestTickManager
                     if (inData instanceof TradeEvent) {
                         TradeEvent data = (TradeEvent) inData;
                         Instrument instrument = data.getInstrument();
+                        /*
+                         * Ignore data if it is for an instrument (e.g. another
+                         * option) that has not been requested yet.
+                         */
                         if (item.containsKey(instrument)) {
                             MDLatestTickImpl mdItem = item.get(instrument);
                             BigDecimal price = data.getPrice();

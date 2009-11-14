@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class StatusToImageConverter extends TypedConverter<IStatus, Image> {
-    
+
     /**
      * Constructor.
      */
@@ -39,15 +39,19 @@ public class StatusToImageConverter extends TypedConverter<IStatus, Image> {
             fieldDecorationID = FieldDecorationRegistry.DEC_WARNING;
             break;
         case IStatus.ERROR:
-            if  (fromObject instanceof RequiredStatus) {
+            if (fromObject instanceof RequiredStatus) {
                 fieldDecorationID = FieldDecorationRegistry.DEC_REQUIRED;
                 break;
             }
         case IStatus.CANCEL:
             fieldDecorationID = FieldDecorationRegistry.DEC_ERROR;
             break;
+        default:
+            /*
+             * No decoration needed.
+             */
+            return null;
         }
-
         FieldDecoration fieldDecoration = FieldDecorationRegistry.getDefault()
                 .getFieldDecoration(fieldDecorationID);
         return fieldDecoration == null ? null : fieldDecoration.getImage();

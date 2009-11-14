@@ -28,8 +28,8 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Parses an order from a string. 
- *
+ * Parses an order from a string.
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
@@ -159,13 +159,18 @@ public class OrderSingleParser {
 
                         private void applyOptionalField(String string,
                                 OrderSingle order) {
+                            if (string.isEmpty()) {
+                                return;
+                            }
                             String[] split = string.split(":"); //$NON-NLS-1$
                             if (split.length == 1) {
                                 throw new IllegalArgumentException(
-                                        Messages.ORDER_SINGLE_PARSER_NO_VALUE_FOR_OPTIONAL_FIELD.getText(split[0]));
+                                        Messages.ORDER_SINGLE_PARSER_NO_VALUE_FOR_OPTIONAL_FIELD
+                                                .getText(split[0]));
                             } else if (split.length != 2) {
                                 throw new IllegalArgumentException(
-                                        Messages.ORDER_SINGLE_PARSER_INVALID_OPTIONAL_FIELD.getText(string));
+                                        Messages.ORDER_SINGLE_PARSER_INVALID_OPTIONAL_FIELD
+                                                .getText(string));
                             }
                             String keyword = split[0];
                             String value = split[1];
@@ -203,11 +208,14 @@ public class OrderSingleParser {
                                     order
                                             .setTimeInForce(TimeInForce.ImmediateOrCancel);
                                 } else {
-                                    throw new IllegalArgumentException();
+                                    throw new IllegalArgumentException(
+                                            Messages.ORDER_SINGLE_PARSER_INVALID_TIF
+                                                    .getText(value));
                                 }
                             } else {
                                 throw new IllegalArgumentException(
-                                        Messages.ORDER_SINGLE_PARSER_INVALID_OPTIONAL_FIELD.getText(string));
+                                        Messages.ORDER_SINGLE_PARSER_INVALID_OPTIONAL_FIELD
+                                                .getText(string));
                             }
                         }
                     }).from(TOKENS, Scanners.WHITESPACES);

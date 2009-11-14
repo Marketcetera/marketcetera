@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.ui.OptionPerspectiveFactory;
 
 /* $License$ */
 
@@ -22,5 +23,15 @@ public class OptionOrderTicketController extends
      */
     public OptionOrderTicketController(OptionOrderTicketModel model) {
         super(model);
+    }
+
+    @Override
+    public String getViewId() {
+        return OptionOrderTicketView.ID;
+    }
+
+    @Override
+    public String getPerspectiveId() {
+        return OptionPerspectiveFactory.ID;
     }
 }

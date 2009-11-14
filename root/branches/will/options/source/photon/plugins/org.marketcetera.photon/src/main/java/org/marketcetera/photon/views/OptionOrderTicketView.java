@@ -30,11 +30,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commons.ui.databinding.DataBindingUtils;
 import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.OrderCapacity;
-import org.marketcetera.trade.PositionEffect;
-import org.marketcetera.trade.Side;
-
-import com.google.common.collect.ObjectArrays;
 
 /* $License$ */
 
@@ -79,13 +74,7 @@ public class OptionOrderTicketView extends
 
     @Override
     protected String getReplaceOrderString() {
-        return Messages.OPTION_ORDER_TICKET_VIEW_REPLACE__HEADING
-                .getText();
-    }
-
-    @Override
-    protected EnumSet<Side> getValidSides() {
-        return EnumSet.of(Side.Buy, Side.Sell);
+        return Messages.OPTION_ORDER_TICKET_VIEW_REPLACE__HEADING.getText();
     }
 
     @Override
@@ -101,7 +90,7 @@ public class OptionOrderTicketView extends
                 EnumSet.of(OptionType.Unknown)).toArray());
 
         /*
-         * Order capactity combo based on OrderCapacity enum.
+         * Order capacity combo based on OrderCapacity enum.
          * 
          * An extra blank entry is added since the field is optional.
          */
@@ -109,9 +98,8 @@ public class OptionOrderTicketView extends
                 .getOrderCapacityCombo());
         mOrderCapacityComboViewer
                 .setContentProvider(new ArrayContentProvider());
-        mOrderCapacityComboViewer.setInput(ObjectArrays.concat(BLANK, EnumSet
-                .of(OrderCapacity.Agency, OrderCapacity.Principal,
-                        OrderCapacity.RisklessPrincipal).toArray()));
+        mOrderCapacityComboViewer.setInput(getModel()
+                .getValidOrderCapacityValues());
 
         /*
          * Open close combo based on PositionEffect enum.
@@ -120,8 +108,8 @@ public class OptionOrderTicketView extends
          */
         mOpenCloseComboViewer = new ComboViewer(ticket.getOpenCloseCombo());
         mOpenCloseComboViewer.setContentProvider(new ArrayContentProvider());
-        mOpenCloseComboViewer.setInput(ObjectArrays.concat(BLANK, EnumSet
-                .complementOf(EnumSet.of(PositionEffect.Unknown)).toArray()));
+        mOpenCloseComboViewer.setInput(getModel()
+                .getValidPositionEffectValues());
     }
 
     @Override

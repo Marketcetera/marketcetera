@@ -75,7 +75,7 @@ public class MarketDataViewItem implements ISymbolProvider {
 	public void setEquity(Equity equity) {
 		Validate.notNull(equity);
 		String oldSymbol = getSymbol();
-		if (!oldSymbol.equals(equity)) {
+		if (!mEquity.equals(equity)) {
 			MDLatestTick oldLatestTick = getLatestTick();
 			MDTopOfBook oldTopOfBook = getTopOfBook();
 			dispose();

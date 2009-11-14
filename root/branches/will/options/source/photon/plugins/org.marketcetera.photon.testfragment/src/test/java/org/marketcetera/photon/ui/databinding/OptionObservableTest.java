@@ -26,7 +26,7 @@ import com.google.common.collect.ImmutableList;
 /* $License$ */
 
 /**
- * Tests {@link OptionObservable}.
+ * Tests {@link OptionObservable}, and also {@link CompoundObservableManager}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -85,6 +85,10 @@ public class OptionObservableTest {
             child.setValue(null);
             assertThat(instrument.getTypedValue(), nullValue());
             /*
+             * Subclasses can extend.
+             */
+            additionalTests(instrument, child);
+            /*
              * Dispose parent.
              */
             instrument.dispose();
@@ -99,6 +103,11 @@ public class OptionObservableTest {
         protected abstract void change();
 
         protected abstract T changeAgain();
+
+        protected void additionalTests(
+                ITypedObservableValue<Instrument> instrument,
+                ITypedObservableValue<T> child) {
+        }
     }
 
     @Test
@@ -124,6 +133,21 @@ public class OptionObservableTest {
             protected ITypedObservableValue<String> observeChild(
                     OptionObservable parent) {
                 return parent.observeSymbol();
+            }
+
+            @Override
+            protected void additionalTests(
+                    ITypedObservableValue<Instrument> instrument,
+                    ITypedObservableValue<String> child) {
+                child.setValue("X");
+                Instrument option = new Option("X", mExpiry, mStrike, mType);
+                assertThat(instrument.getTypedValue(), is(option));
+                child.setValue("  ");
+                assertThat(instrument.getTypedValue(), nullValue());
+                child.setValue("X");
+                assertThat(instrument.getTypedValue(), is(option));
+                child.setValue("");
+                assertThat(instrument.getTypedValue(), nullValue());
             }
         };
     }
@@ -151,6 +175,21 @@ public class OptionObservableTest {
             protected ITypedObservableValue<String> observeChild(
                     OptionObservable parent) {
                 return parent.observeExpiry();
+            }
+
+            @Override
+            protected void additionalTests(
+                    ITypedObservableValue<Instrument> instrument,
+                    ITypedObservableValue<String> child) {
+                child.setValue("200912");
+                Instrument option = new Option(mSymbol, "200912", mStrike, mType);
+                assertThat(instrument.getTypedValue(), is(option));
+                child.setValue("    \t");
+                assertThat(instrument.getTypedValue(), nullValue());
+                child.setValue("200912");
+                assertThat(instrument.getTypedValue(), is(option));
+                child.setValue("");
+                assertThat(instrument.getTypedValue(), nullValue());
             }
         };
     }

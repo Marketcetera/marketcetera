@@ -38,7 +38,9 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.util.concurrent.Lock;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.ObjectArrays;
 
 public class PositionsViewFixture {
@@ -138,7 +140,7 @@ public class PositionsViewFixture {
         SWTBotTreeItem item = assertGroupedPosition(grouping, "", "", "", "",
                 "", position, incoming, positionPL, tradingPL, realizedPL,
                 unrealizedPL, totalPL);
-        return new PositionTreeValidator(item);
+        return new PositionTreeValidator(item, null);
     }
 
     public SWTBotTreeItem assertGroupedPosition(String grouping,
@@ -160,16 +162,17 @@ public class PositionsViewFixture {
     }
 
     public void assertFlatPosition(String underlying, String account,
-            String trader, String... otherColumnValues) {
+            String trader, String instrument, String... otherColumnValues) {
         SWTBotTable table = mView.bot().table();
         assertThat("Wrong number of column values", otherColumnValues.length,
-                is(table.columnCount() - 3));
+                is(table.columnCount() - 4));
         for (int i = 0; i < table.rowCount(); i++) {
             if (table.cell(i, "Underlying").equals(underlying)
                     && table.cell(i, "Account").equals(account)
-                    && table.cell(i, "Trader Id").equals(trader)) {
+                    && table.cell(i, "Trader Id").equals(trader)
+                    && table.cell(i, "Instrument").equals(instrument)) {
                 for (int j = 0; j < otherColumnValues.length; j++) {
-                    assertThat(table.cell(i, j + 3), is(otherColumnValues[j]));
+                    assertThat(table.cell(i, j + 4), is(otherColumnValues[j]));
                 }
                 return;
             }
@@ -191,6 +194,30 @@ public class PositionsViewFixture {
         }
     }
 
+    public void fireTrade(Instrument instrument, String newPrice) {
+        mMarketDataSupport.fireTrade(instrument, newPrice == null ? null
+                : new BigDecimal(newPrice));
+    }
+
+    public void fireClosingPrice(Instrument instrument, String newPrice) {
+        mMarketDataSupport.fireClosingPrice(instrument, newPrice == null ? null
+                : new BigDecimal(newPrice));
+    }
+
+    public void fireOptionMultiplier(Instrument instrument,
+            Integer newMultiplier) {
+        mMarketDataSupport.fireOptionMultiplier(instrument, newMultiplier);
+    }
+
+    public void filter(final String string) throws Exception {
+        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+            @Override
+            public void run() throws Throwable {
+                mRealView.setFilterText(string);
+            }
+        });
+    }
+
     public void registerModel() {
         mMockService = OSGITestUtil.registerMockService(PositionEngine.class,
                 PositionEngineFactory.create(mTrades, mIncomingPositionSupport,
@@ -210,6 +237,9 @@ public class PositionsViewFixture {
 
     private class MockMarketDataSupport implements MarketDataSupport {
 
+        private final Multimap<Instrument, InstrumentMarketDataListener> mListeners = HashMultimap
+                .create();
+
         @Override
         public BigDecimal getLastTradePrice(Instrument instrument) {
             return null;
@@ -228,11 +258,39 @@ public class PositionsViewFixture {
         @Override
         public void addInstrumentMarketDataListener(Instrument instrument,
                 InstrumentMarketDataListener listener) {
+            mListeners.put(instrument, listener);
         }
 
         @Override
         public void removeInstrumentMarketDataListener(Instrument instrument,
                 InstrumentMarketDataListener listener) {
+            mListeners.remove(instrument, listener);
+        }
+
+        public void fireTrade(Instrument instrument, BigDecimal newPrice) {
+            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(
+                    this, newPrice);
+            for (InstrumentMarketDataListener listener : mListeners
+                    .get(instrument)) {
+                listener.symbolTraded(event);
+            }
+        }
+
+        public void fireClosingPrice(Instrument instrument, BigDecimal newPrice) {
+            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(
+                    this, newPrice);
+            for (InstrumentMarketDataListener listener : mListeners
+                    .get(instrument)) {
+                listener.closePriceChanged(event);
+            }
+        }
+
+        public void fireOptionMultiplier(Instrument instrument,
+                Integer newMultiplier) {
+            for (InstrumentMarketDataListener listener : mListeners
+                    .get(instrument)) {
+                listener.optionMultiplierChanged(newMultiplier);
+            }
         }
 
         @Override
@@ -243,10 +301,12 @@ public class PositionsViewFixture {
 
     public class PositionTreeValidator {
 
-        private SWTBotTreeItem mItem;
+        private final SWTBotTreeItem mItem;
+        private final PositionTreeValidator mParent;
 
-        public PositionTreeValidator(SWTBotTreeItem item) {
+        public PositionTreeValidator(SWTBotTreeItem item, PositionTreeValidator parent) {
             mItem = item;
+            mParent = parent;
         }
 
         public PositionTreeValidator withChild(String grouping,
@@ -256,7 +316,7 @@ public class PositionsViewFixture {
             SWTBotTreeItem item = assertGroupedPosition(grouping, "", "", "",
                     "", "", position, incoming, positionPL, tradingPL,
                     realizedPL, unrealizedPL, totalPL);
-            return new PositionTreeValidator(item);
+            return new PositionTreeValidator(item, this);
         }
 
         public SWTBotTreeItem assertGroupedPosition(String grouping,
@@ -275,16 +335,17 @@ public class PositionsViewFixture {
             return null; // unreachable
         }
 
-        public void withChildEquityPosition(String grouping, String position,
+        public PositionTreeValidator withEquityPosition(String grouping, String position,
                 String incoming, String positionPL, String tradingPL,
                 String realizedPL, String unrealizedPL, String totalPL) {
             SWTBotTreeItem item = assertGroupedPosition(grouping, "EQ", "NA",
                     "NA", "NA", "NA", position, incoming, positionPL,
                     tradingPL, realizedPL, unrealizedPL, totalPL);
             assertThat(item.getItems().length, is(0));
+            return this;
         }
 
-        public void withChildOptionPosition(String grouping, String root,
+        public PositionTreeValidator withOptionPosition(String grouping, String root,
                 String expiry, String type, String strike, String position,
                 String incoming, String positionPL, String tradingPL,
                 String realizedPL, String unrealizedPL, String totalPL) {
@@ -292,6 +353,11 @@ public class PositionsViewFixture {
                     expiry, type, strike, position, incoming, positionPL,
                     tradingPL, realizedPL, unrealizedPL, totalPL);
             assertThat(item.getItems().length, is(0));
+            return this;
+        }
+        
+        public PositionTreeValidator up() {
+            return mParent;
         }
 
     }

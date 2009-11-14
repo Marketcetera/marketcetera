@@ -20,4 +20,18 @@ public interface IOrderTicketController {
 	void clear();
 	
 	void dispose();
+	
+	/**
+     * Return the id of the perspective that is associated with this controller.
+     * 
+     * @return the perspective id
+     */
+    String getPerspectiveId();
+    
+    /**
+     * Return the id of the view that is associated with this controller.
+     * 
+     * @return the view id
+     */
+    String getViewId();
 }

@@ -15,6 +15,8 @@ import org.marketcetera.photon.IBrokerIdValidator;
 import org.marketcetera.photon.test.PhotonTestBase;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Side;
 
@@ -33,6 +35,8 @@ public class CommandParserTest extends PhotonTestBase {
     public void testCancel() {
         Object result = new CommandParser(null).parseCommand("c 1234 asdf");
         assertThat(result, is((Object) Arrays.asList("1234", "asdf")));
+        result = new CommandParser(null).parseCommand("C\t2 \t 3 4 5");
+        assertThat(result, is((Object) Arrays.asList("2", "3", "4", "5")));
     }
 
     @Test
@@ -43,6 +47,13 @@ public class CommandParserTest extends PhotonTestBase {
         assertThat(result.getQuantity(), is(new BigDecimal("10")));
         assertThat(result.getInstrument(), is((Instrument) new Equity("MSFT")));
         assertThat(result.getPrice(), is(new BigDecimal("10")));
+        result = (OrderSingle) new CommandParser(null)
+                .parseCommand("O S 5 MSFT200912P10 12.2 b:gs");
+        assertThat(result.getSide(), is(Side.Sell));
+        assertThat(result.getQuantity(), is(new BigDecimal("5")));
+        assertThat(result.getInstrument(), is((Instrument) new Option("MSFT",
+                "200912", BigDecimal.TEN, OptionType.Put)));
+        assertThat(result.getPrice(), is(new BigDecimal("12.2")));
     }
 
     @Test
@@ -57,9 +68,8 @@ public class CommandParserTest extends PhotonTestBase {
 
         final IBrokerIdValidator mockValidator = mock(IBrokerIdValidator.class);
         when(mockValidator.isValid("ABC")).thenReturn(false);
-        new ExpectedFailure<ParserException>(
-                OrderSingleParserTest.getInvalidBrokerMessage("ABC"),
-                false) {
+        new ExpectedFailure<ParserException>(OrderSingleParserTest
+                .getInvalidBrokerMessage("ABC"), false) {
             @Override
             protected void run() throws Exception {
                 new CommandParser(mockValidator)

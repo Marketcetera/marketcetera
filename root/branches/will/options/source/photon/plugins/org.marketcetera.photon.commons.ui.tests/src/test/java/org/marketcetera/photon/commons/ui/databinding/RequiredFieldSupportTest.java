@@ -52,12 +52,16 @@ public class RequiredFieldSupportTest extends PhotonTestBase {
         mWindow = new ApplicationWindow(null) {
             @Override
             protected Control createContents(Composite parent) {
+                DataBindingContext dbc = new DataBindingContext();
                 Composite c = new Composite(parent, SWT.NONE);
                 Text text = new Text(c, SWT.NONE);
                 IObservableValue value = SWTObservables.observeText(text,
                         SWT.Modify);
-                DataBindingContext dbc = new DataBindingContext();
                 RequiredFieldSupport.initFor(dbc, value, "Text", true, null);
+                Text hiddenText = new Text(c, SWT.NONE);
+                IObservableValue hiddenTextValue = SWTObservables.observeText(hiddenText,
+                        SWT.Modify);
+                RequiredFieldSupport.initFor(dbc, hiddenTextValue, "HiddenText", false, null);
                 ListViewer list = new ListViewer(c);
                 list.setContentProvider(new ArrayContentProvider());
                 list.setInput(new Object[] { "item 1", "item 2" });
@@ -133,7 +137,7 @@ public class RequiredFieldSupportTest extends PhotonTestBase {
     @Test
     public void testForSWTObservableValue() throws Throwable {
         SWTBot bot = new SWTBot();
-        SWTBotText text = bot.text();
+        SWTBotText text = bot.text(0);
         SWTBotControlDecoration decoration = new SWTBotControlDecoration(text);
         final String message = getRequiredValueMessage("Text");
         decoration.assertRequired(message);
@@ -141,6 +145,19 @@ public class RequiredFieldSupportTest extends PhotonTestBase {
         decoration.assertHidden();
         text.setText("");
         decoration.assertRequired(message);
+    }
+
+    @Test
+    public void testRequiredDecorationHidden() throws Throwable {
+        SWTBot bot = new SWTBot();
+        SWTBotText text = bot.text(1);
+        SWTBotControlDecoration decoration = new SWTBotControlDecoration(text);
+        final String message = getRequiredValueMessage("HiddenText");
+        decoration.assertNoImage(message);
+        text.setText("ABC");
+        decoration.assertHidden();
+        text.setText("");
+        decoration.assertNoImage(message);
     }
 
     @Test

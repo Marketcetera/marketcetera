@@ -347,7 +347,14 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 		control.setMenu(menu);
 	}
 
-	private void setFilterText(String filterText) {
+	/**
+	 * Sets the filter value.
+	 * 
+	 * NOTE: public access for testing only
+	 * 
+	 * @param filterText the filterText
+	 */
+	public void setFilterText(String filterText) {
 		mFilterText = filterText;
 		((PositionsViewPage) getCurrentPage()).setFilterText(filterText);
 	}
