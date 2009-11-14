@@ -375,9 +375,15 @@ public class RequestHandler
         } else if (FIXMessageUtil.isCancelReplaceRequest(qMsg)) {
             ordStatus=OrdStatus.PENDING_REPLACE;
             orderID=getOptFieldStr(qMsg,OrderID.FIELD);
+            if(orderID==null) {
+                orderID=SELF_ORDER_ID;
+            }
         } else if (FIXMessageUtil.isCancelRequest(qMsg)) {
             ordStatus=OrdStatus.PENDING_CANCEL;
             orderID=getOptFieldStr(qMsg,OrderID.FIELD);
+            if(orderID==null) {
+                orderID=SELF_ORDER_ID;
+            }
         } else {
             return null;
         }

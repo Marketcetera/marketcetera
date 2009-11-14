@@ -73,13 +73,13 @@ public class ReportHistoryServices {
      * @throws PersistenceException if there were errors retrieving the equity
      * position
      */
-    public BigDecimal getPositionAsOf
+    public BigDecimal getEquityPositionAsOf
         (SimpleUser inUser,
          Date inDate,
          Equity inEquity)
         throws PersistenceException
     {
-        return ExecutionReportSummary.getPositionForEquity
+        return ExecutionReportSummary.getEquityPositionAsOf
             (inUser,inDate,inEquity);
     }
     /**
@@ -97,12 +97,12 @@ public class ReportHistoryServices {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    public Map<PositionKey<Equity>, BigDecimal> getPositionsAsOf
+    public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
         (SimpleUser inUser,
          Date inDate)
         throws PersistenceException
     {
-        return ExecutionReportSummary.getPositionsAsOf(inUser,inDate);
+        return ExecutionReportSummary.getAllEquityPositionsAsOf(inUser,inDate);
     }
 
     /**

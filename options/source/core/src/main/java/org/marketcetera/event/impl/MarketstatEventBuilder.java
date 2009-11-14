@@ -94,7 +94,9 @@ public abstract class MarketstatEventBuilder
                     throw new IllegalArgumentException(VALIDATION_OPTION_REQUIRED.getText());
                 }
                 return new OptionMarketstatEventImpl(getMarketstat(),
-                                                     getOption());
+                                                     getOption(),
+                                                     getVolumeChange(),
+                                                     getInterestChange());
             }
         };
     }
@@ -326,10 +328,10 @@ public abstract class MarketstatEventBuilder
     /**
      * Sets the multiplier value.
      *
-     * @param inMultiplier an <code>int</code> value
+     * @param inMultiplier a <code>BigDecimal</code> value
      * @return a <code>MarketstatEventBuilder</code> value
      */
-    public final MarketstatEventBuilder withMultiplier(int inMultiplier)
+    public final MarketstatEventBuilder withMultiplier(BigDecimal inMultiplier)
     {
         option.setMultiplier(inMultiplier);
         return this;
@@ -343,6 +345,39 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder hasDeliverable(boolean inHasDeliverable)
     {
         option.setHasDeliverable(inHasDeliverable);
+        return this;
+    }
+    /**
+     * Sets the provider symbol value.
+     *
+     * @param inProviderSymbol a <code>String</code> value
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withProviderSymbol(String inProviderSymbol)
+    {
+        option.setProviderSymbol(inProviderSymbol);
+        return this;
+    }
+    /**
+     * Sets the change in volume.
+     *
+     * @param inVolumeChange a <code>BigDecimal</code> value
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withVolumeChange(BigDecimal inVolumeChange)
+    {
+        volumeChange = inVolumeChange;
+        return this;
+    }
+    /**
+     * Sets the change in interest.
+     *
+     * @param inInterestChange a <code>BigDecimal</code> value
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withInterestChange(BigDecimal inInterestChange)
+    {
+        interestChange = inInterestChange;
         return this;
     }
     /* (non-Javadoc)
@@ -374,11 +409,37 @@ public abstract class MarketstatEventBuilder
         return option;
     }
     /**
+     * Gets the volume change value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    protected final BigDecimal getVolumeChange()
+    {
+        return volumeChange;
+    }
+    /**
+     * Gets the interest change volume. 
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    protected final BigDecimal getInterestChange()
+    {
+        return interestChange;
+    }
+    /**
      * the marketstat attributes 
      */
     private MarketstatBean marketstat = new MarketstatBean();
     /**
      *  the option attributes
      */
-    private OptionBean option = new OptionBean();
+    private final OptionBean option = new OptionBean();
+    /**
+     * the change in volume since the previous close, may be <code>null</code> 
+     */
+    private BigDecimal volumeChange;
+    /**
+     * the change in interest since the previous close, may be <code>null</code>
+     */
+    private BigDecimal interestChange;
 }

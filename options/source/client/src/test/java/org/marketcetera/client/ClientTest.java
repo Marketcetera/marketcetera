@@ -346,10 +346,10 @@ public class ClientTest
         rs = getClient().getReportsSince(new Date());
         assertEquals(0,rs.length);
 
-        assertEquals(BigDecimal.TEN,getClient().getPositionAsOf
+        assertEquals(BigDecimal.TEN,getClient().getEquityPositionAsOf
                      (new Date(10),null));
         assertEquals(MockServiceImpl.POSITIONS, getClient().
-                getPositionsAsOf(new Date()));
+                getAllEquityPositionsAsOf(new Date()));
 
         //getOptionPositionAsOf()
         Option option = new Option("XYZ", "20101010", BigDecimal.TEN, OptionType.Call);
@@ -797,12 +797,12 @@ public class ClientTest
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.getPositionAsOf(null, null);
+                client.getEquityPositionAsOf(null, null);
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.getPositionsAsOf(null);
+                client.getAllEquityPositionsAsOf(null);
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){

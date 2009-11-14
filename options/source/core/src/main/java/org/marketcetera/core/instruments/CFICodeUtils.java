@@ -28,9 +28,7 @@ class CFICodeUtils {
     }
 
     /**
-     * Returns the option type value from the CFI code string. This method
-     * assumes that the supplied CFI code value is an option, it doesn't verify
-     * that the supplied CFI code represents an option instrument.
+     * Returns the option type value from the CFI code string. 
      *
      * @param inCFICode the CFI code value.
      *

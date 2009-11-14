@@ -109,7 +109,11 @@ public class JMSXMLMessageConverter implements MessageConverter {
             (inObject instanceof OrderEnvelope) ||
             (inObject instanceof BrokerStatus)) {
             try {
-                return session.createTextMessage(toXML(inObject));
+                TextMessage message = session.createTextMessage(toXML(inObject));
+                //Set the type property for interoperability with .NET client.
+                message.setStringProperty(JMS_TYPE_PROPERTY,
+                        inObject.getClass().getSimpleName());
+                return message;
             } catch (JAXBException e) {
                 throw new MessageConversionException(new I18NBoundMessage1P(
                         Messages.ERROR_CONVERTING_OBJECT_TO_MESSAGE,
@@ -203,4 +207,5 @@ public class JMSXMLMessageConverter implements MessageConverter {
     private final ThreadLocal<Unmarshaller> mUnmarshallers =
             new ThreadLocal<Unmarshaller>();
     private final JAXBContext mContext;
+    private static final String JMS_TYPE_PROPERTY = "metc_type";  //$NON-NLS-1$
 }

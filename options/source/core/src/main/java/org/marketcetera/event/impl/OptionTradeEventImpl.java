@@ -1,5 +1,7 @@
 package org.marketcetera.event.impl;
 
+import java.math.BigDecimal;
+
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.event.OptionEvent;
@@ -38,7 +40,7 @@ final class OptionTradeEventImpl
      * @see org.marketcetera.event.OptionEvent#getMultiplier()
      */
     @Override
-    public int getMultiplier()
+    public BigDecimal getMultiplier()
     {
         return option.getMultiplier();
     }
@@ -65,6 +67,14 @@ final class OptionTradeEventImpl
     public Option getInstrument()
     {
         return (Option)super.getInstrument();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.OptionEvent#getOpraSymbol()
+     */
+    @Override
+    public String getProviderSymbol()
+    {
+        return option.getProviderSymbol();
     }
     /**
      * Create a new OptionTradeEventImpl instance.

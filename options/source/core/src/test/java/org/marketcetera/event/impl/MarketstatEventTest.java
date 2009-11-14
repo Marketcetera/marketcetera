@@ -1,20 +1,13 @@
 package org.marketcetera.event.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.EventTestBase;
-import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.Messages;
-import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.*;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
@@ -621,7 +614,31 @@ public class MarketstatEventTest
         verify(builder);
     }
     /**
-     * Tests {@link MarketstatEventBuilder#withMultiplier(int)}.
+     * Tests {@link MarketstatEventBuilder#withProviderSymbol(String)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withProviderSymbol()
+            throws Exception
+    {
+        MarketstatEventBuilder builder = setDefaults(getBuilder());
+        String symbol = null;
+        builder.withProviderSymbol(symbol);
+        assertEquals(symbol,
+                     builder.getOption().getProviderSymbol());
+        symbol = "";
+        builder.withProviderSymbol(symbol);
+        assertEquals(symbol,
+                     builder.getOption().getProviderSymbol());
+        symbol = "MQF/W/X";
+        builder.withProviderSymbol(symbol);
+        assertEquals(symbol,
+                     builder.getOption().getProviderSymbol());
+        verify(builder);
+    }
+    /**
+     * Tests {@link MarketstatEventBuilder#withMultiplier(BigDecimal)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -630,15 +647,57 @@ public class MarketstatEventTest
             throws Exception
     {
         MarketstatEventBuilder builder = setDefaults(getBuilder());
-        builder.withMultiplier(Integer.MIN_VALUE);
-        assertEquals(Integer.MIN_VALUE,
+        builder.withMultiplier(new BigDecimal(Integer.MIN_VALUE));
+        assertEquals(new BigDecimal(Integer.MIN_VALUE),
                      builder.getOption().getMultiplier());
-        builder.withMultiplier(0);
-        assertEquals(0,
+        builder.withMultiplier(BigDecimal.ZERO);
+        assertEquals(BigDecimal.ZERO,
                      builder.getOption().getMultiplier());
-        builder.withMultiplier(Integer.MAX_VALUE);
-        assertEquals(Integer.MAX_VALUE,
+        builder.withMultiplier(new BigDecimal(Integer.MAX_VALUE));
+        assertEquals(new BigDecimal(Integer.MAX_VALUE),
                      builder.getOption().getMultiplier());
+        verify(builder);
+    }
+    /**
+     * Tests {@link MarketstatEventBuilder#withInterestChange(BigDecimal)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withInterestChange()
+            throws Exception
+    {
+        MarketstatEventBuilder builder = setDefaults(getBuilder());
+        builder.withInterestChange(new BigDecimal(Integer.MIN_VALUE));
+        assertEquals(new BigDecimal(Integer.MIN_VALUE),
+                     builder.getInterestChange());
+        builder.withInterestChange(BigDecimal.ZERO);
+        assertEquals(BigDecimal.ZERO,
+                     builder.getInterestChange());
+        builder.withInterestChange(new BigDecimal(Integer.MAX_VALUE));
+        assertEquals(new BigDecimal(Integer.MAX_VALUE),
+                     builder.getInterestChange());
+        verify(builder);
+    }
+    /**
+     * Tests {@link MarketstatEventBuilder#withVolumeChange(BigDecimal)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withVolumeChange()
+            throws Exception
+    {
+        MarketstatEventBuilder builder = setDefaults(getBuilder());
+        builder.withVolumeChange(new BigDecimal(Integer.MIN_VALUE));
+        assertEquals(new BigDecimal(Integer.MIN_VALUE),
+                     builder.getVolumeChange());
+        builder.withVolumeChange(BigDecimal.ZERO);
+        assertEquals(BigDecimal.ZERO,
+                     builder.getVolumeChange());
+        builder.withVolumeChange(new BigDecimal(Integer.MAX_VALUE));
+        assertEquals(new BigDecimal(Integer.MAX_VALUE),
+                     builder.getVolumeChange());
         verify(builder);
     }
     /**
@@ -845,8 +904,8 @@ public class MarketstatEventTest
         }
         assertEquals(inBuilder.getMarketstat().getVolume(),
                      event.getVolume());
-        if(event instanceof OptionEvent) {
-            OptionEvent optionEvent = (OptionEvent)event;
+        if(event instanceof OptionMarketstatEvent) {
+            OptionMarketstatEvent optionEvent = (OptionMarketstatEvent)event;
             assertEquals(inBuilder.getOption().getExpirationType(),
                          optionEvent.getExpirationType());
             assertEquals(inBuilder.getOption().getInstrument(),
@@ -859,6 +918,12 @@ public class MarketstatEventTest
                          optionEvent.getUnderlyingInstrument());
             assertEquals(inBuilder.getOption().hasDeliverable(),
                          optionEvent.hasDeliverable());
+            assertEquals(inBuilder.getOption().getProviderSymbol(),
+                         optionEvent.getProviderSymbol());
+            assertEquals(inBuilder.getInterestChange(),
+                         optionEvent.getInterestChange());
+            assertEquals(inBuilder.getVolumeChange(),
+                         optionEvent.getVolumeChange());
         }
         Object newSource = new Object();
         event.setSource(newSource);
@@ -890,9 +955,10 @@ public class MarketstatEventTest
         inBuilder.withLowExchange("low exchange");
         inBuilder.withLowPrice(new BigDecimal(counter++));
         inBuilder.withMessageId(System.nanoTime());
-        inBuilder.withMultiplier(0);
+        inBuilder.withMultiplier(BigDecimal.ZERO);
         inBuilder.withOpenExchange("open exchange");
         inBuilder.withOpenPrice(new BigDecimal(counter++));
+        inBuilder.withProviderSymbol("MSQ/K/X");
         inBuilder.withPreviousCloseDate(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withPreviousClosePrice(new BigDecimal(counter++));
         inBuilder.withSource(this);
@@ -901,6 +967,8 @@ public class MarketstatEventTest
         inBuilder.withTradeLowTime(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withUnderlyingInstrument(useEquity ? equity : option);
         inBuilder.withVolume(new BigDecimal(counter++));
+        inBuilder.withVolumeChange(EventTestBase.generateDecimalValue());
+        inBuilder.withInterestChange(EventTestBase.generateDecimalValue());
         return inBuilder;
     }
     /**

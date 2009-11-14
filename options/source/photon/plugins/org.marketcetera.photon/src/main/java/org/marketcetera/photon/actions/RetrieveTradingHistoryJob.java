@@ -84,7 +84,7 @@ public class RetrieveTradingHistoryJob extends Job {
 					});
                     Map<PositionKey<?>, BigDecimal> positions = Maps
                             .<PositionKey<?>, BigDecimal> newHashMap(ClientManager
-                                    .getInstance().getPositionsAsOf(
+                                    .getInstance().getAllEquityPositionsAsOf(
                                             lastOccurrence));
                     positions.putAll(ClientManager.getInstance()
                             .getAllOptionPositionsAsOf(lastOccurrence));

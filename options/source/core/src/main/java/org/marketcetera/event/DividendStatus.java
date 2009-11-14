@@ -13,11 +13,11 @@ import org.marketcetera.util.misc.ClassVersion;
 public enum DividendStatus
 {
     /**
-     * unofficial dividend
+     * Any next dividend amount and date are projected based on last dividend amount and date using the published dividend frequency
      */
     UNOFFICIAL,
     /**
-     * official dividend
+     * The next dividend amount and date published by the primary exchange
      */
     OFFICIAL,
     /**

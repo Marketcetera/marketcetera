@@ -349,10 +349,7 @@ public final class DividendBean
      * @throws IllegalArgumentException if <code>Equity</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Amount</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Currency</code> is <code>null</code> or empty
-     * @throws IllegalArgumentException if <code>DeclareDate</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>ExecutionDate</code> is <code>null</code> or empty
-     * @throws IllegalArgumentException if <code>PaymentDate</code> is <code>null</code> or empty
-     * @throws IllegalArgumentException if <code>RecordDate</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>Frequency</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Status</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Type</code> is <code>null</code>
@@ -371,21 +368,9 @@ public final class DividendBean
            currency.isEmpty()) {
             EventServices.error(VALIDATION_NULL_CURRENCY);
         }
-        if(declareDate == null ||
-           declareDate.isEmpty()) {
-            EventServices.error(VALIDATION_NULL_DECLARE_DATE);
-        }
         if(executionDate == null ||
            executionDate.isEmpty()) {
             EventServices.error(VALIDATION_NULL_EXECUTION_DATE);
-        }
-        if(paymentDate == null ||
-           paymentDate.isEmpty()) {
-            EventServices.error(VALIDATION_NULL_PAYMENT_DATE);
-        }
-        if(recordDate == null ||
-           recordDate.isEmpty()) {
-            EventServices.error(VALIDATION_NULL_RECORD_DATE);
         }
         if(frequency == null) {
             EventServices.error(VALIDATION_NULL_FREQUENCY);
@@ -403,17 +388,17 @@ public final class DividendBean
     @Override
     public String toString()
     {
-        return String.format("Dividend: [amount=%s, currency=%s, equity=%s, declareDate=%s, executionDate=%s, paymentDate=%s, recordDate=%s, frequency=%s, status=%s, type=%s, [%s with source %s at %s]]", //$NON-NLS-1$
+        return String.format("%s %s %s Dividend %s %s(%s) executionDate=%s declareDate=%s paymentDate=%s recordDate=%s [%s with source %s at %s]]", //$NON-NLS-1$
+                             type,
+                             status,
+                             frequency,
+                             equity,
                              amount,
                              currency,
-                             equity,
-                             declareDate,
                              executionDate,
-                             frequency,
+                             declareDate,
                              paymentDate,
                              recordDate,
-                             status,
-                             type,
                              getMessageId(),
                              getSource(),
                              getTimestamp());

@@ -371,7 +371,7 @@ public class QuoteBeanTest
         // these values don't need to be as extensively tested because, while necessary to create
         //  an OptionEvent, they don't get transfered to the QuoteEvent
         optionBidBuilder.withExpirationType(ExpirationType.AMERICAN)
-                        .withMultiplier(0)
+                        .withMultiplier(BigDecimal.ZERO)
                         .withUnderlyingInstrument(equity);
         // these values will get tested
         optionBidBuilder.withAction(QuoteAction.DELETE)

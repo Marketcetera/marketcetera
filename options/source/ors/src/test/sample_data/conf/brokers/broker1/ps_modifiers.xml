@@ -40,12 +40,12 @@
            name="msgFields">
             <map>
               <!--
-                - Set the 'Rule80A' (tag 47) of all application messages
-                - to 'A' (Agency single order).
+                - Set the 'Text' (tag 58) of all application messages
+                - to 'Test Text'.
                 -->
               <entry
-               key="47(app)"
-               value="A"/>
+               key="58(app)"
+               value="Test Text"/>
             </map>
           </property>
           <!-- Modifications to the trailer fields. -->

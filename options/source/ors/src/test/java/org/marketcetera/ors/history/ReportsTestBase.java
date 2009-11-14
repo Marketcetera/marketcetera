@@ -299,7 +299,7 @@ public class ReportsTestBase extends TestCaseBase {
     
     protected static BigDecimal getPosition(Date inDate, Equity inEquity, SimpleUser inViewer)
             throws Exception {
-        return sServices.getPositionAsOf(inViewer, inDate, inEquity);
+        return sServices.getEquityPositionAsOf(inViewer, inDate, inEquity);
     }
 
     protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate)
@@ -338,7 +338,7 @@ public class ReportsTestBase extends TestCaseBase {
 
     protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
             throws Exception {
-        return sServices.getPositionsAsOf(inViewer, inDate);
+        return sServices.getAllEquityPositionsAsOf(inViewer, inDate);
     }
 
     protected static ExecutionReport createAndSaveER(String inOrderID,

@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 
 /* $License$ */
 /**
- * Verifies {@link ReportHistoryServices#getPositionAsOf(org.marketcetera.ors.security.SimpleUser, Date, Equity)}
- * & {@link ReportHistoryServices#getPositionsAsOf(org.marketcetera.ors.security.SimpleUser, Date)}. 
+ * Verifies {@link ReportHistoryServices#getEquityPositionAsOf(org.marketcetera.ors.security.SimpleUser, Date, Equity)}
+ * & {@link ReportHistoryServices#getAllEquityPositionsAsOf(org.marketcetera.ors.security.SimpleUser, Date)}.
  *
  * @author anshul@marketcetera.com
  * @version $Id$

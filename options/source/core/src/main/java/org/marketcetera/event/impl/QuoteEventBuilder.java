@@ -408,10 +408,10 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     /**
      * Sets the multiplier value.
      *
-     * @param inMultiplier an <code>int</code> value
+     * @param inMultiplier a <code>BigDecimal</code> value
      * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
-    public QuoteEventBuilder<E> withMultiplier(int inMultiplier)
+    public QuoteEventBuilder<E> withMultiplier(BigDecimal inMultiplier)
     {
         option.setMultiplier(inMultiplier);
         return this;
@@ -425,6 +425,17 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public QuoteEventBuilder<E> hasDeliverable(boolean inHasDeliverable)
     {
         option.setHasDeliverable(inHasDeliverable);
+        return this;
+    }
+    /**
+     * Sets the provider symbol value.
+     *
+     * @param inProviderSymbol a <code>String</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public final QuoteEventBuilder<E> withProviderSymbol(String inProviderSymbol)
+    {
+        option.setProviderSymbol(inProviderSymbol);
         return this;
     }
     /* (non-Javadoc)

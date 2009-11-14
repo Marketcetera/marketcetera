@@ -152,7 +152,7 @@ public class EventTestBase
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(DateUtils.dateToString(new Date()))
                                                  .withExpirationType(ExpirationType.AMERICAN)
-                                                 .withMultiplier(0)
+                                                 .withMultiplier(BigDecimal.ZERO)
                                                  .withUnderlyingInstrument(inInstrument).create();
     }
     /**
@@ -293,7 +293,7 @@ public class EventTestBase
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(DateUtils.dateToString(new Date()))
                                                  .withExpirationType(ExpirationType.AMERICAN)
-                                                 .withMultiplier(0)
+                                                 .withMultiplier(BigDecimal.ZERO)
                                                  .withUnderlyingInstrument(inInstrument).create();
     }
     /**
@@ -390,7 +390,7 @@ public class EventTestBase
                                                    .withPrice(generateDecimalValue())
                                                    .withSize(generateDecimalValue())
                                                    .withExpirationType(ExpirationType.AMERICAN)
-                                                   .withMultiplier(0)
+                                                   .withMultiplier(BigDecimal.ZERO)
                                                    .withUnderlyingInstrument(inUnderlyingInstrument)
                                                    .withTradeDate(DateUtils.dateToString(new Date())).create();
     }
@@ -552,7 +552,7 @@ public class EventTestBase
                                                         .withTradeHighTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
                                                         .withTradeLowTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
                                                         .withExpirationType(ExpirationType.AMERICAN)
-                                                        .withMultiplier(0)
+                                                        .withMultiplier(BigDecimal.ZERO)
                                                         .withUnderlyingInstrument(inUnderlyingInstrument)
                                                         .withOpenExchange("O")
                                                         .withHighExchange("H")
