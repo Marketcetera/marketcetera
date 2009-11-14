@@ -1,6 +1,7 @@
 package org.marketcetera.event.beans;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -54,6 +55,7 @@ public final class OptionBean
         option.setInstrument(inOptionEvent.getInstrument());
         option.setMultiplier(inOptionEvent.getMultiplier());
         option.setUnderlyingInstrument(inOptionEvent.getUnderlyingInstrument());
+        option.setProviderSymbol(inOptionEvent.getProviderSymbol());
         return option;
     }
     /**
@@ -113,18 +115,18 @@ public final class OptionBean
     /**
      * Get the multiplier value.
      *
-     * @return an <code>int</code> value
+     * @return a <code>BigDecimal</code> value
      */
-    public int getMultiplier()
+    public BigDecimal getMultiplier()
     {
         return multiplier;
     }
     /**
      * Sets the multiplier value.
      *
-     * @param inMultiplier an <code>int</code> value
+     * @param inMultiplier a <code>BigDecimal</code> value
      */
-    public void setMultiplier(int inMultiplier)
+    public void setMultiplier(BigDecimal inMultiplier)
     {
         multiplier = inMultiplier;
     }
@@ -145,6 +147,24 @@ public final class OptionBean
     public void setHasDeliverable(boolean inHasDeliverable)
     {
         hasDeliverable = inHasDeliverable;
+    }
+    /**
+     * Get the OPRA Symbol value.
+     *
+     * @return a <code>String</code> value or <code>null</code>
+     */
+    public String getProviderSymbol()
+    {
+        return providerSymbol;
+    }
+    /**
+     * Sets the OPRA Symbol value.
+     *
+     * @param inOpraSymbol a <code>String</code> value
+     */
+    public void setProviderSymbol(String inOpraSymbol)
+    {
+        providerSymbol = inOpraSymbol;
     }
     /**
      * Performs validation of the attributes.
@@ -176,7 +196,8 @@ public final class OptionBean
         result = prime * result + ((expirationType == null) ? 0 : expirationType.hashCode());
         result = prime * result + (hasDeliverable ? 1231 : 1237);
         result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
-        result = prime * result + multiplier;
+        result = prime * result + ((multiplier == null) ? 0 : multiplier.hashCode());
+        result = prime * result + ((providerSymbol == null) ? 0 : providerSymbol.hashCode());
         result = prime * result + ((underlyingInstrument == null) ? 0 : underlyingInstrument.hashCode());
         return result;
     }
@@ -216,6 +237,13 @@ public final class OptionBean
         if (multiplier != other.multiplier) {
             return false;
         }
+        if (providerSymbol == null) {
+            if (other.providerSymbol != null) {
+                return false;
+            }
+        } else if (!providerSymbol.equals(other.providerSymbol)) {
+            return false;
+        }
         if (underlyingInstrument == null) {
             if (other.underlyingInstrument != null) {
                 return false;
@@ -231,12 +259,13 @@ public final class OptionBean
     @Override
     public String toString()
     {
-        return String.format("expirationType=%s, hasDeliverable=%s, instrument=%s, multiplier=%s, underlyingInstrument=%s", //$NON-NLS-1$
+        return String.format("expirationType=%s, hasDeliverable=%s, instrument=%s, multiplier=%s, underlyingInstrument=%s opraSymbol=%s", //$NON-NLS-1$
                              expirationType,
                              hasDeliverable,
                              instrument,
                              multiplier,
-                             underlyingInstrument);
+                             underlyingInstrument,
+                             providerSymbol);
     }
     /**
      * Copies all member attributes from the donor to the recipient.
@@ -251,6 +280,7 @@ public final class OptionBean
         inRecipient.setHasDeliverable(inDonor.hasDeliverable());
         inRecipient.setInstrument(inDonor.getInstrument());
         inRecipient.setMultiplier(inDonor.getMultiplier());
+        inRecipient.setProviderSymbol(inDonor.getProviderSymbol());
         inRecipient.setUnderlyingInstrument(inDonor.getUnderlyingInstrument());
     }
     /**
@@ -264,11 +294,15 @@ public final class OptionBean
     /**
      * the multiplier of the option
      */
-    private int multiplier;
+    private BigDecimal multiplier;
     /**
      * indicates if the option includes deliverables
      */
     private boolean hasDeliverable;
+    /**
+     * the provider symbol of the option, if available
+     */
+    private String providerSymbol;
     /**
      * the instrument of the option
      */

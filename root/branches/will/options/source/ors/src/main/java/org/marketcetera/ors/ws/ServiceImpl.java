@@ -140,23 +140,23 @@ public class ServiceImpl
             (session.getUser(),date);
     }
 
-    private BigDecimal getPositionAsOfImpl
+    private BigDecimal getEquityPositionAsOfImpl
         (ClientSession session,
          Date date,
          Equity equity)
         throws PersistenceException
     {
-        return getHistoryServices().getPositionAsOf
+        return getHistoryServices().getEquityPositionAsOf
             (session.getUser(),date,equity);
     }
 
-    private MapWrapper<PositionKey<Equity>,BigDecimal> getPositionsAsOfImpl
+    private MapWrapper<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOfImpl
         (ClientSession session,
          Date date)
         throws PersistenceException
     {
         return new MapWrapper<PositionKey<Equity>, BigDecimal>(
-                getHistoryServices().getPositionsAsOf(session.getUser(),date));
+                getHistoryServices().getAllEquityPositionsAsOf(session.getUser(),date));
     }
     
     private BigDecimal getOptionPositionAsOfImpl
@@ -267,7 +267,7 @@ public class ServiceImpl
     }
 
     @Override
-    public BigDecimal getPositionAsOf
+    public BigDecimal getEquityPositionAsOf
         (ClientContext context,
          final DateWrapper date,
          final Equity equity)
@@ -281,13 +281,13 @@ public class ServiceImpl
                  SessionHolder<ClientSession> sessionHolder)
                 throws PersistenceException
             {
-                return getPositionAsOfImpl
+                return getEquityPositionAsOfImpl
                     (sessionHolder.getSession(),date.getRaw(),equity);
             }}).execute(context);
     }
 
     @Override
-    public MapWrapper<PositionKey<Equity>,BigDecimal> getPositionsAsOf
+    public MapWrapper<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOf
         (ClientContext context,
          final DateWrapper date)
         throws RemoteException
@@ -301,7 +301,7 @@ public class ServiceImpl
                  SessionHolder<ClientSession> sessionHolder)
                 throws PersistenceException
             {
-                return getPositionsAsOfImpl
+                return getAllEquityPositionsAsOfImpl
                     (sessionHolder.getSession(),date.getRaw());
             }}).execute(context);
     }

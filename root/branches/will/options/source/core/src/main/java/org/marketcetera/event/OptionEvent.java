@@ -1,5 +1,7 @@
 package org.marketcetera.event;
 
+import java.math.BigDecimal;
+
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -25,13 +27,20 @@ public interface OptionEvent
     /**
      * Gets the multiplier value of the option event.
      *
-     * @return an <code>int</code> value
+     * @return a <code>BigDecimal</code> value
      */
-    public int getMultiplier();
+    public BigDecimal getMultiplier();
     /**
      * Indicates if the option event has deliverables. 
      *
      * @return a <code>boolean</code> value
      */
     public boolean hasDeliverable();
+    /**
+     * Returns the original provider symbol of the option, if available. 
+     *
+     * @return a <code>String</code> value or <code>null</code> if the option event
+     *  did not have a provider symbol
+     */
+    public String getProviderSymbol();
 }

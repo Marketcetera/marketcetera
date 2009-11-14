@@ -248,6 +248,8 @@ public abstract class Factory {
      * @param inActorID the ID of the actor user of this message.
      *
      * @param inViewerID the ID of the viewer user of this message.
+     *
+     * @return the FIX Response message wrapping the supplied FIX Message.
      */
     public abstract FIXResponse createFIXResponse
         (Message inMessage,

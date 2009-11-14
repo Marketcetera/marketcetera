@@ -21,5 +21,27 @@ public enum ExpirationType
     /**
      * American expiration options may be exercised at any point up to and including contract expiration
      */
-    AMERICAN
+    AMERICAN,
+    /**
+     * unknown expiration type
+     */
+    UNKNOWN;
+    /**
+     * Gets the <code>ExpirationType</code> associated with the given
+     * <code>char</code>.
+     *
+     * @param inCode a <code>char</code> value
+     * @return an <code>ExpirationType</code> value
+     */
+    public static ExpirationType getExpirationTypeForChar(char inCode)
+    {
+        switch(inCode) {
+            case 'A' :
+                return AMERICAN;
+            case 'E' :
+                return EUROPEAN;
+            default:
+                return UNKNOWN;
+        }
+    }
 }

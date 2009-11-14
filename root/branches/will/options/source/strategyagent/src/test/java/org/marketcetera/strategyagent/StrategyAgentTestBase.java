@@ -236,7 +236,7 @@ public class StrategyAgentTestBase extends TestCaseBase {
             return mExitCode;
         }
         @Override
-        void exit(int inExitCode) {
+        protected void exit(int inExitCode) {
             mExitCode = inExitCode;
         }
 

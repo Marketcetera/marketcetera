@@ -232,25 +232,31 @@ public final class OptionChain
     {
         // renders the option chain as a human-readable table
         // TODO add column headers to the option chain
-        // TODO render dividends more elegantly
         StringBuilder builder = new StringBuilder();
         String nl = SystemUtils.LINE_SEPARATOR;
-        String none = "---";
-        builder.append("Option Chain for ").append(getUnderlyingInstrument().getSymbol()).append(nl);
-        builder.append("Bid:  ").append(getLatestUnderlyingBid() == null ? none : String.format("%s %s %s",
-                                                                                               getLatestUnderlyingBid().getSize(),
-                                                                                               getLatestUnderlyingBid().getPrice(),
-                                                                                               getLatestUnderlyingBid().getExchange())).append(nl);
-        builder.append("Ask:  ").append(getLatestUnderlyingAsk() == null ? none : String.format("%s %s %s",
-                                                                                               getLatestUnderlyingAsk().getSize(),
-                                                                                               getLatestUnderlyingAsk().getPrice(),
-                                                                                               getLatestUnderlyingAsk().getExchange())).append(nl);
-        builder.append("Last: ").append(getLatestUnderlyingTrade() == null ? none : String.format("%s %s %s",
-                                                                                               getLatestUnderlyingTrade().getSize(),
-                                                                                               getLatestUnderlyingTrade().getPrice(),
-                                                                                               getLatestUnderlyingTrade().getExchange())).append(nl);
-        builder.append("High: ").append(getLatestUnderlyingMarketstat() == null ? none : getLatestUnderlyingMarketstat().getHigh().toPlainString()).append(nl);
-        builder.append("Low: ").append(getLatestUnderlyingMarketstat() == null ? none : getLatestUnderlyingMarketstat().getLow().toPlainString()).append(nl);
+        String none = "---"; //$NON-NLS-1$
+        builder.append("Option Chain for ").append(getUnderlyingInstrument().getSymbol()).append(nl); //$NON-NLS-1$
+        builder.append("Bid:  ").append(getLatestUnderlyingBid() == null ? none : String.format("%s %s %s", //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                                getLatestUnderlyingBid().getSize(),
+                                                                                                getLatestUnderlyingBid().getPrice(),
+                                                                                                getLatestUnderlyingBid().getExchange())).append(nl);
+        builder.append("Ask:  ").append(getLatestUnderlyingAsk() == null ? none : String.format("%s %s %s", //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                                getLatestUnderlyingAsk().getSize(),
+                                                                                                getLatestUnderlyingAsk().getPrice(),
+                                                                                                getLatestUnderlyingAsk().getExchange())).append(nl);
+        builder.append("Last: ").append(getLatestUnderlyingTrade() == null ? none : String.format("%s %s %s", //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                                  getLatestUnderlyingTrade().getSize(),
+                                                                                                  getLatestUnderlyingTrade().getPrice(),
+                                                                                                  getLatestUnderlyingTrade().getExchange())).append(nl);
+        builder.append("High: ").append(getLatestUnderlyingMarketstat() == null ||
+                                        getLatestUnderlyingMarketstat().getHigh() == null ? none : getLatestUnderlyingMarketstat().getHigh().toPlainString()).append(nl); //$NON-NLS-1$
+        builder.append("Low: ").append(getLatestUnderlyingMarketstat() == null ||
+                                       getLatestUnderlyingMarketstat().getLow() == null ? none : getLatestUnderlyingMarketstat().getLow().toPlainString()).append(nl); //$NON-NLS-1$
+        // add dividends
+        builder.append("Dividends:").append(nl); //$NON-NLS-1$
+        for(DividendEvent dividend : dividends) {
+            builder.append(" ").append(dividend).append(nl); //$NON-NLS-1$
+        }
         Collection<OptionContractPair> chain = getOptionChain();
         if(chain.isEmpty()) {
             return builder.toString();
@@ -286,7 +292,7 @@ public final class OptionChain
             } else {
                 continue;
             }
-            rowHeaders.add(String.format("%s %s %s",
+            rowHeaders.add(String.format("%s %s %s", //$NON-NLS-1$
                                          symbol,
                                          expiry,
                                          strike));
@@ -294,7 +300,7 @@ public final class OptionChain
                put.getLatestBid() != null) {
                 BidEvent bid = put.getLatestBid();
                 putBidSizes.add(bid.getSize().toPlainString());
-                putBidPrices.add(String.format("%s %s",
+                putBidPrices.add(String.format("%s %s", //$NON-NLS-1$
                                                bid.getPrice().toPlainString(),
                                                bid.getExchange()));
             } else {
@@ -305,7 +311,7 @@ public final class OptionChain
                put.getLatestAsk() != null) {
                 AskEvent ask = put.getLatestAsk();
                 putAskSizes.add(ask.getSize().toPlainString());
-                putAskPrices.add(String.format("%s %s",
+                putAskPrices.add(String.format("%s %s", //$NON-NLS-1$
                                                ask.getPrice().toPlainString(),
                                                ask.getExchange()));
             } else {
@@ -316,7 +322,7 @@ public final class OptionChain
                put.getLatestTrade() != null) {
                 TradeEvent trade = put.getLatestTrade();
                 lastPutSizes.add(trade.getSize().toPlainString());
-                lastPutPrices.add(String.format("%s %s",
+                lastPutPrices.add(String.format("%s %s", //$NON-NLS-1$
                                                 trade.getPrice().toPlainString(),
                                                 trade.getExchange()));
             } else {
@@ -327,7 +333,7 @@ public final class OptionChain
                call.getLatestBid() != null) {
                 BidEvent bid = call.getLatestBid();
                 callBidSizes.add(bid.getSize().toPlainString());
-                callBidPrices.add(String.format("%s %s",
+                callBidPrices.add(String.format("%s %s", //$NON-NLS-1$
                                                 bid.getPrice().toPlainString(),
                                                 bid.getExchange()));
             } else {
@@ -338,7 +344,7 @@ public final class OptionChain
                call.getLatestAsk() != null) {
                 AskEvent ask = call.getLatestAsk();
                 callAskSizes.add(ask.getSize().toPlainString());
-                callAskPrices.add(String.format("%s %s",
+                callAskPrices.add(String.format("%s %s", //$NON-NLS-1$
                                                 ask.getPrice().toPlainString(),
                                                 ask.getExchange()));
             } else {
@@ -349,7 +355,7 @@ public final class OptionChain
                call.getLatestTrade() != null) {
                 TradeEvent trade = call.getLatestTrade();
                 lastCallSizes.add(trade.getSize().toPlainString());
-                lastCallPrices.add(String.format("%s %s",
+                lastCallPrices.add(String.format("%s %s", //$NON-NLS-1$
                                                  trade.getPrice().toPlainString(),
                                                  trade.getExchange()));
             } else {
@@ -373,36 +379,36 @@ public final class OptionChain
         List<String> rawPutSizes = new ArrayList<String>();
         for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
             StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedPutBidSizes.get(counter)).append(" | ");
-            columnBuilder.append(normalizedPutAskSizes.get(counter)).append(" | ");
-            columnBuilder.append(normalizedLastPutSizes.get(counter)).append(" | ");
+            columnBuilder.append(normalizedPutBidSizes.get(counter)).append(" | "); //$NON-NLS-1$
+            columnBuilder.append(normalizedPutAskSizes.get(counter)).append(" | "); //$NON-NLS-1$
+            columnBuilder.append(normalizedLastPutSizes.get(counter)).append(" | "); //$NON-NLS-1$
             rawPutSizes.add(columnBuilder.toString());
         }
         List<String> normalizedPutSizes = makeColumn(rawPutSizes);
         List<String> rawPutPrices = new ArrayList<String>();
         for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
             StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedPutBidPrices.get(counter)).append(" | ");
-            columnBuilder.append(normalizedPutAskPrices.get(counter)).append(" | ");
-            columnBuilder.append(normalizedLastPutPrices.get(counter)).append(" | ");
+            columnBuilder.append(normalizedPutBidPrices.get(counter)).append(" | "); //$NON-NLS-1$
+            columnBuilder.append(normalizedPutAskPrices.get(counter)).append(" | "); //$NON-NLS-1$
+            columnBuilder.append(normalizedLastPutPrices.get(counter)).append(" | "); //$NON-NLS-1$
             rawPutPrices.add(columnBuilder.toString());
         }
         List<String> normalizedPutPrices = makeColumn(rawPutPrices);
         List<String> rawCallSizes = new ArrayList<String>();
         for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
             StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedCallBidSizes.get(counter)).append(" | ");
-            columnBuilder.append(normalizedCallAskSizes.get(counter)).append(" | ");
-            columnBuilder.append(normalizedLastCallSizes.get(counter)).append(" | ");
+            columnBuilder.append(normalizedCallBidSizes.get(counter)).append(" | "); //$NON-NLS-1$
+            columnBuilder.append(normalizedCallAskSizes.get(counter)).append(" | "); //$NON-NLS-1$
+            columnBuilder.append(normalizedLastCallSizes.get(counter)).append(" | "); //$NON-NLS-1$
             rawCallSizes.add(columnBuilder.toString());
         }
         List<String> normalizedCallSizes = makeColumn(rawCallSizes);
         List<String> rawCallPrices = new ArrayList<String>();
         for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
             StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedCallBidPrices.get(counter)).append(" | ");
-            columnBuilder.append(normalizedCallAskPrices.get(counter)).append(" | ");
-            columnBuilder.append(normalizedLastCallPrices.get(counter)).append(" | ");
+            columnBuilder.append(normalizedCallBidPrices.get(counter)).append(" | "); //$NON-NLS-1$
+            columnBuilder.append(normalizedCallAskPrices.get(counter)).append(" | "); //$NON-NLS-1$
+            columnBuilder.append(normalizedLastCallPrices.get(counter)).append(" | "); //$NON-NLS-1$
             rawCallPrices.add(columnBuilder.toString());
         }
         List<String> normalizedCallPrices = makeColumn(rawCallPrices);
@@ -423,7 +429,7 @@ public final class OptionChain
         }
         List<String> normalizedCalls = makeColumn(rawCalls);
         for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
-            builder.append(normalizedRowHeaders.get(counter)).append(" | ");
+            builder.append(normalizedRowHeaders.get(counter)).append(" | "); //$NON-NLS-1$
             builder.append(normalizedPuts.get(counter));
             builder.append(normalizedCalls.get(counter));
             builder.append(nl);
@@ -500,6 +506,7 @@ public final class OptionChain
             return false;
         }
         if(inMarketstat instanceof EquityEvent) {
+            // TODO cache values instead so latest value is kept
             latestMarketstat = inMarketstat;
             return true;
         }

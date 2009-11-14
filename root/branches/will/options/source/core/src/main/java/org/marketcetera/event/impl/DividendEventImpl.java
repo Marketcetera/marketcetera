@@ -209,10 +209,7 @@ final class DividendEventImpl
      * @throws IllegalArgumentException if <code>Equity</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Amount</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Currency</code> is <code>null</code> or empty
-     * @throws IllegalArgumentException if <code>DeclareDate</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>ExecutionDate</code> is <code>null</code> or empty
-     * @throws IllegalArgumentException if <code>PaymentDate</code> is <code>null</code> or empty
-     * @throws IllegalArgumentException if <code>RecordDate</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>Frequency</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Status</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Type</code> is <code>null</code>

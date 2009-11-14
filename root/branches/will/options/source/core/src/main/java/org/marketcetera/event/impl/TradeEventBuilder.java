@@ -215,10 +215,10 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     /**
      * Sets the multiplier value.
      *
-     * @param inMultiplier an <code>int</code> value
-     * @return a <code>TradeEventBuilder</code> value
+     * @param inMultiplier a <code>BigDecimal</code> value
+     * @return a <code>TradeEventBuilder&lt;E&gt;</code> value
      */
-    public TradeEventBuilder<E> withMultiplier(int inMultiplier)
+    public TradeEventBuilder<E> withMultiplier(BigDecimal inMultiplier)
     {
         option.setMultiplier(inMultiplier);
         return this;
@@ -232,6 +232,17 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public TradeEventBuilder<E> hasDeliverable(boolean inHasDeliverable)
     {
         option.setHasDeliverable(inHasDeliverable);
+        return this;
+    }
+    /**
+     * Sets the provider symbol value.
+     *
+     * @param inProviderSymbol a <code>String</code> value
+     * @return a <code>TradeEventBuilder&lt;E&gt;</code> value
+     */
+    public final TradeEventBuilder<E> withProviderSymbol(String inProviderSymbol)
+    {
+        option.setProviderSymbol(inProviderSymbol);
         return this;
     }
     /* (non-Javadoc)
