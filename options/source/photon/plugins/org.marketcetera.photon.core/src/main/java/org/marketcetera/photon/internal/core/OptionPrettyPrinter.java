@@ -23,7 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
 public class OptionPrettyPrinter extends InstrumentPrettyPrinter<Option> {
 
     private static final Pattern EXPIRY_PATTERN = Pattern
-            .compile("^(\\d\\d\\d\\d)(\\d\\d)(\\d\\d)?"); //$NON-NLS-1$
+            .compile("^(\\d{4})(\\d{2})(\\d{2})?"); //$NON-NLS-1$
 
     private static final String EXPIRY_DISPLAY_MONTH = "%tb %<ty"; //$NON-NLS-1$
 

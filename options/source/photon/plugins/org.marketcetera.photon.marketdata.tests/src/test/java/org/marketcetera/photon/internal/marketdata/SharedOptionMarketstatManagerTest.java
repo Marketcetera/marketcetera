@@ -3,6 +3,7 @@ package org.marketcetera.photon.internal.marketdata;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
 
@@ -59,19 +60,20 @@ public class SharedOptionMarketstatManagerTest
 
     @Override
     protected IDataFlowManager<Map<Option, MDMarketstatImpl>, SharedOptionMarketstatKey> createFixture(
-            ModuleManager moduleManager, Executor marketDataExecutor, IMarketDataRequestSupport marketDataRequestSupport) {
+            ModuleManager moduleManager, Executor marketDataExecutor,
+            IMarketDataRequestSupport marketDataRequestSupport) {
         SharedOptionMarketstatManager manager = new SharedOptionMarketstatManager(
                 moduleManager, marketDataExecutor, marketDataRequestSupport);
         /*
          * The manager doesn't start tracking options until get is called on the
          * map.
          */
-        manager.getItem(mKey1).get(mOption1a);
-        manager.getItem(mKey1).get(mOption1b);
-        manager.getItem(mKey2).get(mOption2a);
-        manager.getItem(mKey2).get(mOption2b);
-        manager.getItem(mKey3).get(mOption3a);
-        manager.getItem(mKey3).get(mOption3b);
+        assertNotNull(manager.getItem(mKey1).get(mOption1a));
+        assertNotNull(manager.getItem(mKey1).get(mOption1b));
+        assertNotNull(manager.getItem(mKey2).get(mOption2a));
+        assertNotNull(manager.getItem(mKey2).get(mOption2b));
+        assertNotNull(manager.getItem(mKey3).get(mOption3a));
+        assertNotNull(manager.getItem(mKey3).get(mOption3b));
         return manager;
     }
 
@@ -117,6 +119,10 @@ public class SharedOptionMarketstatManagerTest
             Integer closePrice2, String previousCloseDate2,
             Integer previousClosePrice2) {
         assertThat(item.size(), is(2));
+        /*
+         * Use containsKey instead of hasItem matcher since it's a computing map
+         * that will create the item when get is called.
+         */
         assertThat(item.containsKey(option1), is(true));
         assertThat(item.containsKey(option2), is(true));
         assertTick(item.get(option1), option1, closeDate1, closePrice1,
@@ -141,9 +147,9 @@ public class SharedOptionMarketstatManagerTest
         if (key == mKey1) {
             return createEvent(mOption1a, "d3", 7, "d4", 9);
         } else if (key == mKey2) {
-            return createEvent(mOption2a, "d3", 7, "d4", 9);
+            return createEvent(mOption2a, "d4", 8, "d5", 10);
         } else if (key == mKey3) {
-            return createEvent(mOption3a, "d3", 7, "d4", 9);
+            return createEvent(mOption3a, "d5", 9, "d6", 11);
         } else {
             throw new AssertionError();
         }
@@ -154,9 +160,9 @@ public class SharedOptionMarketstatManagerTest
         if (key == mKey1) {
             return createEvent(mOption1a, "d1", 5, "d2", 100);
         } else if (key == mKey2) {
-            return createEvent(mOption2a, "d1", 5, "d2", 100);
+            return createEvent(mOption2a, "d2", 6, "d3", 101);
         } else if (key == mKey3) {
-            return createEvent(mOption3a, "d1", 5, "d2", 100);
+            return createEvent(mOption3a, "d3", 7, "d4", 101);
         } else {
             throw new AssertionError();
         }
@@ -169,10 +175,10 @@ public class SharedOptionMarketstatManagerTest
             assertTicks(item, mOption1a, mOption1b, "d3", 7, "d4", 9, null,
                     null, null, null);
         } else if (key == mKey2) {
-            assertTicks(item, mOption2a, mOption2b, "d3", 7, "d4", 9, null,
+            assertTicks(item, mOption2a, mOption2b, "d4", 8, "d5", 10, null,
                     null, null, null);
         } else if (key == mKey3) {
-            assertTicks(item, mOption3a, mOption3b, "d3", 7, "d4", 9, null,
+            assertTicks(item, mOption3a, mOption3b, "d5", 9, "d6", 11, null,
                     null, null, null);
         }
     }
@@ -184,10 +190,10 @@ public class SharedOptionMarketstatManagerTest
             assertTicks(item, mOption1a, mOption1b, "d1", 5, "d2", 100, null,
                     null, null, null);
         } else if (key == mKey2) {
-            assertTicks(item, mOption2a, mOption2b, "d1", 5, "d2", 100, null,
+            assertTicks(item, mOption2a, mOption2b, "d2", 6, "d3", 101, null,
                     null, null, null);
         } else if (key == mKey3) {
-            assertTicks(item, mOption3a, mOption3b, "d1", 5, "d2", 100, null,
+            assertTicks(item, mOption3a, mOption3b, "d3", 7, "d4", 102, null,
                     null, null, null);
         }
     }
@@ -208,7 +214,7 @@ public class SharedOptionMarketstatManagerTest
     protected void validateRequest(SharedOptionMarketstatKey key,
             MarketDataRequest request) {
         assertThat(request.getContent().size(), is(1));
-        assertThat(request.getContent(), hasItem(Content.LATEST_TICK));
+        assertThat(request.getContent(), hasItem(Content.MARKET_STAT));
         assertThat(request.getUnderlyingSymbols().length, is(1));
         assertThat(request.getUnderlyingSymbols(), hasItemInArray(key
                 .getInstrument().getSymbol()));

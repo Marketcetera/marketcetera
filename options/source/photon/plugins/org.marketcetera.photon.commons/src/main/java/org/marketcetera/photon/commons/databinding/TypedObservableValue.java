@@ -38,15 +38,13 @@ public abstract class TypedObservableValue<T> extends
      * 
      * @return the typed value
      */
-    @SuppressWarnings("unchecked")
     public final T getTypedValue() {
-        return (T) getValue();
+        return mType.cast(getValue());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected final void doSetValue(Object value) {
-        doSetTypedValue((T) value);
+        doSetTypedValue(mType.cast(value));
     }
 
     protected abstract void doSetTypedValue(T value);

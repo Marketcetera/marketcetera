@@ -36,8 +36,8 @@ import org.marketcetera.trade.Equity;
  */
 public class MarketDataViewItemTest {
 
-    private static final Equity symbol1 = new Equity("MSFT");
-    private static final Equity symbol2 = new Equity("GOOG");
+    private static final Equity equity1 = new Equity("MSFT");
+    private static final Equity equity2 = new Equity("GOOG");
 
     private MarketDataViewItem mFixture;
     private PropertyChangeListener mMockListener;
@@ -54,20 +54,20 @@ public class MarketDataViewItemTest {
     @Before
     public void setUp() {
         mMockMarketData = mock(IMarketData.class);
-        mTick1 = createTick(symbol1);
-        mTick2 = createTick(symbol2);
+        mTick1 = createTick(equity1);
+        mTick2 = createTick(equity2);
         mMockTick1Reference = createReference(mTick1);
         mMockTick2Reference = createReference(mTick2);
-        when(mMockMarketData.getLatestTick(symbol1)).thenReturn(mMockTick1Reference);
-        when(mMockMarketData.getLatestTick(symbol2)).thenReturn(mMockTick2Reference);
-        mTOB1 = createTOB(symbol1);
-        mTOB2 = createTOB(symbol2);
+        when(mMockMarketData.getLatestTick(equity1)).thenReturn(mMockTick1Reference);
+        when(mMockMarketData.getLatestTick(equity2)).thenReturn(mMockTick2Reference);
+        mTOB1 = createTOB(equity1);
+        mTOB2 = createTOB(equity2);
         mMockTOB1Reference = createReference(mTOB1);
         mMockTOB2Reference = createReference(mTOB2);
-        when(mMockMarketData.getTopOfBook(symbol1)).thenReturn(mMockTOB1Reference);
-        when(mMockMarketData.getTopOfBook(symbol2)).thenReturn(mMockTOB2Reference);
-        mFixture = new MarketDataViewItem(mMockMarketData, symbol1);
-        assertEquals(symbol1, mFixture.getEquity());
+        when(mMockMarketData.getTopOfBook(equity1)).thenReturn(mMockTOB1Reference);
+        when(mMockMarketData.getTopOfBook(equity2)).thenReturn(mMockTOB2Reference);
+        mFixture = new MarketDataViewItem(mMockMarketData, equity1);
+        assertEquals(equity1, mFixture.getEquity());
         mMockListener = mock(PropertyChangeListener.class);
         mFixture.addPropertyChangeListener("symbol", mMockListener);
         mFixture.addPropertyChangeListener("latestTick", mMockListener);
@@ -104,7 +104,7 @@ public class MarketDataViewItemTest {
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                new MarketDataViewItem(null, symbol1);
+                new MarketDataViewItem(null, equity1);
             }
         };
     }
@@ -121,13 +121,13 @@ public class MarketDataViewItemTest {
 
     @Test
     public void testSetEquity() {
-        mFixture.setEquity(symbol2);
-        assertEquals(symbol2, mFixture.getEquity());
+        mFixture.setEquity(equity2);
+        assertEquals(equity2, mFixture.getEquity());
         verify(mMockTick1Reference).dispose();
         verify(mMockTOB1Reference).dispose();
-        verify(mMockListener).propertyChange(argThat(isPropertyChange("symbol", is(symbol1.getSymbol()), is(symbol2.getSymbol()))));
-        verify(mMockListener).propertyChange(argThat(isPropertyChange("latestTick", hasSymbol(symbol1), hasSymbol(symbol2))));
-        verify(mMockListener).propertyChange(argThat(isPropertyChange("topOfBook", hasSymbol(symbol1), hasSymbol(symbol2))));
+        verify(mMockListener).propertyChange(argThat(isPropertyChange("symbol", is(equity1.getSymbol()), is(equity2.getSymbol()))));
+        verify(mMockListener).propertyChange(argThat(isPropertyChange("latestTick", hasSymbol(equity1), hasSymbol(equity2))));
+        verify(mMockListener).propertyChange(argThat(isPropertyChange("topOfBook", hasSymbol(equity1), hasSymbol(equity2))));
     }
 
     public static Matcher<?> hasSymbol(final Equity symbol) {

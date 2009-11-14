@@ -73,8 +73,10 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
 	@Override
 	public void postStartup() {
-		// Hides Editor area when leaving Ruby perspective so editor-related toolbar
-		// items will disappear
+        /*
+         * Hides Editor area when leaving Strategy perspective so editor-related
+         * toolbar items will disappear.
+         */
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().addPerspectiveListener(
 				new PerspectiveAdapter() {
 					@Override
@@ -88,6 +90,11 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 								page.setPartState(reference, IWorkbenchPage.STATE_RESTORED);
 							else
 								page.setPartState(reference, IWorkbenchPage.STATE_MINIMIZED);
+                            /*
+                             * The above code minimizes the editor area, but
+                             * sometimes leaves UI artifacts. This seems to work
+                             * around it.
+                             */
 							((WorkbenchPage) page).getActivePerspective().refreshEditorAreaVisibility();
 						}
 					}

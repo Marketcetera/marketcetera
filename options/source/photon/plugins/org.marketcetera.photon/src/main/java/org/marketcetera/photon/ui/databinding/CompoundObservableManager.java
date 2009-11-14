@@ -2,12 +2,14 @@ package org.marketcetera.photon.ui.databinding;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.databinding.observable.DisposeEvent;
 import org.eclipse.core.databinding.observable.IDisposeListener;
 import org.eclipse.core.databinding.observable.masterdetail.MasterDetailObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
+import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.ImmutableList;
@@ -64,9 +66,7 @@ public abstract class CompoundObservableManager<T extends IObservableValue> {
             @Override
             public void handleValueChange(ValueChangeEvent event) {
                 if (!mUpdatingParent) {
-                    mUpdatingChildren = true;
-                    updateChildren();
-                    mUpdatingChildren = false;
+                    internalUpdateChildren();
                 }
             }
         });
@@ -75,16 +75,24 @@ public abstract class CompoundObservableManager<T extends IObservableValue> {
                 @Override
                 public void handleValueChange(ValueChangeEvent event) {
                     if (!mUpdatingChildren) {
-                        mUpdatingParent = true;
-                        updateParent();
-                        mUpdatingParent = false;
+                        internalUpdateParent();
                     }
                 }
             });
         }
+        internalUpdateChildren();
+    }
+
+    private void internalUpdateChildren() {
         mUpdatingChildren = true;
         updateChildren();
         mUpdatingChildren = false;
+    }
+
+    private void internalUpdateParent() {
+        mUpdatingParent = true;
+        updateParent();
+        mUpdatingParent = false;
     }
 
     /**
@@ -105,4 +113,19 @@ public abstract class CompoundObservableManager<T extends IObservableValue> {
      * Update the parent observable since a child has changed.
      */
     protected abstract void updateParent();
+
+    /**
+     * Utility method to only set the observable to the new value if the new
+     * value is different than the existing one.
+     * 
+     * @param <T> the observable's type
+     * @param observable the observable
+     * @param newValue the new value
+     */
+    protected static <T> void setIfChanged(ITypedObservableValue<T> observable,
+            T newValue) {
+        if (!ObjectUtils.equals(observable.getValue(), newValue)) {
+            observable.setValue(newValue);
+        }
+    }
 }

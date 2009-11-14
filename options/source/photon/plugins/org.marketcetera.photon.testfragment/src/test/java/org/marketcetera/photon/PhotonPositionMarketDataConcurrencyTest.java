@@ -104,7 +104,7 @@ public class PhotonPositionMarketDataConcurrencyTest extends
     private final Thread mListenersThread = new ReportingThread(
             "ListenerThread") {
 
-        private final ListMultimap<String, InstrumentMarketDataListener> mListeners = LinkedListMultimap
+        private final ListMultimap<Equity, InstrumentMarketDataListener> mListeners = LinkedListMultimap
                 .create();
 
         @Override
@@ -112,7 +112,7 @@ public class PhotonPositionMarketDataConcurrencyTest extends
             while (true) {
                 if (isInterrupted())
                     return;
-                String symbol = getRandomElement(mSymbols);
+                Equity equity = new Equity(getRandomElement(mSymbols));
                 InstrumentMarketDataListener listener = new InstrumentMarketDataListenerBase() {
 
                     @Override
@@ -135,21 +135,21 @@ public class PhotonPositionMarketDataConcurrencyTest extends
                         }
                     }
                 };
-                mListeners.put(symbol, listener);
+                mListeners.put(equity, listener);
                 SLF4JLoggerProxy.trace(getName(), "Adding listener");
                 try {
                     sleep(12);
                 } catch (InterruptedException e) {
                     return;
                 }
-                mFixture.addInstrumentMarketDataListener(new Equity(symbol), listener);
-                symbol = getRandomElement(mSymbols);
-                List<InstrumentMarketDataListener> list = mListeners.get(symbol);
+                mFixture.addInstrumentMarketDataListener(equity, listener);
+                equity = new Equity(getRandomElement(mSymbols));
+                List<InstrumentMarketDataListener> list = mListeners.get(equity);
                 if (!list.isEmpty()) {
                     SLF4JLoggerProxy.trace(getName(), "Removing listener");
                     int index = list.size() == 1 ? 0 : mGenerator.nextInt(list
                             .size() - 1);
-                    mFixture.removeInstrumentMarketDataListener(new Equity(symbol),
+                    mFixture.removeInstrumentMarketDataListener(equity,
                             list.get(index));
                 }
                 try {

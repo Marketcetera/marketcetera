@@ -94,7 +94,7 @@ public class SharedOptionMarketstatManager
         final MarketDataRequest request = MarketDataRequest.newRequest()
                 .ofAssetClass(AssetClass.OPTION).withUnderlyingSymbols(
                         instrument.getSymbol())
-                .withContent(Content.LATEST_TICK);
+                .withContent(Content.MARKET_STAT);
         return new Subscriber() {
 
             @Override
@@ -107,9 +107,12 @@ public class SharedOptionMarketstatManager
                 final Map<Option, MDMarketstatImpl> item = getItem(key);
                 synchronized (item) {
                     if (inData instanceof MarketstatEvent) {
-                        System.out.println(inData);
                         MarketstatEvent data = (MarketstatEvent) inData;
                         Instrument instrument = data.getInstrument();
+                        /*
+                         * Ignore data if it is for an instrument (e.g. another
+                         * option) that has not been requested yet.
+                         */
                         if (item.containsKey(instrument)) {
                             MDMarketstatImpl mdItem = item.get(instrument);
                             BigDecimal close = data.getClose();

@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
 
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.ui.databinding.OptionObservable;
@@ -8,7 +9,10 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderCapacity;
 import org.marketcetera.trade.PositionEffect;
+import org.marketcetera.trade.Side;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.ObjectArrays;
 
 /* $License$ */
 
@@ -95,5 +99,31 @@ public class OptionOrderTicketModel extends OrderTicketModel {
      */
     public final ITypedObservableValue<PositionEffect> getPositionEffect() {
         return mPositionEffect;
+    }
+
+    @Override
+    public Object[] getValidSideValues() {
+        return EnumSet.of(Side.Buy, Side.Sell).toArray();
+    }
+
+    /**
+     * Get the valid values for the order capacity.
+     * 
+     * @return the valid order capacity values
+     */
+    public Object[] getValidOrderCapacityValues() {
+        return ObjectArrays.concat(BLANK, EnumSet.of(OrderCapacity.Agency,
+                OrderCapacity.Principal, OrderCapacity.RisklessPrincipal)
+                .toArray());
+    }
+
+    /**
+     * Get the valid values for the position effect.
+     * 
+     * @return the valid position effect values
+     */
+    public Object[] getValidPositionEffectValues() {
+        return ObjectArrays.concat(BLANK, EnumSet.complementOf(
+                EnumSet.of(PositionEffect.Unknown)).toArray());
     }
 }

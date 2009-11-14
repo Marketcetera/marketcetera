@@ -50,13 +50,15 @@ public class NewOrReplaceOrderObservable extends
 
     @Override
     protected void doSetTypedValue(NewOrReplaceOrder value) {
-        if (mOrder == value) {
-            return;
-        } else {
-            NewOrReplaceOrder oldValue = mOrder;
-            mOrder = (NewOrReplaceOrder) value;
-            fireValueChange(Diffs.createValueDiff(oldValue, mOrder));
-        }
+        /*
+         * Even if the order has not changed, we fire the change anyway to
+         * provide a mechanism to update detail value listeners. This is
+         * necessary because NewOrReplaceOrder impl's are mutable but don't
+         * provide change notifications.
+         */
+        NewOrReplaceOrder oldValue = mOrder;
+        mOrder = (NewOrReplaceOrder) value;
+        fireValueChange(Diffs.createValueDiff(oldValue, mOrder));
     }
 
     /**

@@ -22,7 +22,8 @@ import org.marketcetera.trade.Side;
  * Test {@link OptionOrderTicketView}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: OptionOrderTicketViewTest.java 10861 2009-11-09 04:29:18Z will
+ *          $
  * @since $Release$
  */
 public class OptionOrderTicketViewTest extends
@@ -127,7 +128,6 @@ public class OptionOrderTicketViewTest extends
         mFixture = fixture;
         assertThat(fixture.getOpenCloseCombo().itemCount(), is(3));
         fixture.getOpenCloseCombo().setSelection("Open");
-        Thread.sleep(1000);
         assertPositionEffect(PositionEffect.Open);
         fixture.getOpenCloseCombo().setSelection("Close");
         assertPositionEffect(PositionEffect.Close);
@@ -149,6 +149,29 @@ public class OptionOrderTicketViewTest extends
         assertOrderCapacity(OrderCapacity.RisklessPrincipal);
         fixture.getCapacityCombo().setSelection(0);
         assertOrderCapacity(null);
+    }
+    
+    @Test
+    public void testSendButton() throws Exception {
+        OptionOrderTicketViewFixture fixture = createFixture();
+        mFixture = fixture;
+        assertSendDisabled("Side is required");
+        fixture.getSideCombo().setSelection("Buy");
+        assertSendDisabled("Quantity is required");
+        fixture.getQuantityText().setText("10");
+        assertSendDisabled("Symbol is required");
+        fixture.getSymbolText().setText("M");
+        assertSendDisabled("Order Type is required");
+        fixture.getOrderTypeCombo().setSelection("Limit");
+        assertSendDisabled("Price is required");
+        fixture.getPriceText().setText("10");
+        assertSendDisabled("Expiry is required");
+        fixture.getExpiryText().setText("200910");
+        assertSendDisabled("Strike Price is required");
+        fixture.getStrikeText().setText("3");
+        assertSendDisabled("Option Type is required");
+        fixture.getOptionTypeCombo().setSelection("Call");
+        assertThat(fixture.getSendButton().isEnabled(), is(true));
     }
 
     protected void assertPositionEffect(final PositionEffect positionEffect)

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.concurrent.Executor;
 
+import org.junit.Test;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.Capability;
@@ -68,7 +69,9 @@ public class LatestTickManagerTest extends
     protected void validateInitialConditions(MDLatestTick item,
             LatestTickKey key) {
         assertThat(item.getInstrument(), is(key.getInstrument()));
+        assertThat(item.getSize(), nullValue());
         assertThat(item.getPrice(), nullValue());
+        assertThat(item.getMultiplier(), nullValue());
     }
 
     @Override
@@ -85,12 +88,14 @@ public class LatestTickManagerTest extends
     protected void validateState1(MDLatestTick item, LatestTickKey key) {
         assertThat(item.getPrice(), comparesEqualTo(1));
         assertThat(item.getSize(), comparesEqualTo(6));
+        assertThat(item.getMultiplier(), nullValue());
     }
 
     @Override
     protected void validateState2(MDLatestTick item, LatestTickKey key) {
         assertThat(item.getPrice(), comparesEqualTo(10));
         assertThat(item.getSize(), comparesEqualTo(7));
+        assertThat(item.getMultiplier(), nullValue());
     }
 
     private Object createEvent(Instrument instrument, int price, int size) {
@@ -104,12 +109,42 @@ public class LatestTickManagerTest extends
         return builder.create();
     }
 
+    private Object createOptionEvent(Instrument instrument, int price, int size, int multiplier) {
+        TradeEventBuilder<TradeEvent> builder = TradeEventBuilder.tradeEvent(
+                instrument).withExchange("Q").withTradeDate("bogus").withPrice(
+                new BigDecimal(price)).withSize(new BigDecimal(size));
+        if (instrument instanceof Option) {
+            builder = builder.withUnderlyingInstrument(new Equity(instrument
+                    .getSymbol())).withExpirationType(ExpirationType.AMERICAN).withMultiplier(multiplier);
+        }
+        return builder.create();
+    }
+
     @Override
     protected void validateRequest(LatestTickKey key, MarketDataRequest request) {
         assertThat(request.getContent().size(), is(1));
         assertThat(request.getContent(), hasItem(Content.LATEST_TICK));
         assertThat(request.getSymbols().length, is(1));
         assertThat(request.getSymbols(), hasItemInArray(getOsiSymbol(key)));
+    }
+    
+    @Test
+    public void optionMultiplier() throws Exception {
+        // start flow
+        mFixture.startFlow(mKey2);
+        // emit event with multiplier
+        emit(createOptionEvent(mKey2.getInstrument(), 1, 2, 3));
+        // item should have changed
+        assertThat(mItem2.getPrice(), comparesEqualTo(1));
+        assertThat(mItem2.getSize(), comparesEqualTo(2));
+        assertThat(mItem2.getMultiplier(), is(3));
+        // emit another event
+        emit(createOptionEvent(mKey2.getInstrument(), 4, 5, 6));
+        assertThat(mItem2.getPrice(), comparesEqualTo(4));
+        assertThat(mItem2.getSize(), comparesEqualTo(5));
+        assertThat(mItem2.getMultiplier(), is(6));
+        // finish
+        mFixture.stopFlow(mKey2);
     }
 
 }

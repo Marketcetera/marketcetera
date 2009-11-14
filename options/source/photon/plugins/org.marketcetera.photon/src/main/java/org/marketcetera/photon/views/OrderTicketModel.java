@@ -1,13 +1,16 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
 import java.util.Map;
 
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
 import org.marketcetera.photon.ui.databinding.NewOrReplaceOrderObservable;
@@ -20,6 +23,7 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.ObjectArrays;
 
 /* $License$ */
 
@@ -34,6 +38,7 @@ import com.google.common.collect.Maps;
 @ClassVersion("$Id$")
 public abstract class OrderTicketModel {
 
+    protected static final Object BLANK = new OrderTicketModel.NullSentinel(""); //$NON-NLS-1$
     private final NewOrReplaceOrderObservable mOrderObservable = new NewOrReplaceOrderObservable();
     private final ITypedObservableValue<BrokerID> mBrokerId;
     private final ITypedObservableValue<Side> mSide;
@@ -56,14 +61,15 @@ public abstract class OrderTicketModel {
         mTimeInForce = mOrderObservable.observeTimeInForce();
         mAccount = mOrderObservable.observeAccount();
         mBrokerId = mOrderObservable.observeBrokerId();
-        
-        mIsLimitOrder = TypedObservableValueDecorator.decorate(new ComputedValue(Boolean.class) {
-            @Override
-            protected Object calculate() {
-                return mOrderType.getValue() == OrderType.Limit;
-            }
-        }, true, Boolean.class);
-        
+
+        mIsLimitOrder = TypedObservableValueDecorator.decorate(
+                new ComputedValue(Boolean.class) {
+                    @Override
+                    protected Object calculate() {
+                        return mOrderType.getValue() == OrderType.Limit;
+                    }
+                }, true, Boolean.class);
+
         mIsLimitOrder.addValueChangeListener(new IValueChangeListener() {
             @Override
             public void handleValueChange(ValueChangeEvent event) {
@@ -73,7 +79,7 @@ public abstract class OrderTicketModel {
             }
         });
     }
-    
+
     /**
      * Returns an observable that tracks the current order.
      * 
@@ -91,7 +97,7 @@ public abstract class OrderTicketModel {
     public final ITypedObservableValue<BrokerID> getBrokerId() {
         return mBrokerId;
     }
-    
+
     /**
      * Returns an observable that tracks the side of the current order.
      * 
@@ -225,4 +231,67 @@ public abstract class OrderTicketModel {
             order.setCustomFields(map);
         }
     }
+
+    /**
+     * Get the valid values for the side.
+     * 
+     * @return the valid sides
+     */
+    public Object[] getValidSideValues() {
+        return EnumSet.complementOf(
+                EnumSet.of(Side.Unknown, Side.SellShortExempt)).toArray();
+    }
+
+    /**
+     * Get the valid values for the order type.
+     * 
+     * @return the valid order types
+     */
+    public Object[] getValidOrderTypeValues() {
+        return EnumSet.complementOf(EnumSet.of(OrderType.Unknown)).toArray();
+    }
+
+    /**
+     * Get the valid values for the broker.
+     * 
+     * @return the valid brokers
+     */
+    public IObservableList getValidBrokers() {
+        return BrokerManager.getCurrent().getAvailableBrokers();
+    }
+
+    /**
+     * Get the valid values for the time in force.
+     * 
+     * @return the valid time in force values
+     */
+    public Object[] getValidTimeInForceValues() {
+        return ObjectArrays.concat(BLANK, EnumSet.complementOf(
+                EnumSet.of(TimeInForce.Unknown)).toArray());
+    }
+
+    /**
+     * An object that can be used in place of null. It has a {@link #toString()}
+     * value for display purposes, but it corresponds to a null model value.
+     */
+    @ClassVersion("$Id$")
+    static class NullSentinel {
+        private final String mString;
+
+        /**
+         * Constructor.
+         * 
+         * @param string
+         *            the value for {@link #toString()}
+         */
+        public NullSentinel(String string) {
+            mString = string;
+        }
+
+        @Override
+        public String toString() {
+            return mString;
+        }
+    }
+
 }

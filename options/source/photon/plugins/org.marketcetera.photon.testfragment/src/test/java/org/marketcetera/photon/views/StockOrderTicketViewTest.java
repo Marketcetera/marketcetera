@@ -1,10 +1,10 @@
 package org.marketcetera.photon.views;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Test;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.test.AbstractUIRunner.UI;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 
@@ -19,12 +19,6 @@ import org.marketcetera.trade.Instrument;
  */
 public class StockOrderTicketViewTest extends
         OrderTicketViewTestBase<IStockOrderTicket, StockOrderTicketModel> {
-
-    @BeforeClass
-    @UI
-    public static void beforeClass() {
-        PhotonPlugin.getDefault().initOrderTickets();
-    }
 
     @Override
     protected StockOrderTicketModel getModel() {
@@ -45,7 +39,7 @@ public class StockOrderTicketViewTest extends
     }
     
     @Override
-    protected OrderTicketViewFixture<IStockOrderTicket> createFixture()
+    protected StockOrderTicketViewFixture createFixture()
             throws Exception {
         return new StockOrderTicketViewFixture();
     }
@@ -77,5 +71,22 @@ public class StockOrderTicketViewTest extends
         assertInstrument(new Equity("ABC.D"));
         mFixture.getSymbolText().setText("");
         assertInstrument(null);
+    }
+    
+    @Test
+    public void testSendButton() throws Exception {
+        StockOrderTicketViewFixture fixture = createFixture();
+        mFixture = fixture;
+        assertSendDisabled("Side is required");
+        fixture.getSideCombo().setSelection("Buy");
+        assertSendDisabled("Quantity is required");
+        fixture.getQuantityText().setText("10");
+        assertSendDisabled("Symbol is required");
+        fixture.getSymbolText().setText("M");
+        assertSendDisabled("Order Type is required");
+        fixture.getOrderTypeCombo().setSelection("Limit");
+        assertSendDisabled("Price is required");
+        fixture.getPriceText().setText("10");
+        assertThat(fixture.getSendButton().isEnabled(), is(true));
     }
 }

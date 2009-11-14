@@ -43,16 +43,12 @@ import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
-import org.marketcetera.photon.ui.EquityPerspectiveFactory;
-import org.marketcetera.photon.ui.OptionPerspectiveFactory;
 import org.marketcetera.photon.views.IOrderTicketController;
-import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.photon.views.OptionOrderTicketController;
 import org.marketcetera.photon.views.OptionOrderTicketModel;
 import org.marketcetera.photon.views.SecondaryIDCreator;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicketModel;
-import org.marketcetera.photon.views.StockOrderTicketView;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -133,7 +129,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     
     private ServiceTracker mLogoutServiceTracker;
     
-    private UnderlyingSymbolSupport mUnderlyingSymbolSupport = new ClientUnderlyingSymbolSupport();
+    private final UnderlyingSymbolSupport mUnderlyingSymbolSupport = new ClientUnderlyingSymbolSupport();
 
     /**
      * The constructor.
@@ -436,6 +432,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
      * @return the controller for the appropriate order ticket.
      */
     public IOrderTicketController getOrderTicketController(NewOrReplaceOrder order) {
+        // TODO: instrument specific functionality that can be abstracted
         Instrument i = order.getInstrument();
         if (i instanceof Option) {
             return getOptionOrderTicketController();
@@ -454,17 +451,9 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
      */
     public void showOrderInTicket(NewOrReplaceOrder order)
             throws WorkbenchException {
-        IOrderTicketController orderTicketController = PhotonPlugin
-                .getDefault().getOrderTicketController(order);
-        String perspective;
-        String view;
-        if (orderTicketController instanceof StockOrderTicketController) {
-            perspective = EquityPerspectiveFactory.ID;
-            view = StockOrderTicketView.ID;
-        } else {
-            perspective = OptionPerspectiveFactory.ID;
-            view = OpenOrdersView.ID;
-        }
+        IOrderTicketController orderTicketController = getOrderTicketController(order);
+        String perspective = orderTicketController.getPerspectiveId();
+        String view = orderTicketController.getViewId();
         orderTicketController.setOrderMessage(order);
         PlatformUI.getWorkbench().showPerspective(perspective,
                 PlatformUI.getWorkbench().getActiveWorkbenchWindow());

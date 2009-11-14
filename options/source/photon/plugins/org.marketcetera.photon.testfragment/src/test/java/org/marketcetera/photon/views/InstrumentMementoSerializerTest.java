@@ -1,7 +1,6 @@
 package org.marketcetera.photon.views;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
@@ -18,7 +17,7 @@ import org.marketcetera.trade.OptionType;
 /* $License$ */
 
 /**
- * Tests {@link InstrumentToMemento}.
+ * Tests {@link InstrumentToMemento} and {@link InstrumentFromMemento}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -35,6 +34,8 @@ public class InstrumentMementoSerializerTest {
         test(new Option("YHOO", "201010", new BigDecimal("45"), OptionType.Call));
         test(new Option("MSFT", "201010", new BigDecimal("45.0000001"),
                 OptionType.Call));
+        test(new Option("MSFT", "201010", new BigDecimal("0045.100000"),
+                OptionType.Put));
     }
     
     @Test
@@ -58,7 +59,6 @@ public class InstrumentMementoSerializerTest {
                 InstrumentFromMemento.restore(null);
             }
         };
-        assertThat(InstrumentFromMemento.restore(memento), nullValue());
     }
 
     private void test(Instrument instrument) {

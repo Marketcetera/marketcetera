@@ -3,6 +3,7 @@ package org.marketcetera.photon.internal.marketdata;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
 
@@ -66,12 +67,12 @@ public class SharedOptionLatestTickManagerTest
          * The manager doesn't start tracking options until get is called on the
          * map.
          */
-        manager.getItem(mKey1).get(mOption1a);
-        manager.getItem(mKey1).get(mOption1b);
-        manager.getItem(mKey2).get(mOption2a);
-        manager.getItem(mKey2).get(mOption2b);
-        manager.getItem(mKey3).get(mOption3a);
-        manager.getItem(mKey3).get(mOption3b);
+        assertNotNull(manager.getItem(mKey1).get(mOption1a));
+        assertNotNull(manager.getItem(mKey1).get(mOption1b));
+        assertNotNull(manager.getItem(mKey2).get(mOption2a));
+        assertNotNull(manager.getItem(mKey2).get(mOption2b));
+        assertNotNull(manager.getItem(mKey3).get(mOption3a));
+        assertNotNull(manager.getItem(mKey3).get(mOption3b));
         return manager;
     }
 
@@ -111,6 +112,10 @@ public class SharedOptionLatestTickManagerTest
             Option option1, Option option2, Integer price1, Integer size1,
             Integer multiplier1, Integer price2, Integer size2, Integer multiplier2) {
         assertThat(item.size(), is(2));
+        /*
+         * Use containsKey instead of hasItem matcher since it's a computing map
+         * that will create the item when get is called.
+         */
         assertThat(item.containsKey(option1), is(true));
         assertThat(item.containsKey(option2), is(true));
         assertTick(item.get(option1), option1, price1, size1, multiplier1);

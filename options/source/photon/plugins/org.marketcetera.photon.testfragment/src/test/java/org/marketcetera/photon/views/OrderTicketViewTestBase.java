@@ -212,6 +212,8 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
         assertAccount("account");
         mFixture.getAccountText().setText("");
         assertAccount(null);
+        mFixture.getAccountText().setText("   ");
+        assertAccount("   ");
     }
 
     @Test
@@ -232,6 +234,17 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
                 assertThat(ticket.getForm().getText(), is(getNewOrderText()));
             }
         });
+    }
+    
+    @Test
+    public void testClearButton() throws Exception {
+        setOrderSingle(Side.Buy, "10", "QWER", OrderType.Limit, "1", "gs",
+                TimeInForce.Day, null);
+        mFixture = createFixture();
+        mFixture.assertTicket("Buy", "10", "QWER", "Limit", "1",
+                "Goldman Sachs (gs)", "Day", "");
+        mFixture.getClearButton().click();
+        mFixture.assertTicket("", "", "", "", "", "Goldman Sachs (gs)", "Day", "");
     }
 
     protected abstract String getReplaceOrderText();
@@ -429,6 +442,12 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
         prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE,
                 "" + DeliverToCompID.FIELD + "=ABCD"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
+        ViewTestBase.doDelay(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                return view.getXSWTView().getCustomFieldsTable().getItem(0)
+                        .getText(1).length() > 0;
+            }
+        });
         Table customFieldsTable = view.getXSWTView().getCustomFieldsTable();
         customFieldsTable.getItem(0).setChecked(true);
         ((CustomField) mModel.getCustomFieldsList().get(0)).setEnabled(true);
@@ -504,4 +523,9 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
     }
     
     abstract protected String getViewId();
+
+    protected void assertSendDisabled(String errorText) {
+        mFixture.assertError(errorText);
+        assertThat(mFixture.getSendButton().isEnabled(), is(false));
+    }
 }

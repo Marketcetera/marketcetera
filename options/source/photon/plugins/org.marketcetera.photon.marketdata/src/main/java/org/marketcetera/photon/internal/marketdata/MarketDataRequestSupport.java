@@ -22,7 +22,8 @@ public class MarketDataRequestSupport implements IMarketDataRequestSupport {
      * Constructor.
      * 
      * @param useFineGrainedMarketDataForOptions
-     *            controls whether
+     *            controls whether fine grained market data can be obtained for
+     *            options
      */
     public MarketDataRequestSupport(boolean useFineGrainedMarketDataForOptions) {
         mUseFineGrainedMarketDataForOptions = useFineGrainedMarketDataForOptions;
@@ -45,7 +46,7 @@ public class MarketDataRequestSupport implements IMarketDataRequestSupport {
     }
 
     @SuppressWarnings("unchecked")
-    private <I extends Instrument> InstrumentRequestAdapter<? super Instrument> getAdapter(
+    private <I extends Instrument> InstrumentRequestAdapter<I> getAdapter(
             I instrument) {
         return InstrumentRequestAdapter.SELECTOR.forInstrument(instrument);
     }

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotText;
 import org.eclipse.ui.PlatformUI;
@@ -34,6 +35,8 @@ public abstract class OrderTicketViewFixture<T extends IOrderTicket> {
     private final SWTBotCombo mBrokerCombo;
     private final SWTBotCombo mTimeInForceCombo;
     private final SWTBotText mAccountText;
+    private final SWTBotButton mSendButton;
+    private final SWTBotButton mClearButton;
 
     protected OrderTicketViewFixture(final String id) throws Exception {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
@@ -56,6 +59,8 @@ public abstract class OrderTicketViewFixture<T extends IOrderTicket> {
         mBrokerCombo = findBroker(bot);
         mTimeInForceCombo = findTimeInForce(bot);
         mAccountText = findAccount(bot);
+        mSendButton = bot.button("Send");
+        mClearButton = bot.button("Clear");
     }
 
     protected SWTBotCombo findSide(SWTBot bot) {
@@ -123,6 +128,14 @@ public abstract class OrderTicketViewFixture<T extends IOrderTicket> {
         assertThat(mAccountText.isEnabled(), is(account));
     }
 
+    public SWTBotButton getSendButton() {
+        return mSendButton;
+    }
+
+    public SWTBotButton getClearButton() {
+        return mClearButton;
+    }
+
     public SWTBotCombo getSideCombo() {
         return mSideCombo;
     }
@@ -153,5 +166,9 @@ public abstract class OrderTicketViewFixture<T extends IOrderTicket> {
 
     public SWTBotText getAccountText() {
         return mAccountText;
+    }
+
+    public void assertError(String errorText) {
+        mView.bot().label(errorText);
     }
 }
