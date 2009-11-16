@@ -127,7 +127,7 @@ public class SharedOptionLatestTickManagerTest
         assertThat(tick.getInstrument(), is((Instrument) option));
         assertThat(tick.getPrice(), comparesEqualTo(price));
         assertThat(tick.getSize(), comparesEqualTo(size));
-        assertThat(tick.getMultiplier(), is(multiplier));
+        assertThat(tick.getMultiplier(), comparesEqualTo(multiplier));
     }
 
     @Override
@@ -186,8 +186,8 @@ public class SharedOptionLatestTickManagerTest
                 .withUnderlyingInstrument(new Equity(instrument.getSymbol()))
                 .withExpirationType(ExpirationType.AMERICAN).withExchange("Q")
                 .withTradeDate("bogus").withPrice(new BigDecimal(price))
-                .withSize(new BigDecimal(size)).withMultiplier(multiplier)
-                .create();
+                .withSize(new BigDecimal(size)).withMultiplier(
+                        new BigDecimal(multiplier)).create();
     }
 
     @Override

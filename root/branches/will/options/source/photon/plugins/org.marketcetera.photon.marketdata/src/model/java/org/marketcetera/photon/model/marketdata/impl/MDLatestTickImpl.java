@@ -84,7 +84,7 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * @generated
      * @ordered
      */
-    protected static final Integer MULTIPLIER_EDEFAULT = null;
+    protected static final BigDecimal MULTIPLIER_EDEFAULT = null;
 
     /**
      * The cached value of the '{@link #getMultiplier() <em>Multiplier</em>}' attribute.
@@ -94,7 +94,7 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * @generated
      * @ordered
      */
-    protected volatile Integer multiplier = MULTIPLIER_EDEFAULT;
+    protected volatile BigDecimal multiplier = MULTIPLIER_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
@@ -164,7 +164,7 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * <!-- end-user-doc -->
      * @generated
      */
-    public Integer getMultiplier() {
+    public BigDecimal getMultiplier() {
         return multiplier;
     }
 
@@ -173,8 +173,8 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setMultiplier(Integer newMultiplier) {
-        Integer oldMultiplier = multiplier;
+    public void setMultiplier(BigDecimal newMultiplier) {
+        BigDecimal oldMultiplier = multiplier;
         multiplier = newMultiplier;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET,
@@ -215,7 +215,7 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
             setSize((BigDecimal) newValue);
             return;
         case MDPackage.MD_LATEST_TICK__MULTIPLIER:
-            setMultiplier((Integer) newValue);
+            setMultiplier((BigDecimal) newValue);
             return;
         }
         super.eSet(featureID, newValue);

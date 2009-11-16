@@ -5,7 +5,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.PositionMetrics;
@@ -46,7 +45,7 @@ public final class PositionRowUpdater {
     private final AtomicBoolean mMultiplierPending = new AtomicBoolean();
     private volatile PositionMetricsCalculator mCalculator;
     private volatile BigDecimal mClosePrice;
-    private volatile Integer mMultiplier;
+    private volatile BigDecimal mMultiplier;
     private volatile BigDecimal mLastTradePrice;
 
     /**
@@ -87,17 +86,17 @@ public final class PositionRowUpdater {
 
             @Override
             public void symbolTraded(InstrumentMarketDataEvent event) {
-                tick(event.getNewPrice());
+                tick(event.getNewAmount());
             }
 
             @Override
             public void closePriceChanged(InstrumentMarketDataEvent event) {
-                PositionRowUpdater.this.closePriceChanged(event.getNewPrice());
+                PositionRowUpdater.this.closePriceChanged(event.getNewAmount());
             }
 
             @Override
-            public void optionMultiplierChanged(Integer multiplier) {
-                PositionRowUpdater.this.optionMultiplierChanged(multiplier);
+            public void optionMultiplierChanged(InstrumentMarketDataEvent event) {
+                PositionRowUpdater.this.optionMultiplierChanged(event.getNewAmount());
             }
         };
         mMarketDataSupport.addInstrumentMarketDataListener(
@@ -190,12 +189,15 @@ public final class PositionRowUpdater {
         }
     }
 
-    private void optionMultiplierChanged(Integer multiplier) {
-        Integer oldMultiplier = mMultiplier;
+    private void optionMultiplierChanged(BigDecimal multiplier) {
+        BigDecimal oldMultiplier = mMultiplier;
         /*
          * Only process if necessary.
          */
-        if (ObjectUtils.equals(oldMultiplier, multiplier)) {
+        if (oldMultiplier == null && multiplier == null) {
+            return;
+        } else if (oldMultiplier != null && multiplier != null
+                && oldMultiplier.compareTo(multiplier) == 0) {
             return;
         }
         mMultiplier = multiplier;

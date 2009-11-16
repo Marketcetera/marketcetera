@@ -114,8 +114,10 @@ public class LatestTickManagerTest extends
                 instrument).withExchange("Q").withTradeDate("bogus").withPrice(
                 new BigDecimal(price)).withSize(new BigDecimal(size));
         if (instrument instanceof Option) {
-            builder = builder.withUnderlyingInstrument(new Equity(instrument
-                    .getSymbol())).withExpirationType(ExpirationType.AMERICAN).withMultiplier(multiplier);
+            builder = builder.withUnderlyingInstrument(
+                    new Equity(instrument.getSymbol())).withExpirationType(
+                    ExpirationType.AMERICAN).withMultiplier(
+                    new BigDecimal(multiplier));
         }
         return builder.create();
     }
@@ -137,12 +139,12 @@ public class LatestTickManagerTest extends
         // item should have changed
         assertThat(mItem2.getPrice(), comparesEqualTo(1));
         assertThat(mItem2.getSize(), comparesEqualTo(2));
-        assertThat(mItem2.getMultiplier(), is(3));
+        assertThat(mItem2.getMultiplier(), comparesEqualTo(3));
         // emit another event
         emit(createOptionEvent(mKey2.getInstrument(), 4, 5, 6));
         assertThat(mItem2.getPrice(), comparesEqualTo(4));
         assertThat(mItem2.getSize(), comparesEqualTo(5));
-        assertThat(mItem2.getMultiplier(), is(6));
+        assertThat(mItem2.getMultiplier(), comparesEqualTo(6));
         // finish
         mFixture.stopFlow(mKey2);
     }

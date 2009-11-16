@@ -77,6 +77,17 @@ public class InstrumentPrettyPrinterTest {
                 testExpiry(null, "");
             }
         };
+        /*
+         * These next two are odd cases. The behavior is unspecified, but the
+         * pretty printer wraps the dates. The tests are included for
+         * completeness.
+         */
+        testExpiry(
+                new Option("IBM", "200913", BigDecimal.ONE, OptionType.Call),
+                "Jan 10");
+        testExpiry(new Option("IBM", "20090230", BigDecimal.ONE,
+                OptionType.Call), "Mar 02 09");
+
     }
 
     private void testExpiry(Option instrument, String expected) {

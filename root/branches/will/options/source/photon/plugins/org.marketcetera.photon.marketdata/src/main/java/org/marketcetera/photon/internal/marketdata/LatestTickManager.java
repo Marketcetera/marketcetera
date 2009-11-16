@@ -103,7 +103,7 @@ public class LatestTickManager extends
                         }
                         if (data instanceof OptionEvent) {
                             OptionEvent optionData = (OptionEvent) data;
-                            Integer multiplier = optionData.getMultiplier();
+                            BigDecimal multiplier = optionData.getMultiplier();
                             if (multiplier != null) {
                                 item.setMultiplier(multiplier);
                             }

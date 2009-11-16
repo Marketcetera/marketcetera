@@ -157,7 +157,7 @@ public class PositionRowUpdaterTest {
         Thread.sleep(1000);
         assertPosition(mFixture.getPosition(), OPTION, "0", null, null, null,
                 null, null);
-        setMultiplier(10);
+        setMultiplier(BigDecimal.TEN);
         Thread.sleep(1000);
         assertPosition(mFixture.getPosition(), OPTION, "0", "1000", "0",
                 "1000", "0", "1000");
@@ -165,7 +165,7 @@ public class PositionRowUpdaterTest {
          * Not likely that multiplier will change, but test since the API allows
          * it.
          */
-        setMultiplier(1);
+        setMultiplier(BigDecimal.ONE);
         Thread.sleep(1000);
         assertPosition(mFixture.getPosition(), OPTION, "0", "100", "0", "100",
                 "0", "100");
@@ -175,8 +175,9 @@ public class PositionRowUpdaterTest {
                 null, null);
     }
 
-    private void setMultiplier(Integer multiplier) {
-        mListener.optionMultiplierChanged(multiplier);
+    private void setMultiplier(BigDecimal multiplier) {
+        mListener.optionMultiplierChanged(new InstrumentMarketDataEvent(this,
+                multiplier));
     }
 
     private Trade<?> createTrade(String quantity, String price) {
@@ -225,7 +226,7 @@ public class PositionRowUpdaterTest {
         }
 
         @Override
-        public Integer getOptionMultiplier(Option option) {
+        public BigDecimal getOptionMultiplier(Option option) {
             return null;
         }
 

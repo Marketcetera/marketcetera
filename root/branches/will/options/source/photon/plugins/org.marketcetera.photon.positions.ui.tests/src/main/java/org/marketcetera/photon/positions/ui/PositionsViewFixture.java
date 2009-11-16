@@ -205,7 +205,7 @@ public class PositionsViewFixture {
     }
 
     public void fireOptionMultiplier(Instrument instrument,
-            Integer newMultiplier) {
+            BigDecimal newMultiplier) {
         mMarketDataSupport.fireOptionMultiplier(instrument, newMultiplier);
     }
 
@@ -251,7 +251,7 @@ public class PositionsViewFixture {
         }
 
         @Override
-        public Integer getOptionMultiplier(Option option) {
+        public BigDecimal getOptionMultiplier(Option option) {
             return null;
         }
 
@@ -286,10 +286,12 @@ public class PositionsViewFixture {
         }
 
         public void fireOptionMultiplier(Instrument instrument,
-                Integer newMultiplier) {
+                BigDecimal newMultiplier) {
+            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(
+                    this, newMultiplier);
             for (InstrumentMarketDataListener listener : mListeners
                     .get(instrument)) {
-                listener.optionMultiplierChanged(newMultiplier);
+                listener.optionMultiplierChanged(event);
             }
         }
 

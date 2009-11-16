@@ -145,21 +145,21 @@ public class PositionRowUpdaterConcurrencyTest {
 
         public void fireEvent() {
             synchronized (mSimulatedDataFlowLock) {
-                if (mGenerator.nextBoolean()) {
-                    InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(
-                            this, new BigDecimal(mGenerator.nextInt(5)));
-                    if (mGenerator.nextBoolean()) {
-                        for (InstrumentMarketDataListener listener : mListeners) {
-                            listener.symbolTraded(event);
-                        }
-                    } else {
-                        for (InstrumentMarketDataListener listener : mListeners) {
-                            listener.closePriceChanged(event);
-                        }
-                    }
-                } else {
-                    for (InstrumentMarketDataListener listener : mListeners) {
-                        listener.optionMultiplierChanged(10);
+                InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(
+                        this, new BigDecimal(mGenerator.nextInt(5)));
+                int type = mGenerator.nextInt(2);
+                for (InstrumentMarketDataListener listener : mListeners) {
+                    switch (type) {
+                    case 0:
+                        listener.symbolTraded(event);
+                        break;
+                    case 1:
+                        listener.closePriceChanged(event);
+                        break;
+                    case 2:
+                        listener.optionMultiplierChanged(event);
+                    default:
+                        throw new AssertionError();
                     }
                 }
             }
@@ -176,7 +176,7 @@ public class PositionRowUpdaterConcurrencyTest {
         }
 
         @Override
-        public Integer getOptionMultiplier(Option option) {
+        public BigDecimal getOptionMultiplier(Option option) {
             return null;
         }
 
