@@ -54,6 +54,10 @@ public class MarketDataViewItem implements ISymbolProvider {
 		return mEquity;
 	}
 
+    public String getSymbol() {
+        return mEquity.getSymbol();
+    }
+
 	public MDLatestTick getLatestTick() {
 		return mLatestTick.get();
 	}
@@ -70,14 +74,14 @@ public class MarketDataViewItem implements ISymbolProvider {
 	 */
 	public void setEquity(Equity equity) {
 		Validate.notNull(equity);
-		Equity oldSymbol = getEquity();
-		if (!oldSymbol.equals(equity)) {
+		String oldSymbol = getSymbol();
+		if (!mEquity.equals(equity)) {
 			MDLatestTick oldLatestTick = getLatestTick();
 			MDTopOfBook oldTopOfBook = getTopOfBook();
 			dispose();
 			mEquity = equity;
 			init();
-			propertyChangeSupport.firePropertyChange("symbol", oldSymbol, getEquity()); //$NON-NLS-1$
+			propertyChangeSupport.firePropertyChange("symbol", oldSymbol, getSymbol()); //$NON-NLS-1$
 			propertyChangeSupport.firePropertyChange("latestTick", oldLatestTick, getLatestTick()); //$NON-NLS-1$
 			propertyChangeSupport.firePropertyChange("topOfBook", oldTopOfBook, getTopOfBook()); //$NON-NLS-1$
 		}
@@ -89,8 +93,8 @@ public class MarketDataViewItem implements ISymbolProvider {
 	}
 
 	private void init() {
-		mLatestTick = mMarketData.getLatestTick(mEquity.getSymbol());
-		mTopOfBook = mMarketData.getTopOfBook(mEquity.getSymbol());
+		mLatestTick = mMarketData.getLatestTick(mEquity);
+		mTopOfBook = mMarketData.getTopOfBook(mEquity);
 	}
 
 	/**

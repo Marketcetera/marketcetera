@@ -2,8 +2,6 @@ package org.marketcetera.photon;
 
 import org.marketcetera.trade.Order;
 
-import quickfix.Message;
-
 public class ImmediatePhotonController extends PhotonController {
 
 	private Order mLastOrder;

@@ -28,23 +28,26 @@ public class ReportHolder
      * Creates an instance.
      *
      * @param inReport the report instance.
+     * @param inUnderlying the underlying symbol
      */
-    public ReportHolder(ReportBase inReport) {
-        this(inReport, null);
+    public ReportHolder(ReportBase inReport, String inUnderlying) {
+        this(inReport, inUnderlying, null);
     }
 
     /**
      * Creates an instance.
      *
      * @param inReport the report instance.
+     * @param inUnderlying the underlying symbol
      * @param inGroupID the orderID of the first order in this chain of orders.
      */
-    public ReportHolder(ReportBase inReport, OrderID inGroupID){
-        this.mReport = inReport;
+    public ReportHolder(ReportBase inReport, String inUnderlying, OrderID inGroupID){
+        mReport = inReport;
         // A unique reference number must be used instead of mReport.getReportID() since some "fake"
         // reports are created by this package with null ids (e.g. average price list).
-        this.mMessageReference = sCounter.incrementAndGet();
-        this.mGroupID = inGroupID;
+        mMessageReference = sCounter.incrementAndGet();
+        mGroupID = inGroupID;
+        mUnderlying = inUnderlying;
     }
 
     /**
@@ -82,9 +85,16 @@ public class ReportHolder
     public OrderID getGroupID() {
         return mGroupID;
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
+    
+    /**
+     * Returns the underlying symbol for the report instrument.
+     * 
+     * @return the underlying symbol
      */
+    public String getUnderlying() {
+        return mUnderlying;
+    }
+    
     @Override
     public int hashCode()
     {
@@ -93,9 +103,7 @@ public class ReportHolder
         result = prime * result + (int) (mMessageReference ^ (mMessageReference >>> 32));
         return result;
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    
     @Override
     public boolean equals(Object obj)
     {
@@ -112,6 +120,7 @@ public class ReportHolder
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("report", mReport) //$NON-NLS-1$
+                .append("underlying", mUnderlying) //$NON-NLS-1$
                 .append("groupId", mGroupID) //$NON-NLS-1$
                 .append("messageReferenceNumber", mMessageReference) //$NON-NLS-1$
                 .toString();
@@ -121,4 +130,5 @@ public class ReportHolder
     private final long mMessageReference;
     private static AtomicLong sCounter = new AtomicLong();
     private final OrderID mGroupID;
+    private final String mUnderlying;
 }

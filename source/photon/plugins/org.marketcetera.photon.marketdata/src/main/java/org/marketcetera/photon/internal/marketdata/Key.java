@@ -4,7 +4,7 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.marketcetera.photon.model.marketdata.MDItem;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -17,33 +17,33 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public abstract class Key<T extends MDItem> {
+public abstract class Key {
 
-	private final String mSymbol;
+	private final Instrument mInstrument;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param symbol
-	 *            the symbol
+	 * @param instrument
+	 *            the instrument
 	 */
-	public Key(final String symbol) {
-		Validate.notNull(symbol);
-		mSymbol = symbol;
+	public Key(final Instrument instrument) {
+		Validate.notNull(instrument);
+		mInstrument = instrument;
 	}
 
 	/**
-	 * Returns the symbol.
+	 * Returns the instrument.
 	 * 
-	 * @return the symbol
+	 * @return the instrument
 	 */
-	public String getSymbol() {
-		return mSymbol;
+	public Instrument getInstrument() {
+		return mInstrument;
 	}
 
 	@Override
 	public final int hashCode() {
-		HashCodeBuilder builder = new HashCodeBuilder().append(getClass()).append(mSymbol);
+		HashCodeBuilder builder = new HashCodeBuilder().append(getClass()).append(mInstrument);
 		enhanceHashCode(builder);
 		return builder.toHashCode();
 	}
@@ -65,9 +65,8 @@ public abstract class Key<T extends MDItem> {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		// once the classes are equal, we can safely cast to Key<T>
-		Key<?> otherKey = (Key<?>) obj;
-		EqualsBuilder builder = new EqualsBuilder().append(mSymbol, otherKey.mSymbol);
+		Key otherKey = (Key) obj;
+		EqualsBuilder builder = new EqualsBuilder().append(mInstrument, otherKey.mInstrument);
 		refineEquals(builder, otherKey);
 		return builder.isEquals();
 	}
@@ -85,13 +84,13 @@ public abstract class Key<T extends MDItem> {
 	 * @param otherKey
 	 *            the other key to compare with
 	 */
-	protected void refineEquals(final EqualsBuilder builder, final Key<?> otherKey) {
+	protected void refineEquals(final EqualsBuilder builder, final Key otherKey) {
 		// no-op
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("symbol", mSymbol) //$NON-NLS-1$
+		return new ToStringBuilder(this).append("instrument", mInstrument) //$NON-NLS-1$
 				.toString();
 	}
 }

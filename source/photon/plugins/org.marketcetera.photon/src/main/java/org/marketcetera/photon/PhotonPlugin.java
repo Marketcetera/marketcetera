@@ -32,9 +32,11 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.core.ICredentialsService;
@@ -44,7 +46,6 @@ import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.photon.views.OptionOrderTicketController;
 import org.marketcetera.photon.views.OptionOrderTicketModel;
-import org.marketcetera.photon.views.OrderTicketModel;
 import org.marketcetera.photon.views.SecondaryIDCreator;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicketModel;
@@ -53,17 +54,15 @@ import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.Strategy;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.trade.Option;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.rubypeople.rdt.core.RubyCore;
-
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.SecurityType;
 
 /* $License$ */
 
@@ -108,7 +107,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
 
     private SecondaryIDCreator secondaryIDCreator = new SecondaryIDCreator();
 
-    private OrderTicketModel stockOrderTicketModel;
+    private StockOrderTicketModel stockOrderTicketModel;
 
     private OptionOrderTicketModel optionOrderTicketModel;
 
@@ -129,6 +128,8 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     private ServiceTracker mCredentialsServiceTracker;
     
     private ServiceTracker mLogoutServiceTracker;
+    
+    private final UnderlyingSymbolSupport mUnderlyingSymbolSupport = new ClientUnderlyingSymbolSupport();
 
     /**
      * The constructor.
@@ -181,8 +182,8 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     }
 
     public void initOrderTickets() {
-        stockOrderTicketModel = new StockOrderTicketModel(messageFactory);
-        optionOrderTicketModel = new OptionOrderTicketModel(messageFactory);
+        stockOrderTicketModel = new StockOrderTicketModel();
+        optionOrderTicketModel = new OptionOrderTicketModel();
         stockOrderTicketController = new StockOrderTicketController(
                 stockOrderTicketModel);
         optionOrderTicketController = new OptionOrderTicketController(
@@ -196,7 +197,16 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     }
 
     private void initTradeReportsHistory() {
-        mTradeReportsHistory = new TradeReportsHistory(messageFactory);
+        mTradeReportsHistory = new TradeReportsHistory(messageFactory, mUnderlyingSymbolSupport);
+    }
+    
+    /**
+     * Returns the {@link UnderlyingSymbolSupport}.
+     * 
+     * @return the underlying symbol support
+     */
+    public UnderlyingSymbolSupport getUnderlyingSymbolSupport() {
+        return mUnderlyingSymbolSupport;
     }
 
     /**
@@ -398,7 +408,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         return null;
     }
 
-    public OrderTicketModel getStockOrderTicketModel() {
+    public StockOrderTicketModel getStockOrderTicketModel() {
         return stockOrderTicketModel;
     }
 
@@ -415,25 +425,40 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     }
 
     /**
-     * Returns the order ticket appropriate for the given message (based on
-     * security type).
+     * Returns the order ticket appropriate for the given order.
      * 
-     * @param orderMessage
-     *            the message specifying the type of order ticket.
+     * @param order
+     *            the order
      * @return the controller for the appropriate order ticket.
      */
-    public IOrderTicketController getOrderTicketController(Message orderMessage) {
-        try {
-            // This works for orders and execution reports
-            if (FIXMessageUtil.isEquityOptionOrder(orderMessage)
-                    || (FIXMessageUtil.isExecutionReport(orderMessage) && SecurityType.OPTION
-                            .equals(orderMessage.getString(SecurityType.FIELD)))) {
-                return getOptionOrderTicketController();
-            }
-        } catch (FieldNotFound e) {
-            // not an option
+    public IOrderTicketController getOrderTicketController(NewOrReplaceOrder order) {
+        // TODO: instrument specific functionality that can be abstracted
+        Instrument i = order.getInstrument();
+        if (i instanceof Option) {
+            return getOptionOrderTicketController();
         }
         return getStockOrderTicketController();
+    }
+    
+    /**
+     * Navigates to the appropriate perspective and sets the order on the ticket
+     * view.
+     * 
+     * @param order
+     *            the order
+     * @throws WorkbenchException
+     *             if an error occurs switching to the view
+     */
+    public void showOrderInTicket(NewOrReplaceOrder order)
+            throws WorkbenchException {
+        IOrderTicketController orderTicketController = getOrderTicketController(order);
+        String perspective = orderTicketController.getPerspectiveId();
+        String view = orderTicketController.getViewId();
+        orderTicketController.setOrderMessage(order);
+        PlatformUI.getWorkbench().showPerspective(perspective,
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                .showView(view);
     }
 
     /**

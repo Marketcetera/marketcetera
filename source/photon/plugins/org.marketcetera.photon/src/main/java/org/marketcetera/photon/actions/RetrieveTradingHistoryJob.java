@@ -1,6 +1,8 @@
 package org.marketcetera.photon.actions;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +17,7 @@ import org.marketcetera.client.ConnectionException;
 import org.marketcetera.core.position.ImmutablePositionSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionEngineFactory;
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
@@ -24,6 +27,8 @@ import org.marketcetera.photon.TimeOfDay;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -77,11 +82,22 @@ public class RetrieveTradingHistoryJob extends Job {
 							}
 						}
 					});
-					PositionEngine engine = PositionEngineFactory.createFromReportHolders(
-							tradeReportsHistory.getAllMessagesList(), new ImmutablePositionSupport(
-									ClientManager.getInstance().getAllEquityPositionsAsOf(lastOccurrence)),
-							new PhotonPositionMarketData(PhotonPlugin.getDefault()
-									.getMarketDataManager().getMarketData()));
+                    Map<PositionKey<?>, BigDecimal> positions = Maps
+                            .<PositionKey<?>, BigDecimal> newHashMap(ClientManager
+                                    .getInstance().getAllEquityPositionsAsOf(
+                                            lastOccurrence));
+                    positions.putAll(ClientManager.getInstance()
+                            .getAllOptionPositionsAsOf(lastOccurrence));
+                    PositionEngine engine = PositionEngineFactory
+                            .createFromReportHolders(tradeReportsHistory
+                                    .getAllMessagesList(),
+                                    new ImmutablePositionSupport(positions),
+                                    new PhotonPositionMarketData(PhotonPlugin
+                                            .getDefault()
+                                            .getMarketDataManager()
+                                            .getMarketData()), PhotonPlugin
+                                            .getDefault()
+                                            .getUnderlyingSymbolSupport());
 					PhotonPlugin.getDefault().registerPositionEngine(engine);
 				} catch (Exception e) {
 					if (e instanceof RuntimeException) {

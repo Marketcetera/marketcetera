@@ -24,5 +24,6 @@ Require-Bundle: org.marketcetera.photon.commons,
  org.marketcetera.photon.strategy.engine.embedded,
  org.marketcetera.photon.strategy.engine.sa,
  org.marketcetera.photon.strategy.engine.sa.ui,
- org.marketcetera.photon.strategy.engine.sa.ui.workbench
+ org.marketcetera.photon.strategy.engine.sa.ui.workbench,
+ org.marketcetera.photon.positions.ui
 Bundle-Vendor: Marketcetera, Inc.

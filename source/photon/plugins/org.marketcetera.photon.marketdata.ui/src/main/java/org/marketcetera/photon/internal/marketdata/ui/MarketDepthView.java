@@ -35,6 +35,7 @@ import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDQuote;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.ObjectArrays;
@@ -48,6 +49,7 @@ import com.google.common.collect.ObjectArrays;
  * symbol,product
  * </pre>
  * 
+ * The symbol is interpreted as an equity symbol.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -131,7 +133,10 @@ public class MarketDepthView extends ViewPart {
 	}
 
 	private void hookupData() {
-		mDataItem = mMarketData.getDepthOfBook(mSymbol, mProduct);
+	    /*
+	     * Note that we are assuming equity here.
+	     */
+		mDataItem = mMarketData.getDepthOfBook(new Equity(mSymbol), mProduct);
 		ObservableListContentProvider bids = new ObservableListContentProvider();
 		mBidsTable.getTableViewer().setContentProvider(bids);
 		mBidsTable.getTableViewer().setLabelProvider(

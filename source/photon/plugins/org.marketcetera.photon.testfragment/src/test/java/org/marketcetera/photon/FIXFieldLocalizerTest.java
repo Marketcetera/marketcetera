@@ -1,8 +1,12 @@
 package org.marketcetera.photon;
 
 import junit.framework.TestCase;
+
+import org.marketcetera.trade.SecurityType;
+
 import quickfix.field.OrdStatus;
 import quickfix.field.OrdType;
+import quickfix.field.PutOrCall;
 import quickfix.field.Side;
 import quickfix.field.TimeInForce;
 
@@ -53,6 +57,16 @@ public class FIXFieldLocalizerTest extends TestCase {
         assertEquals("TIF not shortened correctly", "FOK", FIXFieldLocalizer.getLocalizedFIXValueName(TimeInForce.class.getSimpleName(), "FILL OR KILL"));
         assertEquals("TIF not shortened correctly", "OPG", FIXFieldLocalizer.getLocalizedFIXValueName(TimeInForce.class.getSimpleName(), "AT THE OPENING"));
 
+    }
+
+    public void testExtractValue_SecurityType() throws Exception {
+        assertEquals("SecurityType not shortened correctly", "EQ", FIXFieldLocalizer.getLocalizedFIXValueName(SecurityType.class.getSimpleName(), "COMMON_STOCK"));
+        assertEquals("SecurityType not shortened correctly", "OPT", FIXFieldLocalizer.getLocalizedFIXValueName(SecurityType.class.getSimpleName(), "OPTION"));
+    }
+
+    public void testExtractValue_PutOrCall() throws Exception {
+        assertEquals("PutOrCall not shortened correctly", "Put", FIXFieldLocalizer.getLocalizedFIXValueName(PutOrCall.class.getSimpleName(), "PUT"));
+        assertEquals("PutOrCall not shortened correctly", "Call", FIXFieldLocalizer.getLocalizedFIXValueName(PutOrCall.class.getSimpleName(), "CALL"));
     }
 
 }

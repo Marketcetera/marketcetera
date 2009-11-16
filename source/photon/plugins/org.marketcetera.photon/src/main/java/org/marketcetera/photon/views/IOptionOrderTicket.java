@@ -1,25 +1,31 @@
 package org.marketcetera.photon.views;
 
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;
+import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
+/**
+ * The XSWT option order ticket.
+ *
+ * @version $Id$
+ * @since 0.5.0
+ */
+@ClassVersion("$Id$")
 public interface IOptionOrderTicket extends IOrderTicket {
 
-	/**
-	 * @return symbol for the specific option contract (e.g. "MSQ+GE")
-	 */
-	Text getOptionSymbolText();
+	Text getOptionExpiryText();
+	
+	Button getSelectExpiryButton();
 
-	Combo getExpireMonthCombo();
-
-	Combo getOpenCloseCombo();
+    Combo getOpenCloseCombo();
 
 	Combo getOrderCapacityCombo();
 
 	Combo getPutOrCallCombo();
 	
-	Combo getStrikePriceCombo();
-
-	Combo getExpireYearCombo();
+	Text getStrikePriceText();
 
 }

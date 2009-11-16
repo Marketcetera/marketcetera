@@ -70,8 +70,7 @@ public class FIXDataDictionary {
      */
     public String getHumanFieldValue(int fieldNumber, String value)
     {
-        String result = mDictionary.getValueName(fieldNumber, value);
-        return (result == null) ? result : result.replace('_', ' ');
+        return getHumanFieldValue(mDictionary, fieldNumber, value);
     }
 
     public DataDictionary getDictionary() {
@@ -86,5 +85,19 @@ public class FIXDataDictionary {
     public static FIXDataDictionary initializeDataDictionary(String fixDataDictionaryPath) throws CoreException
     {
         return new FIXDataDictionary(fixDataDictionaryPath);
+    }
+
+    /** Send in the field number and field value you want to translate
+     * Example: Side.FIELD and Side.BUY results in "BUY"
+     * Replaces all the _ with a space
+     * @param dict
+     * @param fieldNumber
+     * @param value
+     * @return human-readable conversion of a FIX constant, or NULL if the value was not found
+     */
+    public static String getHumanFieldValue(DataDictionary dict, int fieldNumber, String value)
+    {
+        String result = dict.getValueName(fieldNumber, value);
+        return (result == null) ? result : result.replace('_', ' ');
     }
 }

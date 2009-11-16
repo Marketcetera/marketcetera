@@ -99,6 +99,60 @@ public class OptionUtils {
         }
         throw new IllegalArgumentException();
     }
+
+    /**
+     * Gets a string symbol as specified by <a
+     * href="http://www.theocc.com/initiatives/symbology/default.jsp">Option
+     * Symbology Initiative</a> from an <code>Option</code>. The provided option
+     * must have property values compliant with OSI tuples. Otherwise, an
+     * exception may be thrown, or an invalid OSI symbol may be returned.
+     * 
+     * @param inOption an <code>Option</code> value
+     * @return a <code>String</code> value compliant with the OSI
+     * @throws IllegalArgumentException
+     *             if the given option symbol is greater than 6 characters, if
+     *             the expiry is not 8 digits, if the type is not {@code
+     *             OptionType.Call} or {@code OptionType.Put}, or if the strike
+     *             is negative, has more than 5 digits to the left of the
+     *             decimal point, or more than 3 digits to the right.
+     */
+    public static String getOsiSymbolFromOption(Option inOption)
+    {
+        String symbol = inOption.getSymbol();
+        if (symbol.length() > 6) {
+            throw new IllegalArgumentException();
+        }
+        String expiry = inOption.getExpiry().substring(2);
+        if (expiry.length() != 6) {
+            throw new IllegalArgumentException();
+        }
+        for (char c : expiry.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                throw new IllegalArgumentException();
+            }
+        }
+        BigDecimal strike = inOption.getStrikePrice();
+        if (strike.signum() == -1 || strike.scale() > 3) {
+            throw new IllegalArgumentException();
+        }
+        long longStrike = inOption.getStrikePrice().movePointRight(3).longValue();
+        if (longStrike > 99999999) {
+            throw new IllegalArgumentException();
+        }
+        char type;
+        switch (inOption.getType()) {
+        case Call:
+            type = 'C';
+            break;
+        case Put:
+            type = 'P';
+            break;
+        default:
+            throw new IllegalArgumentException();
+        }
+        return String.format("%-6s%s%s%08d", //$NON-NLS-1$
+               symbol, expiry, type, longStrike);
+    }
     /**
      * Returns a full year complete with century from the given
      * year-only value.

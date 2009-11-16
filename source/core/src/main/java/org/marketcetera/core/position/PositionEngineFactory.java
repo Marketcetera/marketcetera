@@ -3,10 +3,10 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.impl.Messages;
 import org.marketcetera.core.position.impl.PositionEngineImpl;
 import org.marketcetera.messagehistory.ReportHolder;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderStatus;
@@ -41,20 +41,25 @@ public class PositionEngineFactory {
      *            list of trades, cannot be null
      * @param incomingPositionSupport
      *            support for incoming positions, cannot be null
+     * @param marketDataSupport
+     *            support for market data, cannot be null
+     * @param underlyingSymbolSupport
+     *            support for underlying symbol, cannot be null
      * @return a position engine
      * @throws IllegalArgumentException
      *             if any parameter is null
      */
     public static PositionEngine create(EventList<Trade<?>> trades,
             IncomingPositionSupport incomingPositionSupport,
-            MarketDataSupport marketDataSupport) {
-        Validate
-                .noNullElements(new Object[] { trades, incomingPositionSupport });
+            MarketDataSupport marketDataSupport,
+            UnderlyingSymbolSupport underlyingSymbolSupport) {
+        Validate.noNullElements(new Object[] { trades, incomingPositionSupport,
+                marketDataSupport, underlyingSymbolSupport });
         Lock readLock = trades.getReadWriteLock().readLock();
         readLock.lock();
         try {
             return new PositionEngineImpl(trades, incomingPositionSupport,
-                    marketDataSupport);
+                    marketDataSupport, underlyingSymbolSupport);
         } finally {
             readLock.unlock();
         }
@@ -67,6 +72,10 @@ public class PositionEngineFactory {
      *            list of reports, cannot be null
      * @param incomingPositionSupport
      *            support for incoming positions, cannot be null
+     * @param marketDataSupport
+     *            support for market data, cannot be null
+     * @param underlyingSymbolSupport
+     *            support for underlying symbol, cannot be null
      * @return a position engine
      * @throws IllegalArgumentException
      *             if any parameter is null
@@ -74,9 +83,11 @@ public class PositionEngineFactory {
     public static PositionEngine createFromReports(
             EventList<ReportBase> reports,
             IncomingPositionSupport incomingPositionSupport,
-            MarketDataSupport marketDataSupport) {
-        Validate
-                .noNullElements(new Object[] { reports, incomingPositionSupport });
+            MarketDataSupport marketDataSupport,
+            UnderlyingSymbolSupport underlyingSymbolSupport) {
+        Validate.noNullElements(new Object[] { reports,
+                incomingPositionSupport, marketDataSupport,
+                underlyingSymbolSupport });
         Lock readLock = reports.getReadWriteLock().readLock();
         readLock.lock();
         try {
@@ -84,7 +95,8 @@ public class PositionEngineFactory {
                     reports, new ValidFillsMatcher());
             FunctionList<ReportBase, Trade<?>> trades = new FunctionList<ReportBase, Trade<?>>(
                     validFills, new TradeFunction());
-            return create(trades, incomingPositionSupport, marketDataSupport);
+            return create(trades, incomingPositionSupport, marketDataSupport,
+                    underlyingSymbolSupport);
         } finally {
             readLock.unlock();
         }
@@ -97,6 +109,10 @@ public class PositionEngineFactory {
      *            list of report holders, cannot be null
      * @param incomingPositionSupport
      *            support for incoming positions, cannot be null
+     * @param marketDataSupport
+     *            support for market data, cannot be null
+     * @param underlyingSymbolSupport
+     *            support for underlying symbol, cannot be null
      * @return a position engine
      * @throws IllegalArgumentException
      *             if any parameter is null
@@ -104,16 +120,18 @@ public class PositionEngineFactory {
     public static PositionEngine createFromReportHolders(
             EventList<ReportHolder> holders,
             IncomingPositionSupport incomingPositionSupport,
-            MarketDataSupport marketDataSupport) {
-        Validate
-                .noNullElements(new Object[] { holders, incomingPositionSupport });
+            MarketDataSupport marketDataSupport,
+            UnderlyingSymbolSupport underlyingSymbolSupport) {
+        Validate.noNullElements(new Object[] { holders,
+                incomingPositionSupport, marketDataSupport,
+                underlyingSymbolSupport });
         Lock readLock = holders.getReadWriteLock().readLock();
         readLock.lock();
         try {
             FunctionList<ReportHolder, ReportBase> reports = new FunctionList<ReportHolder, ReportBase>(
                     holders, new ReportExtractor());
             return createFromReports(reports, incomingPositionSupport,
-                    marketDataSupport);
+                    marketDataSupport, underlyingSymbolSupport);
         } finally {
             readLock.unlock();
         }
@@ -151,7 +169,8 @@ public class PositionEngineFactory {
         }
 
         private boolean isValid(ExecutionReport report) {
-            if (notEmpty(report.getInstrument()) && positive(report.getLastPrice())
+            if (notNull(report.getInstrument())
+                    && positive(report.getLastPrice())
                     && notZero(report.getLastQuantity())) {
                 return true;
             } else {
@@ -163,10 +182,6 @@ public class PositionEngineFactory {
 
         private boolean notNull(Object object) {
             return object != null;
-        }
-
-        private boolean notEmpty(Instrument instrument) {
-            return notNull(instrument);
         }
 
         private boolean notZero(BigDecimal number) {
@@ -199,10 +214,11 @@ public class PositionEngineFactory {
      * Adapts an {@link ExecutionReport} to be used as a Trade.
      */
     @ClassVersion("$Id$")
-    private final static class ExecutionReportAdapter implements Trade<Equity> {
+    private final static class ExecutionReportAdapter implements
+            Trade<Instrument> {
 
         private final ExecutionReport mReport;
-        private final PositionKey<Equity> mKey;
+        private final PositionKey<Instrument> mKey;
 
         /**
          * Constructor.
@@ -217,13 +233,12 @@ public class PositionEngineFactory {
              * position is associated with.
              */
             UserID viewer = mReport.getViewerID();
-            mKey = PositionKeyFactory.createEquityKey(mReport.getInstrument()
-                    .getSymbol(), mReport.getAccount(),
-                    viewer == null ? null : viewer.toString());
+            mKey = PositionKeyFactory.createKey(report.getInstrument(), mReport
+                    .getAccount(), viewer == null ? null : viewer.toString());
         }
 
         @Override
-        public PositionKey<Equity> getPositionKey() {
+        public PositionKey<Instrument> getPositionKey() {
             return mKey;
         }
 

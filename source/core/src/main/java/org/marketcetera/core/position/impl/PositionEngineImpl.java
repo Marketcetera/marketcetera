@@ -2,11 +2,13 @@ package org.marketcetera.core.position.impl;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.IncomingPositionSupport;
 import org.marketcetera.core.position.MarketDataSupport;
@@ -16,6 +18,7 @@ import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.position.impl.GroupingList.GroupMatcher;
 import org.marketcetera.core.position.impl.GroupingList.GroupMatcherFactory;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.BasicEventList;
@@ -53,7 +56,8 @@ public final class PositionEngineImpl implements PositionEngine {
         @Override
         public int compare(PositionRow o1, PositionRow o2) {
             return new CompareToBuilder().append(o1.getTraderId(),
-                    o2.getTraderId()).append(o1.getSymbol(), o2.getSymbol())
+                    o2.getTraderId()).append(o1.getUnderlying(),
+                    o2.getUnderlying())
                     .append(o1.getAccount(), o2.getAccount()).toComparison();
         }
     }
@@ -188,8 +192,8 @@ public final class PositionEngineImpl implements PositionEngine {
             PositionRow row = sourceValue.get(0);
             // use the key data from the first row...it won't exactly match all
             // rows, but it's sufficient for further grouping
-            PositionRowImpl summary = new PositionRowImpl(row.getSymbol(), row
-                    .getAccount(), row.getTraderId(), mGrouping, sourceValue);
+            PositionRowImpl summary = new PositionRowImpl(row.getInstrument(),
+                    row.getUnderlying(), row.getAccount(), row.getTraderId(), mGrouping, sourceValue);
             SummaryRowUpdater calculator = new SummaryRowUpdater(summary);
             map.put(sourceValue, calculator);
             return calculator.getSummary();
@@ -198,6 +202,7 @@ public final class PositionEngineImpl implements PositionEngine {
 
     private final MarketDataSupport mMarketDataSupport;
     private final IncomingPositionSupport mIncomingPositionSupport;
+    private final UnderlyingSymbolSupport mUnderlyingSymbolSupport;
     private final SortedList<Trade<?>> mSorted;
     private final GroupingList<Trade<?>> mGrouped;
     private final EventList<PositionRow> mPositionsBase;
@@ -213,16 +218,22 @@ public final class PositionEngineImpl implements PositionEngine {
      *            null
      * @param incomingPositionSupport
      *            support for incoming positions, cannot be null
+     * @param marketDataSupport
+     *            support for market data, cannot be null
+     * @param underlyingSymbolSupport
+     *            support for underlying symbol, cannot be null
      * @throws IllegalArgumentException
      *             if any parameter is null
      */
     public PositionEngineImpl(EventList<Trade<?>> trades,
             IncomingPositionSupport incomingPositionSupport,
-            MarketDataSupport marketDataSupport) {
+            MarketDataSupport marketDataSupport,
+            UnderlyingSymbolSupport underlyingSymbolSupport) {
         Validate.noNullElements(new Object[] { trades, incomingPositionSupport,
-                marketDataSupport });
+                marketDataSupport, underlyingSymbolSupport });
         mMarketDataSupport = marketDataSupport;
         mIncomingPositionSupport = incomingPositionSupport;
+        mUnderlyingSymbolSupport = underlyingSymbolSupport;
         mSorted = new SortedList<Trade<?>>(trades, new Comparator<Trade<?>>() {
 
             @Override
@@ -280,9 +291,12 @@ public final class PositionEngineImpl implements PositionEngine {
     }
 
     private void addPosition(PositionKey<?> key, EventList<Trade<?>> trades) {
-        PositionRowImpl positionRow = new PositionRowImpl(key.getInstrument()
-                .getSymbol(), key.getAccount(), key.getTraderId(),
-                mIncomingPositionSupport.getIncomingPositionFor(key));
+        Instrument instrument = key.getInstrument();
+        String underlying = mUnderlyingSymbolSupport.getUnderlying(instrument);
+        PositionRowImpl positionRow = new PositionRowImpl(instrument,
+                underlying,
+                key.getAccount(), key.getTraderId(), mIncomingPositionSupport
+                        .getIncomingPositionFor(key));
         PositionRowUpdater updater = new PositionRowUpdater(positionRow,
                 trades, mMarketDataSupport);
         mPositions.put(key, updater);
@@ -311,31 +325,79 @@ public final class PositionEngineImpl implements PositionEngine {
         if (groupings.length != 2 || groupings[0] == groupings[1]) {
             throw new UnsupportedOperationException();
         }
+        /*
+         * The API accepts two groupings, i.e. Underlying, then Account. We
+         * compute the other implied one because it is needed to do the
+         * matching.
+         */
+        EnumSet<Grouping> complements = EnumSet.complementOf(EnumSet.of(
+                groupings[0], groupings[1]));
+        if (complements.size() != 1) {
+            throw new IllegalStateException();
+        }
+        Grouping complement = complements.iterator().next();
+        /*
+         * This builds up a chain of lists off of mFlatView, each grouping and
+         * summarizing its children. 
+         * 
+         * We are essentially builds a tree from the
+         * bottom up. The leaf nodes are the positions, i.e. the elements in
+         * mFlatView. Intermediary nodes are summaries of their children.
+         */
         Lock lock = mFlatView.getReadWriteLock().readLock();
         lock.lock();
         try {
-            final GroupingList<PositionRow> grouped = new GroupingList<PositionRow>(
-                    mFlatView, new GroupingMatcherFactory(groupings));
-            final FunctionList<EventList<PositionRow>, PositionRow> summarized = new FunctionList<EventList<PositionRow>, PositionRow>(
-                    grouped, new SummarizeFunction(groupings));
-            final GroupingList<PositionRow> groupedAgain = new GroupingList<PositionRow>(
-                    summarized, new GroupingMatcherFactory(groupings[0]));
-            final FunctionList<EventList<PositionRow>, PositionRow> summarizedAgain = new FunctionList<EventList<PositionRow>, PositionRow>(
-                    groupedAgain, new SummarizeFunction(groupings[0]));
+            /*
+             * The first grouping is on all Grouping values, i.e. partition the
+             * positions into groups that match on everything.
+             */
+            final GroupingList<PositionRow> grouped1 = new GroupingList<PositionRow>(
+                    mFlatView, new GroupingMatcherFactory(groupings[0], groupings[1], complement));
+            /*
+             * Now make a new list that has one element for each group that
+             * summarizes the position values.  These form the next level of tree nodes.
+             */
+            final FunctionList<EventList<PositionRow>, PositionRow> summarized1 = new FunctionList<EventList<PositionRow>, PositionRow>(
+                    grouped1, new SummarizeFunction(groupings[0], groupings[1], complement));
+            /*
+             * Partition the above summary list into groups that match on the
+             * two provided values.
+             */
+            final GroupingList<PositionRow> grouped2 = new GroupingList<PositionRow>(
+                    summarized1, new GroupingMatcherFactory(groupings[0],
+                            groupings[1]));
+            /*
+             * Summarize the new groups to make the next level of tree nodes.
+             */
+            final FunctionList<EventList<PositionRow>, PositionRow> summarized2 = new FunctionList<EventList<PositionRow>, PositionRow>(
+                    grouped2, new SummarizeFunction(groupings[0], groupings[1]));
+            /*
+             * Partition the above summary list into groups that match on the
+             * final grouping.
+             */
+            final GroupingList<PositionRow> grouped3 = new GroupingList<PositionRow>(
+                    summarized2, new GroupingMatcherFactory(groupings[0]));
+            /*
+             * Summarize the final groups for the top level nodes.
+             */
+            final FunctionList<EventList<PositionRow>, PositionRow> summarized3 = new FunctionList<EventList<PositionRow>, PositionRow>(
+                    grouped3, new SummarizeFunction(groupings[0]));
 
             return new PositionData() {
 
                 @Override
                 public EventList<PositionRow> getPositions() {
-                    return summarizedAgain;
+                    return summarized3;
                 }
 
                 @Override
                 public void dispose() {
-                    summarizedAgain.dispose();
-                    groupedAgain.dispose();
-                    summarized.dispose();
-                    grouped.dispose();
+                    summarized3.dispose();
+                    grouped3.dispose();
+                    summarized2.dispose();
+                    grouped2.dispose();
+                    summarized1.dispose();
+                    grouped1.dispose();
                 }
             };
         } finally {

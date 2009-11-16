@@ -37,9 +37,9 @@ public class GroupingContributionItem extends CompoundContributionItem {
 		// labels must be updated if grouping options change
 		assert Grouping.values().length == 3;
 		labels = new EnumMap<Grouping, String>(Grouping.class);
-		labels.put(Grouping.Account, Messages.GROUPING_CONTRIBUTION_ITEM_ACCOUNT_LABEL.getText());
-		labels.put(Grouping.Symbol, Messages.GROUPING_CONTRIBUTION_ITEM_SYMBOL_LABEL.getText());
-		labels.put(Grouping.Trader, Messages.GROUPING_CONTRIBUTION_ITEM_TRADER_LABEL.getText());
+		labels.put(Grouping.Account, Messages.GROUPING_CONTRIBUTION_ITEM_ACCOUNT__LABEL.getText());
+		labels.put(Grouping.Underlying, Messages.GROUPING_CONTRIBUTION_ITEM_UNDERLYING__LABEL.getText());
+		labels.put(Grouping.Trader, Messages.GROUPING_CONTRIBUTION_ITEM_TRADER__LABEL.getText());
 	}
 
 	private final static class GroupingOption {
@@ -109,13 +109,15 @@ public class GroupingContributionItem extends CompoundContributionItem {
 	}
 
 	private GroupingOption[] getGroupingOptions() {
-		// Maybe customize at some point, e.g. don't include trader unless
-		// current user is superuser.
-		return new GroupingOption[] { new GroupingOption(Grouping.Symbol, Grouping.Account),
-				new GroupingOption(Grouping.Symbol, Grouping.Trader),
-				new GroupingOption(Grouping.Account, Grouping.Symbol),
+        /*
+         * Maybe customize at some point, e.g. don't include trader unless
+         * current user is superuser.
+         */
+		return new GroupingOption[] { new GroupingOption(Grouping.Underlying, Grouping.Account),
+				new GroupingOption(Grouping.Underlying, Grouping.Trader),
+				new GroupingOption(Grouping.Account, Grouping.Underlying),
 				new GroupingOption(Grouping.Account, Grouping.Trader),
-				new GroupingOption(Grouping.Trader, Grouping.Symbol),
+				new GroupingOption(Grouping.Trader, Grouping.Underlying),
 				new GroupingOption(Grouping.Trader, Grouping.Account) };
 	}
 

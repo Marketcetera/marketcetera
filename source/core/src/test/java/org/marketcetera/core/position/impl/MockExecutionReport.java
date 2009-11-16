@@ -6,7 +6,6 @@ import java.util.Date;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderCapacity;
 import org.marketcetera.trade.OrderID;
@@ -31,65 +30,65 @@ import org.marketcetera.trade.UserID;
 public class MockExecutionReport implements ExecutionReport {
 
 	private static final long serialVersionUID = 1L;
-	private final String account;
-	private final Instrument instrument;
-	private final Side side;
-	private final BigDecimal price;
-	private final BigDecimal quantity;
-	private final OrderStatus status;
-	private final ReportID id;
-	private UserID viewer;	
+	private final String mAccount;
+	private final Instrument mInstrument;
+	private final Side mSide;
+	private final BigDecimal mPrice;
+	private final BigDecimal mQuantity;
+	private final OrderStatus mStatus;
+	private final ReportID mId;
+	private UserID mViewer;	
 	
-	public MockExecutionReport(String account, String equitySymbol, long trader, Side side,
+	public MockExecutionReport(String account, Instrument instrument, long trader, Side side,
 			String price, String quantity, long sequence, OrderStatus status) {
-		this.account = account;
-		this.instrument = equitySymbol == null? null: new Equity(equitySymbol);
-		this.side = side;
-		this.price = new BigDecimal(price);
-		this.quantity = new BigDecimal(quantity);
-		this.status = status;
-		this.id = new ReportID(sequence);
-		this.viewer = new UserID(trader);
+		mAccount = account;
+		mInstrument = instrument;
+		mSide = side;
+		mPrice = new BigDecimal(price);
+		mQuantity = new BigDecimal(quantity);
+		mStatus = status;
+		mId = new ReportID(sequence);
+		mViewer = new UserID(trader);
 	}
 
 	@Override
 	public String getAccount() {
-		return account;
+		return mAccount;
 	}
 
 	@Override
 	public Instrument getInstrument() {
-		return instrument;
+		return mInstrument;
 	}
 
 	@Override
 	public Side getSide() {
-		return side;
+		return mSide;
 	}
 
 	@Override
 	public BigDecimal getLastPrice() {
-		return price;
+		return mPrice;
 	}
 
 	@Override
 	public BigDecimal getLastQuantity() {
-		return quantity;
+		return mQuantity;
 	}
 
 	@Override
 	public OrderStatus getOrderStatus() {
-		return status;
+		return mStatus;
 	}
 
 	@Override
 	public ReportID getReportID() {
-		return id;
+		return mId;
 	}
 
 	@Override
 	public UserID getViewerID() {
-		return viewer;
+		return mViewer;
 	}
 
 	@Override

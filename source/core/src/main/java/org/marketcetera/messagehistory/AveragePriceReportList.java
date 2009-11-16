@@ -9,6 +9,7 @@ import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
+import org.marketcetera.core.instruments.InstrumentToMessage;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -76,7 +77,6 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                     try {
                         Message deltaMessage = deltaReportHolder.getMessage();
                         ReportBase deltaReport = deltaReportHolder.getReport();
-                        String symbol = deltaMessage.getString(Symbol.FIELD);
                         String side = deltaMessage.getString(Side.FIELD);
                         Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(deltaMessage).extract(deltaMessage);
                         SymbolSide symbolSide = new SymbolSide(instrument, side);
@@ -120,7 +120,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                 if ((execReport.getOriginator() == Originator.Server && deltaReport.getOrderStatus() == OrderStatus.PendingNew) || (lastQuantity != null && lastQuantity.compareTo(BigDecimal.ZERO) > 0)) { 
                                     Message averagePriceMessage = mMessageFactory.createMessage(MsgType.EXECUTION_REPORT);
                                     averagePriceMessage.setField(deltaMessage.getField(new Side()));
-                                    averagePriceMessage.setField(deltaMessage.getField(new Symbol()));
+                                    InstrumentToMessage.SELECTOR.forInstrument(instrument).set(instrument, mMessageFactory.getBeginString(), averagePriceMessage);
                                     // The following block is for the PENDING NEW acks from ORS.
                                     if (execReport.getOriginator() == Originator.Server && deltaReport.getOrderStatus() == OrderStatus.PendingNew){
                                         averagePriceMessage.setField(new OrderQty(execReport.getOrderQuantity()));
@@ -139,7 +139,8 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                                         averagePriceMessage,
                                                         execReport.getBrokerID(),
                                                         Originator.Server, execReport.getActorID(),
-                                                        execReport.getViewerID()));
+                                                        execReport.getViewerID()),
+                                                        deltaReportHolder.getUnderlying());
                                         mAveragePricesList.add(newReport);
                                         averagePriceIndex = mAveragePricesList.size()-1;
                                         mAveragePriceIndexes.put(symbolSide, averagePriceIndex);

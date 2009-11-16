@@ -1,6 +1,6 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import org.marketcetera.photon.model.marketdata.MDMarketstat;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -13,15 +13,15 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class MarketstatKey extends Key<MDMarketstat> {
+public class MarketstatKey extends Key {
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param symbol
-	 *            the symbol
+	 * @param instrument
+	 *            the instrument
 	 */
-	public MarketstatKey(final String symbol) {
-		super(symbol);
+	public MarketstatKey(final Instrument instrument) {
+		super(instrument);
 	}
 }

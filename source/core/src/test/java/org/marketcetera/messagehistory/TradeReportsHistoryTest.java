@@ -3,6 +3,8 @@ package org.marketcetera.messagehistory;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -15,14 +17,19 @@ import junit.framework.Test;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.core.instruments.InstrumentToMessage;
+import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportImpl;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Originator;
@@ -78,7 +85,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     }
 
     protected TradeReportsHistory createMessageHistory() {
-        return new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
+        return new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory(), new MockUnderlyingSymbolSupport());
     }
 
     public void testAddIncomingMessage() throws Exception {
@@ -1001,6 +1008,38 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         ReportBase openOrder = openOrdersList.get(0).getReport();
         assertThat(openOrder.getOrderStatus(), is(OrderStatus.Replaced));
         assertThat(openOrder.getOrderID().getValue(), is("2"));
+    }
+    
+    public void testUnderlyingSymbolSupportOption() throws Exception {
+        // options not supported in FIX 4.0
+        if (fixVersion != FIXVersion.FIX40) {
+            UnderlyingSymbolSupport mockSupport = mock(UnderlyingSymbolSupport.class);
+            TradeReportsHistory history = new TradeReportsHistory(msgFactory,
+                    mockSupport);
+            Message message = createSimpleMessage(Side.BUY, "1");
+            Option option = new Option("XYZ", "200910", new BigDecimal("2"),
+                    OptionType.Put);
+            InstrumentToMessage.SELECTOR.forInstrument(option).set(option,
+                    fixVersion.toString(), message);
+            when(mockSupport.getUnderlying(option)).thenReturn("ABC");
+            history.addIncomingMessage(createBrokerReport(message));
+            assertThat(history.getAllMessagesList().get(0).getUnderlying(),
+                    is("ABC"));
+        }
+    }
+
+    public void testUnderlyingSymbolSupportEquity() throws Exception {
+        UnderlyingSymbolSupport mockSupport = mock(UnderlyingSymbolSupport.class);
+        TradeReportsHistory history = new TradeReportsHistory(msgFactory,
+                mockSupport);
+        Message message = createSimpleMessage(Side.BUY, "1");
+        Equity equity = new Equity("IBM");
+        InstrumentToMessage.SELECTOR.forInstrument(equity).set(equity,
+                fixVersion.toString(), message);
+        when(mockSupport.getUnderlying(equity)).thenReturn("DEF");
+        history.addIncomingMessage(createBrokerReport(message));
+        assertThat(history.getAllMessagesList().get(0).getUnderlying(),
+                is("DEF"));
     }
     
     private void simulateOrderSingle(TradeReportsHistory history, String orderId, char side, String quantity, String symbol, String price) throws Exception {

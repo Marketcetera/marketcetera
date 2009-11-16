@@ -15,7 +15,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.views.WebBrowserView;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

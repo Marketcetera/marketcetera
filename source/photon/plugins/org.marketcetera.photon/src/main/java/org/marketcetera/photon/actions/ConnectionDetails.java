@@ -1,7 +1,5 @@
 package org.marketcetera.photon.actions;
 
-//TODO: Attn toli -- you may want to keep this class, or replace it with your own model object
-
 public class ConnectionDetails {
 	private String userId, password;
 

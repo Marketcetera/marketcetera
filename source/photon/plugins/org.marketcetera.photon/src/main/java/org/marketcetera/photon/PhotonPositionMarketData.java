@@ -19,6 +19,8 @@ import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDPackage;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.HashMultimap;
@@ -49,18 +51,21 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	/*
 	 * mListeners synchronizes access to the following three collections.
 	 */
-	private final SetMultimap<String, SymbolChangeListener> mListeners = HashMultimap.create();
-	private final Map<String, IMarketDataReference<MDLatestTick>> mLatestTickReferences = Maps
+	private final SetMultimap<Instrument, InstrumentMarketDataListener> mListeners = HashMultimap.create();
+	private final Map<Instrument, IMarketDataReference<MDLatestTick>> mLatestTickReferences = Maps
 			.newHashMap();
-	private final Map<String, IMarketDataReference<MDMarketstat>> mStatReferences = Maps
+	private final Map<Instrument, IMarketDataReference<MDMarketstat>> mStatReferences = Maps
 			.newHashMap();
-	/*
-	 * These caches allow easy implementation of getLastTradePrice and getClosingPrice. They also
-	 * allow notification to be fired only when the values change to avoid unnecessary
-	 * notifications, which is especially important with closing price that rarely changes.
-	 */
-	private final ConcurrentMap<String, BigDecimal> mLatestTickCache = new ConcurrentHashMap<String, BigDecimal>();
-	private final ConcurrentMap<String, BigDecimal> mClosingPriceCache = new ConcurrentHashMap<String, BigDecimal>();
+    /*
+     * These caches allow easy implementation of getLastTradePrice,
+     * getClosingPrice, and getOptionMultiplier. They also allow notification to
+     * be fired only when the values change to avoid unnecessary notifications,
+     * which is especially important with closing price and option multiplier
+     * that rarely change.
+     */
+    private final ConcurrentMap<Instrument, BigDecimal> mLatestTickCache = new ConcurrentHashMap<Instrument, BigDecimal>();
+    private final ConcurrentMap<Instrument, BigDecimal> mClosingPriceCache = new ConcurrentHashMap<Instrument, BigDecimal>();
+    private final ConcurrentMap<Instrument, BigDecimal> mOptionMultiplierCache = new ConcurrentHashMap<Instrument, BigDecimal>();
 
 	/*
 	 * Marks null price for the ConcurrentMap caches which don't allow null. This is better than
@@ -83,64 +88,72 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	}
 
 	@Override
-	public BigDecimal getLastTradePrice(String symbol) {
-		Validate.notNull(symbol);
+	public BigDecimal getLastTradePrice(Instrument instrument) {
+		Validate.notNull(instrument);
 		// implementation choice to only return the last trade price if it's already known
 		// not worth it to set up a new data flow
-		return getCachedValue(mLatestTickCache, symbol);
+		return getCachedValue(mLatestTickCache, instrument);
 	}
 
 	@Override
-	public BigDecimal getClosingPrice(String symbol) {
-		Validate.notNull(symbol);
+	public BigDecimal getClosingPrice(Instrument instrument) {
+		Validate.notNull(instrument);
 		// implementation choice to only return the closing price if it's already known
 		// not worth it to set up a new data flow
-		return getCachedValue(mClosingPriceCache, symbol);
+		return getCachedValue(mClosingPriceCache, instrument);
+	}
+	
+	@Override
+	public BigDecimal getOptionMultiplier(Option option) {
+	    Validate.notNull(option);
+        // implementation choice to only return the multiplier if it's already known
+        // not worth it to set up a new data flow
+        return getCachedValue(mOptionMultiplierCache, option);
 	}
 
-	private BigDecimal getCachedValue(final ConcurrentMap<String, BigDecimal> cache,
-			final String symbol) {
-		BigDecimal cached = cache.get(symbol);
+	private BigDecimal getCachedValue(final ConcurrentMap<Instrument, BigDecimal> cache,
+			final Instrument symbol) {
+	    BigDecimal cached = cache.get(symbol);
 		return cached == NULL ? null : cached;
 	}
 
 	@Override
-	public void addSymbolChangeListener(String symbol, SymbolChangeListener listener) {
-		Validate.noNullElements(new Object[] { symbol, listener });
+	public void addInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
+		Validate.noNullElements(new Object[] { instrument, listener });
 		synchronized (mListeners) {
 			if (mDisposed.get()) return;
-			IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(symbol);
+			IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(instrument);
 			if (ref == null) {
-				ref = mMarketData.getLatestTick(symbol);
-				mLatestTickReferences.put(symbol, ref);
+				ref = mMarketData.getLatestTick(instrument);
+				mLatestTickReferences.put(instrument, ref);
 				ref.get().eAdapters().add(mLatestTickAdapter);
 			}
-			IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(symbol);
+			IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(instrument);
 			if (statRef == null) {
-				statRef = mMarketData.getMarketstat(symbol);
-				mStatReferences.put(symbol, statRef);
+				statRef = mMarketData.getMarketstat(instrument);
+				mStatReferences.put(instrument, statRef);
 				statRef.get().eAdapters().add(mClosingPriceAdapter);
 			}
-			mListeners.put(symbol, listener);
+			mListeners.put(instrument, listener);
 		}
 	}
 
 	@Override
-	public void removeSymbolChangeListener(String symbol, SymbolChangeListener listener) {
-		Validate.noNullElements(new Object[] { symbol, listener });
+	public void removeInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
+		Validate.noNullElements(new Object[] { instrument, listener });
 		List<IMarketDataReference<?>> toDispose = Lists.newArrayList();
 		synchronized (mListeners) {
-			IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(symbol);
-			IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(symbol);
-			Set<SymbolChangeListener> listeners = mListeners.get(symbol);
+			IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(instrument);
+			IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(instrument);
+			Set<InstrumentMarketDataListener> listeners = mListeners.get(instrument);
 			listeners.remove(listener);
 			if (listeners.isEmpty()) {
 				if (ref != null) {
 					MDLatestTick tick = ref.get();
 					if (tick != null) {
 						tick.eAdapters().remove(mLatestTickAdapter);
-						mLatestTickReferences.remove(symbol);
-						mLatestTickCache.remove(symbol);
+						mLatestTickReferences.remove(instrument);
+						mLatestTickCache.remove(instrument);
 						toDispose.add(ref);
 					}
 				}
@@ -148,8 +161,8 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 					MDMarketstat stat = statRef.get();
 					if (stat != null) {
 						stat.eAdapters().remove(mClosingPriceAdapter);
-						mStatReferences.remove(symbol);
-						mClosingPriceCache.remove(symbol);
+						mStatReferences.remove(instrument);
+						mClosingPriceCache.remove(instrument);
 						toDispose.add(statRef);
 					}
 				}
@@ -162,50 +175,76 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	}
 
 	private void fireSymbolTraded(final MDLatestTick item) {
-		fireIfChanged(item.getSymbol(), item.getPrice(), mLatestTickCache, true);
+	    Instrument instrument = item.getInstrument();
+        BigDecimal newValue = item.getPrice();
+        if (updateCache(instrument, newValue, mLatestTickCache)) {
+	        InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
+	        synchronized (mListeners) {
+	            if (mDisposed.get()) return;
+	            for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
+	               listener.symbolTraded(event);
+	            }
+	        }
+	    }
 	}
 
 	private void fireClosingPriceChange(final MDMarketstat item) {
-		fireIfChanged(item.getSymbol(), item.getPreviousClosePrice(), mClosingPriceCache, false);
+	    Instrument instrument = item.getInstrument();
+        BigDecimal newValue = item.getPreviousClosePrice();
+        if (updateCache(instrument, newValue, mClosingPriceCache)) {
+            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
+            synchronized (mListeners) {
+                if (mDisposed.get()) return;
+                for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
+                   listener.closePriceChanged(event);
+                }
+            }
+        }
 	}
 
-	private void fireIfChanged(final String symbol, BigDecimal newPrice,
-			final ConcurrentMap<String, BigDecimal> cache,
-			final boolean trueForSymbolTradeFalseForClosePrice) {
-		BigDecimal oldPrice = cache.put(symbol, newPrice == null ? NULL : newPrice);
-		if (oldPrice == NULL) {
-			oldPrice = null;
-		}
-		// only notify if the value changed
-		if (oldPrice == null && newPrice == null) {
-			return;
-		} else if (oldPrice != null && newPrice != null && oldPrice.compareTo(newPrice) == 0) {
-			return;
-		}
-		SymbolChangeEvent event = new SymbolChangeEvent(PhotonPositionMarketData.this, newPrice);
-		synchronized (mListeners) {
-			if (mDisposed.get()) return;
-			for (SymbolChangeListener listener : mListeners.get(symbol)) {
-				if (trueForSymbolTradeFalseForClosePrice) {
-					listener.symbolTraded(event);
-				} else {
-					listener.closePriceChanged(event);
-				}
-			}
-		}
-	}
+	private void fireMultiplierChanged(final MDLatestTick item) {
+	    Instrument instrument = item.getInstrument();
+        BigDecimal newValue = item.getMultiplier();
+        if (updateCache(instrument, newValue, mOptionMultiplierCache)) {
+            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
+            synchronized (mListeners) {
+                if (mDisposed.get()) return;
+                for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
+                   listener.optionMultiplierChanged(event);
+                }
+            }
+        }
+    }
+	
+	/**
+	 * Updates an internal cache and returns whether the value changed.
+	 */
+	private boolean updateCache(final Instrument instrument, BigDecimal newValue,
+            final ConcurrentMap<Instrument, BigDecimal> cache) {
+	    BigDecimal oldValue = cache.put(instrument, newValue == null ? NULL : newValue);
+        if (oldValue == NULL) {
+            oldValue = null;
+        }
+        // only notify if the value changed
+        if (oldValue == null && newValue == null) {
+            return false;
+        } else if (oldValue != null && newValue != null && oldValue.compareTo(newValue) == 0) {
+            return false;
+        }
+        return true;
+    }
 
 	@Override
 	public void dispose() {
 		if (mDisposed.compareAndSet(false, true)) {
-			Set<Map.Entry<String, SymbolChangeListener>> entries;
+			Set<Map.Entry<Instrument, InstrumentMarketDataListener>> entries;
 			synchronized (mListeners) {
 				// make a copy since we will be modifying mListeners
 				entries = Sets.newHashSet(mListeners
 						.entries());
 			}
-			for (Map.Entry<String, SymbolChangeListener> entry : entries) {
-				removeSymbolChangeListener(entry.getKey(), entry.getValue());
+			for (Map.Entry<Instrument, InstrumentMarketDataListener> entry : entries) {
+				removeInstrumentMarketDataListener(entry.getKey(), entry.getValue());
 			}
 		}
 	}
@@ -214,10 +253,13 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 
 		@Override
 		public void notifyChanged(Notification msg) {
-			if (!msg.isTouch() && msg.getEventType() == Notification.SET
-					&& msg.getFeature() == MDPackage.Literals.MD_LATEST_TICK__PRICE) {
-				MDLatestTick item = (MDLatestTick) msg.getNotifier();
-				fireSymbolTraded(item);
+			if (!msg.isTouch() && msg.getEventType() == Notification.SET) {
+			    MDLatestTick item = (MDLatestTick) msg.getNotifier();
+                if (msg.getFeature() == MDPackage.Literals.MD_LATEST_TICK__PRICE) {
+                    fireSymbolTraded(item);
+                } else if (msg.getFeature() == MDPackage.Literals.MD_LATEST_TICK__MULTIPLIER) {
+                    fireMultiplierChanged(item);
+                }
 			}
 		}
 	}

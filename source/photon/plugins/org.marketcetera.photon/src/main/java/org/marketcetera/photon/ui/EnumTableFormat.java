@@ -155,8 +155,6 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	}
 
 	public void removeListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	protected void hideColumn(TableColumn column) {

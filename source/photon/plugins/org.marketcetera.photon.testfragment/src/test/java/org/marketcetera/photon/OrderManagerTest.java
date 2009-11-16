@@ -7,18 +7,19 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.marketcetera.core.CoreException;
+import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.messagehistory.TradeReportsHistoryTest;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
@@ -26,6 +27,8 @@ import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.SecurityType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TypesTestBase;
 
 import quickfix.FieldNotFound;
@@ -34,9 +37,7 @@ import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrdType;
 import quickfix.field.SenderCompID;
-import quickfix.field.Side;
 import quickfix.field.TargetCompID;
-import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
 import ca.odell.glazedlists.EventList;
 
@@ -56,7 +57,7 @@ public class OrderManagerTest extends TestCase {
    
     private static FIXMessageFactory msgFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
     public static Message getTestableExecutionReport() throws FieldNotFound {
-            Message aMessage = msgFactory.newExecutionReport("456", CL_ORD_ID, "987", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
+            Message aMessage = msgFactory.newExecutionReport("456", CL_ORD_ID, "987", OrdStatus.PARTIALLY_FILLED, quickfix.field.Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
                             new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal("12.3"), INSTRUMENT, null);
             aMessage.setUtcTimeStamp(TransactTime.FIELD, THE_TRANSACT_TIME);
             aMessage.getHeader().setField(new SenderCompID("send-dude"));
@@ -71,21 +72,49 @@ public class OrderManagerTest extends TestCase {
         }
     }
 	
+
+
+    private OrderSingle newOrderSingle(Side side, String quantity,
+            String symbol, OrderType type, String price, TimeInForce tif,
+            String account) {
+        OrderSingle order = Factory.getInstance().createOrderSingle();
+        fill(order, side, quantity, symbol, type, price, tif, account);
+        return order;
+    }
+
+    private void fill(NewOrReplaceOrder order, Side side, String quantity,
+            String symbol, OrderType type, String price, TimeInForce tif,
+            String account) {
+        order.setSide(side);
+        if (quantity != null) {
+            order.setQuantity(new BigDecimal(quantity));
+        }
+        if (symbol != null) {
+            order.setInstrument(createInstrument(symbol));
+        }
+        order.setOrderType(type);
+        if (price != null) {
+            order.setPrice(new BigDecimal(price));
+        }
+        order.setTimeInForce(tif);
+        order.setAccount(account);
+    }
+
+    protected Instrument createInstrument(String symbol) {
+        return new Equity(symbol);
+    }
 	
 	private TradeReportsHistory messageHistory;
 	private ImmediatePhotonController photonController;
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		messageHistory = new TradeReportsHistory(msgFactory);
+		messageHistory = new TradeReportsHistory(msgFactory, new MockUnderlyingSymbolSupport());
 		photonController = new ImmediatePhotonController();
 		photonController.setMessageHistory(messageHistory);
 	}
 
 	
-	/*
-	 * Test method for 'org.marketcetera.photon.PhotonController.receiveExecutionReport(ExecutionReport)'
-	 */
 	public void testReceiveExecutionReports() throws Exception {
 		Message[] messages = new Message[2];
 		messages[0] = getTestableExecutionReport();
@@ -101,29 +130,29 @@ public class OrderManagerTest extends TestCase {
 		assertEquals(MsgType.EXECUTION_REPORT, ((ReportHolder)historyList.get(1)).getMessage().getHeader().getString(MsgType.FIELD));
 	}
 
-	/*
-	 * Test method for 'org.marketcetera.photon.PhotonController.handleInternalMessage(Message)'
-	 */
-	public void testHandleInternalMessages() throws Exception {
+	public void testSendAndCancel() throws Exception {
 		EventList<ReportHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(0, historyList.size());
-		Message order = msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.ONE, new Equity("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
-		Message cancel = msgFactory.newCancel("AQWE", "ASDF", Side.BUY, BigDecimal.TEN, new Equity("SDF"), "WERT");
-		Message exReport = msgFactory.newExecutionReport("456", "ASDF", "987", OrdStatus.PENDING_NEW, Side.BUY, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(500),
-				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, new Equity("QWER"), null);
-		photonController.handleInternalMessage(order);
-		TypesTestBase.assertOrderSingle((OrderSingle) photonController.getLastOrder(), 
-				TypesTestBase.NOT_NULL, 
-				org.marketcetera.trade.Side.Buy, BigDecimal.ONE, BigDecimal.TEN, 
-				org.marketcetera.trade.TimeInForce.Day, OrderType.Limit, 
-				new Equity("QWER"), SecurityType.CommonStock, null, null, null, 
-				PhotonController.DEFAULT_BROKER, null);
-		messageHistory.addIncomingMessage(createReport(exReport));
-		photonController.handleInternalMessage(cancel);
+		OrderSingle order = newOrderSingle(Side.Buy, "1", "QWER", OrderType.Limit, "10", TimeInForce.Day, null);
+		photonController.sendOrder(order);
+        TypesTestBase.assertOrderSingle((OrderSingle) photonController.getLastOrder(), 
+                TypesTestBase.NOT_NULL, 
+                org.marketcetera.trade.Side.Buy, BigDecimal.ONE, BigDecimal.TEN, 
+                org.marketcetera.trade.TimeInForce.Day, OrderType.Limit, 
+                new Equity("QWER"), SecurityType.CommonStock, null, null, null, 
+                PhotonController.DEFAULT_BROKER, null);
+        Message exReport = msgFactory.newExecutionReport("456", "ASDF", "987",
+                OrdStatus.PENDING_NEW, quickfix.field.Side.BUY, BigDecimal.ONE,
+                BigDecimal.TEN, new BigDecimal(500), BigDecimal.TEN,
+                BigDecimal.TEN, BigDecimal.TEN, new Equity("QWER"), null);
+		ExecutionReport report = createReport(exReport);
+        messageHistory.addIncomingMessage(report);
+        OrderCancel cancel = Factory.getInstance().createOrderCancel(report);
+        photonController.sendOrder(cancel);
 		TypesTestBase.assertOrderCancel((OrderCancel)photonController.getLastOrder(), 
 				TypesTestBase.NOT_NULL, new OrderID("ASDF"), 
-				org.marketcetera.trade.Side.Buy, new Equity("SDF"), SecurityType.CommonStock, 
-				BigDecimal.TEN, "WERT", null, PhotonController.DEFAULT_BROKER, 
+				org.marketcetera.trade.Side.Buy, new Equity("QWER"), SecurityType.CommonStock, 
+				BigDecimal.ONE, "456", null, new BrokerID("bogus"), 
 				null);
 	}
 
@@ -141,90 +170,63 @@ public class OrderManagerTest extends TestCase {
 		assertEquals(MsgType.EXECUTION_REPORT, ((ReportHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
 	}
 
-	/*
-	 * Test method for 'org.marketcetera.photon.OrderManager.handleInternalMessage(Message)'
-	 */
-	public void testHandleInternalMessage() throws FieldNotFound, CoreException {
-		Message message = msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.ONE, new Equity("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
-		photonController.handleInternalMessage(message);
-		TypesTestBase.assertOrderSingle((OrderSingle)photonController.getLastOrder(), 
-				TypesTestBase.NOT_NULL, org.marketcetera.trade.Side.Buy, 
-				BigDecimal.ONE, BigDecimal.TEN, org.marketcetera.trade.TimeInForce.Day, 
-				OrderType.Limit, new Equity("QWER"), SecurityType.CommonStock, null, null, null, 
-				PhotonController.DEFAULT_BROKER, null);
-
-	}
-
-	/*
-	 * Test method for 'org.marketcetera.photon.OrderManager.cancelReplaceOneOrder(Message)'
-	 */
 	public void testCancelReplaceOneOrder() throws Exception {
 		String myClOrdID = "MyClOrdID";
-		Message message = msgFactory.newLimitOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new Equity("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
-		Message exReport = msgFactory.newExecutionReport("456", myClOrdID, "987", OrdStatus.PENDING_NEW, Side.BUY, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(500),
+		OrderSingle order = newOrderSingle(Side.Buy, "1", "QWER", OrderType.Limit, "10", TimeInForce.Day, null);
+		Message exReport = msgFactory.newExecutionReport("456", myClOrdID, "987", OrdStatus.PENDING_NEW, quickfix.field.Side.BUY, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(500),
 				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, new Equity("QWER"), null);
 		exReport.setField(new OrdType(OrdType.LIMIT));
-		exReport.setField(new TimeInForce(TimeInForce.DAY));
-		photonController.handleInternalMessage(message);
+		exReport.setField(new quickfix.field.TimeInForce(quickfix.field.TimeInForce.DAY));
+		photonController.sendOrder(order);
 		TypesTestBase.assertOrderSingle((OrderSingle)photonController.getLastOrder(), 
 				TypesTestBase.NOT_NULL, org.marketcetera.trade.Side.Buy, BigDecimal.ONE, 
 				BigDecimal.TEN, org.marketcetera.trade.TimeInForce.Day, OrderType.Limit, 
 				new Equity("QWER"), SecurityType.CommonStock, null, null, null, 
 				PhotonController.DEFAULT_BROKER, null);
 
-		messageHistory.addIncomingMessage(createReport(exReport));
-		Message cancelReplaceMessage = msgFactory.newCancelReplaceFromMessage(exReport);
-
-		photonController.handleInternalMessage(cancelReplaceMessage);
-		
+		ExecutionReport report = createReport(exReport);
+        messageHistory.addIncomingMessage(report);
+		photonController.sendOrder(Factory.getInstance().createOrderReplace(report));
 		TypesTestBase.assertOrderReplace((OrderReplace)photonController.getLastOrder(), 
 				TypesTestBase.NOT_NULL, new OrderID(myClOrdID), "456", 
 				OrderType.Limit, org.marketcetera.trade.Side.Buy, 
 				BigDecimal.ONE, BigDecimal.TEN, new Equity("QWER"), 
-				SecurityType.CommonStock, org.marketcetera.trade.TimeInForce.Day, null, PhotonController.DEFAULT_BROKER, 
+				SecurityType.CommonStock, org.marketcetera.trade.TimeInForce.Day, null, new BrokerID("bogus"), 
 				null, null, null);
 	}
 
-	/*
-	 * Test method for 'org.marketcetera.photon.OrderManager.cancelOneOrder(Message)'
-	 */
 	public void testCancelOneOrder() throws Exception {
+	    OrderSingle order = newOrderSingle(Side.Buy, "1", "QWER", OrderType.Market, null, TimeInForce.Day, null);
 		String myClOrdID = "MyClOrdID";
-		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new Equity("QWER"), TimeInForce.DAY, null);
-		Message exReport = msgFactory.newExecutionReport("456", myClOrdID, "987", OrdStatus.PENDING_NEW, Side.BUY, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(500),
+		Message exReport = msgFactory.newExecutionReport("456", myClOrdID, "987", OrdStatus.PENDING_NEW, quickfix.field.Side.BUY, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(500),
 				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, new Equity("QWER"), null);
-		photonController.handleInternalMessage(message);
+		photonController.sendOrder(order);
 		TypesTestBase.assertOrderSingle((OrderSingle)photonController.getLastOrder(), 
 				TypesTestBase.NOT_NULL, org.marketcetera.trade.Side.Buy, 
 				BigDecimal.ONE, null, org.marketcetera.trade.TimeInForce.Day, OrderType.Market, 
 				new Equity("QWER"), SecurityType.CommonStock, null, null, null, 
 				PhotonController.DEFAULT_BROKER, null);
 
-		messageHistory.addIncomingMessage(createReport(exReport));
-		Message cancelMessage = msgFactory.newCancel("clOrd1", myClOrdID, Side.BUY, 
-				BigDecimal.ONE, new Equity("QWER"), "ord1");
-		photonController.handleInternalMessage(cancelMessage);
+		ExecutionReport report = createReport(exReport);
+        messageHistory.addIncomingMessage(report);
+         OrderCancel cancel = Factory.getInstance().createOrderCancel(report);
+		photonController.sendOrder(cancel);
 		TypesTestBase.assertOrderCancel((OrderCancel)photonController.getLastOrder(),
 				TypesTestBase.NOT_NULL, new OrderID(myClOrdID), 
 				org.marketcetera.trade.Side.Buy, new Equity("QWER"), 
-				SecurityType.CommonStock, BigDecimal.ONE, "ord1", null, 
-				PhotonController.DEFAULT_BROKER, null);
+				SecurityType.CommonStock, BigDecimal.ONE, "456", null, 
+				new BrokerID("bogus"), null);
 	}
 
-
-
-	/*
-	 * Test method for 'org.marketcetera.photon.OrderManager.cancelOneOrderByClOrdID(String)'
-	 */
 	public void testCancelOneOrderByClOrdID() throws Exception {
+	    OrderSingle order = newOrderSingle(Side.Buy, "1", "QWER", OrderType.Market, null, TimeInForce.Day, null);
 		String myClOrdID = "MyClOrdID";
-		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new Equity("QWER"), TimeInForce.DAY, null);
 		BigDecimal orderQty = BigDecimal.TEN;
 		BigDecimal cumQty = BigDecimal.ONE;
-		Message exReport = msgFactory.newExecutionReport("456", myClOrdID, "987", OrdStatus.PENDING_NEW, Side.BUY,
+		Message exReport = msgFactory.newExecutionReport("456", myClOrdID, "987", OrdStatus.PENDING_NEW, quickfix.field.Side.BUY,
 				orderQty, BigDecimal.TEN, BigDecimal.TEN,
 				BigDecimal.TEN, cumQty, BigDecimal.TEN, new Equity("QWER"), null);
-		photonController.handleInternalMessage(message);
+		photonController.sendOrder(order);
 		TypesTestBase.assertOrderSingle((OrderSingle)photonController.getLastOrder(), 
 				TypesTestBase.NOT_NULL, org.marketcetera.trade.Side.Buy, 
 				BigDecimal.ONE, null, org.marketcetera.trade.TimeInForce.Day, 

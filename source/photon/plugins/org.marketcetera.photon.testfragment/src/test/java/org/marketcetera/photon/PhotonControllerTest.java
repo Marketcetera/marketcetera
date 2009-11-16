@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
@@ -41,7 +42,7 @@ public class PhotonControllerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         photonController = new MyPhotonController();
-        fixMessageHistory = new TradeReportsHistory(msgFactory);
+        fixMessageHistory = new TradeReportsHistory(msgFactory, new MockUnderlyingSymbolSupport());
         photonController.setMessageHistory(fixMessageHistory);
     }
 

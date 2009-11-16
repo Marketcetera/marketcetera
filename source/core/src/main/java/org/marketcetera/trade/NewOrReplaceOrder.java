@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public interface NewOrReplaceOrder extends Serializable {
+public interface NewOrReplaceOrder extends OrderBase, Serializable {
     /**
      * Gets the OrderType for the Order.
      *

@@ -1,5 +1,8 @@
 package org.marketcetera.messagehistory;
 
+import static org.junit.Assert.assertThat;
+import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
+
 import java.math.BigDecimal;
 
 import junit.framework.Test;
@@ -10,10 +13,12 @@ import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.position.impl.ExpectedListChanges;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.Originator;
 
 import quickfix.Message;
@@ -58,7 +63,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 new BigDecimal(10), new BigDecimal(11), new BigDecimal(10),
                 new BigDecimal(11), new Equity("IBM"), "account");
         message.setField(new LeavesQty(90.0));
-        source.add(new ReportHolder(createReport(message)));
+        source.add(new ReportHolder(createReport(message), "IBM"));
 
         assertEquals(1, averagePriceList.size());
         Message avgPriceMessage = averagePriceList.get(0).getMessage();
@@ -73,7 +78,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                         111), new BigDecimal(110), new BigDecimal(111),
                 new Equity("IBM"), "account");
         message2.setField(new LeavesQty(190.0));
-        source.add(new ReportHolder(createReport(message2)));
+        source.add(new ReportHolder(createReport(message2), "IBM"));
 
         assertEquals(1, averagePriceList.size());
         avgPriceMessage = averagePriceList.get(0).getMessage();
@@ -88,7 +93,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 new BigDecimal(100), new BigDecimal(3), new Equity("IBM"),
                 "account");
         message3.setField(new OrderQty(1000));
-        source.add(new ReportHolder(createReport(message3)));
+        source.add(new ReportHolder(createReport(message3), "IBM"));
 
         assertEquals(1, averagePriceList.size());
         avgPriceMessage = averagePriceList.get(0).getMessage();
@@ -111,7 +116,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
         message.setField(new LeavesQty(0));
         message.setField(new ExecTransType(ExecTransType.NEW));
         message.setField(new ExecType(ExecType.NEW));
-        source.add(new ReportHolder(createReport(message)));
+        source.add(new ReportHolder(createReport(message), "IBM"));
 
         assertEquals(1, averagePriceList.size());
         Message avgPriceMessage = averagePriceList.get(0).getMessage();
@@ -132,8 +137,8 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
                         10), new BigDecimal(11), new Equity("MSFT"), "account");
         message.setField(new LeavesQty(90.0));
-        source.add(new ReportHolder(createReport(message)));
-        source.add(new ReportHolder(createReport(message2)));
+        source.add(new ReportHolder(createReport(message), "IBM"));
+        source.add(new ReportHolder(createReport(message2), "MSFT"));
 
         assertEquals(2, averagePriceList.size());
 
@@ -152,16 +157,41 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
                         10), new BigDecimal(11), new Equity("IBM"), "account");
         message.setField(new LeavesQty(90.0));
-        source.add(new ReportHolder(createReport(message)));
+        source.add(new ReportHolder(createReport(message), "IBM"));
 
         assertEquals(1, averagePriceList.size());
 
         new ExpectedTestFailure(UnsupportedOperationException.class) {
             @Override
             protected void execute() throws Throwable {
-                source.set(0, new ReportHolder(createReport(message)));
+                source.set(0, new ReportHolder(createReport(message), "IBM"));
             }
         }.run();
+    }
+
+    public void testInstrument() throws Exception {
+        if (fixVersion != FIXVersion.FIX40) {
+            EventList<ReportHolder> source = new BasicEventList<ReportHolder>();
+            AveragePriceReportList averagePriceList = new AveragePriceReportList(
+                    FIXVersion.FIX_SYSTEM.getMessageFactory(), source);
+            Option option = new Option("IBM", "200912", BigDecimal.ONE,
+                    OptionType.Put);
+            Message message = msgFactory.newExecutionReport("clordid1",
+                    "clordid1", "execido1", OrdStatus.PENDING_NEW, Side.BUY,
+                    new BigDecimal(1000), null, new BigDecimal(0), null,
+                    new BigDecimal(100), new BigDecimal(3), option, "account");
+            message.setField(new LeavesQty(0));
+            message.setField(new ExecTransType(ExecTransType.NEW));
+            message.setField(new ExecType(ExecType.NEW));
+            source.add(new ReportHolder(createReport(message), "IBM"));
+            assertEquals(1, averagePriceList.size());
+            ReportHolder holder = averagePriceList.get(0);
+            ExecutionReport avgPriceReport = (ExecutionReport) holder
+                    .getReport();
+            assertThat(avgPriceReport.getOrderQuantity(), comparesEqualTo(1000));
+            assertEquals(option, avgPriceReport.getInstrument());
+            assertEquals("IBM", holder.getUnderlying());
+        }
     }
 
     private ExecutionReport createReport(Message message)
