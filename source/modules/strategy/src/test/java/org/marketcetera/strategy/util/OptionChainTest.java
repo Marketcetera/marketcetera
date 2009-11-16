@@ -28,10 +28,7 @@ import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.TestMessages;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.impl.DividendEventBuilder;
-import org.marketcetera.event.impl.LogEventBuilder;
-import org.marketcetera.event.impl.QuoteEventBuilder;
-import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.event.impl.*;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
@@ -71,6 +68,22 @@ public class OptionChainTest
                 new OptionChain(null);
             }
         };
+        new ExpectedFailure<UnsupportedOperationException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                Instrument other = EventTestBase.generateUnsupportedInstrument();
+                verifyOptionChain(new OptionChain(other),
+                                  other,
+                                  null,
+                                  null,
+                                  null,
+                                  null,
+                                  new ArrayList<DividendEvent>(),
+                                  new ArrayList<OptionContractPair>());
+            }
+        };
         verifyOptionChain(new OptionChain(equity),
                           equity,
                           null,
@@ -81,15 +94,6 @@ public class OptionChainTest
                           new ArrayList<OptionContractPair>());
         verifyOptionChain(new OptionChain(callOption),
                           callOption,
-                          null,
-                          null,
-                          null,
-                          null,
-                          new ArrayList<DividendEvent>(),
-                          new ArrayList<OptionContractPair>());
-        Instrument other = EventTestBase.generateUnsupportedInstrument();
-        verifyOptionChain(new OptionChain(other),
-                          other,
                           null,
                           null,
                           null,

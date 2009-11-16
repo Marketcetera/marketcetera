@@ -4,28 +4,24 @@ import static org.marketcetera.strategy.Messages.WRONG_DIVIDEND_EQUITY_FOR_OPTIO
 import static org.marketcetera.strategy.Messages.WRONG_EQUITY_FOR_OPTION_CHAIN;
 import static org.marketcetera.strategy.Messages.WRONG_UNDERLYING_FOR_OPTION_CHAIN;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.EquityEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.OptionEvent;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.core.Pair;
+import org.marketcetera.event.*;
+import org.marketcetera.event.util.MarketstatEventCache;
 import org.marketcetera.strategy.util.OptionContractPair.OptionContractPairKey;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
+import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.CellStyle;
+import org.nocrala.tools.texttablefmt.ShownBorders;
+import org.nocrala.tools.texttablefmt.Table;
+import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 
 /* $License$ */
 
@@ -103,6 +99,7 @@ public final class OptionChain
             throw new NullPointerException();
         }
         instrument = inUnderlyingInstrument;
+        latestMarketstat = new MarketstatEventCache(instrument);
     }
     /**
      * Gets a live, unmodifiable view of the option chain.
@@ -193,7 +190,7 @@ public final class OptionChain
      */
     public MarketstatEvent getLatestUnderlyingMarketstat()
     {
-        return latestMarketstat;
+        return latestMarketstat.get();
     }
     /**
      * Attempts to apply the given event to this <code>OptionChain</code>.
@@ -231,50 +228,66 @@ public final class OptionChain
     public String toString()
     {
         // renders the option chain as a human-readable table
-        // TODO add column headers to the option chain
         StringBuilder builder = new StringBuilder();
-        String nl = SystemUtils.LINE_SEPARATOR;
-        String none = "---"; //$NON-NLS-1$
-        builder.append("Option Chain for ").append(getUnderlyingInstrument().getSymbol()).append(nl); //$NON-NLS-1$
-        builder.append("Bid:  ").append(getLatestUnderlyingBid() == null ? none : String.format("%s %s %s", //$NON-NLS-1$ //$NON-NLS-2$
-                                                                                                getLatestUnderlyingBid().getSize(),
-                                                                                                getLatestUnderlyingBid().getPrice(),
-                                                                                                getLatestUnderlyingBid().getExchange())).append(nl);
-        builder.append("Ask:  ").append(getLatestUnderlyingAsk() == null ? none : String.format("%s %s %s", //$NON-NLS-1$ //$NON-NLS-2$
-                                                                                                getLatestUnderlyingAsk().getSize(),
-                                                                                                getLatestUnderlyingAsk().getPrice(),
-                                                                                                getLatestUnderlyingAsk().getExchange())).append(nl);
-        builder.append("Last: ").append(getLatestUnderlyingTrade() == null ? none : String.format("%s %s %s", //$NON-NLS-1$ //$NON-NLS-2$
-                                                                                                  getLatestUnderlyingTrade().getSize(),
-                                                                                                  getLatestUnderlyingTrade().getPrice(),
-                                                                                                  getLatestUnderlyingTrade().getExchange())).append(nl);
-        builder.append("High: ").append(getLatestUnderlyingMarketstat() == null ||
-                                        getLatestUnderlyingMarketstat().getHigh() == null ? none : getLatestUnderlyingMarketstat().getHigh().toPlainString()).append(nl); //$NON-NLS-1$
-        builder.append("Low: ").append(getLatestUnderlyingMarketstat() == null ||
-                                       getLatestUnderlyingMarketstat().getLow() == null ? none : getLatestUnderlyingMarketstat().getLow().toPlainString()).append(nl); //$NON-NLS-1$
-        // add dividends
-        builder.append("Dividends:").append(nl); //$NON-NLS-1$
-        for(DividendEvent dividend : dividends) {
-            builder.append(" ").append(dividend).append(nl); //$NON-NLS-1$
+        builder.append(getUnderlyingInstrument().getSymbol()).append(nl); //$NON-NLS-1$
+        builder.append(BID).append(getLatestUnderlyingBid() == null ? none : String.format("%s %s %s", //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                           getLatestUnderlyingBid().getSize(),
+                                                                                           getLatestUnderlyingBid().getPrice(),
+                                                                                           getLatestUnderlyingBid().getExchange())).append(nl);
+        builder.append(ASK).append(getLatestUnderlyingAsk() == null ? none : String.format("%s %s %s", //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                           getLatestUnderlyingAsk().getSize(),
+                                                                                           getLatestUnderlyingAsk().getPrice(),
+                                                                                           getLatestUnderlyingAsk().getExchange())).append(nl);
+        builder.append(LAST).append(getLatestUnderlyingTrade() == null ? none : String.format("%s %s %s", //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                              getLatestUnderlyingTrade().getSize(),
+                                                                                              getLatestUnderlyingTrade().getPrice(),
+                                                                                              getLatestUnderlyingTrade().getExchange())).append(nl);
+        MarketstatEvent latestUnderlyingStats = getLatestUnderlyingMarketstat();
+        builder.append(HIGH).append(latestUnderlyingStats == null ||
+                                    latestUnderlyingStats.getHigh() == null ? none : latestUnderlyingStats.getHigh().toPlainString()).append(nl);
+        builder.append(LOW).append(latestUnderlyingStats == null ||
+                                   latestUnderlyingStats.getLow() == null ? none : latestUnderlyingStats.getLow().toPlainString()).append(nl);
+        if(!dividends.isEmpty()) {
+            // add dividends
+            builder.append(DIVIDEND_HEADER).append(nl);
+            Table table = new Table(dividendHeaders.length,
+                                    BorderStyle.CLASSIC_COMPATIBLE_WIDE,
+                                    ShownBorders.ALL,
+                                    false);
+            for(String header : dividendHeaders) {
+                table.addCell(header,
+                              headerStyle);
+            }
+            for(DividendEvent dividend : dividends) {
+                table.addCell(dividend.getType() == null ? none : dividend.getType().toString());
+                table.addCell(dividend.getAmount() == null ? none : String.format("%s (%s)", //$NON-NLS-1$
+                                                                                  dividend.getAmount().toPlainString(),
+                                                                                  dividend.getCurrency()));
+                table.addCell(dividend.getExecutionDate() == null ? none : dividend.getExecutionDate());
+                table.addCell(dividend.getDeclareDate() == null ? none : dividend.getDeclareDate());
+                table.addCell(dividend.getPaymentDate() == null ? none : dividend.getPaymentDate());
+                table.addCell(dividend.getRecordDate() == null ? none : dividend.getRecordDate());
+                table.addCell(dividend.getStatus() == null ? none : dividend.getStatus().toString());
+                table.addCell(dividend.getFrequency() == null ? none : dividend.getFrequency().toString());
+            }
+            builder.append(table.render());
+            builder.append(nl);
         }
         Collection<OptionContractPair> chain = getOptionChain();
         if(chain.isEmpty()) {
             return builder.toString();
         }
-        // generate row headers (symbol expiry strike)
-        List<String> rowHeaders = new ArrayList<String>();
-        List<String> putBidSizes = new ArrayList<String>();
-        List<String> putBidPrices = new ArrayList<String>();
-        List<String> putAskSizes = new ArrayList<String>();
-        List<String> putAskPrices = new ArrayList<String>();
-        List<String> lastPutSizes = new ArrayList<String>();
-        List<String> lastPutPrices = new ArrayList<String>();
-        List<String> callBidSizes = new ArrayList<String>();
-        List<String> callBidPrices = new ArrayList<String>();
-        List<String> callAskSizes = new ArrayList<String>();
-        List<String> callAskPrices = new ArrayList<String>();
-        List<String> lastCallSizes = new ArrayList<String>();
-        List<String> lastCallPrices = new ArrayList<String>();
+        builder.append(OPTION_CHAIN_HEADER).append(nl);
+        Table table = new Table(13,
+                                BorderStyle.CLASSIC_COMPATIBLE_WIDE,
+                                ShownBorders.ALL,
+                                false);
+        // add column headers
+        for(Pair<String,Integer> header : chainHeaders) {
+            table.addCell(header.getFirstMember(),
+                          headerStyle,
+                          header.getSecondMember());
+        }
         for(OptionContractPair pair : chain) {
             OptionContract put = pair.getPut();
             OptionContract call = pair.getCall();
@@ -292,148 +305,78 @@ public final class OptionChain
             } else {
                 continue;
             }
-            rowHeaders.add(String.format("%s %s %s", //$NON-NLS-1$
+            table.addCell(String.format("%s %s %s", //$NON-NLS-1$
                                          symbol,
                                          expiry,
                                          strike));
             if(put != null &&
                put.getLatestBid() != null) {
                 BidEvent bid = put.getLatestBid();
-                putBidSizes.add(bid.getSize().toPlainString());
-                putBidPrices.add(String.format("%s %s", //$NON-NLS-1$
-                                               bid.getPrice().toPlainString(),
-                                               bid.getExchange()));
+                table.addCell(bid.getSize().toPlainString());
+                table.addCell(String.format("%s %s", //$NON-NLS-1$
+                                            bid.getPrice().toPlainString(),
+                                            bid.getExchange()));
             } else {
-                putBidSizes.add(none);
-                putBidPrices.add(none);
+                table.addCell(none);
+                table.addCell(none);
             }
             if(put != null &&
                put.getLatestAsk() != null) {
                 AskEvent ask = put.getLatestAsk();
-                putAskSizes.add(ask.getSize().toPlainString());
-                putAskPrices.add(String.format("%s %s", //$NON-NLS-1$
-                                               ask.getPrice().toPlainString(),
-                                               ask.getExchange()));
+                table.addCell(ask.getSize().toPlainString());
+                table.addCell(String.format("%s %s", //$NON-NLS-1$
+                                            ask.getPrice().toPlainString(),
+                                            ask.getExchange()));
             } else {
-                putAskSizes.add(none);
-                putAskPrices.add(none);
+                table.addCell(none);
+                table.addCell(none);
             }
             if(put != null &&
                put.getLatestTrade() != null) {
                 TradeEvent trade = put.getLatestTrade();
-                lastPutSizes.add(trade.getSize().toPlainString());
-                lastPutPrices.add(String.format("%s %s", //$NON-NLS-1$
-                                                trade.getPrice().toPlainString(),
-                                                trade.getExchange()));
+                table.addCell(trade.getSize().toPlainString());
+                table.addCell(String.format("%s %s", //$NON-NLS-1$
+                                            trade.getPrice().toPlainString(),
+                                            trade.getExchange()));
             } else {
-                lastPutSizes.add(none);
-                lastPutPrices.add(none);
+                table.addCell(none);
+                table.addCell(none);
             }
             if(call != null &&
                call.getLatestBid() != null) {
                 BidEvent bid = call.getLatestBid();
-                callBidSizes.add(bid.getSize().toPlainString());
-                callBidPrices.add(String.format("%s %s", //$NON-NLS-1$
-                                                bid.getPrice().toPlainString(),
-                                                bid.getExchange()));
+                table.addCell(bid.getSize().toPlainString());
+                table.addCell(String.format("%s %s", //$NON-NLS-1$
+                                            bid.getPrice().toPlainString(),
+                                            bid.getExchange()));
             } else {
-                callBidSizes.add(none);
-                callBidPrices.add(none);
+                table.addCell(none);
+                table.addCell(none);
             }
             if(call != null &&
                call.getLatestAsk() != null) {
                 AskEvent ask = call.getLatestAsk();
-                callAskSizes.add(ask.getSize().toPlainString());
-                callAskPrices.add(String.format("%s %s", //$NON-NLS-1$
-                                                ask.getPrice().toPlainString(),
-                                                ask.getExchange()));
+                table.addCell(ask.getSize().toPlainString());
+                table.addCell(String.format("%s %s", //$NON-NLS-1$
+                                            ask.getPrice().toPlainString(),
+                                            ask.getExchange()));
             } else {
-                callAskSizes.add(none);
-                callAskPrices.add(none);
+                table.addCell(none);
+                table.addCell(none);
             }
             if(call != null &&
                call.getLatestTrade() != null) {
                 TradeEvent trade = call.getLatestTrade();
-                lastCallSizes.add(trade.getSize().toPlainString());
-                lastCallPrices.add(String.format("%s %s", //$NON-NLS-1$
-                                                 trade.getPrice().toPlainString(),
-                                                 trade.getExchange()));
+                table.addCell(trade.getSize().toPlainString());
+                table.addCell(String.format("%s %s", //$NON-NLS-1$
+                                            trade.getPrice().toPlainString(),
+                                            trade.getExchange()));
             } else {
-                lastCallSizes.add(none);
-                lastCallPrices.add(none);
+                table.addCell(none);
+                table.addCell(none);
             }
         }
-        List<String> normalizedRowHeaders = makeColumn(rowHeaders);
-        List<String> normalizedPutBidSizes = makeColumn(putBidSizes);
-        List<String> normalizedPutBidPrices = makeColumn(putBidPrices);
-        List<String> normalizedPutAskSizes = makeColumn(putAskSizes);
-        List<String> normalizedPutAskPrices = makeColumn(putAskPrices);
-        List<String> normalizedLastPutSizes = makeColumn(lastPutSizes);
-        List<String> normalizedLastPutPrices = makeColumn(lastPutPrices);
-        List<String> normalizedCallBidSizes = makeColumn(callBidSizes);
-        List<String> normalizedCallBidPrices = makeColumn(callBidPrices);
-        List<String> normalizedCallAskSizes = makeColumn(callAskSizes);
-        List<String> normalizedCallAskPrices = makeColumn(callAskPrices);
-        List<String> normalizedLastCallSizes = makeColumn(lastCallSizes);
-        List<String> normalizedLastCallPrices = makeColumn(lastCallPrices);
-        List<String> rawPutSizes = new ArrayList<String>();
-        for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
-            StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedPutBidSizes.get(counter)).append(" | "); //$NON-NLS-1$
-            columnBuilder.append(normalizedPutAskSizes.get(counter)).append(" | "); //$NON-NLS-1$
-            columnBuilder.append(normalizedLastPutSizes.get(counter)).append(" | "); //$NON-NLS-1$
-            rawPutSizes.add(columnBuilder.toString());
-        }
-        List<String> normalizedPutSizes = makeColumn(rawPutSizes);
-        List<String> rawPutPrices = new ArrayList<String>();
-        for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
-            StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedPutBidPrices.get(counter)).append(" | "); //$NON-NLS-1$
-            columnBuilder.append(normalizedPutAskPrices.get(counter)).append(" | "); //$NON-NLS-1$
-            columnBuilder.append(normalizedLastPutPrices.get(counter)).append(" | "); //$NON-NLS-1$
-            rawPutPrices.add(columnBuilder.toString());
-        }
-        List<String> normalizedPutPrices = makeColumn(rawPutPrices);
-        List<String> rawCallSizes = new ArrayList<String>();
-        for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
-            StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedCallBidSizes.get(counter)).append(" | "); //$NON-NLS-1$
-            columnBuilder.append(normalizedCallAskSizes.get(counter)).append(" | "); //$NON-NLS-1$
-            columnBuilder.append(normalizedLastCallSizes.get(counter)).append(" | "); //$NON-NLS-1$
-            rawCallSizes.add(columnBuilder.toString());
-        }
-        List<String> normalizedCallSizes = makeColumn(rawCallSizes);
-        List<String> rawCallPrices = new ArrayList<String>();
-        for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
-            StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedCallBidPrices.get(counter)).append(" | "); //$NON-NLS-1$
-            columnBuilder.append(normalizedCallAskPrices.get(counter)).append(" | "); //$NON-NLS-1$
-            columnBuilder.append(normalizedLastCallPrices.get(counter)).append(" | "); //$NON-NLS-1$
-            rawCallPrices.add(columnBuilder.toString());
-        }
-        List<String> normalizedCallPrices = makeColumn(rawCallPrices);
-        List<String> rawPuts = new ArrayList<String>();
-        for(int counter=0;counter<normalizedPutSizes.size();counter++) {
-            StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedPutSizes.get(counter));
-            columnBuilder.append(normalizedPutPrices.get(counter));
-            rawPuts.add(columnBuilder.toString());
-        }
-        List<String> normalizedPuts = makeColumn(rawPuts);
-        List<String> rawCalls = new ArrayList<String>();
-        for(int counter=0;counter<normalizedCallSizes.size();counter++) {
-            StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(normalizedCallSizes.get(counter));
-            columnBuilder.append(normalizedCallPrices.get(counter));
-            rawCalls.add(columnBuilder.toString());
-        }
-        List<String> normalizedCalls = makeColumn(rawCalls);
-        for(int counter=0;counter<normalizedRowHeaders.size();counter++) {
-            builder.append(normalizedRowHeaders.get(counter)).append(" | "); //$NON-NLS-1$
-            builder.append(normalizedPuts.get(counter));
-            builder.append(normalizedCalls.get(counter));
-            builder.append(nl);
-        }
+        builder.append(table.render());
         return builder.toString();
     }
     /**
@@ -506,8 +449,7 @@ public final class OptionChain
             return false;
         }
         if(inMarketstat instanceof EquityEvent) {
-            // TODO cache values instead so latest value is kept
-            latestMarketstat = inMarketstat;
+            latestMarketstat.cache(inMarketstat);
             return true;
         }
         if(inMarketstat instanceof OptionEvent) {
@@ -599,32 +541,6 @@ public final class OptionChain
         return true;
     }
     /**
-     * Takes the given list of strings and creates a new list of
-     * strings of all the same width.
-     *
-     * @param inValues a <code>List&lt;String&gt;</code> value
-     * @return a <code>List&lt;String&gt;</code> value
-     */
-    private static List<String> makeColumn(List<String> inValues)
-    {
-        List<String> input = new ArrayList<String>();
-        input.addAll(inValues);
-        List<String> output = new ArrayList<String>();
-        int maxWidth = 0;
-        for(String value : input) {
-            maxWidth = Math.max(maxWidth,
-                                value.length());
-        }
-        for(String value : input) {
-            StringBuilder column = new StringBuilder().append(value);
-            for(int count = 0;count < maxWidth-value.length();count++) {
-                column.append(' ');
-            }
-            output.add(column.toString());
-        }
-        return output;
-    }
-    /**
      * the option chain - the collection of record for the option chain - made concurrent in order for it to be returned
      * outside the scope of this object and still predictably reflect updates, potentially in different threads
      */
@@ -649,9 +565,70 @@ public final class OptionChain
     /**
      * the latest marketstat for the option chain underlying instrument, may be <code>null</code> 
      */
-    private volatile MarketstatEvent latestMarketstat = null;
+    private final MarketstatEventCache latestMarketstat;
     /**
      * the latest trade for the option chain underlying instrument, may be <code>null</code> 
      */
     private volatile TradeEvent latestTrade = null;
+    // the following are constants used to display the option chain 
+    private static final String nl = SystemUtils.LINE_SEPARATOR;
+    private static final String none = "---"; //$NON-NLS-1$
+    private static final CellStyle headerStyle = new CellStyle(HorizontalAlign.center);
+    private static final String[] dividendHeaders = new String[] { "Type","Amount","Execution Date","Declare Date","Payment Date","Record Date","Status","Frequency" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    private static final List<Pair<String,Integer>> chainHeaders = new ArrayList<Pair<String,Integer>>();
+    private static final String BID =  "Bid:  "; //$NON-NLS-1$
+    private static final String ASK =  "Ask:  "; //$NON-NLS-1$
+    private static final String LAST = "Last: "; //$NON-NLS-1$
+    private static final String HIGH = "High: "; //$NON-NLS-1$
+    private static final String LOW =  "Low:  "; //$NON-NLS-1$
+    private static final String DIVIDEND_HEADER = "Dividends"; //$NON-NLS-1$
+    private static final String OPTION_CHAIN_HEADER = "Option Chain"; //$NON-NLS-1$
+    static {
+        chainHeaders.add(new Pair<String,Integer>("", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Put", //$NON-NLS-1$
+                                                  6));
+        chainHeaders.add(new Pair<String,Integer>("Call", //$NON-NLS-1$
+                                                  6));
+        chainHeaders.add(new Pair<String,Integer>("", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Bid", //$NON-NLS-1$
+                                                  2));
+        chainHeaders.add(new Pair<String,Integer>("Ask", //$NON-NLS-1$
+                                                  2));
+        chainHeaders.add(new Pair<String,Integer>("Latest", //$NON-NLS-1$
+                                                  2));
+        chainHeaders.add(new Pair<String,Integer>("Bid", //$NON-NLS-1$
+                                                  2));
+        chainHeaders.add(new Pair<String,Integer>("Ask", //$NON-NLS-1$
+                                                  2));
+        chainHeaders.add(new Pair<String,Integer>("Latest", //$NON-NLS-1$
+                                                  2));
+        chainHeaders.add(new Pair<String,Integer>("Symbol/Expiry/Strike", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Size", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Price X", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Size", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Price X", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Size", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Price X", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Size", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Price X", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Size", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Price X", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Size", //$NON-NLS-1$
+                                                  1));
+        chainHeaders.add(new Pair<String,Integer>("Price X", //$NON-NLS-1$
+                                                  1));
+    }
 }
