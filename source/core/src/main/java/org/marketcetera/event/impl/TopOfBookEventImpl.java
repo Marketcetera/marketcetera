@@ -9,7 +9,6 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.Event;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.beans.EventBean;
@@ -78,9 +77,9 @@ final class TopOfBookEventImpl
      * @see org.marketcetera.event.AggregateEvent#decompose()
      */
     @Override
-    public List<Event> decompose()
+    public List<QuoteEvent> decompose()
     {
-        List<Event> output = new ArrayList<Event>();
+        List<QuoteEvent> output = new ArrayList<QuoteEvent>();
         if(bid != null) {
             output.add(bid);
         }

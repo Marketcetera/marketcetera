@@ -11,7 +11,6 @@ import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DepthOfBookEvent;
-import org.marketcetera.event.Event;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
@@ -105,9 +104,9 @@ final class DepthOfBookEventImpl
      * @see org.marketcetera.event.AggregateEvent#decompose()
      */
     @Override
-    public List<Event> decompose()
+    public List<QuoteEvent> decompose()
     {
-        List<Event> events = new ArrayList<Event>();
+        List<QuoteEvent> events = new ArrayList<QuoteEvent>();
         events.addAll(bids);
         events.addAll(asks);
         return Collections.unmodifiableList(events);
@@ -197,8 +196,8 @@ final class DepthOfBookEventImpl
      * @throws IllegalArgumentException if any entry in the list is null
      * @throws IllegalArgumentException if an entry in the list is for a different instrument than the one given
      */
-    private static <I extends Instrument> void validateList(List<? extends QuoteEvent> inQuotes,
-                                                            I inInstrument)
+    private static void validateList(List<? extends QuoteEvent> inQuotes,
+                                     Instrument inInstrument)
     {
         for(QuoteEvent quote : inQuotes) {
             if(quote == null) {

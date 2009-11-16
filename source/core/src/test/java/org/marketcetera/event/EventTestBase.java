@@ -174,6 +174,26 @@ public class EventTestBase
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
     /**
+     * Generates an option <code>AskEvent</code> with the given values.
+     *
+     * @param inInstrument an <code>Option</code> value
+     * @param inUnderlyingInstrument an <code>Instrument</code> value
+     * @param inExchange a <code>String</code> value
+     * @return an <code>AskEvent</code> value
+     */
+    public static AskEvent generateOptionAskEvent(Option inInstrument,
+                                                  Instrument inUnderlyingInstrument,
+                                                  String inExchange)
+    {
+        return QuoteEventBuilder.optionAskEvent().withInstrument(inInstrument)
+                                                 .withExchange(inExchange)
+                                                 .withPrice(generateDecimalValue())
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withExpirationType(ExpirationType.AMERICAN)
+                                                 .withUnderlyingInstrument(inUnderlyingInstrument).create();
+    }
+    /**
      * Generates an equity <code>BidEvent</code> with the given values.
      *
      * @param inMessageId a <code>long</code> value
@@ -308,6 +328,26 @@ public class EventTestBase
     {
         return QuoteEventBuilder.optionBidEvent().withInstrument(inInstrument)
                                                  .withExchange("exchange")
+                                                 .withPrice(generateDecimalValue())
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withExpirationType(ExpirationType.AMERICAN)
+                                                 .withUnderlyingInstrument(inUnderlyingInstrument).create();
+    }
+    /**
+     * Generates an option <code>BidEvent</code> with the given values.
+     *
+     * @param inInstrument an <code>Option</code> value
+     * @param inUnderlyingInstrument an <code>Instrument</code> value
+     * @param inExchange a <code>String</code> value
+     * @return a <code>BidEvent</code> value
+     */
+    public static BidEvent generateOptionBidEvent(Option inInstrument,
+                                                  Instrument inUnderlyingInstrument,
+                                                  String inExchange)
+    {
+        return QuoteEventBuilder.optionBidEvent().withInstrument(inInstrument)
+                                                 .withExchange(inExchange)
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(DateUtils.dateToString(new Date()))

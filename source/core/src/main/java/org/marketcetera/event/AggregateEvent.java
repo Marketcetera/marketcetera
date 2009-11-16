@@ -18,10 +18,10 @@ public interface AggregateEvent
         extends Event, HasInstrument
 {
     /**
-     * Produces a list of <code>Event</code> objects that describe
+     * Produces a list of <code>QuoteEvent</code> objects that describe
      * this <code>AggregateEvent</code>.
      * 
-     * @return a <code>List&lt;Event&gt;</code> value
+     * @return a <code>List&lt;QuoteEvent&gt;</code> value
      */
-    public List<Event> decompose();
+    public List<QuoteEvent> decompose();
 }
