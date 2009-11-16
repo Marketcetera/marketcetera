@@ -61,6 +61,6 @@ public interface MDLatestTick extends MDItem {
      * @model suppressedSetVisibility="true"
      * @generated
      */
-    Integer getMultiplier();
+    BigDecimal getMultiplier();
 
 } // MDLatestTick

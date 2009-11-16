@@ -524,7 +524,7 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
                 "size", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
         initEAttribute(
                 getMDLatestTick_Multiplier(),
-                ecorePackage.getEIntegerObject(),
+                ecorePackage.getEBigDecimal(),
                 "multiplier", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
         initEClass(

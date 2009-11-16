@@ -52,7 +52,7 @@ public class MultiplierCalculatorTest {
     @Test
     public void testTick() {
         MultiplierCalculator fixture = new MultiplierCalculator(
-                mMockCalculator, 100);
+                mMockCalculator, new BigDecimal(100));
         PositionMetricsImplTest.assertPositionMetrics(fixture
                 .tick(BigDecimal.ONE), "1", "2", "300", "400", "500", "600",
                 "700");
@@ -75,7 +75,7 @@ public class MultiplierCalculatorTest {
     @Test
     public void testTickNoPNL() {
         MultiplierCalculator fixture = new MultiplierCalculator(
-                mMockCalculator, 100);
+                mMockCalculator, new BigDecimal(100));
         PositionMetricsImplTest.assertPositionMetrics(fixture
                 .tick(null), "100", "100", null, null, null, null, null);
     }
@@ -83,7 +83,7 @@ public class MultiplierCalculatorTest {
     @Test
     public void testTrade() {
         MultiplierCalculator fixture = new MultiplierCalculator(
-                mMockCalculator, 100);
+                mMockCalculator, new BigDecimal(100));
         PositionMetricsImplTest.assertPositionMetrics(fixture.trade(mTrade1),
                 "1", "2", "300", "400", "500", "600", "700");
         PositionMetricsImplTest.assertPositionMetrics(fixture.trade(mTrade2),
@@ -103,7 +103,7 @@ public class MultiplierCalculatorTest {
     @Test
     public void testTradeNoPNL() {
         MultiplierCalculator fixture = new MultiplierCalculator(
-                mMockCalculator, 100);
+                mMockCalculator, new BigDecimal(100));
         PositionMetricsImplTest.assertPositionMetrics(fixture
                 .trade(null), "100", "100", null, null, null, null, null);
     }

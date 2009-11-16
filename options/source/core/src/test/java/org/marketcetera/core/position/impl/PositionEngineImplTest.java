@@ -575,7 +575,7 @@ public class PositionEngineImplTest {
                 mUnderlyingSymbolSupport = mock(UnderlyingSymbolSupport.class);
                 when(mUnderlyingSymbolSupport.getUnderlying(equity)).thenReturn("METC");
                 when(mUnderlyingSymbolSupport.getUnderlying(option1)).thenReturn("METC");
-                when(mUnderlyingSymbolSupport.getUnderlying(option2)).thenReturn(null);
+                when(mUnderlyingSymbolSupport.getUnderlying(option2)).thenReturn("METC");
                 when(mUnderlyingSymbolSupport.getUnderlying(option3)).thenReturn("YHOO");
                 return mUnderlyingSymbolSupport;
             };
@@ -593,8 +593,8 @@ public class PositionEngineImplTest {
             @Override
             protected void validatePositions(EventList<PositionRow> positions) {
                 assertThat(positions.size(), is(4));
-                assertPosition(positions.get(0), option2, "MEC", "personal", "1", "20");
-                assertEquityPosition(positions.get(1), "METC", "personal", "1", "1104");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1104");
+                assertPosition(positions.get(1), option2, "METC", "personal", "1", "20");
                 assertPosition(positions.get(2), option1, "METC", "personal", "1", "0");
                 assertPosition(positions.get(3), option3, "YHOO", "personal", "2", "20");
             }

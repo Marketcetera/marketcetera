@@ -9,9 +9,6 @@ import org.marketcetera.photon.FIXFieldLocalizerTest;
 import org.marketcetera.photon.OrderManagerTest;
 import org.marketcetera.photon.PhotonControllerTest;
 import org.marketcetera.photon.StrategyClasspathTest;
-import org.marketcetera.photon.messagehistory.FIXMatcherTest;
-import org.marketcetera.photon.messagehistory.FIXRegexMatcherTest;
-import org.marketcetera.photon.messagehistory.FIXStringMatcherTest;
 import org.marketcetera.photon.quickfix.QuickFIXTest;
 import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
@@ -51,10 +48,6 @@ public class PhotonApplicationSuite {
         suite.addTestSuite(OptionOrderTicketXSWTTest.class);
         suite.addTestSuite(StockOrderTicketXSWTTest.class);
         suite.addTestSuite(OpenOrdersViewTest.class);
-        
-        suite.addTestSuite(FIXMatcherTest.class);
-        suite.addTestSuite(FIXRegexMatcherTest.class);
-        suite.addTestSuite(FIXStringMatcherTest.class);
 
         // this JUnit 4 test is run here with the full Photon application
         suite.addTest(new JUnit4TestAdapter(StrategyClasspathTest.class));

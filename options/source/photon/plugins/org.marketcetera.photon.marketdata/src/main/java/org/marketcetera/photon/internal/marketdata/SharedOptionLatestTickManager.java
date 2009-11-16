@@ -26,6 +26,14 @@ import com.google.inject.Inject;
 /**
  * Manages latest tick flows for an entire option chain that shares a common
  * underlying equity.
+ * <p>
+ * Implementation note: the "item" managed by this class is a map that is a
+ * computing map. Calling get() atomically creates a value for the key. The
+ * {@link MarketData} class manages this map, calling get() when latest tick is
+ * request for an instrument, and calling remove() when the it is no longer
+ * needed. Other code that interacts with the map should be careful not to call
+ * get() unless they are certain the item exists (containsKey() returned true).
+ * Otherwise, map entries might not be cleaned up properly.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -125,7 +133,7 @@ public class SharedOptionLatestTickManager
                             }
                             if (data instanceof OptionEvent) {
                                 OptionEvent optionData = (OptionEvent) data;
-                                Integer multiplier = optionData.getMultiplier();
+                                BigDecimal multiplier = optionData.getMultiplier();
                                 if (multiplier != null) {
                                     mdItem.setMultiplier(multiplier);
                                 }

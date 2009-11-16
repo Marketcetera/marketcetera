@@ -34,9 +34,9 @@ public class MultiplierCalculator implements PositionMetricsCalculator {
      *            the multiplier to apply to P&L values, null if unavailable
      */
     public MultiplierCalculator(PositionMetricsCalculator delegate,
-            Integer multiplier) {
+            BigDecimal multiplier) {
         mDelegate = delegate;
-        mMultiplier = multiplier == null ? null : new BigDecimal(multiplier);
+        mMultiplier = multiplier;
     }
 
     @Override

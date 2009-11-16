@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * Listeners can subscribe to be notified when the trade price or close price
  * changes for an instrument. For options, listeners will also be notified of
- * the multiplier.
+ * changes to the multiplier.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -52,7 +52,7 @@ public interface MarketDataSupport {
      *            the option in question, will not be null
      * @return the option multiplier, or null if unknown
      */
-    Integer getOptionMultiplier(Option option);
+    BigDecimal getOptionMultiplier(Option option);
 
     /**
      * Adds a listener to be notified when the market data for a given
@@ -110,11 +110,10 @@ public interface MarketDataSupport {
         /**
          * Callback for receiving the option multiplier.
          * 
-         * @param multiplier
-         *            the option multiplier, may be null to indicate market data
-         *            is no longer available
+         * @param event
+         *            event describing the change
          */
-        void optionMultiplierChanged(Integer multiplier);
+        void optionMultiplierChanged(InstrumentMarketDataEvent event);
     }
 
     /**
@@ -134,7 +133,7 @@ public interface MarketDataSupport {
         }
 
         @Override
-        public void optionMultiplierChanged(Integer multiplier) {
+        public void optionMultiplierChanged(InstrumentMarketDataEvent event) {
         }
     }
 
@@ -155,20 +154,20 @@ public interface MarketDataSupport {
          */
         public InstrumentMarketDataEvent(Object source, BigDecimal newPrice) {
             super(source);
-            mNewPrice = newPrice;
+            mNewAmount = newPrice;
         }
 
         /**
-         * The new price for the symbol.
+         * The new amount for the market data.
          * 
-         * @return the new price for the symbol, may be null to indicate market
+         * @return the new amount, may be null to indicate market
          *         data is no longer available
          */
-        public BigDecimal getNewPrice() {
-            return mNewPrice;
+        public BigDecimal getNewAmount() {
+            return mNewAmount;
         }
 
-        private BigDecimal mNewPrice;
+        private BigDecimal mNewAmount;
 
         private static final long serialVersionUID = 1L;
     }

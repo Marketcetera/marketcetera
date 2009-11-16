@@ -65,15 +65,14 @@ public class PhotonPositionMarketData implements MarketDataSupport {
      */
     private final ConcurrentMap<Instrument, BigDecimal> mLatestTickCache = new ConcurrentHashMap<Instrument, BigDecimal>();
     private final ConcurrentMap<Instrument, BigDecimal> mClosingPriceCache = new ConcurrentHashMap<Instrument, BigDecimal>();
-    private final ConcurrentMap<Instrument, Integer> mOptionMultiplierCache = new ConcurrentHashMap<Instrument, Integer>();
+    private final ConcurrentMap<Instrument, BigDecimal> mOptionMultiplierCache = new ConcurrentHashMap<Instrument, BigDecimal>();
 
 	/*
 	 * Marks null price for the ConcurrentMap caches which don't allow null. This is better than
 	 * removing keys since it allows the concurrent put method to be used in {@link
 	 * #fireIfChanged(String, BigDecimal, ConcurrentMap, boolean)}
 	 */
-	private static final BigDecimal NULL_BIG_DECIMAL = new BigDecimal(Integer.MIN_VALUE);
-	private static final Integer NULL_INTEGER = Integer.MIN_VALUE;
+	private static final BigDecimal NULL = new BigDecimal(Integer.MIN_VALUE);
 
 	/**
 	 * Constructor.
@@ -93,7 +92,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 		Validate.notNull(instrument);
 		// implementation choice to only return the last trade price if it's already known
 		// not worth it to set up a new data flow
-		return getCachedValue(mLatestTickCache, instrument, NULL_BIG_DECIMAL);
+		return getCachedValue(mLatestTickCache, instrument);
 	}
 
 	@Override
@@ -101,21 +100,21 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 		Validate.notNull(instrument);
 		// implementation choice to only return the closing price if it's already known
 		// not worth it to set up a new data flow
-		return getCachedValue(mClosingPriceCache, instrument, NULL_BIG_DECIMAL);
+		return getCachedValue(mClosingPriceCache, instrument);
 	}
 	
 	@Override
-	public Integer getOptionMultiplier(Option option) {
+	public BigDecimal getOptionMultiplier(Option option) {
 	    Validate.notNull(option);
         // implementation choice to only return the multiplier if it's already known
         // not worth it to set up a new data flow
-        return getCachedValue(mOptionMultiplierCache, option, NULL_INTEGER);
+        return getCachedValue(mOptionMultiplierCache, option);
 	}
 
-	private <T> T getCachedValue(final ConcurrentMap<Instrument, T> cache,
-			final Instrument symbol, T nullObject) {
-		T cached = cache.get(symbol);
-		return cached == nullObject ? null : cached;
+	private BigDecimal getCachedValue(final ConcurrentMap<Instrument, BigDecimal> cache,
+			final Instrument symbol) {
+	    BigDecimal cached = cache.get(symbol);
+		return cached == NULL ? null : cached;
 	}
 
 	@Override
@@ -178,7 +177,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	private void fireSymbolTraded(final MDLatestTick item) {
 	    Instrument instrument = item.getInstrument();
         BigDecimal newValue = item.getPrice();
-        if (updateCache(instrument, newValue, mLatestTickCache, NULL_BIG_DECIMAL)) {
+        if (updateCache(instrument, newValue, mLatestTickCache)) {
 	        InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
 	        synchronized (mListeners) {
 	            if (mDisposed.get()) return;
@@ -192,7 +191,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	private void fireClosingPriceChange(final MDMarketstat item) {
 	    Instrument instrument = item.getInstrument();
         BigDecimal newValue = item.getPreviousClosePrice();
-        if (updateCache(instrument, newValue, mClosingPriceCache, NULL_BIG_DECIMAL)) {
+        if (updateCache(instrument, newValue, mClosingPriceCache)) {
             InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
             synchronized (mListeners) {
                 if (mDisposed.get()) return;
@@ -205,12 +204,13 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 
 	private void fireMultiplierChanged(final MDLatestTick item) {
 	    Instrument instrument = item.getInstrument();
-        Integer newValue = item.getMultiplier();
-        if (updateCache(instrument, newValue, mOptionMultiplierCache, NULL_INTEGER)) {
+        BigDecimal newValue = item.getMultiplier();
+        if (updateCache(instrument, newValue, mOptionMultiplierCache)) {
+            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
             synchronized (mListeners) {
                 if (mDisposed.get()) return;
                 for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
-                   listener.optionMultiplierChanged(newValue);
+                   listener.optionMultiplierChanged(event);
                 }
             }
         }
@@ -219,10 +219,10 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	/**
 	 * Updates an internal cache and returns whether the value changed.
 	 */
-	private <T extends Comparable<T>> boolean updateCache(final Instrument instrument, T newValue,
-            final ConcurrentMap<Instrument, T> cache, T nullObject) {
-        T oldValue = cache.put(instrument, newValue == null ? nullObject : newValue);
-        if (oldValue == nullObject) {
+	private boolean updateCache(final Instrument instrument, BigDecimal newValue,
+            final ConcurrentMap<Instrument, BigDecimal> cache) {
+	    BigDecimal oldValue = cache.put(instrument, newValue == null ? NULL : newValue);
+        if (oldValue == NULL) {
             oldValue = null;
         }
         // only notify if the value changed

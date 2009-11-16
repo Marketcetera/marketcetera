@@ -142,9 +142,9 @@ public class PhotonPositionMarketDataTest {
 		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
 		mFixture.addInstrumentMarketDataListener(METC, mockListener);
 		changeLatestTick(mMETCTick, 5);
-		verify(mockListener).symbolTraded(argThat(hasNewPrice(5)));
+		verify(mockListener).symbolTraded(argThat(hasNewAmount(5)));
 		changeMultiplier(mMETCTick, 8);
-		verify(mockListener).optionMultiplierChanged(8);
+		verify(mockListener).optionMultiplierChanged(argThat(hasNewAmount(8)));
 		
 	}
 
@@ -155,8 +155,8 @@ public class PhotonPositionMarketDataTest {
 		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
 		mFixture.addInstrumentMarketDataListener(IBM, mockListener2);
 		changeLatestTick(mIBMTick, 12);
-		verify(mockListener).symbolTraded(argThat(hasNewPrice(12)));
-		verify(mockListener2).symbolTraded(argThat(hasNewPrice(12)));
+		verify(mockListener).symbolTraded(argThat(hasNewAmount(12)));
+		verify(mockListener2).symbolTraded(argThat(hasNewAmount(12)));
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class PhotonPositionMarketDataTest {
 		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
 		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
 		changeLatestTick(mIBMTick, 7);
-		verify(mockListener, times(1)).symbolTraded(argThat(hasNewPrice(7)));
+		verify(mockListener, times(1)).symbolTraded(argThat(hasNewAmount(7)));
 	}
 
 	@Test
@@ -211,14 +211,14 @@ public class PhotonPositionMarketDataTest {
 		mFixture.addInstrumentMarketDataListener(METC, mockListener2);
 		changePreviousClose(mIBMStat, 20);
 		changePreviousClose(mMETCStat, 25);
-		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(20)));
-		verify(mockListener2, atLeastOnce()).closePriceChanged(argThat(hasNewPrice(25)));
+		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNewAmount(20)));
+		verify(mockListener2, atLeastOnce()).closePriceChanged(argThat(hasNewAmount(25)));
 		assertThat(mFixture.getClosingPrice(IBM), comparesEqualTo(20));
 		assertThat(mFixture.getClosingPrice(METC), comparesEqualTo(25));
 		changePreviousClose(mIBMStat, null);
 		changePreviousClose(mMETCStat, null);
-		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNullNewPrice()));
-		verify(mockListener2, atLeastOnce()).closePriceChanged(argThat(hasNullNewPrice()));
+		verify(mockListener, atLeastOnce()).closePriceChanged(argThat(hasNullNewAmount()));
+		verify(mockListener2, atLeastOnce()).closePriceChanged(argThat(hasNullNewAmount()));
 		assertThat(mFixture.getClosingPrice(IBM), nullValue());
 		assertThat(mFixture.getClosingPrice(METC), nullValue());
 	}
@@ -228,7 +228,7 @@ public class PhotonPositionMarketDataTest {
         InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
         mFixture.addInstrumentMarketDataListener(METC, mockListener);
         changeMultiplier(mMETCTick, 1000);
-        assertThat(mFixture.getOptionMultiplier(METC), is(1000));
+        assertThat(mFixture.getOptionMultiplier(METC), comparesEqualTo(1000));
     }
 	
 	@Test
@@ -236,11 +236,11 @@ public class PhotonPositionMarketDataTest {
 		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
 		mFixture.addInstrumentMarketDataListener(IBM, mockListener);
 		changeLatestTick(mIBMTick, 1);
-		verify(mockListener).symbolTraded(argThat(hasNewPrice(1)));
+		verify(mockListener).symbolTraded(argThat(hasNewAmount(1)));
 		// remove it
 		mFixture.removeInstrumentMarketDataListener(IBM, mockListener);
 		changeLatestTick(mIBMTick, 2);
-		verify(mockListener, never()).symbolTraded(argThat(hasNewPrice(2)));
+		verify(mockListener, never()).symbolTraded(argThat(hasNewAmount(2)));
 	}
 
 	@Test
@@ -251,14 +251,14 @@ public class PhotonPositionMarketDataTest {
 		mFixture.addInstrumentMarketDataListener(METC, mockListener2);
 		changeLatestTick(mIBMTick, 12);
 		changeLatestTick(mMETCTick, 150);
-		verify(mockListener).symbolTraded(argThat(hasNewPrice(12)));
-		verify(mockListener2).symbolTraded(argThat(hasNewPrice(150)));
+		verify(mockListener).symbolTraded(argThat(hasNewAmount(12)));
+		verify(mockListener2).symbolTraded(argThat(hasNewAmount(150)));
 		// remove one
 		mFixture.removeInstrumentMarketDataListener(IBM, mockListener);
 		changeLatestTick(mIBMTick, 13);
 		changeLatestTick(mMETCTick, 151);
-		verify(mockListener, never()).symbolTraded(argThat(hasNewPrice(13)));
-		verify(mockListener2).symbolTraded(argThat(hasNewPrice(151)));
+		verify(mockListener, never()).symbolTraded(argThat(hasNewAmount(13)));
+		verify(mockListener2).symbolTraded(argThat(hasNewAmount(151)));
 	}
 
 	@Test
@@ -274,8 +274,8 @@ public class PhotonPositionMarketDataTest {
 		mFixture.dispose();
 		changeLatestTick(mIBMTick, 15);
 		changeLatestTick(mMETCTick, 151);
-		verify(mockListener, never()).symbolTraded(argThat(hasNewPrice(15)));
-		verify(mockListener2, never()).symbolTraded(argThat(hasNewPrice(151)));
+		verify(mockListener, never()).symbolTraded(argThat(hasNewAmount(15)));
+		verify(mockListener2, never()).symbolTraded(argThat(hasNewAmount(151)));
 		assertThat(mFixture.getLastTradePrice(IBM), nullValue());
 		assertThat(mFixture.getLastTradePrice(METC), nullValue());
 	}
@@ -292,14 +292,14 @@ public class PhotonPositionMarketDataTest {
 	
 	private void changeMultiplier(MDLatestTick tick, int newValue) {
         // use reflection since setLatestTick isn't API
-        tick.eSet(MDPackage.Literals.MD_LATEST_TICK__MULTIPLIER, newValue);
+        tick.eSet(MDPackage.Literals.MD_LATEST_TICK__MULTIPLIER, new BigDecimal(newValue));
     }
 
 	private void changePreviousClose(MDMarketstat stat, int newPrice) throws Exception {
 		changePreviousClose(stat, new BigDecimal(newPrice));
 	}
 
-	private static Matcher<InstrumentMarketDataEvent> hasNewPrice(final int newPrice) {
+	private static Matcher<InstrumentMarketDataEvent> hasNewAmount(final int newPrice) {
 		return new BaseMatcher<InstrumentMarketDataEvent>() {
 
 			@Override
@@ -310,12 +310,12 @@ public class PhotonPositionMarketDataTest {
 
 			@Override
 			public boolean matches(Object item) {
-				return comparesEqualTo(newPrice).matches(((InstrumentMarketDataEvent) item).getNewPrice());
+				return comparesEqualTo(newPrice).matches(((InstrumentMarketDataEvent) item).getNewAmount());
 			}
 		};
 	}
 
-	private static Matcher<InstrumentMarketDataEvent> hasNullNewPrice() {
+	private static Matcher<InstrumentMarketDataEvent> hasNullNewAmount() {
 		return new BaseMatcher<InstrumentMarketDataEvent>() {
 
 			@Override
@@ -326,7 +326,7 @@ public class PhotonPositionMarketDataTest {
 
 			@Override
 			public boolean matches(Object item) {
-				return nullValue().matches(((InstrumentMarketDataEvent) item).getNewPrice());
+				return nullValue().matches(((InstrumentMarketDataEvent) item).getNewAmount());
 			}
 		};
 	}
