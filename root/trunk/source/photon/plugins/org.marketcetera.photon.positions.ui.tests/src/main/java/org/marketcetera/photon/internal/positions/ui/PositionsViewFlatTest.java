@@ -138,6 +138,10 @@ public class PositionsViewFlatTest extends PhotonTestBase {
         mFixture.registerModel();
         mFixture.fireTrade(instrument, "15.865");
         mFixture.fireClosingPrice(instrument, "10");
+        /*
+         * Give time for market data changes to propogate to UI.
+         */
+        Thread.sleep(500);
         mFixture.assertFlatTable();
         mFixture.assertFlatPositionsCount(1);
         mFixture.assertFlatEquityPosition("ABC", "123", "admin", "5.00",
