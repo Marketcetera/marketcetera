@@ -38,7 +38,7 @@ public class Option extends Instrument {
      * Constructor. Note that trailing zeros are stripped from strikePrice.
      * 
      * @param symbol
-     *            the option symbol
+     *            the option root symbol
      * @param expiry
      *            the option expiry
      * @param strikePrice

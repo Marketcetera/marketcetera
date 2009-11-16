@@ -1,5 +1,11 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import java.math.BigDecimal;
+
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+
 
 
 /* $License$ */
@@ -15,17 +21,17 @@ public class TopOfBookKeyTest extends KeyTestBase {
 
 	@Override
 	Object createKey1() {
-		return new TopOfBookKey("IBM");
+		return new TopOfBookKey(new Equity("IBM"));
 	}
 
 	@Override
 	Object createKey2() {
-		return new TopOfBookKey("METC");
+		return new TopOfBookKey(new Option("IBM", "200901", BigDecimal.ONE, OptionType.Call));
 	}
 
 	@Override
 	Object createKeyLike1ButDifferentClass() {
-		return new TopOfBookKey("IBM") {
+		return new TopOfBookKey(new Equity("IBM")) {
 		};
 	}
 

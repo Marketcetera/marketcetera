@@ -2,6 +2,7 @@ package org.marketcetera.photon.commons.ui.databinding;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.Callable;
@@ -115,6 +116,18 @@ public class SWTBotControlDecoration {
      */
     public void assertRequired(String message) throws Exception {
         assertVisible(FieldDecorationRegistry.DEC_REQUIRED, message);
+    }
+
+    /**
+     * Assert no image is shown but the decoration is still visible.
+     * 
+     * @param message
+     *            the expected message
+     */
+    public void assertNoImage(String message) throws Exception {
+        assertThat(isVisible(), is(true));
+        assertThat(getImage(), nullValue());
+        assertThat(getDescriptionText(), is(message));
     }
 
     /**

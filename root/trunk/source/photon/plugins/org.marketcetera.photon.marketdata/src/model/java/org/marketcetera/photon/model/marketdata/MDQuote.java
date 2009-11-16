@@ -1,8 +1,14 @@
+/**
+ * $License$
+ *
+ * $Id$
+ */
 package org.marketcetera.photon.model.marketdata;
 
 import java.math.BigDecimal;
 
 import org.eclipse.emf.ecore.EObject;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -23,51 +29,52 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote()
  * @model
  * @generated
+ * @since $Release$
  */
 @ClassVersion("$Id$")
 public interface MDQuote extends EObject {
-	/**
-	 * Returns the value of the '<em><b>Price</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Price</em>' attribute.
-	 * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote_Price()
-	 * @model suppressedSetVisibility="true"
-	 * @generated
-	 */
-	BigDecimal getPrice();
+    /**
+     * Returns the value of the '<em><b>Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Price</em>' attribute.
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote_Price()
+     * @model suppressedSetVisibility="true"
+     * @generated
+     */
+    BigDecimal getPrice();
 
-	/**
-	 * Returns the value of the '<em><b>Size</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Size</em>' attribute.
-	 * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote_Size()
-	 * @model suppressedSetVisibility="true"
-	 * @generated
-	 */
-	BigDecimal getSize();
+    /**
+     * Returns the value of the '<em><b>Size</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Size</em>' attribute.
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote_Size()
+     * @model suppressedSetVisibility="true"
+     * @generated
+     */
+    BigDecimal getSize();
 
-	/**
-	 * Returns the value of the '<em><b>Source</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Source</em>' attribute.
-	 * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote_Source()
-	 * @model suppressedSetVisibility="true"
-	 * @generated
-	 */
-	String getSource();
+    /**
+     * Returns the value of the '<em><b>Source</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Source</em>' attribute.
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote_Source()
+     * @model suppressedSetVisibility="true"
+     * @generated
+     */
+    String getSource();
 
-	/**
-	 * Returns the value of the '<em><b>Time</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Time</em>' attribute.
-	 * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote_Time()
-	 * @model suppressedSetVisibility="true"
-	 * @generated
-	 */
-	long getTime();
+    /**
+     * Returns the value of the '<em><b>Time</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Time</em>' attribute.
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote_Time()
+     * @model suppressedSetVisibility="true"
+     * @generated
+     */
+    long getTime();
 
 } // MDQuote

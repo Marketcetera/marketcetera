@@ -15,6 +15,7 @@ import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.photon.internal.product.Messages;
 import org.marketcetera.photon.views.FillsView;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -36,9 +37,13 @@ public class ShowPositionFills extends AbstractHandler implements IHandler {
 		PositionRow row = (PositionRow) selection.getFirstElement();
 		final EnumMap<Grouping, String> filters = new EnumMap<Grouping, String>(Grouping.class);
 		Grouping[] keys = row.getGrouping();
+		final Instrument instrument;
 		if (keys == null) {
 			// if no grouping, then this is a unique position
 			keys = Grouping.values();
+			instrument = row.getInstrument();
+		} else {
+		    instrument = null;
 		}
 		for (Grouping key : keys) {
 			filters.put(key, key.get(row));
@@ -50,7 +55,7 @@ public class ShowPositionFills extends AbstractHandler implements IHandler {
 			public void run() {
 				try {
 					FillsView view = (FillsView) page.showView(FillsView.ID, filters.toString(), IWorkbenchPage.VIEW_ACTIVATE);
-					view.setFillsFilter(filters);
+					view.setFillsFilter(filters, instrument);
 				} catch (PartInitException e) {
 					Messages.SHOW_POSITION_FILLS_UNABLE_TO_OPEN_VIEW.error(ShowPositionFills.this, e);
 				}

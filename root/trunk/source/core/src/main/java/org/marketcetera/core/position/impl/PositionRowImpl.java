@@ -10,6 +10,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -26,7 +27,8 @@ import ca.odell.glazedlists.EventList;
 @ClassVersion("$Id$")
 class PositionRowImpl implements PositionRow {
 
-    private final String mSymbol;
+    private final Instrument mInstrument;
+    private final String mUnderlying;
     private final String mAccount;
     private final String mTraderId;
     private final Grouping[] mGrouping;
@@ -36,8 +38,10 @@ class PositionRowImpl implements PositionRow {
     /**
      * Convenience constructor for summary position rows.
      * 
-     * @param symbol
-     *            the symbol
+     * @param instrument
+     *            the instrument
+     * @param underlying
+     *            the underlying symbol
      * @param account
      *            the account
      * @param trader
@@ -47,16 +51,19 @@ class PositionRowImpl implements PositionRow {
      * @param children
      *            the children
      */
-    PositionRowImpl(String symbol, String account, String trader, Grouping[] grouping,
-            EventList<PositionRow> children) {
-        this(symbol, account, trader, grouping, children, new PositionMetricsImpl());
+    PositionRowImpl(Instrument instrument, String underlying, String account,
+            String trader, Grouping[] grouping, EventList<PositionRow> children) {
+        this(instrument, underlying, account, trader, grouping, children,
+                new PositionMetricsImpl());
     }
 
     /**
      * Convenience constructor when only the incoming position is known.
      * 
-     * @param symbol
-     *            the symbol
+     * @param instrument
+     *            the instrument
+     * @param underlying
+     *            the underlying symbol
      * @param account
      *            the account
      * @param trader
@@ -66,15 +73,19 @@ class PositionRowImpl implements PositionRow {
      * @throws IllegalArgumentException
      *             if incomingPosition is null
      */
-    PositionRowImpl(String symbol, String account, String trader, BigDecimal incomingPosition) {
-        this(symbol, account, trader, new PositionMetricsImpl(incomingPosition));
+    PositionRowImpl(Instrument instrument, String underlying, String account,
+            String trader, BigDecimal incomingPosition) {
+        this(instrument, underlying, account, trader, new PositionMetricsImpl(
+                incomingPosition));
     }
 
     /**
      * Convenience constructor.
      * 
-     * @param symbol
-     *            the symbol
+     * @param instrument
+     *            the instrument
+     * @param underlying
+     *            the underlying symbol
      * @param account
      *            the account
      * @param trader
@@ -84,15 +95,18 @@ class PositionRowImpl implements PositionRow {
      * @throws IllegalArgumentException
      *             if metrics is null
      */
-    PositionRowImpl(String symbol, String account, String trader, PositionMetrics metrics) {
-        this(symbol, account, trader, null, null, metrics);
+    PositionRowImpl(Instrument instrument, String underlying, String account,
+            String trader, PositionMetrics metrics) {
+        this(instrument, underlying, account, trader, null, null, metrics);
     }
 
     /**
      * Constructor.
      * 
-     * @param symbol
-     *            the symbol
+     * @param instrument
+     *            the instrument
+     * @param underlying
+     *            the underlying symbol
      * @param account
      *            the account
      * @param trader
@@ -106,10 +120,12 @@ class PositionRowImpl implements PositionRow {
      * @throws IllegalArgumentException
      *             if metrics is null
      */
-    PositionRowImpl(String symbol, String account, String trader, Grouping[] grouping,
+    PositionRowImpl(Instrument instrument, String underlying, String account,
+            String trader, Grouping[] grouping,
             EventList<PositionRow> children, PositionMetrics metrics) {
         Validate.notNull(metrics);
-        mSymbol = symbol;
+        mInstrument = instrument;
+        mUnderlying = underlying;
         mAccount = account;
         mTraderId = trader;
         mGrouping = grouping;
@@ -118,8 +134,13 @@ class PositionRowImpl implements PositionRow {
     }
 
     @Override
-    public String getSymbol() {
-        return mSymbol;
+    public Instrument getInstrument() {
+        return mInstrument;
+    }
+
+    @Override
+    public String getUnderlying() {
+        return mUnderlying;
     }
 
     @Override
@@ -143,8 +164,8 @@ class PositionRowImpl implements PositionRow {
     }
 
     /**
-     * Set to the position metrics to a new value. For thread safety, the supplied PositionMetrics
-     * object must be immutable.
+     * Set to the position metrics to a new value. For thread safety, the
+     * supplied PositionMetrics object must be immutable.
      * 
      * @param positionMetrics
      *            the new position metrics, must be immutable
@@ -165,7 +186,8 @@ class PositionRowImpl implements PositionRow {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("symbol", mSymbol) //$NON-NLS-1$
+                .appendToString(mInstrument.toString())
+                .append("underlying", mUnderlying) //$NON-NLS-1$
                 .append("account", mAccount) //$NON-NLS-1$
                 .append("traderId", mTraderId) //$NON-NLS-1$
                 .append("grouping", mGrouping) //$NON-NLS-1$

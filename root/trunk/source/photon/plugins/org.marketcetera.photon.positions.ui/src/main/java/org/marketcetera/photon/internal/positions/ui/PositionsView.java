@@ -171,7 +171,7 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 			// insets keeps the box outline inside the toolbar area
 			composite.setLayout(new MigLayout("ins 1")); //$NON-NLS-1$
 			Label filterLabel = new Label(composite, SWT.NONE);
-			filterLabel.setText(Messages.POSITIONS_VIEW_FILTER_LABEL.getText());
+			filterLabel.setText(Messages.POSITIONS_VIEW_FILTER__LABEL.getText());
 			FilterBox filter = new FilterBox(composite);
 			filter.addListener(new FilterBox.FilterChangeListener() {
 
@@ -196,7 +196,7 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 	 * remembers user choices
 	 */
 	private PositionsPart mLastPart = PositionsPart.FLAT;
-	private Grouping[] mLastGrouping = new Grouping[] { Grouping.Symbol, Grouping.Account };
+	private Grouping[] mLastGrouping = new Grouping[] { Grouping.Underlying, Grouping.Account };
 
 	private final IObservableValue mPositionEngine = Activator.getDefault().getPositionEngine();
 	private Grouping[] mGrouping = null;
@@ -347,7 +347,14 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 		control.setMenu(menu);
 	}
 
-	private void setFilterText(String filterText) {
+	/**
+	 * Sets the filter value.
+	 * 
+	 * NOTE: public access for testing only
+	 * 
+	 * @param filterText the filterText
+	 */
+	public void setFilterText(String filterText) {
 		mFilterText = filterText;
 		((PositionsViewPage) getCurrentPage()).setFilterText(filterText);
 	}
@@ -405,10 +412,12 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 	/**
 	 * Shows the hierarchical page with the provided grouping.
 	 * 
+	 * NOTE: public access for testing
+	 * 
 	 * @param grouping
 	 *            the grouping
 	 */
-	void showHierarchicalPage(Grouping[] grouping) {
+	public void showHierarchicalPage(Grouping[] grouping) {
 		Validate.noNullElements(grouping);
 		Validate.isTrue(grouping.length == 2);
 		if (!Arrays.equals(mGrouping, grouping)) {

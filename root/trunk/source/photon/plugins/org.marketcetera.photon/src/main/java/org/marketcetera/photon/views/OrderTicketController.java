@@ -8,9 +8,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
-import org.marketcetera.quickfix.FIXMessageFactory;
-
-import quickfix.Message;
+import org.marketcetera.trade.NewOrReplaceOrder;
 
 /* $License$ */
 
@@ -39,8 +37,6 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 
     private final T orderTicketModel;
 
-    protected final FIXMessageFactory messageFactory;
-
     /**
      * Create a new OrderTicketController.  Sets up a MarketDataFeedTracker
      * to track the market data feed service.
@@ -61,7 +57,6 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
         ScopedPreferenceStore preferenceStore = plugin.getPreferenceStore();
         preferenceStore.addPropertyChangeListener(this);
         updateCustomFields(preferenceStore.getString(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE));
-        messageFactory = plugin.getFIXVersion().getMessageFactory();
     }
 
     /**
@@ -117,25 +112,19 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
         }
     }
 
-    /**
-     * Get the order message associated with this order ticket.
-     * @return the order message
-     */
-    public Message getOrderMessage() {
-        return orderTicketModel.getOrderMessage();
+   @Override
+    public NewOrReplaceOrder getOrder() {
+       return orderTicketModel.getOrderObservable().getTypedValue();
     }
 
 
-    /**
-     * Set the order message associated with this order ticket.
-     * @param order the new order message
-     */
-    public void setOrderMessage(Message order) {
-        orderTicketModel.setOrderMessage(order);
-    }
-    
     @Override
-    public void setBrokerId(String id) {
-    	orderTicketModel.setBrokerId(id);
+    public void setOrderMessage(NewOrReplaceOrder order) {
+        orderTicketModel.getOrderObservable().setValue(order);
+    }
+
+    @Override
+    public void clear() {
+        orderTicketModel.clearOrderMessage();
     }
 }

@@ -73,7 +73,7 @@ public class TextContributionItem extends ContributionItem {
 			}
 		});
 
-		toolitem.setWidth(200); // TODO i18n
+		toolitem.setWidth(200);
 		refresh(true);
 		for (KeyListener listener : keyListeners) {
 			textField.addKeyListener(listener);

@@ -212,7 +212,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		mViewer.setContentProvider(content);
 		IObservableSet domain = content.getKnownElements();
 		IObservableMap[] maps = new IObservableMap[] {
-				BeansObservables.observeMap(domain, MarketDataViewItem.class, "equity.symbol"), //$NON-NLS-1$
+				BeansObservables.observeMap(domain, MarketDataViewItem.class, "symbol"), //$NON-NLS-1$
 				createCompositeMap(domain, "latestTick", MDPackage.Literals.MD_LATEST_TICK__PRICE), //$NON-NLS-1$
 				createCompositeMap(domain, "latestTick", MDPackage.Literals.MD_LATEST_TICK__SIZE), //$NON-NLS-1$
 				createCompositeMap(domain, "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__BID_SIZE), //$NON-NLS-1$
@@ -458,21 +458,21 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			if (StringUtils.isBlank(value.toString()))
 				return;
 			final MarketDataViewItem item = (MarketDataViewItem) element;
-			final Equity symbol = item.getEquity();
-			if (symbol.getSymbol().equals(value))
+			final Equity equity = item.getEquity();
+			if (equity.getSymbol().equals(value))
 				return;
-			final Equity newSymbol = new Equity(value.toString());
-			if (mItemMap.containsKey(newSymbol)) {
+			final Equity newEquity = new Equity(value.toString());
+			if (mItemMap.containsKey(newEquity)) {
 				PhotonPlugin.getMainConsoleLogger().warn(
-						DUPLICATE_SYMBOL.getText(newSymbol.getSymbol()));
+						DUPLICATE_SYMBOL.getText(newEquity.getSymbol()));
 				return;
 			}
 			busyRun(new Runnable() {
 				@Override
 				public void run() {
-					mItemMap.remove(symbol);
-					item.setEquity(newSymbol);
-					mItemMap.put(newSymbol, item);
+					mItemMap.remove(equity);
+					item.setEquity(newEquity);
+					mItemMap.put(newEquity, item);
 				}
 			});
 		}

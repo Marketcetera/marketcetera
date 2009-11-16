@@ -18,7 +18,9 @@ import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.UserNameService;
 import org.marketcetera.photon.actions.OpenAdditionalViewAction;
+import org.marketcetera.photon.core.InstrumentPrettyPrinter;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.UserID;
 
 import ca.odell.glazedlists.EventList;
@@ -43,6 +45,7 @@ public class FillsView extends AbstractFIXMessagesView {
 	public static final String ID = "org.marketcetera.photon.views.FillsView"; //$NON-NLS-1$
 	private FilterList<ReportHolder> mFilteredList;
 	private Map<Grouping, String> mFilters;
+    private Instrument mInstrument;
 
 	@Override
 	protected String getViewID() {
@@ -60,6 +63,7 @@ public class FillsView extends AbstractFIXMessagesView {
 					mFilters.put(Grouping.valueOf(filter.getString(GROUPING_ATTRIBUTE)), filter.getString(VALUE_ATTRIBUTE));
 				}
 			}
+			mInstrument = InstrumentFromMemento.restore(memento);
 		}
 		updatePartName();
 	}
@@ -73,6 +77,9 @@ public class FillsView extends AbstractFIXMessagesView {
 				filter.putString(GROUPING_ATTRIBUTE, entry.getKey().name());
 				filter.putString(VALUE_ATTRIBUTE, entry.getValue());
 			}
+		}
+		if (mInstrument != null) {
+            InstrumentToMemento.save(mInstrument, memento);
 		}
 	}
 
@@ -89,38 +96,43 @@ public class FillsView extends AbstractFIXMessagesView {
 		Lock lock = base.getReadWriteLock().readLock();
 		lock.lock();
 		try {
-			mFilteredList = new FilterList<ReportHolder>(base, createMatcher(mFilters));
+			mFilteredList = new FilterList<ReportHolder>(base, createMatcher(mFilters, mInstrument));
 			return mFilteredList;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	/**
-	 * Filters the view's base list. Further filtering can still be done by the super class text
-	 * box.
-	 * 
-	 * @param filters
-	 *            the grouping keys and values used to filter
-	 */
-	public void setFillsFilter(Map<Grouping, String> filters) {
-		if (filters != null && filters.isEmpty()) {
-			filters = null;
-		}
-		mFilters = filters;
-		mFilteredList.setMatcher(createMatcher(filters));
-		updatePartName();
-	}
+    /**
+     * Filters the view's base list. Further filtering can still be done by the
+     * super class text box.
+     * 
+     * @param filters
+     *            the grouping keys and values used to filter
+     * @param instrument
+     *            the instrument to filter, can be null if multiple instruments
+     *            are desired
+     */
+    public void setFillsFilter(Map<Grouping, String> filters,
+            Instrument instrument) {
+        if (filters != null && filters.isEmpty()) {
+            filters = null;
+        }
+        mFilters = filters;
+        mInstrument = instrument;
+        mFilteredList.setMatcher(createMatcher(filters, instrument));
+        updatePartName();
+    }
 
 	private void updatePartName() {
 		if (mFilters == null) {
 			setPartName(Messages.FILLS_VIEW_DEFAULT_LABEL.getText());
 		} else {
-			setPartName(getFilterLabel(mFilters));
+			setPartName(getFilterLabel(mFilters, mInstrument));
 		}
 	}
 
-	private Matcher<ReportHolder> createMatcher(final Map<Grouping, String> filters) {
+	private Matcher<ReportHolder> createMatcher(final Map<Grouping, String> filters, final Instrument instrument) {
 		// no matcher if there are no filters
 		if (filters == null) {
 			return null;
@@ -131,9 +143,14 @@ public class FillsView extends AbstractFIXMessagesView {
 			public boolean matches(ReportHolder item) {
 				ExecutionReport report = (ExecutionReport) item.getReport();
 				EqualsBuilder builder = new EqualsBuilder();
-				// only need to match fields that are being filtered
-				if (filters.containsKey(Grouping.Symbol)) {
-					builder.append(filters.get(Grouping.Symbol), report.getInstrument().getSymbol());
+                /*
+                 * Only match fields that are being filtered. Instrument and
+                 * underlying are mutually exclusive.
+                 */
+				if (instrument != null) {
+				    builder.append(instrument, report.getInstrument());
+				} else if (filters.containsKey(Grouping.Underlying)) {
+					builder.append(filters.get(Grouping.Underlying), item.getUnderlying());
 				}
 				if (filters.containsKey(Grouping.Account)) {
 					builder.append(filters.get(Grouping.Account), report.getAccount());
@@ -147,11 +164,16 @@ public class FillsView extends AbstractFIXMessagesView {
 		};
 	}
 
-	private String getFilterLabel(final Map<Grouping, String> filters) {
+	private String getFilterLabel(final Map<Grouping, String> filters, Instrument instrument) {
 		// use a ToStringBuilder for convenience (brackets, commas, equals sign, etc)
 		ToStringBuilder builder = new ToStringBuilder(filters, new FilterStyle());
 		for (Map.Entry<Grouping, String> entry : filters.entrySet()) {
-			builder.append(getLabel(entry.getKey()), getValue(entry));
+            if (entry.getKey() == Grouping.Underlying && mInstrument != null) {
+                builder.append(Messages.FILLS_VIEW_INSTRUMENT_FILTER_LABEL
+                        .getText(), InstrumentPrettyPrinter.print(instrument));
+            } else {
+                builder.append(getLabel(entry.getKey()), getValue(entry));
+            }
 		}
 		return Messages.FILLS_VIEW_POSITION_FILLS_LABEL.getText() + builder;
 	}
@@ -168,8 +190,8 @@ public class FillsView extends AbstractFIXMessagesView {
 
 	private String getLabel(Grouping key) {
 		switch (key) {
-		case Symbol:
-			return Messages.FILLS_VIEW_SYMBOL_FILTER_LABEL.getText();
+		case Underlying:
+			return Messages.FILLS_VIEW_UNDERLYING_FILTER_LABEL.getText();
 		case Account:
 			return Messages.FILLS_VIEW_ACCOUNT_FILTER_LABEL.getText();
 		case Trader:

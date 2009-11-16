@@ -229,24 +229,23 @@
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
                       <artifactId>swtbot</artifactId>
-                      <version>2.0.0.358-dev</version>
+                      <version>2.0.0.394-dev-e35</version>
                       <type>zip</type>
                       <includes>
-                        plugins/org.apache.log4j_*,
-                        plugins/org.eclipse.swtbot.swt.finder_*,
-                        plugins/org.eclipse.swtbot.eclipse.finder_*,
-                        plugins/org.eclipse.swtbot.junit4_x_*,
-                        plugins/org.hamcrest_*,
-                        plugins/org.hamcrest.core_*,
-                        plugins/org.hamcrest.text_*,
-                        plugins/org.hamcrest.library_*,
-                        plugins/org.hamcrest.integration_*,
-                        plugins/org.hamcrest.core.source_*,
-                        plugins/org.hamcrest.text.source_*,
-                        plugins/org.hamcrest.library.source_*,
-                        plugins/org.hamcrest.integration.source_*
+                        eclipse/plugins/org.apache.log4j_*,
+                        eclipse/plugins/org.eclipse.swtbot.swt.finder_*,
+                        eclipse/plugins/org.eclipse.swtbot.eclipse.finder_*,
+                        eclipse/plugins/org.eclipse.swtbot.junit4_x_*,
+                        eclipse/plugins/org.hamcrest_*,
+                        eclipse/plugins/org.hamcrest.core_*,
+                        eclipse/plugins/org.hamcrest.text_*,
+                        eclipse/plugins/org.hamcrest.library_*,
+                        eclipse/plugins/org.hamcrest.integration_*,
+                        eclipse/plugins/org.hamcrest.core.source_*,
+                        eclipse/plugins/org.hamcrest.text.source_*,
+                        eclipse/plugins/org.hamcrest.library.source_*,
+                        eclipse/plugins/org.hamcrest.integration.source_*
                       </includes>
-                      <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
                     </artifactItem>
                     <artifactItem>
                       <!--

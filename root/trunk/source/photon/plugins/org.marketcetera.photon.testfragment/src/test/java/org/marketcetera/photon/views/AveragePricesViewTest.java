@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.OrderManagerTest;
@@ -135,7 +136,7 @@ public class AveragePricesViewTest
     }
     
 	public void testShowMessage() throws Exception {
-		TradeReportsHistory hist = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory());
+		TradeReportsHistory hist = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory(), new MockUnderlyingSymbolSupport());
 		AveragePriceView view = (AveragePriceView) getTestView();
 		view.setInput(hist);
 		

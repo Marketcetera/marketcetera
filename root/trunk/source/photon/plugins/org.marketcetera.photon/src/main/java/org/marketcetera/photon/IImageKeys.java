@@ -19,8 +19,6 @@ public interface IImageKeys {
 	public static final String VIEW_SECURITY = "icons/silk/world_go.png"; //$NON-NLS-1$
 	public static final String LIGHTNING = "icons/silk/lightning.png"; //$NON-NLS-1$
 	public static final String ORDER_HISTORY = "icons/silk/clock_go.png"; //$NON-NLS-1$
-	public static final String ARROW_UP = "icons/silk/arrow_up.png"; //$NON-NLS-1$
-	public static final String ARROW_DOWN = "icons/silk/arrow_down.png"; //$NON-NLS-1$
 	public static final String FILTER = "icons/silk/drink_empty.png"; //$NON-NLS-1$
 	public static final String GROUP = "icons/silk/chart_organization.png"; //$NON-NLS-1$
 	public static final String ACCOUNT = "icons/silk/coins.png"; //$NON-NLS-1$

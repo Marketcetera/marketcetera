@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.marketcetera.core,
  org.eclipse.emf.common,
  org.eclipse.emf.ecore,
- com.google.inject
+ com.google.inject,
+ org.marketcetera.photon.commons
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.marketcetera.photon.marketdata,

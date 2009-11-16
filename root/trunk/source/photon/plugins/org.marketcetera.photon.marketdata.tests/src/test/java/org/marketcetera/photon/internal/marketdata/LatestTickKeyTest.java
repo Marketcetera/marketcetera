@@ -1,5 +1,11 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import java.math.BigDecimal;
+
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+
 
 
 /* $License$ */
@@ -15,17 +21,17 @@ public class LatestTickKeyTest extends KeyTestBase {
 
 	@Override
 	Object createKey1() {
-		return new LatestTickKey("IBM");
+		return new LatestTickKey(new Equity("IBM"));
 	}
 
 	@Override
 	Object createKey2() {
-		return new LatestTickKey("METC");
+		return new LatestTickKey(new Option("IBM", "200901", BigDecimal.ONE, OptionType.Call));
 	}
 
 	@Override
 	Object createKeyLike1ButDifferentClass() {
-		return new LatestTickKey("IBM") {
+		return new LatestTickKey(new Equity("IBM")) {
 		};
 	}
 

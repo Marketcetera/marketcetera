@@ -6,8 +6,10 @@ Bundle-Version: 1.7.0
 Bundle-Vendor: Marketcetera, Inc.
 Require-Bundle: org.eclipse.core.runtime,
  org.marketcetera.util,
- org.marketcetera.photon.commons
+ org.marketcetera.photon.commons,
+ org.marketcetera.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.marketcetera.photon.core
 Eclipse-ExtensibleAPI: true
+Eclipse-RegisterBuddy: org.marketcetera.core

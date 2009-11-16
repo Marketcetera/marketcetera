@@ -122,7 +122,6 @@ public class WebBrowserView
 			// maybe it's a symbol
 			// just check to see if it's 10 characters or less
 			if (newLocation.length()>0 && newLocation.length()<=10){
-				//TODO: update to handle options?
 				browseToGoogleFinanceForSymbol(new Equity(newLocation));
 			}
 		}

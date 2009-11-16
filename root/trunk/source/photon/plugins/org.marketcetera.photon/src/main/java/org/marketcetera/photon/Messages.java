@@ -51,18 +51,12 @@ public interface Messages
                                                                                                       "ApplicationActionBarAdvisor_OpenPerspectiveMenuID"); //$NON-NLS-1$
     public static I18NMessage0P CommandStatusLineContribution_CommandLabel = new I18NMessage0P(LOGGER,
                                                                                                "CommandStatusLineContribution_CommandLabel"); //$NON-NLS-1$
-    public static final I18NMessage0P COMMAND_PARSER_AUTO_SELECT_BROKER_KEYWORD = new I18NMessage0P(
-			LOGGER, "command_parser.auto_select_broker_keyword");//$NON-NLS-1$
-    public static final I18NMessage2P COMMAND_PARSER_INVALID_BROKER_ID = new I18NMessage2P(
-			LOGGER, "command_parser.invalid_broker_id");//$NON-NLS-1$
     public static I18NMessage0P CANNOT_START_DEFAULT_SCRIPT_PROJECT = new I18NMessage0P(LOGGER,
                                                                                         "cannot_start_default_script_project"); //$NON-NLS-1$
     public static I18NMessage1P LOGGER_LEVEL_CHANGED = new I18NMessage1P(LOGGER,
                                                                          "logger_level_changed"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_LOAD_RUBY = new I18NMessage0P(LOGGER,
                                                                      "cannot_load_ruby"); //$NON-NLS-1$
-    public static I18NMessage0P MESSAGE_LABEL = new I18NMessage0P(LOGGER,
-                                                                  "message_label"); //$NON-NLS-1$
     public static I18NMessage1P ApplicationWorkbenchWindowAdvisor_ApplicationInitializing = new I18NMessage1P(LOGGER,
                                                                                                               "ApplicationWorkbenchWindowAdvisor_ApplicationInitializing"); //$NON-NLS-1$ 
     public static I18NMessage0P ApplicationWorkbenchWindowAdvisor_OnlineLabel = new I18NMessage0P(LOGGER,
@@ -95,8 +89,6 @@ public interface Messages
                                                                        "cannot_send_cancel"); //$NON-NLS-1$
     public static I18NMessage2P CANNOT_SEND_CANCEL_FOR_REASON = new I18NMessage2P(LOGGER,
                                                                                   "cannot_send_cancel_for_reason"); //$NON-NLS-1$
-    public static I18NMessage1P MISSING_SIDE = new I18NMessage1P(LOGGER,
-                                                                 "missing_side"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_SEND_NOT_CONNECTED = new I18NMessage0P(LOGGER,
                                                                               "cannot_send_not_connected"); //$NON-NLS-1$
     public static I18NMessage0P WEB_HELP_ACTION = new I18NMessage0P(LOGGER,
@@ -109,8 +101,6 @@ public interface Messages
                                                                          "focus_command_action"); //$NON-NLS-1$
     public static I18NMessage0P FOCUS_COMMAND_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
                                                                                      "focus_command_action_description"); //$NON-NLS-1$
-    public static I18NMessage1P MISSING_DEFAULT_CONSTRUCTOR = new I18NMessage1P(LOGGER,
-                                                                                "missing_default_constructor"); //$NON-NLS-1$
     public static I18NMessage0P NULL_TARGET_PAGE = new I18NMessage0P(LOGGER,
                                                                      "null_target_page"); //$NON-NLS-1$
     public static I18NMessage1P VIEW_DOES_NOT_IMPLEMENT = new I18NMessage1P(LOGGER,
@@ -159,32 +149,8 @@ public interface Messages
                                                                       "cannot_send_order"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_CANCEL_ORDER = new I18NMessage0P(LOGGER,
                                                                         "cannot_cancel_order"); //$NON-NLS-1$
-    public static I18NMessage1P INVALID_PUT_OR_CALL = new I18NMessage1P(LOGGER,
-                                                                        "invalid_put_or_call"); //$NON-NLS-1$
-    public static I18NMessage1P NO_MESSAGE_CONVERTER = new I18NMessage1P(LOGGER,
-                                                                         "no_message_converter"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_DETERMINE_RESPONSE_DESTINATION = new I18NMessage0P(LOGGER,
-                                                                                          "cannot_determine_response_destination"); //$NON-NLS-1$
     public static I18NMessage0P CLIENT_EXCEPTION = new I18NMessage0P(LOGGER,
                                                                   "client_exception"); //$NON-NLS-1$
-    public static I18NMessage1P EXPECTED_PRICE = new I18NMessage1P(LOGGER,
-                                                                   "expected_price"); //$NON-NLS-1$
-    public static I18NMessage0P MISSING_TIME_IN_FORCE = new I18NMessage0P(LOGGER,
-                                                                          "missing_time_in_force"); //$NON-NLS-1$
-    public static I18NMessage0P OPEN_LABEL = new I18NMessage0P(LOGGER,
-                                                               "open_label"); //$NON-NLS-1$
-    public static I18NMessage0P CLOSE_LABEL = new I18NMessage0P(LOGGER,
-                                                                "close_label"); //$NON-NLS-1$
-    public static I18NMessage0P CUSTOMER_LABEL = new I18NMessage0P(LOGGER,
-                                                                   "customer_label"); //$NON-NLS-1$
-    public static I18NMessage0P BROKER_DEALER_LABEL = new I18NMessage0P(LOGGER,
-                                                                        "broker_dealer_label"); //$NON-NLS-1$
-    public static I18NMessage0P MARKET_MAKER_LABEL = new I18NMessage0P(LOGGER,
-                                                                       "market_maker_label"); //$NON-NLS-1$
-    public static I18NMessage0P UNKNOWN_MESSAGE_TYPE = new I18NMessage0P(LOGGER,
-                                                                         "unknown_message_type"); //$NON-NLS-1$
-    public static I18NMessage0P MISSING_FIELD = new I18NMessage0P(LOGGER,
-                                                                  "missing_field"); //$NON-NLS-1$
     public static I18NMessage1P INVALID_PROMPT = new I18NMessage1P(LOGGER,
                                                                    "invalid_prompt"); //$NON-NLS-1$
     public static I18NMessage1P MUST_NOT_BE_BLANK = new I18NMessage1P(LOGGER,
@@ -272,8 +238,6 @@ public interface Messages
                                                                        "more_columns_label"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_PARSE_LEVEL_TWO_DATA = new I18NMessage0P(LOGGER,
                                                                                 "cannot_parse_level_two_data"); //$NON-NLS-1$
-    public static I18NMessage1P CANNOT_REMOVE_NONEXISTANT_LISTENER = new I18NMessage1P(LOGGER,
-                                                                                       "cannot_remove_nonexistant_listener"); //$NON-NLS-1$
     public static I18NMessage0P PASSWORD_LABEL = new I18NMessage0P(LOGGER,
                                                                    "password_label"); //$NON-NLS-1$
     public static I18NMessage0P ORS_LOGIN_LABEL = new I18NMessage0P(LOGGER,
@@ -294,94 +258,22 @@ public interface Messages
                                                                               "user_id_must_not_be_blank"); //$NON-NLS-1$
     public static I18NMessage1P ORS_LOGIN_HELP_URL = new I18NMessage1P(LOGGER,
                                                                        "ors_login_help_url"); //$NON-NLS-1$
-    public static I18NMessage0P INPUT_REQUIRED = new I18NMessage0P(LOGGER,
-                                                                   "input_required"); //$NON-NLS-1$
-    public static I18NMessage0P VALUE_REQUIRED = new I18NMessage0P(LOGGER,
-                                                                   "value_required"); //$NON-NLS-1$
-    public static I18NMessage0P ARGUMENT_MUST_BE_STRING = new I18NMessage0P(LOGGER,
-                                                                            "argument_must_be_string"); //$NON-NLS-1$
-    public static I18NMessage0P INTEGER_REQUIRED = new I18NMessage0P(LOGGER,
-                                                                     "integer_required"); //$NON-NLS-1$
-    public static I18NMessage0P MAY_NOT_BE_VALID_FOR_FIX_VERSION = new I18NMessage0P(LOGGER,
-                                                                                     "may_not_be_valid_for_fix_version"); //$NON-NLS-1$
-    public static I18NMessage0P DECIMAL_REQUIRED = new I18NMessage0P(LOGGER,
-                                                                     "decimal_required"); //$NON-NLS-1$
-    public static I18NMessage0P INVALID_VALUE = new I18NMessage0P(LOGGER,
-                                                                  "invalid_value"); //$NON-NLS-1$
-    public static I18NMessage1P INVALID_SPECIFIED_VALUE = new I18NMessage1P(LOGGER,
-                                                                            "invalid_specified_value"); //$NON-NLS-1$
-    public static I18NMessage2P INVALID_SPECIFIED_DATE = new I18NMessage2P(LOGGER,
-                                                                           "invalid_specified_date"); //$NON-NLS-1$
     public static I18NMessage0P SET_SYMBOL_LABEL = new I18NMessage0P(LOGGER,
                                                                      "set_symbol_label"); //$NON-NLS-1$
     public static I18NMessage0P SET_SYMBOL_TOOTLTIPS = new I18NMessage0P(LOGGER,
                                                                          "set_symbol_tooltips"); //$NON-NLS-1$
     public static I18NMessage0P FAILED_TO_DISPOSE_MARKET_DATA_WIDGET = new I18NMessage0P(LOGGER,
                                                                                          "failed_to_dispose_market_data_widget"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_PARSE_OPTION_INFO = new I18NMessage0P(LOGGER,
-                                                                             "cannot_parse_option_info"); //$NON-NLS-1$
     public static I18NMessage0P COPY_LABEL = new I18NMessage0P(LOGGER,
                                                                "copy_label"); //$NON-NLS-1$
-    public static I18NMessage0P OPTIONS_LABEL = new I18NMessage0P(LOGGER,
-                                                                  "options_label"); //$NON-NLS-1$
-    public static I18NMessage0P SKIPPING_MARKET_DATA = new I18NMessage0P(LOGGER,
-                                                                         "skipping_market_data"); //$NON-NLS-1$
-    public static I18NMessage2P CANNOT_GET_OPTION_CONTRACT_INFO_SPECIFIED = new I18NMessage2P(LOGGER,
-                                                                                              "cannot_get_option_contract_info_specified"); //$NON-NLS-1$
-    public static I18NMessage0P MESSAGE_NOT_DERIVATIVE_SECURITY_LIST = new I18NMessage0P(LOGGER,
-                                                                                         "message_not_derivative_security_list"); //$NON-NLS-1$
-    public static I18NMessage1P CANNOT_PARSE_OPTION_INFO_SPECIFIED = new I18NMessage1P(LOGGER,
-                                                                                       "cannot_parse_option_info_specified"); //$NON-NLS-1$
-    public static I18NMessage0P NEW_OPTION_LABEL = new I18NMessage0P(LOGGER,
-                                                                     "new_option_label"); //$NON-NLS-1$
-    public static I18NMessage0P REPLACE_OPTION_LABEL = new I18NMessage0P(LOGGER,
-                                                                         "replace_option_label"); //$NON-NLS-1$
-    public static I18NMessage0P VALUE_NOT_FOUND = new I18NMessage0P(LOGGER,
-                                                                    "value_not_found"); //$NON-NLS-1$
     public static I18NMessage1P CANNOT_READ_CUSTOM_FIELD = new I18NMessage1P(LOGGER,
                                                                              "cannot_read_custom_field"); //$NON-NLS-1$
-    public static I18NMessage0P INVALID_TIME_IN_FORCE = new I18NMessage0P(LOGGER,
-                                                                          "invalid_time_in_force"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_BIND_TO_TICKET = new I18NMessage0P(LOGGER,
-                                                                          "cannot_bind_to_ticket"); //$NON-NLS-1$
-    public static I18NMessage1P CANNOT_SEND_ORDER_SPECIFIED = new I18NMessage1P(LOGGER,
-                                                                                "cannot_send_order_specified"); //$NON-NLS-1$
-    public static I18NMessage0P NEW_EQUITY_LABEL = new I18NMessage0P(LOGGER,
-                                                                     "new_equity_label"); //$NON-NLS-1$
-    public static I18NMessage0P REPLACE_EQUITY_LABEL = new I18NMessage0P(LOGGER,
-                                                                         "replace_equity_label"); //$NON-NLS-1$
-    public static I18NMessage0P TIME_LABEL = new I18NMessage0P(LOGGER,
-                                                               "time_label"); //$NON-NLS-1$
-    public static I18NMessage0P TRADE_LABEL = new I18NMessage0P(LOGGER,
-                                                                "trade_label"); //$NON-NLS-1$
-    public static I18NMessage0P SCORE_LABEL = new I18NMessage0P(LOGGER,
-                                                                "score_label"); //$NON-NLS-1$
-    public static I18NMessage0P DELETE_ITEMS_LABEL = new I18NMessage0P(LOGGER,
-                                                                       "delete_items_label"); //$NON-NLS-1$
-    public static I18NMessage0P DELETE_ITEMS_TOOLTIPS = new I18NMessage0P(LOGGER,
-                                                                          "delete_items_tooltips"); //$NON-NLS-1$
-    public static I18NMessage0P DELETE_ALL_ITEMS_LABEL = new I18NMessage0P(LOGGER,
-                                                                           "delete_all_items_label"); //$NON-NLS-1$
-    public static I18NMessage0P DELETE_ALL_ITEMS_TOOLTIPS = new I18NMessage0P(LOGGER,
-                                                                              "delete_all_items_tooltips"); //$NON-NLS-1$
-    public static I18NMessage0P SEND_ITEMS_LABEL = new I18NMessage0P(LOGGER,
-                                                                     "send_items_label"); //$NON-NLS-1$
-    public static I18NMessage0P SEND_ITEMS_TOOLTIPS = new I18NMessage0P(LOGGER,
-                                                                        "send_items_tooltips"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_FORMAT_TRADE_RECOMMENDATION = new I18NMessage0P(LOGGER,
-                                                                                       "cannot_format_trade_recommendation"); //$NON-NLS-1$
-    public static I18NMessage1P INVALID_MONTH_NAME = new I18NMessage1P(LOGGER,
-                                                                       "invalid_month_name"); //$NON-NLS-1$
     public static I18NMessage0P READY_LABEL = new I18NMessage0P(LOGGER,
                                                                 "ready_label"); //$NON-NLS-1$
     public static I18NMessage1P CANNOT_CONNECT_TO_URL = new I18NMessage1P(LOGGER,
                                                                           "cannot_connect_to_url"); //$NON-NLS-1$
     public static I18NMessage1P DUPLICATE_SYMBOL = new I18NMessage1P(LOGGER,
                                                                      "duplicate_symbol"); //$NON-NLS-1$
-    public static I18NMessage0P ENABLED_LABEL = new I18NMessage0P(LOGGER,
-                                                                  "enabled_label"); //$NON-NLS-1$
-    public static I18NMessage1P CANNOT_FIND_CUSTOM_FIELD = new I18NMessage1P(LOGGER,
-                                                                             "cannot_find_custom_field"); //$NON-NLS-1$
     public static I18NMessage0P FULL_MESSAGE_LABEL = new I18NMessage0P(LOGGER,
                                                                        "full_message_label"); //$NON-NLS-1$
     public static I18NMessage0P COPY_MESSAGE_LABEL = new I18NMessage0P(LOGGER,
@@ -398,8 +290,6 @@ public interface Messages
                                                                      "value_name_label"); //$NON-NLS-1$
     public static I18NMessage0P REQUIRED_LABEL = new I18NMessage0P(LOGGER,
                                                                    "required_label"); //$NON-NLS-1$
-    public static I18NMessage0P LISTENER_EXECUTION_FAILED = new I18NMessage0P(LOGGER,
-                                                                              "listener_execution_failed"); //$NON-NLS-1$
     public static I18NMessage0P BID_SZ_LABEL = new I18NMessage0P(LOGGER,
                                                                  "bid_sz_label"); //$NON-NLS-1$
     public static I18NMessage0P BID_LABEL = new I18NMessage0P(LOGGER,
@@ -426,12 +316,6 @@ public interface Messages
                                                                    "matcher_failed"); //$NON-NLS-1$
     public static I18NMessage1P UNRECOGNIZED_FIELD = new I18NMessage1P(LOGGER,
                                                                        "unrecognized_field"); //$NON-NLS-1$
-    public static I18NMessage0P HIGH_PRIORITY_SUBJECT = new I18NMessage0P(LOGGER,
-                                                                          "high_priority_subject"); //$NON-NLS-1$
-    public static I18NMessage0P MEDIUM_PRIORITY_SUBJECT = new I18NMessage0P(LOGGER,
-                                                                            "medium_priority_subject"); //$NON-NLS-1$
-    public static I18NMessage0P LOW_PRIORITY_SUBJECT = new I18NMessage0P(LOGGER,
-                                                                         "low_priority_subject"); //$NON-NLS-1$
     public static I18NMessage1P STATUS_INDICATOR_OVERLAY_ERROR = new I18NMessage1P(
 			LOGGER, "status_indicator.overlay_error"); //$NON-NLS-1$
     public static I18NMessage1P GOOGLE_FINANCE_LOOKUP_INVALID_TYPE = new I18NMessage1P(
@@ -514,12 +398,14 @@ public interface Messages
 			"fills_view.default_label"); //$NON-NLS-1$
 	public static I18NMessage0P FILLS_VIEW_POSITION_FILLS_LABEL = new I18NMessage0P(LOGGER,
 			"fills_view.position_fills_label"); //$NON-NLS-1$
-	public static I18NMessage0P FILLS_VIEW_SYMBOL_FILTER_LABEL = new I18NMessage0P(LOGGER,
-			"fills_view.symbol_filter_label"); //$NON-NLS-1$
+	public static I18NMessage0P FILLS_VIEW_UNDERLYING_FILTER_LABEL = new I18NMessage0P(LOGGER,
+			"fills_view.underlying_filter_label"); //$NON-NLS-1$
 	public static I18NMessage0P FILLS_VIEW_ACCOUNT_FILTER_LABEL = new I18NMessage0P(LOGGER,
 			"fills_view.account_filter_label"); //$NON-NLS-1$
 	public static I18NMessage0P FILLS_VIEW_TRADER_FILTER_LABEL = new I18NMessage0P(LOGGER,
 			"fills_view.trader_filter_label"); //$NON-NLS-1$
+    public static I18NMessage0P FILLS_VIEW_INSTRUMENT_FILTER_LABEL = new I18NMessage0P(
+            LOGGER, "fills_view.instrument_filter_label"); //$NON-NLS-1$
 	public static I18NMessage0P FILLS_VIEW_UNKNOWN_FILTER_VALUE = new I18NMessage0P(LOGGER,
 			"fills_view.unknown_filter_value"); //$NON-NLS-1$
 	public static I18NMessage1P USER_NAME_SERVICE_LOOKUP_FAILED = new I18NMessage1P(LOGGER,
@@ -537,4 +423,7 @@ public interface Messages
 			"market_depth.open_book.label"); //$NON-NLS-1$
 	public static I18NMessage0P MARKET_DEPTH_OPEN_BOOK_MNEMONIC = new I18NMessage0P(LOGGER,
 			"market_depth.open_book.mnemonic"); //$NON-NLS-1$
+	
+    public static I18NMessage0P CLIENT_UNDERLYING_SYMBOL_SUPPORT_MAPPING_ERROR = new I18NMessage0P(
+            LOGGER, "client_underlying_symbol_support_mapping_error"); //$NON-NLS-1$
 }

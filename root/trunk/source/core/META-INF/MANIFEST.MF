@@ -36,6 +36,7 @@ Eclipse-BuddyPolicy: registered
 Import-Package: junit.framework;resolution:=optional,
  org.hamcrest;resolution:=optional,
  org.junit;resolution:=optional,
- org.junit.runners;resolution:=optional,
  org.junit.runner;resolution:=optional,
- org.mockito;resolution:=optional
+ org.junit.runners;resolution:=optional,
+ org.mockito;resolution:=optional,
+ org.mockito.stubbing;resolution:=optional

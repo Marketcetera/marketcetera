@@ -135,13 +135,4 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
     public void close() {
         // do nothing
     }
-
-	@Override
-	public void setLayout(Layout arg0) {
-		// TODO Auto-generated method stub
-		super.setLayout(arg0);
-	}
-    
-    
-
 }

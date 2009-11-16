@@ -23,9 +23,12 @@
 			<x:children>
 				<label text="Side"/>
 				<label text="Quantity"/>
-				<label text="Symbol/Root"><layoutData x:class="gridData" horizontalSpan="2"/></label>
-				<label text="OptionSymbol"><layoutData x:class="gridData" horizontalSpan="3"/></label>
-				<combo x:style="BORDER" x:id="SideCombo"/>
+				<label text="Symbol"/>
+				<label text="Order Type"/>
+				<label text="Price"/>
+				<label text="Broker"/>
+				<label text="TIF"/>
+				<combo x:style="BORDER|READ_ONLY" x:id="SideCombo"/>
 				<text x:style="SINGLE|BORDER" x:id="QuantityText" text="">
 			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
 			            horizontalAlignment="GridData.FILL" 
@@ -34,44 +37,43 @@
 				<text x:style="SINGLE|BORDER" x:id="SymbolText" text="">
 			        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
 			            horizontalAlignment="GridData.FILL" 
-			            verticalAlignment="GridData.CENTER"
-			            horizontalSpan="2"/>
+			            verticalAlignment="GridData.CENTER"/>
 				</text>
-				<text x:style="SINGLE|BORDER" x:id="OptionSymbolText" text="" enabled="false">
-			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
-			            horizontalAlignment="GridData.FILL" 
-			            verticalAlignment="GridData.CENTER"
-			            horizontalSpan="3"/>
-				</text>
-				<label text="Expiration"/>
-				<label text="Year"/>
-				<label text="Strike"/>
-				<label text="C/P"/>
-				<label text="Price"/>
-				<label text="Broker"/>
-				<label text="TIF"/>
-				<combo x:style="BORDER" x:id="ExpireMonthCombo"/>
-				<combo x:style="BORDER" x:id="ExpireYearCombo"/>
-				<combo x:style="BORDER" x:id="StrikePriceCombo"/>
-				<combo x:style="BORDER" x:id="PutOrCallCombo"/>
+				<combo x:style="BORDER|READ_ONLY" x:id="OrderTypeCombo"/>
 				<text x:style="SINGLE|BORDER" x:id="PriceText" text="">
 			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
 			            horizontalAlignment="GridData.FILL" 
 			            verticalAlignment="GridData.CENTER"/>
 				</text>
 				<combo x:style="BORDER|READ_ONLY" x:id="BrokerCombo" text="">
-			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
+			        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
 			            horizontalAlignment="GridData.FILL" 
 			            verticalAlignment="GridData.CENTER"/>
 				</combo>
-				<combo x:style="BORDER" x:id="TifCombo" text="">
+				<combo x:style="BORDER|READ_ONLY" x:id="TifCombo" text="">
 			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
 			            horizontalAlignment="GridData.FILL" 
 			            verticalAlignment="GridData.CENTER"/>
 				</combo>
 				<composite>
+					<layout x:class="gridLayout" numColumns="4" marginWidth="0" marginHeight="0" verticalSpacing="1" horizontalSpacing="10"/>
+					<layoutData x:class="gridData" horizontalAlignment="SWT.FILL" horizontalSpan="5"/>
+				    <label text="Expiry"/>
+				    <label text=""/>
+				    <label text="Strike"/>
+				    <label text="Type"/>
+				    <text x:style="SINGLE|BORDER" x:id="OptionExpiryText" text=""><layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+			            horizontalAlignment="GridData.FILL" 
+			            verticalAlignment="GridData.CENTER"/></text>
+			        <button x:id="SelectExpiryButton" text="Select..."/>
+				    <text x:style="SINGLE|BORDER" x:id="StrikePriceText" text=""><layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+			            horizontalAlignment="GridData.FILL" 
+			            verticalAlignment="GridData.CENTER"/></text>
+				    <combo x:style="BORDER|READ_ONLY" x:id="PutOrCallCombo"/>
+				</composite>
+				<composite>
 					<layout x:class="rowLayout" x:style="HORIZONTAL"/>
-					<layoutData x:class="gridData" horizontalAlignment="GridData.END" horizontalSpan="7"/>
+					<layoutData x:class="gridData" verticalAlignment="SWT.BOTTOM" horizontalAlignment="SWT.END" horizontalSpan="2"/>
 					<button x:id="SendButton" x:style="PUSH" text="Send" enabled="false"/>
 					<button x:id="ClearButton" x:style="PUSH" text="Clear"/>
 				</composite>
@@ -88,12 +90,12 @@
 								horizontalAlignment="FILL"/>
 						</text>
 						<label text="Open/Close:"/>
-						<combo x:id="OpenCloseCombo" text="">
+						<combo x:style="BORDER|READ_ONLY" x:id="OpenCloseCombo" text="">
 							<layoutData x:class="gridData" verticalAlignment="BEGINNING"
 								horizontalAlignment="FILL"/>
 						</combo>
 						<label text="Capacity:"/>
-						<combo x:id="OrderCapacityCombo" text="">
+						<combo x:style="BORDER|READ_ONLY" x:id="OrderCapacityCombo" text="">
 							<layoutData x:class="gridData" verticalAlignment="BEGINNING"
 								horizontalAlignment="FILL"/>
 						</combo>
@@ -101,16 +103,16 @@
 				</section>
 				<section x:id="CustomExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Custom fields" expanded="true" client="_custom_composite">
 					<layoutData x:class="gridData" horizontalSpan="4" grabExcessHorizontalSpace="true"
-					     verticalAlignment="BEGINNING" horizontalAlignment="FILL"/>
+					      grabExcessVerticalSpace="true" verticalAlignment="FILL" horizontalAlignment="FILL" heightHint="200"/>
 					<composite x:id="_custom_composite">
 						<layout x:class="gridLayout" numColumns="2" marginWidth="1"
 							verticalSpacing="1" horizontalSpacing="1" marginHeight="1" />
-						<checkboxTableViewer x:id="CustomFieldsTableViewer" x:style="BORDER|FULL_SELECTION" headerVisible="true">
-							<layoutData x:class="gridData" verticalAlignment="CENTER"
-								grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
-							<tableColumn text="Enabled/Key" width="60"/>
-							<tableColumn text="Value" width="50"/>
-						</checkboxTableViewer>
+						<table x:id="CustomFieldsTable" x:style="BORDER|FULL_SELECTION|SWT.CHECK" headerVisible="true">
+							<layoutData x:class="gridData" verticalAlignment="FILL"
+								grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL"/>
+							<tableColumn text="Enabled/Key" width="100"/>
+							<tableColumn text="Value" width="120"/>
+						</table>
 					</composite>
 				</section>
 			</x:children>
@@ -119,7 +121,7 @@
 	<label x:id="ErrorIconLabel" text="">
 		<layoutData x:class="gridData" 
 			horizontalAlignment="GridData.BEGINNING"
-			verticalAlignment="GridData.END"
+			verticalAlignment="GridData.CENTER"
 			horizontalIndent="3"
 			widthHint="7" />
 	</label>
