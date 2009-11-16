@@ -199,6 +199,10 @@ public class PositionsViewGroupedTest extends PhotonTestBase {
         mFixture.registerModel();
         mFixture.fireTrade(instrument, "12");
         mFixture.fireClosingPrice(instrument, "8");
+        /*
+         * Give time for market data changes to propogate to UI.
+         */
+        Thread.sleep(500);
         mFixture.groupBy(Grouping.Underlying, Grouping.Account);
         mFixture.assertGroupTree();
         mFixture.assertGroupedPositionsCount(1);
