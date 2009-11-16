@@ -1,11 +1,6 @@
 package org.marketcetera.marketdata.bogus;
 
-import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.MARKET_STAT;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.TOTAL_VIEW;
+import static org.marketcetera.marketdata.MarketDataRequest.Content.*;
 import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
 
 import org.marketcetera.core.CoreException;
@@ -59,7 +54,8 @@ public class BogusFeedMessageTranslator
                                               OPEN_BOOK,
                                               TOTAL_VIEW,
                                               LATEST_TICK,
-                                              MARKET_STAT)) {
+                                              MARKET_STAT,
+                                              DIVIDEND)) {
             return inRequest;
         }
         throw new CoreException(new I18NBoundMessage1P(UNSUPPORTED_REQUEST,

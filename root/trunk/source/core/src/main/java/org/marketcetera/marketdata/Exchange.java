@@ -1,11 +1,12 @@
 package org.marketcetera.marketdata;
 
+import java.util.List;
+
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.DepthOfBookEvent;
+import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -21,83 +22,102 @@ import org.marketcetera.util.misc.ClassVersion;
 public interface Exchange<T>
 {
     /**
-     * Returns statistical data for the given instrument.
+     * Returns statistical data for the given <code>ExchangeRequest</code>.
      *
-     * @param inInstrument an <code>Instrument</code> value
-     * @return a <code>MarketstatEvent</code> value
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
+     * @return a <code>List&lt;MarketstatEvent&gt;</code> value
      */
-    public MarketstatEvent getStatistics(Instrument inInstrument);
+    public List<MarketstatEvent> getStatistics(ExchangeRequest inExchangeRequest);
     /**
-     * Establishes a subscription to statistical data for the given instrument.
+     * Establishes a subscription to statistical data for the given <code>ExchangeRequest</code>.
      *
      * <p>The subscription will remain active until canceled via {@link Exchange#cancel(Object)} or
      * the exchange is stopped via {@link Exchange#stop}.
      *
-     * @param inInstrument an <code>Instrument</code> value
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
      * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
      * @return a <code>T</code> value representing the subscription
      */
-    public T getStatistics(Instrument inInstrument,
+    public T getStatistics(ExchangeRequest inExchangeRequest,
                            ISubscriber inSubscriber);
     /**
-     * Gets the top of the exchange book for the given instrument.
+     * Gets the top of the exchange book for the given <code>ExchangeRequest</code>.
      *
-     * @param inInstrument an <code>Instrument</code> value
-     * @return a <code>TopOfBook</code> value
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
+     * @return a <code>List&lt;QuoteEvent&gt;</code> value
      */
-    public TopOfBookEvent getTopOfBook(Instrument inInstrument);
+    public List<QuoteEvent> getTopOfBook(ExchangeRequest inExchangeRequest);
     /**
-     * Establishes a subscription to the top of the exchange book for the given instrument.
+     * Establishes a subscription to the top of the exchange book for the given <code>ExchangeRequest</code>.
      * 
      * <p>The subscription will remain active until canceled via {@link Exchange#cancel(Object)} or
      * the exchange is stopped via {@link Exchange#stop}.
      *
-     * @param inInstrument an <code>Instrument</code> value
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
      * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
      * @return a <code>T</code> value representing the subscription
      */
-    public T getTopOfBook(Instrument inInstrument,
+    public T getTopOfBook(ExchangeRequest inExchangeRequest,
                           ISubscriber inSubscriber);
     /**
-     * Gets the depth of the exchange book for the given instrument.
+     * Gets the depth of the exchange book for the given <code>ExchangeRequest</code>.
      *
-     * @param inInstrument an <code>Instrument</code> value
-     * @return a <code>DepthOfBook</code> value
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
+     * @return a <code>List&lt;QuoteEvent&gt;</code> value
      */
-    public DepthOfBookEvent getDepthOfBook(Instrument inInstrument);
+    public List<QuoteEvent> getDepthOfBook(ExchangeRequest inExchangeRequest);
     /**
-     * Establishes a subscription to the depth of the exchange book for the given instrument.
+     * Establishes a subscription to the depth of the exchange book for the given <code>ExchangeRequest</code>.
      *
      * <p>The subscription will remain active until canceled via {@link Exchange#cancel(Object)} or
      * the exchange is stopped via {@link Exchange#stop}.
      *
-     * @param inInstrument an <code>Instrument</code> value
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
      * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
      * @return a <code>T</code> value representing the subscription
      */
-    public T getDepthOfBook(Instrument inInstrument,
+    public T getDepthOfBook(ExchangeRequest inExchangeRequest,
                             ISubscriber inSubscriber);
     /**
-     * Gets the latest trade for the given instrument.
+     * Gets the latest trade for the given <code>ExchangeRequest</code>.
      *
-     * @param inInstrument an <code>Instrument</code> value
-     * @return a <code>TradeEvent</code> value or null if there is no trade to return
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
+     * @return a <code>List&lt;TradeEvent&gt;</code> value
      */
-    public TradeEvent getLatestTick(Instrument inInstrument);
+    public List<TradeEvent> getLatestTick(ExchangeRequest inExchangeRequest);
     /**
-     * Establishes a subscription to the latest trade for the given instrument.
+     * Establishes a subscription to the latest trade for the given <code>ExchangeRequest</code>.
      *
      * <p>The subscription will remain active until canceled via {@link Exchange#cancel(Object)} or
      * the exchange is stopped via {@link Exchange#stop}.
      *
-     * @param inInstrument an <code>Instrument</code> value
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
      * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
-     *
      *
      * @return a <code>T</code> value representing the subscription
      */
-    public T getLatestTick(Instrument inInstrument,
+    public T getLatestTick(ExchangeRequest inExchangeRequest,
                            ISubscriber inSubscriber);
+    /**
+     * Gets the dividends for the given <code>ExchangeRequest</code>.
+     *
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
+     * @return a <code>List&lt;DividendEvent&gt;</code> value
+     */
+    public List<DividendEvent> getDividends(ExchangeRequest inExchangeRequest);
+    /**
+     * Establishes a subscription to the dividends for the given <code>ExchangeRequest</code>.
+     *
+     * <p>The subscription will remain active until canceled via {@link Exchange#cancel(Object)} or
+     * the exchange is stopped via {@link Exchange#stop}.
+     *
+     * @param inExchangeRequest an <code>ExchangeRequest</code> value
+     * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
+     *
+     * @return a <code>T</code> value representing the subscription
+     */
+    public T getDividends(ExchangeRequest inExchangeRequest,
+                          ISubscriber inSubscriber);
     /**
      * Cancels the subscription represented by the given token.
      * 
@@ -151,6 +171,10 @@ public interface Exchange<T>
         /**
          * statistics for an instrument
          */
-        STATISTICS
+        STATISTICS,
+        /**
+         * dividends for an instrument
+         */
+        DIVIDENDS
     }
 }

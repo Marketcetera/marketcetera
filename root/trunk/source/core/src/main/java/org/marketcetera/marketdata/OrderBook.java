@@ -123,10 +123,9 @@ public class OrderBook
      */
     public final DepthOfBookEvent getDepthOfBook()
     {
-        return DepthOfBookEventBuilder.depthOfBook()
-                                      .withBids(getBidBook())
-                                      .withAsks(getAskBook())
-                                      .withInstrument(getInstrument()).create();
+        return DepthOfBookEventBuilder.depthOfBook().withBids(getBidBook())
+                                                    .withAsks(getAskBook())
+                                                    .withInstrument(getInstrument()).create();
     }
     /**
      * Gets the current state of the <code>Bid</code> book. 

@@ -1,35 +1,20 @@
 package org.marketcetera.marketdata.bogus;
 
-import static org.marketcetera.marketdata.Capability.LATEST_TICK;
-import static org.marketcetera.marketdata.Capability.LEVEL_2;
-import static org.marketcetera.marketdata.Capability.OPEN_BOOK;
-import static org.marketcetera.marketdata.Capability.MARKET_STAT;
-import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
-import static org.marketcetera.marketdata.Capability.TOTAL_VIEW;
+import static org.marketcetera.marketdata.Capability.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
-import org.marketcetera.marketdata.AbstractMarketDataFeed;
-import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.FeedException;
-import org.marketcetera.marketdata.MarketDataFeed;
-import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.SimulatedExchange;
+import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.MarketDataRequest.AssetClass;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
-import org.marketcetera.marketdata.SimulatedExchange.Token;
+import org.marketcetera.options.OptionUtils;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -233,7 +218,7 @@ public class BogusFeed
     /**
      * capabilities for BogusFeed - note that these are not dynamic as Bogus requires no provisioning
      */
-    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT));
+    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT,DIVIDEND));
     /**
      * indicates if the feed has been logged in to
      */
@@ -300,7 +285,7 @@ public class BogusFeed
         private Request(MarketDataRequest inRequest,
                         BogusFeed inFeed)
         {
-            request = inRequest;
+            marketDataRequest = inRequest;
             feed = inFeed;
             subscriber = new ISubscriber() {
                 @Override
@@ -324,9 +309,20 @@ public class BogusFeed
             }
         }
         /**
+         * Gets the underlying instrument for the given symbol. 
+         *
+         * @param inSymbol a <code>String</code> value
+         * @return an <code>Instrument</code> value
+         */
+        private Instrument getUnderlyingInstrument(String inSymbol)
+        {
+            return new Equity(inSymbol); // this is slightly restrictive in the long run, but certainly acceptable for now
+        }
+        /**
          * Executes the market data request associated with this object.
          * 
          * @throws IllegalStateException if this method has already been executed for this object
+         * @throws IllegalArgumentException if the request is for Option asset class and contains a symbol that is not OSI-compliant
          */
         private synchronized void execute()
         {
@@ -334,44 +330,70 @@ public class BogusFeed
                 throw new IllegalStateException();
             }
             try {
-                List<Equity> symbols = new ArrayList<Equity>();
-                for(String symbol : request.getSymbols()) {
-                    symbols.add(new Equity(symbol));
+                List<ExchangeRequest> exchangeRequests = new ArrayList<ExchangeRequest>();
+                if(marketDataRequest.getSymbols().length != 0) {
+                    if(marketDataRequest.getAssetClass() == AssetClass.EQUITY) {
+                        for(String symbol : marketDataRequest.getSymbols()) {
+                            exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(new Equity(symbol)).create());
+                        }
+                    } else if(marketDataRequest.getAssetClass() == AssetClass.OPTION) {
+                        for(String symbol : marketDataRequest.getSymbols()) {
+                            // this assumes that the symbol is an OSI-compliant symbol, otherwise, there's no way to parse it
+                            //  deterministically.  if it's not OSI-compliant, an IAE will be thrown, which puts the kaibosh on
+                            //  the whole request.  this is a limitation ironed into the Bogus adapter
+                            Option basicOption = OptionUtils.getOsiOptionFromString(symbol);
+                            exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(basicOption)
+                                                                                    .withUnderlyingInstrument(getUnderlyingInstrument(basicOption.getSymbol())).create());
+                        }
+                    } else {
+                        // this is a new asset class and there is no support for it here
+                        assert(false);
+                    }
+                } else {
+                    // marketDataRequest has no symbols - should then have underlyingsymbols instead
+                    assert(marketDataRequest.getUnderlyingSymbols().length != 0);
+                    for(String symbol : marketDataRequest.getUnderlyingSymbols()) {
+                        exchangeRequests.add(ExchangeRequestBuilder.newRequest().withUnderlyingInstrument(getUnderlyingInstrument(symbol)).create());
+                    }
                 }
-                for(Equity symbol : symbols) {
+                for(ExchangeRequest exchangeRequest : exchangeRequests) {
                     // all symbols for which we want data are collected in the symbols list
                     // each type of subscription is managed differently
-                    for(Content content : request.getContent()) {
+                    for(Content content : marketDataRequest.getContent()) {
                         switch(content) {
                             case LEVEL_2 :
                                 // LEVEL_2 is NASDAQ Level II data, which is TOP_OF_BOOK from all
                                 //  managed exchanges.
-                                doTopOfBook(symbol,
+                                doTopOfBook(exchangeRequest,
                                             null);
                                 break;
                             case TOP_OF_BOOK :
                                 // TOP_OF_BOOK from the specified exchange only
-                                doTopOfBook(symbol,
-                                            request.getExchange());
+                                doTopOfBook(exchangeRequest,
+                                            marketDataRequest.getExchange());
                                 break;
                             case OPEN_BOOK :
                                 // OPEN_BOOK is depth-of-book from the specified exchange
-                                doDepthOfBook(symbol,
-                                              request.getExchange());
+                                doDepthOfBook(exchangeRequest,
+                                              marketDataRequest.getExchange());
                                 break;
                             case TOTAL_VIEW :
                                 // TOTAL_VIEW is depth-of-book from the specified exchange
-                                doDepthOfBook(symbol,
-                                              request.getExchange());
+                                doDepthOfBook(exchangeRequest,
+                                              marketDataRequest.getExchange());
                                 break;
                             case LATEST_TICK :
                                 // LATEST_TICK is the most recent trade
-                                doLatestTick(symbol,
-                                             request.getExchange());
+                                doLatestTick(exchangeRequest,
+                                             marketDataRequest.getExchange());
                                 break;
                             case MARKET_STAT :
-                                doStatistics(symbol,
-                                             request.getExchange());
+                                doStatistics(exchangeRequest,
+                                             marketDataRequest.getExchange());
+                                break;
+                            case DIVIDEND :
+                                doDividends(exchangeRequest,
+                                            marketDataRequest.getExchange());
                                 break;
                             default:
                                 throw new UnsupportedOperationException();
@@ -383,62 +405,79 @@ public class BogusFeed
             }
         }
         /**
-         * Executes a statistics request for the given symbol using the
+         * Executes a statistics request for the given request using the
          * given exchange code.
          *
-         * @param inEquity an <code>Equity</code> value
+         * @param inExchangeRequest an <code>ExchangeRequest</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doStatistics(Equity inEquity,
+        private void doStatistics(ExchangeRequest inExchangeRequest,
                                   String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getStatistics(inEquity,
+                exchangeTokens.add(exchange.getStatistics(inExchangeRequest,
                                                           subscriber));
             }
         }
         /**
-         * Executes a depth-of-book request for the given symbol using the
+         * Executes a dividend request for the given request using the
          * given exchange code.
          *
-         * @param inEquity an <code>Equity</code> value
+         * @param inExchangeRequest an <code>ExchangeRequest</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doDepthOfBook(Equity inEquity,
+        private void doDividends(ExchangeRequest inExchangeRequest,
+                                 String inExchangeToUse)
+        {
+            for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
+                exchangeTokens.add(exchange.getDividends(inExchangeRequest,
+                                                         subscriber));
+                // dividends are the same across all feeds, so the first answer is sufficient
+                break;
+            }
+        }
+        /**
+         * Executes a depth-of-book request for the given request using the
+         * given exchange code.
+         *
+         * @param inRequest an <code>ExchangeRequest</code> value
+         * @param inExchangeToUse a <code>String</code> value
+         */
+        private void doDepthOfBook(ExchangeRequest inRequest,
                                    String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getDepthOfBook(inEquity,
+                exchangeTokens.add(exchange.getDepthOfBook(inRequest,
                                                            subscriber));
             }
         }
         /**
-         * Executes a top-of-book request for the given symbol using the
+         * Executes a top-of-book request for the given request using the
          * given exchange code.
          *
-         * @param inEquity an <code>Equity</code> value
+         * @param inRequest an <code>ExchangeRequest</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doTopOfBook(Equity inEquity,
+        private void doTopOfBook(ExchangeRequest inRequest,
                                  String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getTopOfBook(inEquity,
+                exchangeTokens.add(exchange.getTopOfBook(inRequest,
                                                          subscriber));
             }
         }
         /**
-         * Executes a latest-tick request for the given symbol using the given
+         * Executes a latest-tick request for the given request using the given
          * exchange code.
          *
-         * @param inEquity an <code>Equity</code> value
+         * @param inRequest an <code>ExchangeRequest</code> value
          * @param inExchangeToUse a <code>String</code> value
          */
-        private void doLatestTick(Equity inEquity,
+        private void doLatestTick(ExchangeRequest inRequest,
                                   String inExchangeToUse)
         {
             for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getLatestTick(inEquity,
+                exchangeTokens.add(exchange.getLatestTick(inRequest,
                                                           subscriber));
             }
         }
@@ -447,7 +486,7 @@ public class BogusFeed
          */
         private void cancel()
         {
-            for(Token token : exchangeTokens) {
+            for(SimulatedExchange.Token token : exchangeTokens) {
                 token.cancel();
             }
         }
@@ -463,11 +502,11 @@ public class BogusFeed
         /**
          * the collection of subscription tokens associated with this request
          */
-        private final List<Token> exchangeTokens = new ArrayList<Token>();
+        private final List<SimulatedExchange.Token> exchangeTokens = new ArrayList<SimulatedExchange.Token>();
         /**
          * the market data request associated with this object
          */
-        private final MarketDataRequest request;
+        private final MarketDataRequest marketDataRequest;
         /**
          * the unique identifier of this request
          */

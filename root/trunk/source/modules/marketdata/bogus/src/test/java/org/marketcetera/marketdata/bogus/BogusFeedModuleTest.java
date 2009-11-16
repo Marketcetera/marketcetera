@@ -149,7 +149,7 @@ public class BogusFeedModuleTest
     @Override
     protected Capability[] getExpectedCapabilities()
     {
-        return new Capability[] { TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT };
+        return new Capability[] { TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT,DIVIDEND };
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataModuleTestBase#getUnexpectedCapability()

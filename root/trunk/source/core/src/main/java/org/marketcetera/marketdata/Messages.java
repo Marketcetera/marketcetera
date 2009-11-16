@@ -136,4 +136,10 @@ public interface Messages
                                                                "invalid_uri"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_SCHEME_NAME = new I18NMessage1P(LOGGER,
                                                                        "invalid_scheme_name"); //$NON-NLS-1$
+    static final I18NMessage0P INSTRUMENT_OR_UNDERLYING_INSTRUMENT_REQUIRED = new I18NMessage0P(LOGGER,
+                                                                                                "instrument_or_underlying_instrument_required"); //$NON-NLS-1$
+    static final I18NMessage1P OPTION_REQUIRES_UNDERLYING_INSTRUMENT = new I18NMessage1P(LOGGER,
+                                                                                         "option_requires_underlying_instrument"); //$NON-NLS-1$
+    static final I18NMessage1P DIVIDEND_REQUEST_MISSING_INSTRUMENT = new I18NMessage1P(LOGGER,
+                                                                                       "dividend_request_missing_instrument"); //$NON-NLS-1$
 }

@@ -36,9 +36,9 @@ public class MockAggregateEvent
     /**
      * Create a new MockAggregateEvent instance.
      *
-     * @param inCompositeEvents a <code>List&lt;Event&gt;</code> value containing the events to which this event should decompose
+     * @param inCompositeEvents a <code>List&lt;QuoteEvent&gt;</code> value containing the events to which this event should decompose
      */
-    public MockAggregateEvent(List<Event> inCompositeEvents)
+    public MockAggregateEvent(List<QuoteEvent> inCompositeEvents)
     {
         this(new Date(),
              new Equity("METC"));
@@ -88,7 +88,7 @@ public class MockAggregateEvent
      * @see org.marketcetera.event.AggregateEvent#decompose()
      */
     @Override
-    public List<Event> decompose()
+    public List<QuoteEvent> decompose()
     {
         return compositeEvents;
     }
@@ -112,7 +112,7 @@ public class MockAggregateEvent
     /**
      * stores the events to which this event should decompose
      */
-    private final List<Event> compositeEvents = new ArrayList<Event>();
+    private final List<QuoteEvent> compositeEvents = new ArrayList<QuoteEvent>();
     /**
      * event attributes
      */

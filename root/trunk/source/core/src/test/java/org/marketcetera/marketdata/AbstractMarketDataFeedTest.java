@@ -1,16 +1,8 @@
 package org.marketcetera.marketdata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 
@@ -20,12 +12,7 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.event.AggregateEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.EventTestBase;
-import org.marketcetera.event.MockAggregateEvent;
-import org.marketcetera.event.MockEvent;
-import org.marketcetera.event.MockEventTranslator;
+import org.marketcetera.event.*;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
@@ -732,10 +719,10 @@ public class AbstractMarketDataFeedTest
         assertEquals(e,
                      s.getPublications().get(0));
         // next, send in an aggregate event and make sure it gets properly decomposed
-        List<Event> expectedEvents = Arrays.asList(new Event[] { EventTestBase.generateEquityAskEvent(metc,
-                                                                                                      exchange),
-                                                                 EventTestBase.generateEquityBidEvent(metc,
-                                                                                                      exchange) } );
+        List<QuoteEvent> expectedEvents = Arrays.asList(new QuoteEvent[] { EventTestBase.generateEquityAskEvent(metc,
+                                                                                                                exchange),
+                                                                           EventTestBase.generateEquityBidEvent(metc,
+                                                                                                                exchange) } );
         MockAggregateEvent mae = new MockAggregateEvent(expectedEvents);
         feed.setEventsToReturn(Arrays.asList(new Event[] { mae } ));
         s.reset();
