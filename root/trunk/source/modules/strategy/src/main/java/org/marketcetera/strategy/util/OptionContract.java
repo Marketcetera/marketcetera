@@ -6,6 +6,7 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.event.*;
 import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.event.util.MarketstatEventCache;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
@@ -104,7 +105,7 @@ public final class OptionContract
      */
     public MarketstatEvent getLatestMarketstat()
     {
-        return latestMarketstat;
+        return latestMarketstat.get();
     }
     /**
      * Create a new OptionContract instance.
@@ -126,6 +127,7 @@ public final class OptionContract
                    boolean inHasDeliverable,
                    BigDecimal inMultiplier)
     {
+        latestMarketstat = new MarketstatEventCache(inInstrument);
         option.setInstrument(new Option(inInstrument.getSymbol(),
                                         inInstrument.getExpiry(),
                                         inInstrument.getStrikePrice(),
@@ -202,7 +204,7 @@ public final class OptionContract
      */
     private void setLatestMarketstat(MarketstatEvent inLatestMarketstat)
     {
-        latestMarketstat = inLatestMarketstat;
+        latestMarketstat.cache(inLatestMarketstat);
     }
     /**
      * option info
@@ -223,5 +225,5 @@ public final class OptionContract
     /**
      * the latest marketstat for this contract, may be <code>null</code>
      */
-    private volatile MarketstatEvent latestMarketstat = null;
+    private final MarketstatEventCache latestMarketstat;
 }
