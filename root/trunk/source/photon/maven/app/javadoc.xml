@@ -12,9 +12,6 @@
         <fileset dir="${photon.target}">
             <include name="**/*.jar"/>
         </fileset>
-        <fileset dir="${plugins.dir}/jfun.parsec/lib">
-            <include name="**/*.jar"/>
-        </fileset>
         <dirset dir="${plugins.dir}/com.swtworkbench.community.xswt/@dot"/>
     </path>
 
