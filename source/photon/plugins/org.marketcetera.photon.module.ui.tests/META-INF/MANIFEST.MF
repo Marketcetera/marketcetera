@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Module Framework Support UI Tests
 Bundle-SymbolicName: org.marketcetera.photon.module.ui.tests;singleton:=true
-Bundle-Version: 1.7.0
+Bundle-Version: 2.0.0
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon.module.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

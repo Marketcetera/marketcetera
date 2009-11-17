@@ -88,6 +88,6 @@ public class ApplicationVersion {
         "1.5.1"; //$NON-NLS-1$
     public static final String VERSION_1_6_0 =
         "1.6.0"; //$NON-NLS-1$
-    public static final String VERSION_1_7_0 =
-        "1.7.0"; //$NON-NLS-1$
+    public static final String VERSION_2_0_0 =
+        "2.0.0"; //$NON-NLS-1$
 }

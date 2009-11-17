@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Photon Core
 Bundle-SymbolicName: org.marketcetera.photon.core;singleton:=true
-Bundle-Version: 1.7.0
+Bundle-Version: 2.0.0
 Bundle-Vendor: Marketcetera, Inc.
 Require-Bundle: org.eclipse.core.runtime,
  org.marketcetera.util,
