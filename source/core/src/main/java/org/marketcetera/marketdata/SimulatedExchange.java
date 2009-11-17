@@ -1274,7 +1274,7 @@ public class SimulatedExchange
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.0.0
      */
     @ThreadSafe
     private static enum InstrumentComparator
@@ -1317,7 +1317,7 @@ public class SimulatedExchange
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.0.0
      */
     @ThreadSafe
     @ClassVersion("$Id$")
@@ -1509,7 +1509,7 @@ public class SimulatedExchange
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.0.0
      */
     @ThreadSafe
     @ClassVersion("$Id$")
@@ -2033,7 +2033,7 @@ public class SimulatedExchange
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.0.0
      */
     @Immutable
     @ClassVersion("$Id$")

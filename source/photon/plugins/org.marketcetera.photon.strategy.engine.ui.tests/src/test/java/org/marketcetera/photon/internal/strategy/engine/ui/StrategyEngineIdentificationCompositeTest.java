@@ -32,7 +32,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: StrategyEngineIdentificationCompositeTest.java 10713 2009-08-30
  *          09:08:28Z tlerios $
- * @since $Release$
+ * @since 2.0.0
  */
 @RunWith(SimpleUIRunner.class)
 public class StrategyEngineIdentificationCompositeTest extends PhotonTestBase {

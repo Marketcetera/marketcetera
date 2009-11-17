@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  * Tests {@link FIXConverter}.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

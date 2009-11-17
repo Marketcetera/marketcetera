@@ -9,7 +9,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * A store for key-value pairs specific to a session.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

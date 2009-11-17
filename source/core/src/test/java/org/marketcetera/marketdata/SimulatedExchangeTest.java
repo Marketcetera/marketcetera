@@ -1945,7 +1945,7 @@ public class SimulatedExchangeTest
     *
     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
     * @version $Id$
-    * @since $Release$
+    * @since 2.0.0
     */
    private static class InstrumentState
    {
@@ -1982,7 +1982,7 @@ public class SimulatedExchangeTest
     *
     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
     * @version $Id$
-    * @since $Release$
+    * @since 2.0.0
     */
    private static class EventOrganizer
    {
@@ -2098,7 +2098,7 @@ public class SimulatedExchangeTest
         *
         * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
         * @version $Id$
-        * @since $Release$
+        * @since 2.0.0
         */
        private static enum RequestType
        {

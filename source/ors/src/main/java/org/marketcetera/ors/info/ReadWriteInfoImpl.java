@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>This class is not intended to be thread-safe.</p>
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

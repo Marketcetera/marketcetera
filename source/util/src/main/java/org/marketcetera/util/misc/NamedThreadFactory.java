@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class NamedThreadFactory implements ThreadFactory {

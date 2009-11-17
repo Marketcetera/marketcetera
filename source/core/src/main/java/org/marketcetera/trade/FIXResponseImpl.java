@@ -10,7 +10,7 @@ import quickfix.Message;
  * the sake of JAXB and is not intended for general use.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

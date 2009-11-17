@@ -28,7 +28,7 @@ import org.junit.runner.notification.RunListener;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 final class ScreenshotCaptureListener extends RunListener {
     /** The logger. */

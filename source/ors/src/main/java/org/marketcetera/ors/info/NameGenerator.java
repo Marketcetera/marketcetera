@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Integer#MAX_VALUE} names are generated.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

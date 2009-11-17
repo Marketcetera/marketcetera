@@ -34,7 +34,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public abstract class StrategyEngineConnectionImpl extends EObjectImpl

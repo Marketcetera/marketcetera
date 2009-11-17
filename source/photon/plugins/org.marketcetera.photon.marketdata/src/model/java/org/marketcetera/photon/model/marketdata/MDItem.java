@@ -25,7 +25,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDItem()
  * @model abstract="true"
  * @generated
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public interface MDItem extends EObject {

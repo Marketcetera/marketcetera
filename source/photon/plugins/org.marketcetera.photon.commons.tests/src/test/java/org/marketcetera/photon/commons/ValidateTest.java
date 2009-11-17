@@ -16,7 +16,7 @@ import org.marketcetera.photon.test.PhotonTestBase;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class ValidateTest extends PhotonTestBase {
 

@@ -25,7 +25,7 @@ import org.marketcetera.photon.test.AbstractUIRunner.UI;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 // see http://bugs.eclipse.org/231619
 @SuppressWarnings("restriction")

@@ -17,7 +17,7 @@ import org.marketcetera.trade.Equity;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class MultiplierCalculatorTest {
 

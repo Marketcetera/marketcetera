@@ -39,7 +39,7 @@ import org.marketcetera.util.misc.NamedThreadFactory;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public abstract class AbstractUIRunner extends BlockJUnit4ClassRunner {
 

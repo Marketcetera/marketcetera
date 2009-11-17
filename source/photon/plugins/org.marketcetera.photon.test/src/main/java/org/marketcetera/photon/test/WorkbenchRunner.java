@@ -20,7 +20,7 @@ import org.junit.runners.model.InitializationError;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public final class WorkbenchRunner extends AbstractUIRunner {
 

@@ -18,7 +18,7 @@ import org.marketcetera.photon.strategy.StrategyUI;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public final class Application implements IApplication {

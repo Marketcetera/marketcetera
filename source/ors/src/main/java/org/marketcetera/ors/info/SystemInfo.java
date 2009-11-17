@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * A store for system-wide key-value pairs.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

@@ -10,7 +10,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class EquityPositionKeyComparator extends InstrumentPositionKeyComparator<Equity> {

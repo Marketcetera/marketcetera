@@ -19,7 +19,7 @@ import quickfix.field.Symbol;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public abstract class InstrumentFromMessage extends DynamicInstrumentHandler<Message> {

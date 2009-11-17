@@ -11,7 +11,7 @@ import static org.marketcetera.marketdata.MarketDataRequest.*;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class MarketData extends Strategy {
     private static final String SYMBOLS = "AMZN,JAVA"; //Depends on MD - can be other symbols

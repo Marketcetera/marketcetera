@@ -21,7 +21,7 @@ import org.marketcetera.photon.commons.ui.ColorManager.IColorDescriptorProvider;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public abstract class EnumColorManagerTestBase<E extends Enum<E>> extends
         ColorManagerTestBase {

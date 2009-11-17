@@ -1,7 +1,7 @@
 # Sample commands for strategyAgent
 #
 # author:anshul@marketcetera.com
-# since $Release$
+# since 2.0.0
 # version: $Id$
 #
 # Create Module Command

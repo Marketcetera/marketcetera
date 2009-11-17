@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * JAXB marshalling.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

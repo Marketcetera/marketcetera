@@ -46,7 +46,7 @@ import java.util.concurrent.Callable;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class PerformanceTest {

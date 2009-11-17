@@ -34,7 +34,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: CreateEquityOrderFromQuote.java 10808 2009-10-12 21:33:18Z
  *          anshul $
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class CreateEquityOrderFromQuote extends AbstractHandler {

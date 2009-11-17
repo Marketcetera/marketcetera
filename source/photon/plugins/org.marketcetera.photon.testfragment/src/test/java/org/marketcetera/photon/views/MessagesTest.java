@@ -12,7 +12,7 @@ import org.marketcetera.util.l10n.MessageComparator;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: MessagesTest.java 10713 2009-08-30 09:08:28Z tlerios $
- * @since $Release$
+ * @since 2.0.0
  */
 public class MessagesTest {
 

@@ -24,7 +24,7 @@ import java.util.*;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 class SAClientImpl implements SAClient, EmitterAdapter {
