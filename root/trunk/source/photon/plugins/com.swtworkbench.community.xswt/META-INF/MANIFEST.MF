@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: XSWT Plugin
-Bundle-Version: 1.7.0
+Bundle-Version: 2.0.0
 Export-Package: com.swtworkbench.community.xswt,
  com.swtworkbench.community.xswt.codegen,
  com.swtworkbench.community.xswt.codegens,

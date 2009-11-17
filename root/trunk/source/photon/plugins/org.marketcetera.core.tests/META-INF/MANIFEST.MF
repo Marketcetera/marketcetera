@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.core.tests
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Marketcetera Core Tests
-Bundle-Version: 1.7.0
+Bundle-Version: 2.0.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.util-test;visibility:=reexport,
  org.marketcetera.core
@@ -30,4 +30,4 @@ Import-Package: junit.framework,
  org.hamcrest,
  org.junit,
  org.mockito
-Bundle-ClassPath: core-1.7.0-tests.jar
+Bundle-ClassPath: core-2.0.0-tests.jar
