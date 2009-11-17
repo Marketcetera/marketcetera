@@ -1010,38 +1010,108 @@ public class SimulatedExchangeTest
          */
         // prepare the expected top-of-book results
         expectedTopOfBook.addAll(Arrays.asList(new BookEntryTuple[] { 
+            /* 100 104.00 | 104.00 50 */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("100"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+            /* 50 104.00 | 104.00 50 */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("50"),
+                                                 BidEvent.class),
+                               new QuantityTuple(new BigDecimal("104.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
             /*  50 104.00 | */
             new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
                                                  new BigDecimal("50"),
                                                  BidEvent.class),
                                null),
-            /* 100 103.00 | */
-            new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
-                                                 new BigDecimal("100"),
-                                                 BidEvent.class),
-                               null),
-            /* 50 103.00 | */
-            new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+            /* 50 104.00 | 103.00 50 */
+            new BookEntryTuple(new QuantityTuple(new BigDecimal("104.00"),
                                                  new BigDecimal("50"),
                                                  BidEvent.class),
-                               null),
-            /* 100 102.00 | */
-            new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
-                                                 new BigDecimal("100"),
-                                                 BidEvent.class),
-                               null),
-           /* 50 102.00 | */
-           new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
-                                                new BigDecimal("50"),
+                               new QuantityTuple(new BigDecimal("103.00"),
+                                                 new BigDecimal("50"),
+                                                 AskEvent.class)),
+           /* 100 103.00 | 103.00 50 */
+           new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                                new BigDecimal("100"),
                                                 BidEvent.class),
-                              null),
-          /* 50 102.00 | 1000.00 10000 */
-           new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                              new QuantityTuple(new BigDecimal("103.00"),
                                                 new BigDecimal("50"),
-                                                BidEvent.class),
-                              new QuantityTuple(new BigDecimal("1000"),
-                                                new BigDecimal("1000"),
                                                 AskEvent.class)),
+          /* 100 103.00 | */
+          new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                               new BigDecimal("100"),
+                                               BidEvent.class),
+                             null),
+          /* 100 103.00 | 102.00 50 */
+          new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                               new BigDecimal("100"),
+                                               BidEvent.class),
+                             new QuantityTuple(new BigDecimal("102.00"),
+                                               new BigDecimal("50"),
+                                               AskEvent.class)),
+          /* 50 103.00 | 102.00 50  */
+          new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                               new BigDecimal("50"),
+                                               BidEvent.class),
+                             new QuantityTuple(new BigDecimal("102.00"),
+                                               new BigDecimal("50"),
+                                               AskEvent.class)),
+          /* 50 103.00 | */
+          new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                               new BigDecimal("50"),
+                                               BidEvent.class),
+                             null),
+          /* 50 103.00 | 101.00 50 */ 
+          new BookEntryTuple(new QuantityTuple(new BigDecimal("103.00"),
+                                               new BigDecimal("50"),
+                                               BidEvent.class),
+                             new QuantityTuple(new BigDecimal("101.00"),
+                                               new BigDecimal("50"),
+                                               AskEvent.class)),
+         /* 100 102.00 | 101.00 50 */ 
+         new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                              new BigDecimal("100"),
+                                              BidEvent.class),
+                            new QuantityTuple(new BigDecimal("101.00"),
+                                              new BigDecimal("50"),
+                                              AskEvent.class)),
+         /* 100 102.00 | */
+         new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                              new BigDecimal("100"),
+                                              BidEvent.class),
+                            null),
+         /* 100 102.00 | 100.00 50 */
+         new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                              new BigDecimal("100"),
+                                              BidEvent.class),
+                            new QuantityTuple(new BigDecimal("100.00"),
+                                              new BigDecimal("50"),
+                                              AskEvent.class)),
+         /* 50 102.00 | 100.00 50 */
+         new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                              new BigDecimal("50"),
+                                              BidEvent.class),
+                            new QuantityTuple(new BigDecimal("100.00"),
+                                              new BigDecimal("50"),
+                                              AskEvent.class)),
+         /* 50 102.00 | */
+         new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                              new BigDecimal("50"),
+                                              BidEvent.class),
+                            null),
+         /* 50 102.00 | 1000 1000 */
+         new BookEntryTuple(new QuantityTuple(new BigDecimal("102.00"),
+                                              new BigDecimal("50"),
+                                              BidEvent.class),
+                            new QuantityTuple(new BigDecimal("1000"),
+                                              new BigDecimal("1000"),
+                                              AskEvent.class)),
         }));
         // prepare the expected latest tick results
         List<QuantityTuple> expectedLatestTicks = new ArrayList<QuantityTuple>();
@@ -1391,6 +1461,32 @@ public class SimulatedExchangeTest
             TestCaseBase.setLevel(SimulatedExchange.class.getName(),
                                   Level.INFO);
         }
+    }
+    /**
+     * Tests the output of the exchange in random mode.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void randomModeOutput()
+            throws Exception
+    {
+        exchange.start();
+        // start the exchange in random mode
+        final AllEventsSubscriber all = new AllEventsSubscriber();
+        exchange.getTopOfBook(ExchangeRequestBuilder.newRequest().withInstrument(metc).create(),
+                              all);
+        // this block should actually take less than 30s - there are 2 new events/sec and every now and then
+        //  a trade will create a few extras
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return all.events.size() >= 60;
+            }
+        });
+        exchange.stop();
     }
     /**
      * Executes a test to make sure that the given <code>Instrument</code> and underlying <code>Instrument</code>
