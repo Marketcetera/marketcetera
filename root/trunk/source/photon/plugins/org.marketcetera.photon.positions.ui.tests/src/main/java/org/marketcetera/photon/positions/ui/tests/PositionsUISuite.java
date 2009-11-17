@@ -13,7 +13,7 @@ import org.marketcetera.photon.internal.positions.ui.PositionsViewGroupedTest;
  * Test suite for this bundle.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: StrategyEngineUISuite.java 10802 2009-10-07 21:00:55Z will $
+ * @version $Id$
  * @since 2.0.0
  */
 @RunWith(Suite.class)
