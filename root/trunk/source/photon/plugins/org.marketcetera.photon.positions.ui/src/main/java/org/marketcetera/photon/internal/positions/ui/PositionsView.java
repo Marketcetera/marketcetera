@@ -67,382 +67,395 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class PositionsView extends PageBookView implements IColumnProvider {
 
-	/**
-	 * Dummy part that allows us to take advantage of {@link PageBookView} infrastructure to support
-	 * switching between table and tree UI.
-	 * 
-	 * This technique was inspired by
-	 * org.eclipse.pde.internal.ui.views.dependencies.DependenciesView.
-	 */
-	@ClassVersion("$Id$")
-	private static enum PositionsPart implements IWorkbenchPart {
+    /**
+     * Dummy part that allows us to take advantage of {@link PageBookView} infrastructure to support
+     * switching between table and tree UI.
+     * 
+     * This technique was inspired by
+     * org.eclipse.pde.internal.ui.views.dependencies.DependenciesView.
+     */
+    @ClassVersion("$Id$")
+    private static enum PositionsPart implements IWorkbenchPart {
 
-		/**
-		 * Flat table UI.
-		 */
-		FLAT,
+        /**
+         * Flat table UI.
+         */
+        FLAT,
 
-		/**
-		 * Grouped tree UI.
-		 */
-		HIERARCHICAL;
+        /**
+         * Grouped tree UI.
+         */
+        HIERARCHICAL;
 
-		@Override
-		public void addPropertyListener(IPropertyListener listener) {
-		}
+        @Override
+        public void addPropertyListener(IPropertyListener listener) {
+        }
 
-		@Override
-		public void createPartControl(Composite parent) {
-		}
+        @Override
+        public void createPartControl(Composite parent) {
+        }
 
-		@Override
-		public void dispose() {
-		}
+        @Override
+        public void dispose() {
+        }
 
-		@Override
-		@SuppressWarnings("unchecked")
-		public Object getAdapter(Class adapter) {
-			return null;
-		}
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object getAdapter(Class adapter) {
+            return null;
+        }
 
-		@Override
-		public IWorkbenchPartSite getSite() {
-			return null;
-		}
+        @Override
+        public IWorkbenchPartSite getSite() {
+            return null;
+        }
 
-		@Override
-		public String getTitle() {
-			return null;
-		}
+        @Override
+        public String getTitle() {
+            return null;
+        }
 
-		@Override
-		public Image getTitleImage() {
-			return null;
-		}
+        @Override
+        public Image getTitleImage() {
+            return null;
+        }
 
-		@Override
-		public String getTitleToolTip() {
-			return null;
-		}
+        @Override
+        public String getTitleToolTip() {
+            return null;
+        }
 
-		@Override
-		public void removePropertyListener(IPropertyListener listener) {
-		}
+        @Override
+        public void removePropertyListener(IPropertyListener listener) {
+        }
 
-		@Override
-		public void setFocus() {
-		}
-	}
+        @Override
+        public void setFocus() {
+        }
+    }
 
-	/**
-	 * Changes the current page.
-	 */
-	@ClassVersion("$Id$")
-	public static final class ChangePageHandler extends AbstractHandler implements IHandler,
-			IExecutableExtension {
+    /**
+     * Changes the current page.
+     */
+    @ClassVersion("$Id$")
+    public static final class ChangePageHandler extends AbstractHandler implements IHandler,
+            IExecutableExtension {
 
-		private PositionsPart mPart;
+        private PositionsPart mPart;
 
-		@Override
-		public Object execute(ExecutionEvent event) throws ExecutionException {
-			PositionsView view = (PositionsView) HandlerUtil.getActivePart(event);
-			if (view != null && view.mPositionEngine.getValue() != null) {
-				view.showPart(mPart);
-			}
-			return null;
-		}
+        @Override
+        public Object execute(ExecutionEvent event) throws ExecutionException {
+            PositionsView view = (PositionsView) HandlerUtil.getActivePart(event);
+            if (view != null && view.mPositionEngine.getValue() != null) {
+                view.showPart(mPart);
+            }
+            return null;
+        }
 
-		@Override
-		public void setInitializationData(IConfigurationElement config, String propertyName,
-				Object data) throws CoreException {
-			mPart = PositionsPart.valueOf((String) data);
-		}
-	}
+        @Override
+        public void setInitializationData(IConfigurationElement config, String propertyName,
+                Object data) throws CoreException {
+            mPart = PositionsPart.valueOf((String) data);
+        }
+    }
 
-	/**
-	 * Toolbar filter box.
-	 */
-	@ClassVersion("$Id$")
-	public static final class ViewFilter extends WorkbenchWindowControlContribution {
+    /**
+     * Toolbar filter box.
+     */
+    @ClassVersion("$Id$")
+    public static final class ViewFilter extends WorkbenchWindowControlContribution {
 
-		@Override
-		protected Control createControl(Composite parent) {
-			Composite composite = new Composite(parent, SWT.NONE);
-			// insets keeps the box outline inside the toolbar area
-			composite.setLayout(new MigLayout("ins 1")); //$NON-NLS-1$
-			Label filterLabel = new Label(composite, SWT.NONE);
-			filterLabel.setText(Messages.POSITIONS_VIEW_FILTER__LABEL.getText());
-			FilterBox filter = new FilterBox(composite);
-			filter.addListener(new FilterBox.FilterChangeListener() {
+        @Override
+        protected Control createControl(Composite parent) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            // insets keeps the box outline inside the toolbar area
+            composite.setLayout(new MigLayout("ins 1")); //$NON-NLS-1$
+            Label filterLabel = new Label(composite, SWT.NONE);
+            filterLabel.setText(Messages.POSITIONS_VIEW_FILTER__LABEL.getText());
+            FilterBox filter = new FilterBox(composite);
+            filter.addListener(new FilterBox.FilterChangeListener() {
 
-				@Override
-				public void filterChanged(FilterChangeEvent event) {
-					PositionsView view = getView();
-					if (view != null) view.setFilterText(event.getFilterText());
-				}
-			});
-			return composite;
-		}
-	}
+                @Override
+                public void filterChanged(FilterChangeEvent event) {
+                    PositionsView view = getView();
+                    if (view != null) view.setFilterText(event.getFilterText());
+                }
+            });
+            return composite;
+        }
+    }
 
-	/*
-	 * memento keys for serialization
-	 */
-	private static final String LAST_PART_KEY = "defaultPart"; //$NON-NLS-1$
-	private static final String LAST_GROUPING_KEY_1 = "grouping1"; //$NON-NLS-1$
-	private static final String LAST_GROUPING_KEY_2 = "grouping2"; //$NON-NLS-1$
+    /*
+     * memento keys for serialization
+     */
+    private static final String LAST_PART_KEY = "defaultPart"; //$NON-NLS-1$
+    private static final String LAST_GROUPING_KEY_1 = "grouping1"; //$NON-NLS-1$
+    private static final String LAST_GROUPING_KEY_2 = "grouping2"; //$NON-NLS-1$
 
-	/*
-	 * remembers user choices
-	 */
-	private PositionsPart mLastPart = PositionsPart.FLAT;
-	private Grouping[] mLastGrouping = new Grouping[] { Grouping.Underlying, Grouping.Account };
+    /*
+     * remembers user choices
+     */
+    private PositionsPart mLastPart = PositionsPart.FLAT;
+    private Grouping[] mLastGrouping = new Grouping[] { Grouping.Underlying, Grouping.Account };
 
-	private final IObservableValue mPositionEngine = Activator.getDefault().getPositionEngine();
-	private Grouping[] mGrouping = null;
-	private String mFilterText = ""; //$NON-NLS-1$
-	private IMemento mMemento;
-	private MenuManager mMenuManager;
-	private IValueChangeListener mEngineListener;
+    private final IObservableValue mPositionEngine = Activator.getDefault().getPositionEngine();
+    private Grouping[] mGrouping = null;
+    private String mFilterText = ""; //$NON-NLS-1$
+    private IMemento mMemento;
+    private MenuManager mMenuManager;
+    private IValueChangeListener mEngineListener;
 
-	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException {
-		super.init(site, memento);
-		mMemento = memento;
-		// restore saved state, if any
-		if (memento != null) {
-			try {
-				String part = memento.getString(LAST_PART_KEY);
-				if (part != null) {
-					mLastPart = PositionsPart.valueOf(part);
-				}
-			} catch (IllegalArgumentException e) {
-				Messages.POSITIONS_VIEW_STATE_RESTORE_FAILURE.error(this, e);
-			}
-			try {
-				String one = memento.getString(LAST_GROUPING_KEY_1);
-				String two = memento.getString(LAST_GROUPING_KEY_2);
-				if (one != null && two != null) {
-					mLastGrouping = new Grouping[] { Grouping.valueOf(one), Grouping.valueOf(two) };
-				}
-			} catch (IllegalArgumentException e) {
-				Messages.POSITIONS_VIEW_STATE_RESTORE_FAILURE.error(this, e);
-			}
-		}
-		// both pages share a context menu
-		mMenuManager = new MenuManager();
-		site.registerContextMenu(mMenuManager, getSelectionProvider());
+    @Override
+    public void init(IViewSite site, IMemento memento) throws PartInitException {
+        super.init(site, memento);
+        mMemento = memento;
+        // restore saved state, if any
+        if (memento != null) {
+            try {
+                String part = memento.getString(LAST_PART_KEY);
+                if (part != null) {
+                    mLastPart = PositionsPart.valueOf(part);
+                }
+            } catch (IllegalArgumentException e) {
+                Messages.POSITIONS_VIEW_STATE_RESTORE_FAILURE.error(this, e);
+            }
+            try {
+                String one = memento.getString(LAST_GROUPING_KEY_1);
+                String two = memento.getString(LAST_GROUPING_KEY_2);
+                if (one != null && two != null) {
+                    mLastGrouping = new Grouping[] { Grouping.valueOf(one), Grouping.valueOf(two) };
+                }
+            } catch (IllegalArgumentException e) {
+                Messages.POSITIONS_VIEW_STATE_RESTORE_FAILURE.error(this, e);
+            }
+            /*
+             * Normally mGrouping gets set in showHierarchicalPage, either when
+             * the view is switched from flat to hierarchical mode, or when the
+             * position engine comes up and mLastPart is hierarchical. However,
+             * if the position engine is already available when the view is
+             * initializing, the last part will be bootstrapped and
+             * showHierarchicalPage isn't called, so mGrouping needs to be set
+             * here.
+             */
+            if (mLastPart == PositionsPart.HIERARCHICAL
+                    && mPositionEngine.getValue() != null) {
+                mGrouping = mLastGrouping;
+            }
+        }
+        // both pages share a context menu
+        mMenuManager = new MenuManager();
+        site.registerContextMenu(mMenuManager, getSelectionProvider());
 
-		// a listener that activates/deactivates the page when the position engine
-		// appears/disappears
-		mEngineListener = new IValueChangeListener() {
-			@Override
-			public void handleValueChange(ValueChangeEvent event) {
-				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						if (mPositionEngine.getValue() == null) {
-							mGrouping = null;
-							partClosed(getCurrentContributingPart());
-						} else {
-							showPart(mLastPart);
-						}
-					}
-				});
-				
-			}
-		};
-		mPositionEngine.addValueChangeListener(mEngineListener);
-	}
+        // a listener that activates/deactivates the page when the position engine
+        // appears/disappears
+        mEngineListener = new IValueChangeListener() {
+            @Override
+            public void handleValueChange(ValueChangeEvent event) {
+                PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+                    public void run() {
+                        if (mPositionEngine.getValue() == null) {
+                            mGrouping = null;
+                            partClosed(getCurrentContributingPart());
+                        } else {
+                            showPart(mLastPart);
+                        }
+                    }
+                });
+                
+            }
+        };
+        mPositionEngine.addValueChangeListener(mEngineListener);
+    }
 
-	@Override
-	public void saveState(IMemento memento) {
-		memento.putString(LAST_PART_KEY, mLastPart.name());
-		memento.putString(LAST_GROUPING_KEY_1, mLastGrouping[0].name());
-		memento.putString(LAST_GROUPING_KEY_2, mLastGrouping[1].name());
-		// allow individual pages to save state too
-		PageRec page = getPageRec(PositionsPart.FLAT);
-		if (page != null) ((PositionsViewPage) page.page).saveState(memento);
-		page = getPageRec(PositionsPart.HIERARCHICAL);
-		if (page != null) ((PositionsViewPage) page.page).saveState(memento);
-	}
+    @Override
+    public void saveState(IMemento memento) {
+        memento.putString(LAST_PART_KEY, mLastPart.name());
+        memento.putString(LAST_GROUPING_KEY_1, mLastGrouping[0].name());
+        memento.putString(LAST_GROUPING_KEY_2, mLastGrouping[1].name());
+        // allow individual pages to save state too
+        PageRec page = getPageRec(PositionsPart.FLAT);
+        if (page != null) ((PositionsViewPage) page.page).saveState(memento);
+        page = getPageRec(PositionsPart.HIERARCHICAL);
+        if (page != null) ((PositionsViewPage) page.page).saveState(memento);
+    }
 
-	@Override
-	public void dispose() {
-		// cleanup listener
-		mPositionEngine.removeValueChangeListener(mEngineListener);
-		super.dispose();
-	}
+    @Override
+    public void dispose() {
+        // cleanup listener
+        mPositionEngine.removeValueChangeListener(mEngineListener);
+        super.dispose();
+    }
 
-	@Override
-	protected boolean isImportant(IWorkbenchPart part) {
-		// We don't care about the active workbench part, just dummy parts "activated" by this view
-		return part instanceof PositionsPart;
-	}
+    @Override
+    protected boolean isImportant(IWorkbenchPart part) {
+        // We don't care about the active workbench part, just dummy parts "activated" by this view
+        return part instanceof PositionsPart;
+    }
 
-	@Override
-	public Control getColumnWidget() {
-		IPage currentPage = getCurrentPage();
-		if (currentPage instanceof PositionsViewPage) {
-			return ((PositionsViewPage) currentPage).getColumnWidget();
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public Control getColumnWidget() {
+        IPage currentPage = getCurrentPage();
+        if (currentPage instanceof PositionsViewPage) {
+            return ((PositionsViewPage) currentPage).getColumnWidget();
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	protected IWorkbenchPart getBootstrapPart() {
-		// only can bootstrap if the engine is available
-		return mPositionEngine.getValue() == null ? null : mLastPart;
-	}
+    @Override
+    protected IWorkbenchPart getBootstrapPart() {
+        // only can bootstrap if the engine is available
+        return mPositionEngine.getValue() == null ? null : mLastPart;
+    }
 
-	@Override
-	protected IPage createDefaultPage(PageBook book) {
-		UnavailablePage unavailablePage = new UnavailablePage();
-		unavailablePage.createControl(book);
-		return unavailablePage;
-	}
+    @Override
+    protected IPage createDefaultPage(PageBook book) {
+        UnavailablePage unavailablePage = new UnavailablePage();
+        unavailablePage.createControl(book);
+        return unavailablePage;
+    }
 
-	@Override
-	protected PageRec doCreatePage(IWorkbenchPart part) {
-		final IPageBookViewPage page;
-		switch ((PositionsPart) part) {
-		case FLAT:
-			page = new PositionsViewTablePage(this, mMemento);
-			break;
-		case HIERARCHICAL:
-			page = new PositionsViewTreePage(this, mMemento);
-			break;
-		default:
-			throw new AssertionError("Invalid part"); //$NON-NLS-1$
-		}
+    @Override
+    protected PageRec doCreatePage(IWorkbenchPart part) {
+        final IPageBookViewPage page;
+        switch ((PositionsPart) part) {
+        case FLAT:
+            page = new PositionsViewTablePage(this, mMemento);
+            break;
+        case HIERARCHICAL:
+            page = new PositionsViewTreePage(this, mMemento);
+            break;
+        default:
+            throw new AssertionError("Invalid part"); //$NON-NLS-1$
+        }
 
-		initPage(page);
-		page.createControl(getPageBook());
-		return new PageRec(part, page);
-	}
+        initPage(page);
+        page.createControl(getPageBook());
+        return new PageRec(part, page);
+    }
 
-	@Override
-	protected void doDestroyPage(IWorkbenchPart part, PageRec pageRecord) {
-		IPage page = pageRecord.page;
-		page.dispose();
-		pageRecord.dispose();
-	}
+    @Override
+    protected void doDestroyPage(IWorkbenchPart part, PageRec pageRecord) {
+        IPage page = pageRecord.page;
+        page.dispose();
+        pageRecord.dispose();
+    }
 
-	@Override
-	protected void showPageRec(PageRec pageRec) {
-		super.showPageRec(pageRec);
-		if (!(pageRec.page instanceof UnavailablePage)) {
-			installContextMenu();
-			((PositionsViewPage) pageRec.page).setFilterText(getFilterText());
-		}
-	}
+    @Override
+    protected void showPageRec(PageRec pageRec) {
+        super.showPageRec(pageRec);
+        if (!(pageRec.page instanceof UnavailablePage)) {
+            installContextMenu();
+            ((PositionsViewPage) pageRec.page).setFilterText(getFilterText());
+        }
+    }
 
-	/**
-	 * Adds the common context menu to the column widget.
-	 */
-	private void installContextMenu() {
-		MenuManager contextMenu = mMenuManager;
-		Control control = getColumnWidget();
-		Menu menu = contextMenu.createContextMenu(control);
-		control.setMenu(menu);
-	}
+    /**
+     * Adds the common context menu to the column widget.
+     */
+    private void installContextMenu() {
+        MenuManager contextMenu = mMenuManager;
+        Control control = getColumnWidget();
+        Menu menu = contextMenu.createContextMenu(control);
+        control.setMenu(menu);
+    }
 
-	/**
-	 * Sets the filter value.
-	 * 
-	 * NOTE: public access for testing only
-	 * 
-	 * @param filterText the filterText
-	 */
-	public void setFilterText(String filterText) {
-		mFilterText = filterText;
-		((PositionsViewPage) getCurrentPage()).setFilterText(filterText);
-	}
+    /**
+     * Sets the filter value.
+     * 
+     * NOTE: public access for testing only
+     * 
+     * @param filterText the filterText
+     */
+    public void setFilterText(String filterText) {
+        mFilterText = filterText;
+        ((PositionsViewPage) getCurrentPage()).setFilterText(filterText);
+    }
 
-	/**
-	 * @return the current filter text
-	 */
-	String getFilterText() {
-		return mFilterText;
-	}
+    /**
+     * @return the current filter text
+     */
+    String getFilterText() {
+        return mFilterText;
+    }
 
-	/**
-	 * @return the current grouping
-	 */
-	Grouping[] getGrouping() {
-		return mGrouping;
-	}
+    /**
+     * @return the current grouping
+     */
+    Grouping[] getGrouping() {
+        return mGrouping;
+    }
 
-	/**
-	 * Shows the specified part.
-	 * 
-	 * @param part
-	 *            the part
-	 */
-	void showPart(PositionsPart part) {
-		switch (part) {
-		case HIERARCHICAL:
-			showHierarchicalPage();
-			break;
-		case FLAT:
-			showFlatPage();
-			break;
-		default:
-			throw new AssertionError();
-		}
-	}
+    /**
+     * Shows the specified part.
+     * 
+     * @param part
+     *            the part
+     */
+    void showPart(PositionsPart part) {
+        switch (part) {
+        case HIERARCHICAL:
+            showHierarchicalPage();
+            break;
+        case FLAT:
+            showFlatPage();
+            break;
+        default:
+            throw new AssertionError();
+        }
+    }
 
-	/**
-	 * Shows the flat page.
-	 */
-	void showFlatPage() {
-		mGrouping = null;
-		mLastPart = PositionsPart.FLAT;
-		partClosed(PositionsPart.HIERARCHICAL);
-		partActivated(PositionsPart.FLAT);
-	}
+    /**
+     * Shows the flat page.
+     */
+    void showFlatPage() {
+        mGrouping = null;
+        mLastPart = PositionsPart.FLAT;
+        partClosed(PositionsPart.HIERARCHICAL);
+        partActivated(PositionsPart.FLAT);
+    }
 
-	/**
-	 * Shows the hierarchical page with the the default grouping.
-	 */
-	void showHierarchicalPage() {
-		showHierarchicalPage(mLastGrouping);
-	}
+    /**
+     * Shows the hierarchical page with the the default grouping.
+     */
+    void showHierarchicalPage() {
+        showHierarchicalPage(mLastGrouping);
+    }
 
-	/**
-	 * Shows the hierarchical page with the provided grouping.
-	 * 
-	 * NOTE: public access for testing
-	 * 
-	 * @param grouping
-	 *            the grouping
-	 */
-	public void showHierarchicalPage(Grouping[] grouping) {
-		Validate.noNullElements(grouping);
-		Validate.isTrue(grouping.length == 2);
-		if (!Arrays.equals(mGrouping, grouping)) {
-			mLastPart = PositionsPart.HIERARCHICAL;
-			mGrouping = grouping;
-			mLastGrouping = grouping;
-			// dispose the last tree page if it exists to free up resources
-			partClosed(PositionsPart.HIERARCHICAL);
-			partActivated(PositionsPart.HIERARCHICAL);
-		}
-	}
+    /**
+     * Shows the hierarchical page with the provided grouping.
+     * 
+     * NOTE: public access for testing
+     * 
+     * @param grouping
+     *            the grouping
+     */
+    public void showHierarchicalPage(Grouping[] grouping) {
+        Validate.noNullElements(grouping);
+        Validate.isTrue(grouping.length == 2);
+        if (!Arrays.equals(mGrouping, grouping)) {
+            mLastPart = PositionsPart.HIERARCHICAL;
+            mGrouping = grouping;
+            mLastGrouping = grouping;
+            // dispose the last tree page if it exists to free up resources
+            partClosed(PositionsPart.HIERARCHICAL);
+            partActivated(PositionsPart.HIERARCHICAL);
+        }
+    }
 
-	/**
-	 * Convenience method to get the active positions view instance.
-	 * 
-	 * @return the active PositionsView instance, or null if there is either no active part or the
-	 *         active part is not a PositionsView
-	 */
-	static PositionsView getView() {
-		IWorkbenchWindow active = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		if (active == null) return null;
-		IWorkbenchPage page = active.getActivePage();
-		if (page == null) return null;
-		IWorkbenchPart part = page.getActivePart();
-		if (!(part instanceof PositionsView)) return null;
-		return (PositionsView) part;
-	}
+    /**
+     * Convenience method to get the active positions view instance.
+     * 
+     * @return the active PositionsView instance, or null if there is either no active part or the
+     *         active part is not a PositionsView
+     */
+    static PositionsView getView() {
+        IWorkbenchWindow active = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (active == null) return null;
+        IWorkbenchPage page = active.getActivePage();
+        if (page == null) return null;
+        IWorkbenchPart part = page.getActivePart();
+        if (!(part instanceof PositionsView)) return null;
+        return (PositionsView) part;
+    }
 }
