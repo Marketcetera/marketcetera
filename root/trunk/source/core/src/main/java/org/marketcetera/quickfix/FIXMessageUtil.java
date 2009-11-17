@@ -336,6 +336,7 @@ public class FIXMessageUtil {
      * Use cases: an order comes in missing a Side, so we need to create an ExecutionReport
      * that's a rejection, and need to extract all the other fields (ClOrdId, size, etc)
      * which may or may not be present since the order is malformed
+     * <strong>warning: ignores groups</strong>
      *
      * @param outgoingMessage The message whose fields need to be filled.
      * @param existingMessage The message whose fields need to be copied.
@@ -367,6 +368,7 @@ public class FIXMessageUtil {
      * Use cases: an order comes in missing a Side, so we need to create an ExecutionReport
      * that's a rejection, and need to extract all the other fields (ClOrdId, size, etc)
      * which may or may not be present since the order is malformed
+     * <strong>warning: ignores groups</strong>
      *
      * @param outgoingMessage The message whose fields need to be filled.
      * @param existingMessage The message whose fields need to be copied.
@@ -381,28 +383,32 @@ public class FIXMessageUtil {
                                                      boolean onlyCopyRequiredFields,
                                                      Set<Integer> inclusionSet)
     {
+        String msgType=null;
         try {
-            String msgType = outgoingMessage.getHeader().getString(MsgType.FIELD);
-            for (int fieldInt = 1; fieldInt < MAX_FIX_FIELDS; fieldInt++){
-                if(inclusionSet != null && !(inclusionSet.contains(fieldInt))) {
-                    continue;
-                }
-                if ((!onlyCopyRequiredFields || dict.isRequiredField(msgType,
-						fieldInt))
-						&& existingMessage.isSetField(fieldInt)
-						&& !outgoingMessage.isSetField(fieldInt)
-                        && dict.isMsgField(msgType, fieldInt)) {
-					try {
-						outgoingMessage.setField(existingMessage
-								.getField(new StringField(fieldInt)));
-					} catch (FieldNotFound e) {
-						// do nothing and ignore
-					}
-				}
-            }
-
+            msgType=outgoingMessage.getHeader().getString(MsgType.FIELD);
         } catch (FieldNotFound ex) {
             Messages.FIX_OUTGOING_NO_MSGTYPE.error(LOGGER_NAME, ex);
+            return;
+        }
+
+        Iterator<Field<?>> fieldItr=existingMessage.iterator();
+        while (fieldItr.hasNext()) {
+            Field<?> field = fieldItr.next();
+            int fieldInt=field.getTag();
+            if(inclusionSet != null && !(inclusionSet.contains(fieldInt))) {
+                continue;
+            }
+            if ((!onlyCopyRequiredFields || dict.isRequiredField(msgType,
+                                                                 fieldInt))
+                && !outgoingMessage.isSetField(fieldInt)
+                && dict.isMsgField(msgType, fieldInt)) {
+                try {
+                    outgoingMessage.setField(existingMessage
+                                             .getField(new StringField(fieldInt)));
+                } catch (FieldNotFound e) {
+                    // do nothing and ignore
+                }
+            }
         }
     }
     /**
