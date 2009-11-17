@@ -804,9 +804,9 @@ public class SimulatedExchange
                                        this,
                                        event);
                 // process the event
-                List<Event> eventsToPublish = book.process(event);
+                book.process(event);
                 // settle the book as a result of this change
-                eventsToPublish.addAll(settleBook(book));
+                List<MarketDataEvent> eventsToPublish = settleBook(book);
                 // note that the events from processing the event and settling the book are all published in one
                 //  batch.  this has functional implications because it means that several interim top-of-book states
                 //  may be compressed into one.  this is the most correct behavior because an un-settled book
@@ -825,9 +825,9 @@ public class SimulatedExchange
     /**
      * Publishes the given events to interested subscribers.
      *
-     * @param inEventsToPublish a <code>List&lt;Event&gt;</code> value
+     * @param inEventsToPublish a <code>List&lt;? extends Event&gt;</code> value
      */
-    private void publishEvents(List<Event> inEventsToPublish)
+    private void publishEvents(List<? extends Event> inEventsToPublish)
     {
         SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                "{} publishing events: {}", //$NON-NLS-1$
@@ -1381,6 +1381,7 @@ public class SimulatedExchange
                     newEvents.add(QuoteEventBuilder.delete(displacedEvent));
                 }
             }
+            publishEvents(newEvents);
             SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                    "{} processed {} and produced for publication: {}", //$NON-NLS-1$
                                    this,
