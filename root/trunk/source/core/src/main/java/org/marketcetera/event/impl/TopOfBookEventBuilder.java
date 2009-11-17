@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @NotThreadSafe
 @ClassVersion("$Id$")

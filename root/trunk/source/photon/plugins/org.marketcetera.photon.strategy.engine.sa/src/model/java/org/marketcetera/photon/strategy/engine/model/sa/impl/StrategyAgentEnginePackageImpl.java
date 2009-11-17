@@ -25,7 +25,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * An implementation of the model <b>Package</b>.
  * <!-- end-user-doc -->
  * @generated
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class StrategyAgentEnginePackageImpl extends EPackageImpl implements

@@ -30,7 +30,7 @@ import java.lang.management.ManagementFactory;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 class SAServiceImpl extends ServiceBaseImpl<ClientSession> implements SAService {

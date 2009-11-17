@@ -33,7 +33,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: InternalStrategyAgentEngine.java 10795 2009-10-06 20:05:38Z
  *          will $
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {

@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class ModuleURNXmlAdapterTest {

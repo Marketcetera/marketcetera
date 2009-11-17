@@ -12,7 +12,7 @@ import org.marketcetera.util.log.I18NMessage1P;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public interface Messages {

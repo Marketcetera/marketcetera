@@ -3,7 +3,7 @@
 #
 # author:Toli Kuznets
 # author:anshul@marketcetera.com
-# since $Release$
+# since 2.0.0
 # version: $Id$
 #
 #

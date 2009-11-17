@@ -28,7 +28,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.strategy.engine.model.sa.StrategyAgentEnginePackage
  * @generated
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class StrategyAgentEngineSwitch<T> {

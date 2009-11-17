@@ -9,7 +9,7 @@ import quickfix.SessionID;
  * Application#fromApp(Message,SessionID)}.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

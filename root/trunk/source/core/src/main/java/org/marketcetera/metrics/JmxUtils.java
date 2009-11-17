@@ -17,7 +17,7 @@ import javax.management.*;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  * @see ThreadedMetricMXBean
  */
 @ClassVersion("$Id$")

@@ -22,7 +22,7 @@ import java.util.LinkedList;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public abstract class PositionsTestBase<T extends Instrument> extends ReportsTestBase {

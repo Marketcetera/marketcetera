@@ -8,7 +8,7 @@ package org.marketcetera.photon.test;
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: ExpectedIllegalStateException.java 10713 2009-08-30 09:08:28Z
  *          tlerios $
- * @since $Release$
+ * @since 2.0.0
  */
 public abstract class ExpectedIllegalStateException extends
         ExpectedFailure<IllegalStateException> {

@@ -27,7 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDTopOfBook()
  * @model
  * @generated
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public interface MDTopOfBook extends MDItem {

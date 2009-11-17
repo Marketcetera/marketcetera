@@ -26,7 +26,7 @@ import com.google.common.collect.ImmutableList;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class DynamicInstrumentFunctionSelector<T,S extends DynamicInstrumentHandler<T>> {

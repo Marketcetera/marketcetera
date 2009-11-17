@@ -8,7 +8,7 @@ import static org.marketcetera.marketdata.MarketDataRequest.Content;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class ProcessData extends Strategy {
     private static final String [] SYMBOLS = {"AMZN", "JAVA"}; // Depends on MD - can be other symbols

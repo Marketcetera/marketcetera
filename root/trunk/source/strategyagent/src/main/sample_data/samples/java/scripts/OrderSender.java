@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class OrderSender extends Strategy {
     private static final String SYMBOLS = "AMZN"; // Depends on MD - can be other symbols

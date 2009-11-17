@@ -20,7 +20,7 @@ import com.google.common.collect.Collections2;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public final class StartAllHandler extends

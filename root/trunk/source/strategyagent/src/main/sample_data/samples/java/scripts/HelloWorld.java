@@ -7,7 +7,7 @@ import org.marketcetera.strategy.java.Strategy;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class HelloWorld extends Strategy {
     /**

@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.sa.StrategyAgentEnginePackage#getStrategyAgentEngine()
  * @model
  * @generated
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public interface StrategyAgentEngine extends StrategyEngine {

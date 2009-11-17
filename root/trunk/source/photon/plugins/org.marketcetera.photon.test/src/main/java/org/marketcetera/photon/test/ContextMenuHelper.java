@@ -28,7 +28,7 @@ import org.hamcrest.Matcher;
  * 
  * @author Stefan Seelmann
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class ContextMenuHelper {
 

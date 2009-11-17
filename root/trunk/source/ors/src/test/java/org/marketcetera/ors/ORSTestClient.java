@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
  * A wrapper around a production client, for use in ORS testing.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

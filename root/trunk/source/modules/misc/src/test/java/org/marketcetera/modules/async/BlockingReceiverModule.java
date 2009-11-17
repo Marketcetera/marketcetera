@@ -17,7 +17,7 @@ import java.util.concurrent.Semaphore;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class BlockingReceiverModule extends Module implements DataReceiver {

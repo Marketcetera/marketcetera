@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * {@link #getText()}.</p>
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

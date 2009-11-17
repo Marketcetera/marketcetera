@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  *
  * @author tlerios@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 
 /* $License$ */

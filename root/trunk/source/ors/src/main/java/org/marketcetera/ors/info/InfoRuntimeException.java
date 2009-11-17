@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * management.
  * 
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

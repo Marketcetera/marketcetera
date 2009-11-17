@@ -8,7 +8,7 @@ import quickfix.SessionID;
  * Application#onLogon(SessionID)}.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.model.marketdata.MDPackage
  * @generated
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class MDSwitch<T> {

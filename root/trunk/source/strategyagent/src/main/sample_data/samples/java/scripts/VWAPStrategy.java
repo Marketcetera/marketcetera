@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class VWAPStrategy extends Strategy {
     public static final String [] SYMBOLS = {"AMZN","GOOG","MSFT"}; // Depends on MD - can be other symbols

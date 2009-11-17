@@ -16,7 +16,7 @@ import com.google.inject.ImplementedBy;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 @ImplementedBy(SharedOptionMarketstatManager.class)

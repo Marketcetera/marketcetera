@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class EquityReportsHistoryTest extends ReportHistoryTestBase<Equity> {

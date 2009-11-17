@@ -47,7 +47,7 @@ import org.springframework.beans.factory.BeanCreationException;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class RemoteDataEmitterTest extends RemoteEmitterTestBase {

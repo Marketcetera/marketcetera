@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * An implementation of the model <b>Factory</b>.
  * <!-- end-user-doc -->
  * @generated
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class StrategyAgentEngineFactoryImpl extends EFactoryImpl implements

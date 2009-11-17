@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public final class ConditionsFactory {

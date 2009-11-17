@@ -14,7 +14,7 @@ import org.marketcetera.client.OrderValidationException;
  * 
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public abstract class InstrumentValidationHandler<I extends Instrument>

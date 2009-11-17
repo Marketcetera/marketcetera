@@ -26,7 +26,7 @@ import org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineCon
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: StrategyEngineCoreTestUtil.java 10744 2009-09-12 00:12:39Z will
  *          $
- * @since $Release$
+ * @since 2.0.0
  */
 public class StrategyEngineCoreTestUtil {
 

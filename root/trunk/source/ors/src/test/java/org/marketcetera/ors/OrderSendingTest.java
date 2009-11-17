@@ -22,7 +22,7 @@ import org.marketcetera.core.instruments.InstrumentFromMessage;
  * Tests sending of orders for various instrument types.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

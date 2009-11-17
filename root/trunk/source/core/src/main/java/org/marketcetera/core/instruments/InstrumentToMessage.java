@@ -29,7 +29,7 @@ import quickfix.field.Symbol;
  * 
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public abstract class InstrumentToMessage<I extends Instrument> extends InstrumentFunctionHandler<I> {

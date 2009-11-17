@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage
  * @generated
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public interface StrategyEngineCoreFactory extends EFactory {

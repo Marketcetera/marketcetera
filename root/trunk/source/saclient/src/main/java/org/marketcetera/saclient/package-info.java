@@ -13,7 +13,7 @@
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @XmlSchema(namespace = "http://marketcetera.org/types/saclient")
 package org.marketcetera.saclient;

@@ -28,7 +28,7 @@ import com.google.common.collect.Lists;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @NotThreadSafe
 @ClassVersion("$Id$")

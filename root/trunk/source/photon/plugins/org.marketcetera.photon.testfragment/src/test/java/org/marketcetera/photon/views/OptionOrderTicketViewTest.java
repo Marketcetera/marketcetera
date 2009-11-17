@@ -24,7 +24,7 @@ import org.marketcetera.trade.Side;
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: OptionOrderTicketViewTest.java 10861 2009-11-09 04:29:18Z will
  *          $
- * @since $Release$
+ * @since 2.0.0
  */
 public class OptionOrderTicketViewTest extends
         OrderTicketViewTestBase<IOptionOrderTicket, OptionOrderTicketModel> {

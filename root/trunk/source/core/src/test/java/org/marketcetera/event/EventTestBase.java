@@ -26,7 +26,7 @@ import org.marketcetera.trade.SecurityType;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class EventTestBase
 {
@@ -672,7 +672,7 @@ public class EventTestBase
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.0.0
      */
     private static class UnsupportedInstrument
             extends Instrument

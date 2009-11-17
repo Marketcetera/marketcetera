@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  *
  * @author anshul@marketcetera.com
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
 public class OptionToMessage extends InstrumentToMessage<Option> {

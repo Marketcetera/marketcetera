@@ -14,7 +14,7 @@ import org.marketcetera.photon.internal.positions.ui.PositionsViewGroupedTest;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: StrategyEngineUISuite.java 10802 2009-10-07 21:00:55Z will $
- * @since $Release$
+ * @since 2.0.0
  */
 @RunWith(Suite.class)
 @SuiteClasses( { MessagesTest.class, PositionsViewFlatTest.class, PositionsViewGroupedTest.class })

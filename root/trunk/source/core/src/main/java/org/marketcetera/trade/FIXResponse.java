@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * cannot be wrapped by any other FIX Agnostic wrapper.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 

@@ -34,7 +34,7 @@ import org.marketcetera.photon.test.ThreadRealm;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.0.0
  */
 public class DataBindingContextCaveatTest extends PhotonTestBase {
     @Test

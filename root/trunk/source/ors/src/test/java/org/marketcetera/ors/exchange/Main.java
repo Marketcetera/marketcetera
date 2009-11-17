@@ -9,7 +9,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * A miniscule exchange: command-line execution.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.0.0
  * @version $Id$
  */
 
