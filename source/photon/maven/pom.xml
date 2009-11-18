@@ -37,18 +37,18 @@
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>photon-bundle</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>photon-rcptarget</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
         <type>pom</type>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>photon-test-bundle</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
