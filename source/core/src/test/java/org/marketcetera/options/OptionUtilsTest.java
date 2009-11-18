@@ -1,8 +1,13 @@
 package org.marketcetera.options;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.marketcetera.trade.OptionType.*;
+import static org.junit.Assert.assertThat;
+import static org.marketcetera.trade.OptionType.Call;
+import static org.marketcetera.trade.OptionType.Put;
+import static org.marketcetera.trade.OptionType.Unknown;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
@@ -15,6 +20,15 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 
+/* $License$ */
+
+/**
+ * Tests {@link OptionUtils}.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
 public class OptionUtilsTest {
     
     @Test
@@ -53,10 +67,36 @@ public class OptionUtilsTest {
 	
 	@Test
 	public void testGetNextUSEquityOptionExpiration() throws Exception {
+	    // TODO: this tests nothing
 		long currentTimeMillis = System.currentTimeMillis();
 		Date date = OptionUtils.getNextUSEquityOptionExpiration();
 //		assertTrue(currentTimeMillis < date.getTime());
 	}
+	
+	@Test
+    public void testNormalizeOptionExpiry() throws Exception {
+	    assertNormalized("200911", "20091121");
+	    assertNormalized("201001", "20100116");
+	    assertNormalized("201005", "20100522");
+        assertNormalized("203712", "20371219");
+        assertNormalized("20371212", null);
+        assertNormalized("abc", null);
+        assertNormalized("2009xx", null);
+        assertNormalized("xxxx05", null);
+        assertNormalized("200900", null);
+        assertNormalized("200913", null);
+        new ExpectedFailure<NullPointerException>() {
+            @Override
+            protected void run() throws Exception {
+                OptionUtils.normalizeUSEquityOptionExpiry(null);
+            }
+        };
+    }
+
+    private void assertNormalized(String expiry, String expected) {
+        assertThat(OptionUtils.normalizeUSEquityOptionExpiry(expiry), is(expected));
+    }
+    
     /**
      * Tests {@link OptionUtils#getOsiOptionFromString(String)}.
      *

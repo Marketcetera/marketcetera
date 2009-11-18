@@ -8,7 +8,18 @@ import java.util.regex.Pattern;
 
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
+/**
+ * Various option related utilities. 
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$")
 public class OptionUtils {
 
 	/**
@@ -16,14 +27,17 @@ public class OptionUtils {
 	 * @param month one of Calendar.JANUARY - Calendar.DECEMBER
 	 */
 	public static final Date getUSEquityOptionExpiration(int month, int year){
-		Calendar cal = GregorianCalendar.getInstance(); //i18n_date
-		cal.set(year, month, 1);
-		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-		int firstFridayOffset = (Calendar.FRIDAY - dayOfWeek + 7)%7;
-
-		cal.add(Calendar.DAY_OF_MONTH, firstFridayOffset + 15); // two weeks and a day
+		Calendar cal = getSaturdayAfterThirdFriday(month, year);
 		return cal.getTime();
 	}
+
+    private static Calendar getSaturdayAfterThirdFriday(int month, int year) {
+        Calendar cal = new GregorianCalendar(year, month, 1);
+		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+		int firstFridayOffset = (Calendar.FRIDAY - dayOfWeek + 7)%7;
+		cal.add(Calendar.DAY_OF_MONTH, firstFridayOffset + 15); // two weeks and a day
+        return cal;
+    }
 	
 	public static final Date getNextUSEquityOptionExpiration(){
 		Calendar cal = GregorianCalendar.getInstance();    //i18n_datetime
@@ -36,7 +50,34 @@ public class OptionUtils {
 		} 
 		return candidate;
 	}
-	/**
+
+    /**
+     * Adds day to a YYYYMM expiry string. The day is the Saturday after the
+     * third Friday of the month (US standard rules). If the provided expiry is
+     * not YYYYMM, or cannot be normalized for any reason, null is returned.
+     * 
+     * @param expiry an option expiry string
+     * @return the expiry in YYYYMMDD, or null
+     */
+    public static String normalizeUSEquityOptionExpiry(String expiry) {
+        if (expiry.length() == 6) {
+            try {
+                int expiryYear = Integer.parseInt(expiry.substring(0, 4));
+                int expiryMonth = Integer.parseInt(expiry.substring(4));
+                if (expiryMonth > 0 && expiryMonth < 13) {
+                    Calendar cal = getSaturdayAfterThirdFriday(expiryMonth - 1,
+                            expiryYear);
+                    int expiryDay = cal.get(Calendar.DAY_OF_MONTH);
+                    return String.format("%s%02d", expiry, expiryDay);
+                }
+            } catch (NumberFormatException e) {
+                // unsupported format, return expiry as is
+            }
+        }
+        return null;
+    }
+
+    /**
 	 * Gets the <code>OptionType</code> value for the given character
 	 * interpreted as an OSI-compliant symbol value.
 	 *
