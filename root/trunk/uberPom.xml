@@ -25,6 +25,7 @@
 
   <properties>
     <mvn.public.package>org.marketcetera</mvn.public.package>
+    <mvn.project.version>2.0.0</mvn.project.version>
     <mvn.javase.version>6</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
     <mvn.spring.version>2.5.2</mvn.spring.version>
@@ -41,57 +42,57 @@
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>client</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>core</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>marketdata-bogus</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>misc</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>strategy</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>util</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>cep-esper</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>remote-receiver</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>remote-emitter</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>saclient</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
       </dependency>
 
       <!-- Compile: QuickFIX/J. -->
@@ -407,27 +408,27 @@
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>core</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>util-test</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>client</artifactId>
-        <version>[${project.version}]</version>
+        <version>[${mvn.project.version}]</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
