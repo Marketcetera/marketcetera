@@ -1,9 +1,7 @@
 package org.marketcetera.options;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.marketcetera.trade.Option;
@@ -22,15 +20,6 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class OptionUtils {
 
-	/**
-	 * 
-	 * @param month one of Calendar.JANUARY - Calendar.DECEMBER
-	 */
-	public static final Date getUSEquityOptionExpiration(int month, int year){
-		Calendar cal = getSaturdayAfterThirdFriday(month, year);
-		return cal.getTime();
-	}
-
     private static Calendar getSaturdayAfterThirdFriday(int month, int year) {
         Calendar cal = new GregorianCalendar(year, month, 1);
 		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
@@ -38,18 +27,6 @@ public class OptionUtils {
 		cal.add(Calendar.DAY_OF_MONTH, firstFridayOffset + 15); // two weeks and a day
         return cal;
     }
-	
-	public static final Date getNextUSEquityOptionExpiration(){
-		Calendar cal = GregorianCalendar.getInstance();    //i18n_datetime
-		long currentTime = cal.getTimeInMillis();
-		int currentMonth = cal.get(Calendar.MONTH);
-		int currentYear = cal.get(Calendar.YEAR);
-		Date candidate = getUSEquityOptionExpiration(currentMonth, currentYear);
-		if (currentTime > candidate.getTime()){
-			candidate = getUSEquityOptionExpiration(currentMonth+1, currentYear);
-		} 
-		return candidate;
-	}
 
     /**
      * Adds day to a YYYYMM expiry string. The day is the Saturday after the
@@ -75,6 +52,32 @@ public class OptionUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Normalizes the supplied expiry date with a day if it doesn't
+     * include the day, ie. if it's in YYYYMM format. If the supplied
+     * expiry doesn't need to be normalized or cannot be normalized, a
+     * null value is returned back.
+     * <p>
+     * This method looks for a {@link OptionExpiryNormalizer custom} option
+     * expiry normalization implementation. If one is found, that implementation
+     * is used to carry out the option expiry normalization. If no such
+     * implementation is found the
+     * {@link #normalizeUSEquityOptionExpiry(String) US option expiry}
+     * normalization is applied. 
+     *  
+     * @param inExpiry the option expiry string.
+     *
+     * @return the expiry in YYYYMMDD, if the supplied expiry was normalized,
+     * null if it wasn't.
+     */
+    public static String normalizeEquityOptionExpiry(String inExpiry) {
+        OptionExpiryNormalizer normalizer = getNormalizer();
+        if(normalizer != null) {
+            return normalizer.normalizeEquityOptionExpiry(inExpiry);
+        }
+        return normalizeUSEquityOptionExpiry(inExpiry);
     }
 
     /**
@@ -224,8 +227,82 @@ public class OptionUtils {
         return extrapolatedYear;
     }
     /**
+     * Load the custom option expiry normalizer if any.
+     *
+     * @return the custom option expiry normalizer if found, null otherwise.
+     */
+    private static OptionExpiryNormalizer getNormalizer() {
+        if (sNormalizerLoaded) {
+            return sOptionExpiryNormalizer;
+        }
+        synchronized (OptionUtils.class) {
+            if (!sNormalizerLoaded) {
+                Class<OptionExpiryNormalizer> normalizerClass = OptionExpiryNormalizer.class;
+                //Use the context class loader when unit testing to facilitate unit testing
+                /*
+                * The following section of code uses the classloader for this jar
+                * for loading the custom loader in a production install.
+                * It is written to use the thread context classloader within
+                * a unit test run to facilitate testing of this code from within
+                * a unit test.
+                * It is not desirable to use the context classloader in production
+                * as it might yield different results depending on the context
+                * it is invoked from.
+                */
+                ClassLoader cl = sIsTest
+                        ? Thread.currentThread().getContextClassLoader()
+                        : normalizerClass.getClassLoader();
+                OptionExpiryNormalizer normalizer = null;
+                try {
+                    ServiceLoader<OptionExpiryNormalizer> loader = ServiceLoader.load(
+                            normalizerClass, cl);
+                    Iterator<OptionExpiryNormalizer> iter = loader.iterator();
+                    if (iter.hasNext()) {
+                        normalizer = iter.next();
+                    }
+                } catch (Exception e) {
+                    Messages.LOG_ERROR_LOADING_OPTION_EXPIRY_NORMALIZER.warn(OptionUtils.class, e);
+                } catch (ServiceConfigurationError e) {
+                    Messages.LOG_ERROR_LOADING_OPTION_EXPIRY_NORMALIZER.warn(OptionUtils.class, e);
+                } finally {
+                    if (normalizer != null) {
+                        Messages.LOG_OPTION_EXPIRY_NORMALIZER_CUSTOMIZED.info(
+                                OptionUtils.class,
+                                normalizer.getClass().getName());
+                    }
+                    sOptionExpiryNormalizer = normalizer;
+                    sNormalizerLoaded = true;
+                }
+            }
+            return sOptionExpiryNormalizer;
+        }
+    }
+
+    /**
+     * This method is provided to facilitate testing. It's not meant to be
+     * used outside of unit-testing.
+     */
+    static void resetNormalizerLoaded() {
+        sNormalizerLoaded = false;
+    }
+
+    /**
+     * Sets up the class for testing. When setup for testing,
+     * the {@link #getNormalizer()} method uses the Thread context classloader
+     * to load the custom option normalizer instead of the current class'
+     * classloader.
+     * <p>
+     * This method is only meant to be invoked from a unit test.
+     */
+    static void setupForTest() {
+        sIsTest = true;
+    }
+    /**
      * this pattern does a basic syntax check of a symbol to see if it complies with the OSI
      * note that this pattern does not check the expiry date to see if it is completely valid, for example Feb 31st would be valid
      */
     private static final Pattern OSI_SYMBOL_PATTERN = Pattern.compile(".{6}\\d{2}(0\\d|1[0-2])(0[1-9]|[12]\\d|3[01])(C|P)\\d{5}\\d{3}"); //$NON-NLS-1$
+    private static volatile OptionExpiryNormalizer sOptionExpiryNormalizer;
+    private static volatile boolean sNormalizerLoaded = false;
+    private static volatile boolean sIsTest = false;
 }

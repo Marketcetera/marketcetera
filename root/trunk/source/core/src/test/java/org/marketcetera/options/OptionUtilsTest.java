@@ -30,50 +30,14 @@ import org.marketcetera.trade.OptionType;
  * @since $Release$
  */
 public class OptionUtilsTest {
-    
+    	
+    /**
+     * Verifies {@link OptionUtils#normalizeEquityOptionExpiry(String)} &
+     * {@link OptionUtils#normalizeUSEquityOptionExpiry(String)}.
+     *
+     * @throws Exception if there were unexpected errors
+     */
     @Test
-	public void testGetUSEquityOptionExpiration() throws Exception {
-		assertExpiration(20, OptionUtils.getUSEquityOptionExpiration(Calendar.JANUARY, 2007));
-		assertExpiration(17, OptionUtils.getUSEquityOptionExpiration(Calendar.FEBRUARY, 2007));
-		assertExpiration(17, OptionUtils.getUSEquityOptionExpiration(Calendar.MARCH, 2007));
-		assertExpiration(21, OptionUtils.getUSEquityOptionExpiration(Calendar.APRIL, 2007));
-		assertExpiration(19, OptionUtils.getUSEquityOptionExpiration(Calendar.MAY, 2007));
-		assertExpiration(16, OptionUtils.getUSEquityOptionExpiration(Calendar.JUNE, 2007));
-		assertExpiration(21, OptionUtils.getUSEquityOptionExpiration(Calendar.JULY, 2007));
-		assertExpiration(18, OptionUtils.getUSEquityOptionExpiration(Calendar.AUGUST, 2007));
-		assertExpiration(22, OptionUtils.getUSEquityOptionExpiration(Calendar.SEPTEMBER, 2007));
-		assertExpiration(20, OptionUtils.getUSEquityOptionExpiration(Calendar.OCTOBER, 2007));
-		assertExpiration(17, OptionUtils.getUSEquityOptionExpiration(Calendar.NOVEMBER, 2007));
-		assertExpiration(22, OptionUtils.getUSEquityOptionExpiration(Calendar.DECEMBER, 2007));
-		assertExpiration(19, OptionUtils.getUSEquityOptionExpiration(Calendar.JANUARY, 2008));
-		assertExpiration(16, OptionUtils.getUSEquityOptionExpiration(Calendar.FEBRUARY, 2008));
-		assertExpiration(22, OptionUtils.getUSEquityOptionExpiration(Calendar.MARCH, 2008));
-		assertExpiration(19, OptionUtils.getUSEquityOptionExpiration(Calendar.APRIL, 2008));
-		assertExpiration(17, OptionUtils.getUSEquityOptionExpiration(Calendar.MAY, 2008));
-		assertExpiration(21, OptionUtils.getUSEquityOptionExpiration(Calendar.JUNE, 2008));
-		assertExpiration(19, OptionUtils.getUSEquityOptionExpiration(Calendar.JULY, 2008));
-		assertExpiration(16, OptionUtils.getUSEquityOptionExpiration(Calendar.AUGUST, 2008));
-		assertExpiration(20, OptionUtils.getUSEquityOptionExpiration(Calendar.SEPTEMBER, 2008));
-		assertExpiration(18, OptionUtils.getUSEquityOptionExpiration(Calendar.OCTOBER, 2008));
-		assertExpiration(22, OptionUtils.getUSEquityOptionExpiration(Calendar.NOVEMBER, 2008));
-		assertExpiration(20, OptionUtils.getUSEquityOptionExpiration(Calendar.DECEMBER, 2008));
-	}
-
-	private void assertExpiration(int dayOfMonth, Date equityOptionExpiration) {
-		Calendar cal = GregorianCalendar.getInstance();
-		cal.setTime(equityOptionExpiration);
-		assertEquals(dayOfMonth, cal.get(Calendar.DAY_OF_MONTH));
-	}
-	
-	@Test
-	public void testGetNextUSEquityOptionExpiration() throws Exception {
-	    // TODO: this tests nothing
-		long currentTimeMillis = System.currentTimeMillis();
-		Date date = OptionUtils.getNextUSEquityOptionExpiration();
-//		assertTrue(currentTimeMillis < date.getTime());
-	}
-	
-	@Test
     public void testNormalizeOptionExpiry() throws Exception {
 	    assertNormalized("200911", "20091121");
 	    assertNormalized("201001", "20100116");
@@ -81,6 +45,9 @@ public class OptionUtilsTest {
         assertNormalized("203712", "20371219");
         assertNormalized("20371212", null);
         assertNormalized("abc", null);
+        assertNormalized("", null);
+        assertNormalized("  ", null);
+        assertNormalized("      ", null);
         assertNormalized("2009xx", null);
         assertNormalized("xxxx05", null);
         assertNormalized("200900", null);
@@ -91,10 +58,17 @@ public class OptionUtilsTest {
                 OptionUtils.normalizeUSEquityOptionExpiry(null);
             }
         };
+        new ExpectedFailure<NullPointerException>() {
+            @Override
+            protected void run() throws Exception {
+                OptionUtils.normalizeEquityOptionExpiry(null);
+            }
+        };
     }
 
     private void assertNormalized(String expiry, String expected) {
         assertThat(OptionUtils.normalizeUSEquityOptionExpiry(expiry), is(expected));
+        assertThat(OptionUtils.normalizeEquityOptionExpiry(expiry), is(expected));
     }
     
     /**
@@ -453,7 +427,7 @@ public class OptionUtilsTest {
                 new BigDecimal("99999.999"));
     }
     /**
-     * Tests {@link OptionType#getInstanceForOSIValue(char)}.
+     * Tests {@link OptionUtils#getOptionTypeForOSICharacter(char)}.
      *
      * @throws Exception if an unexpected error occurs
      */
