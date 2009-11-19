@@ -122,7 +122,7 @@ public class EmbeddedConnectionTest extends
         final Strategy strategy = createStrategyToDeploy();
         strategy.setLanguage("ABC");
         new ExpectedFailure<I18NException>(
-                "The strategy module could not translate \"ABC\" to a valid language type.") {
+                "The embedded engine supports Ruby strategies only.") {
             @Override
             protected void run() throws Exception {
                 fixture.deploy(strategy);

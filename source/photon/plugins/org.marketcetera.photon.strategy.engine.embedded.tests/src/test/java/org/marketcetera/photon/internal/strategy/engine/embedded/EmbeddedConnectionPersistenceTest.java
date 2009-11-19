@@ -54,7 +54,7 @@ public class EmbeddedConnectionPersistenceTest extends EmbeddedConnectionTest {
         super.testDeployWithParameters();
         assertThat(mPersistenceService.getPersisted().size(), is(1));
         assertStrategy(mPersistenceService.getPersisted().get(0), "strat2",
-                "MyStrategy2", "JAVA", getTempScript().getPath(), true,
+                "MyStrategy2", "RUBY", getTempScript().getPath(), true,
                 ImmutableMap.of("abc", "xyz", "123", "abc"));
     }
 

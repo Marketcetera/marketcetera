@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.emf.common.util.EList;
 import org.marketcetera.core.Util;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.commons.ExceptionUtils;
@@ -233,8 +234,16 @@ public abstract class AbstractStrategyEngineConnection extends
         ExceptionUtils.launderedGet(getGUIExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                getEngine().getDeployedStrategies()
-                        .removeAll(removedStrategies);
+                /*
+                 * Cannot call
+                 * getDeployedStrategies().removeAll(removedStrategies) due to
+                 * Eclipse bug. See note on
+                 * StrategyEngine#getDeployedStrategies().
+                 */
+                EList<DeployedStrategy> deployedStrategies = getEngine().getDeployedStrategies();
+                for (DeployedStrategy toRemove : removedStrategies) {
+                    deployedStrategies.remove(toRemove);
+                }
             }
         }));
 

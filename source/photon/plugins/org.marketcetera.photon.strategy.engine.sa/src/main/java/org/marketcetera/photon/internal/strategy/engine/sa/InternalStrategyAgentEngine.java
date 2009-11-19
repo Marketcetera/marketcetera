@@ -178,6 +178,10 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
             public void run() {
                 setConnection(null);
                 setConnectionState(ConnectionState.DISCONNECTED);
+                /*
+                 * Cannot call getDeployedStrategies().clear() due to Eclipse
+                 * bug. See note on StrategyEngine#getDeployedStrategies().
+                 */
                 for (Iterator<?> iterator = getDeployedStrategies().iterator(); iterator
                         .hasNext();) {
                     iterator.next();

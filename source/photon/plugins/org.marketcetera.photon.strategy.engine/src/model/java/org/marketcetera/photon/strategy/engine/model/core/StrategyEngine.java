@@ -5,6 +5,8 @@
  */
 package org.marketcetera.photon.strategy.engine.model.core;
 
+import java.util.List;
+
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
@@ -151,11 +153,13 @@ public interface StrategyEngine extends EObject {
      * It is bidirectional and its opposite is '{@link org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy#getEngine <em>Engine</em>}'.
      * <!-- begin-user-doc -->
      * <p>
-     * <b>WARNING:</b> Do not call {@link List#clear()} on the returned list if
-     * the object is bound to a UI using EMF Data Binding due to due to <a
+     * <b>WARNING:</b> Do not call {@link List#clear()} or
+     * {@link List#removeAll(java.util.Collection)} on the returned list if the
+     * object is bound to a UI using EMF Data Binding due to due to <a
      * href="http://bugs.eclipse.org/291641">http://bugs.eclipse.org/291641</a>.
      * </p>
      * <!-- end-user-doc -->
+     * 
      * @return the value of the '<em>Deployed Strategies</em>' reference list.
      * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyEngine_DeployedStrategies()
      * @see org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy#getEngine
