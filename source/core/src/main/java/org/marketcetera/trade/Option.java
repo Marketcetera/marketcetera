@@ -11,11 +11,21 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.options.OptionUtils;
 
 /* $License$ */
 
 /**
  * Identifies an option.
+ * <p>
+ * Note that if the option expiry specifies the expiry date in the format
+ * YYYYMM, an augmented form of the expiry is also stored as an attribute
+ * of the option. The {@link #getAugmentedExpiry() augmented expiry} is used
+ * for {@link #hashCode()} and {@link #equals(Object)} methods in preference
+ * to the specified {@link #getExpiry() expiry}.
+ * <p>
+ * See {@link OptionUtils#normalizeEquityOptionExpiry(String)} for details
+ * on how the expiry value is augmented. 
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -31,6 +41,8 @@ public class Option extends Instrument {
     private final OptionType mType;
 
     private final String mExpiry;
+
+    private final String mAugmentedExpiry;
 
     private final BigDecimal mStrikePrice;
 
@@ -59,6 +71,7 @@ public class Option extends Instrument {
         mSymbol = symbol;
         mType = type;
         mExpiry = expiry;
+        mAugmentedExpiry = OptionUtils.normalizeEquityOptionExpiry(mExpiry);
         strikePrice = strikePrice.stripTrailingZeros();
         if(strikePrice.scale() < 0) {
             //reset the scale if the number is a multiple of 10
@@ -74,6 +87,7 @@ public class Option extends Instrument {
         mSymbol = null;
         mType = null;
         mExpiry = null;
+        mAugmentedExpiry = null;
         mStrikePrice = null;
     }
 
@@ -108,6 +122,20 @@ public class Option extends Instrument {
     }
 
     /**
+     * Returns the augmented option expiry.
+     * <p>
+     * The augmented expiry is available if the supplied option
+     * expiry doesn't include the expiry day, otherwise it is null.
+     *
+     * @return the augmented expiry, if the expiry was augmented, null otherwise.
+     * 
+     * @see OptionUtils#normalizeEquityOptionExpiry(String) 
+     */
+    public String getAugmentedExpiry() {
+        return mAugmentedExpiry;
+    }
+
+    /**
      * Returns the option strike price.
      * 
      * @return the option strike price, never null
@@ -129,7 +157,9 @@ public class Option extends Instrument {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + mExpiry.hashCode();
+        result = prime * result + (mAugmentedExpiry == null
+                ? mExpiry.hashCode()
+                : mAugmentedExpiry.hashCode());
         result = prime * result + mStrikePrice.hashCode();
         result = prime * result + mSymbol.hashCode();
         result = prime * result + mType.hashCode();
@@ -148,19 +178,28 @@ public class Option extends Instrument {
             return false;
         }
         Option other = (Option) obj;
+        String expiry = mAugmentedExpiry == null
+                ? mExpiry
+                : mAugmentedExpiry;
+        String otherExpiry = other.mAugmentedExpiry == null
+                ? other.mExpiry
+                : other.mAugmentedExpiry;
         return mSymbol.equals(other.mSymbol) && mType.equals(other.mType)
-                && mExpiry.equals(other.mExpiry)
-                && mStrikePrice.equals(other.mStrikePrice);
+                && mStrikePrice.equals(other.mStrikePrice)
+                && expiry.equals(otherExpiry);
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("symbol", mSymbol) //$NON-NLS-1$
                 .append("type", mType) //$NON-NLS-1$
                 .append("expiry", mExpiry) //$NON-NLS-1$
-                .append("strikePrice", mStrikePrice) //$NON-NLS-1$
-                .toString();
+                .append("strikePrice", mStrikePrice); //$NON-NLS-1$
+        if(mAugmentedExpiry != null) {
+            builder.append("augmentedExpiry", mAugmentedExpiry);  //$NON-NLS-1$
+        }
+        return builder.toString();
     }
     private static final long serialVersionUID = 1L;
 }
