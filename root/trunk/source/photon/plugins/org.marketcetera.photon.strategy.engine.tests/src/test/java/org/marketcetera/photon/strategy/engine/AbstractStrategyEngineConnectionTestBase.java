@@ -209,13 +209,13 @@ public abstract class AbstractStrategyEngineConnectionTestBase extends
         Strategy strategy = createStrategy("strat2");
         strategy.setScriptPath(getTempScript().getPath());
         strategy.setClassName("MyStrategy2");
-        strategy.setLanguage("JAVA");
+        strategy.setLanguage("RUBY");
         strategy.setRouteOrdersToServer(true);
         strategy.getParameters().put("abc", "xyz");
         strategy.getParameters().put("123", "abc");
         DeployedStrategy deployed = fixture.deploy(strategy);
         assertDeployedStrategy(deployed, fixture.getEngine(),
-                StrategyState.STOPPED, "strat2", "MyStrategy2", "JAVA",
+                StrategyState.STOPPED, "strat2", "MyStrategy2", "RUBY",
                 mTempScript.getPath(), true, ImmutableMap.of("abc", "xyz",
                         "123", "abc"));
     }
@@ -229,10 +229,10 @@ public abstract class AbstractStrategyEngineConnectionTestBase extends
         Strategy strategy = createStrategy("strat3");
         strategy.setScriptPath(url);
         strategy.setClassName("Clazz123");
-        strategy.setLanguage("JAVA");
+        strategy.setLanguage("RUBY");
         DeployedStrategy deployed = fixture.deploy(strategy);
         assertDeployedStrategy(deployed, fixture.getEngine(),
-                StrategyState.STOPPED, "strat3", "Clazz123", "JAVA", url,
+                StrategyState.STOPPED, "strat3", "Clazz123", "RUBY", url,
                 false, null);
         // there should also be a debug message
         assertLastEvent(

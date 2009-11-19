@@ -23,8 +23,10 @@ import org.marketcetera.photon.strategy.engine.AbstractStrategyEngineConnection;
 import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
+import org.marketcetera.strategy.Language;
 import org.marketcetera.strategy.StrategyMXBean;
 import org.marketcetera.strategy.StrategyModuleFactory;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -94,6 +96,10 @@ public class EmbeddedConnection extends AbstractStrategyEngineConnection {
     @Override
     protected ModuleURN doDeploy(Strategy strategy, File script)
             throws Exception {
+        if (!Language.RUBY.name().equals(strategy.getLanguage())) {
+            throw new I18NException(
+                    Messages.EMBEDDED_CONNECTION_UNSUPPORTED_LANGUAGE);
+        }
         return mModuleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
                 strategy.getInstanceName(), strategy.getClassName(), strategy
                         .getLanguage(), script, getProperties(strategy),

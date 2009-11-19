@@ -1,0 +1,24 @@
+<project default="init">
+    <description>
+        Initializes a photon workspace with useful things (samples, local engine configuration).
+    </description>
+  <property name="sourceWorkspace" location="initWorkspace"/>
+  <property name="samples" location="../../../strategyagent/src/main/sample_data/samples"/>
+  <property name="javaSamples" location="${samples}/java/scripts"/>
+  <property name="rubySamples" location="${samples}/ruby/scripts"/>
+  <!-- assumes workspace folder is a sibling of the metc checkout (dev env) -->
+  <property name="targetWorkspace" location="../../../../../runtime-photon.product"/>
+  
+  <target name="init">
+    <echo message="Copying from ${sourceWorkspace} to ${targetWorkspace}"/>
+    <copy todir="${targetWorkspace}" overwrite="true">
+      <fileset dir="${sourceWorkspace}"/>
+    </copy>
+    <copy todir="${targetWorkspace}/ActiveScripts/Samples/java" overwrite="true">
+      <fileset dir="${javaSamples}"/>
+    </copy>
+    <copy todir="${targetWorkspace}/ActiveScripts/Samples/ruby" overwrite="true">
+      <fileset dir="${rubySamples}"/>
+    </copy>
+  </target>
+</project>

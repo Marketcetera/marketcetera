@@ -97,7 +97,7 @@ public class EmbeddedEngineTest {
         final DeployedStrategy strat = createDeployedStrategy(instanceName);
         strat.setScriptPath(script.getPath());
         strat.setClassName("EmbeddedEngineTestStrategy");
-        strat.setLanguage("JAVA");
+        strat.setLanguage("RUBY");
         return strat;
     }
 

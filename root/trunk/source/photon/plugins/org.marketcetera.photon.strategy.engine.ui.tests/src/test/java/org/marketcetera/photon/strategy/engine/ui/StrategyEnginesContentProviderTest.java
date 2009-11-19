@@ -8,6 +8,8 @@ import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEn
 import static org.marketcetera.photon.strategy.engine.model.core.test.StrategyEngineCoreTestUtil.createEngine;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.list.WritableList;
@@ -24,6 +26,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
 import org.marketcetera.photon.strategy.engine.model.core.Strategy;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.ui.tests.StrategyEngineTreeTestHelper;
@@ -152,14 +155,35 @@ public class StrategyEnginesContentProviderTest extends PhotonTestBase {
     public void testClear() throws Exception {
         SWTBot bot = new SWTBot();
         SWTBotTree tree = bot.tree();
-        assertThat(tree.rowCount(), is(2));
+        SWTBotTreeItem engine1 = tree.getAllItems()[0];
+        engine1.expand();
+        assertThat(engine1.rowCount(), is(2));
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Exception {
                 mEngine1.getDeployedStrategies().clear();
             }
         });
-        assertThat(tree.rowCount(), is(0));
+        assertThat(engine1.rowCount(), is(0));
+    }
+
+    @Test
+    @Ignore("until Eclipse bug is fixed, see EMFPropertyListenerCaveatTest")
+    public void testRemoveAll() throws Exception {
+        SWTBot bot = new SWTBot();
+        SWTBotTree tree = bot.tree();
+        SWTBotTreeItem engine1 = tree.getAllItems()[0];
+        engine1.expand();
+        assertThat(engine1.rowCount(), is(2));
+        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+            @Override
+            public void run() throws Exception {
+                List<DeployedStrategy> deployedStrategies = new ArrayList<DeployedStrategy>(
+                        mEngine1.getDeployedStrategies());
+                deployedStrategies.removeAll(deployedStrategies);
+            }
+        });
+        assertThat(engine1.rowCount(), is(0));
     }
 
     @Test
