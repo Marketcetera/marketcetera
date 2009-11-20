@@ -1,11 +1,15 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import static org.ops4j.peaberry.Peaberry.osgiModule;
+import static org.ops4j.peaberry.Peaberry.service;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.internal.marketdata.DataFlowManager.MarketDataExecutor;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
@@ -68,10 +72,13 @@ public class Activator extends Plugin {
                     bind(IMarketDataRequestSupport.class).toInstance(
                             new MarketDataRequestSupport(
                                     useFineGrainedMarketDataForOptions));
+                    bind(UnderlyingSymbolSupport.class).toProvider(
+                            service(UnderlyingSymbolSupport.class).single()
+                                    .direct());
                 }
             };
-            mMarketDataManager = Guice.createInjector(module).getInstance(
-                    MarketDataManager.class);
+            mMarketDataManager = Guice.createInjector(osgiModule(context),
+                    module).getInstance(MarketDataManager.class);
             // service is unregistered during stop
             context.registerService(IMarketDataManager.class.getName(),
                     mMarketDataManager, null);

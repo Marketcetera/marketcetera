@@ -179,6 +179,8 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         mLogoutServiceTracker = new ServiceTracker(context,
                 ILogoutService.class.getName(), null);
         mLogoutServiceTracker.open();
+        context.registerService(UnderlyingSymbolSupport.class.getName(),
+                mUnderlyingSymbolSupport, null);
     }
 
     public void initOrderTickets() {
