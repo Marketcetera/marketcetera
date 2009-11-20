@@ -236,4 +236,16 @@ public class SharedOptionLatestTickManagerTest
         mFixture.stopFlow(mKey1);
     }
 
+    @Test
+    public void testOptionEquivalence() {
+        Option mOption1aWithDay = new Option("IBM", "20090117",
+                BigDecimal.TEN, OptionType.Put);
+        // start flow
+        mFixture.startFlow(mKey1);
+        // emit an event for each option
+        emit(createEvent(mOption1aWithDay, 10, 7, 4));
+        assertTick(mItem1.get(mOption1a), mOption1a, 10, 7, 4);
+        // finish
+        mFixture.stopFlow(mKey1);
+    }
 }

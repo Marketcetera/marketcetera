@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
@@ -38,6 +39,7 @@ import org.marketcetera.trade.OptionType;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.MapMaker;
+import com.google.inject.Provider;
 
 /* $License$ */
 
@@ -61,7 +63,10 @@ public class MarketDataTest {
     private ISharedOptionMarketstatManager mSharedOptionMarketstatManager;
     private Factory mDepthOfBookFactory;
     private IMarketDataRequestSupport mMarketDataRequestAdapter;
+    private UnderlyingSymbolSupport mUnderlyingSymbolSupport;
+    private Provider<UnderlyingSymbolSupport> mUnderlyingProvider;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void before() {
         mMockLatestTickManager = mock(ILatestTickManager.class);
@@ -88,12 +93,16 @@ public class MarketDataTest {
         mSharedOptionLatestTickManager = mock(ISharedOptionLatestTickManager.class);
         mSharedOptionMarketstatManager = mock(ISharedOptionMarketstatManager.class);
         mMarketDataRequestAdapter = mock(IMarketDataRequestSupport.class);
+        mUnderlyingSymbolSupport = mock(UnderlyingSymbolSupport.class);
+        mUnderlyingProvider = mock(Provider.class);
+        when(mUnderlyingProvider.get()).thenReturn(mUnderlyingSymbolSupport);
         when(mMarketDataRequestAdapter.useFineGrainedMarketDataForOptions())
                 .thenReturn(true);
         mFixture = new MarketData(mMockLatestTickManager,
                 mMockTopOfBookManager, mMockMarketstatManager,
                 mDepthOfBookFactory, mSharedOptionLatestTickManager,
-                mSharedOptionMarketstatManager, mMarketDataRequestAdapter);
+                mSharedOptionMarketstatManager, mMarketDataRequestAdapter,
+                mUnderlyingProvider);
     }
 
     @Test
@@ -105,7 +114,7 @@ public class MarketDataTest {
                         mMockMarketstatManager, mDepthOfBookFactory,
                         mSharedOptionLatestTickManager,
                         mSharedOptionMarketstatManager,
-                        mMarketDataRequestAdapter);
+                        mMarketDataRequestAdapter, mUnderlyingProvider);
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -115,7 +124,7 @@ public class MarketDataTest {
                         mMockMarketstatManager, mDepthOfBookFactory,
                         mSharedOptionLatestTickManager,
                         mSharedOptionMarketstatManager,
-                        mMarketDataRequestAdapter);
+                        mMarketDataRequestAdapter, mUnderlyingProvider);
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -125,7 +134,7 @@ public class MarketDataTest {
                         null, mDepthOfBookFactory,
                         mSharedOptionLatestTickManager,
                         mSharedOptionMarketstatManager,
-                        mMarketDataRequestAdapter);
+                        mMarketDataRequestAdapter, mUnderlyingProvider);
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -135,7 +144,7 @@ public class MarketDataTest {
                         mMockMarketstatManager, null,
                         mSharedOptionLatestTickManager,
                         mSharedOptionMarketstatManager,
-                        mMarketDataRequestAdapter);
+                        mMarketDataRequestAdapter, mUnderlyingProvider);
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -144,7 +153,7 @@ public class MarketDataTest {
                 new MarketData(mMockLatestTickManager, mMockTopOfBookManager,
                         mMockMarketstatManager, mDepthOfBookFactory, null,
                         mSharedOptionMarketstatManager,
-                        mMarketDataRequestAdapter);
+                        mMarketDataRequestAdapter, mUnderlyingProvider);
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -153,7 +162,7 @@ public class MarketDataTest {
                 new MarketData(mMockLatestTickManager, mMockTopOfBookManager,
                         mMockMarketstatManager, mDepthOfBookFactory,
                         mSharedOptionLatestTickManager, null,
-                        mMarketDataRequestAdapter);
+                        mMarketDataRequestAdapter, mUnderlyingProvider);
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -162,7 +171,18 @@ public class MarketDataTest {
                 new MarketData(mMockLatestTickManager, mMockTopOfBookManager,
                         mMockMarketstatManager, mDepthOfBookFactory,
                         mSharedOptionLatestTickManager,
-                        mSharedOptionMarketstatManager, null);
+                        mSharedOptionMarketstatManager, null,
+                        mUnderlyingProvider);
+            }
+        };
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run() throws Exception {
+                new MarketData(mMockLatestTickManager, mMockTopOfBookManager,
+                        mMockMarketstatManager, mDepthOfBookFactory,
+                        mSharedOptionLatestTickManager,
+                        mSharedOptionMarketstatManager,
+                        mMarketDataRequestAdapter, null);
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -178,7 +198,7 @@ public class MarketDataTest {
                             }
                         }, mSharedOptionLatestTickManager,
                         mSharedOptionMarketstatManager,
-                        mMarketDataRequestAdapter);
+                        mMarketDataRequestAdapter, mUnderlyingProvider);
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -282,19 +302,9 @@ public class MarketDataTest {
      */
     @Test
     public void testGetLatestTickWithSharedOptionFlows() {
-        when(mMarketDataRequestAdapter.useFineGrainedMarketDataForOptions())
-                .thenReturn(false);
-        mFixture = new MarketData(mMockLatestTickManager,
-                mMockTopOfBookManager, mMockMarketstatManager,
-                mDepthOfBookFactory, mSharedOptionLatestTickManager,
-                mSharedOptionMarketstatManager, mMarketDataRequestAdapter);
         new SharedReferenceCountTestTemplate<MDLatestTickImpl, SharedOptionLatestTickKey, ISharedOptionLatestTickManager>(
                 new SharedOptionLatestTickKey(new Equity("IBM")),
-                new SharedOptionLatestTickKey(new Equity("METC")), new Option(
-                        "IBM", "200910", BigDecimal.ONE, OptionType.Put),
-                new Option("IBM", "200910", BigDecimal.ONE, OptionType.Call),
-                new Option("METC", "200910", BigDecimal.ONE, OptionType.Put),
-                mSharedOptionLatestTickManager) {
+                new SharedOptionLatestTickKey(new Equity("METC")), mSharedOptionLatestTickManager) {
             @Override
             MDLatestTickImpl createItem(Option option) {
                 MDLatestTickImpl item = new MDLatestTickImpl();
@@ -405,19 +415,9 @@ public class MarketDataTest {
      */
     @Test
     public void testGetMarketstatWithSharedOptionFlows() {
-        when(mMarketDataRequestAdapter.useFineGrainedMarketDataForOptions())
-                .thenReturn(false);
-        mFixture = new MarketData(mMockLatestTickManager,
-                mMockTopOfBookManager, mMockMarketstatManager,
-                mDepthOfBookFactory, mSharedOptionLatestTickManager,
-                mSharedOptionMarketstatManager, mMarketDataRequestAdapter);
         new SharedReferenceCountTestTemplate<MDMarketstatImpl, SharedOptionMarketstatKey, ISharedOptionMarketstatManager>(
                 new SharedOptionMarketstatKey(new Equity("IBM")),
-                new SharedOptionMarketstatKey(new Equity("METC")), new Option(
-                        "IBM", "200910", BigDecimal.ONE, OptionType.Put),
-                new Option("IBM", "200910", BigDecimal.ONE, OptionType.Call),
-                new Option("METC", "200910", BigDecimal.ONE, OptionType.Put),
-                mSharedOptionMarketstatManager) {
+                new SharedOptionMarketstatKey(new Equity("METC")), mSharedOptionMarketstatManager) {
             @Override
             MDMarketstatImpl createItem(Option option) {
                 MDMarketstatImpl item = new MDMarketstatImpl();
@@ -546,8 +546,32 @@ public class MarketDataTest {
 
     private abstract class SharedReferenceCountTestTemplate<T, K extends Key, M extends IDataFlowManager<Map<Option, T>, K>> {
 
-        public SharedReferenceCountTestTemplate(K key1, K key2,
-                Option option1a, Option option1b, Option option2, M manager) {
+        public SharedReferenceCountTestTemplate(K ibmKey, K metcKey, M manager) {
+            when(mMarketDataRequestAdapter.useFineGrainedMarketDataForOptions())
+                    .thenReturn(false);
+            mFixture = new MarketData(mMockLatestTickManager,
+                    mMockTopOfBookManager, mMockMarketstatManager,
+                    mDepthOfBookFactory, mSharedOptionLatestTickManager,
+                    mSharedOptionMarketstatManager, mMarketDataRequestAdapter,
+                    mUnderlyingProvider);
+            Option option1a = new Option("IBM", "200910", BigDecimal.ONE,
+                    OptionType.Put);
+            Option option1b = new Option("IBM", "200910", BigDecimal.ONE,
+                    OptionType.Call);
+            Option option2 = new Option("MEC", "200910", BigDecimal.ONE,
+                    OptionType.Put);
+            /*
+             * Return null the first time to test graceful fallback to
+             * option.getSymbol.
+             */
+            when(mUnderlyingProvider.get()).thenReturn(null).thenReturn(
+                    mUnderlyingSymbolSupport);
+            when(mUnderlyingSymbolSupport.getUnderlying(option1a)).thenReturn(
+                    "IBM");
+            when(mUnderlyingSymbolSupport.getUnderlying(option1b)).thenReturn(
+                    "IBM");
+            when(mUnderlyingSymbolSupport.getUnderlying(option2)).thenReturn(
+                    "METC");
             Function<Option, T> computer = new Function<Option, T>() {
                 @Override
                 public T apply(Option from) {
@@ -556,12 +580,12 @@ public class MarketDataTest {
             };
             Map<Option, T> map1 = new MapMaker().makeComputingMap(computer);
             Map<Option, T> map2 = new MapMaker().makeComputingMap(computer);
-            when(manager.getItem(key1)).thenReturn(map1);
-            when(manager.getItem(key2)).thenReturn(map2);
+            when(manager.getItem(ibmKey)).thenReturn(map1);
+            when(manager.getItem(metcKey)).thenReturn(map2);
             // get a reference
             IMarketDataReference<? extends MDItem> ref1 = getReferenceAndValidate(option1a);
             // start flow should have been called
-            verify(manager).startFlow(key1);
+            verify(manager).startFlow(ibmKey);
             // the option should exist in the map
             assertMap(map1, option1a);
             // get another reference under the same key
@@ -585,23 +609,23 @@ public class MarketDataTest {
             // map should not change
             assertMap(map1, option1a, option1b);
             // stop flow not called yet
-            verify(manager, never()).stopFlow(key1);
+            verify(manager, never()).stopFlow(ibmKey);
             ref2.dispose();
             ref4.dispose();
             // now stop flow called
-            verify(manager).stopFlow(key1);
+            verify(manager).stopFlow(ibmKey);
             IMarketDataReference<? extends MDItem> ref5 = getReferenceAndValidate(option1a);
             // start flow called a second time
-            verify(manager, times(2)).startFlow(key1);
+            verify(manager, times(2)).startFlow(ibmKey);
             IMarketDataReference<? extends MDItem> ref6 = getReferenceAndValidate(option2);
-            verify(manager).startFlow(key2);
+            verify(manager).startFlow(metcKey);
             // verify both maps
             assertMap(map1, option1a);
             assertMap(map2, option2);
             ref5.dispose();
             ref6.dispose();
-            verify(manager, times(2)).stopFlow(key1);
-            verify(manager).stopFlow(key2);
+            verify(manager, times(2)).stopFlow(ibmKey);
+            verify(manager).stopFlow(metcKey);
         }
 
         private void assertMap(Map<Option, T> map, Option... options) {

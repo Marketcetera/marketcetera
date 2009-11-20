@@ -164,8 +164,8 @@ public class PositionEngineFactory {
         public boolean matches(ReportBase item) {
             OrderStatus orderStatus = item.getOrderStatus();
             return item instanceof ExecutionReport
-                    && isValid((ExecutionReport) item)
-                    && (orderStatus == OrderStatus.PartiallyFilled || orderStatus == OrderStatus.Filled);
+                    && (orderStatus == OrderStatus.PartiallyFilled || orderStatus == OrderStatus.Filled)
+                    && isValid((ExecutionReport) item);
         }
 
         private boolean isValid(ExecutionReport report) {

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.photon.marketdata.IMarketData;
@@ -24,6 +25,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /* $License$ */
 
@@ -64,6 +66,7 @@ public class MarketData implements IMarketData {
     private final ISharedOptionMarketstatManager mSharedOptionMarketstatManager;
     private final Map<Content, IDepthOfBookManager> mContentToDepthManager;
     private final boolean mUseFineGrainedMarketDataForOptions;
+    private final Provider<UnderlyingSymbolSupport> mUnderlyingSymbolSupport;
 
     /**
      * Constructor.
@@ -78,11 +81,13 @@ public class MarketData implements IMarketData {
      *            the factory for creating market depth managers
      * @param sharedOptionLatestTickManager
      *            the manager for shared option latest tick data
-     * @param mSharedOptionMarketstatManager
+     * @param sharedOptionMarketstatManager
      *            the manager for shared option marketstat data
      * @param marketDataRequestAdapter
      *            controls whether fine grained market data is available for
      *            options
+     * @param underlyingSymbolSupport
+     *            enables lookup of underlying symbol for options
      * @throws IllegalArgumentException
      *             if any parameter is null, or if the depth of book factory
      *             returns null for a needed capability set
@@ -94,11 +99,12 @@ public class MarketData implements IMarketData {
             final IDepthOfBookManager.Factory depthOfBookManagerFactory,
             final ISharedOptionLatestTickManager sharedOptionLatestTickManager,
             final ISharedOptionMarketstatManager sharedOptionMarketstatManager,
-            final IMarketDataRequestSupport marketDataRequestAdapter) {
+            final IMarketDataRequestSupport marketDataRequestAdapter,
+            final Provider<UnderlyingSymbolSupport> underlyingSymbolSupport) {
         Validate.noNullElements(new Object[] { latestTickManager,
                 topOfBookManager, marketstatManager, depthOfBookManagerFactory,
                 sharedOptionLatestTickManager, sharedOptionMarketstatManager,
-                marketDataRequestAdapter });
+                marketDataRequestAdapter, underlyingSymbolSupport });
         mLatestTickManager = latestTickManager;
         mTopOfBookManager = topOfBookManager;
         mMarketstatManager = marketstatManager;
@@ -117,6 +123,7 @@ public class MarketData implements IMarketData {
                 Content.OPEN_BOOK, mOpenBookManager);
         mUseFineGrainedMarketDataForOptions = marketDataRequestAdapter
                 .useFineGrainedMarketDataForOptions();
+        mUnderlyingSymbolSupport = underlyingSymbolSupport;
     }
 
     /**
@@ -157,8 +164,8 @@ public class MarketData implements IMarketData {
                     mLatestTickManager, new LatestTickKey(instrument));
         } else {
             final Option option = (Option) instrument;
-            return getSharedReference(new SharedOptionLatestTickKey(new Equity(
-                    option.getSymbol())), new LatestTickKey(option),
+            return getSharedReference(new SharedOptionLatestTickKey(
+                    getUnderlying(option)), new LatestTickKey(option),
                     mSharedOptionLatestTickManager);
         }
     }
@@ -209,6 +216,16 @@ public class MarketData implements IMarketData {
         };
     }
 
+    private Equity getUnderlying(Option option) {
+        UnderlyingSymbolSupport underlyingSymbolSupport = mUnderlyingSymbolSupport
+                .get();
+        if (underlyingSymbolSupport != null) {
+            return new Equity(underlyingSymbolSupport.getUnderlying(option));
+        } else {
+            return new Equity(option.getSymbol());
+        }
+    }
+
     @Override
     public IMarketDataReference<MDTopOfBook> getTopOfBook(
             final Instrument instrument) {
@@ -226,8 +243,8 @@ public class MarketData implements IMarketData {
                     mMarketstatManager, new MarketstatKey(instrument));
         } else {
             final Option option = (Option) instrument;
-            return getSharedReference(new SharedOptionMarketstatKey(new Equity(
-                    option.getSymbol())), new MarketstatKey(option),
+            return getSharedReference(new SharedOptionMarketstatKey(
+                    getUnderlying(option)), new MarketstatKey(option),
                     mSharedOptionMarketstatManager);
         }
     }
