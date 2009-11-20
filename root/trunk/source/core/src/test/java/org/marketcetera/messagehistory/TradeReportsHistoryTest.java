@@ -333,6 +333,12 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         assertThat(history.getOpenOrdersList().size(), is(0));
     }
 
+    public void testOrderExpired() throws Exception {
+        TradeReportsHistory history = createMessageHistory();
+        simulateOrderExpiry(history, "1", Side.BUY, "10", "ASDF", "1");
+        assertThat(history.getOpenOrdersList().size(), is(0));
+    }
+
     public void testReplaceRejected() throws Exception {
         TradeReportsHistory history = createMessageHistory();
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
@@ -1055,6 +1061,12 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     private void simulateOrderReject(TradeReportsHistory history, String orderId, char side, String quantity, String symbol, String price) throws Exception {
         history.addIncomingMessage(createServerReport(createMessage(OrdStatus.PENDING_NEW, orderId, side, quantity, symbol, price)));
         history.addIncomingMessage(createBrokerReport(createMessage(OrdStatus.REJECTED, orderId, side, quantity, symbol, price)));
+    }
+
+    private void simulateOrderExpiry(TradeReportsHistory history, String orderId, char side, String quantity, String symbol, String price) throws Exception {
+        history.addIncomingMessage(createServerReport(createMessage(OrdStatus.PENDING_NEW, orderId, side, quantity, symbol, price)));
+        history.addIncomingMessage(createBrokerReport(createMessage(OrdStatus.NEW, orderId, side, quantity, symbol, price)));
+        history.addIncomingMessage(createBrokerReport(createMessage(OrdStatus.EXPIRED, orderId, side, quantity, symbol, price)));
     }
 
     private void simulateReplace(TradeReportsHistory history, String orderId, String origOrdId, char side, String quantity, String symbol, String price) throws Exception {

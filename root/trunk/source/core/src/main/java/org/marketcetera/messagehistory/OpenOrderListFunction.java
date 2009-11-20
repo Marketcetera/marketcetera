@@ -77,7 +77,8 @@ final class OpenOrderListFunction implements Function<List<ReportHolder>, Report
                 ExecutionReport ereport = (ExecutionReport) report;
                 if (ereport.getOrderStatus() == OrderStatus.Filled
                         || ereport.getOrderStatus() == OrderStatus.Canceled
-                        || ereport.getOrderStatus() == OrderStatus.Rejected) {
+                        || ereport.getOrderStatus() == OrderStatus.Rejected
+                        || ereport.getOrderStatus() == OrderStatus.Expired) {
                     // order has been filled, canceled, or rejected, whole chain is obsolete
                     return null;
                 } else if (ereport.isCancelable()) {
