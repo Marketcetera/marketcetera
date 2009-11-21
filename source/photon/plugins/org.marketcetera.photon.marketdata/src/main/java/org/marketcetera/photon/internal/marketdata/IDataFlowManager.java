@@ -86,4 +86,19 @@ public interface IDataFlowManager<T, K extends Key> {
 	 *             occurs
 	 */
 	void stopFlow(K key);
+
+    /**
+     * Restarts the data flow for the given key.
+     * 
+     * This operation has no effect if the flow is stopped.
+     * 
+     * @param key
+     *            the data key
+     * @throws IllegalArgumentException
+     *             if key is null
+     * @throws IllegalStateException
+     *             if the module framework is in an unexpected state, or if an unrecoverable error
+     *             occurs
+     */
+    void restartFlow(K key);
 }
