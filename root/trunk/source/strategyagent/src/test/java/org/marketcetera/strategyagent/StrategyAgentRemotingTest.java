@@ -161,17 +161,27 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
         };
         final StatelessClientContext ctx = new StatelessClientContext();
         assertNull(ctx.getAppId());
-        //context without version
-        new ExpectedFailure<I18NException>(Messages.VERSION_MISMATCH,
-                null, ApplicationVersion.getVersion(), DEFAULT_CREDENTIAL){
+        //context without appID
+        new ExpectedFailure<I18NException>(Messages.APP_MISMATCH,
+                null, DEFAULT_CREDENTIAL){
             @Override
             protected void run() throws Exception {
                StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL, 
                        DEFAULT_CREDENTIAL.toCharArray());
             }
         };
+        //context with invalid appID
+        ctx.setAppId(Util.getAppId("invalid", ApplicationVersion.getVersion()));
+        new ExpectedFailure<I18NException>(Messages.APP_MISMATCH,
+                "invalid", DEFAULT_CREDENTIAL){
+            @Override
+            protected void run() throws Exception {
+               StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL,
+                       DEFAULT_CREDENTIAL.toCharArray());
+            }
+        };
         //context with invalid version
-        ctx.setAppId(Util.getAppId("dontcare", "invalid"));
+        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, "invalid"));
         new ExpectedFailure<I18NException>(Messages.VERSION_MISMATCH,
                 "invalid", ApplicationVersion.getVersion(), DEFAULT_CREDENTIAL){
             @Override
@@ -181,7 +191,8 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
             }
         };
         //context with default version number
-        ctx.setAppId(Util.getAppId("dontcare", ApplicationVersion.DEFAULT_VERSION));
+        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME,
+                ApplicationVersion.DEFAULT_VERSION));
         new ExpectedFailure<I18NException>(Messages.VERSION_MISMATCH,
                 ApplicationVersion.DEFAULT_VERSION,
                 ApplicationVersion.getVersion(), DEFAULT_CREDENTIAL){
@@ -191,8 +202,8 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
                 DEFAULT_CREDENTIAL.toCharArray());
             }
         };
-        //context with server version number
-        ctx.setAppId(Util.getAppId("dontcare", ApplicationVersion.getVersion()));
+        //context with correct name & version number
+        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, ApplicationVersion.getVersion()));
         assertTrue(StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray()));
         //valid contexts

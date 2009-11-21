@@ -303,36 +303,69 @@ public class CEPEsperProcessor extends Module
     private final Map<RequestID, List<EPStatement>> mRequests =
             new Hashtable<RequestID, List<EPStatement>>();
 
+    /**
+     * Configuration file location.
+     */
     private String mConfiguration;
+    /**
+     * If the module should be configured for external time.
+     */
     private volatile boolean mUseExternalTime;
     /**
      * The prefix for pattern queries - they all start with p:xxxxx
      */
     private static final String PATTERN_QUERY_PREFIX = "p:";  //$NON-NLS-1$
 
-    private final Map<DataFlowID, List<Pair<DataEmitterSupport, String[]>>> mUnprocessedRequests =
-            new Hashtable<DataFlowID, List<Pair<DataEmitterSupport, String[]>>>();
-    private ProcessingDelegate mDelegate;
+    /**
+     * The processing delegate to use.
+     */
+    private volatile ProcessingDelegate mDelegate;
 
-    /** Basic interface to describe a data flow processing delegate.
+    /**
+     * Basic interface to describe a data flow processing delegate.
      * This is going to be used by both the "straight-through to Esper" delegate and by
      * the {#link ExternalTimeDelegate} that will behave differently in when
      * external time is being used.
      */
     private static interface ProcessingDelegate {
-        /** Sends the request to be processed */
+        /**
+         * Sends the request to be processed.
+         *
+         * @param inStmts the query statements.
+         * @param inSupport the emitter support to emit data.
+         *
+         * @throws RequestDataException if there were errors processing the request.
+         */
         void processRequest(String[] inStmts, DataEmitterSupport inSupport) throws RequestDataException;
-        /** Cancels all existing and pending requests */
+        /**
+         * Cancels all existing and pending requests.
+         *
+         * @param inFlowID the flowID of the data flow to cancel.
+         * @param inRequestID the requestID of the data flow to cancel. 
+         */
         void cancelRequest(DataFlowID inFlowID, RequestID inRequestID);
 
+        /**
+         * Invoked to allow every delegate to pre-process data before it
+         * is delivered to the esper runtime.
+         *
+         * @param inFlowID the data flowID.
+         * @param inData the received data.
+         *
+         * @throws StopDataFlowException if the data flow should be stopped.
+         */
         void preProcessData(DataFlowID inFlowID, Object inData) throws StopDataFlowException;
     }
 
-    /** Regular "straight-through" delegate - just send all the incoming queries directly to Esper
+    /**
+     * Regular "straight-through" delegate - just send all the incoming queries directly to Esper
      * This is for non-external-time (ie for wall-clock time) operation.
      */
     private class RegularDelegate implements ProcessingDelegate {
-        /** Creates the incoming statements with Esper, and creates a subscriber for the last one */
+        /**
+         * Creates the incoming statements with Esper and creates a subscriber
+         * for the last one
+         */
         @Override
         public void processRequest(String[] inStmts, DataEmitterSupport inSupport) throws RequestDataException {
             ArrayList<EPStatement> statements;
@@ -345,7 +378,10 @@ public class CEPEsperProcessor extends Module
             mRequests.put(inSupport.getRequestID(), statements);
         }
 
-        /** Go through and destroy all the existing EPL statements */
+        /**
+         * Go through and destroy all the existing EPL statements
+         */
+        @Override
         public void cancelRequest(DataFlowID inFlowID, RequestID inRequestID) {
             List<EPStatement> stmts = mRequests.remove(inRequestID);
             if(stmts != null) {
@@ -356,25 +392,30 @@ public class CEPEsperProcessor extends Module
         }
 
         // Nothing to pre-process for regular implementation
+        @Override
         public void preProcessData(DataFlowID inFlowID, Object inData) throws StopDataFlowException {
             //do nothing
         }
     }
 
-    /** Responsible for implemneting external time behaviour -
+    /**
+     * Responsible for implemneting external time behaviour -
      * instead of sending the querieis straight to Esper, we wait
      * until the first time event comes in, and only start CEP then
      */
     private class ExternalTimeDelegate extends RegularDelegate {
-        /** Cache the incoming requests - they will be kicked off after
-         * we receive the first time event */
+        /**
+         * Cache the incoming requests - they will be kicked off after
+         * we receive the first time event within
+         * {@link #preProcessData(DataFlowID, Object)}. 
+         */
         @Override
         public void processRequest(String[] inStmts, DataEmitterSupport inSupport) {
             //Save off inSupport and statments so that they can be processed
             //in preProcessData
             List<Pair<DataEmitterSupport, String[]>> emitterList = mUnprocessedRequests.get(inSupport.getFlowID());
             if(emitterList == null) {
-                emitterList = new ArrayList<Pair<DataEmitterSupport, String[]>>();
+                emitterList = new LinkedList<Pair<DataEmitterSupport, String[]>>();
                 mUnprocessedRequests.put(inSupport.getFlowID(), emitterList);
             }
             emitterList.add(new Pair<DataEmitterSupport, String[]>(inSupport, inStmts));
@@ -386,9 +427,11 @@ public class CEPEsperProcessor extends Module
             // remove any pending unprocessed statements for this flowID
             List<Pair<DataEmitterSupport, String[]>> reqList = mUnprocessedRequests.get(inFlowID);
             if(reqList != null) {
-                for (Pair<DataEmitterSupport, String[]> dataEmitterSupportPair : reqList) {
-                    if(dataEmitterSupportPair.getFirstMember().getRequestID().equals(inRequestID)) {
-                        reqList.remove(dataEmitterSupportPair);
+                Iterator<Pair<DataEmitterSupport, String[]>> iterator = reqList.iterator();
+                while(iterator.hasNext()) {
+                    Pair<DataEmitterSupport, String[]> pair = iterator.next();
+                    if(pair.getFirstMember().getRequestID().equals(inRequestID)) {
+                        iterator.remove();
                     }
                 }
                 if(reqList.isEmpty()) {
@@ -397,7 +440,8 @@ public class CEPEsperProcessor extends Module
             }
         }
 
-        /** Seed the Esper engine with the incoming time event, then
+        /**
+         * Seed the Esper engine with the incoming time event, then
          * delegate to the regular {@link #processRequest(String[], DataEmitterSupport)} implementation.
          * If the incoming events aren't TimestampCarriers, then just discard them
          */
@@ -419,6 +463,8 @@ public class CEPEsperProcessor extends Module
                 }
             }
         }
+        private final Map<DataFlowID, List<Pair<DataEmitterSupport, String[]>>> mUnprocessedRequests =
+                new Hashtable<DataFlowID, List<Pair<DataEmitterSupport, String[]>>>();
     }
 
     /**

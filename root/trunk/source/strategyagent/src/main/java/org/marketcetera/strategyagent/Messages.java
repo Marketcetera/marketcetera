@@ -75,5 +75,7 @@ public interface Messages {
             new I18NMessage2P(LOGGER, "log_error_set_attribute");   //$NON-NLS-1$
     static final I18NMessage3P VERSION_MISMATCH =
             new I18NMessage3P(LOGGER, "version_mismatch");   //$NON-NLS-1$
+    static final I18NMessage2P APP_MISMATCH =
+            new I18NMessage2P(LOGGER, "app_mismatch");   //$NON-NLS-1$
 
 }

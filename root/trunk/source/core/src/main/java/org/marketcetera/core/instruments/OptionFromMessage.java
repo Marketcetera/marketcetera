@@ -112,7 +112,7 @@ public class OptionFromMessage extends InstrumentFromMessage {
                 if (value != null) {
                     //FIX version 4.2 uses MaturityDay to specify the option's
                     //expiry day once OSI goes into effect.
-                    if (inMessage.isSetField(MaturityDay.FIELD)) {
+                    if (value.length() == 6 && inMessage.isSetField(MaturityDay.FIELD)) {
                         try {
                             String day = inMessage.getString(MaturityDay.FIELD);
                             if (day != null) {

@@ -253,7 +253,27 @@ public class Util
         }
         return output.toString();
     }
-    
+
+    /**
+     * Returns the name portion of the given application ID.
+     *
+     * @param id The application ID. It may be null.
+     * @return The name portion. It may be null if the provided ID
+     *         lacks a name.
+     */
+    public static String getName(AppId id) {
+        if ((id == null) || (id.getValue() == null)) {
+            return null;
+        }
+        int index = id.getValue().indexOf(APP_ID_VERSION_SEPARATOR);
+        String value = index == -1
+                ? id.getValue()
+                : id.getValue().substring(0, index);
+        return value.isEmpty()
+                ? null
+                : value;
+    }
+
     /**
      * Returns the version portion of the given application ID.
      *

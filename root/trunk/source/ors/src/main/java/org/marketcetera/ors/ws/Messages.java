@@ -41,6 +41,8 @@ public interface Messages
 
     static final I18NMessage3P VERSION_MISMATCH=
         new I18NMessage3P(LOGGER,"version_mismatch"); //$NON-NLS-1$
+    static final I18NMessage2P APP_MISMATCH =
+            new I18NMessage2P(LOGGER, "app_mismatch");   //$NON-NLS-1$
     static final I18NMessage1P BAD_CREDENTIALS=
         new I18NMessage1P(LOGGER,"bad_credentials"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_CREATE_REPLY_TOPIC=

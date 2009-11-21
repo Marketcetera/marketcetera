@@ -259,4 +259,28 @@ public class UtilTest
                 Util.getVersion(Util.getAppId("Weird",
                         ApplicationVersion.VERSION_1_5_0)));
     }
+
+    /**
+     * Tests {@link Util#getName(org.marketcetera.util.ws.tags.AppId)}.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void getName() throws Exception {
+        assertNull(Util.getName(null));
+        assertNull(Util.getName(new AppId(null)));
+        assertNull(Util.getName(new AppId("")));
+        assertEquals(" ", Util.getName(new AppId(" ")));
+        assertEquals("any", Util.getName(new AppId("any")));
+        assertEquals(" ", Util.getName(Util.getAppId(" ", "")));
+        assertEquals(" ", Util.getName(Util.getAppId(" ", " ")));
+        assertEquals("x", Util.getName(Util.getAppId("x", "")));
+        assertEquals("x", Util.getName(Util.getAppId("x", " ")));
+        assertEquals("x", Util.getName(Util.getAppId("x", "y")));
+        assertEquals(" x ", Util.getName(Util.getAppId(" x ", " y ")));
+        assertEquals(UnicodeData.COMBO, Util.getName(
+                Util.getAppId(UnicodeData.COMBO, UnicodeData.COMBO)));
+        assertEquals("MyApp", Util.getName(Util.getAppId("MyApp",
+                ApplicationVersion.VERSION_2_0_0)));
+    }
 }
