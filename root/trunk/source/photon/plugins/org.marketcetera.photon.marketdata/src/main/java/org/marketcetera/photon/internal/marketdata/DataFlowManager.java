@@ -234,6 +234,17 @@ abstract class DataFlowManager<T, K extends Key> implements
         resetItem(key);
     }
 
+    @Override
+    public final synchronized void restartFlow(final K key) {
+        Validate.notNull(key);
+        ModuleURN subscriberURN = mSubscribers.get(key);
+        if (subscriberURN == null) {
+            return;
+        }
+        stopModule(subscriberURN, false);
+        startModule(subscriberURN);
+    }
+
     /**
      * Initializes a {@link MarketDataRequest} for the provided instrument.
      * 

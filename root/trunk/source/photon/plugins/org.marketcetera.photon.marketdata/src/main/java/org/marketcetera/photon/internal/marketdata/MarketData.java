@@ -171,7 +171,7 @@ public class MarketData implements IMarketData {
     }
 
     private <T extends MDItem, I extends T, S extends Key, K extends Key, M extends IDataFlowManager<Map<Option, I>, S>> IMarketDataReference<T> getSharedReference(
-            S sharedKey, K individualKey, M manager) {
+            final S sharedKey, K individualKey, final M manager) {
         /*
          * The shared data case is complex. All shared option data items for the
          * same underlying equity share the same data flow (since fine grained
@@ -192,13 +192,45 @@ public class MarketData implements IMarketData {
          * SharedOptionLatestTickKey, one for the IBMoption1 LatestTickKey, and
          * two for the IBMoption2 LatestTickKey.
          */
-        final Reference<Map<Option, I>, S> shared = new Reference<Map<Option, I>, S>(
-                manager, sharedKey);
+        Option option = (Option) individualKey.getInstrument();
+        Map<Option, I> map = manager.getItem(sharedKey);
+        /*
+         * Unfortunately, we need to restart the flow each time a new
+         * reference is created. When a flow is started, market data
+         * providers send a snapshot of the current state and we need
+         * to make sure we get it for the new option (we already got it
+         * once but discarded it because we were not paying attention to
+         * it).
+         */
+        synchronized(mReferences) {
+            if (!mReferences.contains(individualKey)) {
+                if (!mReferences.contains(sharedKey)) {
+                    manager.startFlow(sharedKey);
+                } else {
+                    manager.restartFlow(sharedKey);
+                }
+            }
+        }
         /*
          * This will create a new data item the first time, but reuse the
          * existing one on successive invocations.
          */
-        final T item = shared.get().get((Option) individualKey.getInstrument());
+        final T item = map.get(option);
+        /*
+         * Create the shared reference using the shared key.
+         */
+        final IMarketDataReference<Map<Option, I>> shared = new AbstractReference<Map<Option, I>, S>(sharedKey, 
+                map) {
+            @Override
+            protected void referenceDisposed(S key, boolean lastOne) {
+                if (lastOne) {
+                    manager.stopFlow(key);
+                }
+            }
+        };
+        /*
+         * Create the individual option reference using the individual key.
+         */
         return new AbstractReference<T, K>(individualKey, item) {
             @Override
             protected void referenceDisposed(K key, boolean lastOne) {

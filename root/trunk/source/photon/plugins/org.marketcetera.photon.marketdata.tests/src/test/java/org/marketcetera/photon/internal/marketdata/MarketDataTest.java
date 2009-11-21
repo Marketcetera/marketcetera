@@ -585,25 +585,29 @@ public class MarketDataTest {
             // get a reference
             IMarketDataReference<? extends MDItem> ref1 = getReferenceAndValidate(option1a);
             // start flow should have been called
-            verify(manager).startFlow(ibmKey);
+            verify(manager, times(1)).startFlow(ibmKey);
             // the option should exist in the map
             assertMap(map1, option1a);
-            // get another reference under the same key
+            // get another reference under the same shared key
             IMarketDataReference<? extends MDItem> ref2 = getReferenceAndValidate(option1b);
             // the new option should exist in the map
             assertMap(map1, option1a, option1b);
+            // the flow should have been restarted
+            verify(manager, times(1)).restartFlow(ibmKey);
             // dispose the first reference
             ref1.dispose();
             // the option should no longer exist in the map
             assertMap(map1, option1b);
             // get the first option data again
             IMarketDataReference<? extends MDItem> ref3 = getReferenceAndValidate(option1a);
-            // option back in the map
+            // option back in the map and flow restarted
             assertMap(map1, option1a, option1b);
+            verify(manager, times(2)).restartFlow(ibmKey);
             // get a second reference to the same option
             IMarketDataReference<? extends MDItem> ref4 = getReferenceAndValidate(option1a);
-            // map should not change
+            // map should not change and flow unchanged
             assertMap(map1, option1a, option1b);
+            verify(manager, times(2)).restartFlow(ibmKey);
             // dispose one of the option1a references
             ref3.dispose();
             // map should not change
@@ -613,19 +617,19 @@ public class MarketDataTest {
             ref2.dispose();
             ref4.dispose();
             // now stop flow called
-            verify(manager).stopFlow(ibmKey);
+            verify(manager, times(1)).stopFlow(ibmKey);
             IMarketDataReference<? extends MDItem> ref5 = getReferenceAndValidate(option1a);
             // start flow called a second time
             verify(manager, times(2)).startFlow(ibmKey);
             IMarketDataReference<? extends MDItem> ref6 = getReferenceAndValidate(option2);
-            verify(manager).startFlow(metcKey);
+            verify(manager, times(1)).startFlow(metcKey);
             // verify both maps
             assertMap(map1, option1a);
             assertMap(map2, option2);
             ref5.dispose();
             ref6.dispose();
             verify(manager, times(2)).stopFlow(ibmKey);
-            verify(manager).stopFlow(metcKey);
+            verify(manager, times(1)).stopFlow(metcKey);
         }
 
         private void assertMap(Map<Option, T> map, Option... options) {
