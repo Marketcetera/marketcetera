@@ -85,6 +85,8 @@ public class InstrumentToMessageTest {
         //verify symbol
         assertEquals(true, msg.isSetField(Symbol.FIELD));
         assertEquals(TEST_EQUITY.getSymbol(), msg.getString(Symbol.FIELD));
+        //Test equivalence with InstrumentFromMessage
+        assertEquals(TEST_EQUITY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
 
     /**
@@ -108,6 +110,8 @@ public class InstrumentToMessageTest {
         if (isFieldPresent(dictionary, msg, msgType, Symbol.FIELD)) {
             assertEquals(TEST_EQUITY.getSymbol(), msg.getString(Symbol.FIELD));
         }
+        //Test equivalence with InstrumentFromMessage
+        assertEquals(TEST_EQUITY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
 
     /**
@@ -181,6 +185,8 @@ public class InstrumentToMessageTest {
             //verify strike price
             assertEquals(true, msg.isSetField(StrikePrice.FIELD));
             assertEquals(option.getStrikePrice(), new BigDecimal(msg.getString(StrikePrice.FIELD)));
+            //verify equivalence with InstrumentFromMessage
+            assertEquals(option, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
         }
     }
 
@@ -243,6 +249,10 @@ public class InstrumentToMessageTest {
                 assertEquals("10", msg.getString(MaturityDay.FIELD));
             } else {
                 assertFalse(expiry, msg.isSetField(MaturityDay.FIELD));
+            }
+            //verify equivalence with InstrumentFromMessage
+            if (InstrumentToMessage.SELECTOR.forInstrument(option).isSupported(dictionary, msgType)) {
+                assertEquals(option, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
             }
         }
     }

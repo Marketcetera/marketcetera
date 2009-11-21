@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.management.JMX;
 
@@ -16,16 +17,12 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.EventTestBase;
-import org.marketcetera.module.BlockingSinkDataListener;
-import org.marketcetera.module.CopierModuleFactory;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.module.ModuleTestBase;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.*;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Suggestion;
+import org.marketcetera.util.test.LogTestAssist;
+import org.apache.log4j.Level;
 
 /**
  * Test the external time functionality
@@ -54,6 +51,7 @@ public class ExternalTimeTest extends ModuleTestBase {
         sManager = new ModuleManager();
         sManager.init();
         sManager.addSinkListener(sSink);
+        sLogAssist.resetAppender();
     }
 
     @After
@@ -141,4 +139,26 @@ public class ExternalTimeTest extends ModuleTestBase {
         sManager.cancel(flow);
         assertEquals("shouldn't have any statements", 0, esperBean.getStatementNames().length);
     }
+    @Test
+    public void testCancelWithoutData() throws Exception {
+        sManager.createModule(CEPEsperFactory.PROVIDER_URN, TEST_URN);
+        CEPEsperProcessorMXBean esperBean = JMX.newMXBeanProxy(
+                ModuleTestBase.getMBeanServer(),
+                TEST_URN.toObjectName(),
+                CEPEsperProcessorMXBean.class);
+        sManager.stop(TEST_URN);
+        esperBean.setUseExternalTime(true);
+        sManager.start(TEST_URN);
+        String[] query = {"select * bid"};
+        DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
+                //don't send any data so that we remove unprocessed statements.
+                new DataRequest(CopierModuleFactory.INSTANCE_URN, new Object[0]),
+                new DataRequest(TEST_URN, query)
+        });
+        sManager.cancel(flowID);
+        //There should be no warning when canceling the data flow.
+        sLogAssist.assertNoEvents();
+    }
+    private static final LogTestAssist sLogAssist = new LogTestAssist(
+            "org.marketcetera.module.SyncCoupler", Level.WARN);
 }

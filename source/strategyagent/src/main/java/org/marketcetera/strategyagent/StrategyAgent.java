@@ -10,11 +10,13 @@ import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.module.*;
 import org.marketcetera.saclient.SAService;
+import org.marketcetera.saclient.SAClientVersion;
 import org.marketcetera.client.ClientManager;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -289,7 +291,7 @@ public class StrategyAgent extends ApplicationBase {
      *
      * @return if the authentication succeeded.
      *
-     * @throws I18NException if the client version is incompatible with the server.
+     * @throws I18NException if the client is incompatible with the server.
      */
     static boolean authenticate(StatelessClientContext context,
                                 String user,
@@ -297,7 +299,13 @@ public class StrategyAgent extends ApplicationBase {
             throws I18NException {
         //Verify client version
         String serverVersion = ApplicationVersion.getVersion();
+        String clientName = Util.getName(context.getAppId());
         String clientVersion = Util.getVersion(context.getAppId());
+        if (!compatibleApp(clientName)) {
+            throw new I18NException
+                    (new I18NBoundMessage2P(Messages.APP_MISMATCH,
+                            clientName, user));
+        }
         if (!compatibleVersions(clientVersion, serverVersion)) {
             throw new I18NException
                     (new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
@@ -385,6 +393,18 @@ public class StrategyAgent extends ApplicationBase {
         // If the server's version is unknown, any client is allowed.
         return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
                 ObjectUtils.equals(clientVersion, serverVersion));
+    }
+
+    /**
+     * Checks if a client with the supplied name is compatible with this server.
+     *
+     * @param clientName The client name.
+     *
+     * @return True if a client with the supplied name is compatible with this
+     * server.
+     */
+    private static boolean compatibleApp(String clientName) {
+        return SAClientVersion.APP_ID_NAME.equals(clientName);
     }
 
     /**
