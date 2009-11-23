@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Broker configuration: broker selector.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_selector"
+   class="org.marketcetera.ors.brokers.SpringSelector">
+    <!-- Selector entries. -->
+    <property
+     name="entries">
+      <list>
+        <bean
+         class="org.marketcetera.ors.brokers.SpringSelectorEntry">
+          <property
+           name="targetType"
+           value="CS"/> <!-- Common Stock. -->
+          <property
+           name="broker"
+           ref="metc_broker2_broker"/>
+          <property
+           name="skipIfUnavailable"
+           value="true"/>
+        </bean>
+        <bean
+         class="org.marketcetera.ors.brokers.SpringSelectorEntry">
+          <property
+           name="targetType"
+           value="OPT"/> <!-- Option. -->
+          <property
+           name="broker"
+           ref="metc_broker2_broker"/>
+          <property
+           name="skipIfUnavailable"
+           value="false"/>
+        </bean>
+      </list>
+    </property>
+    <!-- Default broker. -->
+    <property
+     name="defaultBroker"
+     ref="metc_broker1_broker"/>
+  </bean>
+</beans>

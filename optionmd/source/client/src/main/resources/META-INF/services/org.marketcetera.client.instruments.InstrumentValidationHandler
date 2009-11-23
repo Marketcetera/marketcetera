@@ -1,0 +1,2 @@
+org.marketcetera.client.instruments.EquityValidationHandler
+org.marketcetera.client.instruments.OptionValidationHandler
