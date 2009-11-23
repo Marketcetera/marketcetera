@@ -1,0 +1,8 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Currency Pairs", :action_name => "List Currency Pairs", :top_level_controller => @controller.controller_name } %>
+
+<h1>Listing Currency Pairs</h1>
+
+<%= render :partial => 'currency_pairs/currency_pair_list_display' %>
+
+<%= pagination_links(@currency_pair_pages) %>
