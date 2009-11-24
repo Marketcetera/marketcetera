@@ -151,4 +151,14 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
      * @return whether the message is cancelable.
      */
     public boolean isCancelable();
+    
+    
+    /**
+     * The price, if specified in the order
+     * 
+     * @return price, if specified in the order
+     */
+    
+    public BigDecimal getPrice();
+    
 }

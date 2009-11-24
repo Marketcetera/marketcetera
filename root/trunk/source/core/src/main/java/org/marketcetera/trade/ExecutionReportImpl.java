@@ -114,6 +114,11 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
     }
 
     @Override
+    public BigDecimal getPrice() {
+    	return FIXUtil.getPrice(getMessage());
+    }
+    
+    @Override
     public synchronized String toString() {
         return Messages.EXECUTION_REPORT_TO_STRING.getText(
                 String.valueOf(getAccount()),
@@ -144,6 +149,7 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
                 String.valueOf(getTimeInForce()),
                 String.valueOf(getTransactTime()),
                 String.valueOf(getBrokerOrderID()),
+                String.valueOf(getPrice()),
                 String.valueOf(getMessage())
         );
     }
