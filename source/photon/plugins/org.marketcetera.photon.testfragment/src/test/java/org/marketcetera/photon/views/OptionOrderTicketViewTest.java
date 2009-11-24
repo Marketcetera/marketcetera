@@ -13,8 +13,10 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderCapacity;
+import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.PositionEffect;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 
 /* $License$ */
 
@@ -150,7 +152,7 @@ public class OptionOrderTicketViewTest extends
         fixture.getCapacityCombo().setSelection(0);
         assertOrderCapacity(null);
     }
-    
+
     @Test
     public void testSendButton() throws Exception {
         OptionOrderTicketViewFixture fixture = createFixture();
@@ -172,6 +174,18 @@ public class OptionOrderTicketViewTest extends
         assertSendDisabled("Option Type is required");
         fixture.getOptionTypeCombo().setSelection("Call");
         assertThat(fixture.getSendButton().isEnabled(), is(true));
+    }
+
+    @Override
+    public void fieldsDisabledForReplaceOrders() throws Exception {
+        OptionOrderTicketViewFixture fixture = createFixture();
+        mFixture = fixture;
+        fixture.assertEnabled(true, true, true, true, false, true, true, true,
+                true, true, true, true, true, true);
+        setReplace(Side.Buy, "10", "QWER", OrderType.Limit, "10", null,
+                TimeInForce.Day, null);
+        fixture.assertEnabled(false, true, false, true, true, false, true,
+                false, false, false, false, true, true, true);
     }
 
     protected void assertPositionEffect(final PositionEffect positionEffect)
