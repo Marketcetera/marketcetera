@@ -62,7 +62,7 @@ class FactoryImpl extends Factory {
             order.setBrokerOrderID(inLatestReport.getBrokerOrderID());
             order.setOrderType(inLatestReport.getOrderType());
             order.setOriginalOrderID(inLatestReport.getOrderID());
-            order.setPrice(inLatestReport.getLastPrice());
+            order.setPrice(inLatestReport.getPrice());
             order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
             order.setInstrument(inLatestReport.getInstrument());
