@@ -7,6 +7,6 @@
 # Create the Market Data strategy
 createModule;metc:strategy:system;marketData,MarketData,JAVA,samples/java/scripts/MarketData.java,,false,metc:sink:system
 # Start the market data module
-startModule;metc:mdata:marketcetera:single
+startModule;metc:mdata:bogus:single
 # Start the strategy
 startModule;metc:strategy:system:marketData

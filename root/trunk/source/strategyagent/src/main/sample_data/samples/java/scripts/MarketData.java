@@ -14,8 +14,9 @@ import static org.marketcetera.marketdata.MarketDataRequest.*;
  * @since 2.0.0
  */
 public class MarketData extends Strategy {
-    private static final String SYMBOLS = "AMZN,JAVA"; //Depends on MD - can be other symbols
-    private static final String MARKET_DATA_PROVIDER = "marketcetera"; // Can be activ, bogus, marketcetera
+    private static final String SYMBOLS = "AMZN,GOOG"; //Depends on MD - can be other symbols
+    private static final String OPTION_OSI_SYMBOL = "AAPL  091121C00123450"; //AAPL, Nov'09 $123.45 Call
+    private static final String MARKET_DATA_PROVIDER = "bogus"; // Can be activ, bogus, marketcetera
     /**
      * Executed when the strategy is started.
      * Use this method to set up data flows
@@ -23,10 +24,17 @@ public class MarketData extends Strategy {
      */
     @Override
     public void onStart() {
+        //equity
         requestMarketData(MarketDataRequest.newRequest().
                 withSymbols(SYMBOLS).
                 fromProvider(MARKET_DATA_PROVIDER).
-                withContent(Content.LATEST_TICK, Content.TOP_OF_BOOK));
+                withContent(Content.TOP_OF_BOOK));
+        //option
+        requestMarketData(MarketDataRequest.newRequest().
+                withSymbols(OPTION_OSI_SYMBOL).
+                ofAssetClass(AssetClass.OPTION).
+                fromProvider(MARKET_DATA_PROVIDER).
+                withContent(Content.LATEST_TICK));
     }
 
     /**

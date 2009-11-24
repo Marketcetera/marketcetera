@@ -13,9 +13,9 @@ include_class "org.marketcetera.marketdata.MarketDataRequest"
 # Strategy that receives marketdata   #
 #######################################
 class MarketData < Strategy
-    SYMBOLS = "AMZN,JAVA" # Depends on MD - can be other symbols
-    CONTENT = "LATEST_TICK,TOP_OF_BOOK"
-    MARKET_DATA_PROVIDER = "marketcetera" # Can be activ, bogus, marketcetera
+    SYMBOLS = "AMZN,GOOG" # Depends on MD - can be other symbols
+    OPTION_OSI_SYMBOL = "AAPL  091121C00123450" # AAPL, Nov'09 $123.45 Call
+    MARKET_DATA_PROVIDER = "bogus" # Can be activ, bogus, marketcetera
 
     ##########################################
     # Executed when the strategy is started. #
@@ -24,8 +24,17 @@ class MarketData < Strategy
     #  and other initialization tasks.       #
     ##########################################
     def on_start
-      request = MarketDataRequest.newRequest().withSymbols(SYMBOLS).fromProvider(MARKET_DATA_PROVIDER).withContent(CONTENT)
-      request_market_data(request)
+      # equity
+      request_market_data(MarketDataRequest.newRequest().
+          withSymbols(SYMBOLS).
+          fromProvider(MARKET_DATA_PROVIDER).
+          withContent("TOP_OF_BOOK"))
+      # option
+      request_market_data(MarketDataRequest.newRequest().
+          withSymbols(OPTION_OSI_SYMBOL).
+          ofAssetClass("OPTION").
+          fromProvider(MARKET_DATA_PROVIDER).
+          withContent("LATEST_TICK"))
     end
 
     ####################################################
