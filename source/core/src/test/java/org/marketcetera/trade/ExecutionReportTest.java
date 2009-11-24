@@ -79,6 +79,8 @@ public class ExecutionReportTest extends TypesTestBase {
         assertNull(report.getReportID());
         //Verify toString, doesn't fail.
         report.toString();
+        //validate it is null
+        assertEquals(null, report.getPrice());
         //report with all fields filled in
         BrokerID cID = new BrokerID("bro1");
         OrderID orderID = new OrderID("or2");
@@ -124,7 +126,7 @@ public class ExecutionReportTest extends TypesTestBase {
                 quickfix.field.OrderCapacity.PROPRIETARY));
         msg.setField(new quickfix.field.PositionEffect(
                 quickfix.field.PositionEffect.CLOSE));
-
+        
         //Verify the regular factory method
         report = sFactory.createExecutionReport(msg, cID,
                                                 Originator.Broker, actorID, viewerID);
@@ -139,7 +141,8 @@ public class ExecutionReportTest extends TypesTestBase {
         assertNull(report.getReportID());
         //Verify toString() doesn't fail.
         report.toString();
-
+        //validate orderprice is equal to getprices
+        assertEquals(orderPrice , report.getPrice());
         //Verify the map
         Map<Integer,String> expected = new HashMap<Integer, String>();
         expected.put(Account.FIELD, account);

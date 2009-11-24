@@ -52,6 +52,11 @@ public class MockExecutionReport implements ExecutionReport {
 	}
 
 	@Override
+	public BigDecimal getPrice() {
+		return null;
+	}
+	
+	@Override
 	public String getAccount() {
 		return mAccount;
 	}
