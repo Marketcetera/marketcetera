@@ -312,7 +312,7 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
 
     protected abstract Instrument createInstrument(String symbol);
 
-    private void setReplace(final Side side, final String quantity,
+    protected void setReplace(final Side side, final String quantity,
             final String symbol, final OrderType type, final String price,
             final String brokerId, final TimeInForce tif, final String account)
             throws Exception {

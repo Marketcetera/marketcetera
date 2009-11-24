@@ -199,6 +199,8 @@ public class OptionOrderTicketView extends
         DataBindingUtils.initControlDecorationSupportFor(expiryValidator,
                 SWT.BOTTOM | SWT.LEFT);
         dbc.addValidationStatusProvider(expiryValidator);
+        enableForNewOrderOnly(ticket.getOptionExpiryText());
+        enableForNewOrderOnly(ticket.getSelectExpiryButton());
 
         /*
          * Strike
@@ -206,12 +208,14 @@ public class OptionOrderTicketView extends
         bindRequiredDecimal(ticket.getStrikePriceText(),
                 model.getStrikePrice(),
                 Messages.OPTION_ORDER_TICKET_VIEW_STRIKE_PRICE__LABEL.getText());
+        enableForNewOrderOnly(ticket.getStrikePriceText());
 
         /*
          * Option type
          */
         bindRequiredCombo(mOptionTypeComboViewer, model.getOptionType(),
                 Messages.OPTION_ORDER_TICKET_VIEW_OPTION_TYPE__LABEL.getText());
+        enableForNewOrderOnly(ticket.getPutOrCallCombo());
 
         /*
          * Order Capacity
