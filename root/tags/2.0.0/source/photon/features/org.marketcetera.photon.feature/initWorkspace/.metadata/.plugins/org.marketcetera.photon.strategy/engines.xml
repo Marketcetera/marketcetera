@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:strategyagent="http://www.marketcetera.org/photon/strategy/engine/strategyagent/1.0">
+  <strategyagent:StrategyAgentEngine name="Local Strategy Agent" jmsUrl="tcp://127.0.0.1:61617" webServiceHostname="127.0.0.1" webServicePort="9001"/>
+</xmi:XMI>
