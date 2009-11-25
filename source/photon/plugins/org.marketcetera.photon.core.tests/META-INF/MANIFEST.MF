@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Photon Core Tests
 Bundle-SymbolicName: org.marketcetera.photon.core.tests
-Bundle-Version: 2.0.0
+Bundle-Version: 2.1.0
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon.core
 Import-Package: org.hamcrest,
