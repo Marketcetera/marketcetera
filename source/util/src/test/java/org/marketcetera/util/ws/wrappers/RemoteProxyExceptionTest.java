@@ -32,6 +32,9 @@ public class RemoteProxyExceptionTest
         "testTrace"+SystemUtils.LINE_SEPARATOR;
     private static final String TEST_STRING=
         "testString";
+    private static final String TEST_CLASS=
+        "testClass";
+
 
     private static String getStackTraceNoArg
         (RemoteProxyException ex)
@@ -89,24 +92,28 @@ public class RemoteProxyExceptionTest
     public void basics()
     {
         assertEquality(new RemoteProxyException
-                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING),
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING,TEST_CLASS),
                        new RemoteProxyException
-                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING),
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING,TEST_CLASS),
                        new RemoteProxyException
-                       (null,TEST_TRACE,TEST_STRING),
+                       (null,TEST_TRACE,TEST_STRING,TEST_CLASS),
                        new RemoteProxyException
-                       (TEST_MESSAGE,null,TEST_STRING),
+                       (TEST_MESSAGE,null,TEST_STRING,TEST_CLASS),
                        new RemoteProxyException
-                       (TEST_MESSAGE,TEST_TRACE,null),
+                       (TEST_MESSAGE,TEST_TRACE,null,TEST_CLASS),
                        new RemoteProxyException
-                       (TEST_MESSAGE+"d",TEST_TRACE,TEST_STRING),
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING,null),
                        new RemoteProxyException
-                       (TEST_MESSAGE,new String[] {"d"},TEST_STRING),
+                       (TEST_MESSAGE+"d",TEST_TRACE,TEST_STRING,TEST_CLASS),
                        new RemoteProxyException
-                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING+"d"));
+                       (TEST_MESSAGE,new String[] {"d"},TEST_STRING,TEST_CLASS),
+                       new RemoteProxyException
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING+"d",TEST_CLASS),
+                       new RemoteProxyException
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING,TEST_CLASS+"d"));
 
         RemoteProxyException ex=new RemoteProxyException
-            (TEST_MESSAGE,TEST_TRACE,TEST_STRING);
+            (TEST_MESSAGE,TEST_TRACE,TEST_STRING,TEST_CLASS);
         assertEquals(TEST_MESSAGE,ex.getMessage());
         assertArrayEquals(TEST_TRACE,ex.getTraceCapture());
         assertEquals(TEST_TRACE_PRINT,getStackTraceNoArg(ex));
@@ -114,20 +121,21 @@ public class RemoteProxyExceptionTest
         assertEquals(TEST_TRACE_PRINT,getStackTraceWriter(ex));
         assertNull(ex.getStackTrace());
         assertEquals(TEST_STRING,ex.toString());
+        assertEquals(TEST_CLASS,ex.getServerName());
     }
 
     @Test
     public void nullParams()
     {
         assertEquality(new RemoteProxyException
-                       (null,null,null),
+                       (null,null,null,null),
                        new RemoteProxyException
-                       (null,null,null),
+                       (null,null,null,null),
                        new RemoteProxyException
-                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING));
+                       (TEST_MESSAGE,TEST_TRACE,TEST_STRING,TEST_CLASS));
 
         RemoteProxyException ex=new RemoteProxyException
-            (null,null,null);
+            (null,null,null,null);
         assertNull(ex.getMessage());
         assertNull(ex.getTraceCapture());
         assertEquals(StringUtils.EMPTY,getStackTraceNoArg(ex));
@@ -135,5 +143,6 @@ public class RemoteProxyExceptionTest
         assertEquals(StringUtils.EMPTY,getStackTraceWriter(ex));
         assertNull(ex.getStackTrace());
         assertNull(ex.toString());
+        assertNull(ex.getServerName());
     }
 }

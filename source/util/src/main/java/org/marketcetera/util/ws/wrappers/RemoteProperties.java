@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * stack.</p>
  *
  * <p>Equality and hash code generation ignore the receiver's
- * throwable and its wrapper.</p>
+ * throwable, its wrapper, and its class name.</p>
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
@@ -48,6 +48,7 @@ public class RemoteProperties
     private String[] mTraceCapture;
     private String mServerMessage;
     private String mServerString;
+    private String mServerName;
 
 
     // CONSTRUCTORS.
@@ -75,6 +76,7 @@ public class RemoteProperties
             setServerMessage(getTransientThrowable().getLocalizedMessage());
         }
         setServerString(getTransientThrowable().toString());
+        setServerName(getTransientThrowable().getClass().getName());
     }
 
     /**
@@ -207,6 +209,29 @@ public class RemoteProperties
     }
 
     /**
+     * Sets the receiver's server class name to the given one.
+     *
+     * @param serverName The name, which may be null.
+     */
+
+    public void setServerName
+        (String serverName)
+    {
+        mServerName=serverName;
+    }
+
+    /**
+     * Returns the receiver's server class name.
+     *
+     * @return The name, which may be null.
+     */
+
+    public String getServerName()
+    {
+        return mServerName;
+    }
+
+    /**
      * Returns a best-effort reconstruction of the receiver's
      * throwable, as described in {@link RemoteException}.
      *
@@ -225,7 +250,8 @@ public class RemoteProperties
             return getWrapper().getRaw();
         }
         return new RemoteProxyException
-            (getServerMessage(),getTraceCapture(),getServerString());
+            (getServerMessage(),getTraceCapture(),
+             getServerString(),getServerName());
     }
 
 
