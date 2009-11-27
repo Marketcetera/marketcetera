@@ -867,7 +867,7 @@ public class SimulatedExchange
         } else {
             // the previous tick has not yet completed, skip this one
             SLF4JLoggerProxy.debug(SimulatedExchange.class,
-                                   "{} skipped tick {}",
+                                   "{} skipped tick {}", //$NON-NLS-1$
                                    this,
                                    iterationCounter.get()); //$NON-NLS-1$
         }
@@ -1329,7 +1329,7 @@ public class SimulatedExchange
         @Override
         public String toString()
         {
-            return String.format("%s [latest=%s value=%s]",
+            return String.format("%s [latest=%s value=%s]", //$NON-NLS-1$
                                  instrument,
                                  latestTrade,
                                  value);
@@ -1521,7 +1521,7 @@ public class SimulatedExchange
         @Override
         public String toString()
         {
-            return String.format("%s [value: %s underlying: %s option chain: %s]",
+            return String.format("%s [value: %s underlying: %s option chain: %s]", //$NON-NLS-1$
                                  instrument,
                                  mostRecentValue,
                                  underlyingInstrument,
@@ -1551,7 +1551,7 @@ public class SimulatedExchange
                     long oneQuarter = oneDay * 90; // approximate, not really important
                     DividendEventBuilder builder = DividendEventBuilder.dividend().withEquity((Equity)inInstrument);
                     tempDividends.add(builder.withAmount(randomDecimal(10).add(PENNY))
-                                             .withCurrency("USD")
+                                             .withCurrency("USD") //$NON-NLS-1$
                                              .withDeclareDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
                                                                                      DateUtils.DAYS))
                                              .withExecutionDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
@@ -1684,7 +1684,7 @@ public class SimulatedExchange
         @Override
         public String toString()
         {
-            return String.format("FilteringSubscriber for %s on %s watching %s",
+            return String.format("FilteringSubscriber for %s on %s watching %s", //$NON-NLS-1$
                                  type,
                                  exchange,
                                  instruments);
@@ -2199,7 +2199,7 @@ public class SimulatedExchange
         @Override
         public String toString()
         {
-            return String.format("Simulated Exchange Token for %s",
+            return String.format("Simulated Exchange Token for %s", //$NON-NLS-1$
                                  subscriber);
         }
     }
