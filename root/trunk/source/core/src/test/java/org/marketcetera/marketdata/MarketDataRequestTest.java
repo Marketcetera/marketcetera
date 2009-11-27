@@ -995,7 +995,6 @@ public class MarketDataRequestTest
                                                                                                                  "METC",
                                                                                                                  null));
             requestString.append(Util.KEY_VALUE_DELIMITER);
-            requestString.append(CONTENT_KEY).append(Util.KEY_VALUE_SEPARATOR);
             boolean delimiterNeeded = false;
             boolean errorExpected = false;
             List<Content> expectedContents = new ArrayList<Content>();
@@ -1003,11 +1002,12 @@ public class MarketDataRequestTest
                 if(delimiterNeeded) {
                     requestString.append(SYMBOL_DELIMITER);
                 }
-                requestString.append(subcontent);
-                delimiterNeeded = true;
-                if(subcontent == null) {
-                    errorExpected = true;
-                } else {
+                if(subcontent != null) {
+                    if(!requestString.toString().contains(CONTENT_KEY)) {
+                        requestString.append(CONTENT_KEY).append(Util.KEY_VALUE_SEPARATOR);
+                    }
+                    requestString.append(subcontent);
+                    delimiterNeeded = true;
                     expectedContents.add(subcontent);
                 }
             }

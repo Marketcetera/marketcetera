@@ -219,7 +219,22 @@ public class UtilTest
         assertEquals(Util.propertiesFromString(expectedResults),
                      Util.propertiesFromString(Util.propertiesToString(testProperties)));
     }
-
+    /**
+     * Tests the round-trip of an empty value through {@link Util#propertiesFromString(String)}
+     * and {@link Util#propertiesToString(Properties)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testEmptyValue()
+            throws Exception
+    {
+        Properties p = new Properties();
+        p.setProperty("key",
+                      "");
+        assertEquals("",
+                     Util.propertiesFromString(Util.propertiesToString(p)).getProperty("key"));
+    }
     /**
      * Tests {@link Util#getAppId(String, String)}.
      *

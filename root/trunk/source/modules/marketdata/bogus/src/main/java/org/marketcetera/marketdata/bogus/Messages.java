@@ -28,7 +28,6 @@ public interface Messages
                                                                              "unknown_entry_type"); //$NON-NLS-1$
     public static final I18NMessage0P PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,
                                                                                "provider_description"); //$NON-NLS-1$
-    public static final I18NMessage1P INVALID_REQUEST_DATA_TYPE = new I18NMessage1P(LOGGER,
-                                                                                    "invalid_request_data_type"); //$NON-NLS-1$
-
+    public static final I18NMessage1P UNSUPPORTED_OPTION_SPECIFICATION = new I18NMessage1P(LOGGER,
+                                                                                           "unsupported_option_specification"); //$NON-NLS-1$
 }

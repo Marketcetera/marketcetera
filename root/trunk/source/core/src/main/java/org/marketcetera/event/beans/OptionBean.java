@@ -259,7 +259,7 @@ public final class OptionBean
     @Override
     public String toString()
     {
-        return String.format("expirationType=%s, hasDeliverable=%s, instrument=%s, multiplier=%s, underlyingInstrument=%s opraSymbol=%s", //$NON-NLS-1$
+        return String.format("expirationType=%s, hasDeliverable=%s, instrument=%s, multiplier=%s, underlyingInstrument=%s providerSymbol=%s", //$NON-NLS-1$
                              expirationType,
                              hasDeliverable,
                              instrument,

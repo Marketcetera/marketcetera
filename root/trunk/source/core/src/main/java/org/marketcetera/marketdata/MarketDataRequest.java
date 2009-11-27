@@ -127,7 +127,10 @@ public class MarketDataRequest
                 request.setProvider(sanitizedProps.get(PROVIDER_KEY));
             }
             if(sanitizedProps.containsKey(CONTENT_KEY)) {
-                request.withContent(sanitizedProps.get(CONTENT_KEY).split(SYMBOL_DELIMITER));
+                String contentString = sanitizedProps.get(CONTENT_KEY);
+                if(!contentString.isEmpty()) {
+                    request.withContent(sanitizedProps.get(CONTENT_KEY).split(SYMBOL_DELIMITER));
+                }
             }
             if(sanitizedProps.containsKey(EXCHANGE_KEY)) {
                 request.setExchange(sanitizedProps.get(EXCHANGE_KEY));

@@ -73,7 +73,7 @@ public final class ExchangeRequest
     @Override
     public String toString()
     {
-        return String.format("ExchangeRequest [instrument=%s, underlyingInstrument=%s]",
+        return String.format("ExchangeRequest [instrument=%s, underlyingInstrument=%s]", //$NON-NLS-1$
                              instrument,
                              underlyingInstrument);
     }

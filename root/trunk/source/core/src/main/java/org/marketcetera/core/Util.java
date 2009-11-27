@@ -11,8 +11,10 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 
 /**
- * Collection of random utilities
+ * Collection of random utilities.
+ * 
  * @author Toli Kuznets
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
@@ -125,27 +127,38 @@ public class Util
                                                                                           ESCAPED_KEY_VALUE_SEPARATOR);
             String processedKeyValueSeparatorProperties = processedForKeyValueSeparator.getFirstMember();
             String keyValueSeparatorToken = processedForKeyValueSeparator.getSecondMember();
-            String[] subStatements = processedKeyValueSeparatorProperties.split(KEY_VALUE_SEPARATOR);
-            if(subStatements != null &&
-               subStatements.length == 2) {
-                String key = untokenizeEscapedDelimiters(subStatements[0],
-                                                         processedForEscapeCharacter.getSecondMember(),
-                                                         ESCAPE_CHARACTER);
-                String value = untokenizeEscapedDelimiters(subStatements[1],
-                                                           processedForEscapeCharacter.getSecondMember(),
-                                                           ESCAPE_CHARACTER);
-                key = untokenizeEscapedDelimiters(key,
-                                                  keyValueSeparatorToken,
-                                                  KEY_VALUE_SEPARATOR);
-                value = untokenizeEscapedDelimiters(value,
-                                                    keyValueSeparatorToken,
-                                                    KEY_VALUE_SEPARATOR);
-                props.setProperty(key,
-                                  value);
+            if(processedKeyValueSeparatorProperties.contains(KEY_VALUE_SEPARATOR)) {
+                String[] subStatements = processedKeyValueSeparatorProperties.split(KEY_VALUE_SEPARATOR);
+                if(subStatements != null &&
+                   (subStatements.length >= 1 &&
+                    subStatements.length <= 2)) {
+                    String key = untokenizeEscapedDelimiters(subStatements[0],
+                                                             processedForEscapeCharacter.getSecondMember(),
+                                                             ESCAPE_CHARACTER);
+                    String value = ""; //$NON-NLS-1$
+                    if(subStatements.length == 2) {
+                        value = untokenizeEscapedDelimiters(subStatements[1],
+                                                            processedForEscapeCharacter.getSecondMember(),
+                                                            ESCAPE_CHARACTER);
+                    }
+                    key = untokenizeEscapedDelimiters(key,
+                                                      keyValueSeparatorToken,
+                                                      KEY_VALUE_SEPARATOR);
+                    value = untokenizeEscapedDelimiters(value,
+                                                        keyValueSeparatorToken,
+                                                        KEY_VALUE_SEPARATOR);
+                    props.setProperty(key,
+                                      value);
+                } else {
+                    SLF4JLoggerProxy.debug(Util.class,
+                                           "Putative key/value \"{}\" discarded", //$NON-NLS-1$
+                                           (subStatements == null ? "null" : Arrays.toString(subStatements))); //$NON-NLS-1$
+                }
             } else {
                 SLF4JLoggerProxy.debug(Util.class,
-                                       "Putative key/value \"{}\" discarded", //$NON-NLS-1$
-                                       (subStatements == null ? "null" : Arrays.toString(subStatements))); //$NON-NLS-1$
+                                       "Putative key/value \"{}\" discarded because it does not contain '{}'", //$NON-NLS-1$
+                                       processedKeyValueSeparatorProperties,
+                                       KEY_VALUE_SEPARATOR);
             }
         }
         return props;
