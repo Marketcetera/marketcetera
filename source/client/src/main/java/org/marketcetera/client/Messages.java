@@ -33,6 +33,10 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "send_order_fail_no_connect");   //$NON-NLS-1$
     static final I18NMessage4P ERROR_CONNECT_TO_SERVER =
             new I18NMessage4P(LOGGER, "error_connect_to_server");   //$NON-NLS-1$
+    static final I18NMessage2P ERROR_CONNECT_INCOMPATIBLE_DIRECT =
+            new I18NMessage2P(LOGGER, "error_connect_incompatible_direct");   //$NON-NLS-1$
+    static final I18NMessage1P ERROR_CONNECT_INCOMPATIBLE_DEDUCED =
+            new I18NMessage1P(LOGGER, "error_connect_incompatible_deduced");   //$NON-NLS-1$
     static final I18NMessage0P CREATE_MODULE_ERROR =
             new I18NMessage0P(LOGGER, "create_module_error");   //$NON-NLS-1$
     static final I18NMessage0P CLIENT_ALREADY_INITIALIZED =

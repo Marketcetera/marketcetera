@@ -1,30 +1,31 @@
 package org.marketcetera.client;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.client.config.SpringConfig;
+import org.marketcetera.client.jms.JmsManager;
+import org.marketcetera.client.jms.JmsUtils;
+import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.client.jms.ReceiveOnlyHandler;
+import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.metrics.ThreadedMetric;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.except.ExceptUtils;
+import org.marketcetera.util.log.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.spring.SpringUtils;
-import org.marketcetera.util.log.*;
-import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
-import org.marketcetera.trade.*;
-import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.client.brokers.BrokersStatus;
-import org.marketcetera.client.users.UserInfo;
-import org.marketcetera.client.config.SpringConfig;
-import org.marketcetera.client.jms.JmsManager;
-import org.marketcetera.client.jms.JmsUtils;
-import org.marketcetera.client.jms.ReceiveOnlyHandler;
-import org.marketcetera.client.jms.OrderEnvelope;
-import org.marketcetera.metrics.ThreadedMetric;
+import org.marketcetera.util.ws.wrappers.RemoteProxyException;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 import java.math.BigDecimal;
@@ -518,29 +519,6 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     /**
-     * Sets the time interval between heartbeats.
-     *
-     * @param heartbeatInterval The interval, in ms.
-     */
-
-    static void setHeartbeatInterval
-        (long heartbeatInterval)
-    {
-        sHeartbeatInterval=heartbeatInterval;
-    }
-
-    /**
-     * Returns the time interval between heartbeats.
-     *
-     * @return The interval, in ms.
-     */
-
-    static long getHeartbeatInterval()
-    {
-        return sHeartbeatInterval;
-    }
-
-    /**
      * The 'heart' that produces heartbeats, keeping the connection to
      * the ORS server alive.
      */
@@ -572,7 +550,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         {
             while (true) {
                 try {
-                    Thread.sleep(getHeartbeatInterval());
+                    Thread.sleep(mParameters.getHeartbeatInterval());
                 } catch (InterruptedException ex) {
                     SLF4JLoggerProxy.debug
                         (HEARTBEATS,"Stopped (interrupted)"); //$NON-NLS-1$
@@ -589,7 +567,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                 try {
                     mService.heartbeat(getServiceContext());
                     setServerAlive(true);
-                } catch (Throwable ex) {
+                } catch (Exception ex) {
                     setServerAlive(false);
                     if (ExceptUtils.isInterruptException(ex)) {
                         SLF4JLoggerProxy.debug
@@ -601,6 +579,53 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                         (HEARTBEATS,"Failed",ex); //$NON-NLS-1$
                     exceptionThrown(new ConnectionException
                                     (ex,Messages.ERROR_HEARTBEAT_FAILED));
+                    if (ex instanceof RemoteException) {
+                        // We connected to the server, but the session
+                        // may have expired: attempt to auto-reconnect
+                        // after a short delay to let the server
+                        // settle (if it has just restarted). The
+                        // delay is random so that not all clients
+                        // will try and contact the ORS at the same
+                        // time.
+                        long delay=(long)(RECONNECT_WAIT_INTERVAL*
+                                          (0.75+1.25*Math.random()));
+                        SLF4JLoggerProxy.debug
+                            (HEARTBEATS,"Reconnecting in "+ //$NON-NLS-1$
+                             delay+"ms..."); //$NON-NLS-1$
+                        try {
+                            Thread.sleep(delay);
+                        } catch (InterruptedException ex2) {
+                            SLF4JLoggerProxy.debug
+                                (HEARTBEATS,
+                                 "Stopped (interrupted)"); //$NON-NLS-1$
+                            markExit();
+                            return;
+                        }
+                        try {
+                            mServiceClient.logout();
+                            mServiceClient.login(mParameters.getUsername(),
+                                                 mParameters.getPassword());
+                            setServerAlive(true);
+                            SLF4JLoggerProxy.debug
+                                (HEARTBEATS,
+                                 "...reconnect succeeded."); //$NON-NLS-1$
+                        } catch (Exception ex2) {
+                            setServerAlive(false);
+                            if (ExceptUtils.isInterruptException(ex2)) {
+                                SLF4JLoggerProxy.debug
+                                    (HEARTBEATS,
+                                     "Stopped (interrupted)"); //$NON-NLS-1$
+                                markExit();
+                                return;
+                            }
+                            SLF4JLoggerProxy.debug
+                                (HEARTBEATS,
+                                 "...reconnect failed.",ex2); //$NON-NLS-1$
+                            exceptionThrown
+                                (new ConnectionException
+                                 (ex2,Messages.ERROR_HEARTBEAT_FAILED));
+                        }
+                    }
                 }
                 if (isMarked()) {
                     SLF4JLoggerProxy.debug
@@ -731,6 +756,25 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         } catch (Throwable t) {
             internalClose();
             ExceptUtils.interrupt(t);
+            if (t.getCause() instanceof RemoteProxyException) {
+                RemoteProxyException ex=(RemoteProxyException)t.getCause();
+                if (IncompatibleComponentsException.class.getName().equals
+                    (ex.getServerName())) {
+                    throw new ConnectionException
+                        (t,new I18NBoundMessage1P
+                         (Messages.ERROR_CONNECT_INCOMPATIBLE_DEDUCED,
+                          ex.getMessage()));
+                }
+            } else if (t.getCause() instanceof
+                       IncompatibleComponentsException) {
+                IncompatibleComponentsException ex=
+                    (IncompatibleComponentsException)t.getCause();
+                throw new ConnectionException
+                    (t,new I18NBoundMessage2P
+                     (Messages.ERROR_CONNECT_INCOMPATIBLE_DIRECT,
+                      ClientVersion.APP_ID,
+                      ex.getServerVersion()));
+            }
             throw new ConnectionException(t, new I18NBoundMessage4P(
                     Messages.ERROR_CONNECT_TO_SERVER, mParameters.getURL(),
                     mParameters.getUsername(), mParameters.getHostname(),
@@ -910,11 +954,9 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     private final Map<String,Collection<String>> mRootToUnderlyingCache=
             new HashMap<String, Collection<String>>();
 
-    private static final long DEFAULT_HEARTBEAT_INTERVAL = 5000;
-    private static long sHeartbeatInterval=
-        DEFAULT_HEARTBEAT_INTERVAL;
+    private static final long RECONNECT_WAIT_INTERVAL = 30000;
 
-    private org.marketcetera.util.ws.stateful.Client mServiceClient;
+    private volatile org.marketcetera.util.ws.stateful.Client mServiceClient;
     private Service mService;
     private Heart mHeart;
 

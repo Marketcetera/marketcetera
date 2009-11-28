@@ -216,6 +216,19 @@ public class ClientTest
                 ClientManager.init(nullPass);
             }
         };
+        // Incompatible client and server versions.
+        final ClientParameters incompatVersions = new ClientParameters(
+                MockAuthenticator.VERSION_MISMATCH_USER,
+                DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
+                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+        new ExpectedFailure<ConnectionException>(
+                      Messages.ERROR_CONNECT_INCOMPATIBLE_DIRECT,
+                      ClientVersion.APP_ID,
+                      MockAuthenticator.VERSION_MISMATCH_SERVER_VERSION){
+            protected void run() throws Exception {
+                ClientManager.init(incompatVersions);
+            }
+        };
         final ClientParameters emptyPass = new ClientParameters(
                 parameters.getUsername(), "  ".toCharArray(),
                 MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT);
@@ -1266,13 +1279,13 @@ public class ClientTest
         }
         return mClient;
     }
-    private void initClient(long heartbeatInterval)
+    private void initClient(int heartbeatInterval)
             throws ConnectionException, ClientInitException {
         Date currentTime = new Date();
         ClientParameters parameters = new ClientParameters(DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
-        ClientImpl.setHeartbeatInterval(heartbeatInterval);
+                Node.DEFAULT_HOST, Node.DEFAULT_PORT,
+                null, heartbeatInterval);
         ClientManager.init(parameters);
         mClient = ClientManager.getInstance();
         mClient.addExceptionListener(mListener);
@@ -1421,6 +1434,6 @@ public class ClientTest
     }
 
     private static final String DEFAULT_CREDENTIAL = "name";
-    private static final long SHORT_INTERVAL = 2000;
-    private static final long LONG_INTERVAL = 60000;
+    private static final int SHORT_INTERVAL = 2000;
+    private static final int LONG_INTERVAL = 60000;
 }
