@@ -28,7 +28,7 @@ public class DefaultMessageModifier implements MessageModifier {
     private static final String ADMIN_MODIFIER_KEY = "ADMIN"; //$NON-NLS-1$
     private static final String APP_MODIFIER_KEY = "APP"; //$NON-NLS-1$
     private static final String GLOBAL_MODIFIER_KEY = "*"; //$NON-NLS-1$
-    private static final String PARSER_REGEX = "([0-9]+)(\\((\\*|[0-9a-z]|admin|app)\\))?"; //$NON-NLS-1$
+    private static final String PARSER_REGEX = "([0-9]+)(\\((\\*|[0-9a-z]+|admin|app)\\))?"; //$NON-NLS-1$
     private static final Pattern DEFAULT_FIELDS_PATTERN = Pattern.compile(PARSER_REGEX, Pattern.CASE_INSENSITIVE);
 
     class MessageModifier {
