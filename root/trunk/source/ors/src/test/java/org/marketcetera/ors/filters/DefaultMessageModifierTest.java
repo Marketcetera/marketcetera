@@ -29,8 +29,9 @@ public class DefaultMessageModifierTest extends TestCase {
     private static final String FIELD_21_VAL = "qwer"; //$NON-NLS-1$
     private static final String TRAILER_28_VAL = "ppp"; //$NON-NLS-1$
     private static final String FIELD_42_VAL = "123456789101112"; //$NON-NLS-1$
+    private static final String FIELD_63_VAL = "field63val"; //$NON-NLS-1$
 
-    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+    private FIXMessageFactory msgFactory = FIXVersion.FIX44.getMessageFactory();
 
     public DefaultMessageModifierTest(String inName) {
         super(inName);
@@ -89,7 +90,7 @@ public class DefaultMessageModifierTest extends TestCase {
     public void testModifyOrderWithPredicate() throws BackingStoreException, FieldNotFound, CoreException {
         DefaultMessageModifier mod = new DefaultMessageModifier();
         mod.setHeaderFields(createFieldsMap(new String[][]{{"57(*)", HEADER_57_VAL}})); //$NON-NLS-1$
-        mod.setMsgFields(createFieldsMap(new String[][]{{"21(d)", FIELD_21_VAL}, {"42(admin)", FIELD_42_VAL}})); //$NON-NLS-1$ //$NON-NLS-2$
+        mod.setMsgFields(createFieldsMap(new String[][]{{"21(d)", FIELD_21_VAL}, {"42(admin)", FIELD_42_VAL}, {"63(BH)", FIELD_63_VAL}})); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28(app)", TRAILER_28_VAL}})); //$NON-NLS-1$
 
         Message heartbeat = msgFactory.createMessage(MsgType.HEARTBEAT);
@@ -100,24 +101,36 @@ public class DefaultMessageModifierTest extends TestCase {
         
         Message logon = msgFactory.createMessage(MsgType.LOGON);
 
+        Message confRequest = msgFactory.createMessage(MsgType.CONFIRMATION_REQUEST);
+
         assertTrue(mod.modifyMessage(heartbeat, null, null));
         assertTrue(mod.modifyMessage(newOrderSingle, null, null));
         assertTrue(mod.modifyMessage(logon, null, null));
+        assertTrue(mod.modifyMessage(confRequest, null, null));
 
         assertEquals(HEADER_57_VAL, heartbeat.getHeader().getString(57));
         assertFalse(heartbeat.isSetField(21));
         assertFalse(heartbeat.getTrailer().isSetField(28));
         assertEquals(FIELD_42_VAL, heartbeat.getString(42));
+        assertFalse(heartbeat.isSetField(63));
 
         assertEquals(HEADER_57_VAL, newOrderSingle.getHeader().getString(57));
         assertEquals(FIELD_21_VAL, newOrderSingle.getString(21));
         assertEquals(TRAILER_28_VAL, newOrderSingle.getTrailer().getString(28));
         assertFalse(newOrderSingle.isSetField(42));
+        assertFalse(newOrderSingle.isSetField(63));
 
         assertEquals(HEADER_57_VAL, logon.getHeader().getString(57));
         assertFalse(logon.isSetField(21));
         assertFalse(logon.getTrailer().isSetField(28));
         assertEquals(FIELD_42_VAL, logon.getString(42));
+        assertFalse(logon.isSetField(63));
+
+        assertEquals(HEADER_57_VAL, confRequest.getHeader().getString(57));
+        assertFalse(confRequest.isSetField(21));
+        assertEquals(TRAILER_28_VAL, confRequest.getTrailer().getString(28));
+        assertFalse(confRequest.isSetField(42));
+        assertEquals(FIELD_63_VAL, confRequest.getString(63));
     }
 
     /** Put one extra field in the config and make sure that it appears
