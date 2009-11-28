@@ -75,6 +75,15 @@ public class ClientParameters {
         return mIDPrefix;
     }
 
+    /**
+     * The time interval between heartbeats, in ms.
+     *
+     * @return the time interval.
+     */
+    public int getHeartbeatInterval() {
+        return mHeartbeatInterval;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,7 +96,8 @@ public class ClientParameters {
                 ObjectUtils.equals(mUsername, that.mUsername) &&
                 ObjectUtils.equals(mHostname, that.mHostname) &&
                 ObjectUtils.equals(mIDPrefix, that.mIDPrefix) &&
-                ObjectUtils.equals(mPort, that.mPort);
+                ObjectUtils.equals(mPort, that.mPort) &&
+                ObjectUtils.equals(mHeartbeatInterval, that.mHeartbeatInterval);
     }
 
     @Override
@@ -96,6 +106,7 @@ public class ClientParameters {
                 Arrays.hashCode(mPassword) +
                 ObjectUtils.hashCode(mHostname) +
                 ObjectUtils.hashCode(mPort) +
+                ObjectUtils.hashCode(mHeartbeatInterval) +
                 ObjectUtils.hashCode(mIDPrefix) +
                 ObjectUtils.hashCode(mURL);
     }
@@ -110,22 +121,44 @@ public class ClientParameters {
      * @param inPort the port number
      * @param inIDPrefix the string to prefix to the orderIDs generated
      * by the client based on the IDs from the server.
+     * @param inHeartbeatInterval time interval between heartbeats, in ms.
      */
     @ConstructorProperties({"username", 
             "password",
             "URL",
             "hostname",
             "port",
-            "IDPrefix"})
+            "IDPrefix",
+            "heartbeatInterval"})
     public ClientParameters(String inUsername, char[] inPassword,
                             String inURL, String inHostname, int inPort,
-                            String inIDPrefix) {
+                            String inIDPrefix, int inHeartbeatInterval) {
         mUsername = inUsername;
         mPassword = inPassword;
         mURL = inURL;
         mHostname = inHostname;
         mPort = inPort;
         mIDPrefix = inIDPrefix;
+        mHeartbeatInterval = inHeartbeatInterval;
+    }
+
+
+    /**
+     * Creates an instance.
+     *
+     * @param inUsername the user name.
+     * @param inPassword the password.
+     * @param inURL the URL.
+     * @param inHostname the host name
+     * @param inPort the port number
+     * @param inIDPrefix the string to prefix to the orderIDs generated
+     * by the client based on the IDs from the server.
+     */
+    public ClientParameters(String inUsername, char[] inPassword,
+                            String inURL, String inHostname, int inPort,
+                            String inIDPrefix) {
+        this(inUsername, inPassword, inURL, inHostname, inPort, inIDPrefix,
+             DEFAULT_HEARTBEAT_INTERVAL);
     }
 
     /**
@@ -151,6 +184,7 @@ public class ClientParameters {
                 ", Hostname='" + mHostname + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
                 ", Port='" + mPort + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
                 ", IDPrefix='" + mIDPrefix + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
+                ", HeartbeatInterval='" + mHeartbeatInterval + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
                 '}';  //$NON-NLS-1$
     }
 
@@ -160,4 +194,7 @@ public class ClientParameters {
     private int mPort;
     private String mURL;
     private String mIDPrefix;
+    private int mHeartbeatInterval;
+
+    public static final int DEFAULT_HEARTBEAT_INTERVAL = 5000;
 }

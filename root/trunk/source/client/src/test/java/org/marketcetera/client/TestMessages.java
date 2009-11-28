@@ -21,6 +21,8 @@ public interface TestMessages {
      */
     static final I18NLoggerProxy LOGGER =
             new I18NLoggerProxy(PROVIDER);
+    static final I18NMessage0P MOCK_VERSION_MISMATCH =
+            new I18NMessage0P(LOGGER, "mock_version_mismatch");   //$NON-NLS-1$
     static final I18NMessage0P PROVIDER_ORDER_SENDER =
             new I18NMessage0P(LOGGER, "provider_order_sender");   //$NON-NLS-1$
 }
