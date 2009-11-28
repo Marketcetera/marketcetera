@@ -122,7 +122,6 @@ public class OrderRoutingSystem
             (new String[] {"file:"+CONF_DIR+ //$NON-NLS-1$
                            "server.xml"}, //$NON-NLS-1$
                 parentContext);
-        mContext.registerShutdownHook();
         mContext.start();
 
         // Create system information.

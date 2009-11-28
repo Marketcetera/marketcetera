@@ -60,7 +60,7 @@
          value="15"/>
         <entry
          key="ResetOnLogout"
-         value="Y"/>
+         value="N"/>
         <entry
          key="ResetOnDisconnect"
          value="Y"/>
