@@ -174,7 +174,8 @@ public enum FileType
     public boolean isSymbolicLink()
     {
         return ((this==LINK_FILE) ||
-                (this==LINK_DIR));
+                (this==LINK_DIR) ||
+                (this==LINK_UNKNOWN));
     }
 
     /**
