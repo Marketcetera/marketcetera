@@ -73,7 +73,7 @@ public class DBAuthenticator
         (StatelessClientContext context,
          String user,
          char[] password)
-        throws I18NException
+        throws IncompatibleComponentsException
     {
         String serverVersion=ApplicationVersion.getVersion();
         String clientName=Util.getName(context.getAppId());
