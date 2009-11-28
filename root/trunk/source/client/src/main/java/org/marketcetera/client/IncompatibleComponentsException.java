@@ -33,7 +33,7 @@ public class IncompatibleComponentsException
     // CONSTRUCTORS.
 
     /**
-     * Constructs a new throwable with the given message and referring
+     * Constructs a new exception with the given message and referring
      * to a server with the given version.
      *
      * @param message The message.
