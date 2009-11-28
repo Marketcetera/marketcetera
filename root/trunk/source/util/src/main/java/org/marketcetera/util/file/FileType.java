@@ -9,7 +9,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * A file type. Files on NTFS are limited to the following types:
  * {@link #NONEXISTENT}, {@link #FILE}, {@link #DIR} (folder), and
  * {@link #UNKNOWN} (the file may or may not exist, and, if it does,
- * its type cannot be determined).
+ * its type cannot be determined). On Linux, {@link #LINK_FILE} and
+ * {@link #LINK_DIR} also apply to symbolic links that point to
+ * symbolic links (and so on) that eventually point to a file or
+ * directory, respectively.
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0

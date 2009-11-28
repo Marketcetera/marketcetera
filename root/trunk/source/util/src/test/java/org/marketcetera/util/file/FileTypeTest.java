@@ -133,19 +133,19 @@ public class FileTypeTest
         assertEquals(NONEXISTENT,get(TEST_ALIASED_NONEXISTENT_FILE));
 
         assertEquals(LINK_FILE,get(TEST_ALIASED_FILE_LINK));
-	assertEquals(LINK_DIR,get(TEST_ALIASED_DIR_LINK));
+        assertEquals(LINK_DIR,get(TEST_ALIASED_DIR_LINK));
         assertEquals(LINK_UNKNOWN,get(TEST_ALIASED_DANGLING_LINK));
         assertEquals(LINK_UNKNOWN,get(TEST_ALIASED_RECURSIVE_LINK));
 
-	assertEquals(LINK_FILE,get(TEST_DP_DIRECT_FILE_LINK));
-	assertEquals(LINK_DIR,get(TEST_DP_DIRECT_DIR_LINK));
-	assertEquals(LINK_UNKNOWN,get(TEST_DP_DIRECT_DANGLING_LINK));
+        assertEquals(LINK_FILE,get(TEST_DP_DIRECT_FILE_LINK));
+        assertEquals(LINK_DIR,get(TEST_DP_DIRECT_DIR_LINK));
+        assertEquals(LINK_UNKNOWN,get(TEST_DP_DIRECT_DANGLING_LINK));
 
-	assertEquals(LINK_FILE,get(TEST_DP_INDIRECT_FILE_LINK));
-	assertEquals(LINK_DIR,get(TEST_DP_INDIRECT_DIR_LINK));
-	assertEquals(LINK_UNKNOWN,get(TEST_DP_INDIRECT_DANGLING_LINK));
+        assertEquals(LINK_FILE,get(TEST_DP_INDIRECT_FILE_LINK));
+        assertEquals(LINK_DIR,get(TEST_DP_INDIRECT_DIR_LINK));
+        assertEquals(LINK_UNKNOWN,get(TEST_DP_INDIRECT_DANGLING_LINK));
 
-	assertEquals(LINK_UNKNOWN,get(TEST_DP_RECURSIVE_LINK));
+        assertEquals(LINK_UNKNOWN,get(TEST_DP_RECURSIVE_LINK));
     }
 
     /*
