@@ -1,3 +1,5 @@
+package sample;
+
 import org.marketcetera.strategy.java.Strategy;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.*;
