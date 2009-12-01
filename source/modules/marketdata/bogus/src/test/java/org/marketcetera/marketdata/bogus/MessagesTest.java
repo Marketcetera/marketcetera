@@ -11,7 +11,7 @@ import org.marketcetera.util.l10n.MessageComparator;
  * Tests the messages for the Bogus Market Data Feed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MessagesTest.java 3841 2008-11-18 08:29:49Z klim $
+ * @version $Id$
  * @since $Release$
  */
 public class MessagesTest
