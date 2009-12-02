@@ -27,7 +27,7 @@ import org.marketcetera.trade.OptionType;
  * @since 2.0.0
  */
 @RunWith(WorkbenchRunner.class)
-public class PositionsViewFlatTest extends PhotonTestBase {
+public class PositionsViewTablePageTest extends PhotonTestBase {
 
     public static final PositionKey<Equity> EQ_ABC_123_admin = PositionKeyFactory
             .createEquityKey("ABC", "123", "admin");
@@ -168,6 +168,22 @@ public class PositionsViewFlatTest extends PhotonTestBase {
                 "Oct 09", "Call", "1.00", "10.00", "0.00", "NA", "NA", "NA",
                 "NA", "NA");
         mFixture.filter("ABC");
+        mFixture.assertFlatPositionsCount(2);
+        mFixture.assertFlatEquityPosition("ABC", "123", "admin", "5.00",
+                "0.00", "NA", "NA", "NA", "NA", "NA");
+        mFixture.assertFlatOptionPosition("ABC", "123", "admin", "ABC",
+                "Oct 09", "Call", "1.00", "10.00", "0.00", "NA", "NA", "NA",
+                "NA", "NA");
+    }
+
+    @Test
+    public void testFilteringBeforeRegister() throws Exception {
+        mFixture.addTrade(MockTrade.createTrade(EQ_ABC_123_admin, "5", "5"));
+        mFixture.addTrade(MockTrade.createTrade(EQ_IBM_null_admin2, "5", "5"));
+        mFixture.addTrade(MockTrade.createTrade(EQ_METC_acc_null, "5", "5"));
+        mFixture.addTrade(MockTrade.createTrade(OPT_ABC200910C1_123_admin, "10", "10"));
+        mFixture.filter("ABC");
+        mFixture.registerModel();
         mFixture.assertFlatPositionsCount(2);
         mFixture.assertFlatEquityPosition("ABC", "123", "admin", "5.00",
                 "0.00", "NA", "NA", "NA", "NA", "NA");

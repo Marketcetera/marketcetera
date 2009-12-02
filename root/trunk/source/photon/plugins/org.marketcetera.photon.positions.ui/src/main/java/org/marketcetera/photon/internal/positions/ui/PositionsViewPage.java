@@ -84,7 +84,6 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
             mMatcherEditor = new SearchEngineTextMatcherEditor<PositionRow>(
                     getFilterator());
             mFilteredList.setMatcherEditor(mMatcherEditor);
-            setFilterText(mView.getFilterText());
         } finally {
             mLock.writeLock().unlock();
         }
