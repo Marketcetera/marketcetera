@@ -231,7 +231,8 @@ public class PositionsViewFixture {
         }
     }
 
-    public void dispose() {
+    public void dispose() throws Exception {
+        filter("");
         unregisterModel();
     }
 

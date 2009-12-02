@@ -1,9 +1,9 @@
 package org.marketcetera.photon.internal.positions.ui;
 
-import static org.marketcetera.photon.internal.positions.ui.PositionsViewFlatTest.EQ_ABC_123_admin;
-import static org.marketcetera.photon.internal.positions.ui.PositionsViewFlatTest.EQ_IBM_null_admin2;
-import static org.marketcetera.photon.internal.positions.ui.PositionsViewFlatTest.OPT_ABC20091010P1_null_admin;
-import static org.marketcetera.photon.internal.positions.ui.PositionsViewFlatTest.OPT_ABC200910C1_123_admin;
+import static org.marketcetera.photon.internal.positions.ui.PositionsViewTablePageTest.EQ_ABC_123_admin;
+import static org.marketcetera.photon.internal.positions.ui.PositionsViewTablePageTest.EQ_IBM_null_admin2;
+import static org.marketcetera.photon.internal.positions.ui.PositionsViewTablePageTest.OPT_ABC20091010P1_null_admin;
+import static org.marketcetera.photon.internal.positions.ui.PositionsViewTablePageTest.OPT_ABC200910C1_123_admin;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +26,7 @@ import org.marketcetera.trade.Equity;
  * @since 2.0.0
  */
 @RunWith(WorkbenchRunner.class)
-public class PositionsViewGroupedTest extends PhotonTestBase {
+public class PositionsViewTreePageTest extends PhotonTestBase {
 
     private PositionsViewFixture mFixture;
 
@@ -269,5 +269,19 @@ public class PositionsViewGroupedTest extends PhotonTestBase {
                 "NA", "NA", "NA");
         mFixture.assertGroupedPosition("IBM", "10.00", "0.00", "NA", "NA",
                 "NA", "NA", "NA");
+    }
+
+    @Test
+    public void testFilteringBeforeRegister() throws Exception {
+        mFixture.addTrade(MockTrade.createTrade(OPT_ABC20091010P1_null_admin,
+                "10", "10"));
+        mFixture.addTrade(MockTrade.createTrade(OPT_ABC200910C1_123_admin,
+                "10", "10"));
+        mFixture.addTrade(MockTrade.createTrade(EQ_ABC_123_admin, "10", "10"));
+        mFixture
+                .addTrade(MockTrade.createTrade(EQ_IBM_null_admin2, "10", "10"));
+        mFixture.filter("bogus");
+        mFixture.registerModel();
+        mFixture.assertGroupedPositionsCount(0);
     }
 }

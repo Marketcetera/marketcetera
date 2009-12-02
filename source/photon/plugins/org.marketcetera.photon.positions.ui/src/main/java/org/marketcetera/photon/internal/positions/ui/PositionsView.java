@@ -34,7 +34,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 import org.eclipse.ui.part.IPage;
-import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.PageBookView;
 import org.marketcetera.core.position.Grouping;
@@ -317,7 +316,7 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 
     @Override
     protected PageRec doCreatePage(IWorkbenchPart part) {
-        final IPageBookViewPage page;
+        final PositionsViewPage page;
         switch ((PositionsPart) part) {
         case FLAT:
             page = new PositionsViewTablePage(this, mMemento);
@@ -331,6 +330,7 @@ public class PositionsView extends PageBookView implements IColumnProvider {
 
         initPage(page);
         page.createControl(getPageBook());
+        page.setFilterText(getFilterText());
         return new PageRec(part, page);
     }
 
@@ -369,7 +369,9 @@ public class PositionsView extends PageBookView implements IColumnProvider {
      */
     public void setFilterText(String filterText) {
         mFilterText = filterText;
-        ((PositionsViewPage) getCurrentPage()).setFilterText(filterText);
+        if (getCurrentPage() instanceof PositionsViewPage) {
+            ((PositionsViewPage) getCurrentPage()).setFilterText(filterText);
+        }
     }
 
     /**

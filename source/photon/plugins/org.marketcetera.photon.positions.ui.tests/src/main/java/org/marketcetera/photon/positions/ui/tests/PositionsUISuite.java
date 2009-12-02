@@ -4,8 +4,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.marketcetera.photon.internal.positions.ui.MessagesTest;
-import org.marketcetera.photon.internal.positions.ui.PositionsViewFlatTest;
-import org.marketcetera.photon.internal.positions.ui.PositionsViewGroupedTest;
+import org.marketcetera.photon.internal.positions.ui.PositionsViewTablePageTest;
+import org.marketcetera.photon.internal.positions.ui.PositionsViewTreePageTest;
 
 /* $License$ */
 
@@ -17,6 +17,6 @@ import org.marketcetera.photon.internal.positions.ui.PositionsViewGroupedTest;
  * @since 2.0.0
  */
 @RunWith(Suite.class)
-@SuiteClasses( { MessagesTest.class, PositionsViewFlatTest.class, PositionsViewGroupedTest.class })
+@SuiteClasses( { MessagesTest.class, PositionsViewTablePageTest.class, PositionsViewTreePageTest.class })
 public final class PositionsUISuite {
 }
