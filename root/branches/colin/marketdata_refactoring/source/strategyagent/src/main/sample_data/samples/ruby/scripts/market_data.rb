@@ -8,7 +8,6 @@
 #   
 include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
-include_class "org.marketcetera.marketdata.Content"
 include_class "org.marketcetera.marketdata.AssetClass"
 
 #######################################
@@ -30,13 +29,13 @@ class MarketData < Strategy
       request_market_data(MarketDataRequestBuilder.newRequest().
           withSymbols(SYMBOLS).
           withProvider(MARKET_DATA_PROVIDER).
-          withContent(Content::TOP_OF_BOOK).create)
+          withContent("TOP_OF_BOOK").create)
       # option
       request_market_data(MarketDataRequestBuilder.newRequest().
           withSymbols(OPTION_OSI_SYMBOL).
           withAssetClass(AssetClass::OPTION).
           withProvider(MARKET_DATA_PROVIDER).
-          withContent(Content::LATEST_TICK).create)
+          withContent("LATEST_TICK").create)
     end
 
     ####################################################

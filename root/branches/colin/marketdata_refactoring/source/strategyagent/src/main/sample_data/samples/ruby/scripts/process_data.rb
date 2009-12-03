@@ -9,14 +9,13 @@
 'require java'
 include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
-include_class "org.marketcetera.marketdata.Content"
 
 ##################################################
 # Strategy that processes market data via CEP    #
 ##################################################
 class ProcessData < Strategy
     SYMBOLS = "AMZN,JAVA" # Depends on MD - can be other symbols
-    CONTENT = Content::LATEST_TICK
+    CONTENT = "LATEST_TICK"
     MARKET_DATA_PROVIDER = "marketcetera" # Can be activ, bogus, marketcetera
     CEP_QUERY = ["select t.instrumentAsString as symbol, t.price * t.size as position from trade t"]
     CEP_PROVIDER = "esper"

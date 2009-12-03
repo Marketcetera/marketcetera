@@ -229,7 +229,7 @@ final class StrategyModule
             ModuleURN cepDataURN = constructCepUrn(inCEPSource,
                                                    inNamespace);
             SLF4JLoggerProxy.debug(StrategyModule.class,
-                                   "{} received a processed market data request {} from {} via {}", //$NON-NLS-1$
+                                   "{} received a processed market data request {} for market data from {} via {}", //$NON-NLS-1$
                                    strategy,
                                    inRequest,
                                    marketDataURN,
