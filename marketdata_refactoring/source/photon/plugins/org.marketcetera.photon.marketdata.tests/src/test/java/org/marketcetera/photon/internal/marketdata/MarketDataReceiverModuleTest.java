@@ -88,7 +88,8 @@ public class MarketDataReceiverModuleTest {
 
 							@Override
 							public MarketDataRequest getRequest() {
-								return MarketDataRequestBuilder.newRequest().create();
+                                return MarketDataRequestBuilder.newRequest()
+                                        .withSymbols("METC").create();
 							}
 
 							@Override
@@ -114,7 +115,8 @@ public class MarketDataReceiverModuleTest {
 
 					@Override
 					public MarketDataRequest getRequest() {
-						return MarketDataRequestBuilder.newRequest().create();
+					    return MarketDataRequestBuilder.newRequest()
+                        .withSymbols("METC").create();
 					}
 
 					@Override
