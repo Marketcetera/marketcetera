@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project default="javadoc">
+
+    <path id="photon.classpath">
+        <pathelement location="${plugins.dir}/client/target/client-${javadoc.version}.jar"/>
+        <pathelement location="${plugins.dir}/core/target/core-${javadoc.version}.jar"/>
+        <pathelement location="${plugins.dir}/emitter/target/remote-emitter-${javadoc.version}.jar"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.commons.ui/miglayout-3.6.3-swt.jar"/>
+        <pathelement location="${plugins.dir}/strategy/target/strategy-${javadoc.version}.jar"/>
+        <pathelement location="${plugins.dir}/util/target/util-${javadoc.version}.jar"/>
+        <fileset dir="${photon.target}">
+            <include name="**/*.jar"/>
+        </fileset>
+        <dirset dir="${plugins.dir}/com.swtworkbench.community.xswt/@dot"/>
+    </path>
+
+    <path id="photon.srcpath">
+        <pathelement location="${plugins.dir}/org.marketcetera.photon/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.core/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.commons/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.commons.ui/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.commons.ui.workbench/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.marketdata/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.marketdata/src/model/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.marketdata.ui/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.module/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.module.ui/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.notification/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.positions.ui/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.product/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine/src/model/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine.ui/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine.ui.workbench/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine.ui.workbench.ws/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine.embedded/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine.sa/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine.sa.ui/src/main/java"/>
+        <pathelement location="${plugins.dir}/org.marketcetera.photon.strategy.engine.sa.ui.workbench/src/main/java"/>
+    </path>
+
+    <target name="javadoc">
+        <javadoc access="protected" 
+                 doctitle="${javadoc.title}"
+                 windowtitle="${javadoc.title}"
+                 author="true" 
+                 classpathref="photon.classpath"
+                 destdir="${javadoc.destdir}" 
+                 sourcepathref="photon.srcpath"
+                 additionalparam="-tag generated:X -tag ordered:X -tag model:X"
+                 version="true">
+            <link href="http://commons.apache.org/cli/api-release/"/>
+            <link href="http://commons.apache.org/collections/api-release/"/>
+            <link href="http://commons.apache.org/io/api-release/"/>
+            <link href="http://commons.apache.org/lang/api-release/"/>
+            <link href="http://commons.apache.org/vfs/apidocs/"/>
+            <link href="http://help.eclipse.org/stable/nftopic/org.eclipse.platform.doc.isv/reference/api/"/>
+            <link href="http://java.sun.com/javaee/${javaee.version}/docs/api/"/>
+            <link href="http://java.sun.com/javase/${javase.version}/docs/api/"/>
+            <link href="http://logging.apache.org/log4j/1.2/apidocs/"/>
+            <link href="http://publicobject.com/glazedlists/glazedlists-1.7.0/api/"/>
+            <link href="http://static.springframework.org/spring/docs/2.5.2/api/"/>
+            <link href="http://www.migcalendar.com/miglayout/javadoc/"/>
+            <link href="http://www.quickfixj.org/quickfixj/javadoc/"/>
+
+            <link href="${platform.javadoc.link}"/>
+        </javadoc>
+    </target>
+
+</project>
