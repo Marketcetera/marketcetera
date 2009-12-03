@@ -38,7 +38,7 @@ import com.google.common.collect.ObjectArrays;
 @ClassVersion("$Id$")
 public abstract class OrderTicketModel {
 
-    protected static final Object BLANK = new OrderTicketModel.NullSentinel(""); //$NON-NLS-1$
+    protected static final Object BLANK = new NullSentinel(""); //$NON-NLS-1$
     private final NewOrReplaceOrderObservable mOrderObservable = new NewOrReplaceOrderObservable();
     private final ITypedObservableValue<BrokerID> mBrokerId;
     private final ITypedObservableValue<Side> mSide;

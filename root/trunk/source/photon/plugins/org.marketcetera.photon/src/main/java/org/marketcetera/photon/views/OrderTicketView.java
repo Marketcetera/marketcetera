@@ -28,6 +28,8 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -47,10 +49,8 @@ import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.BrokerManager.Broker;
 import org.marketcetera.photon.BrokerManager.BrokerLabelProvider;
-import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedConverter;
 import org.marketcetera.photon.commons.databinding.TypedObservableValue;
-import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
 import org.marketcetera.photon.commons.ui.databinding.RequiredFieldSupport;
 import org.marketcetera.photon.commons.ui.databinding.UpdateStrategyFactory;
 import org.marketcetera.photon.ui.databinding.StatusToImageConverter;
@@ -402,73 +402,116 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          * Need custom required field logic since price is only required for
          * limit orders.
          */
-        Binding binding = bindDecimal(ticket.getPriceText(), model.getPrice(),
-                Messages.ORDER_TICKET_VIEW_PRICE__LABEL.getText());
-        /*
-         * RequiredFieldSupport reports an error if the value is null or empty
-         * string. We want this behavior when the order is a limit order, but
-         * not when it is a market order (since empty string is correct as the
-         * price is uneditable. So we decorate the observable and pass the
-         * decorated one to RequiredFieldsupport.
-         */
-        IObservableValue priceDecorator = new DecoratingObservableValue(
-                (IObservableValue) binding.getTarget(), false) {
-            @Override
-            public Object getValue() {
-                Object actualValue = super.getValue();
-                if ("".equals(actualValue) //$NON-NLS-1$
-                        && !model.isLimitOrder().getTypedValue()) {
-                    /*
-                     * Return an object to "trick" RequiredFieldSupport to not
-                     * error.
-                     */
-                    return new Object();
+        {
+            Binding binding = bindDecimal(ticket.getPriceText(), model
+                    .getPrice(), Messages.ORDER_TICKET_VIEW_PRICE__LABEL
+                    .getText());
+            /*
+             * RequiredFieldSupport reports an error if the value is null or
+             * empty string. We want this behavior when the order is a limit
+             * order, but not when it is a market order (since empty string is
+             * correct as the price is uneditable. So we decorate the observable
+             * and pass the decorated one to RequiredFieldsupport.
+             */
+            IObservableValue priceDecorator = new DecoratingObservableValue(
+                    (IObservableValue) binding.getTarget(), false) {
+                @Override
+                public Object getValue() {
+                    Object actualValue = super.getValue();
+                    if ("".equals(actualValue) //$NON-NLS-1$
+                            && !model.isLimitOrder().getTypedValue()) {
+                        /*
+                         * Return an object to "trick" RequiredFieldSupport to
+                         * not error.
+                         */
+                        return new Object();
+                    }
+                    return actualValue;
                 }
-                return actualValue;
-            }
-        };
-        RequiredFieldSupport.initFor(dbc, priceDecorator,
-                Messages.ORDER_TICKET_VIEW_PRICE__LABEL.getText(), false,
-                SWT.BOTTOM | SWT.LEFT, binding);
-        dbc.bindValue(SWTObservables.observeEnabled(ticket.getPriceText()),
-                model.isLimitOrder());
+            };
+            RequiredFieldSupport.initFor(dbc, priceDecorator,
+                    Messages.ORDER_TICKET_VIEW_PRICE__LABEL.getText(), false,
+                    SWT.BOTTOM | SWT.LEFT, binding);
+            dbc.bindValue(SWTObservables.observeEnabled(ticket.getPriceText()),
+                    model.isLimitOrder());
+        }
 
         /*
          * Broker
          * 
-         * Need an intermediary observable to handle conversion from Broker to
-         * BrokerID.
+         * Custom binding logic required since the viewer list can dynamically
+         * change.
          */
-        ITypedObservableValue<Broker> broker = TypedObservableValueDecorator
-                .create(Broker.class);
-        getObservablesManager().addObservable(broker);
-        dbc.bindValue(broker, model.getBrokerId(), new UpdateValueStrategy()
-                .setConverter(new TypedConverter<Broker, BrokerID>(
-                        Broker.class, BrokerID.class) {
-                    @Override
-                    public BrokerID doConvert(Broker fromObject) {
-                        return fromObject.getId();
+        {
+            IObservableValue target = ViewersObservables
+                    .observeSingleSelection(mAvailableBrokersViewer);
+            /*
+             * Bind the target (combo) to the model, but use POLICY_ON_REQUEST
+             * for target-to-model binding since we don't want the model to
+             * change simply because a broker went down. The target-to-model
+             * updates are handled manually below.
+             */
+            final Binding binding = dbc.bindValue(target, model.getBrokerId(),
+                    new UpdateValueStrategy(
+                            UpdateValueStrategy.POLICY_ON_REQUEST)
+                            .setConverter(new TypedConverter<Broker, BrokerID>(
+                                    Broker.class, BrokerID.class) {
+                                @Override
+                                public BrokerID doConvert(Broker fromObject) {
+                                    return fromObject.getId();
+                                }
+                            }), new UpdateValueStrategy()
+                            .setConverter(new TypedConverter<BrokerID, Broker>(
+                                    BrokerID.class, Broker.class) {
+                                @Override
+                                public Broker doConvert(BrokerID fromObject) {
+                                    return BrokerManager.getCurrent()
+                                            .getBroker(fromObject);
+                                }
+                            }));
+            /*
+             * If the target changes and the new value is not null, then this
+             * was a user selection and the model should be updated.
+             */
+            target.addValueChangeListener(new IValueChangeListener() {
+                @Override
+                public void handleValueChange(ValueChangeEvent event) {
+                    if (event.diff.getNewValue() != null) {
+                        binding.updateTargetToModel();
                     }
-                }), new UpdateValueStrategy()
-                .setConverter(new TypedConverter<BrokerID, Broker>(
-                        BrokerID.class, Broker.class) {
-                    @Override
-                    public Broker doConvert(BrokerID fromObject) {
-                        if (fromObject == null) {
-                            return BrokerManager.AUTO_SELECT_BROKER;
+                }
+            });
+            /*
+             * When the broker list changes, we force a model-to-target update
+             * to ensure the two are in sync if possible.
+             */
+            final IListChangeListener listener = new IListChangeListener() {
+                @Override
+                public void handleListChange(ListChangeEvent event) {
+                    binding.updateModelToTarget();
+                }
+            };
+            BrokerManager.getCurrent().getAvailableBrokers()
+                    .addListChangeListener(listener);
+            /*
+             * Need to remove the listener when the widget is disposed.
+             */
+            mAvailableBrokersViewer.getControl().addDisposeListener(
+                    new DisposeListener() {
+                        @Override
+                        public void widgetDisposed(DisposeEvent e) {
+                            BrokerManager.getCurrent().getAvailableBrokers()
+                                    .removeListChangeListener(listener);
                         }
-                        for (Object obj : BrokerManager.getCurrent()
-                                .getAvailableBrokers()) {
-                            Broker broker = (Broker) obj;
-                            BrokerID id = broker.getId();
-                            if (id != null && id.equals(fromObject)) {
-                                return broker;
-                            }
-                        }
-                        return BrokerManager.AUTO_SELECT_BROKER;
-                    }
-                }));
-        bindCombo(mAvailableBrokersViewer, broker);
+                    });
+            /*
+             * If the model has a broker id, but the target doesn't have a
+             * corresponding entry, the target will be null which needs to
+             * generate an error.
+             */
+            setRequired(binding, Messages.ORDER_TICKET_VIEW_BROKER__LABEL
+                    .getText());
+        }
         enableForNewOrderOnly(mAvailableBrokersViewer.getControl());
 
         /*

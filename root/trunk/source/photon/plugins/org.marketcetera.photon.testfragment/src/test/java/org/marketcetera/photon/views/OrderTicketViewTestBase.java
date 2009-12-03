@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -48,8 +49,8 @@ import quickfix.field.PrevClosePx;
 /* $License$ */
 
 /**
- * Base class for {@link OrderTicketView} tests. 
- *
+ * Base class for {@link OrderTicketView} tests.
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 2.0.0
@@ -71,7 +72,7 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
                 new BrokerID("metc"), false);
         BrokersStatus statuses = new BrokersStatus(Arrays.asList(status1,
                 status2));
-        BrokerManager.getCurrent().setBrokersStatus(statuses);
+        setBrokersStatus(statuses);
         clearOrder();
     }
 
@@ -94,7 +95,8 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
         mFixture.assertTicket("", "", "", "", "", "Auto Select", "Day", "");
     }
 
-    abstract protected OrderTicketViewFixture<T> createFixture() throws Exception;
+    abstract protected OrderTicketViewFixture<T> createFixture()
+            throws Exception;
 
     @Test
     public void ticketShowsModel() throws Exception {
@@ -132,9 +134,9 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
             assertSide(side);
         }
     }
-    
+
     protected Side[] getValidSides() {
-        return new Side[] {Side.Buy, Side.Sell, Side.SellShort};
+        return new Side[] { Side.Buy, Side.Sell, Side.SellShort };
     }
 
     @Test
@@ -179,6 +181,61 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
         assertBrokerId("gs");
         mFixture.getBrokerCombo().setSelection("Auto Select");
         assertBrokerId(null);
+    }
+
+    @Test
+    public void testBrokerIdPreservedAcrossBrokerStatusChanges()
+            throws Exception {
+        mFixture = createFixture();
+        SWTBotCombo combo = mFixture.getBrokerCombo();
+        assertThat(combo.selection(), is("Auto Select"));
+        assertThat(combo.items(), is(new String[] { "Auto Select",
+                "Goldman Sachs (gs)" }));
+        combo.setSelection("Goldman Sachs (gs)");
+        assertBrokerId("gs");
+        BrokerStatus status1 = new BrokerStatus("Goldman Sachs", new BrokerID(
+                "gs"), true);
+        BrokerStatus status2 = new BrokerStatus("Exchange Simulator",
+                new BrokerID("metc"), true);
+        BrokersStatus statuses = new BrokersStatus(Arrays.asList(status1,
+                status2));
+        setBrokersStatus(statuses);
+        assertThat(combo.selection(), is("Goldman Sachs (gs)"));
+        assertBrokerId("gs");
+        assertThat(combo.selection(), is("Goldman Sachs (gs)"));
+        assertThat(combo.items(), is(new String[] { "Auto Select",
+                "Goldman Sachs (gs)", "Exchange Simulator (metc)" }));
+        /*
+         * Remove the selected broker. This causes the combo to have no (null)
+         * selection, but we want the broker to be retained on the model. This
+         * is especially important for replace orders where the broker should
+         * never be changed.
+         */
+        statuses = new BrokersStatus(Arrays.asList(status2));
+        setBrokersStatus(statuses);
+        assertBrokerId("gs");
+        assertThat(combo.selectionIndex(), is(-1));
+        assertThat(combo.items(), is(new String[] { "Auto Select",
+                "Exchange Simulator (metc)" }));
+        /*
+         * Bring gs back.
+         */
+        statuses = new BrokersStatus(Arrays.asList(status1, status2));
+        setBrokersStatus(statuses);
+        assertBrokerId("gs");
+        assertThat(combo.selection(), is("Goldman Sachs (gs)"));
+        assertThat(combo.items(), is(new String[] { "Auto Select",
+                "Goldman Sachs (gs)", "Exchange Simulator (metc)" }));
+    }
+
+    private void setBrokersStatus(final BrokersStatus statuses)
+            throws Exception {
+        AbstractUIRunner.syncRun(new ThrowableRunnable() {
+            @Override
+            public void run() throws Throwable {
+                BrokerManager.getCurrent().setBrokersStatus(statuses);
+            }
+        });
     }
 
     @Test
@@ -235,7 +292,7 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
             }
         });
     }
-    
+
     @Test
     public void testClearButton() throws Exception {
         setOrderSingle(Side.Buy, "10", "QWER", OrderType.Limit, "1", "gs",
@@ -244,7 +301,8 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
         mFixture.assertTicket("Buy", "10", "QWER", "Limit", "1",
                 "Goldman Sachs (gs)", "Day", "");
         mFixture.getClearButton().click();
-        mFixture.assertTicket("", "", "", "", "", "Goldman Sachs (gs)", "Day", "");
+        mFixture.assertTicket("", "", "", "", "", "Goldman Sachs (gs)", "Day",
+                "");
     }
 
     protected abstract String getReplaceOrderText();
@@ -348,7 +406,8 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
         });
     }
 
-    protected void assertInstrument(final Instrument instrument) throws Exception {
+    protected void assertInstrument(final Instrument instrument)
+            throws Exception {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
             @Override
             public void run() throws Throwable {
@@ -521,7 +580,7 @@ public abstract class OrderTicketViewTestBase<T extends IOrderTicket, M extends 
                 .showView(getViewId());
         return view;
     }
-    
+
     abstract protected String getViewId();
 
     protected void assertSendDisabled(String errorText) {
