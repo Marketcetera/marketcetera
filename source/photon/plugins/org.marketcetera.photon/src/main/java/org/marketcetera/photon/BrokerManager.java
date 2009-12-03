@@ -1,18 +1,21 @@
 package org.marketcetera.photon;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.Realm;
-import org.eclipse.core.databinding.observable.list.ComputedList;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -31,7 +34,7 @@ public final class BrokerManager implements IBrokerIdValidator {
     /**
      * The default/null broker.
      */
-    public static final Broker AUTO_SELECT_BROKER = new Broker(
+    private static final Broker AUTO_SELECT_BROKER = new Broker(
             Messages.BROKER_MANAGER_AUTO_SELECT.getText(), null);
 
     /**
@@ -43,19 +46,23 @@ public final class BrokerManager implements IBrokerIdValidator {
         return PhotonPlugin.getDefault().getBrokerManager();
     }
 
-    private final IObservableList mBrokers = new WritableList(new SyncRealm(),
-            new ArrayList<Object>(), BrokersStatus.class);
+    private final IObservableList mAvailableBrokers = new WritableList(
+            new SyncRealm(), Lists.newArrayList(AUTO_SELECT_BROKER),
+            Broker.class);
 
-    private final IObservableList mAvailableBrokers = new AvailableBrokers();
+    private final IObservableList mUnmodifiableAvailableBrokers = Observables
+            .unmodifiableObservableList(mAvailableBrokers);
+
+    private final Map<BrokerID, Broker> mBrokerMap = Maps.newHashMap();
 
     /**
      * Returns an observable list of the available brokers managed by this
-     * class.
+     * class. The returned list should not be modified.
      * 
      * @return the available brokers
      */
     public IObservableList getAvailableBrokers() {
-        return mAvailableBrokers;
+        return mUnmodifiableAvailableBrokers;
     }
 
     /**
@@ -65,25 +72,39 @@ public final class BrokerManager implements IBrokerIdValidator {
      *            the new statuses
      */
     public synchronized void setBrokersStatus(BrokersStatus statuses) {
-        mBrokers.clear();
-        mBrokers.addAll(statuses.getBrokers());
+        mBrokerMap.clear();
+        mAvailableBrokers.clear();
+        List<Broker> availableBrokers = Lists.newArrayList();
+        availableBrokers.add(AUTO_SELECT_BROKER);
+        for (BrokerStatus status : statuses.getBrokers()) {
+            if (status.getLoggedOn()) {
+                Broker broker = new Broker(status.getName(), status.getId());
+                mBrokerMap.put(status.getId(), broker);
+                availableBrokers.add(broker);
+            }
+        }
+        mAvailableBrokers.addAll(availableBrokers);
     }
 
     @Override
-    public boolean isValid(String brokerId) {
-        if (StringUtils.isBlank(brokerId)) {
-            return false;
+    public synchronized boolean isValid(String brokerId) {
+        Validate.notNull(brokerId, "brokerID"); //$NON-NLS-1$
+        return mBrokerMap.containsKey(new BrokerID(brokerId));
+    }
+
+    /**
+     * Returns the {@link Broker} object for a given {@link BrokerID}. If no
+     * Broker is found, null is returned.
+     * 
+     * @param brokerId
+     *            the broker id
+     * @return the broker
+     */
+    public synchronized Broker getBroker(BrokerID brokerId) {
+        if (brokerId == null) {
+            return AUTO_SELECT_BROKER;
         }
-        synchronized (this) {
-            for (Object object : mAvailableBrokers) {
-                Broker broker = (Broker) object;
-                if (broker.getId() != null && broker.getId().getValue() != null
-                        && broker.getId().getValue().equals(brokerId)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return mBrokerMap.get(brokerId);
     }
 
     /**
@@ -101,31 +122,6 @@ public final class BrokerManager implements IBrokerIdValidator {
             synchronized (BrokerManager.this) {
                 super.syncExec(runnable);
             }
-        }
-    }
-
-    /**
-     * List that combines the default {@link BrokerManager#AUTO_SELECT_BROKER} broker with the available ones
-     */
-    @ClassVersion("$Id$")
-    private final class AvailableBrokers extends ComputedList {
-
-        public AvailableBrokers() {
-            super(mBrokers.getRealm(), mBrokers.getElementType());
-        }
-
-        @Override
-        protected List<?> calculate() {
-            List<Broker> list = new ArrayList<Broker>();
-            list.add(AUTO_SELECT_BROKER);
-            for (Object object : mBrokers) {
-                BrokerStatus brokerStatus = (BrokerStatus) object;
-                if (brokerStatus.getLoggedOn()) {
-                    list.add(new Broker(brokerStatus.getName(), brokerStatus
-                            .getId()));
-                }
-            }
-            return list;
         }
     }
 
