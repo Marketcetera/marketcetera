@@ -9,7 +9,7 @@ import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderCancelReject;
@@ -59,10 +59,14 @@ public class JavaStrategy
             try {
                 if(stringAPI != null) {
                     setProperty("requestID",
-                                Integer.toString(requestMarketData(MarketDataRequest.newRequest().withContent(content).withSymbols(symbols).fromProvider(marketDataSource).toString())));
+                                Integer.toString(requestMarketData(MarketDataRequestBuilder.newRequest().withContent(content)
+                                                                                                        .withSymbols(symbols)
+                                                                                                        .withProvider(marketDataSource).create().toString())));
                 } else {
                     setProperty("requestID",
-                                Integer.toString(requestMarketData(MarketDataRequest.newRequest().withContent(content).withSymbols(symbols).fromProvider(marketDataSource))));
+                                Integer.toString(requestMarketData(MarketDataRequestBuilder.newRequest().withContent(content)
+                                                                                                        .withSymbols(symbols)
+                                                                                                        .withProvider(marketDataSource).create())));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -133,7 +137,9 @@ public class JavaStrategy
         if(marketDataSource != null) {
             String symbols = getParameter("symbols");
             setProperty("requestID",
-                        Long.toString(requestMarketData(MarketDataRequest.newRequest().withContent("LATEST_TICK").withSymbols(symbols).fromProvider(marketDataSource))));
+                        Long.toString(requestMarketData(MarketDataRequestBuilder.newRequest().withContent("LATEST_TICK")
+                                                                                             .withSymbols(symbols)
+                                                                                             .withProvider(marketDataSource).create())));
         }
         String shouldLoop = getParameter("shouldLoopOnStop");
         if(shouldLoop != null) {

@@ -15,6 +15,6 @@ public abstract class MarketDataFeedTestSuite
     public static MarketDataRequest generateDataRequest() 
         throws Exception
     {
-        return MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG,MSFT,YGZ9");
+        return MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("GOOG,MSFT,YGZ9").create();
     }    
 }

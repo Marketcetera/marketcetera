@@ -15,7 +15,6 @@ import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.*;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
@@ -132,8 +131,8 @@ public class AbstractMarketDataFeedTest
         throws Exception
     {
         MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
-        MarketDataRequest request1 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG,MSFT");
-        MarketDataRequest request2 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("YHOO"); 
+        MarketDataRequest request1 = MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("GOOG,MSFT").create();
+        MarketDataRequest request2 = MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("YHOO").create(); 
         MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
         MockSubscriber subscriber = new MockSubscriber();
         MarketDataFeedTokenSpec spec1 = MarketDataFeedTokenSpec.generateTokenSpec(request1, 
@@ -330,7 +329,7 @@ public class AbstractMarketDataFeedTest
         feed.start();
         feed.login(new MockMarketDataFeedCredentials());
         feed.setShouldTimeout(true);
-        final MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG"), 
+        final MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("GOOG").create(), 
                                                                                        new ISubscriber[0]);
         new ExpectedTestFailure(FeedException.class,
                                 Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getText()) {
@@ -372,7 +371,7 @@ public class AbstractMarketDataFeedTest
         assertTrue(feed.getCreatedHandles().isEmpty());
         // #3
         MockSubscriber s1 = new MockSubscriber();
-        MarketDataRequest request0 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("test");
+        MarketDataRequest request0 = MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("test").create();
         MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(request0,
                                                                                  s1);
         MockMarketDataFeedToken token = feed.execute(spec);
@@ -423,8 +422,8 @@ public class AbstractMarketDataFeedTest
         assertEquals(2,
                      handleList2.size());
         // create two new requests to use
-        MarketDataRequest request1 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("COLIN");
-        MarketDataRequest request2 = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("NOT-COLIN");
+        MarketDataRequest request1 = MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("COLIN").create();
+        MarketDataRequest request2 = MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("NOT-COLIN").create();
         assertFalse(request1.equals(request2));
         // reset the subscriber counters
         s1.reset();
@@ -477,43 +476,6 @@ public class AbstractMarketDataFeedTest
                      token.getStatus());
         assertEquals(Status.ACTIVE,
                      token2.getStatus());
-    }
-    /**
-     * Tests the ability of the feed to catch invalid requests.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void requestValidation()
-        throws Exception
-    {
-        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
-        feed.start();
-        feed.login(new MockMarketDataFeedCredentials());
-        // create an invalid request
-        final MarketDataRequest invalidRequest = MarketDataRequest.newRequest();
-        // prove that it's invalid
-        new ExpectedFailure<IllegalArgumentException>(NEITHER_SYMBOLS_NOR_UNDERLYING_SYMBOLS_SPECIFIED.getText(invalidRequest)) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                MarketDataRequest.validate(invalidRequest);
-            }
-        };
-        // try to submit the request, make sure the request fails
-        MockSubscriber subscriber = new MockSubscriber();
-        MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(invalidRequest,
-                                                                                 subscriber);
-        MockMarketDataFeedToken token = feed.execute(spec);
-        assertEquals(Status.EXECUTION_FAILED,
-                     token.getStatus());
-        // fix the request
-        invalidRequest.withSymbols("METC");
-        // resubmit
-        token = feed.execute(spec);
-        assertEquals(Status.ACTIVE,
-                     token.getStatus());
     }
     private static class TestFeedComponentListener
     	implements IFeedComponentListener
@@ -621,7 +583,7 @@ public class AbstractMarketDataFeedTest
             }
         }
         subscriber.reset();
-        MarketDataRequest fullDepthMessage = MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG").withContent(Content.TOTAL_VIEW);
+        MarketDataRequest fullDepthMessage = MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("GOOG").withContent(Content.TOTAL_VIEW).create();
         doExecuteTest(fullDepthMessage,
                       subscriber,
                       false, 
@@ -705,7 +667,7 @@ public class AbstractMarketDataFeedTest
         // set up a subscriber to receive events
         final MockSubscriber s = new MockSubscriber();
         // a market data request (doesn't matter what)
-        MarketDataRequest request = new MarketDataRequest().fromProvider("not-a-real-provider").withSymbols("METC");
+        MarketDataRequest request = MarketDataRequestBuilder.newRequest().withProvider("not-a-real-provider").withSymbols("METC").create();
         // first, have the feed return a non-aggregate event
         MockEvent e = new MockEvent();
         assertTrue(Event.class.isAssignableFrom(e.getClass()));

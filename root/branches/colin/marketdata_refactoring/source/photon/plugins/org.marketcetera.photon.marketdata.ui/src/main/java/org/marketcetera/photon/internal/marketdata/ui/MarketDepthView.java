@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.photon.commons.ui.table.ColumnConfiguration;
 import org.marketcetera.photon.commons.ui.table.TableConfiguration;
 import org.marketcetera.photon.commons.ui.table.TableSupport;

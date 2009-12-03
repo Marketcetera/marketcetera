@@ -10,8 +10,6 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.*;
-import org.marketcetera.marketdata.MarketDataRequest.AssetClass;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.options.OptionUtils;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
@@ -336,13 +334,14 @@ public class BogusFeed
             }
             try {
                 List<ExchangeRequest> exchangeRequests = new ArrayList<ExchangeRequest>();
-                if(marketDataRequest.getSymbols().length != 0) {
+                Set<String> symbols = marketDataRequest.getSymbols(); 
+                if(!symbols.isEmpty()) {
                     if(marketDataRequest.getAssetClass() == AssetClass.EQUITY) {
-                        for(String symbol : marketDataRequest.getSymbols()) {
+                        for(String symbol : symbols) {
                             exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(new Equity(symbol)).create());
                         }
                     } else if(marketDataRequest.getAssetClass() == AssetClass.OPTION) {
-                        for(String symbol : marketDataRequest.getSymbols()) {
+                        for(String symbol : symbols) {
                             // this assumes that the symbol is an OSI-compliant symbol, otherwise, there's no way to parse it
                             //  deterministically.  if it's not OSI-compliant, an IAE will be thrown, which puts the kaibosh on
                             //  the whole request.  this is a limitation ironed into the Bogus adapter
@@ -362,7 +361,8 @@ public class BogusFeed
                     }
                 } else {
                     // marketDataRequest has no symbols - should then have underlyingsymbols instead
-                    assert(marketDataRequest.getUnderlyingSymbols().length != 0);
+                    Set<String> underlyingSymbols = marketDataRequest.getUnderlyingSymbols();
+                    assert(!underlyingSymbols.isEmpty());
                     for(String symbol : marketDataRequest.getUnderlyingSymbols()) {
                         exchangeRequests.add(ExchangeRequestBuilder.newRequest().withUnderlyingInstrument(getUnderlyingInstrument(symbol)).create());
                     }

@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
 
 import java.util.ArrayList;

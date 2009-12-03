@@ -13,11 +13,7 @@ import java.util.concurrent.Callable;
 
 import org.junit.Test;
 import org.marketcetera.event.HasInstrument;
-import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.MarketDataFeedTestBase;
-import org.marketcetera.marketdata.MarketDataModuleTestBase;
-import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.*;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleException;
@@ -63,10 +59,10 @@ public class BogusFeedModuleTest
         });
         assertTrue(symbols.isEmpty());
         DataFlowID id1 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
-                                                                                          MarketDataRequest.newRequest().withSymbols("IBM")) });
+                                                                                          MarketDataRequestBuilder.newRequest().withSymbols("IBM").create()) });
         Thread.sleep(2000);
         DataFlowID id2 = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
-                                                                                          MarketDataRequest.newRequest().withSymbols("GOOG").withContent(Content.MARKET_STAT)) });
+                                                                                          MarketDataRequestBuilder.newRequest().withSymbols("GOOG").withContent(Content.MARKET_STAT).create()) });
         Thread.sleep(5000);
         moduleManager.cancel(id1);
         moduleManager.cancel(id2);
@@ -99,7 +95,7 @@ public class BogusFeedModuleTest
                         if(!dataRequested[0]) {
                             // this call will hang if the deadlock has not been repaired 
                             createdFlows.add(moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.INSTANCE_URN,
-                                                                                                              MarketDataRequest.newRequest().withSymbols("GOOG")) }));
+                                                                                                              MarketDataRequestBuilder.newRequest().withSymbols("GOOG").create()) }));
                             dataRequested[0] = true;
                         }
                         receivedData.add(inData);
@@ -109,7 +105,7 @@ public class BogusFeedModuleTest
                 }
             });
             createdFlows.add(moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.INSTANCE_URN,
-                                                                                              MarketDataRequest.newRequest().withSymbols("IBM")) }));
+                                                                                              MarketDataRequestBuilder.newRequest().withSymbols("IBM").create()) }));
             // need to infinite loop here since the deadlock is between the market data delivery thread and the new ExecutorThread
             MarketDataFeedTestBase.wait(new Callable<Boolean>() {
                 @Override

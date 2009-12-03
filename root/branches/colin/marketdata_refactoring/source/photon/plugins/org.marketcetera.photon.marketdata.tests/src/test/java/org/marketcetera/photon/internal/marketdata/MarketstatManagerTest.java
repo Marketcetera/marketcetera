@@ -15,8 +15,8 @@ import java.util.concurrent.Executor;
 import org.junit.Test;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
@@ -118,8 +118,8 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 	protected void validateRequest(MarketstatKey key, MarketDataRequest request) {
 		assertThat(request.getContent().size(), is(1));
 		assertThat(request.getContent(), hasItem(Content.MARKET_STAT));
-		assertThat(request.getSymbols().length, is(1));
-        assertThat(request.getSymbols(), hasItemInArray(getOsiSymbol(key)));
+		assertThat(request.getSymbols().size(), is(1));
+        assertThat(request.getSymbols().toArray(new String[0]), hasItemInArray(getOsiSymbol(key)));
 	}
 
     @Test
