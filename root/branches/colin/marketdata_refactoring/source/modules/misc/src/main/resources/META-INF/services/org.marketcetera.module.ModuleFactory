@@ -1,0 +1,3 @@
+#Names of module factory implementations
+org.marketcetera.modules.csv.CSVEmitterFactory
+org.marketcetera.modules.async.SimpleAsyncProcessorFactory
