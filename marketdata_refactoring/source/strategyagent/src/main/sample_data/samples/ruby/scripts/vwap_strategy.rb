@@ -15,7 +15,6 @@ include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
 include_class "org.marketcetera.trade.Equity"
 include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
-include_class "org.marketcetera.marketdata.Content"
 include_class "java.math.BigDecimal"
 
 
@@ -30,7 +29,7 @@ include_class "java.math.BigDecimal"
 class VWAPStrategy < Strategy
     SYMBOLS = ["AMZN","GOOG","MSFT"] # Depends on MD - can be other symbols
     MARKET_DATA_PROVIDER = "bogus" # Can be activ, bogus, marketcetera
-    CONTENT = Content::LATEST_TICK
+    CONTENT = "LATEST_TICK"
     CEP_QUERY = ["SELECT t.instrumentAsString AS instrument, sum(cast(t.price, double) * cast(t.size, double))/sum(cast(t.size, double)) AS vwap FROM trade t GROUP BY instrument"]
     CEP_PROVIDER = "esper"
 

@@ -198,15 +198,12 @@ public class MarketDataRequest
     private void validateSymbols()
     {
         Set<String> symbols = getSymbols();
-        // concern ourselves here only with the case where symbols is non-empty
-        if(!symbols.isEmpty()) {
-            // symbols is non-empty, underlying symbols is empty
-            for(String symbol : symbols) {
-                if(symbol == null ||
-                   symbol.trim().isEmpty()) {
-                    throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_SYMBOLS,
-                                                                              String.valueOf(symbols)).getText());
-                }
+        // symbols is non-empty, underlying symbols is empty
+        for(String symbol : symbols) {
+            if(symbol == null ||
+                    symbol.trim().isEmpty()) {
+                throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_SYMBOLS,
+                                                                          String.valueOf(symbols)).getText());
             }
         }
     }
@@ -237,15 +234,12 @@ public class MarketDataRequest
     private void validateUnderlyingSymbols()
     {
         Set<String> underlyingSymbols = getUnderlyingSymbols();
-        // concern ourselves here only with the case where underlying symbols is non-empty
-        if(!underlyingSymbols.isEmpty()) {
-            // underlying symbols is non-empty, symbols is empty
-            for(String underlyingSymbol : underlyingSymbols) {
-                if(underlyingSymbol == null ||
-                   underlyingSymbol.trim().isEmpty()) {
-                    throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_UNDERLYING_SYMBOLS,
-                                                                              String.valueOf(underlyingSymbols)).getText());
-                }
+        // underlying symbols is non-empty, symbols is empty
+        for(String underlyingSymbol : underlyingSymbols) {
+            if(underlyingSymbol == null ||
+                    underlyingSymbol.trim().isEmpty()) {
+                throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_UNDERLYING_SYMBOLS,
+                                                                          String.valueOf(underlyingSymbols)).getText());
             }
         }
     }

@@ -5,7 +5,8 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import static org.marketcetera.marketdata.MarketDataRequest.*;
+import org.marketcetera.marketdata.AssetClass;
+import org.marketcetera.marketdata.Content;
 
 /* $License$ */
 /**
