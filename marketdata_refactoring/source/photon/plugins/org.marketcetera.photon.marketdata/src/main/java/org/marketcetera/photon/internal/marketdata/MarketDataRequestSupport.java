@@ -1,7 +1,7 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.AssetClass;
+import org.marketcetera.marketdata.AssetClass;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -30,10 +30,10 @@ public class MarketDataRequestSupport implements IMarketDataRequestSupport {
     }
 
     @Override
-    public MarketDataRequest initializeRequest(Instrument instrument) {
+    public MarketDataRequestBuilder initializeRequest(Instrument instrument) {
         if (!mUseFineGrainedMarketDataForOptions
                 && (instrument instanceof Option)) {
-            return MarketDataRequest.newRequest().ofAssetClass(
+            return MarketDataRequestBuilder.newRequest().withAssetClass(
                     AssetClass.OPTION).withUnderlyingSymbols(
                     instrument.getSymbol());
         }

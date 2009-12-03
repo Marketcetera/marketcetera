@@ -205,7 +205,7 @@ public abstract class MarketDataModuleTestBase
         throws Exception
     {
         assertTrue(moduleManager.getDataFlows(true).isEmpty());
-        MarketDataRequest request = MarketDataRequest.newRequest().withSymbols("GOOG").fromProvider(getProvider());
+        MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols("GOOG").withProvider(getProvider()).create();
         final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                                    request.toString()) });
         // wait until some arbitrary number of ticks have been received
@@ -224,7 +224,7 @@ public abstract class MarketDataModuleTestBase
         throws Exception
     {
         assertTrue(moduleManager.getDataFlows(true).isEmpty());
-        MarketDataRequest request = MarketDataRequest.newRequest().withSymbols("GOOG");
+        MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols("GOOG").create();
         final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                                    request) });
         // wait until some arbitrary number of ticks have been received
@@ -242,7 +242,7 @@ public abstract class MarketDataModuleTestBase
     public void reconnect()
         throws Exception
     {
-        MarketDataRequest request = MarketDataRequest.newRequest().withSymbols("GOOG");
+        MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols("GOOG").create();
         final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                                    request) });
         // wait until some arbitrary number of ticks have been received

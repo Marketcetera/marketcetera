@@ -14,7 +14,8 @@ include_class "org.marketcetera.trade.OrderType"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
 include_class "org.marketcetera.trade.Equity"
-include_class "org.marketcetera.marketdata.MarketDataRequest"
+include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
+include_class "org.marketcetera.marketdata.Content"
 include_class "java.math.BigDecimal"
 
 
@@ -29,7 +30,7 @@ include_class "java.math.BigDecimal"
 class VWAPStrategy < Strategy
     SYMBOLS = ["AMZN","GOOG","MSFT"] # Depends on MD - can be other symbols
     MARKET_DATA_PROVIDER = "bogus" # Can be activ, bogus, marketcetera
-    CONTENT = "LATEST_TICK"
+    CONTENT = Content::LATEST_TICK
     CEP_QUERY = ["SELECT t.instrumentAsString AS instrument, sum(cast(t.price, double) * cast(t.size, double))/sum(cast(t.size, double)) AS vwap FROM trade t GROUP BY instrument"]
     CEP_PROVIDER = "esper"
 
@@ -41,7 +42,7 @@ class VWAPStrategy < Strategy
     ##########################################
     def on_start
       @vwaps = {}
-      request = MarketDataRequest.newRequest().withSymbols(SYMBOLS.to_java(:string)).fromProvider(MARKET_DATA_PROVIDER).withContent(CONTENT)
+      request = MarketDataRequestBuilder.newRequest().withSymbols(SYMBOLS.to_java(:string)).withProvider(MARKET_DATA_PROVIDER).withContent(CONTENT).create
       request_processed_market_data(request, CEP_QUERY.to_java(:string), CEP_PROVIDER)
       request_callback_after((1000*10), nil) # register for callback in 10 seconds
     end

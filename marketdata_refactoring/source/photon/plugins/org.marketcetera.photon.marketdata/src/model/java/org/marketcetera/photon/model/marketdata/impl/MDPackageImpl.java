@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.Content;
 
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDFactory;

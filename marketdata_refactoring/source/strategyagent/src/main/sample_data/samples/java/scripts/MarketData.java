@@ -4,7 +4,7 @@ import org.marketcetera.strategy.java.Strategy;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import static org.marketcetera.marketdata.MarketDataRequest.*;
 
 /* $License$ */
@@ -27,16 +27,16 @@ public class MarketData extends Strategy {
     @Override
     public void onStart() {
         //equity
-        requestMarketData(MarketDataRequest.newRequest().
+        requestMarketData(MarketDataRequestBuilder.newRequest().
                 withSymbols(SYMBOLS).
-                fromProvider(MARKET_DATA_PROVIDER).
-                withContent(Content.TOP_OF_BOOK));
+                withProvider(MARKET_DATA_PROVIDER).
+                withContent(Content.TOP_OF_BOOK).create());
         //option
-        requestMarketData(MarketDataRequest.newRequest().
+        requestMarketData(MarketDataRequestBuilder.newRequest().
                 withSymbols(OPTION_OSI_SYMBOL).
-                ofAssetClass(AssetClass.OPTION).
-                fromProvider(MARKET_DATA_PROVIDER).
-                withContent(Content.LATEST_TICK));
+                withAssetClass(AssetClass.OPTION).
+                withProvider(MARKET_DATA_PROVIDER).
+                withContent(Content.LATEST_TICK).create());
     }
 
     /**

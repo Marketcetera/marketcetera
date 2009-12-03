@@ -12,8 +12,8 @@ import java.util.EnumSet;
 import java.util.concurrent.Executor;
 
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl;
@@ -94,8 +94,8 @@ public class TopOfBookManagerTest extends
     protected void validateRequest(TopOfBookKey key, MarketDataRequest request) {
         assertThat(request.getContent().size(), is(1));
         assertThat(request.getContent(), hasItem(Content.TOP_OF_BOOK));
-        assertThat(request.getSymbols().length, is(1));
-        assertThat(request.getSymbols(), hasItemInArray(getOsiSymbol(key)));
+        assertThat(request.getSymbols().size(), is(1));
+        assertThat(request.getSymbols().toArray(new String[0]), hasItemInArray(getOsiSymbol(key)));
     }
 
 }

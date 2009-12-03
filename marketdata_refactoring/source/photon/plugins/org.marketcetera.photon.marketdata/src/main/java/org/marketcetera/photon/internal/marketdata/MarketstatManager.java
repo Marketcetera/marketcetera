@@ -6,8 +6,8 @@ import java.util.concurrent.Executor;
 
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl;
 import org.marketcetera.trade.Instrument;
@@ -76,7 +76,7 @@ public class MarketstatManager extends
         assert key != null;
         final Instrument instrument = key.getInstrument();
         final MarketDataRequest request = initializeRequest(instrument)
-                .withContent(Content.MARKET_STAT);
+                .withContent(Content.MARKET_STAT).create();
         return new Subscriber() {
 
             @Override

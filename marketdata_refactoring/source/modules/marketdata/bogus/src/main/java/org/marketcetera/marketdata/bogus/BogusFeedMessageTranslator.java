@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.bogus;
 
-import static org.marketcetera.marketdata.MarketDataRequest.Content.*;
+import static org.marketcetera.marketdata.Content.*;
 import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
 
 import org.marketcetera.core.CoreException;

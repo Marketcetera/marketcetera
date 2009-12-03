@@ -1,7 +1,6 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItemInArray;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
@@ -19,8 +18,8 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDQuote;
@@ -121,8 +120,8 @@ public class DepthOfBookManagerTest extends
     protected void validateRequest(DepthOfBookKey key, MarketDataRequest request) {
         assertThat(request.getContent().size(), is(1));
         assertThat(request.getContent(), hasItem(key.getProduct()));
-        assertThat(request.getSymbols().length, is(1));
-        assertThat(request.getSymbols(), hasItemInArray(getOsiSymbol(key)));
+        assertThat(request.getSymbols().size(), is(1));
+        assertThat(request.getSymbols(), hasItem(getOsiSymbol(key)));
     }
 
     @Test

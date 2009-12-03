@@ -1,10 +1,10 @@
 package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertNotNull;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.LEVEL_2;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.OPEN_BOOK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.Content.LEVEL_2;
+import static org.marketcetera.marketdata.Content.OPEN_BOOK;
+import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
 
 import java.util.*;
 
@@ -13,8 +13,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 /* $License$ */
 
@@ -94,7 +94,8 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
     public void translateMarketDataRequest()
         throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(new I18NBoundMessage1P(INVALID_SYMBOLS,
+                                                                             Arrays.toString(new String[] { "" } )).getText()) {
             protected void run()
                 throws Exception
             {
@@ -102,7 +103,7 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
                                  "");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(MISSING_SYMBOLS.getText()) {
+        new ExpectedFailure<IllegalArgumentException>() {
             protected void run()
                 throws Exception
             {
@@ -159,13 +160,13 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
         contents.add(Arrays.asList(new Content[] { TOP_OF_BOOK,LATEST_TICK,OPEN_BOOK } ));
         contents.add(Arrays.asList(new Content[] { TOP_OF_BOOK,LATEST_TICK,OPEN_BOOK,LEVEL_2 } ));
         for(List<Content> content : contents) {
-            final MarketDataRequest request = MarketDataRequest.newRequest().withSymbols(inSecurityList).withContent(content.toArray(new Content[content.size()]));
+            final MarketDataRequestBuilder builder = MarketDataRequestBuilder.newRequest().withSymbols(inSecurityList).withContent(content.toArray(new Content[content.size()]));
             if(inExchange != null &&
                !inExchange.isEmpty()) {
-                request.fromExchange(inExchange);
+                builder.withExchange(inExchange);
             }
             if(supports(new HashSet<Content>(content))) {
-                verifyResponse(translator.fromDataRequest(request),
+                verifyResponse(translator.fromDataRequest(builder.create()),
                                inExchange,
                                content.toArray(new Content[content.size()]),
                                inSecurityList);
@@ -174,7 +175,7 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
                     protected void run()
                         throws Exception
                     {
-                        translator.fromDataRequest(request);
+                        translator.fromDataRequest(builder.create());
                     }
                 };
             }

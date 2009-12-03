@@ -15,8 +15,8 @@ import java.util.concurrent.Executor;
 import org.junit.Test;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
@@ -195,8 +195,8 @@ public class SharedOptionLatestTickManagerTest
             MarketDataRequest request) {
         assertThat(request.getContent().size(), is(1));
         assertThat(request.getContent(), hasItem(Content.LATEST_TICK));
-        assertThat(request.getUnderlyingSymbols().length, is(1));
-        assertThat(request.getUnderlyingSymbols(), hasItemInArray(key
+        assertThat(request.getUnderlyingSymbols().size(), is(1));
+        assertThat(request.getUnderlyingSymbols().toArray(new String[0]), hasItemInArray(key
                 .getInstrument().getSymbol()));
     }
     

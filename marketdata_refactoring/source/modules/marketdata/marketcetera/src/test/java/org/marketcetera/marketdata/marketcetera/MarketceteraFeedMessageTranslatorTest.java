@@ -1,16 +1,16 @@
 package org.marketcetera.marketdata.marketcetera;
 
 import static org.junit.Assert.assertEquals;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.LATEST_TICK;
-import static org.marketcetera.marketdata.MarketDataRequest.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXVersion;
@@ -18,11 +18,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
-import quickfix.field.MsgType;
-import quickfix.field.NoRelatedSym;
-import quickfix.field.SecurityExchange;
-import quickfix.field.SubscriptionRequestType;
-import quickfix.field.Symbol;
+import quickfix.field.*;
 
 
 /* $License$ */
