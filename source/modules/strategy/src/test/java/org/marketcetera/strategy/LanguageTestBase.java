@@ -2157,6 +2157,11 @@ public abstract class LanguageTestBase
                            new Date(),
                            null);
         MockClient.getPositionFails = false;
+        getClientFails = true;
+        doPositionAsOfTest(validEquity.getSymbol(),
+                           new Date(),
+                           null);
+        getClientFails = false;
         // date in the past (before position begins)
         Interval<BigDecimal> openingBalance = position.getPositionView().get(0);
         doPositionAsOfTest(validEquity.getSymbol(),

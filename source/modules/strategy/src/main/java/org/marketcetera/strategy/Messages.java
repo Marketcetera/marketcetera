@@ -127,8 +127,6 @@ public interface Messages
                                                                               "cannot_retrieve_underlying"); //$NON-NLS-1$
     static final I18NMessage2P CANNOT_RETRIEVE_OPTION_ROOTS = new I18NMessage2P(LOGGER,
                                                                                 "cannot_retrieve_option_roots"); //$NON-NLS-1$
-    static final I18NMessage0P CANNOT_INITIALIZE_CLIENT = new I18NMessage0P(LOGGER,
-                                                                            "cannot_initialize_client"); //$NON-NLS-1$
     static final I18NMessage2P EXECUTION_REPORT_REQUEST_FAILED = new I18NMessage2P(LOGGER,
                                                                                    "execution_report_request_failed"); //$NON-NLS-1$
     static final I18NMessage4P INVALID_CEP_REQUEST = new I18NMessage4P(LOGGER,
