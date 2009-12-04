@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>In this context, <em>content</em> refers to the type of market data request.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRequest.java 10885 2009-11-17 19:22:56Z klim $
+ * @version $Id$
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
