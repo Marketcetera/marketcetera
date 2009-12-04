@@ -1,7 +1,7 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import org.junit.Test;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 

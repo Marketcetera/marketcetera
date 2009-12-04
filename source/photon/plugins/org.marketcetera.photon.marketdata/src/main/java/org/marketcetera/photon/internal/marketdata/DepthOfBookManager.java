@@ -9,8 +9,8 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDQuote;
 import org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl;
@@ -134,7 +134,7 @@ public class DepthOfBookManager extends
         assert key != null;
         final Instrument instrument = key.getInstrument();
         final MarketDataRequest request = initializeRequest(instrument)
-                .withContent(key.getProduct());
+                .withContent(key.getProduct()).create();
         final boolean isLevel2 = key.getProduct() == Content.LEVEL_2;
         return new Subscriber() {
 

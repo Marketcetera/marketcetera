@@ -7,7 +7,7 @@ package org.marketcetera.photon.model.marketdata;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.Content;
 
 import org.marketcetera.util.misc.ClassVersion;
 

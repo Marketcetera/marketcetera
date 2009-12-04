@@ -13,7 +13,7 @@ include_class "org.marketcetera.trade.OrderType"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
 include_class "org.marketcetera.trade.Equity"
-include_class "org.marketcetera.marketdata.MarketDataRequest"
+include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
 include_class "java.math.BigDecimal"
 
 ###############################
@@ -31,7 +31,7 @@ class OrderSender < Strategy
     #  and other initialization tasks.       #
     ##########################################
     def on_start
-      request = MarketDataRequest.newRequest().withSymbols(SYMBOLS).fromProvider(MARKET_DATA_PROVIDER)
+      request = MarketDataRequestBuilder.newRequest().withSymbols(SYMBOLS).withProvider(MARKET_DATA_PROVIDER).create
       @requestID=request_market_data(request)
       info "Issued Market Data Request " + @requestID.to_s
       @receivedData = false

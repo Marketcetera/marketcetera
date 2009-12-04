@@ -1,7 +1,6 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItemInArray;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -15,8 +14,8 @@ import org.junit.Test;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
@@ -126,8 +125,8 @@ public class LatestTickManagerTest extends
     protected void validateRequest(LatestTickKey key, MarketDataRequest request) {
         assertThat(request.getContent().size(), is(1));
         assertThat(request.getContent(), hasItem(Content.LATEST_TICK));
-        assertThat(request.getSymbols().length, is(1));
-        assertThat(request.getSymbols(), hasItemInArray(getOsiSymbol(key)));
+        assertThat(request.getSymbols().size(), is(1));
+        assertThat(request.getSymbols(), hasItem(getOsiSymbol(key)));
     }
     
     @Test

@@ -7,8 +7,8 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl;
 import org.marketcetera.trade.Instrument;
@@ -76,7 +76,7 @@ public class TopOfBookManager extends
         assert key != null;
         final Instrument instrument = key.getInstrument();
         final MarketDataRequest request = initializeRequest(instrument)
-                .withContent(Content.TOP_OF_BOOK);
+                .withContent(Content.TOP_OF_BOOK).create();
         return new Subscriber() {
 
             @Override

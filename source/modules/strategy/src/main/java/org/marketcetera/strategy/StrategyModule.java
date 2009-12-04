@@ -174,7 +174,13 @@ final class StrategyModule
         }
         int requestID = counter.incrementAndGet();
         try {
-            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inRequest.getProvider()),
+            ModuleURN marketDataURN = constructMarketDataUrn(inRequest.getProvider());
+            SLF4JLoggerProxy.debug(StrategyModule.class,
+                                   "{} received a market data request {} for data from {}", //$NON-NLS-1$
+                                   strategy,
+                                   inRequest,
+                                   marketDataURN);
+            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(marketDataURN,
                                                                                                        inRequest),
                                                                                        new DataRequest(getURN()) },
                                                                    false);
@@ -219,10 +225,18 @@ final class StrategyModule
         int requestID = counter.incrementAndGet();
         // construct a request that connects the provider to the cep query
         try {
-            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(constructMarketDataUrn(inRequest.getProvider()),
+            ModuleURN marketDataURN = constructMarketDataUrn(inRequest.getProvider());
+            ModuleURN cepDataURN = constructCepUrn(inCEPSource,
+                                                   inNamespace);
+            SLF4JLoggerProxy.debug(StrategyModule.class,
+                                   "{} received a processed market data request {} for market data from {} via {}", //$NON-NLS-1$
+                                   strategy,
+                                   inRequest,
+                                   marketDataURN,
+                                   cepDataURN);
+            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(marketDataURN,
                                                                                                        inRequest),
-                                                                                       new DataRequest(constructCepUrn(inCEPSource,
-                                                                                                                       inNamespace),
+                                                                                       new DataRequest(cepDataURN,
                                                                                                        determineCepStatements(inCEPSource,
                                                                                                                               inStatements)),
                                                                                        new DataRequest(getURN()) },

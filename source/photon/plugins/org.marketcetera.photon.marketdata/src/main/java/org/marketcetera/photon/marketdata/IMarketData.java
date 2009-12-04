@@ -1,7 +1,7 @@
 package org.marketcetera.photon.marketdata;
 
 import org.eclipse.emf.ecore.EObject;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.photon.internal.marketdata.MarketData;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;

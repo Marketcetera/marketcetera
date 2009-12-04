@@ -1,7 +1,8 @@
 package sample;
 
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.trade.*;
 
 import java.util.Map;
@@ -30,10 +31,10 @@ public class VWAPStrategy extends Strategy {
      */
     @Override
     public void onStart() {
-        requestProcessedMarketData(MarketDataRequest.newRequest().
+        requestProcessedMarketData(MarketDataRequestBuilder.newRequest().
                 withSymbols(SYMBOLS).
-                fromProvider(MARKET_DATA_PROVIDER).
-                withContent(MarketDataRequest.Content.LATEST_TICK),
+                withProvider(MARKET_DATA_PROVIDER).
+                withContent(Content.LATEST_TICK).create(),
                 CEP_QUERY, CEP_PROVIDER);
         requestCallbackAfter(1000 * 10, null); // register for callback in 10 seconds
     }

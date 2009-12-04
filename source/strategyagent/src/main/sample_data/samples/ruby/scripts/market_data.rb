@@ -7,7 +7,8 @@
 #
 #   
 include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.marketdata.MarketDataRequest"
+include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
+include_class "org.marketcetera.marketdata.AssetClass"
 
 #######################################
 # Strategy that receives marketdata   #
@@ -25,16 +26,16 @@ class MarketData < Strategy
     ##########################################
     def on_start
       # equity
-      request_market_data(MarketDataRequest.newRequest().
+      request_market_data(MarketDataRequestBuilder.newRequest().
           withSymbols(SYMBOLS).
-          fromProvider(MARKET_DATA_PROVIDER).
-          withContent("TOP_OF_BOOK"))
+          withProvider(MARKET_DATA_PROVIDER).
+          withContent("TOP_OF_BOOK").create)
       # option
-      request_market_data(MarketDataRequest.newRequest().
+      request_market_data(MarketDataRequestBuilder.newRequest().
           withSymbols(OPTION_OSI_SYMBOL).
-          ofAssetClass("OPTION").
-          fromProvider(MARKET_DATA_PROVIDER).
-          withContent("LATEST_TICK"))
+          withAssetClass(AssetClass::OPTION).
+          withProvider(MARKET_DATA_PROVIDER).
+          withContent("LATEST_TICK").create)
     end
 
     ####################################################

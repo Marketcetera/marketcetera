@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.internal.marketdata.IDepthOfBookManager.Factory;

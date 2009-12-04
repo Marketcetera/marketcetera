@@ -1,5 +1,5 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.marketdata.MarketDataRequest"
+include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
 include_class "org.marketcetera.trade.Factory"
 include_class "org.marketcetera.trade.Equity"
 include_class 'org.marketcetera.util.test.UnicodeData'
@@ -40,12 +40,12 @@ class RubyStrategy < Strategy
           stringAPI = get_parameter "useStringAPI"
           if(stringAPI != nil)
             set_property("requestID",
-                         (request_market_data(MarketDataRequest.newRequest().
-                                              withContent(content.to_s).withSymbols(symbols).fromProvider(marketDataSource).to_s)).to_s)
+                         (request_market_data(MarketDataRequestBuilder.newRequest().
+                                              withContent(content.to_s).withSymbols(symbols).withProvider(marketDataSource).create.to_s)).to_s)
           else
             set_property("requestID",
-                         (request_market_data(MarketDataRequest.newRequest().
-                                              withContent(content.to_s).withSymbols(symbols).fromProvider(marketDataSource))).to_s)
+                         (request_market_data(MarketDataRequestBuilder.newRequest().
+                                              withContent(content.to_s).withSymbols(symbols).withProvider(marketDataSource).create)).to_s)
           end
       end
       if(get_parameter("shouldRequestCEPData") != nil)
@@ -92,7 +92,7 @@ class RubyStrategy < Strategy
       if(marketDataSource != nil)
           symbols = get_parameter("symbols")
           set_property("requestID",
-                       Long.toString(request_market_data(MarketDataRequest.newRequest().withContent("LATEST_TICK").withSymbols(symbols).fromProvider(marketDataSource))))
+                       Long.toString(request_market_data(MarketDataRequestBuilder.newRequest().withContent("LATEST_TICK").withSymbols(symbols).withProvider(marketDataSource).create)))
       end
       shouldLoop = get_parameter("shouldLoopOnStop")
       if(shouldLoop != nil)
