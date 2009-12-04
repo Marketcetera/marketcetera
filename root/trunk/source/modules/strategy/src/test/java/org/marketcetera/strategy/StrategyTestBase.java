@@ -40,9 +40,11 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.*;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
+import org.marketcetera.marketdata.TestMessages;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.*;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.strategy.StrategyModule.ClientFactory;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NMessage;
 
@@ -1372,7 +1374,19 @@ public class StrategyTestBase
         MockRecorderModule.shouldFullyFillOrders = true;
         MockRecorderModule.shouldIgnoreLogMessages = true;
         MockRecorderModule.ordersReceived = 0;
-        StrategyModule.orsClient = new MockClient();
+        getClientFails = false;
+        final MockClient testClient = new MockClient();
+        StrategyModule.clientFactory = new ClientFactory() {
+            @Override
+            public Client getClient()
+                    throws ClientInitException
+            {
+                if(getClientFails) {
+                    throw new ClientInitException(TestMessages.EXPECTED_EXCEPTION);
+                }
+                return testClient;
+            }
+        };
         moduleManager = new ModuleManager();
         moduleManager.init();
         outputURN = moduleManager.createModule(MockRecorderModule.Factory.PROVIDER_URN);
@@ -1943,6 +1957,10 @@ public class StrategyTestBase
      * random number generator for public use
      */
     public static final Random random = new Random(System.nanoTime());
+    /**
+     * indicates if the getClient call in the StrategyModule should fail
+     */
+    protected static boolean getClientFails;
     /**
      * global singleton module manager
      */
