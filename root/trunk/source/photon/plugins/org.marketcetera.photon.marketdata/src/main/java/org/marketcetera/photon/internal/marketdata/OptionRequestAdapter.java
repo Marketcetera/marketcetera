@@ -1,7 +1,7 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.AssetClass;
+import org.marketcetera.marketdata.AssetClass;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.options.OptionUtils;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -26,10 +26,10 @@ public class OptionRequestAdapter extends InstrumentRequestAdapter<Option> {
     }
 
     @Override
-    public MarketDataRequest initializeRequest(Option instrument) {
-        return MarketDataRequest
+    public MarketDataRequestBuilder initializeRequest(Option instrument) {
+        return MarketDataRequestBuilder
                 .newRequest()
-                .ofAssetClass(AssetClass.OPTION)
+                .withAssetClass(AssetClass.OPTION)
                 .withSymbols(
                         OptionUtils.getOsiSymbolFromOption(instrument));
     }

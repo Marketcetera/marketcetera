@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.marketdata.IMarketDataReference;

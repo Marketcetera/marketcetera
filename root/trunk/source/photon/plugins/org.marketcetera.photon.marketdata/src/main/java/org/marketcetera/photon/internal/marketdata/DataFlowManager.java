@@ -13,12 +13,8 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.module.InvalidURNException;
-import org.marketcetera.module.MXBeanOperationException;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.module.*;
 import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.except.ExceptUtils;
@@ -252,7 +248,7 @@ abstract class DataFlowManager<T, K extends Key> implements
      *            the instrument
      * @return a {@link MarketDataRequest} with instrument information
      */
-    protected final MarketDataRequest initializeRequest(Instrument instrument) {
+    protected final MarketDataRequestBuilder initializeRequest(Instrument instrument) {
         return mMarketDataRequestSupport.initializeRequest(instrument);
     }
 

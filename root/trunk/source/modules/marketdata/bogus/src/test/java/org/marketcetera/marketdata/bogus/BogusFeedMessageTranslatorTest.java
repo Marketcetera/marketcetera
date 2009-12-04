@@ -7,10 +7,10 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 
 /* $License$ */
 
@@ -55,6 +55,6 @@ public class BogusFeedMessageTranslatorTest
         assertArrayEquals(inExpectedContent,
                           inActualResponse.getContent().toArray(new Content[inActualResponse.getContent().size()]));
         assertArrayEquals(inExpectedSymbols,
-                          inActualResponse.getSymbols());
+                          inActualResponse.getSymbols().toArray(new String[0]));
     }
 }

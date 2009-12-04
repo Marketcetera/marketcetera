@@ -24,21 +24,9 @@ import javax.management.NotificationListener;
 import org.junit.Test;
 import org.marketcetera.core.Util;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
-import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.module.DataFlowException;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.module.IllegalRequestParameterValue;
-import org.marketcetera.module.InvalidURNException;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleNotFoundException;
-import org.marketcetera.module.ModuleStateException;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.SinkModuleFactory;
-import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.module.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
 
@@ -370,7 +358,7 @@ public class StrategyModuleTest
         // plumb the market data provider externally to the strategy module - normally, this would be done internally, but, for this test,
         //  it is sufficient that the data is flowing, it doesn't matter how it gets there
         DataFlowID dataFlowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.PROVIDER_URN,
-                                                                                                 MarketDataRequest.newRequest().fromExchange("Exchange").withSymbols("GOOG")),
+                                                                                                 MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("GOOG").create()),
                                                                                  new DataRequest(strategy) },
                                                              false);
         // TODO when the strategy services come on-line, use them to measure the data coming in, for now, take a little nap and let the data flow

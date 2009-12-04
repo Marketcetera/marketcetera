@@ -7,8 +7,8 @@ import java.util.concurrent.Executor;
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
 import org.marketcetera.trade.Instrument;
@@ -76,7 +76,7 @@ public class LatestTickManager extends
         assert key != null;
         final Instrument instrument = key.getInstrument();
         final MarketDataRequest request = initializeRequest(instrument)
-                .withContent(Content.LATEST_TICK);
+                .withContent(Content.LATEST_TICK).create();
         return new Subscriber() {
 
             @Override

@@ -7,10 +7,7 @@ import java.util.concurrent.Executor;
 
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequest.AssetClass;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.*;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
 import org.marketcetera.trade.Instrument;
@@ -99,10 +96,10 @@ public class SharedOptionLatestTickManager
     protected Subscriber createSubscriber(final SharedOptionLatestTickKey key) {
         assert key != null;
         final Instrument instrument = key.getInstrument();
-        final MarketDataRequest request = MarketDataRequest.newRequest()
-                .ofAssetClass(AssetClass.OPTION).withUnderlyingSymbols(
+        final MarketDataRequest request = MarketDataRequestBuilder.newRequest()
+                .withAssetClass(AssetClass.OPTION).withUnderlyingSymbols(
                         instrument.getSymbol())
-                .withContent(Content.LATEST_TICK);
+                .withContent(Content.LATEST_TICK).create();
         return new Subscriber() {
 
             @Override

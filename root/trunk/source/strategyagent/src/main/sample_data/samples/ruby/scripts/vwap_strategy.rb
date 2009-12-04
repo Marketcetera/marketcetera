@@ -14,7 +14,7 @@ include_class "org.marketcetera.trade.OrderType"
 include_class "org.marketcetera.trade.Side"
 include_class "org.marketcetera.trade.TimeInForce"
 include_class "org.marketcetera.trade.Equity"
-include_class "org.marketcetera.marketdata.MarketDataRequest"
+include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
 include_class "java.math.BigDecimal"
 
 
@@ -41,7 +41,7 @@ class VWAPStrategy < Strategy
     ##########################################
     def on_start
       @vwaps = {}
-      request = MarketDataRequest.newRequest().withSymbols(SYMBOLS.to_java(:string)).fromProvider(MARKET_DATA_PROVIDER).withContent(CONTENT)
+      request = MarketDataRequestBuilder.newRequest().withSymbols(SYMBOLS.to_java(:string)).withProvider(MARKET_DATA_PROVIDER).withContent(CONTENT).create
       request_processed_market_data(request, CEP_QUERY.to_java(:string), CEP_PROVIDER)
       request_callback_after((1000*10), nil) # register for callback in 10 seconds
     end

@@ -5,7 +5,7 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 

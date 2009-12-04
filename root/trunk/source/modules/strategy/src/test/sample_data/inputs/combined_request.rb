@@ -1,5 +1,5 @@
 include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.marketdata.MarketDataRequest"
+include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
 include_class "java.lang.Integer"
 
 class CombinedRequest < Strategy
@@ -56,14 +56,14 @@ class CombinedRequest < Strategy
       begin
         if(stringAPI != nil)
           set_property("requestID",
-                       Integer.toString(request_processed_market_data(MarketDataRequest.newRequest().withContent("LATEST_TICK,TOP_OF_BOOK").withSymbols(symbols).
-                         fromProvider(marketDataSource).to_s,
+                       Integer.toString(request_processed_market_data(MarketDataRequestBuilder.newRequest().withContent("LATEST_TICK,TOP_OF_BOOK").withSymbols(symbols).
+                         withProvider(marketDataSource).create.to_s,
                        statementsToUse,
                        cepSource)))
         else
           set_property("requestID",
-                       Integer.toString(request_processed_market_data(MarketDataRequest.newRequest().withContent("LATEST_TICK,TOP_OF_BOOK").withSymbols(symbols).
-                         fromProvider(marketDataSource),
+                       Integer.toString(request_processed_market_data(MarketDataRequestBuilder.newRequest().withContent("LATEST_TICK,TOP_OF_BOOK").withSymbols(symbols).
+                         withProvider(marketDataSource).create,
                        statementsToUse,
                        cepSource)))
         end

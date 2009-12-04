@@ -6,12 +6,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.internal.marketdata.IMarketDataSubscriber;
-import org.marketcetera.photon.internal.marketdata.MarketDataReceiverFactory;
-import org.marketcetera.photon.internal.marketdata.Messages;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.util.except.I18NException;
 
@@ -90,7 +88,8 @@ public class MarketDataReceiverModuleTest {
 
 							@Override
 							public MarketDataRequest getRequest() {
-								return MarketDataRequest.newRequest();
+                                return MarketDataRequestBuilder.newRequest()
+                                        .withSymbols("METC").create();
 							}
 
 							@Override
@@ -116,7 +115,8 @@ public class MarketDataReceiverModuleTest {
 
 					@Override
 					public MarketDataRequest getRequest() {
-						return MarketDataRequest.newRequest();
+					    return MarketDataRequestBuilder.newRequest()
+                        .withSymbols("METC").create();
 					}
 
 					@Override

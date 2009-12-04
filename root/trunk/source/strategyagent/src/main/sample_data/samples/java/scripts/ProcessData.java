@@ -1,8 +1,8 @@
 package sample;
 
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.marketdata.MarketDataRequest;
-import static org.marketcetera.marketdata.MarketDataRequest.Content;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.Content;
 
 /* $License$ */
 /**
@@ -28,10 +28,10 @@ public class ProcessData extends Strategy {
      */
     @Override
     public void onStart() {
-        requestProcessedMarketData(MarketDataRequest.newRequest().
+        requestProcessedMarketData(MarketDataRequestBuilder.newRequest().
                 withSymbols(SYMBOLS).
-                fromProvider(MARKET_DATA_PROVIDER).
-                withContent(Content.LATEST_TICK),
+                withProvider(MARKET_DATA_PROVIDER).
+                withContent(Content.LATEST_TICK).create(),
                 CEP_QUERY, CEP_PROVIDER);
     }
 
