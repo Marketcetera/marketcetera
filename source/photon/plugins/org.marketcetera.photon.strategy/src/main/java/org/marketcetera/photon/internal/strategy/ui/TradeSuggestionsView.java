@@ -27,91 +27,94 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class TradeSuggestionsView extends ViewPart implements IColumnProvider {
 
-	private TableSupport mTableSupport = TableSupport
-			.create(getTableConfiguration());
+    private TableSupport mTableSupport = TableSupport
+            .create(getTableConfiguration());
 
-	@Override
-	public void createPartControl(Composite parent) {
-		mTableSupport.createTable(parent);
-		mTableSupport.setInput(TradeSuggestionManager.getCurrent()
-				.getTradeSuggestions());
-		getViewSite().setSelectionProvider(mTableSupport.getTableViewer());
-		hookContextMenu();
-	}
+    @Override
+    public void createPartControl(Composite parent) {
+        mTableSupport.createTable(parent);
+        mTableSupport.setInput(TradeSuggestionManager.getCurrent()
+                .getTradeSuggestions());
+        getViewSite().setSelectionProvider(mTableSupport.getTableViewer());
+        hookContextMenu();
+    }
 
-	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
-		menuMgr.setRemoveAllWhenShown(true);
-		Menu menu = menuMgr.createContextMenu(mTableSupport.getTableViewer()
-				.getControl());
-		mTableSupport.getTableViewer().getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, mTableSupport.getTableViewer());
-	}
+    private void hookContextMenu() {
+        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+        menuMgr.setRemoveAllWhenShown(true);
+        Menu menu = menuMgr.createContextMenu(mTableSupport.getTableViewer()
+                .getControl());
+        mTableSupport.getTableViewer().getControl().setMenu(menu);
+        getSite().registerContextMenu(menuMgr, mTableSupport.getTableViewer());
+    }
 
-	@Override
-	public void setFocus() {
-		mTableSupport.setFocus();
-	}
+    @Override
+    public void setFocus() {
+        mTableSupport.setFocus();
+    }
 
-	@Override
-	public Table getColumnWidget() {
-		return mTableSupport.getTableViewer().getTable();
-	}
+    @Override
+    public Table getColumnWidget() {
+        return mTableSupport.getTableViewer().getTable();
+    }
 
-	private TableConfiguration getTableConfiguration() {
-		ColumnConfiguration[] columns = new ColumnConfiguration[] {
-				ColumnConfiguration.hidden().beanProperty("identifier") //$NON-NLS-1$
-						.heading(
-								Messages.TRADE_SUGGESTION_IDENTIFIER_LABEL
-										.getText()),
-				ColumnConfiguration.defaults().beanProperty("side").heading( //$NON-NLS-1$
-						Messages.TRADE_SUGGESTION_SIDE_LABEL.getText()),
-				ColumnConfiguration.hidden().beanProperty("securityType") //$NON-NLS-1$
-						.heading(
-								Messages.TRADE_SUGGESTION_SECURITY_TYPE_LABEL
-										.getText()),
-				ColumnConfiguration.defaults().beanProperty("quantity") //$NON-NLS-1$
-						.heading(
-								Messages.TRADE_SUGGESTION_QUANTITY_LABEL
-										.getText()),
-				ColumnConfiguration.defaults().beanProperty("instrument").heading( //$NON-NLS-1$
-						Messages.TRADE_SUGGESTION_INSTRUMENT_LABEL.getText()),
-				ColumnConfiguration.defaults().beanProperty("price").heading( //$NON-NLS-1$
-						Messages.TRADE_SUGGESTION_PRICE_LABEL.getText()),
-				ColumnConfiguration.defaults().beanProperty("orderType") //$NON-NLS-1$
-						.heading(
-								Messages.TRADE_SUGGESTION_ORDER_TYPE_LABEL
-										.getText()),
-				ColumnConfiguration.hidden().beanProperty("timeInForce") //$NON-NLS-1$
-						.heading(
-								Messages.TRADE_SUGGESTION_TIME_IN_FORCE_LABEL
-										.getText()),
-				ColumnConfiguration.hidden().beanProperty("orderCapacity") //$NON-NLS-1$
-						.heading(
-								Messages.TRADE_SUGGESTION_ORDER_CAPACITY_LABEL
-										.getText()),
-				ColumnConfiguration.hidden().beanProperty("positionEffect") //$NON-NLS-1$
-						.heading(
-								Messages.TRADE_SUGGESTION_POSITION_EFFECT_LABEL
-										.getText()),
-				ColumnConfiguration.defaults().beanProperty("score").heading( //$NON-NLS-1$
-						Messages.TRADE_SUGGESTION_SCORE_LABEL.getText()),
-				ColumnConfiguration.hidden().beanProperty("account").heading( //$NON-NLS-1$
-						Messages.TRADE_SUGGESTION_ACCOUNT_LABEL.getText()),
-				ColumnConfiguration.hidden().beanProperty("brokerID") //$NON-NLS-1$
-						.heading(
-								Messages.TRADE_SUGGESTION_BROKER_ID_LABEL
-										.getText()),
-				ColumnConfiguration.defaults().beanProperty("timestamp") //$NON-NLS-1$
-						.heading(
-								Messages.TRADE_SUGGESTION_TIMESTAMP_LABEL
-										.getText()).layoutData(
-								new ColumnWeightData(25)) };
+    private TableConfiguration getTableConfiguration() {
+        ColumnConfiguration[] columns = new ColumnConfiguration[] {
+                ColumnConfiguration.hidden().beanProperty("identifier") //$NON-NLS-1$
+                        .heading(
+                                Messages.TRADE_SUGGESTION_IDENTIFIER_LABEL
+                                        .getText()),
+                ColumnConfiguration.defaults().beanProperty("source").heading( //$NON-NLS-1$
+                        Messages.TRADE_SUGGESTION_SOURCE_LABEL.getText()),
+                ColumnConfiguration.defaults().beanProperty("side").heading( //$NON-NLS-1$
+                        Messages.TRADE_SUGGESTION_SIDE_LABEL.getText()),
+                ColumnConfiguration.hidden().beanProperty("securityType") //$NON-NLS-1$
+                        .heading(
+                                Messages.TRADE_SUGGESTION_SECURITY_TYPE_LABEL
+                                        .getText()),
+                ColumnConfiguration.defaults().beanProperty("quantity") //$NON-NLS-1$
+                        .heading(
+                                Messages.TRADE_SUGGESTION_QUANTITY_LABEL
+                                        .getText()),
+                ColumnConfiguration.defaults()
+                        .beanProperty("instrument").heading( //$NON-NLS-1$
+                                Messages.TRADE_SUGGESTION_INSTRUMENT_LABEL
+                                        .getText()),
+                ColumnConfiguration.defaults().beanProperty("price").heading( //$NON-NLS-1$
+                        Messages.TRADE_SUGGESTION_PRICE_LABEL.getText()),
+                ColumnConfiguration.defaults().beanProperty("orderType") //$NON-NLS-1$
+                        .heading(
+                                Messages.TRADE_SUGGESTION_ORDER_TYPE_LABEL
+                                        .getText()),
+                ColumnConfiguration.hidden().beanProperty("timeInForce") //$NON-NLS-1$
+                        .heading(
+                                Messages.TRADE_SUGGESTION_TIME_IN_FORCE_LABEL
+                                        .getText()),
+                ColumnConfiguration.hidden().beanProperty("orderCapacity") //$NON-NLS-1$
+                        .heading(
+                                Messages.TRADE_SUGGESTION_ORDER_CAPACITY_LABEL
+                                        .getText()),
+                ColumnConfiguration.hidden().beanProperty("positionEffect") //$NON-NLS-1$
+                        .heading(
+                                Messages.TRADE_SUGGESTION_POSITION_EFFECT_LABEL
+                                        .getText()),
+                ColumnConfiguration.defaults().beanProperty("score").heading( //$NON-NLS-1$
+                        Messages.TRADE_SUGGESTION_SCORE_LABEL.getText()),
+                ColumnConfiguration.hidden().beanProperty("account").heading( //$NON-NLS-1$
+                        Messages.TRADE_SUGGESTION_ACCOUNT_LABEL.getText()),
+                ColumnConfiguration.hidden().beanProperty("brokerID") //$NON-NLS-1$
+                        .heading(
+                                Messages.TRADE_SUGGESTION_BROKER_ID_LABEL
+                                        .getText()),
+                ColumnConfiguration.defaults().beanProperty("timestamp") //$NON-NLS-1$
+                        .heading(
+                                Messages.TRADE_SUGGESTION_TIMESTAMP_LABEL
+                                        .getText()).layoutData(
+                                new ColumnWeightData(25)) };
 
-		return TableConfiguration.defaults().tableStyle(
-				SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER)
-				.headerVisible(true).itemClass(TradeSuggestion.class).columns(
-						columns);
-	}
-
+        return TableConfiguration.defaults().tableStyle(
+                SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER)
+                .headerVisible(true).itemClass(TradeSuggestion.class).columns(
+                        columns);
+    }
 }

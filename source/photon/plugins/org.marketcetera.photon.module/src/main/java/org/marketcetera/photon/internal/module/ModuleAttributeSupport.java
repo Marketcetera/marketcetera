@@ -74,7 +74,7 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 			return ModuleSupport.getMBeanServerConnection().getAttribute(objectName, attribute);
 		} catch (Exception e) {
 			throw new MXBeanOperationException(e, new I18NBoundMessage2P(
-					Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_GET_ATTRIBUTE, attribute, urn));
+					Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_TO_GET_ATTRIBUTE, attribute, urn));
 		}
 	}
 
@@ -87,7 +87,7 @@ public class ModuleAttributeSupport implements IModuleAttributeSupport {
 					new Attribute(attribute, value));
 		} catch (Exception e) {
 			throw new MXBeanOperationException(e, new I18NBoundMessage2P(
-					Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_SET_ATTRIBUTE, attribute, urn));
+					Messages.MODULE_ATTRIBUTE_SUPPORT_FAILED_TO_SET_ATTRIBUTE, attribute, urn));
 		}
 	}
 }

@@ -12,6 +12,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.Provider;
 
 /* $License$ */
 
@@ -68,6 +69,23 @@ public class OSGITestUtil {
     public static BundleContext getTestBundleContext() {
         return Platform.getBundle("org.marketcetera.photon.test")
                 .getBundleContext();
+    }
+
+    /**
+     * Returns a static {@link Provider} that always provides the provided
+     * object.
+     * 
+     * @param toProvide
+     *            the object to provide
+     * @return a {@link Provider}
+     */
+    public static <T> Provider<T> provide(final T toProvide) {
+        return new Provider<T>() {
+            @Override
+            public T get() {
+                return toProvide;
+            }
+        };
     }
 
     /**

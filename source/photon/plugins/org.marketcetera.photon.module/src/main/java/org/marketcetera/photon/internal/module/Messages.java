@@ -1,9 +1,8 @@
 package org.marketcetera.photon.internal.module;
 
-import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.photon.commons.ReflectiveMessages;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage2P;
-import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -16,29 +15,20 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
-public interface Messages {
-	/**
-	 * The message provider.
-	 */
-	static final I18NMessageProvider PROVIDER = new I18NMessageProvider(
-			"photon_module"); //$NON-NLS-1$
+final class Messages {
+	
+	static I18NMessage0P ACTIVATOR_FAILED_TO_STOP_MODULE_MANAGER;
+	static I18NMessage0P ACTIVATOR_FAILED_TO_SAVE_PREFERENCES;
+	static I18NMessage0P PREFERENCE_ATTRIBUTE_DEFAULTS_FAILED_TO_SAVE_PREFERENCES;
+	static I18NMessage2P MODULE_ATTRIBUTE_SUPPORT_FAILED_TO_GET_ATTRIBUTE;
+	static I18NMessage2P MODULE_ATTRIBUTE_SUPPORT_FAILED_TO_SET_ATTRIBUTE;
+	static I18NMessage2P NOTIFICATION_HANDLER_ENHANCED_SUBJECT_FORMAT;
+	
+	static {
+        ReflectiveMessages.init(Messages.class);
+    }
 
-	/**
-	 * The logger.
-	 */
-	static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
-
-	/*
-	 * Log Messages
-	 */
-	public static I18NMessage0P ACTIVATOR_FAILED_TO_STOP_MODULE_MANAGER = new I18NMessage0P(
-			LOGGER, "activator.failed_to_stop_module_manager"); //$NON-NLS-1$
-	public static I18NMessage0P ACTIVATOR_FAILED_TO_SAVE_PREFERENCES = new I18NMessage0P(
-			LOGGER, "activator.failed_to_save_preferences"); //$NON-NLS-1$
-	public static I18NMessage0P PREFERENCE_ATTRIBUTE_DEFAULTS_FAILED_TO_SAVE_PREFERENCES = new I18NMessage0P(
-			LOGGER, "preference_attribute_defaults.failed_to_save_preferences"); //$NON-NLS-1$
-	public static I18NMessage2P MODULE_ATTRIBUTE_SUPPORT_FAILED_GET_ATTRIBUTE = new I18NMessage2P(
-			LOGGER, "module_attribute_support.failed_to_get_attribute"); //$NON-NLS-1$
-	public static I18NMessage2P MODULE_ATTRIBUTE_SUPPORT_FAILED_SET_ATTRIBUTE = new I18NMessage2P(
-			LOGGER, "module_attribute_support.failed_to_set_attribute"); //$NON-NLS-1$
+    private Messages() {
+        throw new AssertionError("non-instantiable"); //$NON-NLS-1$
+    }
 }

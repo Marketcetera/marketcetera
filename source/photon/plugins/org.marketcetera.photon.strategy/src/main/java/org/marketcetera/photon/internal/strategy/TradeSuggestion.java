@@ -28,19 +28,24 @@ public class TradeSuggestion {
 
 	private final OrderSingleSuggestion mSuggestion;
 
-	private final Date mTimestamp;
+	private final String mSource;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param suggestion
-	 *            the trade suggestion
-	 * @param timestamp
-	 *            the time the suggestion was received
-	 */
-	TradeSuggestion(OrderSingleSuggestion suggestion, Date timestamp) {
+    private final Date mTimestamp;
+
+    /**
+     * Constructor.
+     * 
+     * @param suggestion
+     *            the trade suggestion
+     * @param source
+     *            the source of the suggestion
+     * @param timestamp
+     *            the time the suggestion was received
+     */
+	TradeSuggestion(OrderSingleSuggestion suggestion, String source, Date timestamp) {
 		Validate.notNull(suggestion);
 		mSuggestion = suggestion;
+		mSource = source;
 		mTimestamp = timestamp;
 	}
 
@@ -169,6 +174,15 @@ public class TradeSuggestion {
 	public BrokerID getBrokerID() {
 		return getOrder().getBrokerID();
 	}
+	
+	/**
+     * Returns the source.
+     * 
+     * @return the source
+     */
+    public String getSource() {
+        return mSource;
+    }
 
 	/**
 	 * Returns the timestamp.

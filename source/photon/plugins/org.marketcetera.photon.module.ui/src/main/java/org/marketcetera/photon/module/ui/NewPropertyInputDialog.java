@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public final class NewPropertyInputDialog extends InputDialog implements Messages {
+public final class NewPropertyInputDialog extends InputDialog {
 
 	/**
 	 * Property Value text widget.
@@ -63,28 +63,28 @@ public final class NewPropertyInputDialog extends InputDialog implements Message
 	 */
 	public NewPropertyInputDialog(Shell parentShell,
 			boolean allowInstanceDefault) {
-		super(parentShell, NEW_PROPERTY_DIALOG_TITLE.getText(),
-				NEW_PROPERTY_DIALOG_KEY_LABEL.getText(), null,
+		super(parentShell, Messages.NEW_PROPERTY_DIALOG__TITLE.getText(),
+		        Messages.NEW_PROPERTY_DIALOG_KEY__LABEL.getText(), null,
 				new IInputValidator() {
 					@Override
 					public String isValid(String newText) {
 						if (newText.isEmpty())
 							return null;
 						if (!Character.isJavaIdentifierStart(newText.charAt(0)))
-							return NEW_PROPERTY_DIALOG_INVALID_INITIAL_CHARACTER_ERROR
+							return Messages.NEW_PROPERTY_DIALOG_INVALID_INITIAL_CHARACTER_ERROR
 									.getText();
 						if (newText.contains(" ")) //$NON-NLS-1$
-							return NEW_PROPERTY_DIALOG_CONTAINS_SPACE_ERROR
+							return Messages.NEW_PROPERTY_DIALOG_CONTAINS_SPACE_ERROR
 									.getText();
 						for (int i = 1; i < newText.length(); i++) {
 							final char c = newText.charAt(i);
 							if (!Character.isJavaIdentifierPart(c) && c != '.') {
-								return NEW_PROPERTY_DIALOG_INVALID_CHARACTER_ERROR
+								return Messages.NEW_PROPERTY_DIALOG_INVALID_CHARACTER_ERROR
 										.getText(c);
 							}
 						}
 						if (newText.charAt(newText.length() - 1) == '.')
-							return NEW_PROPERTY_DIALOG_END_WITH_PERIOD_ERROR.getText();
+							return Messages.NEW_PROPERTY_DIALOG_END_WITH_PERIOD_ERROR.getText();
 						return null;
 					}
 				});
@@ -95,7 +95,7 @@ public final class NewPropertyInputDialog extends InputDialog implements Message
 	protected Control createDialogArea(Composite parent) {
 		final Composite composite = (Composite) super.createDialogArea(parent);
 		Label label = new Label(composite, SWT.WRAP);
-		label.setText(NEW_PROPERTY_DIALOG_VALUE_LABEL.getText());
+		label.setText(Messages.NEW_PROPERTY_DIALOG_VALUE__LABEL.getText());
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, true);
 		data.widthHint = convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
 		label.setLayoutData(data);
@@ -107,7 +107,7 @@ public final class NewPropertyInputDialog extends InputDialog implements Message
 		if (mAllowInstanceDefault) {
 			mInstanceDefaultButton = new Button(composite, SWT.CHECK);
 			mInstanceDefaultButton
-					.setText(NEW_PROPERTY_DIALOG_INSTANCE_DEFAULTS_LABEL
+					.setText(Messages.NEW_PROPERTY_DIALOG_INSTANCE_DEFAULTS__LABEL
 							.getText());
 			GridData data2 = new GridData(SWT.FILL, SWT.CENTER, true, true);
 			data2.widthHint = convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
