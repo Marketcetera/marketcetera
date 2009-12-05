@@ -13,3 +13,4 @@ Require-Bundle: org.marketcetera.photon.strategy.engine,
 Export-Package: org.marketcetera.photon.strategy.engine.embedded
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true
+Bundle-Activator: org.marketcetera.photon.internal.strategy.engine.embedded.Activator

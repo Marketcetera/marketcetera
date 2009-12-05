@@ -155,7 +155,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 				if (selection.length <= 1) {
 					manager
 							.add(new Action(
-									Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_ACTION_LABEL
+									Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_ACTION__LABEL
 											.getText()) {
 								@Override
 								public void run() {
@@ -193,7 +193,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 				if (selection.length >= 1) {
 					manager
 							.add(new Action(
-									Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_DELETE_ACTION_LABEL
+									Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_DELETE_ACTION__LABEL
 											.getText()) {
 								@Override
 								public void run() {
@@ -217,7 +217,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 		// A button to add properties
 		Button button = new Button(parent, SWT.PUSH);
 		button
-				.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_BUTTON_LABEL
+				.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_BUTTON__LABEL
 						.getText());
 		GridDataFactory.defaultsFor(button).applyTo(button);
 		button.addSelectionListener(new SelectionAdapter() {

@@ -7,7 +7,7 @@ import org.marketcetera.util.l10n.MessageComparator;
 /* $License$ */
 
 /**
- * 
+ * Tests {@link Messages}.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
