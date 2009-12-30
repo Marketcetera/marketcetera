@@ -1,16 +1,17 @@
 package org.marketcetera.core;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.io.File;
 
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.file.Deleter;
 
 import org.marketcetera.persist.PersistTestBase;
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 
 import javax.sql.DataSource;
 
@@ -22,16 +23,13 @@ import javax.sql.DataSource;
  */
 
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class DatabaseIDFactoryTest extends TestCase {
+public class DatabaseIDFactoryTest {
     private static DataSource mDataSource;
 
-    public DatabaseIDFactoryTest(String inName) {
-        super(inName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeClass
+    public static void setUp() throws Exception {
+        new File("junit").delete(); //$NON-NLS-1$
+        new File("junit").deleteOnExit(); //$NON-NLS-1$
         if(mDataSource == null) {
             mDataSource = (DataSource) PersistTestBase.springSetup(
                     new String[]{"persist.xml"}).getBean("mysqlpool", //$NON-NLS-1$ //$NON-NLS-2$
@@ -39,17 +37,11 @@ public class DatabaseIDFactoryTest extends TestCase {
         }
     }
 
-    public static Test suite() throws Exception {
-        new File("junit").delete(); //$NON-NLS-1$
-        new File("junit").deleteOnExit(); //$NON-NLS-1$
-        return new MarketceteraTestSuite(DatabaseIDFactoryTest.class);
-    }
-
-
     /**
      * needs to have a valid mySQL db in order to run this code
      * @throws Exception if there were exceptions
      */
+    @Test
     public void testDatabaseIDs() throws Exception {
         DatabaseIDFactory factory = new DatabaseIDFactory(mDataSource,
                 DatabaseIDFactory.TABLE_NAME, DatabaseIDFactory.COL_NAME, 13);
