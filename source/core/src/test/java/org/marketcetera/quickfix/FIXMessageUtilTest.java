@@ -132,7 +132,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         assertEquals(clOrderID, aMessage.getString(ClOrdID.FIELD));
         assertEquals(symbol, aMessage.getString(Symbol.FIELD));
         if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(msgFactory.getBeginString()))) {
-            assertFalse(aMessage.isSetField(SecurityType.FIELD));
+        assertFalse(aMessage.isSetField(SecurityType.FIELD));
         } else {
             assertEquals(SecurityType.COMMON_STOCK, aMessage.getString(SecurityType.FIELD));
         }
@@ -151,7 +151,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
             assertFalse(aMessage.isSetField(SecurityType.FIELD));
         } else {
             assertEquals(org.marketcetera.trade.SecurityType.CommonStock.getFIXValue(),
-                    aMessage.getString(SecurityType.FIELD));
+                aMessage.getString(SecurityType.FIELD));
         }
 
         // now send an order w/out account name
@@ -175,17 +175,16 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         return newSingle;
     }
 
-    public static Message createOptionNOS(String optionRoot, String optionContractSpecifier,
+    public static Message createOptionNOS(String optionRoot,
                                           String maturityMonthYear, BigDecimal strikePrice,
                                           int putOrCall, BigDecimal price, BigDecimal qty,
                                           char side, FIXMessageFactory msgFactory)
     {
-        String optionContractSymbol = optionRoot + "+" + optionContractSpecifier; //$NON-NLS-1$
         Message newSingle = createNOS(optionRoot, price, qty, side, msgFactory);
-        newSingle.setField(new Symbol(optionContractSymbol));
         newSingle.setField(new MaturityMonthYear(maturityMonthYear));
         newSingle.setField(new StrikePrice(strikePrice));
         newSingle.setField(new PutOrCall(putOrCall));
+        newSingle.setField(new SecurityType(SecurityType.OPTION));
 
         return newSingle;
     }
@@ -214,6 +213,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         newSingle.setField(new TimeInForce(TimeInForce.DAY));
         newSingle.setField(new Account("testAccount")); //$NON-NLS-1$
+        newSingle.setField(new SecurityType(SecurityType.COMMON_STOCK));
         return newSingle;
     }
 
@@ -645,7 +645,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         equity.setField(new Symbol("FRED.+")); //$NON-NLS-1$
         assertFalse("equity with route doesn't work: FRED.+", FIXMessageUtil.isEquityOptionOrder(equity)); //$NON-NLS-1$
 
-        Message option = FIXMessageUtilTest.createOptionNOS("XYZ", "GE", "200708", new BigDecimal("10.25"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        Message option = FIXMessageUtilTest.createOptionNOS("XYZ", "200708", new BigDecimal("10.25"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 PutOrCall.CALL, new BigDecimal("33.23"), new BigDecimal("10"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$
         assertTrue("option didn't work", FIXMessageUtil.isEquityOptionOrder(option)); //$NON-NLS-1$
         assertTrue("didn't work on IBM+IB plain order", //$NON-NLS-1$
